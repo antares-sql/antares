@@ -1,0 +1,39 @@
+{
+  "name": "antares",
+  "productName": "Antares",
+  "version": "0.0.0",
+  "description": "A multi-platform easy to use SQL client. ",
+  "license": "MIT",
+  "scripts": {
+    "dev": "electron-webpack dev",
+    "compile": "electron-webpack",
+    "dist": "yarn compile && electron-builder",
+    "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
+  },
+  "build": {
+    "appId": "com.app.antares",
+    "artifactName": "${productName}.${ext}"
+  },
+  "electronWebpack": {},
+  "dependencies": {
+    "source-map-support": "^0.5.16"
+  },
+  "devDependencies": {
+    "electron": "^8.2.4",
+    "electron-builder": "^22.4.1",
+    "electron-devtools-installer": "^3.0.0",
+    "electron-webpack": "^2.8.2",
+    "electron-webpack-vue": "^2.4.0",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-vue": "^6.2.2",
+    "node-sass": "^4.14.0",
+    "sass-loader": "^8.0.2",
+    "vue": "^2.6.11",
+    "webpack": "^4.43.0"
+  }
+}
