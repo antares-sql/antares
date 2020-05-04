@@ -12,11 +12,20 @@
   },
   "build": {
     "appId": "com.app.antares",
-    "artifactName": "${productName}.${ext}"
+    "artifactName": "${productName}.${ext}",
+    "files": [
+      "static/*"
+    ]
   },
   "electronWebpack": {},
   "dependencies": {
-    "source-map-support": "^0.5.16"
+    "devicons": "^1.8.0",
+    "knex": "^0.21.1",
+    "source-map-support": "^0.5.16",
+    "vue-i18n": "^8.17.4",
+    "vue-router": "^3.1.6",
+    "vuex": "^3.3.0",
+    "vuex-persist": "^2.2.0"
   },
   "devDependencies": {
     "electron": "^8.2.4",
