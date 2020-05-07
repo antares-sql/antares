@@ -1,32 +1,45 @@
 <template>
-   <div id="app">
-      <img alt="Vue logo" src="logo.png">
-      <HelloWorld :msg="$store.state.application.appName" />
+   <div id="wrapper">
+      <!-- <TheHeader @toggleSidebar="toggleSidebar" /> -->
+      <!-- <TheSidebar /> -->
+      <div id="main-content">
+         <!-- <BaseLoaderLayer
+            id="main-loader"
+            :is-loading="isLoading"
+         /> -->
+         <QueryEditor v-model="query" />
+      </div>
+      <!-- <TheFooter /> -->
    </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue';
+import QueryEditor from '@/components/QueryEditor';
 
 export default {
    name: 'App',
    components: {
-      HelloWorld
+      QueryEditor
+   },
+   data () {
+      return {
+         query: ''
+      };
+   },
+   computed: {
+      isLoading () {
+         return this.$store.state.application.isLoading;
+      }
+   },
+   methods: {
    }
 };
 </script>
 
 <style>
-body{
-  background: #FFFFFF;
-}
-
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+   html,
+   body{
+      height: 100%;
+      background: #fff;
+   }
 </style>

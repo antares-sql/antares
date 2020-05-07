@@ -15,6 +15,8 @@ function createMainWindow () {
    const window = new BrowserWindow({
       width: 1024,
       height: 800,
+      title: 'Antares',
+      autoHideMenuBar: true,
       icon: path.join(__static, 'logo-32.png'),
       webPreferences: {
          nodeIntegration: true,

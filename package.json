@@ -17,10 +17,19 @@
       "static/*"
     ]
   },
-  "electronWebpack": {},
+  "electronWebpack": {
+    "whiteListedModules": [
+      "codemirror"
+    ],
+    "renderer": {
+      "webpackConfig": "webpack.config.js"
+    }
+  },
   "dependencies": {
+    "codemirror": "^5.53.2",
     "devicons": "^1.8.0",
     "knex": "^0.21.1",
+    "material-design-icons": "^3.0.1",
     "source-map-support": "^0.5.16",
     "vue-i18n": "^8.17.4",
     "vue-router": "^3.1.6",
@@ -34,6 +43,7 @@
     "electron-webpack": "^2.8.2",
     "electron-webpack-vue": "^2.4.0",
     "eslint": "^6.8.0",
+    "babel-eslint": "^10.1.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-node": "^11.1.0",

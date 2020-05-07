@@ -9,7 +9,8 @@
         "plugin:vue/recommended"
     ],
     "parserOptions": {
-        "ecmaVersion": 2017,
+        "parser": "babel-eslint",
+        "ecmaVersion": 9,
         "sourceType": "module"
     },
     "rules": {
@@ -40,9 +41,6 @@
         ],
         "no-console": "off",
         "no-undef": "off",
-        "plugins": [
-            "vue"
-        ],
         "vue/no-side-effects-in-computed-properties": "off",
         "vue/require-default-prop": "off",
         "vue/no-v-html": "off",
