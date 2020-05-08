@@ -1,37 +1,51 @@
 <template>
    <div id="wrapper">
-      <!-- <TheHeader @toggleSidebar="toggleSidebar" /> -->
-      <!-- <TheSidebar /> -->
-      <div id="main-content">
+      <!-- <TheHeader /> -->
+      <TheSettingBar />
+      <TheExploreBar />
+      <div id="main-content" class="container">
          <!-- <BaseLoaderLayer
             id="main-loader"
             :is-loading="isLoading"
          /> -->
-         <QueryEditor v-model="query" />
+         <TheAppWelcome @newConn="showNewConnModal" />
       </div>
-      <!-- <TheFooter /> -->
+      <TheFooter />
+      <NewConnectionModal :is-opened="isNewConnModal" />
    </div>
 </template>
 
 <script>
-import QueryEditor from '@/components/QueryEditor';
+import { mapActions, mapState } from 'vuex';
+import TheSettingBar from '@/components/TheSettingBar';
+import TheExploreBar from '@/components/TheExploreBar';
+import TheFooter from '@/components/TheFooter';
+import TheAppWelcome from '@/components/TheAppWelcome';
+import NewConnectionModal from '@/components/NewConnectionModal';
 
 export default {
    name: 'App',
    components: {
-      QueryEditor
+      TheSettingBar,
+      TheExploreBar,
+      TheFooter,
+      TheAppWelcome,
+      NewConnectionModal
    },
    data () {
       return {
-         query: ''
       };
    },
    computed: {
-      isLoading () {
-         return this.$store.state.application.isLoading;
-      }
+      ...mapState({
+         isLoading: state => state.application.isLoading,
+         isNewConnModal: state => state.connections.isNewConnModal
+      })
    },
    methods: {
+      ...mapActions({
+         showNewConnModal: 'connections/showNewConnModal'
+      })
    }
 };
 </script>
@@ -40,6 +54,15 @@ export default {
    html,
    body{
       height: 100%;
-      background: #fff;
+   }
+
+   #wrapper{
+      display: flex;
+      height: 100vh;
+      position: relative;
+   }
+
+   #main-content{
+      /* background: #232524; */
    }
 </style>

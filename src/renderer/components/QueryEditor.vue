@@ -69,4 +69,7 @@ export default {
 </script>
 
 <style scoped>
+   .editor-wrapper{
+      border-bottom: 1px solid #444444;
+   }
 </style>
