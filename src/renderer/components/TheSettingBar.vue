@@ -42,7 +42,7 @@ export default {
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      background: #3f3f3f;
+      background: $bg-color-light;
       padding: .5rem 0;
       margin-bottom: $footer-height;
       box-shadow: 0 0 1px 0px #000;

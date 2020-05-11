@@ -11,7 +11,7 @@
          <TheAppWelcome @newConn="showNewConnModal" />
       </div>
       <TheFooter />
-      <NewConnectionModal :is-opened="isNewConnModal" />
+      <NewConnectionModal v-if="isNewConnModal" />
    </div>
 </template>
 
@@ -62,7 +62,7 @@ export default {
       position: relative;
    }
 
-   #main-content{
-      /* background: #232524; */
-   }
+   /* #main-content{
+      background: #232524;
+   } */
 </style>

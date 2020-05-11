@@ -5,6 +5,8 @@ import * as path from 'path';
 import { format as formatUrl } from 'url';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 
+import ipcApi from './ipc-api';
+
 const isDevelopment = process.env.NODE_ENV !== 'production';
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
@@ -58,6 +60,9 @@ function createMainWindow () {
          window.focus();
       });
    });
+
+   // Initialize ipcApi
+   ipcApi();
 
    return window;
 };

@@ -18,7 +18,7 @@ export default {
       flex-direction: column;
       justify-content: flex-start;
       align-items: center;
-      background: #272727;
+      background: $bg-color-gray;
       margin-bottom: $footer-height;
       box-shadow: 0 0 1px 0px #000;
       z-index: 8;

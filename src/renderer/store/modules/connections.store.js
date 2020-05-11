@@ -16,6 +16,7 @@ export default {
       }
    },
    actions: {
+      // Modals
       showNewConnModal ({ commit }) {
          commit('showNewConnModal');
       },
