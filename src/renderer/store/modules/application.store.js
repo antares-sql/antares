@@ -1,20 +1,24 @@
 'use strict';
 
 export default {
-   namespaced: false,
+   namespaced: true,
    strict: true,
    state: {
-      appName: 'Antares - SQL Client',
-      isLoading: false
+      app_name: 'Antares - SQL Client',
+      is_loading: false
+   },
+   getters: {
+      isLoading: state => state.is_loading,
+      appName: state => state.app_name
    },
    mutations: {
-      setLoadingStatus (state, payload) {
-         state.isLoading = payload;
+      SET_LOADING_STATUS (state, payload) {
+         state.is_loading = payload;
       }
    },
    actions: {
       setLoadingStatus ({ commit }, payload) {
-         commit('setLoadingStatus', payload);
+         commit('SET_LOADING_STATUS', payload);
       }
    }
 };

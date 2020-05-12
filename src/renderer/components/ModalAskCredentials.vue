@@ -1,0 +1,77 @@
+<template>
+   <div class="modal active modal-sm">
+      <a class="modal-overlay" />
+      <div class="modal-container">
+         <div class="modal-header text-light">
+            <div class="modal-title h6">
+               Credentials
+            </div>
+            <a class="btn btn-clear c-hand" @click="closeModal" />
+         </div>
+         <div class="modal-body">
+            <div class="content">
+               <form class="form-horizontal">
+                  <div class="form-group">
+                     <div class="col-3">
+                        <label class="form-label">User:</label>
+                     </div>
+                     <div class="col-9">
+                        <input
+                           v-model="credentials.user"
+                           class="form-input"
+                           type="text"
+                        >
+                     </div>
+                  </div>
+                  <div class="form-group">
+                     <div class="col-3">
+                        <label class="form-label">Password:</label>
+                     </div>
+                     <div class="col-9">
+                        <input
+                           v-model="credentials.password"
+                           class="form-input"
+                           type="password"
+                        >
+                     </div>
+                  </div>
+               </form>
+            </div>
+         </div>
+         <div class="modal-footer text-light">
+            <button class="btn btn-primary mr-2" @click="sendCredentials">
+               Send
+            </button>
+            <button class="btn btn-link" @click="closeModal">
+               Close
+            </button>
+         </div>
+      </div>
+   </div>
+</template>
+
+<script>
+export default {
+   name: 'ModalAskCredentials',
+   data () {
+      return {
+         credentials: {
+            user: '',
+            password: ''
+         }
+      };
+   },
+   methods: {
+      closeModal () {
+         this.$emit('closeAsking');
+      },
+      sendCredentials () {
+         this.$emit('credentials', this.credentials);
+      }
+   }
+};
+</script>
+
+<style>
+
+</style>

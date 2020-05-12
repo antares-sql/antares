@@ -5,23 +5,33 @@ export default {
    strict: true,
    state: {
       connections: [],
-      isNewConnModal: false
+      is_new_modal: false
+   },
+   getters: {
+      getConnections: state => state.connections,
+      isNewModal: state => state.is_new_modal
    },
    mutations: {
-      showNewConnModal (state) {
-         state.isNewConnModal = true;
+      ADD_CONNECTION (state, connection) {
+         state.connections.push(connection);
       },
-      hideNewConnModal (state) {
-         state.isNewConnModal = false;
+      SHOW_NEW_CONNECTION_MODAL (state) {
+         state.is_new_modal = true;
+      },
+      HIDE_NEW_CONNECTION_MODAL (state) {
+         state.is_new_modal = false;
       }
    },
    actions: {
+      addConnection ({ commit }, connection) {
+         commit('ADD_CONNECTION', connection);
+      },
       // Modals
       showNewConnModal ({ commit }) {
-         commit('showNewConnModal');
+         commit('SHOW_NEW_CONNECTION_MODAL');
       },
       hideNewConnModal ({ commit }) {
-         commit('hideNewConnModal');
+         commit('HIDE_NEW_CONNECTION_MODAL');
       }
    }
 };

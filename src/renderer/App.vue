@@ -11,17 +11,17 @@
          <TheAppWelcome @newConn="showNewConnModal" />
       </div>
       <TheFooter />
-      <NewConnectionModal v-if="isNewConnModal" />
+      <ModalNewConnection v-if="isNewConnModal" />
    </div>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import TheSettingBar from '@/components/TheSettingBar';
 import TheExploreBar from '@/components/TheExploreBar';
 import TheFooter from '@/components/TheFooter';
 import TheAppWelcome from '@/components/TheAppWelcome';
-import NewConnectionModal from '@/components/NewConnectionModal';
+import ModalNewConnection from '@/components/ModalNewConnection';
 
 export default {
    name: 'App',
@@ -30,16 +30,16 @@ export default {
       TheExploreBar,
       TheFooter,
       TheAppWelcome,
-      NewConnectionModal
+      ModalNewConnection
    },
    data () {
       return {
       };
    },
    computed: {
-      ...mapState({
-         isLoading: state => state.application.isLoading,
-         isNewConnModal: state => state.connections.isNewConnModal
+      ...mapGetters({
+         isLoading: 'application/isLoading',
+         isNewConnModal: 'connections/isNewModal'
       })
    },
    methods: {

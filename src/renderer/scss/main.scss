@@ -26,24 +26,50 @@ body{
    align-items: center;
 }
 
-/*Override*/
-.modal-overlay,
-.modal.active .modal-overlay{
-   background: rgba(255, 255, 255, 0.15);
+.dbi{
+   display: inline-block;
+   width: 42px;
+   height: 42px;
+   background-size: cover;
+
+   &.dbi-mysql{
+      background-image: url('/svg/mysql.svg');
+   }
+
+   &.dbi-mssql{
+      background-image: url('/svg/mssql.svg');
+   }
+
+   &.dbi-pg{
+      background-image: url('/svg/pg.svg');
+   }
+
+   &.dbi-oracledb{
+      background-image: url('/svg/oracledb3.svg');
+   }
 }
 
-.modal-container{
-   box-shadow: 0 0 1px 0px #000;
-   padding: 0;
-   background: $bg-color;
-
-   .modal-header{
-      padding: .4rem .8rem;
-      text-transform: uppercase;
-      background: $bg-color-gray;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+/*Override*/
+.modal{
+   .modal-overlay,
+   &.active .modal-overlay{
+      background: rgba(255, 255, 255, 0.15);
+   }
+   
+   .modal-sm .modal-container,
+   .modal-container{
+      box-shadow: 0 0 1px 0px #000;
+      padding: 0;
+      background: $bg-color;
+   
+      .modal-header{
+         padding: .4rem .8rem;
+         text-transform: uppercase;
+         background: $bg-color-gray;
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+      }
    }
 }
 

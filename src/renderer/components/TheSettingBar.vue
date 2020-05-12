@@ -3,6 +3,14 @@
       <div class="settingbar-top-elements">
          <ul class="settingbar-elements">
             <li
+               v-for="(connection, key) in connections"
+               :key="key"
+               class="settingbar-element btn btn-link tooltip tooltip-right p-0"
+               :data-tooltip="`${connection.user}@${connection.host}:${connection.port}`"
+            >
+               <i class="dbi" :class="`dbi-${connection.client}`" />
+            </li>
+            <li
                class="settingbar-element btn btn-link tooltip tooltip-right"
                data-tooltip="Add connection"
                @click="showNewConnModal"
@@ -23,10 +31,15 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
    name: 'TheSettingBar',
+   computed: {
+      ...mapGetters({
+         connections: 'connections/getConnections'
+      })
+   },
    methods: {
       ...mapActions({
          showNewConnModal: 'connections/showNewConnModal'
@@ -50,8 +63,18 @@ export default {
 
       .settingbar-elements{
          list-style: none;
+         text-align: center;
          padding: 0;
          margin: 0;
+
+         .settingbar-element{
+            height: initial;
+
+            .settingbar-element-icon{
+               width: 42px;
+            }
+         }
+
       }
    }
 </style>
