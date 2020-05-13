@@ -152,7 +152,8 @@ export default {
             port: '3306',
             user: 'root',
             password: '',
-            ask: false
+            ask: false,
+            uid: Math.random().toString(36).substr(2, 9).toUpperCase()
          },
          toast: {
             status: '',

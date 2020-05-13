@@ -8,7 +8,7 @@
             id="main-loader"
             :is-loading="isLoading"
          /> -->
-         <TheAppWelcome @newConn="showNewConnModal" />
+         <TheAppWelcome v-if="!connections.length" @newConn="showNewConnModal" />
       </div>
       <TheFooter />
       <ModalNewConnection v-if="isNewConnModal" />
@@ -39,7 +39,8 @@ export default {
    computed: {
       ...mapGetters({
          isLoading: 'application/isLoading',
-         isNewConnModal: 'connections/isNewModal'
+         isNewConnModal: 'connections/isNewModal',
+         connections: 'connections/getConnections'
       })
    },
    methods: {

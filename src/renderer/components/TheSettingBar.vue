@@ -3,9 +3,10 @@
       <div class="settingbar-top-elements">
          <ul class="settingbar-elements">
             <li
-               v-for="(connection, key) in connections"
-               :key="key"
+               v-for="connection in connections"
+               :key="connection.uid"
                class="settingbar-element btn btn-link tooltip tooltip-right p-0"
+               :class="{'selected': connection.uid === selectedConnection}"
                :data-tooltip="`${connection.user}@${connection.host}:${connection.port}`"
             >
                <i class="dbi" :class="`dbi-${connection.client}`" />
@@ -37,13 +38,15 @@ export default {
    name: 'TheSettingBar',
    computed: {
       ...mapGetters({
-         connections: 'connections/getConnections'
+         connections: 'connections/getConnections',
+         selectedConnection: 'connections/getSelected'
       })
    },
    methods: {
       ...mapActions({
          showNewConnModal: 'connections/showNewConnModal'
-      })
+      }),
+      isActiveTab: uid => uid === this.selectedConnection
    }
 };
 </script>

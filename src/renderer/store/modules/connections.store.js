@@ -5,10 +5,16 @@ export default {
    strict: true,
    state: {
       connections: [],
-      is_new_modal: false
+      is_new_modal: false,
+      connection_selected: null
    },
    getters: {
       getConnections: state => state.connections,
+      getSelected: state => {
+         if (state.connection_selected) return state.connection_selected;
+         if (state.connections.length) return state.connections[0].uid;
+         return null;
+      },
       isNewModal: state => state.is_new_modal
    },
    mutations: {
