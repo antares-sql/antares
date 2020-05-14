@@ -1,30 +1,31 @@
 <template>
-   <div id="settingbar" class="container">
+   <div id="settingbar">
       <div class="settingbar-top-elements">
          <ul class="settingbar-elements">
             <li
                v-for="connection in connections"
                :key="connection.uid"
-               class="settingbar-element btn btn-link tooltip tooltip-right p-0"
+               class="settingbar-element btn btn-link tooltip tooltip-right"
                :class="{'selected': connection.uid === selectedConnection}"
                :data-tooltip="`${connection.user}@${connection.host}:${connection.port}`"
+               @click="selectConnection(connection.uid)"
             >
-               <i class="dbi" :class="`dbi-${connection.client}`" />
+               <i class="settingbar-element-icon dbi" :class="`dbi-${connection.client}`" />
             </li>
             <li
-               class="settingbar-element btn btn-link tooltip tooltip-right"
+               class="settingbar-element btn btn-link tooltip tooltip-right pt-3"
                data-tooltip="Add connection"
                @click="showNewConnModal"
             >
-               <i class="material-icons text-light">add</i>
+               <i class="settingbar-element-icon material-icons text-light">add</i>
             </li>
          </ul>
       </div>
 
       <div class="settingbar-bottom-elements">
          <ul class="settingbar-elements">
-            <li class="settingbar-element btn btn-link tooltip tooltip-right" data-tooltip="Settings">
-               <i class="material-icons text-light">settings</i>
+            <li class="settingbar-element btn btn-link tooltip tooltip-right mb-2" data-tooltip="Settings">
+               <i class="settingbar-element-icon material-icons text-light">settings</i>
             </li>
          </ul>
       </div>
@@ -44,9 +45,9 @@ export default {
    },
    methods: {
       ...mapActions({
-         showNewConnModal: 'connections/showNewConnModal'
-      }),
-      isActiveTab: uid => uid === this.selectedConnection
+         showNewConnModal: 'connections/showNewConnModal',
+         selectConnection: 'connections/selectConnection'
+      })
    }
 };
 </script>
@@ -59,7 +60,7 @@ export default {
       justify-content: space-between;
       align-items: center;
       background: $bg-color-light;
-      padding: .5rem 0;
+      padding: 0;
       margin-bottom: $footer-height;
       box-shadow: 0 0 1px 0px #000;
       z-index: 9;
@@ -72,9 +73,25 @@ export default {
 
          .settingbar-element{
             height: initial;
+            width: 100%;
+            padding: 0;
+            padding: .3rem 0 0;
+            margin: 0;
+            border-left: 3px solid transparent;
+            opacity: .5;
+            transition: opacity .2s;
+
+            &:hover{
+               opacity: 1;
+            }
+
+            &.selected{
+               border-left-color: $body-font-color;
+               opacity: 1;
+            }
 
             .settingbar-element-icon{
-               width: 42px;
+               margin-left: -3px;
             }
          }
 

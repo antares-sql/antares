@@ -5,7 +5,7 @@ import * as path from 'path';
 import { format as formatUrl } from 'url';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 
-import ipcApi from './ipc-api';
+import ipcHandlers from './ipc-handlers';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
@@ -15,8 +15,8 @@ let mainWindow;
 
 function createMainWindow () {
    const window = new BrowserWindow({
-      width: 1200,
-      height: 900,
+      width: 1600,
+      height: 1000,
       minHeight: 550,
       minWidth: 450,
       title: 'Antares',
@@ -61,8 +61,8 @@ function createMainWindow () {
       });
    });
 
-   // Initialize ipcApi
-   ipcApi();
+   // Initialize ipcHandlers
+   ipcHandlers();
 
    return window;
 };

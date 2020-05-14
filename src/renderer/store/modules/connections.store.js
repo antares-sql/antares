@@ -26,6 +26,9 @@ export default {
       },
       HIDE_NEW_CONNECTION_MODAL (state) {
          state.is_new_modal = false;
+      },
+      SELECT_CONNECTION (state, uid) {
+         state.connection_selected = uid;
       }
    },
    actions: {
@@ -38,6 +41,9 @@ export default {
       },
       hideNewConnModal ({ commit }) {
          commit('HIDE_NEW_CONNECTION_MODAL');
+      },
+      selectConnection ({ commit }, uid) {
+         commit('SELECT_CONNECTION', uid);
       }
    }
 };

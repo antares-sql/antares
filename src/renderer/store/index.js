@@ -8,10 +8,10 @@ import application from './modules/application.store';
 import connections from './modules/connections.store';
 
 const vuexLocalStorage = new VuexPersist({
-   key: 'vuex', // The key to store the state on in the storage provider.
+   key: 'application', // The key to store the state on in the storage provider.
    storage: window.localStorage,
    reducer: state => ({
-      connections: state.connections.connections
+      connections: state.connections
    })
 });
 

@@ -128,7 +128,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { ipcRenderer } from 'electron';
+import Connection from '@/ipc-api/Connection';
 import ModalAskCredentials from '@/components/ModalAskCredentials';
 import BaseToast from '@/components/BaseToast';
 
@@ -177,34 +177,25 @@ export default {
 
          if (this.connection.ask)
             this.isAsking = true;
-         else
-            await this.invokeTest(this.connection);
+         else {
+            try {
+               const res = await Connection.makeTest(this.connection);
+               if (res.status === 'error')
+                  this.toast = { status: 'error', message: res.response.message };
+               else
+                  this.toast = { status: 'success', message: 'Connection successifully made!' };
+            }
+            catch (err) {
+               this.toast = { status: 'error', message: err.stack };
+            }
+
+            this.isTesting = false;
+         }
       },
       async continueTest (credentials) { // if "Ask for credentials" is true
          this.isAsking = false;
          const params = Object.assign({}, this.connection, credentials);
-         await this.invokeTest(params);
-      },
-      invokeTest (params) {
-         return new Promise((resolve, reject) => {
-            ipcRenderer.invoke('testConnection', params).then(res => {
-               if (res.status === 'error') {
-                  this.toast = {
-                     status: 'error',
-                     message: res.response.message
-                  };
-               }
-               else {
-                  this.toast = {
-                     status: 'success',
-                     message: 'Connection successifully made!'
-                  };
-               }
-
-               this.isTesting = false;
-               resolve();
-            });
-         });
+         await Connection.makeTest(params);
       },
       saveNewConnection () {
          this.addConnection(this.connection);

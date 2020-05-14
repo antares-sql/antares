@@ -1,14 +1,15 @@
 <template>
    <div id="wrapper">
-      <!-- <TheHeader /> -->
       <TheSettingBar />
-      <TheExploreBar />
       <div id="main-content" class="container">
-         <!-- <BaseLoaderLayer
-            id="main-loader"
-            :is-loading="isLoading"
-         /> -->
          <TheAppWelcome v-if="!connections.length" @newConn="showNewConnModal" />
+         <div v-else class="columns col-gapless">
+            <DatabaseWorkspace
+               v-for="connection in connections"
+               :key="connection.uid"
+               :connection="connection"
+            />
+         </div>
       </div>
       <TheFooter />
       <ModalNewConnection v-if="isNewConnModal" />
@@ -18,18 +19,18 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import TheSettingBar from '@/components/TheSettingBar';
-import TheExploreBar from '@/components/TheExploreBar';
 import TheFooter from '@/components/TheFooter';
 import TheAppWelcome from '@/components/TheAppWelcome';
+import DatabaseWorkspace from '@/components/DatabaseWorkspace';
 import ModalNewConnection from '@/components/ModalNewConnection';
 
 export default {
    name: 'App',
    components: {
       TheSettingBar,
-      TheExploreBar,
       TheFooter,
       TheAppWelcome,
+      DatabaseWorkspace,
       ModalNewConnection
    },
    data () {
@@ -51,7 +52,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
    html,
    body{
       height: 100%;
@@ -63,7 +64,12 @@ export default {
       position: relative;
    }
 
-   /* #main-content{
-      background: #232524;
-   } */
+   #main-content {
+      padding: 0;
+      justify-content: flex-start;
+
+      > .columns{
+         height: 100vh;
+      }
+   }
 </style>
