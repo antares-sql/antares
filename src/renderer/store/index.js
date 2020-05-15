@@ -6,6 +6,7 @@ import VuexPersist from 'vuex-persist';
 
 import application from './modules/application.store';
 import connections from './modules/connections.store';
+import notifications from './modules/notifications.store';
 
 const vuexLocalStorage = new VuexPersist({
    key: 'application', // The key to store the state on in the storage provider.
@@ -21,7 +22,8 @@ export default new Vuex.Store({
    strict: true,
    modules: {
       application,
-      connections
+      connections,
+      notifications
    },
    plugins: [vuexLocalStorage.plugin]
 });

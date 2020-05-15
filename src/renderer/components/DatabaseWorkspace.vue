@@ -1,18 +1,14 @@
 <template>
    <div v-show="selectedConnection === connection.uid" class="workspace column columns">
-      <DatabaseExploreBar
-         :uid="connection.uid"
-         :is-connected="isConnected"
-         @connect="startConnection"
-      />
+      <DatabaseExploreBar :connection="connection" />
       <div class="workspace-tabs column">
-         <p>{{ connection.uid }}</p>
+         <p>{{ connection }}</p>
       </div>
    </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import Connection from '@/ipc-api/Connection';
 import DatabaseExploreBar from '@/components/DatabaseExploreBar';
 
@@ -26,7 +22,6 @@ export default {
    },
    data () {
       return {
-         isConnected: false,
          structure: null
       };
    },
@@ -37,14 +32,19 @@ export default {
    },
    async created () {
       this.isConnected = await Connection.checkConnection(this.connection.uid);
-      if (this.isConnected)
-         this.structure = await Connection.connect(this.connection);// TODO: use refresh
+      if (this.isConnected) {
+         try {
+            this.structure = await Connection.connect(this.connection);// TODO: use refresh
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+      }
    },
    methods: {
-      async startConnection () {
-         this.structure = await Connection.connect(this.connection);
-         this.isConnected = true;
-      }
+      ...mapActions({
+         addNotification: 'notifications/addNotification'
+      })
    }
 };
 </script>

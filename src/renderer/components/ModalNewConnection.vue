@@ -17,7 +17,11 @@
                            <label class="form-label">Client:</label>
                         </div>
                         <div class="col-9 col-sm-12">
-                           <select v-model="connection.client" class="form-select">
+                           <select
+                              v-model="connection.client"
+                              class="form-select"
+                              @change="setDefaults"
+                           >
                               <option value="mysql">
                                  MySQL/MariaDB
                               </option>
@@ -129,6 +133,7 @@
 <script>
 import { mapActions } from 'vuex';
 import Connection from '@/ipc-api/Connection';
+import { uidGen } from 'common/libs/utilities';
 import ModalAskCredentials from '@/components/ModalAskCredentials';
 import BaseToast from '@/components/BaseToast';
 
@@ -153,7 +158,7 @@ export default {
             user: 'root',
             password: '',
             ask: false,
-            uid: Math.random().toString(36).substr(2, 9).toUpperCase()
+            uid: uidGen()
          },
          toast: {
             status: '',
@@ -168,6 +173,22 @@ export default {
          closeModal: 'connections/hideNewConnModal',
          addConnection: 'connections/addConnection'
       }),
+      setDefaults () {
+         switch (this.connection.client) {
+            case 'mysql':
+               this.connection.port = '3306';
+               break;
+            case 'mssql':
+               this.connection.port = '1433';
+               break;
+            case 'pg':
+               this.connection.port = '5432';
+               break;
+            case 'oracledb':
+               this.connection.port = '1521';
+               break;
+         }
+      },
       async startTest () {
          this.isTesting = true;
          this.toast = {

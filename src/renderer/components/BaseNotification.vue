@@ -1,17 +1,16 @@
 <template>
-   <div
-      :style="{display: isVisible ? 'flex' : 'none'}"
-      class="toast mt-2"
-      :class="toastStatus.className"
-   >
-      <span class="p-vcentered text-left" v-html="`${toastStatus.iconTag} ${message}`" />
+   <div class="toast mt-2" :class="notificationStatus.className">
+      <span class="p-vcentered text-left">
+         <i class="material-icons mr-1">{{ notificationStatus.iconName }}</i>
+         <span class="notification-message">{{ message }}</span>
+      </span>
       <button class="btn btn-clear" @click="hideToast" />
    </div>
 </template>
 
 <script>
-export default {
-   name: 'BaseToast',
+export default { // TODO: open notifications button
+   name: 'BaseNotification',
    props: {
       message: {
          type: String,
@@ -22,48 +21,34 @@ export default {
          default: ''
       }
    },
-   data () {
-      return {
-         isVisible: false
-      };
-   },
    computed: {
-      toastStatus () {
+      notificationStatus () {
          let className = '';
-         let iconTag = '';
+         let iconName = '';
          switch (this.status) {
             case 'success':
                className = 'toast-success';
-               iconTag = '<i class="material-icons mr-1">done</i>';
+               iconName = 'done';
                break;
             case 'error':
                className = 'toast-error';
-               iconTag = '<i class="material-icons mr-1">error</i>';
+               iconName = 'error';
                break;
             case 'warning':
                className = 'toast-warning';
-               iconTag = '<i class="material-icons mr-1">warning</i>';
+               iconName = 'warning';
                break;
             case 'primary':
                className = 'toast-primary';
-               iconTag = '<i class="material-icons mr-1">info_outline</i>';
+               iconName = 'info_outline';
                break;
          }
 
-         return { className, iconTag };
-      }
-   },
-   watch: {
-      message: function () {
-         if (this.message)
-            this.isVisible = true;
-         else
-            this.isVisible = false;
+         return { className, iconName };
       }
    },
    methods: {
       hideToast () {
-         this.isVisible = false;
          this.$emit('close');
       }
    }
@@ -75,5 +60,14 @@ export default {
       justify-content: space-between;
       user-select: text;
       word-break: break-all;
+   }
+
+   .notification-message{
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: inline-block;
+      width: 25rem;
+      user-select: none;
    }
 </style>
