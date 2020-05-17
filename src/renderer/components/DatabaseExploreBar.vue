@@ -3,47 +3,20 @@
       <div class="workspace-explorebar-title">
          {{ connection.user }}@{{ connection.host }}:{{ connection.port }}
       </div>
-      <button
-         v-if="!isConnected"
-         class="btn btn-success mt-4"
-         :class="{'loading': isConnecting}"
-         @click="startConnection"
-      >
-         Connect
-      </button>
+      <DatabaseConnectPanel :connection="connection" />
    </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-import Connection from '@/ipc-api/Connection';
+import DatabaseConnectPanel from '@/components/DatabaseConnectPanel';
 
 export default {
    name: 'DatabaseExploreBar',
+   components: {
+      DatabaseConnectPanel
+   },
    props: {
       connection: Object
-   },
-   data () {
-      return {
-         isConnected: false,
-         isConnecting: false
-      };
-   },
-   methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification'
-      }),
-      async startConnection () {
-         this.isConnecting = true;
-         try {
-            this.structure = await Connection.connect(this.connection);
-            this.isConnected = true;
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-         this.isConnecting = false;
-      }
    }
 };
 </script>

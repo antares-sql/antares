@@ -5,7 +5,6 @@
             v-for="notification in latestNotifications"
             :key="notification.uid"
             :message="notification.message"
-            :title="notification.message"
             :status="notification.status"
             @close="removeNotification(notification.uid)"
          />
@@ -42,7 +41,7 @@ export default {
    #notifications-board{
       position: absolute;
       z-index: 9;
-      right: 1rem;
+      right: .8rem;
       bottom: $footer-height+1rem;
    }
 </style>

@@ -6,6 +6,7 @@ import VuexPersist from 'vuex-persist';
 
 import application from './modules/application.store';
 import connections from './modules/connections.store';
+import workspaces from './modules/workspaces.store';
 import notifications from './modules/notifications.store';
 
 const vuexLocalStorage = new VuexPersist({
@@ -23,6 +24,7 @@ export default new Vuex.Store({
    modules: {
       application,
       connections,
+      workspaces,
       notifications
    },
    plugins: [vuexLocalStorage.plugin]

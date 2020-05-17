@@ -1,15 +1,20 @@
 <template>
    <div class="toast mt-2" :class="notificationStatus.className">
-      <span class="p-vcentered text-left">
+      <span class="p-vcentered text-left" :class="{'expanded': isExpanded}">
          <i class="material-icons mr-1">{{ notificationStatus.iconName }}</i>
          <span class="notification-message">{{ message }}</span>
       </span>
+      <i
+         v-if="isExpandable"
+         class="material-icons c-hand"
+         @click="toggleExpand"
+      >{{ isExpanded ? 'expand_less' : 'expand_more' }}</i>
       <button class="btn btn-clear" @click="hideToast" />
    </div>
 </template>
 
 <script>
-export default { // TODO: open notifications button
+export default {
    name: 'BaseNotification',
    props: {
       message: {
@@ -20,6 +25,11 @@ export default { // TODO: open notifications button
          type: String,
          default: ''
       }
+   },
+   data () {
+      return {
+         isExpanded: false
+      };
    },
    computed: {
       notificationStatus () {
@@ -45,11 +55,17 @@ export default { // TODO: open notifications button
          }
 
          return { className, iconName };
+      },
+      isExpandable () {
+         return this.message.length > 80;
       }
    },
    methods: {
       hideToast () {
          this.$emit('close');
+      },
+      toggleExpand () {
+         this.isExpanded = !this.isExpanded;
       }
    }
 };
@@ -60,6 +76,8 @@ export default { // TODO: open notifications button
       justify-content: space-between;
       user-select: text;
       word-break: break-all;
+      width: fit-content;
+      margin-left: auto;
    }
 
    .notification-message{
@@ -67,7 +85,11 @@ export default { // TODO: open notifications button
       overflow: hidden;
       text-overflow: ellipsis;
       display: inline-block;
-      width: 25rem;
+      max-width: 25rem;
       user-select: none;
+   }
+
+   .expanded .notification-message{
+      white-space: initial;
    }
 </style>

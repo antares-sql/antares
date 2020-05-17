@@ -1,5 +1,5 @@
 <template>
-   <div v-show="selectedConnection === connection.uid" class="workspace column columns">
+   <div v-show="selectedWorkspace === connection.uid" class="workspace column columns">
       <DatabaseExploreBar :connection="connection" />
       <div class="workspace-tabs column">
          <p>{{ connection }}</p>
@@ -27,23 +27,32 @@ export default {
    },
    computed: {
       ...mapGetters({
-         selectedConnection: 'connections/getSelected'
+         selectedWorkspace: 'workspaces/getSelected',
+         getConnected: 'workspaces/getConnected'
       })
    },
    async created () {
-      this.isConnected = await Connection.checkConnection(this.connection.uid);
-      if (this.isConnected) {
+      const isInitiated = await Connection.checkConnection(this.connection.uid);
+      if (isInitiated) {
          try {
-            this.structure = await Connection.connect(this.connection);// TODO: use refresh
+            const { status, response } = await Connection.connect(this.connection);
+            if (status === 'success') {
+               this.structure = response;
+               this.addConnected(this.connection.uid);
+            }
+            else
+               this.addNotification({ status, message: response });
          }
          catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
+            this.addNotification({ status: 'error', message: err.toString() });
          }
       }
    },
    methods: {
       ...mapActions({
-         addNotification: 'notifications/addNotification'
+         addNotification: 'notifications/addNotification',
+         addConnected: 'workspaces/addConnected',
+         removeConnected: 'workspaces/removeConnected'
       })
    }
 };

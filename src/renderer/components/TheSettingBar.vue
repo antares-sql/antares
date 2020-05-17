@@ -6,11 +6,11 @@
                v-for="connection in connections"
                :key="connection.uid"
                class="settingbar-element btn btn-link tooltip tooltip-right"
-               :class="{'selected': connection.uid === selectedConnection}"
+               :class="{'selected': connection.uid === selectedWorkspace}"
                :data-tooltip="`${connection.user}@${connection.host}:${connection.port}`"
-               @click="selectConnection(connection.uid)"
+               @click="selectWorkspace(connection.uid)"
             >
-               <i class="settingbar-element-icon dbi" :class="`dbi-${connection.client}`" />
+               <i class="settingbar-element-icon dbi" :class="`dbi-${connection.client} ${connected.includes(connection.uid) ? 'badge' : ''}`" />
             </li>
             <li
                class="settingbar-element btn btn-link tooltip tooltip-right pt-3"
@@ -40,13 +40,14 @@ export default {
    computed: {
       ...mapGetters({
          connections: 'connections/getConnections',
-         selectedConnection: 'connections/getSelected'
+         connected: 'workspaces/getConnected',
+         selectedWorkspace: 'workspaces/getSelected'
       })
    },
    methods: {
       ...mapActions({
          showNewConnModal: 'connections/showNewConnModal',
-         selectConnection: 'connections/selectConnection'
+         selectWorkspace: 'workspaces/selectWorkspace'
       })
    }
 };
@@ -92,6 +93,13 @@ export default {
 
             .settingbar-element-icon{
                margin-left: -3px;
+
+               &.badge::after{
+                  bottom: -10px;
+                  right: 0;
+                  position: absolute;
+                  background: $success-color;
+               }
             }
          }
 

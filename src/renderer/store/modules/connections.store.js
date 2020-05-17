@@ -5,16 +5,10 @@ export default {
    strict: true,
    state: {
       connections: [],
-      is_new_modal: false,
-      connection_selected: null
+      is_new_modal: false
    },
    getters: {
       getConnections: state => state.connections,
-      getSelected: state => {
-         if (state.connection_selected) return state.connection_selected;
-         if (state.connections.length) return state.connections[0].uid;
-         return null;
-      },
       isNewModal: state => state.is_new_modal
    },
    mutations: {
@@ -26,9 +20,6 @@ export default {
       },
       HIDE_NEW_CONNECTION_MODAL (state) {
          state.is_new_modal = false;
-      },
-      SELECT_CONNECTION (state, uid) {
-         state.connection_selected = uid;
       }
    },
    actions: {
@@ -41,9 +32,6 @@ export default {
       },
       hideNewConnModal ({ commit }) {
          commit('HIDE_NEW_CONNECTION_MODAL');
-      },
-      selectConnection ({ commit }, uid) {
-         commit('SELECT_CONNECTION', uid);
       }
    }
 };

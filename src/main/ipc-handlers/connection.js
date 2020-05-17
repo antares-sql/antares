@@ -30,8 +30,8 @@ export default () => {
    });
 
    ipcMain.handle('connect', async (event, conn) => {
-      // TODO: make a test before
-      connections[conn.uid] = knex({
+      let structure;
+      const connection = knex({
          client: conn.client,
          connection: {
             host: conn.host,
@@ -45,6 +45,14 @@ export default () => {
          }
       });
 
-      return await InformationSchema.getStructure(connections[conn.uid]);
+      try {
+         structure = await InformationSchema.getStructure(connection);
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+
+      connections[conn.uid] = connection;
+      return { status: 'success', response: structure };
    });
 };
