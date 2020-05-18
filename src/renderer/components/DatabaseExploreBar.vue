@@ -1,13 +1,22 @@
 <template>
    <div class="workspace-explorebar column">
-      <div class="workspace-explorebar-title">
-         {{ connection.user }}@{{ connection.host }}:{{ connection.port }}
+      <div class="workspace-explorebar-header">
+         <span class="workspace-explorebar-title">{{ connection.user }}@{{ connection.host }}:{{ connection.port }}</span>
+         <span v-if="isConnected" class="workspace-explorebar-tools">
+            <i class="material-icons md-18 c-hand mr-1" title="Refresh">cached</i>
+            <i
+               class="material-icons md-18 c-hand"
+               title="Disconnect"
+               @click="disconnectWorkspace(connection.uid)"
+            >exit_to_app</i>
+         </span>
       </div>
-      <DatabaseConnectPanel :connection="connection" />
+      <DatabaseConnectPanel v-if="!isConnected" :connection="connection" />
    </div>
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
 import DatabaseConnectPanel from '@/components/DatabaseConnectPanel';
 
 export default {
@@ -17,6 +26,19 @@ export default {
    },
    props: {
       connection: Object
+   },
+   computed: {
+      ...mapGetters({
+         connected: 'workspaces/getConnected'
+      }),
+      isConnected () {
+         return this.connected.includes(this.connection.uid);
+      }
+   },
+   methods: {
+      ...mapActions({
+         disconnectWorkspace: 'workspaces/removeConnected'
+      })
    }
 };
 </script>
@@ -37,15 +59,33 @@ export default {
       position: relative;
       padding-top: 1.4rem;
 
-      .workspace-explorebar-title{
+      .workspace-explorebar-header{
          top: 0;
          left: 0;
          right: 0;
          padding: .3rem;
          position: absolute;
+         display: flex;
+         justify-content: space-between;
          font-size: .6rem;
          font-weight: 700;
          text-transform: uppercase;
+
+         .workspace-explorebar-title{
+            width: 80%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+         }
+
+         .workspace-explorebar-tools > i{
+            opacity: .6;
+            transition: opacity .2s;;
+
+            &:hover{
+               opacity: 1;
+            }
+         }
       }
    }
 </style>

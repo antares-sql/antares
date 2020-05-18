@@ -2,7 +2,7 @@
    <div v-show="selectedWorkspace === connection.uid" class="workspace column columns">
       <DatabaseExploreBar :connection="connection" />
       <div class="workspace-tabs column">
-         <p>{{ connection }}</p>
+         <pre>{{ JSON.stringify(connection, null, 3) }}</pre>
       </div>
    </div>
 </template>
@@ -32,6 +32,7 @@ export default {
       })
    },
    async created () {
+      this.addWorkspace(this.connection.uid);
       const isInitiated = await Connection.checkConnection(this.connection.uid);
       if (isInitiated) {
          try {
@@ -51,6 +52,7 @@ export default {
    methods: {
       ...mapActions({
          addNotification: 'notifications/addNotification',
+         addWorkspace: 'workspaces/addWorkspace',
          addConnected: 'workspaces/addConnected',
          removeConnected: 'workspaces/removeConnected'
       })

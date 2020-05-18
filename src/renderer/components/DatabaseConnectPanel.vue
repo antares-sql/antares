@@ -1,5 +1,5 @@
 <template>
-   <div v-if="!isConnected" class="columns">
+   <div class="columns">
       <div class="column col-12 empty text-light">
          <div class="empty-icon">
             <i class="material-icons md-48">cloud_off</i>
@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 import Connection from '@/ipc-api/Connection';
 
 export default {
@@ -33,14 +33,6 @@ export default {
       return {
          isConnecting: false
       };
-   },
-   computed: {
-      ...mapGetters({
-         connected: 'workspaces/getConnected'
-      }),
-      isConnected () {
-         return this.connected.includes(this.connection.uid);
-      }
    },
    methods: {
       ...mapActions({

@@ -55,4 +55,9 @@ export default () => {
       connections[conn.uid] = connection;
       return { status: 'success', response: structure };
    });
+
+   ipcMain.handle('disconnect', (event, uid) => {
+      connections[uid].destroy();
+      delete connections[uid];
+   });
 };

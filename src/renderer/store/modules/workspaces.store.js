@@ -1,5 +1,5 @@
 'use strict';
-// import { uidGen } from 'common/libs/utilities';
+import Connection from '@/ipc-api/Connection';
 
 export default {
    namespaced: true,
@@ -7,11 +7,11 @@ export default {
    state: {
       workspaces: [],
       connected_workspaces: [],
-      workspace_selected: null
+      selected_workspace: null
    },
    getters: {
       getSelected: state => {
-         if (state.workspace_selected) return state.workspace_selected;
+         if (state.selected_workspace) return state.selected_workspace;
          if (state.workspaces.length) return state.workspaces[0].uid;
          return null;
       },
@@ -20,13 +20,16 @@ export default {
    },
    mutations: {
       SELECT_WORKSPACE (state, uid) {
-         state.workspace_selected = uid;
+         state.selected_workspace = uid;
       },
       ADD_CONNECTED (state, uid) {
          state.connected_workspaces.push(uid);
       },
       REMOVE_CONNECTED (state, uid) {
-         state.connected_workspaces = state.connected_workspaces.filter(item => item.uid !== uid);
+         state.connected_workspaces = state.connected_workspaces.filter(value => value !== uid);
+      },
+      ADD_WORKSPACE (state, workspace) {
+         state.workspaces.push(workspace);
       }
    },
    actions: {
@@ -36,8 +39,16 @@ export default {
       addConnected ({ commit }, uid) {
          commit('ADD_CONNECTED', uid);
       },
-      removeConnected ({ commit }, uid) {
+      async removeConnected ({ commit }, uid) {
+         Connection.disconnect(uid);
          commit('REMOVE_CONNECTED', uid);
+      },
+      addWorkspace ({ commit }, uid) {
+         const workspace = {
+            uid,
+            tabs: []
+         };
+         commit('ADD_WORKSPACE', workspace);
       }
    }
 };

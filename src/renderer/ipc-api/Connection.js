@@ -14,6 +14,10 @@ export default class {
       return ipcRenderer.invoke('connect', params);
    }
 
+   static disconnect (uid) {
+      return ipcRenderer.invoke('disconnect', uid);
+   }
+
    // TODO: refresh
    // TODO: disconnect
 }

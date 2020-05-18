@@ -9,7 +9,7 @@
          class="material-icons c-hand"
          @click="toggleExpand"
       >{{ isExpanded ? 'expand_less' : 'expand_more' }}</i>
-      <button class="btn btn-clear" @click="hideToast" />
+      <button class="btn btn-clear ml-2" @click="hideToast" />
    </div>
 </template>
 
