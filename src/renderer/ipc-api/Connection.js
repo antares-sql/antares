@@ -18,6 +18,7 @@ export default class {
       return ipcRenderer.invoke('disconnect', uid);
    }
 
-   // TODO: refresh
-   // TODO: disconnect
+   static refresh (uid) {
+      return ipcRenderer.invoke('refresh', uid);
+   }
 }

@@ -22,7 +22,6 @@
 
 <script>
 import { mapActions } from 'vuex';
-import Connection from '@/ipc-api/Connection';
 
 export default {
    name: 'DatabaseConnectPanel',
@@ -37,20 +36,11 @@ export default {
    methods: {
       ...mapActions({
          addNotification: 'notifications/addNotification',
-         addConnected: 'workspaces/addConnected'
+         connectWorkspace: 'workspaces/connectWorkspace'
       }),
       async startConnection () {
          this.isConnecting = true;
-         try {
-            const { status, response } = await Connection.connect(this.connection);
-            if (status === 'error')
-               this.addNotification({ status, message: response });
-            else
-               this.addConnected(this.connection.uid);
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
+         await this.connectWorkspace(this.connection);
          this.isConnecting = false;
       }
    }

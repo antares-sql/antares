@@ -60,4 +60,15 @@ export default () => {
       connections[uid].destroy();
       delete connections[uid];
    });
+
+   ipcMain.handle('refresh', async (event, uid) => {
+      try {
+         structure = await InformationSchema.getStructure(connection);
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+
+      return { status: 'success', response: structure };
+   });
 };
