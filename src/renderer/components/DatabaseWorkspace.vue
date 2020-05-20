@@ -2,7 +2,7 @@
    <div v-show="selectedWorkspace === connection.uid" class="workspace column columns">
       <DatabaseExploreBar :connection="connection" />
       <div class="workspace-tabs column">
-         <pre>{{ JSON.stringify(connection, null, 3) }}</pre>
+         <pre>{{ JSON.stringify(workspace.structure, null, 3) }}</pre>
       </div>
    </div>
 </template>
@@ -23,8 +23,11 @@ export default {
    computed: {
       ...mapGetters({
          selectedWorkspace: 'workspaces/getSelected',
-         getConnected: 'workspaces/getConnected'
-      })
+         getWorkspace: 'workspaces/getWorkspace'
+      }),
+      workspace () {
+         return this.getWorkspace(this.connection.uid);
+      }
    },
    async created () {
       this.addWorkspace(this.connection.uid);
@@ -47,5 +50,10 @@ export default {
    .workspace{
       padding: 0;
       margin: 0;
+
+      .workspace-tabs{
+         overflow: auto;
+         height: calc(100vh - #{$footer-height});
+      }
    }
 </style>

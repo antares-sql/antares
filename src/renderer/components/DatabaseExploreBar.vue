@@ -2,16 +2,21 @@
    <div class="workspace-explorebar column">
       <div class="workspace-explorebar-header">
          <span class="workspace-explorebar-title">{{ connection.user }}@{{ connection.host }}:{{ connection.port }}</span>
-         <span v-if="isConnected" class="workspace-explorebar-tools">
-            <i class="material-icons md-18 c-hand mr-1" title="Refresh">cached</i>
+         <span v-if="workspace.connected" class="workspace-explorebar-tools">
             <i
                class="material-icons md-18 c-hand"
+               :class="{'rotate':isRefreshing}"
+               title="Refresh"
+               @click="refresh"
+            >refresh</i>
+            <i
+               class="material-icons md-18 c-hand mr-1 ml-2"
                title="Disconnect"
                @click="disconnectWorkspace(connection.uid)"
             >exit_to_app</i>
          </span>
       </div>
-      <DatabaseConnectPanel v-if="!isConnected" :connection="connection" />
+      <DatabaseConnectPanel v-if="!workspace.connected" :connection="connection" />
    </div>
 </template>
 
@@ -27,18 +32,29 @@ export default {
    props: {
       connection: Object
    },
+   data () {
+      return {
+         isRefreshing: false
+      };
+   },
    computed: {
       ...mapGetters({
-         connected: 'workspaces/getConnected'
+         getWorkspace: 'workspaces/getWorkspace'
       }),
-      isConnected () {
-         return this.connected.includes(this.connection.uid);
+      workspace () {
+         return this.getWorkspace(this.connection.uid);
       }
    },
    methods: {
       ...mapActions({
-         disconnectWorkspace: 'workspaces/removeConnected'
-      })
+         disconnectWorkspace: 'workspaces/removeConnected',
+         refreshStructure: 'workspaces/refreshStructure'
+      }),
+      async refresh () {
+         this.isRefreshing = true;
+         await this.refreshStructure(this.connection.uid);
+         this.isRefreshing = false;
+      }
    }
 };
 </script>
@@ -76,14 +92,23 @@ export default {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
          }
 
-         .workspace-explorebar-tools > i{
-            opacity: .6;
-            transition: opacity .2s;;
+         .workspace-explorebar-tools {
+               display: flex;
+               align-items: center;
 
-            &:hover{
-               opacity: 1;
+               > i{
+                  opacity: .6;
+                  transition: opacity .2s;
+                  display: flex;
+                  align-items: center;
+
+               &:hover{
+                  opacity: 1;
+               }
             }
          }
       }

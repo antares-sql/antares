@@ -41,7 +41,7 @@ export default {
    #notifications-board{
       position: absolute;
       z-index: 9;
-      right: .8rem;
+      right: 1rem;
       bottom: $footer-height+1rem;
    }
 </style>

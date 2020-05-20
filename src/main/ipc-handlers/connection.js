@@ -30,7 +30,6 @@ export default () => {
    });
 
    ipcMain.handle('connect', async (event, conn) => {
-      let structure;
       const connection = knex({
          client: conn.client,
          connection: {
@@ -46,14 +45,13 @@ export default () => {
       });
 
       try {
-         structure = await InformationSchema.getStructure(connection);
+         const structure = await InformationSchema.getStructure(connection);
+         connections[conn.uid] = connection;
+         return { status: 'success', response: structure };
       }
       catch (err) {
          return { status: 'error', response: err.toString() };
       }
-
-      connections[conn.uid] = connection;
-      return { status: 'success', response: structure };
    });
 
    ipcMain.handle('disconnect', (event, uid) => {
@@ -63,12 +61,12 @@ export default () => {
 
    ipcMain.handle('refresh', async (event, uid) => {
       try {
-         structure = await InformationSchema.getStructure(connection);
+         const structure = await InformationSchema.getStructure(connections[uid]);
+         return { status: 'success', response: structure };
       }
       catch (err) {
+         console.log(err);
          return { status: 'error', response: err.toString() };
       }
-
-      return { status: 'success', response: structure };
    });
 };

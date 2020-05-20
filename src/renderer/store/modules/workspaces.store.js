@@ -6,7 +6,6 @@ export default {
    strict: true,
    state: {
       workspaces: [],
-      connected_workspaces: [], // TODO: move to state.workspaces
       selected_workspace: null
    },
    getters: {
@@ -15,20 +14,28 @@ export default {
          if (state.workspaces.length) return state.workspaces[0].uid;
          return null;
       },
-      getWorkspaces: state => state.workspaces,
-      getConnected: state => state.connected_workspaces
+      getWorkspace: state => uid => {
+         const workspace = state.workspaces.filter(workspace => workspace.uid === uid);
+         return workspace.length ? workspace[0] : {};
+      },
+      getConnected: state => {
+         return state.workspaces
+            .filter(workspace => workspace.connected)
+            .map(workspace => workspace.uid);
+      }
    },
    mutations: {
       SELECT_WORKSPACE (state, uid) {
          state.selected_workspace = uid;
       },
       ADD_CONNECTED (state, { uid, structure }) {
-         state.connected_workspaces.push(uid);
-         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, structure } : workspace);
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, structure, connected: true } : workspace);
       },
       REMOVE_CONNECTED (state, uid) {
-         state.connected_workspaces = state.connected_workspaces.filter(value => value !== uid);
-         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, structure: {} } : workspace);
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, structure: {}, connected: false } : workspace);
+      },
+      REFRESH_STRUCTURE (state, uid) {
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, structure } : workspace);
       },
       ADD_WORKSPACE (state, workspace) {
          state.workspaces.push(workspace);
@@ -45,6 +52,18 @@ export default {
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
             else
                commit('ADD_CONNECTED', { uid: connection.uid, structure: response });
+         }
+         catch (err) {
+            dispatch('notifications/addNotification', { status: 'error', message: err.stack }, { root: true });
+         }
+      },
+      async refreshStructure ({ dispatch, commit }, uid) {
+         try {
+            const { status, response } = await Connection.refresh(uid);
+            if (status === 'error')
+               dispatch('notifications/addNotification', { status, message: response }, { root: true });
+            else
+               commit('REFRESH_STRUCTURE', { uid, structure: response });
          }
          catch (err) {
             dispatch('notifications/addNotification', { status: 'error', message: err.stack }, { root: true });
