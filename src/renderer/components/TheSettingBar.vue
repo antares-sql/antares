@@ -1,17 +1,33 @@
 <template>
    <div id="settingbar">
       <div class="settingbar-top-elements">
+         <BaseContextMenu
+            v-if="isContext"
+            :context-event="contextEvent"
+            @close="isContext = false"
+         >
+            <div class="context-element">
+               <i class="material-icons md-18 text-light pr-1">edit</i> Edit
+            </div>
+            <div class="context-element">
+               <i class="material-icons md-18 text-light pr-1">delete</i> Delete
+            </div>
+         </BaseContextMenu>
          <ul class="settingbar-elements">
-            <li
-               v-for="connection in connections"
-               :key="connection.uid"
-               class="settingbar-element btn btn-link tooltip tooltip-right"
-               :class="{'selected': connection.uid === selectedWorkspace}"
-               :data-tooltip="`${connection.user}@${connection.host}:${connection.port}`"
-               @click="selectWorkspace(connection.uid)"
-            >
-               <i class="settingbar-element-icon dbi" :class="`dbi-${connection.client} ${connected.includes(connection.uid) ? 'badge' : ''}`" />
-            </li>
+            <draggable v-model="connections">
+               <li
+                  v-for="connection in connections"
+                  :key="connection.uid"
+                  draggable="true"
+                  class="settingbar-element btn btn-link tooltip tooltip-right"
+                  :class="{'selected': connection.uid === selectedWorkspace}"
+                  :data-tooltip="`${connection.user}@${connection.host}:${connection.port}`"
+                  @click="selectWorkspace(connection.uid)"
+                  @contextmenu.prevent="contextMenu($event)"
+               >
+                  <i class="settingbar-element-icon dbi" :class="`dbi-${connection.client} ${connected.includes(connection.uid) ? 'badge' : ''}`" />
+               </li>
+            </draggable>
             <li
                class="settingbar-element btn btn-link tooltip tooltip-right pt-3"
                data-tooltip="Add connection"
@@ -34,21 +50,47 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import draggable from 'vuedraggable';
+import BaseContextMenu from '@/components/BaseContextMenu';
 
 export default {
    name: 'TheSettingBar',
+   components: {
+      draggable,
+      BaseContextMenu
+   },
+   data () {
+      return {
+         dragElement: null,
+         isContext: false,
+         contextEvent: null
+      };
+   },
    computed: {
       ...mapGetters({
-         connections: 'connections/getConnections',
+         getConnections: 'connections/getConnections',
          connected: 'workspaces/getConnected',
          selectedWorkspace: 'workspaces/getSelected'
-      })
+      }),
+      connections: {
+         get () {
+            return this.getConnections;
+         },
+         set (value) {
+            this.updateConnections(value);
+         }
+      }
    },
    methods: {
       ...mapActions({
+         updateConnections: 'connections/updateConnections',
          showNewConnModal: 'connections/showNewConnModal',
          selectWorkspace: 'workspaces/selectWorkspace'
-      })
+      }),
+      contextMenu (event) {
+         this.contextEvent = event;
+         this.isContext = true;
+      }
    }
 };
 </script>

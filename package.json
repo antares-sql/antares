@@ -35,7 +35,9 @@
     "pg": "^8.2.1",
     "source-map-support": "^0.5.16",
     "spectre.css": "^0.5.8",
+    "vue-click-outside": "^1.1.0",
     "vue-i18n": "^8.17.7",
+    "vuedraggable": "^2.23.2",
     "vuex": "^3.4.0",
     "vuex-persist": "^2.2.0"
   },

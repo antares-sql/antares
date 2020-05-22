@@ -15,6 +15,9 @@ export default {
       ADD_CONNECTION (state, connection) {
          state.connections.push(connection);
       },
+      UPDATE_CONNECTIONS (state, connections) {
+         state.connections = connections;
+      },
       SHOW_NEW_CONNECTION_MODAL (state) {
          state.is_new_modal = true;
       },
@@ -25,6 +28,9 @@ export default {
    actions: {
       addConnection ({ commit }, connection) {
          commit('ADD_CONNECTION', connection);
+      },
+      updateConnections ({ commit }, connections) {
+         commit('UPDATE_CONNECTIONS', connections);
       },
       // Modals
       showNewConnModal ({ commit }) {
