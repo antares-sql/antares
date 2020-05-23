@@ -1,18 +1,12 @@
 <template>
    <div id="settingbar">
       <div class="settingbar-top-elements">
-         <BaseContextMenu
+         <SettingBarContext
             v-if="isContext"
             :context-event="contextEvent"
-            @close="isContext = false"
-         >
-            <div class="context-element">
-               <i class="material-icons md-18 text-light pr-1">edit</i> Edit
-            </div>
-            <div class="context-element">
-               <i class="material-icons md-18 text-light pr-1">delete</i> Delete
-            </div>
-         </BaseContextMenu>
+            :context-connection="contextConnection"
+            @closeContext="isContext = false"
+         />
          <ul class="settingbar-elements">
             <draggable v-model="connections">
                <li
@@ -23,7 +17,7 @@
                   :class="{'selected': connection.uid === selectedWorkspace}"
                   :data-tooltip="`${connection.user}@${connection.host}:${connection.port}`"
                   @click="selectWorkspace(connection.uid)"
-                  @contextmenu.prevent="contextMenu($event)"
+                  @contextmenu.prevent="contextMenu($event, connection)"
                >
                   <i class="settingbar-element-icon dbi" :class="`dbi-${connection.client} ${connected.includes(connection.uid) ? 'badge' : ''}`" />
                </li>
@@ -51,19 +45,20 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import draggable from 'vuedraggable';
-import BaseContextMenu from '@/components/BaseContextMenu';
+import SettingBarContext from '@/components/SettingBarContext';
 
 export default {
    name: 'TheSettingBar',
    components: {
       draggable,
-      BaseContextMenu
+      SettingBarContext
    },
    data () {
       return {
          dragElement: null,
          isContext: false,
-         contextEvent: null
+         contextEvent: null,
+         contextConnection: {}
       };
    },
    computed: {
@@ -87,8 +82,9 @@ export default {
          showNewConnModal: 'connections/showNewConnModal',
          selectWorkspace: 'workspaces/selectWorkspace'
       }),
-      contextMenu (event) {
+      contextMenu (event, connection) {
          this.contextEvent = event;
+         this.contextConnection = connection;
          this.isContext = true;
       }
    }
@@ -111,6 +107,7 @@ export default {
       .settingbar-elements{
          list-style: none;
          text-align: center;
+         width: $settingbar-width;
          padding: 0;
          margin: 0;
 

@@ -1,10 +1,5 @@
 <template>
    <div class="context">
-      <!-- <a
-         class="context-overlay c-hand"
-         @click="$emit('close')"
-         @contextmenu="$emit('close')"
-      /> -->
       <div
          v-click-outside="close"
          class="context-container"
@@ -28,15 +23,15 @@ export default {
    },
    computed: {
       position () {
-         return {
-            top: this.contextEvent.clientY + 'px',
-            left: this.contextEvent.clientX + 'px'
+         return { // TODO: calc direction if near corners
+            top: this.contextEvent.clientY + 5 + 'px',
+            left: this.contextEvent.clientX + 5 + 'px'
          };
       }
    },
    methods: {
       close () {
-         this.$emit('close');
+         this.$emit('closeContext');
       }
    }
 };
@@ -67,8 +62,6 @@ export default {
          border-radius: 0.1rem;
          display: flex;
          flex-direction: column;
-         max-height: 75vh;
-         padding: 0.3rem;
          width: 100%;
          position: absolute;
          pointer-events: initial;
@@ -76,6 +69,12 @@ export default {
          .context-element{
             display: flex;
             align-items: center;
+            padding: .1rem .3rem;
+            cursor: pointer;
+
+            &:hover{
+               background: $primary-color;
+            }
          }
       }
 

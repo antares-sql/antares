@@ -17,11 +17,7 @@
                            <label class="form-label">Client:</label>
                         </div>
                         <div class="col-9 col-sm-12">
-                           <select
-                              v-model="connection.client"
-                              class="form-select"
-                              @change="setDefaults"
-                           >
+                           <select v-model="localConnection.client" class="form-select">
                               <option value="mysql">
                                  MySQL/MariaDB
                               </option>
@@ -43,7 +39,7 @@
                         </div>
                         <div class="col-9 col-sm-12">
                            <input
-                              v-model="connection.host"
+                              v-model="localConnection.host"
                               class="form-input"
                               type="text"
                            >
@@ -55,7 +51,7 @@
                         </div>
                         <div class="col-9 col-sm-12">
                            <input
-                              v-model="connection.port"
+                              v-model="localConnection.port"
                               class="form-input"
                               type="number"
                               min="1"
@@ -69,10 +65,10 @@
                         </div>
                         <div class="col-9 col-sm-12">
                            <input
-                              v-model="connection.user"
+                              v-model="localConnection.user"
                               class="form-input"
                               type="text"
-                              :disabled="connection.ask"
+                              :disabled="localConnection.ask"
                            >
                         </div>
                      </div>
@@ -82,10 +78,10 @@
                         </div>
                         <div class="col-9 col-sm-12">
                            <input
-                              v-model="connection.password"
+                              v-model="localConnection.password"
                               class="form-input"
                               type="password"
-                              :disabled="connection.ask"
+                              :disabled="localConnection.ask"
                            >
                         </div>
                      </div>
@@ -93,7 +89,7 @@
                         <div class="col-3 col-sm-12" />
                         <div class="col-9 col-sm-12">
                            <label class="form-checkbox form-inline">
-                              <input v-model="connection.ask" type="checkbox"><i class="form-icon" /> Ask for credentials
+                              <input v-model="localConnection.ask" type="checkbox"><i class="form-icon" /> Ask for credentials
                            </label>
                         </div>
                      </div>
@@ -114,7 +110,7 @@
             >
                Test connection
             </button>
-            <button class="btn btn-primary mr-2" @click="saveNewConnection">
+            <button class="btn btn-primary mr-2" @click="saveEditConnection">
                Save
             </button>
             <button class="btn btn-link" @click="closeModal">
@@ -133,12 +129,11 @@
 <script>
 import { mapActions } from 'vuex';
 import Connection from '@/ipc-api/Connection';
-import { uidGen } from 'common/libs/utilities';
 import ModalAskCredentials from '@/components/ModalAskCredentials';
 import BaseToast from '@/components/BaseToast';
 
 export default {
-   name: 'ModalNewConnection',
+   name: 'ModalEditConnection',
    components: {
       ModalAskCredentials,
       BaseToast
@@ -147,48 +142,37 @@ export default {
       isOpened: {
          type: Boolean,
          default: false
-      }
+      },
+      connection: Object
    },
    data () {
       return {
-         connection: {
-            client: 'mysql',
-            host: '127.0.0.1',
-            port: '3306',
-            user: 'root',
-            password: '',
-            ask: false,
-            uid: uidGen()
-         },
          toast: {
             status: '',
             message: ''
          },
          isTesting: false,
-         isAsking: false
+         isAsking: false,
+         connectionProxy: null
       };
+   },
+   computed: {
+      localConnection: {
+         get () {
+            if (this.connectionProxy === null)
+               return this.connection;
+            else
+               return this.connectionProxy;
+         },
+         set (val) {
+            this.connectionProxy = val;
+         }
+      }
    },
    methods: {
       ...mapActions({
-         closeModal: 'connections/hideNewConnModal',
-         addConnection: 'connections/addConnection'
+         editConnection: 'connections/editConnection'
       }),
-      setDefaults () {
-         switch (this.connection.client) {
-            case 'mysql':
-               this.connection.port = '3306';
-               break;
-            case 'mssql':
-               this.connection.port = '1433';
-               break;
-            case 'pg':
-               this.connection.port = '5432';
-               break;
-            case 'oracledb':
-               this.connection.port = '1521';
-               break;
-         }
-      },
       async startTest () {
          this.isTesting = true;
          this.toast = {
@@ -229,13 +213,16 @@ export default {
 
          this.isTesting = false;
       },
-      saveNewConnection () {
-         this.addConnection(this.connection);
+      saveEditConnection () {
+         this.editConnection(this.connection);
          this.closeModal();
       },
+      closeModal () {
+         this.$emit('close');
+      },
       closeAsking () {
-         this.isAsking = false;
          this.isTesting = false;
+         this.isAsking = false;
       }
    }
 };

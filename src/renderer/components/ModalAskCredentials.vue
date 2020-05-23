@@ -6,7 +6,7 @@
             <div class="modal-title h6">
                Credentials
             </div>
-            <a class="btn btn-clear c-hand" @click="closeModal" />
+            <a class="btn btn-clear c-hand" @click.stop="closeModal" />
          </div>
          <div class="modal-body">
             <div class="content">
@@ -39,10 +39,10 @@
             </div>
          </div>
          <div class="modal-footer text-light">
-            <button class="btn btn-primary mr-2" @click="sendCredentials">
+            <button class="btn btn-primary mr-2" @click.stop="sendCredentials">
                Send
             </button>
-            <button class="btn btn-link" @click="closeModal">
+            <button class="btn btn-link" @click.stop="closeModal">
                Close
             </button>
          </div>

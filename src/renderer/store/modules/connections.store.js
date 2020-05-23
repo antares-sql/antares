@@ -5,7 +5,8 @@ export default {
    strict: true,
    state: {
       connections: [],
-      is_new_modal: false
+      is_new_modal: false,
+      is_edit_modal: false
    },
    getters: {
       getConnections: state => state.connections,
@@ -14,6 +15,9 @@ export default {
    mutations: {
       ADD_CONNECTION (state, connection) {
          state.connections.push(connection);
+      },
+      DELETE_CONNECTION (state, connection) {
+         state.connections = state.connections.filter(el => el.uid !== connection.uid);
       },
       UPDATE_CONNECTIONS (state, connections) {
          state.connections = connections;
@@ -28,6 +32,12 @@ export default {
    actions: {
       addConnection ({ commit }, connection) {
          commit('ADD_CONNECTION', connection);
+      },
+      deleteConnection ({ commit }, connection) {
+         commit('DELETE_CONNECTION', connection);
+      },
+      editConnection ({ commit }, connection) {
+         commit('EDIT_CONNECTION', connection);
       },
       updateConnections ({ commit }, connections) {
          commit('UPDATE_CONNECTIONS', connections);
