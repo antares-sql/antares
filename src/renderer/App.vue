@@ -14,6 +14,7 @@
       <TheFooter />
       <TheNotificationsBoard />
       <ModalNewConnection v-if="isNewConnModal" />
+      <ModalEditConnection v-if="isEditModal" />
    </div>
 </template>
 
@@ -25,6 +26,7 @@ import TheNotificationsBoard from '@/components/TheNotificationsBoard';
 import TheAppWelcome from '@/components/TheAppWelcome';
 import DatabaseWorkspace from '@/components/DatabaseWorkspace';
 import ModalNewConnection from '@/components/ModalNewConnection';
+import ModalEditConnection from '@/components/ModalEditConnection';
 
 export default {
    name: 'App',
@@ -34,7 +36,8 @@ export default {
       TheNotificationsBoard,
       TheAppWelcome,
       DatabaseWorkspace,
-      ModalNewConnection
+      ModalNewConnection,
+      ModalEditConnection
    },
    data () {
       return {
@@ -44,6 +47,7 @@ export default {
       ...mapGetters({
          isLoading: 'application/isLoading',
          isNewConnModal: 'connections/isNewModal',
+         isEditModal: 'connections/isEditModal',
          connections: 'connections/getConnections'
       })
    },

@@ -143,12 +143,6 @@ export default {
       ModalAskCredentials,
       BaseToast
    },
-   props: {
-      isOpened: {
-         type: Boolean,
-         default: false
-      }
-   },
    data () {
       return {
          connection: {

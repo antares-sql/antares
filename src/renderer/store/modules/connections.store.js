@@ -6,11 +6,14 @@ export default {
    state: {
       connections: [],
       is_new_modal: false,
-      is_edit_modal: false
+      is_edit_modal: false,
+      selected_conection: {}
    },
    getters: {
       getConnections: state => state.connections,
-      isNewModal: state => state.is_new_modal
+      getSelectedConnection: state => state.selected_conection,
+      isNewModal: state => state.is_new_modal,
+      isEditModal: state => state.is_edit_modal
    },
    mutations: {
       ADD_CONNECTION (state, connection) {
@@ -18,6 +21,14 @@ export default {
       },
       DELETE_CONNECTION (state, connection) {
          state.connections = state.connections.filter(el => el.uid !== connection.uid);
+      },
+      EDIT_CONNECTION (state, connection) {
+         const editedConnections = state.connections.map(conn => {
+            if (conn.uid === connection.uid) return connection;
+            return conn;
+         });
+         state.connections = editedConnections;
+         state.selected_conection = {};
       },
       UPDATE_CONNECTIONS (state, connections) {
          state.connections = connections;
@@ -27,6 +38,13 @@ export default {
       },
       HIDE_NEW_CONNECTION_MODAL (state) {
          state.is_new_modal = false;
+      },
+      SHOW_EDIT_CONNECTION_MODAL (state, connection) {
+         state.is_edit_modal = true;
+         state.selected_conection = connection;
+      },
+      HIDE_EDIT_CONNECTION_MODAL (state) {
+         state.is_edit_modal = false;
       }
    },
    actions: {
@@ -48,6 +66,12 @@ export default {
       },
       hideNewConnModal ({ commit }) {
          commit('HIDE_NEW_CONNECTION_MODAL');
+      },
+      showEditConnModal ({ commit }, connection) {
+         commit('SHOW_EDIT_CONNECTION_MODAL', connection);
+      },
+      hideEditConnModal ({ commit }) {
+         commit('HIDE_EDIT_CONNECTION_MODAL');
       }
    }
 };

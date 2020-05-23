@@ -3,7 +3,7 @@
       :context-event="contextEvent"
       @closeContext="$emit('closeContext')"
    >
-      <div class="context-element" @click="showEditModal">
+      <div class="context-element" @click="showEditModal(contextConnection)">
          <i class="material-icons md-18 text-light pr-1">edit</i> Edit
       </div>
       <div class="context-element" @click="showConfirmModal">
@@ -24,12 +24,6 @@
             </div>
          </div>
       </ConfirmModal>
-      <!-- TODO: move to vuex -->
-      <ModalEditConnection
-         v-if="isEditModal"
-         :connection="contextConnection"
-         @close="isEditModal = false"
-      />
    </BaseContextMenu>
 </template>
 
@@ -37,14 +31,12 @@
 import { mapActions } from 'vuex';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
-import ModalEditConnection from '@/components/ModalEditConnection';
 
 export default {
    name: 'SettingBarContext',
    components: {
       BaseContextMenu,
-      ConfirmModal,
-      ModalEditConnection
+      ConfirmModal
    },
    props: {
       contextEvent: MouseEvent,
@@ -52,25 +44,19 @@ export default {
    },
    data () {
       return {
-         isConfirmModal: false,
-         isEditModal: false
+         isConfirmModal: false
       };
    },
    methods: {
       ...mapActions({
-         deleteConnection: 'connections/deleteConnection'
+         deleteConnection: 'connections/deleteConnection',
+         showEditModal: 'connections/showEditConnModal'
       }),
       showConfirmModal () {
          this.isConfirmModal = true;
       },
       hideConfirmModal () {
          this.isConfirmModal = false;
-      },
-      showEditModal () {
-         this.isEditModal = true;
-      },
-      hideEditModal () {
-         this.isEditModal = false;
       }
    }
 };

@@ -4,7 +4,7 @@
       <div class="modal-container">
          <div class="modal-header text-light">
             <div class="modal-title h6">
-               Create a new connection
+               Edit connection
             </div>
             <a class="btn btn-clear c-hand" @click="closeModal" />
          </div>
@@ -127,7 +127,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import Connection from '@/ipc-api/Connection';
 import ModalAskCredentials from '@/components/ModalAskCredentials';
 import BaseToast from '@/components/BaseToast';
@@ -137,13 +137,6 @@ export default {
    components: {
       ModalAskCredentials,
       BaseToast
-   },
-   props: {
-      isOpened: {
-         type: Boolean,
-         default: false
-      },
-      connection: Object
    },
    data () {
       return {
@@ -157,10 +150,13 @@ export default {
       };
    },
    computed: {
+      ...mapGetters({
+         connection: 'connections/getSelectedConnection'
+      }),
       localConnection: {
          get () {
             if (this.connectionProxy === null)
-               return this.connection;
+               return Object.assign({}, this.connection);
             else
                return this.connectionProxy;
          },
@@ -171,6 +167,7 @@ export default {
    },
    methods: {
       ...mapActions({
+         closeModal: 'connections/hideEditConnModal',
          editConnection: 'connections/editConnection'
       }),
       async startTest () {
@@ -180,11 +177,11 @@ export default {
             message: ''
          };
 
-         if (this.connection.ask)
+         if (this.localConnection.ask)
             this.isAsking = true;
          else {
             try {
-               const res = await Connection.makeTest(this.connection);
+               const res = await Connection.makeTest(this.localConnection);
                if (res.status === 'error')
                   this.toast = { status: 'error', message: res.response.message };
                else
@@ -199,7 +196,7 @@ export default {
       },
       async continueTest (credentials) { // if "Ask for credentials" is true
          this.isAsking = false;
-         const params = Object.assign({}, this.connection, credentials);
+         const params = Object.assign({}, this.localConnection, credentials);
          try {
             const res = await Connection.makeTest(params);
             if (res.status === 'error')
@@ -214,11 +211,8 @@ export default {
          this.isTesting = false;
       },
       saveEditConnection () {
-         this.editConnection(this.connection);
+         this.editConnection(this.localConnection);
          this.closeModal();
-      },
-      closeModal () {
-         this.$emit('close');
       },
       closeAsking () {
          this.isTesting = false;
