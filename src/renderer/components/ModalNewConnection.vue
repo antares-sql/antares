@@ -210,6 +210,7 @@ export default {
       async continueTest (credentials) { // if "Ask for credentials" is true
          this.isAsking = false;
          const params = Object.assign({}, this.connection, credentials);
+
          try {
             const res = await Connection.makeTest(params);
             if (res.status === 'error')

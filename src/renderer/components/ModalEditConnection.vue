@@ -146,24 +146,16 @@ export default {
          },
          isTesting: false,
          isAsking: false,
-         connectionProxy: null
+         localConnection: null
       };
    },
    computed: {
       ...mapGetters({
          connection: 'connections/getSelectedConnection'
-      }),
-      localConnection: {
-         get () {
-            if (this.connectionProxy === null)
-               return Object.assign({}, this.connection);
-            else
-               return this.connectionProxy;
-         },
-         set (val) {
-            this.connectionProxy = val;
-         }
-      }
+      })
+   },
+   created () {
+      this.localConnection = Object.assign({}, this.connection);
    },
    methods: {
       ...mapActions({

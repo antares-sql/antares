@@ -17,20 +17,30 @@
             </button>
          </div>
       </div>
+      <ModalAskCredentials
+         v-if="isAsking"
+         @closeAsking="closeAsking"
+         @credentials="continueTest"
+      />
    </div>
 </template>
 
 <script>
 import { mapActions } from 'vuex';
+import ModalAskCredentials from '@/components/ModalAskCredentials';
 
 export default {
    name: 'DatabaseConnectPanel',
+   components: {
+      ModalAskCredentials
+   },
    props: {
       connection: Object
    },
    data () {
       return {
-         isConnecting: false
+         isConnecting: false,
+         isAsking: false
       };
    },
    methods: {
@@ -40,7 +50,22 @@ export default {
       }),
       async startConnection () {
          this.isConnecting = true;
-         await this.connectWorkspace(this.connection);
+
+         if (this.connection.ask)
+            this.isAsking = true;
+         else {
+            await this.connectWorkspace(this.connection);
+            this.isConnecting = false;
+         }
+      },
+      async continueTest (credentials) { // if "Ask for credentials" is true
+         this.isAsking = false;
+         const params = Object.assign({}, this.connection, credentials);
+         await this.connectWorkspace(params);
+         this.isConnecting = false;
+      },
+      closeAsking () {
+         this.isAsking = false;
          this.isConnecting = false;
       }
    }
