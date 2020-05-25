@@ -5,14 +5,14 @@
             <i class="material-icons md-48">mood</i>
          </div>
          <p class="empty-title h5">
-            Welcome to Antares SQL Client!
+            {{ $t('message.appWelcome') }}
          </p>
          <p class="empty-subtitle">
-            Your first step: create a new database connection.
+            {{ $t('message.appFirstStep') }}
          </p>
          <div class="empty-action">
             <button class="btn btn-primary" @click="$emit('newConn')">
-               Create connection
+               {{ $t('message.createConnection') }}
             </button>
          </div>
       </div>

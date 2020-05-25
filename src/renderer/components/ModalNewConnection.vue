@@ -4,7 +4,7 @@
       <div class="modal-container">
          <div class="modal-header text-light">
             <div class="modal-title h6">
-               Create a new connection
+               {{ $t('message.createNewConnection') }}
             </div>
             <a class="btn btn-clear c-hand" @click="closeModal" />
          </div>
@@ -14,7 +14,7 @@
                   <fieldset class="m-0" :disabled="isTesting">
                      <div class="form-group">
                         <div class="col-3 col-sm-12">
-                           <label class="form-label">Client:</label>
+                           <label class="form-label">{{ $t('word.client') }}:</label>
                         </div>
                         <div class="col-9 col-sm-12">
                            <select
@@ -39,7 +39,7 @@
                      </div>
                      <div class="form-group">
                         <div class="col-3 col-sm-12">
-                           <label class="form-label">Host name/IP:</label>
+                           <label class="form-label">{{ $t('word.hostName') }}/IP:</label>
                         </div>
                         <div class="col-9 col-sm-12">
                            <input
@@ -51,7 +51,7 @@
                      </div>
                      <div class="form-group">
                         <div class="col-3 col-sm-12">
-                           <label class="form-label">Port:</label>
+                           <label class="form-label">{{ $t('word.port') }}:</label>
                         </div>
                         <div class="col-9 col-sm-12">
                            <input
@@ -65,7 +65,7 @@
                      </div>
                      <div class="form-group">
                         <div class="col-3 col-sm-12">
-                           <label class="form-label">User:</label>
+                           <label class="form-label">{{ $t('word.user') }}:</label>
                         </div>
                         <div class="col-9 col-sm-12">
                            <input
@@ -78,7 +78,7 @@
                      </div>
                      <div class="form-group">
                         <div class="col-3 col-sm-12">
-                           <label class="form-label">Password:</label>
+                           <label class="form-label">{{ $t('word.password') }}:</label>
                         </div>
                         <div class="col-9 col-sm-12">
                            <input
@@ -93,7 +93,7 @@
                         <div class="col-3 col-sm-12" />
                         <div class="col-9 col-sm-12">
                            <label class="form-checkbox form-inline">
-                              <input v-model="connection.ask" type="checkbox"><i class="form-icon" /> Ask for credentials
+                              <input v-model="connection.ask" type="checkbox"><i class="form-icon" /> {{ $t('message.askCredentials') }}
                            </label>
                         </div>
                      </div>
@@ -112,13 +112,13 @@
                :class="{'loading': isTesting}"
                @click="startTest"
             >
-               Test connection
+               {{ $t('message.testConnection') }}
             </button>
             <button class="btn btn-primary mr-2" @click="saveNewConnection">
-               Save
+               {{ $t('word.save') }}
             </button>
             <button class="btn btn-link" @click="closeModal">
-               Close
+               {{ $t('word.close') }}
             </button>
          </div>
       </div>

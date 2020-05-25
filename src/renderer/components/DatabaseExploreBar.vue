@@ -1,17 +1,17 @@
 <template>
    <div class="workspace-explorebar column">
       <div class="workspace-explorebar-header">
-         <span class="workspace-explorebar-title">{{ connection.user }}@{{ connection.host }}:{{ connection.port }}</span>
+         <span class="workspace-explorebar-title">{{ connection.ask ? '': connection.user+'@' }}{{ connection.host }}:{{ connection.port }}</span>
          <span v-if="workspace.connected" class="workspace-explorebar-tools">
             <i
                class="material-icons md-18 c-hand"
                :class="{'rotate':isRefreshing}"
-               title="Refresh"
+               :title="$t('word.refresh')"
                @click="refresh"
             >refresh</i>
             <i
                class="material-icons md-18 c-hand mr-1 ml-2"
-               title="Disconnect"
+               :title="$t('word.disconnect')"
                @click="disconnectWorkspace(connection.uid)"
             >exit_to_app</i>
          </span>

@@ -5,7 +5,7 @@
             <i class="material-icons md-48">cloud_off</i>
          </div>
          <p class="empty-title h5">
-            Disconnected
+            {{ $t('word.disconnected') }}
          </p>
          <div class="empty-action">
             <button
@@ -13,7 +13,7 @@
                :class="{'loading': isConnecting}"
                @click="startConnection"
             >
-               Connect
+               {{ $t('word.connect') }}
             </button>
          </div>
       </div>

@@ -15,7 +15,7 @@
                   draggable="true"
                   class="settingbar-element btn btn-link tooltip tooltip-right"
                   :class="{'selected': connection.uid === selectedWorkspace}"
-                  :data-tooltip="`${connection.user}@${connection.host}:${connection.port}`"
+                  :data-tooltip="`${connection.ask ? '': connection.user+'@'}${connection.host}:${connection.port}`"
                   @click="selectWorkspace(connection.uid)"
                   @contextmenu.prevent="contextMenu($event, connection)"
                >
@@ -24,7 +24,7 @@
             </draggable>
             <li
                class="settingbar-element btn btn-link tooltip tooltip-right pt-3"
-               data-tooltip="Add connection"
+               :data-tooltip="$t('message.addConnection')"
                @click="showNewConnModal"
             >
                <i class="settingbar-element-icon material-icons text-light">add</i>

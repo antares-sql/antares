@@ -7,10 +7,13 @@ import '@/scss/main.scss';
 
 import App from '@/App.vue';
 import store from '@/store';
+import i18n from '@/i18n';
 
+i18n.locale = store.state.application.locale;
 Vue.config.productionTip = false;
 
 new Vue({
    render: h => h(App),
-   store
+   store,
+   i18n
 }).$mount('#app');

@@ -29,13 +29,13 @@
                class="btn btn-primary mr-2"
                @click="confirmModal"
             >
-               {{ confirmText }}
+               {{ $t('word.confirm') }}
             </button>
             <button
                class="btn btn-link"
                @click="hideModal"
             >
-               Cancel
+               {{ $t('word.cancel') }}
             </button>
          </div>
       </div>
@@ -45,12 +45,6 @@
 <script>
 export default {
    name: 'BaseConfirmModal',
-   props: {
-      confirmText: {
-         type: String,
-         default: 'Confirm'
-      }
-   },
    computed: {
       hasHeader () {
          return !!this.$slots.header;

@@ -4,7 +4,7 @@
       <div class="modal-container p-0">
          <div class="modal-header text-light">
             <div class="modal-title h6">
-               Credentials
+               {{ $t('word.credentials') }}
             </div>
             <a class="btn btn-clear c-hand" @click.stop="closeModal" />
          </div>
@@ -13,7 +13,7 @@
                <form class="form-horizontal">
                   <div class="form-group">
                      <div class="col-3">
-                        <label class="form-label">User:</label>
+                        <label class="form-label">{{ $t('word.user') }}:</label>
                      </div>
                      <div class="col-9">
                         <input
@@ -25,7 +25,7 @@
                   </div>
                   <div class="form-group">
                      <div class="col-3">
-                        <label class="form-label">Password:</label>
+                        <label class="form-label">{{ $t('word.password') }}:</label>
                      </div>
                      <div class="col-9">
                         <input
@@ -40,10 +40,10 @@
          </div>
          <div class="modal-footer text-light">
             <button class="btn btn-primary mr-2" @click.stop="sendCredentials">
-               Send
+               {{ $t('word.send') }}
             </button>
             <button class="btn btn-link" @click.stop="closeModal">
-               Close
+               {{ $t('word.close') }}
             </button>
          </div>
       </div>

@@ -54,15 +54,15 @@ export default {
       pointer-events: none;
 
       .context-container{
+         min-width: 100px;
          max-width: 150px;
          z-index: 1;
-         box-shadow: 0px 1px 1px 0px #000;
+         box-shadow: 0px 0px 1px 0px #000;
          padding: 0;
          background: #1d1d1d;
          border-radius: 0.1rem;
          display: flex;
          flex-direction: column;
-         width: 100%;
          position: absolute;
          pointer-events: initial;
 

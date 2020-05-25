@@ -4,10 +4,10 @@
       @closeContext="$emit('closeContext')"
    >
       <div class="context-element" @click="showEditModal(contextConnection)">
-         <i class="material-icons md-18 text-light pr-1">edit</i> Edit
+         <i class="material-icons md-18 text-light pr-1">edit</i> {{ $t('word.edit') }}
       </div>
       <div class="context-element" @click="showConfirmModal">
-         <i class="material-icons md-18 text-light pr-1">delete</i> Delete
+         <i class="material-icons md-18 text-light pr-1">delete</i> {{ $t('word.delete') }}
       </div>
 
       <ConfirmModal
@@ -16,11 +16,11 @@
          @hide="hideConfirmModal"
       >
          <template :slot="'header'">
-            Delete connection
+            {{ $t('message.deleteConnection') }}
          </template>
          <div :slot="'body'">
             <div class="mb-2">
-               Do you confirm the cancellation of <b>{{ contextConnection.user }}@{{ contextConnection.host }}:{{ contextConnection.port }}</b>?
+               {{ $t('message.deleteConnectionCorfirm') }} <b>{{ contextConnection.user }}@{{ contextConnection.host }}:{{ contextConnection.port }}</b>?
             </div>
          </div>
       </ConfirmModal>
