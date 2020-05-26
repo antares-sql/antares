@@ -17,19 +17,21 @@ module.exports = {
       connected: 'Connesso',
       disconnect: 'Disconnetti',
       disconnected: 'Disconnesso',
-      refresh: 'Aggiorna'
+      refresh: 'Aggiorna',
+      settings: 'Impostazioni'
    },
    message: {
       appWelcome: 'Benvenuto in Antares SQL Client!',
       appFirstStep: 'Primo step: crea una nuova connessione.',
-      addConnection: 'Aggiunti connessione',
+      addConnection: 'Aggiungi connessione',
       createConnection: 'Crea connessione',
       createNewConnection: 'Crea nuova connessione',
       askCredentials: 'Chiedi credenziali',
       testConnection: 'Testa connessione',
       editConnection: 'Modifica connessione',
       deleteConnection: 'Elimina connessione',
-      deleteConnectionCorfirm: 'Confermi l\'eliminazione di'
+      deleteConnectionCorfirm: 'Confermi l\'eliminazione di',
+      connectionSuccessfullyMade: 'Connessione avvenuta con successo!'
    },
    // Date and Time
    short: {

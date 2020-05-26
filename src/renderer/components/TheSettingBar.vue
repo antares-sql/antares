@@ -34,7 +34,7 @@
 
       <div class="settingbar-bottom-elements">
          <ul class="settingbar-elements">
-            <li class="settingbar-element btn btn-link tooltip tooltip-right mb-2" data-tooltip="Settings">
+            <li class="settingbar-element btn btn-link tooltip tooltip-right mb-2" :data-tooltip="$t('word.settings')">
                <i class="settingbar-element-icon material-icons text-light">settings</i>
             </li>
          </ul>

@@ -17,7 +17,8 @@ module.exports = {
       connected: 'Connected',
       disconnect: 'Disconnect',
       disconnected: 'Disconnected',
-      refresh: 'Refresh'
+      refresh: 'Refresh',
+      settings: 'Settings'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -29,7 +30,8 @@ module.exports = {
       testConnection: 'Test connection',
       editConnection: 'Edit connection',
       deleteConnection: 'Delete connection',
-      deleteConnectionCorfirm: 'Do you confirm the cancellation of'
+      deleteConnectionCorfirm: 'Do you confirm the cancellation of',
+      connectionSuccessfullyMade: 'Connection successfully made!'
    },
    // Date and Time
    short: {

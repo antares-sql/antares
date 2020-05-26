@@ -198,7 +198,7 @@ export default {
                if (res.status === 'error')
                   this.toast = { status: 'error', message: res.response.message };
                else
-                  this.toast = { status: 'success', message: 'Connection successifully made!' };
+                  this.toast = { status: 'success', message: this.$t('message.connectionSuccessfullyMade') };
             }
             catch (err) {
                this.toast = { status: 'error', message: err.stack };
@@ -216,7 +216,7 @@ export default {
             if (res.status === 'error')
                this.toast = { status: 'error', message: res.response.message };
             else
-               this.toast = { status: 'success', message: 'Connection successifully made!' };
+               this.toast = { status: 'success', message: this.$t('message.connectionSuccessfullyMade') };
          }
          catch (err) {
             this.toast = { status: 'error', message: err.stack };
