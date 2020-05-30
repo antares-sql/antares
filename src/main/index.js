@@ -4,6 +4,7 @@ import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 import { format as formatUrl } from 'url';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
+import { autoUpdater } from 'electron-updater';
 
 import ipcHandlers from './ipc-handlers';
 
@@ -64,6 +65,10 @@ function createMainWindow () {
    // Initialize ipcHandlers
    ipcHandlers();
 
+   autoUpdater.checkForUpdatesAndNotify();
+   autoUpdater.logger = require('electron-log');
+   autoUpdater.logger.transports.file.level = 'info';
+
    return window;
 };
 
@@ -83,4 +88,13 @@ app.on('activate', () => {
 // create main BrowserWindow when electron is ready
 app.on('ready', () => {
    mainWindow = createMainWindow();
+});
+
+// auto-updater events
+autoUpdater.on('update-available', () => {
+   mainWindow.webContents.send('update_available');
+});
+
+autoUpdater.on('update-downloaded', () => {
+   mainWindow.webContents.send('update_downloaded');
 });

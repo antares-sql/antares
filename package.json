@@ -2,17 +2,18 @@
   "name": "antares",
   "productName": "Antares",
   "version": "0.0.0",
-  "description": "A multi-platform easy to use SQL client. ",
+  "description": "A cross-platform easy to use SQL client. ",
   "license": "MIT",
   "repository": "https://github.com/Fabio286/antares.git",
   "scripts": {
     "dev": "electron-webpack dev",
     "compile": "electron-webpack",
-    "dist": "yarn compile && electron-builder",
-    "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
+    "dist": "npm run compile && electron-builder",
+    "dist:dir": "npm run dist --dir -c.compression=store -c.mac.identity=null"
   },
+  "author": "Fabio Di Stasio <fabio286@gmail.com>",
   "build": {
-    "appId": "com.app.antares",
+    "appId": "com.estarium.${name}",
     "artifactName": "${productName}.${ext}",
     "files": [
       "static/*"
@@ -27,7 +28,9 @@
     }
   },
   "dependencies": {
-    "codemirror": "^5.53.2",
+    "codemirror": "^5.54.0",
+    "electron-log": "^4.2.0",
+    "electron-updater": "^4.3.1",
     "knex": "^0.21.1",
     "material-design-icons": "^3.0.1",
     "mssql": "^6.2.0",
@@ -36,7 +39,7 @@
     "source-map-support": "^0.5.16",
     "spectre.css": "^0.5.8",
     "vue-click-outside": "^1.1.0",
-    "vue-i18n": "^8.17.7",
+    "vue-i18n": "^8.18.1",
     "vuedraggable": "^2.23.2",
     "vuex": "^3.4.0",
     "vuex-persist": "^2.2.0"
@@ -44,7 +47,7 @@
   "devDependencies": {
     "babel-eslint": "^10.1.0",
     "electron": "^8.3.0",
-    "electron-builder": "^22.6.1",
+    "electron-builder": "^22.7.0",
     "electron-devtools-installer": "^3.0.0",
     "electron-webpack": "^2.8.2",
     "electron-webpack-vue": "^2.4.0",

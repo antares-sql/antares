@@ -4,6 +4,7 @@ export default {
    strict: true,
    state: {
       app_name: 'Antares - SQL Client',
+      app_version: process.env.PACKAGE_VERSION || 0,
       is_loading: false,
       is_new_modal: false,
       is_edit_modal: false,
@@ -13,6 +14,7 @@ export default {
    getters: {
       isLoading: state => state.is_loading,
       appName: state => state.app_name,
+      appVersion: state => state.app_version,
       getSelectedConnection: state => state.selected_conection,
       isNewModal: state => state.is_new_modal,
       isEditModal: state => state.is_edit_modal,

@@ -75,7 +75,7 @@
                      <img src="logo.svg" width="128">
                      <h4>{{ appName }}</h4>
                      <p>
-                        {{ $t('word.version') }}: 0.0.0<br>
+                        {{ $t('word.version') }}: {{ appVersion }}<br>
                         <a class="c-hand" @click="openOutside('https://github.com/Fabio286/antares')">GitHub</a>
                      </p>
                   </div>
@@ -102,6 +102,7 @@ export default {
    computed: {
       ...mapGetters({
          appName: 'application/appName',
+         appVersion: 'application/appVersion',
          selectedLocale: 'settings/getLocale'
       }),
       locales () {
