@@ -50,6 +50,24 @@ body{
    }
 }
 
+// Scrollbars
+::-webkit-scrollbar {
+   width: 10px;
+   height: 10px;
+}
+ 
+::-webkit-scrollbar-track {
+   background: $bg-color-light; 
+}
+  
+ ::-webkit-scrollbar-thumb {
+   background: rgba($color: #FFF, $alpha: .5); 
+
+   &:hover {
+      background: rgba($color: #FFF, $alpha: 1); 
+   }
+}
+
 // Animations
 @keyframes rotation {
    from {
@@ -84,6 +102,24 @@ body{
          display: flex;
          justify-content: space-between;
          align-items: center;
+         color: #FFF;
+      }
+   }
+}
+
+.tab{
+   border-color: #272727;
+}
+
+.panel{
+   border: none;
+}
+
+.badge{
+   &[data-badge],
+   &:not([data-badge]){
+      &::after {
+         box-shadow: none;
       }
    }
 }

@@ -18,7 +18,7 @@ function createMainWindow () {
       width: 1600,
       height: 1000,
       minHeight: 550,
-      minWidth: 450,
+      minWidth: 900,
       title: 'Antares',
       autoHideMenuBar: true,
       icon: path.join(__static, 'logo-32.png'),

@@ -2,7 +2,7 @@
    <div class="modal active">
       <a class="modal-overlay c-hand" @click="closeModal" />
       <div class="modal-container">
-         <div class="modal-header text-light">
+         <div class="modal-header">
             <div class="modal-title h6">
                {{ $t('message.editConnection') }}
             </div>
@@ -151,7 +151,7 @@ export default {
    },
    computed: {
       ...mapGetters({
-         connection: 'connections/getSelectedConnection'
+         connection: 'application/getSelectedConnection'
       })
    },
    created () {
@@ -159,7 +159,7 @@ export default {
    },
    methods: {
       ...mapActions({
-         closeModal: 'connections/hideEditConnModal',
+         closeModal: 'application/hideEditConnModal',
          editConnection: 'connections/editConnection'
       }),
       async startTest () {

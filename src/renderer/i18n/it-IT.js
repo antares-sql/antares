@@ -18,7 +18,13 @@ module.exports = {
       disconnect: 'Disconnetti',
       disconnected: 'Disconnesso',
       refresh: 'Aggiorna',
-      settings: 'Impostazioni'
+      settings: 'Impostazioni',
+      general: 'Generale',
+      themes: 'Temi',
+      update: 'Aggiornamento',
+      about: 'Informazioni',
+      language: 'Lingua',
+      version: 'Versione'
    },
    message: {
       appWelcome: 'Benvenuto in Antares SQL Client!',

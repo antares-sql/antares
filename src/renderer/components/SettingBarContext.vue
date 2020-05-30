@@ -50,7 +50,7 @@ export default {
    methods: {
       ...mapActions({
          deleteConnection: 'connections/deleteConnection',
-         showEditModal: 'connections/showEditConnModal'
+         showEditModal: 'application/showEditConnModal'
       }),
       showConfirmModal () {
          this.isConfirmModal = true;

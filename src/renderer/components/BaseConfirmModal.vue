@@ -2,7 +2,7 @@
    <div class="modal modal-sm active">
       <a class="modal-overlay" @click="hideModal" />
       <div class="modal-container">
-         <div v-if="hasHeader" class="modal-header text-light">
+         <div v-if="hasHeader" class="modal-header">
             <div class="modal-title h6">
                <slot name="header" />
             </div>

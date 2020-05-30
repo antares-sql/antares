@@ -5,7 +5,7 @@ export default {
    namespaced: true,
    strict: true,
    state: {
-      locale: 'it-IT'
+      locale: 'en-US'
    },
    getters: {
       getLocale: state => state.locale

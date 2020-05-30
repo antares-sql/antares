@@ -34,7 +34,11 @@
 
       <div class="settingbar-bottom-elements">
          <ul class="settingbar-elements">
-            <li class="settingbar-element btn btn-link tooltip tooltip-right mb-2" :data-tooltip="$t('word.settings')">
+            <li
+               class="settingbar-element btn btn-link tooltip tooltip-right mb-2"
+               :data-tooltip="$t('word.settings')"
+               @click="showSettingModal"
+            >
                <i class="settingbar-element-icon material-icons text-light">settings</i>
             </li>
          </ul>
@@ -79,7 +83,8 @@ export default {
    methods: {
       ...mapActions({
          updateConnections: 'connections/updateConnections',
-         showNewConnModal: 'connections/showNewConnModal',
+         showNewConnModal: 'application/showNewConnModal',
+         showSettingModal: 'application/showSettingModal',
          selectWorkspace: 'workspaces/selectWorkspace'
       }),
       contextMenu (event, connection) {
