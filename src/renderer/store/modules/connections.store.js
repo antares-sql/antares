@@ -7,7 +7,15 @@ export default {
       connections: []
    },
    getters: {
-      getConnections: state => state.connections
+      getConnections: state => state.connections,
+      getConnectionName: state => uid => {
+         const connection = state.connections.filter(connection => connection.uid === uid)[0];
+         return connection.name
+            ? connection.name
+            : connection.ask
+               ? ''
+               : `${connection.user + '@'}${connection.host}:${connection.port}`;
+      }
    },
    mutations: {
       ADD_CONNECTION (state, connection) {

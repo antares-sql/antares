@@ -1,5 +1,16 @@
 'use strict';
 import Connection from '@/ipc-api/Connection';
+function remapStructure (structure) {
+   const databases = structure.map(table => table.TABLE_SCHEMA)
+      .filter((value, index, self) => self.indexOf(value) === index);
+
+   return databases.map(db => {
+      return {
+         dbName: db,
+         tables: structure.filter(table => table.TABLE_SCHEMA === db)
+      };
+   });
+}
 
 export default {
    namespaced: true,
@@ -34,7 +45,7 @@ export default {
       REMOVE_CONNECTED (state, uid) {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, structure: {}, connected: false } : workspace);
       },
-      REFRESH_STRUCTURE (state, uid) {
+      REFRESH_STRUCTURE (state, { uid, structure }) {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, structure } : workspace);
       },
       ADD_WORKSPACE (state, workspace) {
@@ -51,7 +62,7 @@ export default {
             if (status === 'error')
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
             else
-               commit('ADD_CONNECTED', { uid: connection.uid, structure: response });
+               commit('ADD_CONNECTED', { uid: connection.uid, structure: remapStructure(response) });
          }
          catch (err) {
             dispatch('notifications/addNotification', { status: 'error', message: err.stack }, { root: true });
@@ -63,7 +74,7 @@ export default {
             if (status === 'error')
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
             else
-               commit('REFRESH_STRUCTURE', { uid, structure: response });
+               commit('REFRESH_STRUCTURE', { uid, structure: remapStructure(response) });
          }
          catch (err) {
             dispatch('notifications/addNotification', { status: 'error', message: err.stack }, { root: true });

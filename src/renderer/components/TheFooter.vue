@@ -3,17 +3,22 @@
       <div class="footer-left-elements">
          <ul class="footer-elements">
             <li class="footer-element">
-               <i class="material-icons md-18">memory</i>
+               <i class="material-icons md-18 mr-1">memory</i>
+               <small>{{ appVersion }}</small>
             </li>
          </ul>
       </div>
 
       <div class="footer-right-elements">
          <ul class="footer-elements">
-            <li class="footer-element">
-               <i class="material-icons md-18">favorite</i>
+            <li class="footer-element footer-link">
+               <i class="material-icons md-18 mr-1">favorite</i>
+               <small>{{ $t('word.donate') }}</small>
             </li>
-            <li class="footer-element">
+            <li class="footer-element footer-link">
+               <i class="material-icons md-18">bug_report</i>
+            </li>
+            <li class="footer-element footer-link" @click="showSettingModal('about')">
                <i class="material-icons md-18">info_outline</i>
             </li>
          </ul>
@@ -22,9 +27,21 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
-
+   name: 'TheFooter',
+   computed: {
+      ...mapGetters({
+         appName: 'application/appName',
+         appVersion: 'application/appVersion'
+      })
+   },
+   methods: {
+      ...mapActions({
+         showSettingModal: 'application/showSettingModal'
+      })
+   }
 };
 </script>
 
@@ -46,9 +63,23 @@ export default {
          list-style: none;
          margin: 0;
          display: flex;
+         align-items: center;
 
          .footer-element{
+            height: $footer-height;
+            display: flex;
+            align-items: center;
             padding: 0 .4rem;
+            margin: 0;
+
+            &.footer-link{
+               cursor: pointer;
+               transition: background .2s;
+
+               &:hover{
+                  background: rgba($color: #fff, $alpha: .1);
+               }
+            }
          }
       }
    }

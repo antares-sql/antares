@@ -20,7 +20,7 @@
          </template>
          <div :slot="'body'">
             <div class="mb-2">
-               {{ $t('message.deleteConnectionCorfirm') }} <b>{{ contextConnection.user }}@{{ contextConnection.host }}:{{ contextConnection.port }}</b>?
+               {{ $t('message.deleteConnectionCorfirm') }} <b>{{ connectionName }}</b>?
             </div>
          </div>
       </ConfirmModal>
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
 
@@ -46,6 +46,14 @@ export default {
       return {
          isConfirmModal: false
       };
+   },
+   computed: {
+      ...mapGetters({
+         getConnectionName: 'connections/getConnectionName'
+      }),
+      connectionName () {
+         return this.getConnectionName(this.contextConnection.uid);
+      }
    },
    methods: {
       ...mapActions({

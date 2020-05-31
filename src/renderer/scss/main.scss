@@ -34,19 +34,19 @@ body{
    background-size: cover;
 
    &.dbi-mysql{
-      background-image: url('/svg/mysql.svg');
+      background-image: url('../images/svg/mysql.svg');
    }
 
    &.dbi-mssql{
-      background-image: url('/svg/mssql.svg');
+      background-image: url('../images/svg/mssql.svg');
    }
 
    &.dbi-pg{
-      background-image: url('/svg/pg.svg');
+      background-image: url('../images/svg/pg.svg');
    }
 
    &.dbi-oracledb{
-      background-image: url('/svg/oracledb.svg');
+      background-image: url('../images/svg/oracledb.svg');
    }
 }
 

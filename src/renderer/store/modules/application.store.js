@@ -9,6 +9,7 @@ export default {
       is_new_modal: false,
       is_edit_modal: false,
       is_setting_modal: false,
+      selected_setting_tab: 'general',
       selected_conection: {}
    },
    getters: {
@@ -18,7 +19,8 @@ export default {
       getSelectedConnection: state => state.selected_conection,
       isNewModal: state => state.is_new_modal,
       isEditModal: state => state.is_edit_modal,
-      isSettingModal: state => state.is_setting_modal
+      isSettingModal: state => state.is_setting_modal,
+      selectedSettingTab: state => state.selected_setting_tab
    },
    mutations: {
       SET_LOADING_STATUS (state, payload) {
@@ -37,7 +39,8 @@ export default {
       HIDE_EDIT_CONNECTION_MODAL (state) {
          state.is_edit_modal = false;
       },
-      SHOW_SETTING_MODAL (state) {
+      SHOW_SETTING_MODAL (state, tab) {
+         state.selected_setting_tab = tab;
          state.is_setting_modal = true;
       },
       HIDE_SETTING_MODAL (state) {
@@ -61,8 +64,8 @@ export default {
       hideEditConnModal ({ commit }) {
          commit('HIDE_EDIT_CONNECTION_MODAL');
       },
-      showSettingModal ({ commit }) {
-         commit('SHOW_SETTING_MODAL');
+      showSettingModal ({ commit }, tab) {
+         commit('SHOW_SETTING_MODAL', tab);
       },
       hideSettingModal ({ commit }) {
          commit('HIDE_SETTING_MODAL');

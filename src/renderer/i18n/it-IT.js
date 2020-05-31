@@ -7,6 +7,7 @@ module.exports = {
       confirm: 'Conferma',
       cancel: 'Annulla',
       send: 'Invia',
+      connectionName: 'Nome connessione',
       client: 'Client',
       hostName: 'Nome host',
       port: 'Porta',
@@ -24,7 +25,8 @@ module.exports = {
       update: 'Aggiornamento',
       about: 'Informazioni',
       language: 'Lingua',
-      version: 'Versione'
+      version: 'Versione',
+      donate: 'Dona'
    },
    message: {
       appWelcome: 'Benvenuto in Antares SQL Client!',

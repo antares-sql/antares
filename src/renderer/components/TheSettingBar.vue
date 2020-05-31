@@ -15,7 +15,7 @@
                   draggable="true"
                   class="settingbar-element btn btn-link tooltip tooltip-right"
                   :class="{'selected': connection.uid === selectedWorkspace}"
-                  :data-tooltip="`${connection.ask ? '': connection.user+'@'}${connection.host}:${connection.port}`"
+                  :data-tooltip="`${getConnectionName(connection.uid)}`"
                   @click="selectWorkspace(connection.uid)"
                   @contextmenu.prevent="contextMenu($event, connection)"
                >
@@ -37,7 +37,7 @@
             <li
                class="settingbar-element btn btn-link tooltip tooltip-right mb-2"
                :data-tooltip="$t('word.settings')"
-               @click="showSettingModal"
+               @click="showSettingModal('general')"
             >
                <i class="settingbar-element-icon material-icons text-light">settings</i>
             </li>
@@ -68,6 +68,7 @@ export default {
    computed: {
       ...mapGetters({
          getConnections: 'connections/getConnections',
+         getConnectionName: 'connections/getConnectionName',
          connected: 'workspaces/getConnected',
          selectedWorkspace: 'workspaces/getSelected'
       }),
@@ -91,6 +92,9 @@ export default {
          this.contextEvent = event;
          this.contextConnection = connection;
          this.isContext = true;
+      },
+      workspaceName (connection) {
+         return connection.ask ? '' : `${connection.user + '@'}${connection.host}:${connection.port}`;
       }
    }
 };

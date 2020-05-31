@@ -6,15 +6,15 @@
   "license": "MIT",
   "repository": "https://github.com/Fabio286/antares.git",
   "scripts": {
-    "dev": "electron-webpack dev",
+    "dev": "cross-env NODE_ENV=development electron-webpack dev",
     "compile": "electron-webpack",
-    "dist": "npm run compile && electron-builder",
-    "dist:dir": "npm run dist --dir -c.compression=store -c.mac.identity=null"
+    "dist": "cross-env NODE_ENV=production npm run compile && electron-builder",
+    "dist:dir": "cross-env NODE_ENV=production npm run dist --dir -c.compression=store -c.mac.identity=null"
   },
   "author": "Fabio Di Stasio <fabio286@gmail.com>",
   "build": {
-    "appId": "com.estarium.${name}",
-    "artifactName": "${productName}.${ext}",
+    "appId": "com.estarium.antares",
+    "artifactName": "${productName}-${version}-${channel}-${os}_${arch}.${ext}",
     "files": [
       "static/*"
     ]
@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
+    "cross-env": "^7.0.2",
     "electron": "^8.3.0",
     "electron-builder": "^22.7.0",
     "electron-devtools-installer": "^3.0.0",

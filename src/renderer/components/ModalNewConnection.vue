@@ -13,10 +13,22 @@
                <form class="form-horizontal">
                   <fieldset class="m-0" :disabled="isTesting">
                      <div class="form-group">
-                        <div class="col-3 col-sm-12">
+                        <div class="col-4 col-sm-12">
+                           <label class="form-label">{{ $t('word.connectionName') }}:</label>
+                        </div>
+                        <div class="col-8 col-sm-12">
+                           <input
+                              v-model="connection.name"
+                              class="form-input"
+                              type="text"
+                           >
+                        </div>
+                     </div>
+                     <div class="form-group">
+                        <div class="col-4 col-sm-12">
                            <label class="form-label">{{ $t('word.client') }}:</label>
                         </div>
-                        <div class="col-9 col-sm-12">
+                        <div class="col-8 col-sm-12">
                            <select
                               v-model="connection.client"
                               class="form-select"
@@ -38,10 +50,10 @@
                         </div>
                      </div>
                      <div class="form-group">
-                        <div class="col-3 col-sm-12">
+                        <div class="col-4 col-sm-12">
                            <label class="form-label">{{ $t('word.hostName') }}/IP:</label>
                         </div>
-                        <div class="col-9 col-sm-12">
+                        <div class="col-8 col-sm-12">
                            <input
                               v-model="connection.host"
                               class="form-input"
@@ -50,10 +62,10 @@
                         </div>
                      </div>
                      <div class="form-group">
-                        <div class="col-3 col-sm-12">
+                        <div class="col-4 col-sm-12">
                            <label class="form-label">{{ $t('word.port') }}:</label>
                         </div>
-                        <div class="col-9 col-sm-12">
+                        <div class="col-8 col-sm-12">
                            <input
                               v-model="connection.port"
                               class="form-input"
@@ -64,10 +76,10 @@
                         </div>
                      </div>
                      <div class="form-group">
-                        <div class="col-3 col-sm-12">
+                        <div class="col-4 col-sm-12">
                            <label class="form-label">{{ $t('word.user') }}:</label>
                         </div>
-                        <div class="col-9 col-sm-12">
+                        <div class="col-8 col-sm-12">
                            <input
                               v-model="connection.user"
                               class="form-input"
@@ -77,10 +89,10 @@
                         </div>
                      </div>
                      <div class="form-group">
-                        <div class="col-3 col-sm-12">
+                        <div class="col-4 col-sm-12">
                            <label class="form-label">{{ $t('word.password') }}:</label>
                         </div>
-                        <div class="col-9 col-sm-12">
+                        <div class="col-8 col-sm-12">
                            <input
                               v-model="connection.password"
                               class="form-input"
@@ -90,8 +102,8 @@
                         </div>
                      </div>
                      <div class="form-group">
-                        <div class="col-3 col-sm-12" />
-                        <div class="col-9 col-sm-12">
+                        <div class="col-4 col-sm-12" />
+                        <div class="col-8 col-sm-12">
                            <label class="form-checkbox form-inline">
                               <input v-model="connection.ask" type="checkbox"><i class="form-icon" /> {{ $t('message.askCredentials') }}
                            </label>
@@ -146,6 +158,7 @@ export default {
    data () {
       return {
          connection: {
+            name: '',
             client: 'mysql',
             host: '127.0.0.1',
             port: '3306',

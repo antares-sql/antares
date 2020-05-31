@@ -47,7 +47,10 @@
                      <div class="col-6 col-sm-12">
                         <div class="form-group">
                            <div class="col-6 col-sm-12">
-                              <label class="form-label">{{ $t('word.language') }}:</label>
+                              <label class="form-label">
+                                 <i class="material-icons md-18 mr-1">translate</i>
+                                 {{ $t('word.language') }}:
+                              </label>
                            </div>
                            <div class="col-6 col-sm-12">
                               <select
@@ -55,8 +58,12 @@
                                  class="form-select"
                                  @change="changeLocale(localLocale)"
                               >
-                                 <option v-for="(locale, key) in locales" :key="key">
-                                    {{ locale }}
+                                 <option
+                                    v-for="(locale, key) in locales"
+                                    :key="key"
+                                    :value="locale.code"
+                                 >
+                                    {{ locale.name }}
                                  </option>
                               </select>
                            </div>
@@ -72,7 +79,7 @@
                </div>
                <div v-if="selectedTab === 'about'" class="panel-body py-4">
                   <div class="text-center">
-                     <img src="logo.svg" width="128">
+                     <img :src="require('@/images/logo.svg').default" width="128">
                      <h4>{{ appName }}</h4>
                      <p>
                         {{ $t('word.version') }}: {{ appVersion }}<br>
@@ -88,6 +95,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import localesNames from '@/i18n/supported-locales';
 const { shell } = require('electron');
 
 export default {
@@ -103,14 +111,20 @@ export default {
       ...mapGetters({
          appName: 'application/appName',
          appVersion: 'application/appVersion',
+         selectedSettingTab: 'application/selectedSettingTab',
          selectedLocale: 'settings/getLocale'
       }),
       locales () {
-         return this.$i18n.availableLocales;
+         const locales = [];
+         for (const locale of this.$i18n.availableLocales)
+            locales.push({ code: locale, name: localesNames[locale] });
+
+         return locales;
       }
    },
    created () {
       this.localLocale = this.selectedLocale;
+      this.selectedTab = this.selectedSettingTab;
    },
    methods: {
       ...mapActions({
@@ -139,6 +153,11 @@ export default {
 
       .badge::after{
          background: #32b643;
+      }
+
+      .form-label{
+         display: flex;
+         align-items: center;
       }
    }
 

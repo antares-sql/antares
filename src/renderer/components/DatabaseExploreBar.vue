@@ -1,7 +1,7 @@
 <template>
    <div class="workspace-explorebar column">
       <div class="workspace-explorebar-header">
-         <span class="workspace-explorebar-title">{{ connection.ask ? '': connection.user+'@' }}{{ connection.host }}:{{ connection.port }}</span>
+         <span class="workspace-explorebar-title">{{ connectionName }}</span>
          <span v-if="workspace.connected" class="workspace-explorebar-tools">
             <i
                class="material-icons md-18 c-hand"
@@ -17,6 +17,26 @@
          </span>
       </div>
       <DatabaseConnectPanel v-if="!workspace.connected" :connection="connection" />
+      <div class="workspace-explorebar-body">
+         <div
+            v-for="db of workspace.structure"
+            :key="db.dbName"
+         >
+            <div class="database-name">
+               <i class="material-icons md-18 mr-1">view_agenda</i>{{ db.dbName }}
+            </div>
+            <div class="d-block ml-4">
+               <div
+                  v-for="table of db.tables"
+                  :key="table.TABLE_NAME"
+               >
+                  <div class="table-name">
+                     <i class="material-icons md-18 mr-1">view_headline</i>{{ table.TABLE_NAME }}
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
    </div>
 </template>
 
@@ -39,10 +59,14 @@ export default {
    },
    computed: {
       ...mapGetters({
-         getWorkspace: 'workspaces/getWorkspace'
+         getWorkspace: 'workspaces/getWorkspace',
+         getConnectionName: 'connections/getConnectionName'
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
+      },
+      connectionName () {
+         return this.getConnectionName(this.connection.uid);
       }
    },
    methods: {
@@ -62,6 +86,8 @@ export default {
 <style lang="scss">
    .workspace-explorebar{
       width: $explorebar-width;
+      height: calc(100vh - #{$footer-height});
+      overflow: auto;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
@@ -110,6 +136,16 @@ export default {
                   opacity: 1;
                }
             }
+         }
+      }
+
+      .workspace-explorebar-body{
+         width: 100%;
+
+         .database-name,
+         .table-name{
+            display: flex;
+            align-items: center;
          }
       }
    }

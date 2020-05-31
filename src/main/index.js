@@ -1,20 +1,20 @@
 'use strict';
 
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, nativeImage } from 'electron';
 import * as path from 'path';
 import { format as formatUrl } from 'url';
-import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 import { autoUpdater } from 'electron-updater';
 
 import ipcHandlers from './ipc-handlers';
 
-const isDevelopment = process.env.NODE_ENV !== 'production';
+const isDevelopment = process.env.NODE_ENV === 'development';
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow;
 
 function createMainWindow () {
+   const icon = require('../renderer/images/logo-32.png');
    const window = new BrowserWindow({
       width: 1600,
       height: 1000,
@@ -22,7 +22,7 @@ function createMainWindow () {
       minWidth: 900,
       title: 'Antares',
       autoHideMenuBar: true,
-      icon: path.join(__static, 'logo-32.png'),
+      icon: nativeImage.createFromDataURL(icon.default),
       webPreferences: {
          nodeIntegration: true,
          'web-security': false
@@ -40,6 +40,7 @@ function createMainWindow () {
    }
 
    if (isDevelopment) {
+      const { default: installExtension, VUEJS_DEVTOOLS } = require('electron-devtools-installer');
       window.webContents.openDevTools();
 
       installExtension(VUEJS_DEVTOOLS)
