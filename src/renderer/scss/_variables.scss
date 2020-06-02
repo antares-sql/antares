@@ -9,6 +9,8 @@ $success-color: #32b643;
 $error-color: #de3b28;
 
 /*Sizes*/
+$titlebar-height: 1.5rem;
 $settingbar-width: 3rem;
 $explorebar-width: 14rem;
 $footer-height: 1.5rem;
+$excluding-size: $footer-height + $titlebar-height;

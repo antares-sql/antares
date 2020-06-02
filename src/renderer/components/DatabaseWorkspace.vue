@@ -1,6 +1,6 @@
 <template>
-   <div v-show="selectedWorkspace === connection.uid" class="workspace column columns">
-      <DatabaseExploreBar :connection="connection" />
+   <div v-show="isSelected" class="workspace column columns">
+      <DatabaseExploreBar :connection="connection" :is-selected="isSelected" />
       <div class="workspace-tabs column">
          <pre>{{ JSON.stringify(workspace.structure, null, 3) }}</pre>
       </div>
@@ -27,6 +27,9 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
+      },
+      isSelected () {
+         return this.selectedWorkspace === this.connection.uid;
       }
    },
    async created () {
@@ -53,7 +56,7 @@ export default {
 
       .workspace-tabs{
          overflow: auto;
-         height: calc(100vh - #{$footer-height});
+         height: calc(100vh - #{$excluding-size});
       }
    }
 </style>

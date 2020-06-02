@@ -103,13 +103,13 @@ export default {
 <style lang="scss">
    #settingbar{
       width: $settingbar-width;
+      height: calc(100vh - #{$excluding-size});
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
       background: $bg-color-light;
       padding: 0;
-      margin-bottom: $footer-height;
       box-shadow: 0 0 1px 0px #000;
       z-index: 9;
 

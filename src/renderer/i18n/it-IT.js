@@ -39,7 +39,8 @@ module.exports = {
       editConnection: 'Modifica connessione',
       deleteConnection: 'Elimina connessione',
       deleteConnectionCorfirm: 'Confermi l\'eliminazione di',
-      connectionSuccessfullyMade: 'Connessione avvenuta con successo!'
+      connectionSuccessfullyMade: 'Connessione avvenuta con successo!',
+      madeWithJS: 'Fatto con 💛 e JavaScript!'
    },
    // Date and Time
    short: {

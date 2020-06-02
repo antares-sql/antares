@@ -26,7 +26,9 @@ function createMainWindow () {
       webPreferences: {
          nodeIntegration: true,
          'web-security': false
-      }
+      },
+      frame: false,
+      backgroundColor: '#1d1d1d'
    });
 
    if (isDevelopment)

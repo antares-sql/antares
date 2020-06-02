@@ -39,7 +39,8 @@ module.exports = {
       editConnection: 'Edit connection',
       deleteConnection: 'Delete connection',
       deleteConnectionCorfirm: 'Do you confirm the cancellation of',
-      connectionSuccessfullyMade: 'Connection successfully made!'
+      connectionSuccessfullyMade: 'Connection successfully made!',
+      madeWithJS: 'Made with 💛 and JavaScript!'
    },
    // Date and Time
    short: {

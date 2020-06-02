@@ -42,6 +42,6 @@ export default {
       position: absolute;
       z-index: 9;
       right: 1rem;
-      bottom: $footer-height+1rem;
+      bottom: 1rem;
    }
 </style>

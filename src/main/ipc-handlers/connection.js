@@ -65,7 +65,6 @@ export default () => {
          return { status: 'success', response: structure };
       }
       catch (err) {
-         console.log(err);
          return { status: 'error', response: err.toString() };
       }
    });

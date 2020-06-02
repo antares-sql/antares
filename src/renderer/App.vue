@@ -1,26 +1,30 @@
 <template>
    <div id="wrapper">
-      <TheSettingBar />
-      <div id="main-content" class="container">
-         <TheAppWelcome v-if="!connections.length" @newConn="showNewConnModal" />
-         <div v-else class="columns col-gapless">
-            <DatabaseWorkspace
-               v-for="connection in connections"
-               :key="connection.uid"
-               :connection="connection"
-            />
+      <TheTitleBar />
+      <div id="window-content">
+         <TheSettingBar />
+         <div id="main-content" class="container">
+            <TheAppWelcome v-if="!connections.length" @newConn="showNewConnModal" />
+            <div v-else class="columns col-gapless">
+               <DatabaseWorkspace
+                  v-for="connection in connections"
+                  :key="connection.uid"
+                  :connection="connection"
+               />
+            </div>
          </div>
+         <TheFooter />
+         <TheNotificationsBoard />
+         <ModalNewConnection v-if="isNewConnModal" />
+         <ModalEditConnection v-if="isEditModal" />
+         <ModalSettings v-if="isSettingModal" />
       </div>
-      <TheFooter />
-      <TheNotificationsBoard />
-      <ModalNewConnection v-if="isNewConnModal" />
-      <ModalEditConnection v-if="isEditModal" />
-      <ModalSettings v-if="isSettingModal" />
    </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import TheTitleBar from '@/components/TheTitleBar';
 import TheSettingBar from '@/components/TheSettingBar';
 import TheFooter from '@/components/TheFooter';
 import TheNotificationsBoard from '@/components/TheNotificationsBoard';
@@ -33,6 +37,7 @@ import ModalSettings from '@/components/ModalSettings';
 export default {
    name: 'App',
    components: {
+      TheTitleBar,
       TheSettingBar,
       TheFooter,
       TheNotificationsBoard,
@@ -70,17 +75,22 @@ export default {
    }
 
    #wrapper{
-      display: flex;
       height: 100vh;
+      position: relative;
+   }
+
+   #window-content{
+      display: flex;
       position: relative;
    }
 
    #main-content {
       padding: 0;
       justify-content: flex-start;
+      height: calc(100vh - #{$excluding-size});
 
       > .columns{
-         height: 100vh;
+         height: calc(100vh - #{$footer-height});
       }
    }
 </style>

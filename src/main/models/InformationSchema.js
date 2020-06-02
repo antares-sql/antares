@@ -5,6 +5,7 @@ export default class {
       return connection()
          .select('*')
          .withSchema('information_schema')
-         .from('TABLES');
+         .from('TABLES')
+         .orderBy(['TABLE_SCHEMA', 'TABLE_NAME'], 'asc');
    }
 }

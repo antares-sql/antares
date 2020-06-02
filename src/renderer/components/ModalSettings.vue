@@ -42,6 +42,7 @@
                      </li>
                   </ul>
                </div>
+
                <div v-if="selectedTab === 'general'" class="panel-body py-4">
                   <form class="form-horizontal">
                      <div class="col-6 col-sm-12">
@@ -71,19 +72,23 @@
                      </div>
                   </form>
                </div>
+
                <div v-if="selectedTab === 'themes'" class="panel-body py-4">
                   <!--  -->
                </div>
+
                <div v-if="selectedTab === 'update'" class="panel-body py-4">
                   <!--  -->
                </div>
+
                <div v-if="selectedTab === 'about'" class="panel-body py-4">
                   <div class="text-center">
                      <img :src="require('@/images/logo.svg').default" width="128">
                      <h4>{{ appName }}</h4>
                      <p>
                         {{ $t('word.version') }}: {{ appVersion }}<br>
-                        <a class="c-hand" @click="openOutside('https://github.com/Fabio286/antares')">GitHub</a>
+                        <a class="c-hand" @click="openOutside('https://github.com/Fabio286/antares')">GitHub</a><br>
+                        <small>{{ $t('message.madeWithJS') }}</small>
                      </p>
                   </div>
                </div>
