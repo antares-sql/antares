@@ -90,6 +90,8 @@ export default {
       height: $titlebar-height;
       -webkit-app-region: drag;
       user-select: none;
+      box-shadow: 0 0 1px 0px #000;
+      z-index: 9999;
 
       .titlebar-resizer{
          position: absolute;

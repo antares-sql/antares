@@ -22,26 +22,13 @@
                >exit_to_app</i>
             </span>
          </div>
-         <DatabaseConnectPanel v-if="!workspace.connected" :connection="connection" />
+         <WorkspaceConnectPanel v-if="!workspace.connected" :connection="connection" />
          <div class="workspace-explorebar-body">
-            <div
+            <WorkspaceExploreBarDatabase
                v-for="db of workspace.structure"
                :key="db.dbName"
-            >
-               <div class="database-name">
-                  <i class="material-icons md-18 mr-1">view_agenda</i>{{ db.dbName }}
-               </div>
-               <div class="d-block ml-4">
-                  <div
-                     v-for="table of db.tables"
-                     :key="table.TABLE_NAME"
-                  >
-                     <div class="table-name">
-                        <i class="material-icons md-18 mr-1">view_headline</i>{{ table.TABLE_NAME }}
-                     </div>
-                  </div>
-               </div>
-            </div>
+               :database="db"
+            />
          </div>
       </div>
    </div>
@@ -50,12 +37,14 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import _ from 'lodash';
-import DatabaseConnectPanel from '@/components/DatabaseConnectPanel';
+import WorkspaceConnectPanel from '@/components/WorkspaceConnectPanel';
+import WorkspaceExploreBarDatabase from '@/components/WorkspaceExploreBarDatabase';
 
 export default {
-   name: 'DatabaseExploreBar',
+   name: 'WorkspaceExploreBar',
    components: {
-      DatabaseConnectPanel
+      WorkspaceConnectPanel,
+      WorkspaceExploreBarDatabase
    },
    props: {
       connection: Object,
@@ -139,8 +128,6 @@ export default {
 
    .workspace-explorebar{
       width: $explorebar-width;
-      height: calc(100vh - #{$excluding-size});
-      overflow: auto;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
@@ -151,14 +138,11 @@ export default {
       z-index: 8;
       flex: initial;
       position: relative;
-      padding-top: 1.4rem;
+      padding: 0;
 
       .workspace-explorebar-header{
-         top: 0;
-         left: 0;
-         right: 0;
+         width: 100%;
          padding: .3rem;
-         position: absolute;
          display: flex;
          justify-content: space-between;
          font-size: .6rem;
@@ -193,12 +177,9 @@ export default {
 
       .workspace-explorebar-body{
          width: 100%;
-
-         .database-name,
-         .table-name{
-            display: flex;
-            align-items: center;
-         }
+         height: calc((100vh - 30px) - #{$excluding-size});
+         overflow: auto;
+         padding: 0 .1rem;
       }
    }
 </style>

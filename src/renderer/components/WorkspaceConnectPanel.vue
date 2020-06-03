@@ -30,7 +30,7 @@ import { mapActions } from 'vuex';
 import ModalAskCredentials from '@/components/ModalAskCredentials';
 
 export default {
-   name: 'DatabaseConnectPanel',
+   name: 'WorkspaceConnectPanel',
    components: {
       ModalAskCredentials
    },

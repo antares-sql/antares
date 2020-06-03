@@ -140,3 +140,25 @@ body{
 .form-select:not([multiple]):not([size]):focus{
    border-color: $primary-color;
 }
+
+.menu{
+   font-size: .6rem;
+   .menu-item {
+      + .menu-item{
+         margin-top: 0;
+      }
+
+      > a{
+
+         &:hover{
+            color: $body-font-color;
+            background: rgba($color: #FFF, $alpha: .1);
+         }
+      }
+   }
+
+} 
+
+.accordion-body {
+   max-height: 500rem!important;
+}

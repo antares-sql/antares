@@ -1,6 +1,6 @@
 <template>
    <div v-show="isSelected" class="workspace column columns">
-      <DatabaseExploreBar :connection="connection" :is-selected="isSelected" />
+      <WorkspaceExploreBar :connection="connection" :is-selected="isSelected" />
       <div class="workspace-tabs column">
          <pre>{{ JSON.stringify(workspace.structure, null, 3) }}</pre>
       </div>
@@ -10,12 +10,12 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import Connection from '@/ipc-api/Connection';
-import DatabaseExploreBar from '@/components/DatabaseExploreBar';
+import WorkspaceExploreBar from '@/components/WorkspaceExploreBar';
 
 export default {
-   name: 'DatabaseWorkspace',
+   name: 'Workspace',
    components: {
-      DatabaseExploreBar
+      WorkspaceExploreBar
    },
    props: {
       connection: Object

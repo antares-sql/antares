@@ -6,7 +6,7 @@
          <div id="main-content" class="container">
             <TheAppWelcome v-if="!connections.length" @newConn="showNewConnModal" />
             <div v-else class="columns col-gapless">
-               <DatabaseWorkspace
+               <Workspace
                   v-for="connection in connections"
                   :key="connection.uid"
                   :connection="connection"
@@ -29,7 +29,7 @@ import TheSettingBar from '@/components/TheSettingBar';
 import TheFooter from '@/components/TheFooter';
 import TheNotificationsBoard from '@/components/TheNotificationsBoard';
 import TheAppWelcome from '@/components/TheAppWelcome';
-import DatabaseWorkspace from '@/components/DatabaseWorkspace';
+import Workspace from '@/components/Workspace';
 import ModalNewConnection from '@/components/ModalNewConnection';
 import ModalEditConnection from '@/components/ModalEditConnection';
 import ModalSettings from '@/components/ModalSettings';
@@ -42,7 +42,7 @@ export default {
       TheFooter,
       TheNotificationsBoard,
       TheAppWelcome,
-      DatabaseWorkspace,
+      Workspace,
       ModalNewConnection,
       ModalEditConnection,
       ModalSettings
