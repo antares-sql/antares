@@ -68,8 +68,22 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss">
    .editor-wrapper{
       border-bottom: 1px solid #444444;
+   }
+
+   .CodeMirror{
+      height: 200px;
+
+      .CodeMirror-scroll{
+         max-width: 100%;
+      }
+
+      .CodeMirror-line {
+         word-break: break-word!important;
+         white-space: pre-wrap!important;
+         word-break: normal;
+      }
    }
 </style>

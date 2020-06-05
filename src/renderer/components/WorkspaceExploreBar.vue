@@ -22,12 +22,17 @@
                >exit_to_app</i>
             </span>
          </div>
-         <WorkspaceConnectPanel v-if="!workspace.connected" :connection="connection" />
-         <div class="workspace-explorebar-body">
+         <WorkspaceConnectPanel
+            v-if="!workspace.connected"
+            class="workspace-explorebar-body"
+            :connection="connection"
+         />
+         <div v-else class="workspace-explorebar-body">
             <WorkspaceExploreBarDatabase
                v-for="db of workspace.structure"
-               :key="db.dbName"
+               :key="db.name"
                :database="db"
+               :connection="connection"
             />
          </div>
       </div>
@@ -178,7 +183,7 @@ export default {
       .workspace-explorebar-body{
          width: 100%;
          height: calc((100vh - 30px) - #{$excluding-size});
-         overflow: auto;
+         overflow: overlay;
          padding: 0 .1rem;
       }
    }

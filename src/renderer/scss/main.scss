@@ -142,18 +142,10 @@ body{
 }
 
 .menu{
-   font-size: .6rem;
+   font-size: .7rem;
    .menu-item {
       + .menu-item{
          margin-top: 0;
-      }
-
-      > a{
-
-         &:hover{
-            color: $body-font-color;
-            background: rgba($color: #FFF, $alpha: .1);
-         }
       }
    }
 

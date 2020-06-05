@@ -82,6 +82,7 @@ export default {
    #window-content{
       display: flex;
       position: relative;
+      overflow: hidden;
    }
 
    #main-content {

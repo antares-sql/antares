@@ -79,6 +79,5 @@ export default {
       background: transparent;
       display: flex;
       flex-direction: column;
-      justify-content: center;
    }
 </style>

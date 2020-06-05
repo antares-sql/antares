@@ -7,16 +7,22 @@ const connections = {};
 
 export default () => {
    ipcMain.handle('testConnection', async (event, conn) => {
+      const connection = knex({
+         client: conn.client,
+         connection: {
+            host: conn.host,
+            port: +conn.port,
+            user: conn.user,
+            password: conn.password
+         },
+         pool: {
+            min: 1,
+            max: 3
+         }
+      });
+
       try {
-         await knex({
-            client: conn.client,
-            connection: {
-               host: conn.host,
-               port: +conn.port,
-               user: conn.user,
-               password: conn.password
-            }
-         }).raw('SELECT 1+1 AS result');
+         await InformationSchema.testConnection(connection);
 
          return { status: 'success' };
       }

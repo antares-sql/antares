@@ -13,33 +13,32 @@
                   v-for="connection in connections"
                   :key="connection.uid"
                   draggable="true"
-                  class="settingbar-element btn btn-link tooltip tooltip-right"
+                  class="settingbar-element btn btn-link ex-tooltip"
                   :class="{'selected': connection.uid === selectedWorkspace}"
-                  :data-tooltip="`${getConnectionName(connection.uid)}`"
                   @click="selectWorkspace(connection.uid)"
                   @contextmenu.prevent="contextMenu($event, connection)"
+                  @mouseover.self="tooltipPosition"
                >
                   <i class="settingbar-element-icon dbi" :class="`dbi-${connection.client} ${connected.includes(connection.uid) ? 'badge' : ''}`" />
+                  <span class="ex-tooltip-content">{{ getConnectionName(connection.uid) }}</span>
                </li>
             </draggable>
             <li
-               class="settingbar-element btn btn-link tooltip tooltip-right pt-3"
-               :data-tooltip="$t('message.addConnection')"
+               class="settingbar-element btn btn-link ex-tooltip"
                @click="showNewConnModal"
+               @mouseover.self="tooltipPosition"
             >
                <i class="settingbar-element-icon material-icons text-light">add</i>
+               <span class="ex-tooltip-content">{{ $t('message.addConnection') }}</span>
             </li>
          </ul>
       </div>
 
       <div class="settingbar-bottom-elements">
          <ul class="settingbar-elements">
-            <li
-               class="settingbar-element btn btn-link tooltip tooltip-right mb-2"
-               :data-tooltip="$t('word.settings')"
-               @click="showSettingModal('general')"
-            >
+            <li class="settingbar-element btn btn-link ex-tooltip" @click="showSettingModal('general')">
                <i class="settingbar-element-icon material-icons text-light">settings</i>
+               <span class="ex-tooltip-content">{{ $t('word.settings') }}</span>
             </li>
          </ul>
       </div>
@@ -62,7 +61,8 @@ export default {
          dragElement: null,
          isContext: false,
          contextEvent: null,
-         contextConnection: {}
+         contextConnection: {},
+         scale: 0
       };
    },
    computed: {
@@ -95,6 +95,11 @@ export default {
       },
       workspaceName (connection) {
          return connection.ask ? '' : `${connection.user + '@'}${connection.host}:${connection.port}`;
+      },
+      tooltipPosition (e) {
+         const el = e.target;
+         const fromTop = window.pageYOffset + el.getBoundingClientRect().top - (el.offsetHeight / 4);
+         el.querySelector('.ex-tooltip-content').style.top = `${fromTop}px`;
       }
    }
 };
@@ -113,6 +118,22 @@ export default {
       box-shadow: 0 0 1px 0px #000;
       z-index: 9;
 
+      .settingbar-top-elements{
+         overflow-x: hidden;
+         overflow-y: overlay;
+         max-height: calc((100vh - 3.5rem) - #{$excluding-size});
+
+         &::-webkit-scrollbar {
+            width: 3px;
+         }
+      }
+
+      .settingbar-bottom-elements{
+         padding-top: .5rem;
+         background: $bg-color-light;
+         z-index: 1;
+      }
+
       .settingbar-elements{
          list-style: none;
          text-align: center;
@@ -121,14 +142,16 @@ export default {
          margin: 0;
 
          .settingbar-element{
-            height: initial;
+            height: $settingbar-width;
             width: 100%;
-            padding: 0;
-            padding: .3rem 0 0;
             margin: 0;
             border-left: 3px solid transparent;
             opacity: .5;
             transition: opacity .2s;
+            display: flex;
+            align-content: center;
+            justify-content: center;
+            flex-direction: column;
 
             &:hover{
                opacity: 1;
@@ -140,7 +163,6 @@ export default {
             }
 
             .settingbar-element-icon{
-               margin-left: -3px;
 
                &.badge::after{
                   bottom: -10px;
@@ -151,6 +173,34 @@ export default {
             }
          }
 
+      }
+   }
+
+   .ex-tooltip{// Because both overflow-x: visible and overflow-y:auto are evil!!!
+      .ex-tooltip-content{
+         z-index: 999;
+         visibility: hidden;
+         opacity: 0;
+         display:block;
+         position:absolute;
+         background-color:#feffe1;
+         text-align: center;
+         margin:.0 0 0 calc(#{$settingbar-width} - 5px);
+         left: 0;
+         padding: .2rem .4rem;
+         font-size: .7rem;
+         background: rgba(48,55,66,.95);
+         border-radius: .1rem;
+         color: #fff;
+         max-width: 320px;
+         pointer-events: none;
+         text-overflow: ellipsis;
+         transition: opacity .2s;
+      }
+
+      &:hover .ex-tooltip-content{
+         visibility: visible;
+         opacity: 1;
       }
    }
 </style>
