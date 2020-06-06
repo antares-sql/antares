@@ -2,6 +2,7 @@
 import { ipcMain } from 'electron';
 import knex from 'knex';
 import InformationSchema from '../models/InformationSchema';
+import { RawQuery } from '../models/RawQuery';
 
 const connections = {};
 
@@ -69,6 +70,21 @@ export default () => {
       try {
          const structure = await InformationSchema.getStructure(connections[uid]);
          return { status: 'success', response: structure };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
+   ipcMain.on('runQuery', async (event, { connection, query, database }) => {
+      const knexIstance = connections[connection.uid];
+      const Query = new RawQuery({ knexIstance, database });
+      try {
+         Query.runQuery(query);
+
+         Query.on('row', row => {
+            event.sender.send('row', row);
+         });
       }
       catch (err) {
          return { status: 'error', response: err.toString() };

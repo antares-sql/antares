@@ -89,6 +89,7 @@ export default {
       padding: 0;
       justify-content: flex-start;
       height: calc(100vh - #{$excluding-size});
+      width: calc(100% - #{$settingbar-width});
 
       > .columns{
          height: calc(100vh - #{$footer-height});

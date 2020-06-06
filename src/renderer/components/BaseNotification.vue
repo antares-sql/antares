@@ -85,7 +85,7 @@ export default {
       overflow: hidden;
       text-overflow: ellipsis;
       display: inline-block;
-      max-width: 25rem;
+      max-width: 30rem;
       user-select: none;
    }
 

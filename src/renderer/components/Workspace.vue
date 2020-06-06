@@ -1,18 +1,18 @@
 <template>
-   <div v-show="isSelected" class="workspace column columns">
+   <div v-show="isSelected" class="workspace column columns col-gapless">
       <WorkspaceExploreBar :connection="connection" :is-selected="isSelected" />
-      <div class="workspace-tabs column p-0">
-         <ul class="tab tab-block">
+      <div v-if="workspace.connected" class="workspace-tabs column columns col-gapless">
+         <ul class="tab tab-block column col-12">
             <li
                v-for="(tab, key) of workspace.tabs"
                :key="tab.uid"
                class="tab-item"
                :class="{'active': selectedTab === tab.uid}"
             >
-               <a href="#">Query #{{ key }} <span class="btn btn-clear" /></a>
+               <a href="#">Query #{{ key }} <span v-if="workspace.tabs.length > 1" class="btn btn-clear" /></a>
             </li>
          </ul>
-         <QueryEditor v-model="query" />
+         <WorkspaceQueryTab :connection="connection" />
       </div>
    </div>
 </template>
@@ -21,21 +21,16 @@
 import { mapGetters, mapActions } from 'vuex';
 import Connection from '@/ipc-api/Connection';
 import WorkspaceExploreBar from '@/components/WorkspaceExploreBar';
-import QueryEditor from '@/components/QueryEditor';
+import WorkspaceQueryTab from '@/components/WorkspaceQueryTab';
 
 export default {
    name: 'Workspace',
    components: {
       WorkspaceExploreBar,
-      QueryEditor
+      WorkspaceQueryTab
    },
    props: {
       connection: Object
-   },
-   data () {
-      return {
-         query: ''
-      };
    },
    computed: {
       ...mapGetters({
