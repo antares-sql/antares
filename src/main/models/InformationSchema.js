@@ -1,16 +1,10 @@
 'use strict';
-
 export default class {
    static testConnection (connection) {
-      return connection('TABLES')
-         .select({ result: 1 })
-         .withSchema('information_schema');
+      return connection.raw('SELECT 1+1');
    }
 
    static getStructure (connection) {
-      return connection('TABLES')
-         .select('*')
-         .withSchema('information_schema')
-         .orderBy(['TABLE_SCHEMA', 'TABLE_NAME'], 'asc');
+      return connection.raw('SELECT * FROM information_schema.TABLES ORDER BY TABLE_SCHEMA, TABLE_NAME ASC');
    }
 }

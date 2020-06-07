@@ -1,29 +1,27 @@
 
 import { ipcMain } from 'electron';
-import knex from 'knex';
+import { AntaresConnector } from '../libs/AntaresConnector';
 import InformationSchema from '../models/InformationSchema';
-import { RawQuery } from '../models/RawQuery';
+import GenericQuery from '../models/GenericQuery';
 
 const connections = {};
 
 export default () => {
    ipcMain.handle('testConnection', async (event, conn) => {
-      const connection = knex({
+      const Connection = new AntaresConnector({
          client: conn.client,
-         connection: {
+         params: {
             host: conn.host,
             port: +conn.port,
             user: conn.user,
             password: conn.password
-         },
-         pool: {
-            min: 1,
-            max: 3
          }
       });
 
+      await Connection.connect();
+
       try {
-         await InformationSchema.testConnection(connection);
+         await InformationSchema.testConnection(Connection);
 
          return { status: 'success' };
       }
@@ -37,23 +35,22 @@ export default () => {
    });
 
    ipcMain.handle('connect', async (event, conn) => {
-      const connection = knex({
+      const Connection = new AntaresConnector({
          client: conn.client,
-         connection: {
+         params: {
             host: conn.host,
             port: +conn.port,
             user: conn.user,
             password: conn.password
          },
-         pool: {
-            min: 1,
-            max: 3
-         }
+         poolSize: 3
       });
 
+      Connection.connect();
+
       try {
-         const structure = await InformationSchema.getStructure(connection);
-         connections[conn.uid] = connection;
+         const { rows: structure } = await InformationSchema.getStructure(Connection);
+         connections[conn.uid] = Connection;
          return { status: 'success', response: structure };
       }
       catch (err) {
@@ -68,7 +65,7 @@ export default () => {
 
    ipcMain.handle('refresh', async (event, uid) => {
       try {
-         const structure = await InformationSchema.getStructure(connections[uid]);
+         const { rows: structure } = await InformationSchema.getStructure(connections[uid]);
          return { status: 'success', response: structure };
       }
       catch (err) {
@@ -76,15 +73,11 @@ export default () => {
       }
    });
 
-   ipcMain.on('runQuery', async (event, { connection, query, database }) => {
-      const knexIstance = connections[connection.uid];
-      const Query = new RawQuery({ knexIstance, database });
+   ipcMain.handle('rawQuery', async (event, { uid, query, database }) => {
+      if (!query) return;
       try {
-         Query.runQuery(query);
-
-         Query.on('row', row => {
-            event.sender.send('row', row);
-         });
+         const result = await GenericQuery.raw(connections[uid], query, database);
+         return { status: 'success', response: result };
       }
       catch (err) {
          return { status: 'error', response: err.toString() };

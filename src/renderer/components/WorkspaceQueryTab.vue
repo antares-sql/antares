@@ -12,17 +12,21 @@
          </div>
       </div>
       <div ref="resultTable" class="workspace-query-results column col-12">
-         <table v-if="results.length" class="table table-hover">
+         <table v-if="results" class="table table-hover">
             <thead>
                <tr>
-                  <th v-for="field in fields" :key="field">
-                     {{ field }}
+                  <th v-for="field in results.fields" :key="field.name">
+                     {{ field.name }}
                   </th>
                </tr>
             </thead>
             <tbody>
-               <tr v-for="(row, rKey) in results" :key="rKey">
-                  <td v-for="(col, cKey) in row" :key="cKey">
+               <tr v-for="(row, rKey) in results.rows" :key="rKey">
+                  <td
+                     v-for="(col, cKey) in row"
+                     :key="cKey"
+                     :class="fieldType(col)"
+                  >
                      {{ col }}
                   </td>
                </tr>
@@ -33,7 +37,7 @@
 </template>
 
 <script>
-import { ipcRenderer } from 'electron';
+import Connection from '@/ipc-api/Connection';
 import QueryEditor from '@/components/QueryEditor';
 import { mapGetters, mapActions } from 'vuex';
 
@@ -48,7 +52,7 @@ export default {
    data () {
       return {
          query: '',
-         results: []
+         results: {}
       };
    },
    computed: {
@@ -57,9 +61,6 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
-      },
-      fields () {
-         return Object.keys(this.results[0]);
       }
    },
    mounted () {
@@ -73,21 +74,22 @@ export default {
          addNotification: 'notifications/addNotification'
       }),
       async runQuery () {
-         this.results = [];
+         if (!this.query) return;
+         this.results = {};
          this.resizeResults();
 
          const params = {
-            connection: this.connection,
+            uid: this.connection.uid,
             query: this.query,
             database: this.workspace.breadcrumbs.database
          };
 
          try {
-            ipcRenderer.send('runQuery', params);
-
-            ipcRenderer.on('row', (event, row) => {
-               this.results.push(row);
-            });
+            const { status, response } = await Connection.rawQuery(params);
+            if (status === 'success')
+               this.results = response;
+            else
+               this.addNotification({ status: 'error', message: response });
          }
          catch (err) {
             this.addNotification({ status: 'error', message: err.stack });
@@ -101,6 +103,15 @@ export default {
             const size = window.innerHeight - el.getBoundingClientRect().top - footer.offsetHeight;
             el.style.height = size + 'px';
          }
+      },
+      fieldType (col) {
+         let type = typeof col;
+         if (type === 'object')
+            if (col instanceof Date) type = 'date';
+         if (col instanceof Uint8Array) type = 'blob';
+         if (col === null) type = 'null';
+
+         return `type-${type}`;
       }
    }
 };
@@ -138,6 +149,30 @@ export default {
       td{
          border-color: $bg-color-light;
          padding: 0 .4rem;
+         text-overflow: ellipsis;
+         max-width: 200px;
+         white-space: nowrap;
+         overflow: hidden;
+
+         &.type-string{
+            color: seagreen;
+         }
+         &.type-number{
+            color: cornflowerblue;
+            text-align: right;
+         }
+         &.type-date{
+            color: coral;
+         }
+         &.type-blob{
+            color: darkorchid;
+         }
+         &.type-null{
+            color: gray;
+            &::after{
+               content: 'NULL';
+            }
+         }
       }
    }
 }

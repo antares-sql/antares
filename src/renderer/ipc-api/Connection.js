@@ -21,4 +21,8 @@ export default class {
    static refresh (uid) {
       return ipcRenderer.invoke('refresh', uid);
    }
+
+   static rawQuery (params) {
+      return ipcRenderer.invoke('rawQuery', params);
+   }
 }

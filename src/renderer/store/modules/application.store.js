@@ -3,7 +3,7 @@ export default {
    namespaced: true,
    strict: true,
    state: {
-      app_name: 'Antares - SQL Client',
+      app_name: 'Antares - Database Client',
       app_version: process.env.PACKAGE_VERSION || 0,
       is_loading: false,
       is_new_modal: false,
