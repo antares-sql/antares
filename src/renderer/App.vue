@@ -24,28 +24,19 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import TheTitleBar from '@/components/TheTitleBar';
-import TheSettingBar from '@/components/TheSettingBar';
-import TheFooter from '@/components/TheFooter';
-import TheNotificationsBoard from '@/components/TheNotificationsBoard';
-import TheAppWelcome from '@/components/TheAppWelcome';
-import Workspace from '@/components/Workspace';
-import ModalNewConnection from '@/components/ModalNewConnection';
-import ModalEditConnection from '@/components/ModalEditConnection';
-import ModalSettings from '@/components/ModalSettings';
 
 export default {
    name: 'App',
    components: {
-      TheTitleBar,
-      TheSettingBar,
-      TheFooter,
-      TheNotificationsBoard,
-      TheAppWelcome,
-      Workspace,
-      ModalNewConnection,
-      ModalEditConnection,
-      ModalSettings
+      TheTitleBar: () => import(/* webpackChunkName: "TheTitleBar" */'@/components/TheTitleBar'),
+      TheSettingBar: () => import(/* webpackChunkName: "TheSettingBar" */'@/components/TheSettingBar'),
+      TheFooter: () => import(/* webpackChunkName: "TheFooter" */'@/components/TheFooter'),
+      TheNotificationsBoard: () => import(/* webpackChunkName: "TheNotificationsBoard" */'@/components/TheNotificationsBoard'),
+      TheAppWelcome: () => import(/* webpackChunkName: "TheAppWelcome" */'@/components/TheAppWelcome'),
+      Workspace: () => import(/* webpackChunkName: "Workspace" */'@/components/Workspace'),
+      ModalNewConnection: () => import(/* webpackChunkName: "ModalNewConnection" */'@/components/ModalNewConnection'),
+      ModalEditConnection: () => import(/* webpackChunkName: "ModalEditConnection" */'@/components/ModalEditConnection'),
+      ModalSettings: () => import(/* webpackChunkName: "ModalSettings" */'@/components/ModalSettings')
    },
    data () {
       return {

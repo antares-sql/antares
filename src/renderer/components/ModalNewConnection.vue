@@ -35,7 +35,10 @@
                               @change="setDefaults"
                            >
                               <option value="mysql">
-                                 MySQL/MariaDB
+                                 MySQL
+                              </option>
+                              <option value="maria">
+                                 MariaDB
                               </option>
                               <option value="mssql">
                                  Microsoft SQL

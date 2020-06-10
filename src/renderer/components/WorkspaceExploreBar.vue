@@ -102,9 +102,11 @@ export default {
          changeExplorebarSize: 'settings/changeExplorebarSize'
       }),
       async refresh () {
-         this.isRefreshing = true;
-         await this.refreshStructure(this.connection.uid);
-         this.isRefreshing = false;
+         if (!this.isRefreshing) {
+            this.isRefreshing = true;
+            await this.refreshStructure(this.connection.uid);
+            this.isRefreshing = false;
+         }
       },
       resize (e) {
          const el = this.$refs.explorebar;

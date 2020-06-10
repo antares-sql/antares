@@ -1,0 +1,25 @@
+@mixin type-colors($types) {
+   @each $type, $color in $types {
+      .type-#{$type} {
+         color: $color;
+
+         @if $type == 'null'{
+            &::after{
+               content: 'NULL';
+            }
+         }
+
+         @if $type == 'number'{
+            text-align: right;
+         }
+      }
+   }
+}
+
+@include type-colors((
+   "string": seagreen,
+   "number": cornflowerblue,
+   "date": coral,
+   "blob": darkorchid,
+   "null": gray,
+))

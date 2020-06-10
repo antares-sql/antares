@@ -26,7 +26,9 @@ module.exports = {
       about: 'About',
       language: 'Language',
       version: 'Version',
-      donate: 'Donate'
+      donate: 'Donate',
+      run: 'Run',
+      schema: 'Schema'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',

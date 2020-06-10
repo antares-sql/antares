@@ -4,34 +4,26 @@
          <QueryEditor v-model="query" />
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
-               <i class="material-icons text-success" @click="runQuery">play_arrow</i>
+               <button
+                  class="btn btn-link btn-sm"
+                  :class="{'loading':isQuering}"
+                  @click="runQuery"
+               >
+                  <span>{{ $t('word.run') }}</span>
+                  <i class="material-icons text-success">play_arrow</i>
+               </button>
+               <button class="btn btn-link btn-sm">
+                  <span>{{ $t('word.save') }}</span>
+                  <i class="material-icons ml-1">save</i>
+               </button>
             </div>
-            <div>
-               Schema: <b>{{ workspace.breadcrumbs.database }}</b>
+            <div v-if="workspace.breadcrumbs.database">
+               {{ $t('word.schema') }}: <b>{{ workspace.breadcrumbs.database }}</b>
             </div>
          </div>
       </div>
       <div ref="resultTable" class="workspace-query-results column col-12">
-         <table v-if="results" class="table table-hover">
-            <thead>
-               <tr>
-                  <th v-for="field in results.fields" :key="field.name">
-                     {{ field.name }}
-                  </th>
-               </tr>
-            </thead>
-            <tbody>
-               <tr v-for="(row, rKey) in results.rows" :key="rKey">
-                  <td
-                     v-for="(col, cKey) in row"
-                     :key="cKey"
-                     :class="fieldType(col)"
-                  >
-                     {{ col }}
-                  </td>
-               </tr>
-            </tbody>
-         </table>
+         <WorkspaceQueryTable v-if="results" :results="results" />
       </div>
    </div>
 </template>
@@ -39,12 +31,14 @@
 <script>
 import Connection from '@/ipc-api/Connection';
 import QueryEditor from '@/components/QueryEditor';
+import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
    name: 'WorkspaceQueryTab',
    components: {
-      QueryEditor
+      QueryEditor,
+      WorkspaceQueryTable
    },
    props: {
       connection: Object
@@ -52,6 +46,7 @@ export default {
    data () {
       return {
          query: '',
+         isQuering: false,
          results: {}
       };
    },
@@ -75,6 +70,7 @@ export default {
       }),
       async runQuery () {
          if (!this.query) return;
+         this.isQuering = true;
          this.results = {};
          this.resizeResults();
 
@@ -94,6 +90,8 @@ export default {
          catch (err) {
             this.addNotification({ status: 'error', message: err.stack });
          }
+
+         this.isQuering = false;
       },
       resizeResults (e) {
          const el = this.$refs.resultTable;
@@ -126,11 +124,18 @@ export default {
       .workspace-query-runner-footer{
          display: flex;
          justify-content: space-between;
-         padding: .2rem .6rem;
+         padding: .3rem .6rem .4rem;
          align-items: center;
 
          .workspace-query-buttons{
             display: flex;
+
+            .btn{
+               display: flex;
+               align-self: center;
+               color: $body-font-color;
+               margin-right: .4rem;
+            }
          }
       }
    }
@@ -139,38 +144,33 @@ export default {
       overflow: auto;
       white-space: nowrap;
 
-      th{
-         position: sticky;
-         top: 0;
-         background: $bg-color;
-         border-color: $bg-color-light;
-      }
+      .table{
+         width: auto;
 
-      td{
-         border-color: $bg-color-light;
-         padding: 0 .4rem;
-         text-overflow: ellipsis;
-         max-width: 200px;
-         white-space: nowrap;
-         overflow: hidden;
+         .tr:focus{
+            background: rgba($color: #000000, $alpha: .3);
+         }
 
-         &.type-string{
-            color: seagreen;
+         .th{
+            position: sticky;
+            top: 0;
+            background: $bg-color;
+            border-color: $bg-color-light;
+            padding: .1rem .4rem;
+            font-weight: 400;
          }
-         &.type-number{
-            color: cornflowerblue;
-            text-align: right;
-         }
-         &.type-date{
-            color: coral;
-         }
-         &.type-blob{
-            color: darkorchid;
-         }
-         &.type-null{
-            color: gray;
-            &::after{
-               content: 'NULL';
+
+         .td{
+            border-left: 1px solid;
+            border-color: $bg-color-light;
+            padding: 0 .4rem;
+            text-overflow: ellipsis;
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+
+            &:first-child{
+               border-left: none;
             }
          }
       }

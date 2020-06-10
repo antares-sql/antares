@@ -31,7 +31,10 @@
                         <div class="col-8 col-sm-12">
                            <select v-model="localConnection.client" class="form-select">
                               <option value="mysql">
-                                 MySQL/MariaDB
+                                 MySQL
+                              </option>
+                              <option value="maria">
+                                 MariaDB
                               </option>
                               <option value="mssql">
                                  Microsoft SQL

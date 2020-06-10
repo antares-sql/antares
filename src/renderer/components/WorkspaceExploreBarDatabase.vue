@@ -10,7 +10,7 @@
          <span>{{ database.name }}</span>
       </summary>
       <div class="accordion-body">
-         <div class="database-bables">
+         <div class="database-tables">
             <ul class="menu menu-nav pt-0">
                <li
                   v-for="table of database.tables"
@@ -63,6 +63,7 @@ export default {
          align-items: center;
          padding: .1rem;
          cursor: pointer;
+         font-size: .7rem;
 
          > span{
             overflow: hidden;
@@ -78,7 +79,11 @@ export default {
          }
       }
 
-      .database-bables{
+      .menu-item{
+         line-height: 1.2;
+      }
+
+      .database-tables{
          margin-left: 1.2rem;
       }
    }
