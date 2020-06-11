@@ -2,6 +2,7 @@
 
 import Vue from 'vue';
 
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 import 'material-design-icons/iconfont/material-icons.css';
 import '@/scss/main.scss';
 

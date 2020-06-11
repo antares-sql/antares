@@ -22,7 +22,7 @@
             </div>
          </div>
       </div>
-      <div ref="resultTable" class="workspace-query-results column col-12">
+      <div class="workspace-query-results column col-12">
          <WorkspaceQueryTable v-if="results" :results="results" />
       </div>
    </div>
@@ -58,12 +58,6 @@ export default {
          return this.getWorkspace(this.connection.uid);
       }
    },
-   mounted () {
-      window.addEventListener('resize', this.resizeResults);
-   },
-   destroyed () {
-      window.removeEventListener('resize', this.resizeResults);
-   },
    methods: {
       ...mapActions({
          addNotification: 'notifications/addNotification'
@@ -72,7 +66,6 @@ export default {
          if (!this.query) return;
          this.isQuering = true;
          this.results = {};
-         this.resizeResults();
 
          const params = {
             uid: this.connection.uid,
@@ -92,24 +85,6 @@ export default {
          }
 
          this.isQuering = false;
-      },
-      resizeResults (e) {
-         const el = this.$refs.resultTable;
-         const footer = document.getElementById('footer');
-
-         if (el) {
-            const size = window.innerHeight - el.getBoundingClientRect().top - footer.offsetHeight;
-            el.style.height = size + 'px';
-         }
-      },
-      fieldType (col) {
-         let type = typeof col;
-         if (type === 'object')
-            if (col instanceof Date) type = 'date';
-         if (col instanceof Uint8Array) type = 'blob';
-         if (col === null) type = 'null';
-
-         return `type-${type}`;
       }
    }
 };
