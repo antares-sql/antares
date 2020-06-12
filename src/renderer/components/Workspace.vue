@@ -4,15 +4,37 @@
       <div v-if="workspace.connected" class="workspace-tabs column columns col-gapless">
          <ul class="tab tab-block column col-12">
             <li
-               v-for="(tab, key) of workspace.tabs"
+               v-if="workspace.breadcrumbs.table"
+               class="tab-item"
+               :class="{'active': selectedTab === 1}"
+               @click="selectTab({uid: workspace.uid, tab: 1})"
+            >
+               <a class="tab-link">
+                  <i class="material-icons md-18 mr-1">grid_on</i>
+                  <span :title="workspace.breadcrumbs.table">{{ workspace.breadcrumbs.table }}</span>
+               </a>
+            </li>
+            <li
+               v-for="(tab, key) of queryTabs"
                :key="tab.uid"
                class="tab-item"
                :class="{'active': selectedTab === tab.uid}"
+               @click="selectTab({uid: workspace.uid, tab: tab.uid})"
             >
-               <a href="#">Query #{{ key }} <span v-if="workspace.tabs.length > 1" class="btn btn-clear" /></a>
+               <a><span>Query #{{ key+1 }} <span v-if="queryTabs.length > 1" class="btn btn-clear" /></span></a>
             </li>
          </ul>
-         <WorkspaceQueryTab :connection="connection" />
+         <WorkspaceTableTab
+            v-show="selectedTab === 1"
+            :connection="connection"
+            :table="workspace.breadcrumbs.table"
+         />
+         <WorkspaceQueryTab
+            v-for="tab of queryTabs"
+            v-show="selectedTab === tab.uid"
+            :key="tab.uid"
+            :connection="connection"
+         />
       </div>
    </div>
 </template>
@@ -22,12 +44,14 @@ import { mapGetters, mapActions } from 'vuex';
 import Connection from '@/ipc-api/Connection';
 import WorkspaceExploreBar from '@/components/WorkspaceExploreBar';
 import WorkspaceQueryTab from '@/components/WorkspaceQueryTab';
+import WorkspaceTableTab from '@/components/WorkspaceTableTab';
 
 export default {
    name: 'Workspace',
    components: {
       WorkspaceExploreBar,
-      WorkspaceQueryTab
+      WorkspaceQueryTab,
+      WorkspaceTableTab
    },
    props: {
       connection: Object
@@ -44,7 +68,10 @@ export default {
          return this.selectedWorkspace === this.connection.uid;
       },
       selectedTab () {
-         return this.workspace.tabs.filter(tab => tab.selected).uid || this.workspace.tabs[0].uid;
+         return this.workspace.selected_tab || this.queryTabs[0].uid;
+      },
+      queryTabs () {
+         return this.workspace.tabs.filter(tab => tab.type === 'query');
       }
    },
    async created () {
@@ -58,7 +85,8 @@ export default {
          addNotification: 'notifications/addNotification',
          addWorkspace: 'workspaces/addWorkspace',
          connectWorkspace: 'workspaces/connectWorkspace',
-         removeConnected: 'workspaces/removeConnected'
+         removeConnected: 'workspaces/removeConnected',
+         selectTab: 'workspaces/selectTab'
       })
    }
 };
@@ -78,7 +106,71 @@ export default {
          margin-top: 0;
 
          .tab-item{
-            max-width: 6rem;
+            max-width: 12rem;
+            width: fit-content;
+            flex: initial;
+
+            &.active a{
+               opacity: 1;
+            }
+
+            > a{
+               padding: .2rem .8rem;
+               color: $body-font-color;
+               cursor: pointer;
+               display: flex;
+               align-items: center;
+               opacity: .7;
+               transition: opacity .2s;
+
+               &:hover{
+                  opacity: 1;
+               }
+
+               > span {
+                  overflow: hidden;
+                  white-space: nowrap;
+                  text-overflow: ellipsis;
+               }
+            }
+         }
+      }
+   }
+
+   .workspace-query-results{
+      overflow: auto;
+      white-space: nowrap;
+
+      .table{
+         width: auto;
+         border-collapse: separate;
+
+         .tr:focus{
+            background: rgba($color: #000000, $alpha: .3);
+         }
+
+         .th{
+            position: sticky;
+            top: 0;
+            background: $bg-color;
+            border: 1px solid;
+            border-left: none;
+            border-color: $bg-color-light;
+            padding: .1rem .4rem;
+            font-weight: 700;
+            font-size: .7rem;
+         }
+
+         .td{
+            border-right: 1px solid;
+            border-bottom: 1px solid;
+            border-color: $bg-color-light;
+            padding: 0 .4rem;
+            text-overflow: ellipsis;
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            font-size: .7rem;
          }
       }
    }

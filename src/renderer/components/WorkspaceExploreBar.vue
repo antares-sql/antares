@@ -161,7 +161,7 @@ export default {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            display: flex;
+            display: block;
             align-items: center;
          }
 

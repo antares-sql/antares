@@ -59,7 +59,8 @@ export default {
       NEW_TAB (state, uid) {
          const newTab = {
             uid: uidGen(),
-            selected: false
+            selected: false,
+            type: 'query'
          };
          state.workspaces = state.workspaces.map(workspace => {
             if (workspace.uid === uid) {
@@ -71,6 +72,9 @@ export default {
             else
                return workspace;
          });
+      },
+      SELECT_TAB (state, { uid, tab }) {
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, selected_tab: tab } : workspace);
       }
    },
    actions: {
@@ -109,14 +113,15 @@ export default {
          const workspace = {
             uid,
             connected: false,
-            tabs: [],
+            selectedTab: 0,
+            tabs: [{ uid: 1, type: 'table' }],
             structure: {},
             breadcrumbs: {}
          };
 
          commit('ADD_WORKSPACE', workspace);
 
-         if (!getters.getWorkspace(uid).tabs.length)
+         if (getters.getWorkspace(uid).tabs.length < 2)
             dispatch('newTab', uid);
       },
       changeBreadcrumbs ({ commit, getters }, payload) {
@@ -124,6 +129,9 @@ export default {
       },
       newTab ({ commit }, uid) {
          commit('NEW_TAB', uid);
+      },
+      selectTab ({ commit }, payload) {
+         commit('SELECT_TAB', payload);
       }
    }
 };

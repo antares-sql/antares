@@ -2,7 +2,7 @@
    <BaseVirtualScroll
       v-if="results.rows"
       ref="resultTable"
-      :items="results.rows"
+      :items="rows"
       :item-height="25"
       class="vscroll"
       :style="{'height': resultsSize+'px'}"
@@ -22,8 +22,8 @@
             </div>
             <div class="tbody">
                <div
-                  v-for="(row, rKey) in items"
-                  :key="rKey"
+                  v-for="row in items"
+                  :key="row._id"
                   class="tr"
                   tabindex="0"
                >
@@ -32,6 +32,7 @@
                      :key="cKey"
                      class="td"
                      :class="fieldType(col)"
+                     :style="{'display': cKey === '_id'? 'none' : ''}"
                   >
                      {{ col }}
                   </div>
@@ -43,6 +44,7 @@
 </template>
 
 <script>
+import { uidGen } from 'common/libs/utilities';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
 
 export default {
@@ -59,15 +61,15 @@ export default {
       };
    },
    computed: {
-      rows () {
-         return this.results.rows ? this.results.rows.map(item => Object.assign({}, item)) : [];
+      rows () { // Adds uid to rows
+         return this.results.rows ? this.results.rows.map(item => {
+            return { ...item, _id: uidGen() };
+         }) : [];
       }
    },
-   watch: {
-      results: function () {
-         if (this.$refs.resultTable)
-            this.resizeResults();
-      }
+   updated () {
+      if (this.$refs.resultTable)
+         this.resizeResults();
    },
    mounted () {
       window.addEventListener('resize', this.resizeResults);
@@ -86,12 +88,14 @@ export default {
          return `type-${type}`;
       },
       resizeResults (e) {
-         const el = this.$refs.resultTable.$el;
-         const footer = document.getElementById('footer');
+         if (this.$refs.resultTable) {
+            const el = this.$refs.resultTable.$el;
+            const footer = document.getElementById('footer');
 
-         if (el) {
-            const size = window.innerHeight - el.getBoundingClientRect().top - footer.offsetHeight;
-            this.resultsSize = size;
+            if (el) {
+               const size = window.innerHeight - el.getBoundingClientRect().top - footer.offsetHeight;
+               this.resultsSize = size;
+            }
          }
       }
    }

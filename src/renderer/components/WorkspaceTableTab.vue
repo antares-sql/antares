@@ -1,7 +1,6 @@
 <template>
    <div class="workspace-query-tab column col-12 columns col-gapless">
       <div class="workspace-query-runner column col-12">
-         <QueryEditor v-model="query" />
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
                <button
@@ -9,8 +8,8 @@
                   :class="{'loading':isQuering}"
                   @click="runQuery"
                >
-                  <span>{{ $t('word.run') }}</span>
-                  <i class="material-icons text-success">play_arrow</i>
+                  <span>{{ $t('word.refresh') }}</span>
+                  <i class="material-icons ml-1">refresh</i>
                </button>
                <button class="btn btn-link btn-sm">
                   <span>{{ $t('word.save') }}</span>
@@ -35,22 +34,20 @@
 
 <script>
 import Connection from '@/ipc-api/Connection';
-import QueryEditor from '@/components/QueryEditor';
 import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
    name: 'WorkspaceQueryTab',
    components: {
-      QueryEditor,
       WorkspaceQueryTable
    },
    props: {
-      connection: Object
+      connection: Object,
+      table: String
    },
    data () {
       return {
-         query: '',
          isQuering: false,
          results: {}
       };
@@ -61,14 +58,25 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
+      },
+      query () {
+         return `SELECT * FROM \`${this.table}\` LIMIT 1000`;// TODO: use query builder
       }
+   },
+   watch: {
+      table: function () {
+         this.runQuery();
+      }
+   },
+   created () {
+      this.runQuery();
    },
    methods: {
       ...mapActions({
          addNotification: 'notifications/addNotification'
       }),
       async runQuery () {
-         if (!this.query) return;
+         if (!this.table) return;
          this.isQuering = true;
          this.results = {};
 

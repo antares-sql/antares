@@ -47,7 +47,7 @@ export default {
    },
    methods: {
       checkScrollPosition (e = {}) {
-         var el = this.$el;
+         const el = this.$el;
 
          // prevent parent scroll
          if ((el.scrollTop === 0 && e.deltaY < 0) || (Math.abs(el.scrollTop - (el.scrollHeight - el.clientHeight)) <= 1 && e.deltaY > 0))

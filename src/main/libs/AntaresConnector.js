@@ -7,6 +7,17 @@ export class AntaresConnector {
       this.params = args.params;
       this.poolSize = args.poolSize || false;
       this.connection = null;
+
+      this.query = {
+         select: [],
+         from: '',
+         where: [],
+         groupBy: [],
+         orderBy: [],
+         join: [],
+         update: [],
+         insert: []
+      };
    }
 
    connect () {
@@ -27,6 +38,20 @@ export class AntaresConnector {
             break;
       }
    }
+
+   // select (args) {
+   //    const type = typeof args;
+
+   //    switch (type) {
+   //       case string:
+   //       case number:
+   //          this.query.select;
+   //          break;
+
+   //       default:
+   //          break;
+   //    }
+   // }
 
    async raw (sql) {
       switch (this.client) {
