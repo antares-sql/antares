@@ -7,6 +7,7 @@
                <button
                   class="btn btn-link btn-sm"
                   :class="{'loading':isQuering}"
+                  :disabled="!query"
                   @click="runQuery"
                >
                   <span>{{ $t('word.run') }}</span>

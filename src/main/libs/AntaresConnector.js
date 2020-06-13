@@ -57,6 +57,7 @@ export class AntaresConnector {
       switch (this.client) {
          case 'maria':
          case 'mysql': {
+            console.log(mysql);
             const [rows, fields] = await this.connection.query(sql);
             return { rows, fields };
          }

@@ -108,12 +108,13 @@ export default {
       removeConnected ({ commit }, uid) {
          Connection.disconnect(uid);
          commit('REMOVE_CONNECTED', uid);
+         commit('SELECT_TAB', { uid, tab: 0 });
       },
       addWorkspace ({ commit, dispatch, getters }, uid) {
          const workspace = {
             uid,
             connected: false,
-            selectedTab: 0,
+            selected_tab: 0,
             tabs: [{ uid: 1, type: 'table' }],
             structure: {},
             breadcrumbs: {}

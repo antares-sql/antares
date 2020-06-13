@@ -38,7 +38,7 @@ import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
-   name: 'WorkspaceQueryTab',
+   name: 'WorkspaceTableTab',
    components: {
       WorkspaceQueryTable
    },
@@ -49,7 +49,8 @@ export default {
    data () {
       return {
          isQuering: false,
-         results: {}
+         results: {},
+         lastTable: null
       };
    },
    computed: {
@@ -59,13 +60,25 @@ export default {
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
+      isSelected () {
+         return this.workspace.selected_tab === 1;
+      },
       query () {
          return `SELECT * FROM \`${this.table}\` LIMIT 1000`;// TODO: use query builder
       }
    },
    watch: {
       table: function () {
-         this.runQuery();
+         if (this.isSelected) {
+            this.runQuery();
+            this.lastTable = this.table;
+         }
+      },
+      isSelected: function (val) {
+         if (val && this.lastTable !== this.table) {
+            this.runQuery();
+            this.lastTable = this.table;
+         }
       }
    },
    created () {
