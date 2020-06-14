@@ -2,7 +2,7 @@
 import { ipcMain } from 'electron';
 import { AntaresConnector } from '../libs/AntaresConnector';
 import InformationSchema from '../models/InformationSchema';
-import GenericQuery from '../models/GenericQuery';
+import Generic from '../models/Generic';
 
 const connections = {};
 
@@ -76,7 +76,7 @@ export default () => {
    ipcMain.handle('rawQuery', async (event, { uid, query, database }) => {
       if (!query) return;
       try {
-         const result = await GenericQuery.raw(connections[uid], query, database);
+         const result = await Generic.raw(connections[uid], query, database);
          return { status: 'success', response: result };
       }
       catch (err) {

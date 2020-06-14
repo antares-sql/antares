@@ -7,8 +7,7 @@ import { autoUpdater } from 'electron-updater';
 
 import ipcHandlers from './ipc-handlers';
 
-if (module.hot) module.hot.accept();
-const isDevelopment = process.env.NODE_ENV === 'development';
+const isDevelopment = process.env.NODE_ENV !== 'production';
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
