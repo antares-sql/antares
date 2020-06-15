@@ -2,8 +2,8 @@
    <details class="accordion workspace-explorebar-database">
       <summary
          class="accordion-header database-name pb-0"
-         :class="{'text-bold': breadcrumbs.database === database.name}"
-         @click="changeBreadcrumbs({database: database.name, table:null})"
+         :class="{'text-bold': breadcrumbs.schema === database.name}"
+         @click="changeBreadcrumbs({schema: database.name, table:null})"
       >
          <i class="icon material-icons md-18 mr-1">navigate_next</i>
          <i class="material-icons md-18 mr-1">view_agenda</i>
@@ -16,8 +16,8 @@
                   v-for="table of database.tables"
                   :key="table.TABLE_NAME"
                   class="menu-item"
-                  :class="{'text-bold': breadcrumbs.database === database.name && breadcrumbs.table === table.TABLE_NAME}"
-                  @click="changeBreadcrumbs({database: database.name, table: table.TABLE_NAME})"
+                  :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.table === table.TABLE_NAME}"
+                  @click="changeBreadcrumbs({schema: database.name, table: table.TABLE_NAME})"
                >
                   <a class="table-name">
                      <i class="material-icons md-18 mr-1">grid_on</i>

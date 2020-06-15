@@ -22,8 +22,8 @@
                <div v-if="results.rows">
                   {{ $t('word.results') }}: <b>{{ results.rows.length }}</b>
                </div>
-               <div v-if="workspace.breadcrumbs.database">
-                  {{ $t('word.schema') }}: <b>{{ workspace.breadcrumbs.database }}</b>
+               <div v-if="workspace.breadcrumbs.schema">
+                  {{ $t('word.schema') }}: <b>{{ workspace.breadcrumbs.schema }}</b>
                </div>
             </div>
          </div>
@@ -76,7 +76,7 @@ export default {
          const params = {
             uid: this.connection.uid,
             query: this.query,
-            database: this.workspace.breadcrumbs.database
+            schema: this.workspace.breadcrumbs.schema
          };
 
          try {

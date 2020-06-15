@@ -4,9 +4,7 @@ import { AntaresConnector } from '../libs/AntaresConnector';
 import InformationSchema from '../models/InformationSchema';
 import Generic from '../models/Generic';
 
-const connections = {};
-
-export default () => {
+export default (connections) => {
    ipcMain.handle('testConnection', async (event, conn) => {
       const Connection = new AntaresConnector({
          client: conn.client,
@@ -46,9 +44,9 @@ export default () => {
          poolSize: 3
       });
 
-      Connection.connect();
-
       try {
+         await Connection.connect();
+
          const { rows: structure } = await InformationSchema.getStructure(Connection);
          connections[conn.uid] = Connection;
          return { status: 'success', response: structure };
@@ -73,10 +71,10 @@ export default () => {
       }
    });
 
-   ipcMain.handle('rawQuery', async (event, { uid, query, database }) => {
+   ipcMain.handle('rawQuery', async (event, { uid, query, schema }) => {
       if (!query) return;
       try {
-         const result = await Generic.raw(connections[uid], query, database);
+         const result = await Generic.raw(connections[uid], query, schema);
          return { status: 'success', response: result };
       }
       catch (err) {

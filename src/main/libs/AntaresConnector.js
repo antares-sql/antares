@@ -1,5 +1,6 @@
 'use strict';
 import mysql from 'mysql2';
+import mssql from 'mssql';
 
 /**
  * As Simple As Possible Query Builder
@@ -26,7 +27,7 @@ export class AntaresConnector {
          where: [],
          groupBy: [],
          orderBy: [],
-         limit: '',
+         limit: [],
          join: [],
          update: [],
          insert: [],
@@ -62,7 +63,7 @@ export class AntaresConnector {
    /**
     * @memberof AntaresConnector
     */
-   connect () {
+   async connect () {
       switch (this._client) {
          case 'maria':
          case 'mysql':
@@ -75,7 +76,15 @@ export class AntaresConnector {
                this._connection = pool.promise();
             }
             break;
-
+         case 'mssql': {
+            const mssqlParams = {
+               user: this._params.user,
+               password: this._params.password,
+               server: this._params.host
+            };
+            this._connection = await mssql.connect(mssqlParams);
+         }
+            break;
          default:
             break;
       }
@@ -111,28 +120,81 @@ export class AntaresConnector {
       return this;
    }
 
-   getQueryString () {
-      const selectArray = this._query.select.reduce(this._reducer, []);
-      const selectRaw = selectArray.length ? `SELECT ${selectArray.join(', ')}` : 'SELECT *';
-      const fromRaw = this._query.from ? `FROM ${this._query.schema ? `\`${this._query.schema}\`.` : ''} \`${this._query.from}\`` : '';
-      const whereArray = this._query.where.reduce(this._reducer, []);
-      const whereRaw = whereArray.length ? `WHERE ${whereArray.join(', AND ')}` : '';
-      const groupByArray = this._query.groupBy.reduce(this._reducer, []);
-      const groupByRaw = groupByArray.length ? `GROUP BY ${groupByArray.join(', ')}` : '';
-      const orderByArray = this._query.orderBy.reduce(this._reducer, []);
-      const orderByRaw = orderByArray.length ? `ORDER BY ${orderByArray.join(', ')}` : '';
-
-      return `${selectRaw} ${fromRaw} ${whereRaw} ${groupByRaw} ${orderByRaw}`;
+   limit (...args) {
+      this._query.limit = args;
+      return this;
    }
 
-   run () {
-      const rawQuery = this.getQueryString();
+   /**
+    * @returns {string} SQL string
+    * @memberof AntaresConnector
+    */
+   getSQL () {
+      const selectArray = this._query.select.reduce(this._reducer, []);
+      let selectRaw;
+      switch (this._client) {
+         case 'maria':
+         case 'mysql':
+            selectRaw = selectArray.length ? `SELECT ${selectArray.join(', ')} ` : 'SELECT * ';
+            break;
+         case 'mssql': {
+            const topRaw = this._query.limit.length ? ` TOP (${this._query.limit[0]}) ` : '';
+            selectRaw = selectArray.length ? `SELECT${topRaw} ${selectArray.join(', ')} ` : 'SELECT * ';
+         }
+            break;
+         default:
+            break;
+      }
+
+      let fromRaw;
+      switch (this._client) {
+         case 'maria':
+         case 'mysql':
+            fromRaw = this._query.from ? `FROM ${this._query.schema ? `\`${this._query.schema}\`.` : ''}\`${this._query.from}\` ` : '';
+            break;
+         case 'mssql':
+            fromRaw = this._query.from ? `FROM ${this._query.schema ? `${this._query.schema}.` : ''}${this._query.from} ` : '';
+            break;
+         default:
+            break;
+      }
+
+      const whereArray = this._query.where.reduce(this._reducer, []);
+      const whereRaw = whereArray.length ? `WHERE ${whereArray.join(' AND ')} ` : '';
+      const groupByArray = this._query.groupBy.reduce(this._reducer, []);
+      const groupByRaw = groupByArray.length ? `GROUP BY ${groupByArray.join(', ')} ` : '';
+      const orderByArray = this._query.orderBy.reduce(this._reducer, []);
+      const orderByRaw = orderByArray.length ? `ORDER BY ${orderByArray.join(', ')} ` : '';
+
+      let limitRaw;
+      switch (this._client) {
+         case 'maria':
+         case 'mysql':
+            limitRaw = this._query.limit.length ? `LIMIT ${this._query.limit.join(', ')} ` : '';
+            break;
+         case 'mssql':
+            limitRaw = '';
+            break;
+         default:
+            break;
+      }
+
+      return `${selectRaw}${fromRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}`;
+   }
+
+   /**
+    * @returns {Promise}
+    * @memberof AntaresConnector
+    */
+   async run () {
+      const rawQuery = this.getSQL();
+      if (process.env.NODE_ENV === 'development') console.log(rawQuery);
       this._resetQuery();
       return this.raw(rawQuery);
    }
 
    /**
-    * @param {*} sql raw SQL query
+    * @param {string} sql raw SQL query
     * @returns {Promise}
     * @memberof AntaresConnector
     */
@@ -142,6 +204,10 @@ export class AntaresConnector {
          case 'mysql': {
             const [rows, fields] = await this._connection.query(sql);
             return { rows, fields };
+         }
+         case 'mssql': {
+            const results = await this._connection.request().query(sql);
+            return { rows: results.recordsets[0] };
          }
          default:
             break;
@@ -154,10 +220,12 @@ export class AntaresConnector {
    destroy () {
       switch (this._client) {
          case 'maria':
-         case 'mysql': {
+         case 'mysql':
             this._connection.end();
             break;
-         }
+         case 'mssql':
+            this._connection.close();
+            break;
          default:
             break;
       }

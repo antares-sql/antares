@@ -5,7 +5,6 @@ export default class {
    }
 
    static getStructure (connection) {
-      // return connection.raw('SELECT * FROM information_schema.TABLES ORDER BY TABLE_SCHEMA ASC, TABLE_NAME ASC');
       return connection
          .select('*')
          .schema('information_schema')
@@ -14,5 +13,13 @@ export default class {
          .run();
    }
 
-   // TODO: SELECT * FROM `information_schema`.`COLUMNS` WHERE TABLE_SCHEMA='fepcomdb' AND TABLE_NAME='macchine' ORDER BY ORDINAL_POSITION;
+   static getTableColumns (connection, schema, table) {
+      return connection
+         .select('*')
+         .schema('information_schema')
+         .from('COLUMNS')
+         .where({ TABLE_SCHEMA: `= '${schema}'`, TABLE_NAME: `= '${table}'` })
+         .orderBy({ ORDINAL_POSITION: 'ASC' })
+         .run();
+   }
 }

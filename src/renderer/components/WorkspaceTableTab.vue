@@ -6,7 +6,7 @@
                <button
                   class="btn btn-link btn-sm"
                   :class="{'loading':isQuering}"
-                  @click="runQuery"
+                  @click="getTableData"
                >
                   <span>{{ $t('word.refresh') }}</span>
                   <i class="material-icons ml-1">refresh</i>
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import Connection from '@/ipc-api/Connection';
+import Structure from '@/ipc-api/Structure';
 import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
 import { mapGetters, mapActions } from 'vuex';
 
@@ -50,6 +50,7 @@ export default {
       return {
          isQuering: false,
          results: {},
+         fields: {},
          lastTable: null
       };
    },
@@ -62,45 +63,54 @@ export default {
       },
       isSelected () {
          return this.workspace.selected_tab === 1;
-      },
-      query () {
-         return `SELECT * FROM \`${this.table}\` LIMIT 1000`;// TODO: use query builder
       }
    },
    watch: {
       table: function () {
          if (this.isSelected) {
-            this.runQuery();
+            this.getTableData();
             this.lastTable = this.table;
          }
       },
       isSelected: function (val) {
          if (val && this.lastTable !== this.table) {
-            this.runQuery();
+            this.getTableData();
             this.lastTable = this.table;
          }
       }
    },
    created () {
-      this.runQuery();
+      this.getTableData();
    },
    methods: {
       ...mapActions({
          addNotification: 'notifications/addNotification'
       }),
-      async runQuery () {
+      async getTableData () {
          if (!this.table) return;
          this.isQuering = true;
          this.results = {};
 
          const params = {
             uid: this.connection.uid,
-            query: this.query,
-            database: this.workspace.breadcrumbs.database
+            schema: this.workspace.breadcrumbs.schema,
+            table: this.workspace.breadcrumbs.table
          };
 
          try {
-            const { status, response } = await Connection.rawQuery(params);
+            const { status, response } = await Structure.getTableColumns(params);
+            if (status === 'success')
+               this.fields = response.rows;
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         try {
+            const { status, response } = await Structure.getTableData(params);
+            console.log(status, response);
             if (status === 'success')
                this.results = response;
             else
