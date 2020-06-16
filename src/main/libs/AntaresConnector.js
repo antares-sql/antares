@@ -1,6 +1,7 @@
 'use strict';
-import mysql from 'mysql2';
+import mysql from 'mysql';
 import mssql from 'mssql';
+// import pg from 'pg'; TODO: PostgreSQL
 
 /**
  * As Simple As Possible Query Builder
@@ -56,6 +57,11 @@ export class AntaresConnector {
       }
    }
 
+   /**
+    * Resets the query object after a query
+    *
+    * @memberof AntaresConnector
+    */
    _resetQuery () {
       this._query = Object.assign({}, this._queryDefaults);
    }
@@ -71,10 +77,10 @@ export class AntaresConnector {
                const connection = mysql.createConnection(this._params);
                this._connection = connection.promise();
             }
-            else {
-               const pool = mysql.createPool({ ...this._params, connectionLimit: this._poolSize });
-               this._connection = pool.promise();
-            }
+            else
+               this._connection = mysql.createPool({ ...this._params, connectionLimit: this._poolSize });
+               // this._connection = pool.promise();
+
             break;
          case 'mssql': {
             const mssqlParams = {
@@ -125,11 +131,30 @@ export class AntaresConnector {
       return this;
    }
 
+   use (schema) {
+      let sql;
+
+      switch (this._client) {
+         case 'maria':
+         case 'mysql':
+            sql = `USE \`${schema}\``;
+            break;
+         case 'mssql':
+            sql = `USE "${schema}"`;
+            break;
+         default:
+            break;
+      }
+
+      return this.raw(sql);
+   }
+
    /**
     * @returns {string} SQL string
     * @memberof AntaresConnector
     */
    getSQL () {
+      // SELECT
       const selectArray = this._query.select.reduce(this._reducer, []);
       let selectRaw;
       switch (this._client) {
@@ -146,6 +171,7 @@ export class AntaresConnector {
             break;
       }
 
+      // FROM
       let fromRaw;
       switch (this._client) {
          case 'maria':
@@ -166,6 +192,7 @@ export class AntaresConnector {
       const orderByArray = this._query.orderBy.reduce(this._reducer, []);
       const orderByRaw = orderByArray.length ? `ORDER BY ${orderByArray.join(', ')} ` : '';
 
+      // LIMIT
       let limitRaw;
       switch (this._client) {
          case 'maria':
@@ -188,7 +215,6 @@ export class AntaresConnector {
     */
    async run () {
       const rawQuery = this.getSQL();
-      if (process.env.NODE_ENV === 'development') console.log(rawQuery);
       this._resetQuery();
       return this.raw(rawQuery);
    }
@@ -199,15 +225,24 @@ export class AntaresConnector {
     * @memberof AntaresConnector
     */
    async raw (sql) {
+      if (process.env.NODE_ENV === 'development') console.log(sql);
+
       switch (this._client) {
          case 'maria':
          case 'mysql': {
-            const [rows, fields] = await this._connection.query(sql);
+            const { rows, fields } = await new Promise((resolve, reject) => {
+               this._connection.query(sql, (err, rows, fields) => {
+                  if (err)
+                     reject(err);
+                  else
+                     resolve({ rows, fields });
+               });
+            });
             return { rows, fields };
          }
          case 'mssql': {
             const results = await this._connection.request().query(sql);
-            return { rows: results.recordsets[0] };
+            return { rows: results.recordsets[0] };// TODO: fields
          }
          default:
             break;

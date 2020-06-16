@@ -2,6 +2,8 @@ import { ipcMain } from 'electron';
 import InformationSchema from '../models/InformationSchema';
 import Generic from '../models/Generic';
 
+// TODO: remap objects based on client
+
 export default (connections) => {
    ipcMain.handle('getTableColumns', async (event, { uid, schema, table }) => {
       try {

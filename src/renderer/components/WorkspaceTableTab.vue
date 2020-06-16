@@ -11,10 +11,10 @@
                   <span>{{ $t('word.refresh') }}</span>
                   <i class="material-icons ml-1">refresh</i>
                </button>
-               <button class="btn btn-link btn-sm">
+               <!-- <button class="btn btn-link btn-sm">
                   <span>{{ $t('word.save') }}</span>
                   <i class="material-icons ml-1">save</i>
-               </button>
+               </button> -->
             </div>
             <div class="workspace-query-info">
                <div v-if="results.rows">
@@ -27,7 +27,11 @@
          </div>
       </div>
       <div class="workspace-query-results column col-12">
-         <WorkspaceQueryTable v-if="results" :results="results" />
+         <WorkspaceQueryTable
+            v-if="results"
+            :results="results"
+            :fields="resultsFields"
+         />
       </div>
    </div>
 </template>
@@ -50,7 +54,7 @@ export default {
       return {
          isQuering: false,
          results: {},
-         fields: {},
+         fields: [],
          lastTable: null
       };
    },
@@ -63,6 +67,15 @@ export default {
       },
       isSelected () {
          return this.workspace.selected_tab === 1;
+      },
+      resultsFields () {
+         return this.fields.map(field => { // TODO: move to main process
+            return {
+               name: field.COLUMN_NAME,
+               key: field.COLUMN_KEY.toLowerCase(),
+               type: field.DATA_TYPE
+            };
+         });
       }
    },
    watch: {
@@ -110,7 +123,7 @@ export default {
 
          try {
             const { status, response } = await Structure.getTableData(params);
-            console.log(status, response);
+
             if (status === 'success')
                this.results = response;
             else

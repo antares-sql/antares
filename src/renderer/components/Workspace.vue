@@ -145,10 +145,6 @@ export default {
          width: auto;
          border-collapse: separate;
 
-         .tr:focus{
-            background: rgba($color: #000000, $alpha: .3);
-         }
-
          .th{
             position: sticky;
             top: 0;
@@ -171,6 +167,12 @@ export default {
             white-space: nowrap;
             overflow: hidden;
             font-size: .7rem;
+
+            &:focus{
+               box-shadow:inset 0px 0px 0px 1px $body-font-color;
+               background: rgba($color: #000000, $alpha: .3);
+               outline: none;
+            }
          }
       }
    }

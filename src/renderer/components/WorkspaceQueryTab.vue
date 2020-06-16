@@ -13,10 +13,10 @@
                   <span>{{ $t('word.run') }}</span>
                   <i class="material-icons text-success">play_arrow</i>
                </button>
-               <button class="btn btn-link btn-sm">
+               <!-- <button class="btn btn-link btn-sm">
                   <span>{{ $t('word.save') }}</span>
                   <i class="material-icons ml-1">save</i>
-               </button>
+               </button> -->
             </div>
             <div class="workspace-query-info">
                <div v-if="results.rows">
@@ -29,7 +29,11 @@
          </div>
       </div>
       <div class="workspace-query-results column col-12">
-         <WorkspaceQueryTable v-if="results" :results="results" />
+         <WorkspaceQueryTable
+            v-if="results"
+            :results="results"
+            :fields="resultsFields"
+         />
       </div>
    </div>
 </template>
@@ -62,6 +66,11 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
+      },
+      resultsFields () {
+         return this.results.rows && this.results.rows.length ? Object.keys(this.results.rows[0]).map(field => {
+            return { name: field, key: '', type: '' }; // TODO: extract getting table name from query
+         }) : [];
       }
    },
    methods: {
@@ -73,13 +82,13 @@ export default {
          this.isQuering = true;
          this.results = {};
 
-         const params = {
-            uid: this.connection.uid,
-            query: this.query,
-            schema: this.workspace.breadcrumbs.schema
-         };
-
          try {
+            const params = {
+               uid: this.connection.uid,
+               query: this.query,
+               schema: this.workspace.breadcrumbs.schema
+            };
+
             const { status, response } = await Connection.rawQuery(params);
             if (status === 'success')
                this.results = response;
