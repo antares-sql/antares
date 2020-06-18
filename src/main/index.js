@@ -94,8 +94,17 @@ app.on('ready', () => {
 });
 
 // auto-updater events
+autoUpdater.on('checking-for-update', () => {
+});
+
 autoUpdater.on('update-available', () => {
    mainWindow.webContents.send('update_available');
+});
+
+autoUpdater.on('update-not-available', () => {
+});
+
+autoUpdater.on('download-progress', (progressObj) => {
 });
 
 autoUpdater.on('update-downloaded', () => {

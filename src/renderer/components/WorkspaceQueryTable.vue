@@ -38,11 +38,11 @@
                      v-for="(col, cKey) in row"
                      :key="cKey"
                      class="td"
-                     :class="fieldType(col)"
-                     :style="{'display': cKey === '_id'? 'none' : ''}"
+                     :class="`type-${fieldType(cKey)}${isNull(col)}`"
+                     :style="{'display': cKey === '_id' ? 'none' : ''}"
                      tabindex="0"
                   >
-                     {{ col }}
+                     {{ col | typeFormat(fieldType(cKey)) }}
                   </div>
                </div>
             </div>
@@ -52,13 +52,46 @@
 </template>
 
 <script>
-import { uidGen } from 'common/libs/utilities';
+import { uidGen, mimeFromHex, formatBytes } from 'common/libs/utilities';
+import hexToBinary from 'common/libs/hexToBinary';
+import moment from 'moment';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
 
 export default {
    name: 'WorkspaceQueryTable',
    components: {
       BaseVirtualScroll
+   },
+   filters: {
+      typeFormat (val, type) {
+         if (!val) return val;
+
+         switch (type) {
+            case 'char':
+            case 'varchar':
+            case 'text':
+               return val.substring(0, 128);
+            case 'date':
+               return moment(val).format('YYYY-MM-DD');
+            case 'datetime':
+               return moment(val).format('YYYY-MM-DD HH:mm:ss.SSS');
+            case 'blob':
+            case 'mediumblob':
+            case 'longblob': {
+               const buff = Buffer.from(val);
+               if (!buff.length) return '';
+
+               const hex = buff.toString('hex').substring(0, 8).toUpperCase();
+               return `${mimeFromHex(hex).mime} (${formatBytes(buff.length)})`;
+            }
+            case 'bit': {
+               const hex = Buffer.from(val).toString('hex');
+               return hexToBinary(hex);
+            }
+            default:
+               return val;
+         }
+      }
    },
    props: {
       results: Object,
@@ -88,14 +121,16 @@ export default {
       window.removeEventListener('resize', this.resizeResults);
    },
    methods: {
-      fieldType (col) { // TODO: get from fields
-         let type = typeof col;
-         if (type === 'object')
-            if (col instanceof Date) type = 'date';
-         if (col instanceof Uint8Array) type = 'blob';
-         if (col === null) type = 'null';
+      fieldType (cKey) {
+         let type = 'unknown';
+         const field = this.fields.filter(field => field.name === cKey)[0];
+         if (field)
+            type = field.type;
 
-         return `type-${type}`;
+         return type;
+      },
+      isNull (col) {
+         return col === null ? ' is-null' : '';
       },
       keyName (key) {
          switch (key) {

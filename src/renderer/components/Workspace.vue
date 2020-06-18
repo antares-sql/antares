@@ -151,6 +151,7 @@ export default {
             background: $bg-color;
             border: 1px solid;
             border-left: none;
+            border-bottom-width: 2px;
             border-color: $bg-color-light;
             padding: .1rem .4rem;
             font-weight: 700;

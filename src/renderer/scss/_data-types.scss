@@ -3,12 +3,6 @@
       .type-#{$type} {
          color: $color;
 
-         @if $type == 'null'{
-            &::after{
-               content: 'NULL';
-            }
-         }
-
          @if $type == 'number'{
             text-align: right;
          }
@@ -17,9 +11,32 @@
 }
 
 @include type-colors((
-   "string": seagreen,
-   "number": cornflowerblue,
+   "char": seagreen,
+   "varchar": seagreen,
+   "text": seagreen,
+
+   "int": cornflowerblue,
+   "tinyint": cornflowerblue,
+   "smallint": cornflowerblue,
+   "mediumint": cornflowerblue,
+   
+   "datetime": coral,
    "date": coral,
+   "time": coral,
+
+   "bit": lightskyblue,
+   
    "blob": darkorchid,
-   "null": gray,
-))
+   "mediumblob": darkorchid,
+   "longblob": darkorchid,
+   
+   "unknown": gray,
+));
+
+.is-null{
+   color: gray;
+
+   &::after{
+      content: 'NULL';
+   }
+}
