@@ -24,6 +24,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { ipcRenderer } from 'electron';
 
 export default {
    name: 'App',
@@ -50,6 +51,9 @@ export default {
          isSettingModal: 'application/isSettingModal',
          connections: 'connections/getConnections'
       })
+   },
+   mounted () {
+      ipcRenderer.send('checkForUpdates');
    },
    methods: {
       ...mapActions({

@@ -70,10 +70,12 @@ export default {
             case 'char':
             case 'varchar':
             case 'text':
+            case 'mediumtext':
                return val.substring(0, 128);
             case 'date':
                return moment(val).format('YYYY-MM-DD');
             case 'datetime':
+            case 'timestamp':
                return moment(val).format('YYYY-MM-DD HH:mm:ss.SSS');
             case 'blob':
             case 'mediumblob':

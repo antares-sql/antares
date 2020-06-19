@@ -1,7 +1,7 @@
 {
   "name": "antares",
   "productName": "Antares",
-  "version": "0.0.0-alpha",
+  "version": "0.0.1-alpha",
   "description": "A cross-platform easy to use SQL client.",
   "license": "MIT",
   "repository": "https://github.com/Fabio286/antares.git",
@@ -15,7 +15,7 @@
   "author": "Fabio Di Stasio <fabio286@gmail.com>",
   "build": {
     "appId": "com.estarium.antares",
-    "artifactName": "${productName}-${version}-${channel}-${os}_${arch}.${ext}",
+    "artifactName": "${productName}-${version}-${os}_${arch}.${ext}",
     "files": [
       "static/*"
     ]

@@ -10,6 +10,8 @@ import connections from './modules/connections.store';
 import workspaces from './modules/workspaces.store';
 import notifications from './modules/notifications.store';
 
+import ipcUpdates from './plugins/ipcUpdates';
+
 const vuexLocalStorage = new VuexPersist({
    key: 'application', // The key to store the state on in the storage provider.
    storage: window.localStorage,
@@ -30,5 +32,8 @@ export default new Vuex.Store({
       workspaces,
       notifications
    },
-   plugins: [vuexLocalStorage.plugin]
+   plugins: [
+      vuexLocalStorage.plugin,
+      ipcUpdates
+   ]
 });

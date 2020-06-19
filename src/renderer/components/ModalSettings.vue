@@ -78,7 +78,7 @@
                </div>
 
                <div v-if="selectedTab === 'update'" class="panel-body py-4">
-                  <!--  -->
+                  <ModalSettingsUpdate />
                </div>
 
                <div v-if="selectedTab === 'about'" class="panel-body py-4">
@@ -101,10 +101,14 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import localesNames from '@/i18n/supported-locales';
+import ModalSettingsUpdate from '@/components/ModalSettingsUpdate';
 const { shell } = require('electron');
 
 export default {
    name: 'ModalSettings',
+   components: {
+      ModalSettingsUpdate
+   },
    data () {
       return {
          isUpdate: false,

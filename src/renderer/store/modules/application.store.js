@@ -10,7 +10,9 @@ export default {
       is_edit_modal: false,
       is_setting_modal: false,
       selected_setting_tab: 'general',
-      selected_conection: {}
+      selected_conection: {},
+      update_status: 'noupdate', // noupdate, available, checking, nocheck, downloading, downloaded
+      download_progress: 0
    },
    getters: {
       isLoading: state => state.is_loading,
@@ -20,7 +22,9 @@ export default {
       isNewModal: state => state.is_new_modal,
       isEditModal: state => state.is_edit_modal,
       isSettingModal: state => state.is_setting_modal,
-      selectedSettingTab: state => state.selected_setting_tab
+      selectedSettingTab: state => state.selected_setting_tab,
+      getUpdateStatus: state => state.update_status,
+      getDownloadProgress: state => state.download_progress
    },
    mutations: {
       SET_LOADING_STATUS (state, payload) {
@@ -45,6 +49,12 @@ export default {
       },
       HIDE_SETTING_MODAL (state) {
          state.is_setting_modal = false;
+      },
+      CHANGE_UPDATE_STATUS (state, status) {
+         state.update_status = status;
+      },
+      CHANGE_PROGRESS_PERCENTAGE (state, percentage) {
+         state.download_progress = percentage;
       }
    },
    actions: {

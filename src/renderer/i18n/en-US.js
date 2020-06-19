@@ -43,7 +43,15 @@ module.exports = {
       deleteConnection: 'Delete connection',
       deleteConnectionCorfirm: 'Do you confirm the cancellation of',
       connectionSuccessfullyMade: 'Connection successfully made!',
-      madeWithJS: 'Made with 💛 and JavaScript!'
+      madeWithJS: 'Made with 💛 and JavaScript!',
+      checkForUpdates: 'Check for updates',
+      noUpdatesAvailable: 'No updates available',
+      checkingForUpdate: 'Checking for updates',
+      checkFailure: 'Check failed, please try later',
+      updateAvailable: 'Update available',
+      downloadingUpdate: 'Downloading update',
+      updateDownloaded: 'Update downloaded',
+      restartToInstall: 'Restart Antares to install'
    },
    // Date and Time
    short: {
