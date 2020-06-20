@@ -10,7 +10,7 @@
     "compile": "electron-webpack",
     "dist": "cross-env NODE_ENV=production npm run compile && electron-builder",
     "dist:dir": "cross-env NODE_ENV=production npm run dist --dir -c.compression=store -c.mac.identity=null",
-    "publish": "build -p always"
+    "publish": "cross-env NODE_ENV=production npm run dist -p always"
   },
   "author": "Fabio Di Stasio <fabio286@gmail.com>",
   "build": {

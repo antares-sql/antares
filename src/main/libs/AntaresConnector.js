@@ -73,14 +73,10 @@ export class AntaresConnector {
       switch (this._client) {
          case 'maria':
          case 'mysql':
-            if (!this._poolSize) {
-               const connection = mysql.createConnection(this._params);
-               this._connection = connection.promise();
-            }
+            if (!this._poolSize)
+               this._connection = mysql.createConnection(this._params);
             else
                this._connection = mysql.createPool({ ...this._params, connectionLimit: this._poolSize });
-               // this._connection = pool.promise();
-
             break;
          case 'mssql': {
             const mssqlParams = {
