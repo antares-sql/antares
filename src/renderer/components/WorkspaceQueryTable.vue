@@ -34,16 +34,14 @@
                   :key="row._id"
                   class="tr"
                >
-                  <div
+                  <WorkspaceQueryTableCell
                      v-for="(col, cKey) in row"
                      :key="cKey"
-                     class="td"
-                     :class="`type-${fieldType(cKey)}${isNull(col)}`"
-                     :style="{'display': cKey === '_id' ? 'none' : ''}"
-                     tabindex="0"
-                  >
-                     {{ col | typeFormat(fieldType(cKey)) }}
-                  </div>
+                     :content="col"
+                     :field="cKey"
+                     :type="fieldType(cKey)"
+                     @updateField="updateField"
+                  />
                </div>
             </div>
          </div>
@@ -52,48 +50,16 @@
 </template>
 
 <script>
-import { uidGen, mimeFromHex, formatBytes } from 'common/libs/utilities';
-import hexToBinary from 'common/libs/hexToBinary';
-import moment from 'moment';
+import { uidGen } from 'common/libs/utilities';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
+import WorkspaceQueryTableCell from '@/components/WorkspaceQueryTableCell';
+import { mapActions } from 'vuex';
 
 export default {
    name: 'WorkspaceQueryTable',
    components: {
-      BaseVirtualScroll
-   },
-   filters: {
-      typeFormat (val, type) {
-         if (!val) return val;
-
-         switch (type) {
-            case 'char':
-            case 'varchar':
-            case 'text':
-            case 'mediumtext':
-               return val.substring(0, 128);
-            case 'date':
-               return moment(val).format('YYYY-MM-DD');
-            case 'datetime':
-            case 'timestamp':
-               return moment(val).format('YYYY-MM-DD HH:mm:ss.SSS');
-            case 'blob':
-            case 'mediumblob':
-            case 'longblob': {
-               const buff = Buffer.from(val);
-               if (!buff.length) return '';
-
-               const hex = buff.toString('hex').substring(0, 8).toUpperCase();
-               return `${mimeFromHex(hex).mime} (${formatBytes(buff.length)})`;
-            }
-            case 'bit': {
-               const hex = Buffer.from(val).toString('hex');
-               return hexToBinary(hex);
-            }
-            default:
-               return val;
-         }
-      }
+      BaseVirtualScroll,
+      WorkspaceQueryTableCell
    },
    props: {
       results: Object,
@@ -104,6 +70,11 @@ export default {
          resultsSize: 1000,
          localResults: []
       };
+   },
+   computed: {
+      primaryField () {
+         return this.fields.filter(field => field.key === 'pri')[0] || false;
+      }
    },
    watch: {
       results () {
@@ -123,6 +94,9 @@ export default {
       window.removeEventListener('resize', this.resizeResults);
    },
    methods: {
+      ...mapActions({
+         addNotification: 'notifications/addNotification'
+      }),
       fieldType (cKey) {
          let type = 'unknown';
          const field = this.fields.filter(field => field.name === cKey)[0];
@@ -130,9 +104,6 @@ export default {
             type = field.type;
 
          return type;
-      },
-      isNull (col) {
-         return col === null ? ' is-null' : '';
       },
       keyName (key) {
          switch (key) {
@@ -156,6 +127,11 @@ export default {
                this.resultsSize = size;
             }
          }
+      },
+      updateField (payload) {
+         if (!this.primaryField)
+            this.addNotification({ status: 'warning', message: this.$t('message.unableEditFieldWithoutPrimary') });
+         console.log(payload);
       }
    }
 };

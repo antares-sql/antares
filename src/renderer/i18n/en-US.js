@@ -51,7 +51,8 @@ module.exports = {
       updateAvailable: 'Update available',
       downloadingUpdate: 'Downloading update',
       updateDownloaded: 'Update downloaded',
-      restartToInstall: 'Restart Antares to install'
+      restartToInstall: 'Restart Antares to install',
+      unableEditFieldWithoutPrimary: 'Unable to edit a field without a primary key in resultset'
    },
    // Date and Time
    short: {

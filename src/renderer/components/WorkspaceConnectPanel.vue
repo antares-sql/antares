@@ -45,7 +45,6 @@ export default {
    },
    methods: {
       ...mapActions({
-         addNotification: 'notifications/addNotification',
          connectWorkspace: 'workspaces/connectWorkspace'
       }),
       async startConnection () {

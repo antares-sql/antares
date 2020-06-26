@@ -24,7 +24,7 @@ export default {
       isSettingModal: state => state.is_setting_modal,
       selectedSettingTab: state => state.selected_setting_tab,
       getUpdateStatus: state => state.update_status,
-      getDownloadProgress: state => state.download_progress
+      getDownloadProgress: state => Number(state.download_progress.toFixed(1))
    },
    mutations: {
       SET_LOADING_STATUS (state, payload) {

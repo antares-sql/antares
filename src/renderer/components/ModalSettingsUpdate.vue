@@ -45,7 +45,7 @@ export default {
    computed: {
       ...mapGetters({
          updateStatus: 'application/getUpdateStatus',
-         downloadPercentage: 'application/getDownloadProgress'// TODO: remove float
+         downloadPercentage: 'application/getDownloadProgress'
       }),
       updateMessage () {
          switch (this.updateStatus) {

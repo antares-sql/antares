@@ -82,7 +82,6 @@ export default {
    },
    methods: {
       ...mapActions({
-         addNotification: 'notifications/addNotification',
          addWorkspace: 'workspaces/addWorkspace',
          connectWorkspace: 'workspaces/connectWorkspace',
          removeConnected: 'workspaces/removeConnected',
