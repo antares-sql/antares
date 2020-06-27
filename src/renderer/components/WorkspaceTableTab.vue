@@ -31,6 +31,7 @@
             v-if="results"
             :results="results"
             :fields="resultsFields"
+            @updateField="updateField"
          />
       </div>
    </div>
@@ -134,6 +135,24 @@ export default {
          }
 
          this.isQuering = false;
+      },
+      async updateField (payload) {
+         const params = {
+            uid: this.connection.uid,
+            schema: this.workspace.breadcrumbs.schema,
+            table: this.workspace.breadcrumbs.table,
+            ...payload
+         };
+         console.log(params);
+
+         try {
+            const { status, response } = await Structure.updateTableCell(params);
+            if (status !== 'success')
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
       }
    }
 };

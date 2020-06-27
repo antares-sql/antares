@@ -40,7 +40,7 @@
                      :content="col"
                      :field="cKey"
                      :type="fieldType(cKey)"
-                     @updateField="updateField"
+                     @updateField="updateField($event, row[primaryField.name])"
                   />
                </div>
             </div>
@@ -128,10 +128,17 @@ export default {
             }
          }
       },
-      updateField (payload) {
+      updateField (event, id) {
          if (!this.primaryField)
             this.addNotification({ status: 'warning', message: this.$t('message.unableEditFieldWithoutPrimary') });
-         console.log(payload);
+         else {
+            const params = {
+               primary: this.primaryField.name,
+               id,
+               ...event
+            };
+            this.$emit('updateField', params);
+         }
       }
    }
 };

@@ -9,4 +9,8 @@ export default class {
    static getTableData (params) {
       return ipcRenderer.invoke('getTableData', params);
    }
+
+   static updateTableCell (params) {
+      return ipcRenderer.invoke('updateTableCell', params);
+   }
 }

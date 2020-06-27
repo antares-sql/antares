@@ -145,6 +145,11 @@ export class AntaresConnector {
       return this.raw(sql);
    }
 
+   update (...args) {
+      this._query.update = [...this._query.update, ...args];
+      return this;
+   }
+
    /**
     * @returns {string} SQL string
     * @memberof AntaresConnector
@@ -152,30 +157,35 @@ export class AntaresConnector {
    getSQL () {
       // SELECT
       const selectArray = this._query.select.reduce(this._reducer, []);
-      let selectRaw;
-      switch (this._client) {
-         case 'maria':
-         case 'mysql':
-            selectRaw = selectArray.length ? `SELECT ${selectArray.join(', ')} ` : 'SELECT * ';
-            break;
-         case 'mssql': {
-            const topRaw = this._query.limit.length ? ` TOP (${this._query.limit[0]}) ` : '';
-            selectRaw = selectArray.length ? `SELECT${topRaw} ${selectArray.join(', ')} ` : 'SELECT * ';
+      let selectRaw = '';
+      if (selectArray.length) {
+         switch (this._client) {
+            case 'maria':
+            case 'mysql':
+               selectRaw = selectArray.length ? `SELECT ${selectArray.join(', ')} ` : 'SELECT * ';
+               break;
+            case 'mssql': {
+               const topRaw = this._query.limit.length ? ` TOP (${this._query.limit[0]}) ` : '';
+               selectRaw = selectArray.length ? `SELECT${topRaw} ${selectArray.join(', ')} ` : 'SELECT * ';
+            }
+               break;
+            default:
+               break;
          }
-            break;
-         default:
-            break;
       }
 
       // FROM
-      let fromRaw;
+      let fromRaw = '';
+      if (!this._query.update.length)
+         fromRaw = 'FROM';
+
       switch (this._client) {
          case 'maria':
          case 'mysql':
-            fromRaw = this._query.from ? `FROM ${this._query.schema ? `\`${this._query.schema}\`.` : ''}\`${this._query.from}\` ` : '';
+            fromRaw += this._query.from ? ` ${this._query.schema ? `\`${this._query.schema}\`.` : ''}\`${this._query.from}\` ` : '';
             break;
          case 'mssql':
-            fromRaw = this._query.from ? `FROM ${this._query.schema ? `${this._query.schema}.` : ''}${this._query.from} ` : '';
+            fromRaw += this._query.from ? ` ${this._query.schema ? `${this._query.schema}.` : ''}${this._query.from} ` : '';
             break;
          default:
             break;
@@ -183,8 +193,13 @@ export class AntaresConnector {
 
       const whereArray = this._query.where.reduce(this._reducer, []);
       const whereRaw = whereArray.length ? `WHERE ${whereArray.join(' AND ')} ` : '';
+
+      const updateArray = this._query.update.reduce(this._reducer, []);
+      const updateRaw = updateArray.length ? `SET ${updateArray.join(', ')} ` : '';
+
       const groupByArray = this._query.groupBy.reduce(this._reducer, []);
       const groupByRaw = groupByArray.length ? `GROUP BY ${groupByArray.join(', ')} ` : '';
+
       const orderByArray = this._query.orderBy.reduce(this._reducer, []);
       const orderByRaw = orderByArray.length ? `ORDER BY ${orderByArray.join(', ')} ` : '';
 
@@ -202,7 +217,7 @@ export class AntaresConnector {
             break;
       }
 
-      return `${selectRaw}${fromRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}`;
+      return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}`;
    }
 
    /**

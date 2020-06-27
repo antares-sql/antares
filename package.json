@@ -4,7 +4,7 @@
   "version": "0.0.1-alpha",
   "description": "A cross-platform easy to use SQL client.",
   "license": "MIT",
-  "repository": "https://github.com/Fabio286/antares.git",
+  "repository": "https://github.com/EStarium/antares.git",
   "scripts": {
     "dev": "cross-env NODE_ENV=development electron-webpack dev",
     "compile": "electron-webpack",

@@ -11,11 +11,11 @@
 
       <div class="footer-right-elements">
          <ul class="footer-elements">
-            <li class="footer-element footer-link">
+            <li class="footer-element footer-link" @click="openOutside('https://www.patreon.com/fabio286')">
                <i class="material-icons md-18 mr-1">favorite</i>
                <small>{{ $t('word.donate') }}</small>
             </li>
-            <li class="footer-element footer-link">
+            <li class="footer-element footer-link" @click="openOutside('https://github.com/EStarium/antares/issues')">
                <i class="material-icons md-18">bug_report</i>
             </li>
             <li class="footer-element footer-link" @click="showSettingModal('about')">
@@ -28,6 +28,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+const { shell } = require('electron');
 
 export default {
    name: 'TheFooter',
@@ -40,7 +41,10 @@ export default {
    methods: {
       ...mapActions({
          showSettingModal: 'application/showSettingModal'
-      })
+      }),
+      openOutside (link) {
+         shell.openExternal(link);
+      }
    }
 };
 </script>

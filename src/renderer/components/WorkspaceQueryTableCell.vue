@@ -120,8 +120,8 @@ export default {
          this.isEditing = false;
          if (this.localContent === this.content) return;
 
-         const { field, localContent: content } = this;
-         this.$emit('updateField', { field, content });
+         const { field, type, localContent: content } = this;
+         this.$emit('updateField', { field, type, content });
       }
    }
 };

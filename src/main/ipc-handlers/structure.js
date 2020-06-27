@@ -24,4 +24,14 @@ export default (connections) => {
          return { status: 'error', response: err.toString() };
       }
    });
+
+   ipcMain.handle('updateTableCell', async (event, params) => {
+      try {
+         const result = await Generic.updateTableCell(connections[params.uid], params);
+         return { status: 'success', response: result };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
 };
