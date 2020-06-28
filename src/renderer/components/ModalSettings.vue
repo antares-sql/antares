@@ -74,7 +74,9 @@
                </div>
 
                <div v-if="selectedTab === 'themes'" class="panel-body py-4">
-                  <!--  -->
+                  <div class="text-center">
+                     <p>In future releases</p>
+                  </div>
                </div>
 
                <div v-if="selectedTab === 'update'" class="panel-body py-4">

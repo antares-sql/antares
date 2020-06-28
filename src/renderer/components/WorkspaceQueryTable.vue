@@ -139,6 +139,15 @@ export default {
             };
             this.$emit('updateField', params);
          }
+      },
+      applyUpdate (params) {
+         const { primary, id, field, content } = params;
+         this.localResults = this.localResults.map(row => {
+            if (row[primary] === id)
+               row[field] = content;
+
+            return row;
+         });
       }
    }
 };

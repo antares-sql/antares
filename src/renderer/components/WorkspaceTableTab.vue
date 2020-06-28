@@ -29,6 +29,7 @@
       <div class="workspace-query-results column col-12">
          <WorkspaceQueryTable
             v-if="results"
+            ref="queryTable"
             :results="results"
             :fields="resultsFields"
             @updateField="updateField"
@@ -143,11 +144,12 @@ export default {
             table: this.workspace.breadcrumbs.table,
             ...payload
          };
-         console.log(params);
 
          try {
             const { status, response } = await Structure.updateTableCell(params);
-            if (status !== 'success')
+            if (status === 'success')
+               this.$refs.queryTable.applyUpdate(payload);
+            else
                this.addNotification({ status: 'error', message: response });
          }
          catch (err) {

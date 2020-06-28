@@ -238,7 +238,7 @@ export class AntaresConnector {
    async raw (sql) {
       if (process.env.NODE_ENV === 'development') console.log(sql);
 
-      switch (this._client) {
+      switch (this._client) { // TODO: uniform fields with every client type, needed table name and fields array
          case 'maria':
          case 'mysql': {
             const { rows, fields } = await new Promise((resolve, reject) => {

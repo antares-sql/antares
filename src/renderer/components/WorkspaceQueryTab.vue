@@ -31,8 +31,10 @@
       <div class="workspace-query-results column col-12">
          <WorkspaceQueryTable
             v-if="results"
+            ref="queryTable"
             :results="results"
             :fields="resultsFields"
+            @updateField="updateField"
          />
       </div>
    </div>
@@ -40,6 +42,7 @@
 
 <script>
 import Connection from '@/ipc-api/Connection';
+import Structure from '@/ipc-api/Structure';
 import QueryEditor from '@/components/QueryEditor';
 import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
 import { mapGetters, mapActions } from 'vuex';
@@ -57,7 +60,8 @@ export default {
       return {
          query: '',
          isQuering: false,
-         results: {}
+         results: {},
+         fields: []
       };
    },
    computed: {
@@ -68,9 +72,27 @@ export default {
          return this.getWorkspace(this.connection.uid);
       },
       resultsFields () {
-         return this.results.rows && this.results.rows.length ? Object.keys(this.results.rows[0]).map(field => {
-            return { name: field, key: '', type: '' }; // TODO: extract getting table name from query
-         }) : [];
+         if (this.results) {
+            return this.fields.map(field => { // TODO: move to main process
+               return {
+                  name: field.COLUMN_NAME,
+                  key: field.COLUMN_KEY.toLowerCase(),
+                  type: field.DATA_TYPE
+               };
+            }).filter(field => {
+               if (this.results.fields) {
+                  const queryFields = this.results.fields.map(field => field.name);
+                  if (queryFields.includes(field.name)) return field;
+               }
+            });
+         }
+         else
+            return [];
+      },
+      table () {
+         if (this.results.fields.length)
+            return this.results.fields[0].orgTable;
+         return '';
       }
    },
    methods: {
@@ -99,7 +121,43 @@ export default {
             this.addNotification({ status: 'error', message: err.stack });
          }
 
+         try {
+            const params = {
+               uid: this.connection.uid,
+               schema: this.workspace.breadcrumbs.schema,
+               table: this.table
+            };
+
+            const { status, response } = await Structure.getTableColumns(params);
+            if (status === 'success')
+               this.fields = response.rows;
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
          this.isQuering = false;
+      },
+      async updateField (payload) {
+         const params = {
+            uid: this.connection.uid,
+            schema: this.workspace.breadcrumbs.schema,
+            table: this.workspace.breadcrumbs.table,
+            ...payload
+         };
+
+         try {
+            const { status, response } = await Structure.updateTableCell(params);
+            if (status === 'success')
+               this.$refs.queryTable.applyUpdate(payload);
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
       }
    }
 };

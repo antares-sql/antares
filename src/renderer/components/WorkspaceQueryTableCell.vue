@@ -99,7 +99,7 @@ export default {
             case 'longblob':
             case 'bit':
             default:
-               return 'text';
+               return 'hidden';
          }
       }
    },
@@ -108,6 +108,8 @@ export default {
          return value === null ? ' is-null' : '';
       },
       editON () {
+         if (!['number', 'text'].includes(this.inputType)) return;// TODO: remove temporary block
+
          this.$nextTick(() => {
             this.$refs.cell.blur();
 
