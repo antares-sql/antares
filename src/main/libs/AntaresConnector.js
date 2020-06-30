@@ -176,7 +176,7 @@ export class AntaresConnector {
 
       // FROM
       let fromRaw = '';
-      if (!this._query.update.length)
+      if (!this._query.update.length && this._query.from !== '')
          fromRaw = 'FROM';
 
       switch (this._client) {
