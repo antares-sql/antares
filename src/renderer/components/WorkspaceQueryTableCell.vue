@@ -16,7 +16,8 @@
          v-else
          ref="editField"
          v-model="localContent"
-         :type="inputType"
+         v-mask="inputProps.mask"
+         :type="inputProps.type"
          autofocus
          class="editable-field px-2"
          @blur="editOFF"
@@ -28,6 +29,7 @@
 import moment from 'moment';
 import { mimeFromHex, formatBytes } from 'common/libs/utilities';
 import hexToBinary from 'common/libs/hexToBinary';
+import { mask } from 'vue-the-mask';
 
 export default {
    name: 'WorkspaceQueryTableCell',
@@ -41,11 +43,13 @@ export default {
             case 'text':
             case 'mediumtext':
                return val.substring(0, 128);
-            case 'date':
-               return moment(val).format('YYYY-MM-DD');
+            case 'date': {
+               return moment(val).isValid() ? moment(val).format('YYYY-MM-DD') : val;
+            }
             case 'datetime':
-            case 'timestamp':
-               return moment(val).format('YYYY-MM-DD HH:mm:ss.SSS');
+            case 'timestamp': {
+               return moment(val).isValid() ? moment(val).format('YYYY-MM-DD HH:mm:ss.SSS') : val;
+            }
             case 'blob':
             case 'mediumblob':
             case 'longblob': {
@@ -64,6 +68,9 @@ export default {
          }
       }
    },
+   directives: {
+      mask
+   },
    props: {
       type: String,
       field: String,
@@ -76,24 +83,23 @@ export default {
       };
    },
    computed: {
-      inputType () {
+      inputProps () {
          switch (this.type) {
             case 'char':
             case 'varchar':
             case 'text':
             case 'mediumtext':
-               return 'text';
+               return { type: 'text', mask: false };
             case 'int':
             case 'tinyint':
             case 'smallint':
             case 'mediumint':
-               return 'number';
+               return { type: 'number', mask: false };
             case 'date':
-               return 'date';
+               return { type: 'text', mask: '####-##-##' };
             case 'datetime':
             case 'timestamp':
-               return 'datetime-local';
-            // TODO: file uploader/viewer or bit field
+               return { type: 'text', mask: '####-##-## ##:##:##.###' };// TODO: field length
             case 'blob':
             case 'mediumblob':
             case 'longblob':
@@ -108,8 +114,6 @@ export default {
          return value === null ? ' is-null' : '';
       },
       editON () {
-         if (!['number', 'text'].includes(this.inputType)) return;// TODO: remove temporary block
-
          this.$nextTick(() => {
             this.$refs.cell.blur();
 
