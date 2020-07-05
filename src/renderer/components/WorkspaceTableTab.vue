@@ -75,7 +75,8 @@ export default {
             return {
                name: field.COLUMN_NAME,
                key: field.COLUMN_KEY.toLowerCase(),
-               type: field.DATA_TYPE
+               type: field.DATA_TYPE,
+               precision: field.DATETIME_PRECISION
             };
          });
       }

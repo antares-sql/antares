@@ -11,17 +11,28 @@
          class="cell-content px-2"
          :class="isNull(content)"
          @dblclick="editON"
-      >{{ content | typeFormat(type) }}</span>
-      <input
-         v-else
-         ref="editField"
-         v-model="localContent"
-         v-mask="inputProps.mask"
-         :type="inputProps.type"
-         autofocus
-         class="editable-field px-2"
-         @blur="editOFF"
-      >
+      >{{ content | typeFormat(type, precision) }}</span>
+      <template v-else>
+         <input
+            v-if="inputProps.mask"
+            ref="editField"
+            v-model="localContent"
+            v-mask="inputProps.mask"
+            :type="inputProps.type"
+            autofocus
+            class="editable-field px-2"
+            @blur="editOFF"
+         >
+         <input
+            v-else
+            ref="editField"
+            v-model="localContent"
+            :type="inputProps.type"
+            autofocus
+            class="editable-field px-2"
+            @blur="editOFF"
+         >
+      </template>
    </div>
 </template>
 
@@ -34,7 +45,7 @@ import { mask } from 'vue-the-mask';
 export default {
    name: 'WorkspaceQueryTableCell',
    filters: {
-      typeFormat (val, type) {
+      typeFormat (val, type, precision) {
          if (!val) return val;
 
          switch (type) {
@@ -48,7 +59,11 @@ export default {
             }
             case 'datetime':
             case 'timestamp': {
-               return moment(val).isValid() ? moment(val).format('YYYY-MM-DD HH:mm:ss.SSS') : val;
+               let datePrecision = '';
+               for (let i = 0; i < precision; i++)
+                  datePrecision += i === 0 ? '.S' : 'S';
+
+               return moment(val).isValid() ? moment(val).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`) : val;
             }
             case 'blob':
             case 'mediumblob':
@@ -74,6 +89,7 @@ export default {
    props: {
       type: String,
       field: String,
+      precision: [Number, null],
       content: [String, Number, Object, Date, Uint8Array]
    },
    data () {
@@ -98,12 +114,17 @@ export default {
             case 'date':
                return { type: 'text', mask: '####-##-##' };
             case 'datetime':
-            case 'timestamp':
-               return { type: 'text', mask: '####-##-## ##:##:##.###' };// TODO: field length
+            case 'timestamp': {
+               let datetimeMask = '####-##-## ##:##:##';
+               for (let i = 0; i < this.precision; i++)
+                  datetimeMask += i === 0 ? '.#' : '#';
+               return { type: 'text', mask: datetimeMask };
+            }
             case 'blob':
             case 'mediumblob':
             case 'longblob':
             case 'bit':
+               return { type: 'file', mask: false };
             default:
                return 'hidden';
          }
@@ -114,6 +135,8 @@ export default {
          return value === null ? ' is-null' : '';
       },
       editON () {
+         if (['file'].includes(this.inputProps.type)) return;// TODO: remove temporary file block
+
          this.$nextTick(() => {
             this.$refs.cell.blur();
 

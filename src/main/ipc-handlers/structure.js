@@ -7,7 +7,7 @@ import Generic from '../models/Generic';
 export default (connections) => {
    ipcMain.handle('getTableColumns', async (event, { uid, schema, table }) => {
       try {
-         const result = await InformationSchema.getTableColumns(connections[uid], schema, table);
+         const result = await InformationSchema.getTableColumns(connections[uid], schema, table);// TODO: uniform column properties
          return { status: 'success', response: result };
       }
       catch (err) {

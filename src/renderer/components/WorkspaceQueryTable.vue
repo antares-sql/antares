@@ -39,6 +39,7 @@
                      :key="cKey"
                      :content="col"
                      :field="cKey"
+                     :precision="fieldPrecision(cKey)"
                      :type="fieldType(cKey)"
                      @updateField="updateField($event, row[primaryField.name])"
                   />
@@ -104,6 +105,14 @@ export default {
             type = field.type;
 
          return type;
+      },
+      fieldPrecision (cKey) {
+         let length = 0;
+         const field = this.fields.filter(field => field.name === cKey)[0];
+         if (field)
+            length = field.precision;
+
+         return length;
       },
       keyName (key) {
          switch (key) {
