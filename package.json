@@ -32,7 +32,7 @@
     "codemirror": "^5.55.0",
     "electron-log": "^4.2.2",
     "electron-updater": "^4.3.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "material-design-icons": "^3.0.1",
     "moment": "^2.27.0",
     "mssql": "^6.2.0",
