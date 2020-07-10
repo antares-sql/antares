@@ -5,6 +5,7 @@
       class="td"
       :class="`type-${type} p-0`"
       tabindex="0"
+      @contextmenu.prevent="$emit('cellContext', $event)"
    >
       <span
          v-if="!isEditing"

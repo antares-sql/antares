@@ -41,6 +41,8 @@ export default {
    .context{
       display: flex;
       position: absolute;
+      color: $body-font-color;
+      font-size: 16px;
       z-index: 400;
       justify-content: center;
       align-items: center;

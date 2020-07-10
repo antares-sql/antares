@@ -1,66 +1,76 @@
 <template>
-   <BaseVirtualScroll
-      v-if="results.rows"
-      ref="resultTable"
-      :items="localResults"
-      :item-height="25"
-      class="vscroll"
-      :style="{'height': resultsSize+'px'}"
-   >
-      <template slot-scope="{ items }">
-         <div class="table table-hover">
-            <div class="thead">
-               <div class="tr">
-                  <div
-                     v-for="field in fields"
-                     :key="field.name"
-                     class="th"
-                  >
-                     <div class="table-column-title">
-                        <i
-                           v-if="field.key"
-                           class="material-icons column-key c-help"
-                           :class="`key-${field.key}`"
-                           :title="keyName(field.key)"
-                        >vpn_key</i>
-                        <span>{{ field.name }}</span>
+   <div>
+      <TableContext
+         v-if="isContext"
+         :context-event="contextEvent"
+         @closeContext="isContext = false"
+      />
+      <BaseVirtualScroll
+         v-if="results.rows"
+         ref="resultTable"
+         :items="localResults"
+         :item-height="25"
+         class="vscroll"
+         :style="{'height': resultsSize+'px'}"
+      >
+         <template slot-scope="{ items }">
+            <div class="table table-hover">
+               <div class="thead">
+                  <div class="tr">
+                     <div
+                        v-for="field in fields"
+                        :key="field.name"
+                        class="th"
+                     >
+                        <div class="table-column-title">
+                           <i
+                              v-if="field.key"
+                              class="material-icons column-key c-help"
+                              :class="`key-${field.key}`"
+                              :title="keyName(field.key)"
+                           >vpn_key</i>
+                           <span>{{ field.name }}</span>
+                        </div>
                      </div>
                   </div>
                </div>
-            </div>
-            <div class="tbody">
-               <div
-                  v-for="row in items"
-                  :key="row._id"
-                  class="tr"
-               >
-                  <WorkspaceQueryTableCell
-                     v-for="(col, cKey) in row"
-                     :key="cKey"
-                     :content="col"
-                     :field="cKey"
-                     :precision="fieldPrecision(cKey)"
-                     :type="fieldType(cKey)"
-                     @updateField="updateField($event, row[primaryField.name])"
-                  />
+               <div class="tbody">
+                  <div
+                     v-for="row in items"
+                     :key="row._id"
+                     class="tr"
+                  >
+                     <WorkspaceQueryTableCell
+                        v-for="(col, cKey) in row"
+                        :key="cKey"
+                        :content="col"
+                        :field="cKey"
+                        :precision="fieldPrecision(cKey)"
+                        :type="fieldType(cKey)"
+                        @updateField="updateField($event, row[primaryField.name])"
+                        @cellContext="contextMenu($event)"
+                     />
+                  </div>
                </div>
             </div>
-         </div>
-      </template>
-   </BaseVirtualScroll>
+         </template>
+      </BaseVirtualScroll>
+   </div>
 </template>
 
 <script>
 import { uidGen } from 'common/libs/utilities';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
 import WorkspaceQueryTableCell from '@/components/WorkspaceQueryTableCell';
+import TableContext from '@/components/WorkspaceQueryTableContext';
 import { mapActions } from 'vuex';
 
 export default {
    name: 'WorkspaceQueryTable',
    components: {
       BaseVirtualScroll,
-      WorkspaceQueryTableCell
+      WorkspaceQueryTableCell,
+      TableContext
    },
    props: {
       results: Object,
@@ -69,7 +79,9 @@ export default {
    data () {
       return {
          resultsSize: 1000,
-         localResults: []
+         localResults: [],
+         isContext: false,
+         contextEvent: null
       };
    },
    computed: {
@@ -157,6 +169,10 @@ export default {
 
             return row;
          });
+      },
+      contextMenu (event) {
+         this.contextEvent = event;
+         this.isContext = true;
       }
    }
 };

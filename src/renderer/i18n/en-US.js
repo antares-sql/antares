@@ -52,7 +52,9 @@ module.exports = {
       downloadingUpdate: 'Downloading update',
       updateDownloaded: 'Update downloaded',
       restartToInstall: 'Restart Antares to install',
-      unableEditFieldWithoutPrimary: 'Unable to edit a field without a primary key in resultset'
+      unableEditFieldWithoutPrimary: 'Unable to edit a field without a primary key in resultset',
+      editCell: 'Edit cell',
+      deleteRow: 'Delete row'
    },
    // Date and Time
    short: {
