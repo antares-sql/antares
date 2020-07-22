@@ -16,6 +16,9 @@
    &.table-striped {
      .tbody {
        .tr {
+         &.selected{
+          background: #333!important;
+         }
          &.active {
            background: $bg-color-dark;
          }

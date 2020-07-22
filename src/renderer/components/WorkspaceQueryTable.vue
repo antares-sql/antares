@@ -3,6 +3,7 @@
       <TableContext
          v-if="isContext"
          :context-event="contextEvent"
+         :selected-rows="selectedRows"
          @closeContext="isContext = false"
       />
       <BaseVirtualScroll
@@ -39,6 +40,8 @@
                      v-for="row in items"
                      :key="row._id"
                      class="tr"
+                     :class="{'selected': selectedRows.includes(row._id)}"
+                     @click="selectRow($event, row._id)"
                   >
                      <WorkspaceQueryTableCell
                         v-for="(col, cKey) in row"
@@ -48,7 +51,7 @@
                         :precision="fieldPrecision(cKey)"
                         :type="fieldType(cKey)"
                         @updateField="updateField($event, row[primaryField.name])"
-                        @cellContext="contextMenu($event)"
+                        @contextmenu="contextMenu($event, {id: row._id, field: cKey})"
                      />
                   </div>
                </div>
@@ -81,7 +84,9 @@ export default {
          resultsSize: 1000,
          localResults: [],
          isContext: false,
-         contextEvent: null
+         contextEvent: null,
+         selectedCell: null,
+         selectedRows: []
       };
    },
    computed: {
@@ -149,14 +154,14 @@ export default {
             }
          }
       },
-      updateField (event, id) {
+      updateField (payload, id) {
          if (!this.primaryField)
             this.addNotification({ status: 'warning', message: this.$t('message.unableEditFieldWithoutPrimary') });
          else {
             const params = {
                primary: this.primaryField.name,
                id,
-               ...event
+               ...payload
             };
             this.$emit('updateField', params);
          }
@@ -170,7 +175,37 @@ export default {
             return row;
          });
       },
-      contextMenu (event) {
+      selectRow (event, row) {
+         if (event.ctrlKey) {
+            if (this.selectedRows.includes(row))
+               this.selectedRows = this.selectedRows.filter(el => el !== row);
+            else
+               this.selectedRows.push(row);
+         }
+         else if (event.shiftKey) {
+            if (!this.selectedRows.length)
+               this.selectedRows.push(row);
+            else {
+               const lastID = this.selectedRows.slice(-1)[0];
+               const lastIndex = this.localResults.findIndex(el => el._id === lastID);
+               const clickedIndex = this.localResults.findIndex(el => el._id === row);
+               if (lastIndex > clickedIndex) {
+                  for (let i = clickedIndex; i < lastIndex; i++)
+                     this.selectedRows.push(this.localResults[i]._id);
+               }
+               else if (lastIndex < clickedIndex) {
+                  for (let i = clickedIndex; i > lastIndex; i--)
+                     this.selectedRows.push(this.localResults[i]._id);
+               }
+            }
+         }
+         else
+            this.selectedRows = [row];
+      },
+      contextMenu (event, cell) {
+         this.selectedCell = cell;
+         if (!this.selectedRows.includes(cell.id))
+            this.selectedRows = [cell.id];
          this.contextEvent = event;
          this.isContext = true;
       }

@@ -5,14 +5,14 @@
       class="td"
       :class="`type-${type} p-0`"
       tabindex="0"
-      @contextmenu.prevent="$emit('cellContext', $event)"
+      @contextmenu.prevent="$emit('contextmenu', $event)"
    >
       <span
          v-if="!isEditing"
          class="cell-content px-2"
          :class="isNull(content)"
          @dblclick="editON"
-      >{{ content | typeFormat(type, precision) }}</span>
+      >{{ content | typeFormat(type, precision) | cutText }}</span>
       <template v-else>
          <input
             v-if="inputProps.mask"
@@ -46,6 +46,10 @@ import { mask } from 'vue-the-mask';
 export default {
    name: 'WorkspaceQueryTableCell',
    filters: {
+      cutText (val) {
+         if (typeof val !== 'string') return val;
+         return val.length > 50 ? `${val.substring(0, 50)}[...]` : val;
+      },
       typeFormat (val, type, precision) {
          if (!val) return val;
 
@@ -54,7 +58,7 @@ export default {
             case 'varchar':
             case 'text':
             case 'mediumtext':
-               return val.substring(0, 128);
+               return val;
             case 'date': {
                return moment(val).isValid() ? moment(val).format('YYYY-MM-DD') : val;
             }
@@ -148,7 +152,7 @@ export default {
       },
       editOFF () {
          this.isEditing = false;
-         if (this.localContent === this.content) return;
+         if (this.localContent === this.$options.filters.typeFormat(this.content, this.type)) return;
 
          const { field, type, localContent: content } = this;
          this.$emit('updateField', { field, type, content });

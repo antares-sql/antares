@@ -3,11 +3,11 @@
       :context-event="contextEvent"
       @closeContext="$emit('closeContext')"
    >
-      <div class="context-element" @click="showEditModal()">
+      <div class="context-element" @click="$emit('editCell')">
          <i class="material-icons md-18 text-light pr-1">edit</i> {{ $t('message.editCell') }}
       </div>
       <div class="context-element" @click="showConfirmModal">
-         <i class="material-icons md-18 text-light pr-1">delete</i> {{ $t('message.deleteRow') }}
+         <i class="material-icons md-18 text-light pr-1">delete</i> {{ $tc('message.deleteRows', selectedRows.length) }}
       </div>
 
       <ConfirmModal
@@ -32,7 +32,8 @@ export default {
       ConfirmModal
    },
    props: {
-      contextEvent: MouseEvent
+      contextEvent: MouseEvent,
+      selectedRows: Array
    },
    data () {
       return {
