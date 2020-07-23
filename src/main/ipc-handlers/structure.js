@@ -34,4 +34,14 @@ export default (connections) => {
          return { status: 'error', response: err.toString() };
       }
    });
+
+   ipcMain.handle('deleteTableRows', async (event, params) => {
+      try {
+         const result = await Generic.deleteTableRows(connections[params.uid], params);
+         return { status: 'success', response: result };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
 };

@@ -35,6 +35,7 @@
             :results="results"
             :fields="resultsFields"
             @updateField="updateField"
+            @deleteSelected="deleteSelected"
          />
       </div>
    </div>
@@ -46,6 +47,7 @@ import Structure from '@/ipc-api/Structure';
 import QueryEditor from '@/components/QueryEditor';
 import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
 import { mapGetters, mapActions } from 'vuex';
+import tableTabs from '@/mixins/tableTabs';
 
 export default {
    name: 'WorkspaceQueryTab',
@@ -53,6 +55,7 @@ export default {
       QueryEditor,
       WorkspaceQueryTable
    },
+   mixins: [tableTabs],
    props: {
       connection: Object
    },
@@ -140,25 +143,6 @@ export default {
          }
 
          this.isQuering = false;
-      },
-      async updateField (payload) {
-         const params = {
-            uid: this.connection.uid,
-            schema: this.workspace.breadcrumbs.schema,
-            table: this.workspace.breadcrumbs.table,
-            ...payload
-         };
-
-         try {
-            const { status, response } = await Structure.updateTableCell(params);
-            if (status === 'success')
-               this.$refs.queryTable.applyUpdate(payload);
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
       }
    }
 };

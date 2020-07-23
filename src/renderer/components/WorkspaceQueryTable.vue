@@ -4,6 +4,7 @@
          v-if="isContext"
          :context-event="contextEvent"
          :selected-rows="selectedRows"
+         @deleteSelected="deleteSelected"
          @closeContext="isContext = false"
       />
       <BaseVirtualScroll
@@ -143,7 +144,7 @@ export default {
                return 'UNKNOWN ' + key;
          }
       },
-      resizeResults (e) {
+      resizeResults () {
          if (this.$refs.resultTable) {
             const el = this.$refs.resultTable.$el;
             const footer = document.getElementById('footer');
@@ -152,7 +153,11 @@ export default {
                const size = window.innerHeight - el.getBoundingClientRect().top - footer.offsetHeight;
                this.resultsSize = size;
             }
+            this.$refs.resultTable.updateWindow();
          }
+      },
+      refreshScroller () {
+         this.resizeResults();
       },
       updateField (payload, id) {
          if (!this.primaryField)
@@ -164,6 +169,18 @@ export default {
                ...payload
             };
             this.$emit('updateField', params);
+         }
+      },
+      deleteSelected () {
+         if (!this.primaryField)
+            this.addNotification({ status: 'warning', message: this.$t('message.unableEditFieldWithoutPrimary') });
+         else {
+            const rowIDs = this.localResults.filter(row => this.selectedRows.includes(row._id)).map(row => row[this.primaryField.name]);
+            const params = {
+               primary: this.primaryField.name,
+               rows: rowIDs
+            };
+            this.$emit('deleteSelected', params);
          }
       },
       applyUpdate (params) {

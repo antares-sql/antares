@@ -32,7 +32,7 @@ export class AntaresConnector {
          join: [],
          update: [],
          insert: [],
-         delete: []
+         delete: false
       };
       this._query = Object.assign({}, this._queryDefaults);
    }
@@ -107,6 +107,12 @@ export class AntaresConnector {
       return this;
    }
 
+   delete (table) {
+      this._query.delete = true;
+      this.from(table);
+      return this;
+   }
+
    where (...args) {
       this._query.where = [...this._query.where, ...args];
       return this;
@@ -145,6 +151,11 @@ export class AntaresConnector {
       return this.raw(sql);
    }
 
+   /**
+    * @param {String | Array} args field = value
+    * @returns
+    * @memberof AntaresConnector
+    */
    update (...args) {
       this._query.update = [...this._query.update, ...args];
       return this;
@@ -176,7 +187,7 @@ export class AntaresConnector {
 
       // FROM
       let fromRaw = '';
-      if (!this._query.update.length && this._query.from !== '')
+      if (!this._query.update.length && !!this._query.from)
          fromRaw = 'FROM';
 
       switch (this._client) {
@@ -217,7 +228,7 @@ export class AntaresConnector {
             break;
       }
 
-      return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}`;
+      return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}`;
    }
 
    /**

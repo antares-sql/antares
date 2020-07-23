@@ -29,4 +29,12 @@ export default class {
          .where({ [params.primary]: `= ${params.id}` })
          .run();
    }
+
+   static async deleteTableRows (connection, params) {
+      return connection
+         .schema(params.schema)
+         .delete(params.table)
+         .where({ [params.primary]: `IN (${params.rows.join(',')})` })
+         .run();
+   }
 }

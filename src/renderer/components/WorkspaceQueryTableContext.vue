@@ -1,21 +1,25 @@
 <template>
    <BaseContextMenu
       :context-event="contextEvent"
-      @closeContext="$emit('closeContext')"
+      @closeContext="closeContext"
    >
-      <div class="context-element" @click="$emit('editCell')">
-         <i class="material-icons md-18 text-light pr-1">edit</i> {{ $t('message.editCell') }}
-      </div>
       <div class="context-element" @click="showConfirmModal">
          <i class="material-icons md-18 text-light pr-1">delete</i> {{ $tc('message.deleteRows', selectedRows.length) }}
       </div>
 
       <ConfirmModal
          v-if="isConfirmModal"
-         @confirm="deleteConnection()"
+         @confirm="deleteRows()"
          @hide="hideConfirmModal"
       >
-      <!--  -->
+         <template :slot="'header'">
+            {{ $tc('message.deleteRows', selectedRows.length) }}
+         </template>
+         <div :slot="'body'">
+            <div class="mb-2">
+               {{ $tc('message.confirmToDeleteRows', selectedRows.length) }}
+            </div>
+         </div>
       </ConfirmModal>
    </BaseContextMenu>
 </template>
@@ -52,6 +56,13 @@ export default {
       },
       hideConfirmModal () {
          this.isConfirmModal = false;
+      },
+      closeContext () {
+         this.$emit('closeContext');
+      },
+      deleteRows () {
+         this.$emit('deleteSelected');
+         this.closeContext();
       }
    }
 };

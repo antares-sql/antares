@@ -13,4 +13,8 @@ export default class {
    static updateTableCell (params) {
       return ipcRenderer.invoke('updateTableCell', params);
    }
+
+   static deleteTableRows (params) {
+      return ipcRenderer.invoke('deleteTableRows', params);
+   }
 }

@@ -54,7 +54,8 @@ module.exports = {
       restartToInstall: 'Restart Antares to install',
       unableEditFieldWithoutPrimary: 'Unable to edit a field without a primary key in resultset',
       editCell: 'Edit cell',
-      deleteRows: 'Delete row | Delete {count} rows'
+      deleteRows: 'Delete row | Delete {count} rows',
+      confirmToDeleteRows: 'Do you confirm to delete one row? | Do you confirm to delete {count} rows?'
    },
    // Date and Time
    short: {
