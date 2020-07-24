@@ -152,9 +152,14 @@ export default {
             border-left: none;
             border-bottom-width: 2px;
             border-color: $bg-color-light;
-            padding: .1rem .4rem;
+            padding: 0;
             font-weight: 700;
             font-size: .7rem;
+
+            > div {
+               padding: .1rem .4rem;
+               min-width: -webkit-fill-available;
+            }
          }
 
          .td{

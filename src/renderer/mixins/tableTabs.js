@@ -1,4 +1,4 @@
-import Structure from '@/ipc-api/Structure';
+import Tables from '@/ipc-api/Tables';
 
 export default {
    methods: {
@@ -6,12 +6,12 @@ export default {
          const params = {
             uid: this.connection.uid,
             schema: this.workspace.breadcrumbs.schema,
-            table: this.workspace.breadcrumbs.table,
+            table: this.table,
             ...payload
          };
 
          try {
-            const { status, response } = await Structure.updateTableCell(params);
+            const { status, response } = await Tables.updateTableCell(params);
             if (status === 'success')
                this.$refs.queryTable.applyUpdate(payload);
             else
@@ -30,7 +30,7 @@ export default {
          };
 
          try {
-            const { status, response } = await Structure.deleteTableRows(params);
+            const { status, response } = await Tables.deleteTableRows(params);
             if (status === 'success') {
                const { primary, rows } = params;
                this.results = { ...this.results, rows: this.results.rows.filter(row => !rows.includes(row[primary])) };

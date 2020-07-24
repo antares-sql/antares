@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import InformationSchema from '../models/InformationSchema';
-import Generic from '../models/Generic';
+import Tables from '../models/Tables';
 
 // TODO: remap objects based on client
 
@@ -17,7 +17,7 @@ export default (connections) => {
 
    ipcMain.handle('getTableData', async (event, { uid, schema, table }) => {
       try {
-         const result = await Generic.getTableData(connections[uid], schema, table);
+         const result = await Tables.getTableData(connections[uid], schema, table);
          return { status: 'success', response: result };
       }
       catch (err) {
@@ -27,7 +27,7 @@ export default (connections) => {
 
    ipcMain.handle('updateTableCell', async (event, params) => {
       try {
-         const result = await Generic.updateTableCell(connections[params.uid], params);
+         const result = await Tables.updateTableCell(connections[params.uid], params);
          return { status: 'success', response: result };
       }
       catch (err) {
@@ -37,7 +37,7 @@ export default (connections) => {
 
    ipcMain.handle('deleteTableRows', async (event, params) => {
       try {
-         const result = await Generic.deleteTableRows(connections[params.uid], params);
+         const result = await Tables.deleteTableRows(connections[params.uid], params);
          return { status: 'success', response: result };
       }
       catch (err) {

@@ -1,11 +1,11 @@
 import connection from './connection';
-import structure from './structure';
+import tables from './tables';
 import updates from './updates';
 
 const connections = {};
 
 export default () => {
    connection(connections);
-   structure(connections);
+   tables(connections);
    updates();
 };

@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import Structure from '@/ipc-api/Structure';
+import Tables from '@/ipc-api/Tables';
 import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
 import { mapGetters, mapActions } from 'vuex';
 import tableTabs from '@/mixins/tableTabs';
@@ -85,13 +85,13 @@ export default {
       }
    },
    watch: {
-      table: function () {
+      table () {
          if (this.isSelected) {
             this.getTableData();
             this.lastTable = this.table;
          }
       },
-      isSelected: function (val) {
+      isSelected (val) {
          if (val && this.lastTable !== this.table) {
             this.getTableData();
             this.lastTable = this.table;
@@ -117,7 +117,7 @@ export default {
          };
 
          try {
-            const { status, response } = await Structure.getTableColumns(params);
+            const { status, response } = await Tables.getTableColumns(params);
             if (status === 'success')
                this.fields = response.rows;
             else
@@ -128,7 +128,7 @@ export default {
          }
 
          try {
-            const { status, response } = await Structure.getTableData(params);
+            const { status, response } = await Tables.getTableData(params);
 
             if (status === 'success')
                this.results = response;

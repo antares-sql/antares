@@ -3,44 +3,41 @@
       .type-#{$type} {
          color: $color;
 
-         @if $type == 'number'{
+         @if $type == "number" {
             text-align: right;
          }
       }
    }
 }
 
-@include type-colors((
-   "char": seagreen,
-   "varchar": seagreen,
-   "text": seagreen,
-   "mediumtext": seagreen,
-   "longtext": seagreen,
+@include type-colors(
+   (
+      "char": seagreen,
+      "varchar": seagreen,
+      "text": seagreen,
+      "mediumtext": seagreen,
+      "longtext": seagreen,
+      "int": cornflowerblue,
+      "tinyint": cornflowerblue,
+      "smallint": cornflowerblue,
+      "mediumint": cornflowerblue,
+      "bigint": cornflowerblue,
+      "datetime": coral,
+      "date": coral,
+      "time": coral,
+      "timestamp": coral,
+      "bit": lightskyblue,
+      "blob": darkorchid,
+      "mediumblob": darkorchid,
+      "longblob": darkorchid,
+      "unknown": gray,
+   )
+);
 
-   "int": cornflowerblue,
-   "tinyint": cornflowerblue,
-   "smallint": cornflowerblue,
-   "mediumint": cornflowerblue,
-   "bigint": cornflowerblue,
-   
-   "datetime": coral,
-   "date": coral,
-   "time": coral,
-   "timestamp": coral,
-
-   "bit": lightskyblue,
-   
-   "blob": darkorchid,
-   "mediumblob": darkorchid,
-   "longblob": darkorchid,
-   
-   "unknown": gray,
-));
-
-.is-null{
+.is-null {
    color: gray;
 
-   &::after{
-      content: 'NULL';
+   &::after {
+      content: "NULL";
    }
 }

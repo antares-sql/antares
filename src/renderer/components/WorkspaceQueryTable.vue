@@ -10,7 +10,7 @@
       <BaseVirtualScroll
          v-if="results.rows"
          ref="resultTable"
-         :items="localResults"
+         :items="sortedResults"
          :item-height="25"
          class="vscroll"
          :style="{'height': resultsSize+'px'}"
@@ -22,16 +22,19 @@
                      <div
                         v-for="field in fields"
                         :key="field.name"
-                        class="th"
+                        class="th c-hand"
                      >
-                        <div class="table-column-title">
-                           <i
-                              v-if="field.key"
-                              class="material-icons column-key c-help"
-                              :class="`key-${field.key}`"
-                              :title="keyName(field.key)"
-                           >vpn_key</i>
-                           <span>{{ field.name }}</span>
+                        <div ref="columnResize" class="column-resizable">
+                           <div class="table-column-title" @click="sort(field.name)">
+                              <i
+                                 v-if="field.key"
+                                 class="material-icons column-key c-help"
+                                 :class="`key-${field.key}`"
+                                 :title="keyName(field.key)"
+                              >vpn_key</i>
+                              <span>{{ field.name }}</span>
+                              <i v-if="currentSort === field.name" class="material-icons sort-icon">{{ currentSortDir === 'asc' ? 'arrow_upward':'arrow_downward' }}</i>
+                           </div>
                         </div>
                      </div>
                   </div>
@@ -87,16 +90,34 @@ export default {
          isContext: false,
          contextEvent: null,
          selectedCell: null,
-         selectedRows: []
+         selectedRows: [],
+         currentSort: '',
+         currentSortDir: 'asc'
       };
    },
    computed: {
       primaryField () {
          return this.fields.filter(field => field.key === 'pri')[0] || false;
+      },
+      sortedResults () {
+         if (this.currentSort) {
+            return [...this.localResults].sort((a, b) => {
+               let modifier = 1;
+               const valA = typeof a[this.currentSort] === 'string' ? a[this.currentSort].toLowerCase() : a[this.currentSort];
+               const valB = typeof b[this.currentSort] === 'string' ? b[this.currentSort].toLowerCase() : b[this.currentSort];
+               if (this.currentSortDir === 'desc') modifier = -1;
+               if (valA < valB) return -1 * modifier;
+               if (valA > valB) return 1 * modifier;
+               return 0;
+            });
+         }
+         else
+            return this.localResults;
       }
    },
    watch: {
       results () {
+         this.resetSort();
          this.localResults = this.results.rows ? this.results.rows.map(item => {
             return { ...item, _id: uidGen() };
          }) : [];
@@ -104,7 +125,7 @@ export default {
    },
    updated () {
       if (this.$refs.resultTable)
-         this.resizeResults();
+         this.refreshScroller();
    },
    mounted () {
       window.addEventListener('resize', this.resizeResults);
@@ -225,6 +246,22 @@ export default {
             this.selectedRows = [cell.id];
          this.contextEvent = event;
          this.isContext = true;
+      },
+      sort (field) {
+         if (field === this.currentSort) {
+            if (this.currentSortDir === 'asc')
+               this.currentSortDir = 'desc';
+            else
+               this.resetSort();
+         }
+         else {
+            this.currentSortDir = 'asc';
+            this.currentSort = field;
+         }
+      },
+      resetSort () {
+         this.currentSort = '';
+         this.currentSortDir = 'asc';
       }
    }
 };
@@ -237,9 +274,23 @@ export default {
    overflow-anchor: none;
 }
 
+.column-resizable{
+   &:hover,
+   &:active{
+      resize: horizontal;
+      overflow: hidden;
+   }
+}
+
 .table-column-title{
    display: flex;
    align-items: center;
+}
+
+.sort-icon{
+   font-size: .7rem;
+   line-height: 1;
+   margin-left: .2rem;
 }
 
 .column-key{

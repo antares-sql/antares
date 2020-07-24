@@ -43,7 +43,7 @@
 
 <script>
 import Connection from '@/ipc-api/Connection';
-import Structure from '@/ipc-api/Structure';
+import Tables from '@/ipc-api/Tables';
 import QueryEditor from '@/components/QueryEditor';
 import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
 import { mapGetters, mapActions } from 'vuex';
@@ -132,7 +132,7 @@ export default {
                table: this.table
             };
 
-            const { status, response } = await Structure.getTableColumns(params);
+            const { status, response } = await Tables.getTableColumns(params);
             if (status === 'success')
                this.fields = response.rows;
             else

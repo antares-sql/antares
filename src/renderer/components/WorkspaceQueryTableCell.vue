@@ -48,7 +48,7 @@ export default {
    filters: {
       cutText (val) {
          if (typeof val !== 'string') return val;
-         return val.length > 50 ? `${val.substring(0, 50)}[...]` : val;
+         return val.length > 128 ? `${val.substring(0, 128)}[...]` : val;
       },
       typeFormat (val, type, precision) {
          if (!val) return val;
@@ -167,14 +167,12 @@ export default {
    border: none;
    line-height: 1;
    width: 100%;
-   max-width: 200px;
 }
 
 .cell-content{
    display: block;
    min-height: .8rem;
    text-overflow: ellipsis;
-   max-width: 200px;
    white-space: nowrap;
    overflow: hidden;
 }
