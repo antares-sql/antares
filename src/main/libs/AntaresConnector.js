@@ -20,6 +20,7 @@ export class AntaresConnector {
       this._params = args.params;
       this._poolSize = args.poolSize || false;
       this._connection = null;
+      this._logger = args.logger || console.log;
 
       this._queryDefaults = {
          schema: '',
@@ -247,7 +248,7 @@ export class AntaresConnector {
     * @memberof AntaresConnector
     */
    async raw (sql) {
-      if (process.env.NODE_ENV === 'development') console.log(sql);
+      if (process.env.NODE_ENV === 'development') this._logger(sql);
 
       switch (this._client) { // TODO: uniform fields with every client type, needed table name and fields array
          case 'maria':
