@@ -27,7 +27,9 @@ module.exports = {
       language: 'Lingua',
       version: 'Versione',
       donate: 'Dona',
-      run: 'Esegui'
+      run: 'Esegui',
+      schema: 'Schema',
+      results: 'Results'
    },
    message: {
       appWelcome: 'Benvenuto in Antares SQL Client!',
@@ -41,7 +43,18 @@ module.exports = {
       deleteConnection: 'Elimina connessione',
       deleteConnectionCorfirm: 'Confermi l\'eliminazione di',
       connectionSuccessfullyMade: 'Connessione avvenuta con successo!',
-      madeWithJS: 'Fatto con 💛 e JavaScript!'
+      madeWithJS: 'Fatto con 💛 e JavaScript!',
+      noUpdatesAvailable: 'Nessun aggiornamento disponibile',
+      checkingForUpdate: 'Controllando gli aggiornamenti',
+      checkFailure: 'Controllo fallito, riprova più tardi',
+      updateAvailable: 'Aggiornamento disponibile',
+      downloadingUpdate: 'Scaricando l\'aggiornamento',
+      updateDownloaded: 'Aggiornamento scaricato',
+      restartToInstall: 'Riavvia Antares per installare l\'aggiornamento',
+      unableEditFieldWithoutPrimary: 'Impossibile modificare il campo senza una primary key in resultset',
+      editCell: 'Modifica cella',
+      deleteRows: 'Elimina riga | Elimina {count} righe',
+      confirmToDeleteRows: 'Confermi di voler cancellare una riga? | Confermi di voler cancellare {count} righe?'
    },
    // Date and Time
    short: {
