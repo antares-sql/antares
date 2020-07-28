@@ -51,7 +51,7 @@
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.2",
     "electron": "^8.4.0",
-    "electron-builder": "^22.7.0",
+    "electron-builder": "^22.8.0",
     "electron-devtools-installer": "^3.1.1",
     "electron-webpack": "^2.8.2",
     "electron-webpack-vue": "^2.4.0",
