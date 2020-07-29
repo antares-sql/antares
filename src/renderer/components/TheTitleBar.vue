@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { remote } from 'electron';
+import { remote, ipcRenderer } from 'electron';
 
 export default {
    name: 'TheTitleBar',
@@ -56,7 +56,7 @@ export default {
    },
    methods: {
       closeApp () {
-         this.w.close();
+         ipcRenderer.send('closeApp');
       },
       minimizeApp () {
          this.w.minimize();

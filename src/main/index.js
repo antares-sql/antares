@@ -12,7 +12,7 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow;
 
-function createMainWindow () {
+async function createMainWindow () {
    const icon = require('../renderer/images/logo-32.png');
    const window = new BrowserWindow({
       width: 1600,
@@ -24,23 +24,16 @@ function createMainWindow () {
       icon: nativeImage.createFromDataURL(icon.default),
       webPreferences: {
          nodeIntegration: true,
-         'web-security': false
+         'web-security': false,
+         enableRemoteModule: true
       },
       frame: false,
       backgroundColor: '#1d1d1d'
    });
 
-   if (isDevelopment)
-      window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`);
-   else {
-      window.loadURL(formatUrl({
-         pathname: path.join(__dirname, 'index.html'),
-         protocol: 'file',
-         slashes: true
-      }));
-   }
-
    if (isDevelopment) {
+      await window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`);
+
       const { default: installExtension, VUEJS_DEVTOOLS } = require('electron-devtools-installer');
       window.webContents.openDevTools();
 
@@ -51,6 +44,13 @@ function createMainWindow () {
          .catch(err => {
             console.log(err);
          });
+   }
+   else {
+      await window.loadURL(formatUrl({
+         pathname: path.join(__dirname, 'index.html'),
+         protocol: 'file',
+         slashes: true
+      }));
    }
 
    window.on('closed', () => {
