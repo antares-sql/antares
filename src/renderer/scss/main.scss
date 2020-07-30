@@ -127,6 +127,10 @@ body {
    border-color: $primary-color;
 }
 
+.input-group .input-group-addon{
+   border-color: #3f3f3f;
+}
+
 .menu {
    font-size: 0.7rem;
    .menu-item {

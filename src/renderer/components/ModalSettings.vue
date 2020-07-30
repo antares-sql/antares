@@ -45,8 +45,8 @@
 
                <div v-if="selectedTab === 'general'" class="panel-body py-4">
                   <form class="form-horizontal">
-                     <div class="col-6 col-sm-12">
-                        <div class="form-group">
+                     <div class="col-8 col-sm-12">
+                        <div class="form-group mb-4">
                            <div class="col-6 col-sm-12">
                               <label class="form-label">
                                  <i class="material-icons md-18 mr-1">translate</i>
@@ -67,6 +67,25 @@
                                     {{ locale.name }}
                                  </option>
                               </select>
+                           </div>
+                        </div>
+                        <div class="form-group">
+                           <div class="col-6 col-sm-12">
+                              <label class="form-label">
+                                 {{ $t('message.notificationsTimeout') }}:
+                              </label>
+                           </div>
+                           <div class="col-6 col-sm-12">
+                              <div class="input-group">
+                                 <input
+                                    v-model="localTimeout"
+                                    class="form-input"
+                                    type="number"
+                                    min="1"
+                                    @focusout="checkNotificationsTimeout"
+                                 >
+                                 <span class="input-group-addon">{{ $t('word.seconds') }}</span>
+                              </div>
                            </div>
                         </div>
                      </div>
@@ -115,6 +134,7 @@ export default {
       return {
          isUpdate: false,
          localLocale: null,
+         localTimeout: null,
          selectedTab: 'general'
       };
    },
@@ -123,7 +143,8 @@ export default {
          appName: 'application/appName',
          appVersion: 'application/appVersion',
          selectedSettingTab: 'application/selectedSettingTab',
-         selectedLocale: 'settings/getLocale'
+         selectedLocale: 'settings/getLocale',
+         notificationsTimeout: 'settings/getNotificationsTimeout'
       }),
       locales () {
          const locales = [];
@@ -135,18 +156,26 @@ export default {
    },
    created () {
       this.localLocale = this.selectedLocale;
+      this.localTimeout = this.notificationsTimeout;
       this.selectedTab = this.selectedSettingTab;
    },
    methods: {
       ...mapActions({
          closeModal: 'application/hideSettingModal',
-         changeLocale: 'settings/changeLocale'
+         changeLocale: 'settings/changeLocale',
+         updateNotificationsTimeout: 'settings/updateNotificationsTimeout'
       }),
       selectTab (tab) {
          this.selectedTab = tab;
       },
       openOutside (link) {
          shell.openExternal(link);
+      },
+      checkNotificationsTimeout () {
+         if (!this.localTimeout)
+            this.localTimeout = 1;
+
+         this.updateNotificationsTimeout(+this.localTimeout);
       }
    }
 };

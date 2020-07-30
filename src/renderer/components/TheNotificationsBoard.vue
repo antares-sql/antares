@@ -1,5 +1,9 @@
 <template>
-   <div id="notifications-board">
+   <div
+      id="notifications-board"
+      @mouseenter="clearTimeouts"
+      @mouseleave="rearmTimeouts"
+   >
       <transition-group name="slide-fade">
          <BaseNotification
             v-for="notification in latestNotifications"
@@ -21,18 +25,51 @@ export default {
    components: {
       BaseNotification
    },
+   data () {
+      return {
+         timeouts: {}
+      };
+   },
    computed: {
       ...mapGetters({
-         notifications: 'notifications/getNotifications'
+         notifications: 'notifications/getNotifications',
+         notificationsTimeout: 'settings/getNotificationsTimeout'
       }),
       latestNotifications () {
          return this.notifications.slice(0, 10);
       }
    },
+   watch: {
+      notifications: {
+         deep: true,
+         handler: function (notification) {
+            if (notification.length) {
+               this.timeouts[notification[0].uid] = setTimeout(() => {
+                  this.removeNotification(notification[0].uid);
+                  delete this.timeouts[notification.uid];
+               }, this.notificationsTimeout * 1000);
+            }
+         }
+      }
+   },
    methods: {
       ...mapActions({
          removeNotification: 'notifications/removeNotification'
-      })
+      }),
+      clearTimeouts () {
+         for (const uid in this.timeouts) {
+            clearTimeout(this.timeouts[uid]);
+            delete this.timeouts[uid];
+         }
+      },
+      rearmTimeouts () {
+         for (const notification of this.notifications) {
+            this.timeouts[notification.uid] = setTimeout(() => {
+               this.removeNotification(notification.uid);
+               delete this.timeouts[notification.uid];
+            }, this.notificationsTimeout * 1000);
+         }
+      }
    }
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-   <div class="modal modal-sm active">
+   <div class="modal active" :class="modalSizeClass">
       <a class="modal-overlay" @click="hideModal" />
       <div class="modal-container">
          <div v-if="hasHeader" class="modal-header">
@@ -45,6 +45,12 @@
 <script>
 export default {
    name: 'BaseConfirmModal',
+   props: {
+      size: {
+         type: String,
+         default: 'small' // small, medium, large
+      }
+   },
    computed: {
       hasHeader () {
          return !!this.$slots.header;
@@ -54,6 +60,13 @@ export default {
       },
       hasDefault () {
          return !!this.$slots.default;
+      },
+      modalSizeClass () {
+         if (this.size === 'small')
+            return 'modal-sm';
+         else if (this.size === 'large')
+            return 'modal-lg';
+         else return '';
       }
    },
    methods: {

@@ -29,7 +29,9 @@ module.exports = {
       donate: 'Donate',
       run: 'Run',
       schema: 'Schema',
-      results: 'Results'
+      results: 'Results',
+      size: 'Size',
+      seconds: 'Seconds'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -55,7 +57,8 @@ module.exports = {
       unableEditFieldWithoutPrimary: 'Unable to edit a field without a primary key in resultset',
       editCell: 'Edit cell',
       deleteRows: 'Delete row | Delete {count} rows',
-      confirmToDeleteRows: 'Do you confirm to delete one row? | Do you confirm to delete {count} rows?'
+      confirmToDeleteRows: 'Do you confirm to delete one row? | Do you confirm to delete {count} rows?',
+      notificationsTimeout: 'Notifications timeout'
    },
    // Date and Time
    short: {

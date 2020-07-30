@@ -1,4 +1,5 @@
 'use strict';
+import { sqlEscaper } from 'common/libs/sqlEscaper';
 export default class {
    static async getTableData (connection, schema, table) {
       return connection
@@ -9,9 +10,29 @@ export default class {
          .run();
    }
 
-   static async updateTableCell (connection, params) { // TODO: Handle different field types
+   static async updateTableCell (connection, params) {
+      let escapedParam;
+      switch (params.type) {
+         case 'int':
+         case 'tinyint':
+         case 'smallint':
+         case 'mediumint':
+         case 'bigint':
+            escapedParam = params.content;
+            break;
+         case 'char':
+         case 'varchar':
+         case 'text':
+         case 'mediumtext':
+         case 'longtext':
+            escapedParam = `"${sqlEscaper(params.content)}"`;
+            break;
+         default:
+            escapedParam = `"${sqlEscaper(params.content)}"`;
+            break;
+      }
       return connection
-         .update({ [params.field]: `= "${params.content}"` })
+         .update({ [params.field]: `= ${escapedParam}` })
          .schema(params.schema)
          .from(params.table)
          .where({ [params.primary]: `= ${params.id}` })

@@ -2,15 +2,14 @@
    <div
       v-if="field !== '_id'"
       ref="cell"
-      class="td"
-      :class="`type-${type} p-0`"
+      class="td p-0"
       tabindex="0"
       @contextmenu.prevent="$emit('contextmenu', $event)"
    >
       <span
-         v-if="!isEditing"
+         v-if="!isInlineEditor"
          class="cell-content px-2"
-         :class="isNull(content)"
+         :class="`${isNull(content)} type-${type}`"
          @dblclick="editON"
       >{{ content | typeFormat(type, precision) | cutText }}</span>
       <template v-else>
@@ -34,6 +33,29 @@
             @blur="editOFF"
          >
       </template>
+      <ConfirmModal
+         v-if="isTextareaEditor"
+         size="medium"
+         @confirm="editOFF"
+         @hide="hideEditorModal"
+      >
+         <template :slot="'header'">
+            {{ $t('word.edit') }} "{{ field }}"
+         </template>
+         <div :slot="'body'">
+            <div class="mb-2">
+               <div>
+                  <textarea
+                     v-model="localContent"
+                     class="form-input textarea-editor"
+                  />
+               </div>
+               <div class="pt-2">
+                  <b>{{ $t('word.size') }}</b>: {{ localContent.length }}
+               </div>
+            </div>
+         </div>
+      </ConfirmModal>
    </div>
 </template>
 
@@ -42,9 +64,13 @@ import moment from 'moment';
 import { mimeFromHex, formatBytes } from 'common/libs/utilities';
 import hexToBinary from 'common/libs/hexToBinary';
 import { mask } from 'vue-the-mask';
+import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
    name: 'WorkspaceQueryTableCell',
+   components: {
+      ConfirmModal
+   },
    filters: {
       cutText (val) {
          if (typeof val !== 'string') return val;
@@ -99,8 +125,9 @@ export default {
    },
    data () {
       return {
-         isEditing: false,
-         localContent: ''
+         isInlineEditor: false,
+         isTextareaEditor: false,
+         localContent: null
       };
    },
    computed: {
@@ -110,11 +137,13 @@ export default {
             case 'varchar':
             case 'text':
             case 'mediumtext':
+            case 'longtext':
                return { type: 'text', mask: false };
             case 'int':
             case 'tinyint':
             case 'smallint':
             case 'mediumint':
+            case 'bigint':
                return { type: 'number', mask: false };
             case 'date':
                return { type: 'text', mask: '####-##-##' };
@@ -141,21 +170,34 @@ export default {
       },
       editON () {
          if (['file'].includes(this.inputProps.type)) return;// TODO: remove temporary file block
-
-         this.$nextTick(() => {
-            this.$refs.cell.blur();
-
-            this.$nextTick(() => this.$refs.editField.focus());
-         });
          this.localContent = this.$options.filters.typeFormat(this.content, this.type);
-         this.isEditing = true;
+
+         switch (this.type) {
+            case 'text':
+            case 'mediumtext':
+            case 'longtext':
+               this.isTextareaEditor = true;
+               break;
+
+            default:// Inline editable fields
+               this.$nextTick(() => { // Focus on input
+                  this.$refs.cell.blur();
+
+                  this.$nextTick(() => this.$refs.editField.focus());
+               });
+               this.isInlineEditor = true;
+               break;
+         }
       },
       editOFF () {
-         this.isEditing = false;
-         if (this.localContent === this.$options.filters.typeFormat(this.content, this.type)) return;
+         this.isInlineEditor = false;
+         if (this.localContent === this.$options.filters.typeFormat(this.content, this.type)) return;// If not changed
 
          const { field, type, localContent: content } = this;
          this.$emit('updateField', { field, type, content });
+      },
+      hideEditorModal () {
+         this.isTextareaEditor = false;
       }
    }
 };
@@ -175,5 +217,9 @@ export default {
    text-overflow: ellipsis;
    white-space: nowrap;
    overflow: hidden;
+}
+
+.textarea-editor{
+   height: 50vh!important;
 }
 </style>

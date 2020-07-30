@@ -64,11 +64,11 @@ async function createMainWindow () {
       });
    });
 
-   // Initialize ipcHandlers
-   ipcHandlers();
-
    return window;
 };
+
+// Initialize ipcHandlers
+ipcHandlers();
 
 // quit application when all windows are closed
 app.on('window-all-closed', () => {

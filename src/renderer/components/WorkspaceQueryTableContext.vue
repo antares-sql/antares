@@ -9,7 +9,7 @@
 
       <ConfirmModal
          v-if="isConfirmModal"
-         @confirm="deleteRows()"
+         @confirm="deleteRows"
          @hide="hideConfirmModal"
       >
          <template :slot="'header'">
