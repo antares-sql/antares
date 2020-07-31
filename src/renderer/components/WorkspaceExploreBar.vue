@@ -123,70 +123,70 @@ export default {
 </script>
 
 <style lang="scss">
-   .workspace-explorebar-resizer{
-      position: absolute;
-      width: 4px;
-      right: -2px;
-      top: 0;
-      height: calc(100vh - #{$excluding-size});
-      cursor: ew-resize;
-      z-index: 99;
-   }
+  .workspace-explorebar-resizer {
+    position: absolute;
+    width: 4px;
+    right: -2px;
+    top: 0;
+    height: calc(100vh - #{$excluding-size});
+    cursor: ew-resize;
+    z-index: 99;
+  }
 
-   .workspace-explorebar{
-      width: $explorebar-width;
+  .workspace-explorebar {
+    width: $explorebar-width;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+    background: $bg-color-gray;
+    box-shadow: 0 0 1px 0 #000;
+    z-index: 8;
+    flex: initial;
+    position: relative;
+    padding: 0;
+
+    .workspace-explorebar-header {
+      width: 100%;
+      padding: 0.3rem;
       display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
-      text-align: left;
-      background: $bg-color-gray;
-      box-shadow: 0 0 1px 0px #000;
-      z-index: 8;
-      flex: initial;
-      position: relative;
-      padding: 0;
+      justify-content: space-between;
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
 
-      .workspace-explorebar-header{
-         width: 100%;
-         padding: .3rem;
-         display: flex;
-         justify-content: space-between;
-         font-size: .6rem;
-         font-weight: 700;
-         text-transform: uppercase;
-
-         .workspace-explorebar-title{
-            width: 80%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: block;
-            align-items: center;
-         }
-
-         .workspace-explorebar-tools {
-               display: flex;
-               align-items: center;
-
-               > i{
-                  opacity: .6;
-                  transition: opacity .2s;
-                  display: flex;
-                  align-items: center;
-
-               &:hover{
-                  opacity: 1;
-               }
-            }
-         }
+      .workspace-explorebar-title {
+        width: 80%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        align-items: center;
       }
 
-      .workspace-explorebar-body{
-         width: 100%;
-         height: calc((100vh - 30px) - #{$excluding-size});
-         overflow: overlay;
-         padding: 0 .1rem;
+      .workspace-explorebar-tools {
+        display: flex;
+        align-items: center;
+
+        > i {
+          opacity: 0.6;
+          transition: opacity 0.2s;
+          display: flex;
+          align-items: center;
+
+          &:hover {
+            opacity: 1;
+          }
+        }
       }
-   }
+    }
+
+    .workspace-explorebar-body {
+      width: 100%;
+      height: calc((100vh - 30px) - #{$excluding-size});
+      overflow: overlay;
+      padding: 0 0.1rem;
+    }
+  }
 </style>

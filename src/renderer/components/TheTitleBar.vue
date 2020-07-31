@@ -81,55 +81,55 @@ export default {
 </script>
 
 <style lang="scss">
-   #titlebar{
+  #titlebar {
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+    background: $bg-color-light;
+    align-items: center;
+    height: $titlebar-height;
+    -webkit-app-region: drag;
+    user-select: none;
+    box-shadow: 0 0 1px 0 #000;
+    z-index: 9999;
+
+    .titlebar-resizer {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 4px;
+      z-index: 999;
+      -webkit-app-region: no-drag;
+    }
+
+    .titlebar-elements {
       display: flex;
-      position: relative;
-      justify-content: space-between;
-      background: $bg-color-light;
       align-items: center;
-      height: $titlebar-height;
-      -webkit-app-region: drag;
-      user-select: none;
-      box-shadow: 0 0 1px 0px #000;
-      z-index: 9999;
 
-      .titlebar-resizer{
-         position: absolute;
-         top: 0;
-         width: 100%;
-         height: 4px;
-         z-index: 999;
-         -webkit-app-region: no-drag;
+      .titlebar-logo {
+        height: $titlebar-height;
+        padding: 0 0.4rem;
       }
 
-      .titlebar-elements{
-         display: flex;
-         align-items: center;
+      .titlebar-element {
+        display: flex;
+        align-items: center;
+        height: $titlebar-height;
+        line-height: 0;
+        padding: 0 0.7rem;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+        -webkit-app-region: no-drag;
 
-         .titlebar-logo{
-            height: $titlebar-height;
-            padding: 0 .4rem;
-         }
+        &:hover {
+          opacity: 1;
+          background: rgba($color: #fff, $alpha: 0.2);
+        }
 
-         .titlebar-element{
-            display: flex;
-            align-items: center;
-            height: $titlebar-height;
-            line-height: 0;
-            padding: 0 .7rem;
-            opacity: .7;
-            transition: opacity .2s;
-            -webkit-app-region: no-drag;
-
-            &:hover{
-               opacity: 1;
-               background: rgba($color: #fff, $alpha: .2);
-            }
-
-            &.close-button:hover{
-               background: red;
-            }
-         }
+        &.close-button:hover {
+          background: red;
+        }
       }
-   }
+    }
+  }
 </style>

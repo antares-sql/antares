@@ -230,7 +230,7 @@ export default {
 </script>
 
 <style scoped>
-   .modal-container{
-      max-width: 450px;
-   }
+  .modal-container {
+    max-width: 450px;
+  }
 </style>

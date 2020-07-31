@@ -106,101 +106,98 @@ export default {
 </script>
 
 <style lang="scss">
-   #settingbar{
-      width: $settingbar-width;
-      height: calc(100vh - #{$excluding-size});
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
+  #settingbar {
+    width: $settingbar-width;
+    height: calc(100vh - #{$excluding-size});
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background: $bg-color-light;
+    padding: 0;
+    box-shadow: 0 0 1px 0 #000;
+    z-index: 9;
+
+    .settingbar-top-elements {
+      overflow-x: hidden;
+      overflow-y: overlay;
+      max-height: calc((100vh - 3.5rem) - #{$excluding-size});
+
+      &::-webkit-scrollbar {
+        width: 3px;
+      }
+    }
+
+    .settingbar-bottom-elements {
+      padding-top: 0.5rem;
       background: $bg-color-light;
+      z-index: 1;
+    }
+
+    .settingbar-elements {
+      list-style: none;
+      text-align: center;
+      width: $settingbar-width;
       padding: 0;
-      box-shadow: 0 0 1px 0px #000;
-      z-index: 9;
+      margin: 0;
 
-      .settingbar-top-elements{
-         overflow-x: hidden;
-         overflow-y: overlay;
-         max-height: calc((100vh - 3.5rem) - #{$excluding-size});
+      .settingbar-element {
+        height: $settingbar-width;
+        width: 100%;
+        margin: 0;
+        border-left: 3px solid transparent;
+        opacity: 0.5;
+        transition: opacity 0.2s;
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        flex-direction: column;
 
-         &::-webkit-scrollbar {
-            width: 3px;
-         }
+        &:hover {
+          opacity: 1;
+        }
+
+        &.selected {
+          border-left-color: $body-font-color;
+          opacity: 1;
+        }
+
+        .settingbar-element-icon {
+          &.badge::after {
+            bottom: -10px;
+            right: 0;
+            position: absolute;
+            background: $success-color;
+          }
+        }
       }
+    }
+  }
 
-      .settingbar-bottom-elements{
-         padding-top: .5rem;
-         background: $bg-color-light;
-         z-index: 1;
-      }
+  .ex-tooltip {// Because both overflow-x: visible and overflow-y:auto are evil!!!
+    .ex-tooltip-content {
+      z-index: 999;
+      visibility: hidden;
+      opacity: 0;
+      display: block;
+      position: absolute;
+      text-align: center;
+      margin: 0 0 0 calc(#{$settingbar-width} - 5px);
+      left: 0;
+      padding: 0.2rem 0.4rem;
+      font-size: 0.7rem;
+      background: rgba(48, 55, 66, 0.95);
+      border-radius: 0.1rem;
+      color: #fff;
+      max-width: 320px;
+      pointer-events: none;
+      text-overflow: ellipsis;
+      transition: opacity 0.2s;
+    }
 
-      .settingbar-elements{
-         list-style: none;
-         text-align: center;
-         width: $settingbar-width;
-         padding: 0;
-         margin: 0;
-
-         .settingbar-element{
-            height: $settingbar-width;
-            width: 100%;
-            margin: 0;
-            border-left: 3px solid transparent;
-            opacity: .5;
-            transition: opacity .2s;
-            display: flex;
-            align-content: center;
-            justify-content: center;
-            flex-direction: column;
-
-            &:hover{
-               opacity: 1;
-            }
-
-            &.selected{
-               border-left-color: $body-font-color;
-               opacity: 1;
-            }
-
-            .settingbar-element-icon{
-
-               &.badge::after{
-                  bottom: -10px;
-                  right: 0;
-                  position: absolute;
-                  background: $success-color;
-               }
-            }
-         }
-
-      }
-   }
-
-   .ex-tooltip{// Because both overflow-x: visible and overflow-y:auto are evil!!!
-      .ex-tooltip-content{
-         z-index: 999;
-         visibility: hidden;
-         opacity: 0;
-         display:block;
-         position:absolute;
-         background-color:#feffe1;
-         text-align: center;
-         margin:.0 0 0 calc(#{$settingbar-width} - 5px);
-         left: 0;
-         padding: .2rem .4rem;
-         font-size: .7rem;
-         background: rgba(48,55,66,.95);
-         border-radius: .1rem;
-         color: #fff;
-         max-width: 320px;
-         pointer-events: none;
-         text-overflow: ellipsis;
-         transition: opacity .2s;
-      }
-
-      &:hover .ex-tooltip-content{
-         visibility: visible;
-         opacity: 1;
-      }
-   }
+    &:hover .ex-tooltip-content {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
 </style>

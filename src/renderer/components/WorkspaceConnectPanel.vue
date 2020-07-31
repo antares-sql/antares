@@ -72,11 +72,11 @@ export default {
 </script>
 
 <style scoped>
-   .empty{
-      height: 100%;
-      border-radius: 0;
-      background: transparent;
-      display: flex;
-      flex-direction: column;
-   }
+  .empty {
+    height: 100%;
+    border-radius: 0;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+  }
 </style>

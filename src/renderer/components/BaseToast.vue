@@ -70,10 +70,10 @@ export default {
 };
 </script>
 <style scoped>
-   .toast{
-      display: flex;
-      justify-content: space-between;
-      user-select: text;
-      word-break: break-all;
-   }
+  .toast {
+    display: flex;
+    justify-content: space-between;
+    user-select: text;
+    word-break: break-all;
+  }
 </style>

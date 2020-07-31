@@ -71,24 +71,24 @@ export default {
 };
 </script>
 <style scoped>
-   .toast{
-      display: flex;
-      justify-content: space-between;
-      user-select: text;
-      word-break: break-all;
-      width: fit-content;
-      margin-left: auto;
-   }
+  .toast {
+    display: flex;
+    justify-content: space-between;
+    user-select: text;
+    word-break: break-all;
+    width: fit-content;
+    margin-left: auto;
+  }
 
-   .notification-message{
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: inline-block;
-      max-width: 30rem;
-   }
+  .notification-message {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    max-width: 30rem;
+  }
 
-   .expanded .notification-message{
-      white-space: initial;
-   }
+  .expanded .notification-message {
+    white-space: initial;
+  }
 </style>

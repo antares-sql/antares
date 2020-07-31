@@ -25,7 +25,8 @@ async function createMainWindow () {
       webPreferences: {
          nodeIntegration: true,
          'web-security': false,
-         enableRemoteModule: true
+         enableRemoteModule: true,
+         spellcheck: false
       },
       frame: false,
       backgroundColor: '#1d1d1d'

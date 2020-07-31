@@ -78,7 +78,7 @@ export default {
 </script>
 
 <style lang="scss">
-.empty{
-   color: $body-font-color;
+.empty {
+  color: $body-font-color;
 }
 </style>

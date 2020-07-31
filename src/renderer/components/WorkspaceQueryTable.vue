@@ -269,46 +269,46 @@ export default {
 
 <style lang="scss">
 .vscroll {
-   height: 1000px;
-   overflow: auto;
-   overflow-anchor: none;
+  height: 1000px;
+  overflow: auto;
+  overflow-anchor: none;
 }
 
-.column-resizable{
-   &:hover,
-   &:active{
-      resize: horizontal;
-      overflow: hidden;
-   }
+.column-resizable {
+  &:hover,
+  &:active {
+    resize: horizontal;
+    overflow: hidden;
+  }
 }
 
-.table-column-title{
-   display: flex;
-   align-items: center;
+.table-column-title {
+  display: flex;
+  align-items: center;
 }
 
-.sort-icon{
-   font-size: .7rem;
-   line-height: 1;
-   margin-left: .2rem;
+.sort-icon {
+  font-size: 0.7rem;
+  line-height: 1;
+  margin-left: 0.2rem;
 }
 
-.column-key{
-   transform: rotate(90deg);
-   font-size: .7rem;
-   line-height: 1.5;
-   margin-right: .2rem;
+.column-key {
+  transform: rotate(90deg);
+  font-size: 0.7rem;
+  line-height: 1.5;
+  margin-right: 0.2rem;
 
-   &.key-pri{
-      color: goldenrod;
-   }
+  &.key-pri {
+    color: goldenrod;
+  }
 
-   &.key-uni{
-      color: deepskyblue;
-   }
+  &.key-uni {
+    color: deepskyblue;
+  }
 
-   &.key-mul{
-      color: palegreen;
-   }
+  &.key-mul {
+    color: palegreen;
+  }
 }
 </style>

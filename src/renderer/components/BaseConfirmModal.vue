@@ -83,7 +83,7 @@ export default {
 </script>
 
 <style scoped>
-   .modal.modal-sm .modal-container{
-      padding: 0;
-   }
+  .modal.modal-sm .modal-container {
+    padding: 0;
+  }
 </style>

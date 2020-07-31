@@ -9,109 +9,110 @@
 @import "~spectre.css/src/spectre-exp";
 
 body {
-   user-select: none;
+  user-select: none;
 }
 
-/*Additions*/
+/* Additions */
 @include margin-variant(3, $unit-3);
 @include margin-variant(4, $unit-4);
 @include padding-variant(3, $unit-3);
 @include padding-variant(4, $unit-4);
 
 .btn.btn-gray {
-   color: #fff;
-   background: $bg-color-gray;
+  color: #fff;
+  background: $bg-color-gray;
 
-   &:hover {
-      background: $bg-color;
-   }
+  &:hover {
+    background: $bg-color;
+  }
 }
 
 .p-vcentered {
-   display: flex !important;
-   align-items: center;
+  display: flex !important;
+  align-items: center;
 }
 
 .c-help {
-   cursor: help;
+  cursor: help;
 }
 
 // Scrollbars
 ::-webkit-scrollbar {
-   width: 10px;
-   height: 10px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-   background: $bg-color-light;
+  background: $bg-color-light;
 }
 
 ::-webkit-scrollbar-thumb {
-   background: rgba($color: #fff, $alpha: 0.5);
+  background: rgba($color: #fff, $alpha: 0.5);
 
-   &:hover {
-      background: rgba($color: #fff, $alpha: 1);
-   }
+  &:hover {
+    background: rgba($color: #fff, $alpha: 1);
+  }
 }
 
 // Animations
 @keyframes rotation {
-   from {
-      transform: rotate(0deg);
-   }
-   to {
-      transform: rotate(359deg);
-   }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
 }
 
 .rotate {
-   animation: rotation 0.8s infinite linear;
+  animation: rotation 0.8s infinite linear;
 }
 
-/*Override*/
+/* Override */
 .modal {
-   .modal-overlay,
-   &.active .modal-overlay {
-      background: rgba(255, 255, 255, 0.15);
-   }
+  .modal-overlay,
+  &.active .modal-overlay {
+    background: rgba(255, 255, 255, 0.15);
+  }
 
-   .modal-sm .modal-container,
-   .modal-container {
-      box-shadow: 0 0 1px 0px #000;
-      padding: 0;
-      background: $bg-color;
+  .modal-container,
+  .modal-sm .modal-container {
+    box-shadow: 0 0 1px 0 #000;
+    padding: 0;
+    background: $bg-color;
 
-      .modal-header {
-         padding: 0.4rem 0.8rem;
-         text-transform: uppercase;
-         background: $bg-color-gray;
-         display: flex;
-         justify-content: space-between;
-         align-items: center;
-         color: #fff;
-      }
-   }
+    .modal-header {
+      padding: 0.4rem 0.8rem;
+      text-transform: uppercase;
+      background: $bg-color-gray;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+    }
+  }
 }
 
 .tab {
-   border-color: #272727;
+  border-color: #272727;
 }
 
 .panel {
-   border: none;
+  border: none;
 }
 
 .badge {
-   &[data-badge],
-   &:not([data-badge]) {
-      &::after {
-         box-shadow: none;
-      }
-   }
+  &[data-badge],
+  &:not([data-badge]) {
+    &::after {
+      box-shadow: none;
+    }
+  }
 }
 
 .form-select {
-   cursor: pointer;
+  cursor: pointer;
 }
 
 .form-select,
@@ -119,34 +120,35 @@ body {
 .form-input,
 .form-checkbox .form-icon,
 .form-radio .form-icon {
-   border-color: $bg-color-light;
-   background: $bg-color-gray;
+  border-color: $bg-color-light;
+  background: $bg-color-gray;
 }
 
 .form-select:not([multiple]):not([size]):focus {
-   border-color: $primary-color;
+  border-color: $primary-color;
 }
 
-.input-group .input-group-addon{
-   border-color: #3f3f3f;
+.input-group .input-group-addon {
+  border-color: #3f3f3f;
 }
 
 .menu {
-   font-size: 0.7rem;
-   .menu-item {
-      + .menu-item {
-         margin-top: 0;
-      }
-   }
+  font-size: 0.7rem;
+
+  .menu-item {
+    + .menu-item {
+      margin-top: 0;
+    }
+  }
 }
 
 .accordion-body {
-   max-height: 500rem !important;
+  max-height: 500rem !important;
 }
 
 .btn.loading {
-   > .material-icons,
-   > span {
-      visibility: hidden;
-   }
+  > .material-icons,
+  > span {
+    visibility: hidden;
+  }
 }

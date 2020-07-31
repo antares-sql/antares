@@ -1,43 +1,43 @@
 @mixin type-colors($types) {
-   @each $type, $color in $types {
-      .type-#{$type} {
-         color: $color;
+  @each $type, $color in $types {
+    .type-#{$type} {
+      color: $color;
 
-         @if $type == "number" {
-            text-align: right;
-         }
+      @if $type == "number" {
+        text-align: right;
       }
-   }
+    }
+  }
 }
 
 @include type-colors(
-   (
-      "char": seagreen,
-      "varchar": seagreen,
-      "text": seagreen,
-      "mediumtext": seagreen,
-      "longtext": seagreen,
-      "int": cornflowerblue,
-      "tinyint": cornflowerblue,
-      "smallint": cornflowerblue,
-      "mediumint": cornflowerblue,
-      "bigint": cornflowerblue,
-      "datetime": coral,
-      "date": coral,
-      "time": coral,
-      "timestamp": coral,
-      "bit": lightskyblue,
-      "blob": darkorchid,
-      "mediumblob": darkorchid,
-      "longblob": darkorchid,
-      "unknown": gray,
-   )
+  (
+    "char": seagreen,
+    "varchar": seagreen,
+    "text": seagreen,
+    "mediumtext": seagreen,
+    "longtext": seagreen,
+    "int": cornflowerblue,
+    "tinyint": cornflowerblue,
+    "smallint": cornflowerblue,
+    "mediumint": cornflowerblue,
+    "bigint": cornflowerblue,
+    "datetime": coral,
+    "date": coral,
+    "time": coral,
+    "timestamp": coral,
+    "bit": lightskyblue,
+    "blob": darkorchid,
+    "mediumblob": darkorchid,
+    "longblob": darkorchid,
+    "unknown": gray,
+  )
 );
 
 .is-null {
-   color: gray;
+  color: gray;
 
-   &::after {
-      content: "NULL";
-   }
+  &::after {
+    content: "NULL";
+  }
 }

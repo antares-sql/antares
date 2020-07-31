@@ -50,41 +50,41 @@ export default {
 </script>
 
 <style lang="scss">
-   #footer{
-      height: $footer-height;
+  #footer {
+    height: $footer-height;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: $primary-color;
+    padding: 0 0.2rem;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    box-shadow: 0 0 1px 0 #000;
+
+    .footer-elements {
+      list-style: none;
+      margin: 0;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      background: $primary-color;
-      padding: 0 .2rem;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      box-shadow: 0 0 1px 0px #000;
 
-      .footer-elements{
-         list-style: none;
-         margin: 0;
-         display: flex;
-         align-items: center;
+      .footer-element {
+        height: $footer-height;
+        display: flex;
+        align-items: center;
+        padding: 0 0.4rem;
+        margin: 0;
 
-         .footer-element{
-            height: $footer-height;
-            display: flex;
-            align-items: center;
-            padding: 0 .4rem;
-            margin: 0;
+        &.footer-link {
+          cursor: pointer;
+          transition: background 0.2s;
 
-            &.footer-link{
-               cursor: pointer;
-               transition: background .2s;
-
-               &:hover{
-                  background: rgba($color: #fff, $alpha: .1);
-               }
-            }
-         }
+          &:hover {
+            background: rgba($color: #fff, $alpha: 0.1);
+          }
+        }
       }
-   }
+    }
+  }
 </style>

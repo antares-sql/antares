@@ -182,24 +182,23 @@ export default {
 </script>
 
 <style lang="scss">
-#settings{
-   .modal-body{
-      overflow: hidden;
+#settings {
+  .modal-body {
+    overflow: hidden;
 
-      .panel-body{
-         height: calc(70vh - 70px);
-         overflow: auto;
-      }
+    .panel-body {
+      height: calc(70vh - 70px);
+      overflow: auto;
+    }
 
-      .badge::after{
-         background: #32b643;
-      }
+    .badge::after {
+      background: #32b643;
+    }
 
-      .form-label{
-         display: flex;
-         align-items: center;
-      }
-   }
-
+    .form-label {
+      display: flex;
+      align-items: center;
+    }
+  }
 }
 </style>

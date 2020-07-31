@@ -75,10 +75,10 @@ export default {
 </script>
 
 <style lang="scss">
-   #notifications-board{
-      position: absolute;
-      z-index: 9;
-      right: 1rem;
-      bottom: 1rem;
-   }
+  #notifications-board {
+    position: absolute;
+    z-index: 9;
+    right: 1rem;
+    bottom: 1rem;
+  }
 </style>

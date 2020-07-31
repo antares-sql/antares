@@ -56,35 +56,35 @@ export default {
 </script>
 
 <style lang="scss">
-   .workspace-explorebar-database{
-      .database-name,
-      a.table-name{
-         display: flex;
-         align-items: center;
-         padding: .1rem;
-         cursor: pointer;
-         font-size: .7rem;
+  .workspace-explorebar-database {
+    .database-name,
+    a.table-name {
+      display: flex;
+      align-items: center;
+      padding: 0.1rem;
+      cursor: pointer;
+      font-size: 0.7rem;
 
-         > span{
-            overflow: hidden;
-            white-space: nowrap;
-            display: block;
-            text-overflow: ellipsis;
-         }
-
-         &:hover{
-            color: $body-font-color;
-            background: rgba($color: #FFF, $alpha: .05);
-            border-radius: 2px;
-         }
+      > span {
+        overflow: hidden;
+        white-space: nowrap;
+        display: block;
+        text-overflow: ellipsis;
       }
 
-      .menu-item{
-         line-height: 1.2;
+      &:hover {
+        color: $body-font-color;
+        background: rgba($color: #fff, $alpha: 0.05);
+        border-radius: 2px;
       }
+    }
 
-      .database-tables{
-         margin-left: 1.2rem;
-      }
-   }
+    .menu-item {
+      line-height: 1.2;
+    }
+
+    .database-tables {
+      margin-left: 1.2rem;
+    }
+  }
 </style>

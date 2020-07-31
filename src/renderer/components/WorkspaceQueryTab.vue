@@ -149,37 +149,36 @@ export default {
 </script>
 
 <style lang="scss">
-.workspace-tabs{
-   align-content: baseline;
+.workspace-tabs {
+  align-content: baseline;
 
-   .workspace-query-runner{
+  .workspace-query-runner {
+    .workspace-query-runner-footer {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.3rem 0.6rem 0.4rem;
+      align-items: center;
 
-      .workspace-query-runner-footer{
-         display: flex;
-         justify-content: space-between;
-         padding: .3rem .6rem .4rem;
-         align-items: center;
+      .workspace-query-buttons {
+        display: flex;
 
-         .workspace-query-buttons{
-            display: flex;
-
-            .btn{
-               display: flex;
-               align-self: center;
-               color: $body-font-color;
-               margin-right: .4rem;
-            }
-         }
-
-         .workspace-query-info{
-            display: flex;
-
-            > div + div{
-               padding-left: .6rem;
-            }
-         }
+        .btn {
+          display: flex;
+          align-self: center;
+          color: $body-font-color;
+          margin-right: 0.4rem;
+        }
       }
-   }
+
+      .workspace-query-info {
+        display: flex;
+
+        > div + div {
+          padding-left: 0.6rem;
+        }
+      }
+    }
+  }
 }
 
 </style>

@@ -205,28 +205,28 @@ export default {
 </script>
 
 <style lang="scss">
-.editable-field{
-   margin: 0;
-   border: none;
-   line-height: 1;
-   width: 100%;
+.editable-field {
+  margin: 0;
+  border: none;
+  line-height: 1;
+  width: 100%;
 }
 
-.cell-content{
-   display: block;
-   min-height: .8rem;
-   text-overflow: ellipsis;
-   white-space: nowrap;
-   overflow: hidden;
+.cell-content {
+  display: block;
+  min-height: 0.8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-.textarea-editor{
-   height: 50vh!important;
+.textarea-editor {
+  height: 50vh !important;
 }
 
-.editor-field-info{
-   margin-top: .6rem;
-   display: flex;
-   justify-content: space-between;
+.editor-field-info {
+  margin-top: 0.6rem;
+  display: flex;
+  justify-content: space-between;
 }
 </style>

@@ -1,26 +1,26 @@
 .dbi {
-   display: inline-block;
-   width: 42px;
-   height: 42px;
-   background-size: cover;
+  display: inline-block;
+  width: 42px;
+  height: 42px;
+  background-size: cover;
 
-   &.dbi-mysql {
-      background-image: url("../images/svg/mysql.svg");
-   }
+  &.dbi-mysql {
+    background-image: url("../images/svg/mysql.svg");
+  }
 
-   &.dbi-maria {
-      background-image: url("../images/svg/mariadb.svg");
-   }
+  &.dbi-maria {
+    background-image: url("../images/svg/mariadb.svg");
+  }
 
-   &.dbi-mssql {
-      background-image: url("../images/svg/mssql.svg");
-   }
+  &.dbi-mssql {
+    background-image: url("../images/svg/mssql.svg");
+  }
 
-   &.dbi-pg {
-      background-image: url("../images/svg/pg.svg");
-   }
+  &.dbi-pg {
+    background-image: url("../images/svg/pg.svg");
+  }
 
-   &.dbi-oracledb {
-      background-image: url("../images/svg/oracledb.svg");
-   }
+  &.dbi-oracledb {
+    background-image: url("../images/svg/oracledb.svg");
+  }
 }

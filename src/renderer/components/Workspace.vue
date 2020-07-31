@@ -92,94 +92,94 @@ export default {
 </script>
 
 <style lang="scss">
-.workspace{
-   padding: 0;
-   margin: 0;
+.workspace {
+  padding: 0;
+  margin: 0;
 
-   .workspace-tabs{
-      overflow: auto;
-      height: calc(100vh - #{$excluding-size});
+  .workspace-tabs {
+    overflow: auto;
+    height: calc(100vh - #{$excluding-size});
 
-      .tab-block{
-         background: $bg-color-light;
-         margin-top: 0;
+    .tab-block {
+      background: $bg-color-light;
+      margin-top: 0;
 
-         .tab-item{
-            max-width: 12rem;
-            width: fit-content;
-            flex: initial;
+      .tab-item {
+        max-width: 12rem;
+        width: fit-content;
+        flex: initial;
 
-            &.active a{
-               opacity: 1;
-            }
+        &.active a {
+          opacity: 1;
+        }
 
-            > a{
-               padding: .2rem .8rem;
-               color: $body-font-color;
-               cursor: pointer;
-               display: flex;
-               align-items: center;
-               opacity: .7;
-               transition: opacity .2s;
+        > a {
+          padding: 0.2rem 0.8rem;
+          color: $body-font-color;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          opacity: 0.7;
+          transition: opacity 0.2s;
 
-               &:hover{
-                  opacity: 1;
-               }
+          &:hover {
+            opacity: 1;
+          }
 
-               > span {
-                  overflow: hidden;
-                  white-space: nowrap;
-                  text-overflow: ellipsis;
-               }
-            }
-         }
-      }
-   }
-
-   .workspace-query-results{
-      overflow: auto;
-      white-space: nowrap;
-
-      .table{
-         width: auto;
-         border-collapse: separate;
-
-         .th{
-            position: sticky;
-            top: 0;
-            background: $bg-color;
-            border: 1px solid;
-            border-left: none;
-            border-bottom-width: 2px;
-            border-color: $bg-color-light;
-            padding: 0;
-            font-weight: 700;
-            font-size: .7rem;
-
-            > div {
-               padding: .1rem .4rem;
-               min-width: -webkit-fill-available;
-            }
-         }
-
-         .td{
-            border-right: 1px solid;
-            border-bottom: 1px solid;
-            border-color: $bg-color-light;
-            padding: 0 .4rem;
-            text-overflow: ellipsis;
-            max-width: 200px;
-            white-space: nowrap;
+          > span {
             overflow: hidden;
-            font-size: .7rem;
-
-            &:focus{
-               box-shadow:inset 0px 0px 0px 1px $body-font-color;
-               background: rgba($color: #000000, $alpha: .3);
-               outline: none;
-            }
-         }
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+        }
       }
-   }
+    }
+  }
+
+  .workspace-query-results {
+    overflow: auto;
+    white-space: nowrap;
+
+    .table {
+      width: auto;
+      border-collapse: separate;
+
+      .th {
+        position: sticky;
+        top: 0;
+        background: $bg-color;
+        border: 1px solid;
+        border-left: none;
+        border-bottom-width: 2px;
+        border-color: $bg-color-light;
+        padding: 0;
+        font-weight: 700;
+        font-size: 0.7rem;
+
+        > div {
+          padding: 0.1rem 0.4rem;
+          min-width: -webkit-fill-available;
+        }
+      }
+
+      .td {
+        border-right: 1px solid;
+        border-bottom: 1px solid;
+        border-color: $bg-color-light;
+        padding: 0 0.4rem;
+        text-overflow: ellipsis;
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        font-size: 0.7rem;
+
+        &:focus {
+          box-shadow: inset 0 0 0 1px $body-font-color;
+          background: rgba($color: #000, $alpha: 0.3);
+          outline: none;
+        }
+      }
+    }
+  }
 }
 </style>
