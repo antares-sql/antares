@@ -15,10 +15,10 @@ let mainWindow;
 async function createMainWindow () {
    const icon = require('../renderer/images/logo-32.png');
    const window = new BrowserWindow({
-      width: 1600,
-      height: 1000,
-      minHeight: 550,
+      width: 1024,
+      height: 800,
       minWidth: 900,
+      minHeight: 550,
       title: 'Antares',
       autoHideMenuBar: true,
       icon: nativeImage.createFromDataURL(icon.default),

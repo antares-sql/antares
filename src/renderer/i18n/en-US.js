@@ -31,7 +31,8 @@ module.exports = {
       schema: 'Schema',
       results: 'Results',
       size: 'Size',
-      seconds: 'Seconds'
+      seconds: 'Seconds',
+      type: 'Type'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',

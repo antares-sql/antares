@@ -40,7 +40,7 @@
                               <option value="maria">
                                  MariaDB
                               </option>
-                              <option value="mssql">
+                              <!-- <option value="mssql">
                                  Microsoft SQL
                               </option>
                               <option value="pg">
@@ -48,7 +48,7 @@
                               </option>
                               <option value="oracledb">
                                  Oracle DB
-                              </option>
+                              </option> -->
                            </select>
                         </div>
                      </div>

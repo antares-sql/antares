@@ -86,7 +86,6 @@ export default {
       text-overflow: ellipsis;
       display: inline-block;
       max-width: 30rem;
-      user-select: none;
    }
 
    .expanded .notification-message{

@@ -50,8 +50,9 @@
                      class="form-input textarea-editor"
                   />
                </div>
-               <div class="pt-2">
-                  <b>{{ $t('word.size') }}</b>: {{ localContent.length }}
+               <div class="editor-field-info">
+                  <div><b>{{ $t('word.size') }}</b>: {{ localContent.length }}</div>
+                  <div><b>{{ $t('word.type') }}</b>: {{ type.toUpperCase() }}</div>
                </div>
             </div>
          </div>
@@ -221,5 +222,11 @@ export default {
 
 .textarea-editor{
    height: 50vh!important;
+}
+
+.editor-field-info{
+   margin-top: .6rem;
+   display: flex;
+   justify-content: space-between;
 }
 </style>

@@ -173,7 +173,7 @@ export default {
       },
       checkNotificationsTimeout () {
          if (!this.localTimeout)
-            this.localTimeout = 1;
+            this.localTimeout = 10;
 
          this.updateNotificationsTimeout(+this.localTimeout);
       }
