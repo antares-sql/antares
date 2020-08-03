@@ -57,12 +57,53 @@
             </div>
          </div>
       </ConfirmModal>
+      <ConfirmModal
+         v-if="isBlobEditor"
+         @confirm="editOFF"
+         @hide="hideEditorModal"
+      >
+         <template :slot="'header'">
+            {{ $t('word.edit') }} "{{ field }}"
+         </template>
+         <div :slot="'body'">
+            <div class="mb-2">
+               <div>
+                  <img
+                     v-if="isImage"
+                     :src="`data:${contentInfo.mime};base64, ${bufferToBase64(localContent)}`"
+                     class="img-responsive p-centered"
+                  >
+                  <div v-if="contentInfo.size" class="editor-buttons mt-2">
+                     <button class="btn btn-link btn-sm" @click="downloadFile">
+                        <span>{{ $t('word.download') }}</span>
+                        <i class="material-icons ml-1">file_download</i>
+                     </button>
+                  </div>
+               </div>
+               <div class="editor-field-info">
+                  <div>
+                     <b>{{ $t('word.size') }}</b>: {{ localContent.length | formatBytes }}<br>
+                     <b>{{ $t('word.mimeType') }}</b>: {{ contentInfo.mime }}
+                  </div>
+                  <div><b>{{ $t('word.type') }}</b>: {{ type.toUpperCase() }}</div>
+               </div>
+               <div class="mt-3">
+                  <label>{{ $t('message.uploadFile') }}</label>
+                  <input
+                     class="form-input"
+                     type="file"
+                     @change="filesChange($event)"
+                  >
+               </div>
+            </div>
+         </div>
+      </ConfirmModal>
    </div>
 </template>
 
 <script>
 import moment from 'moment';
-import { mimeFromHex, formatBytes } from 'common/libs/utilities';
+import { mimeFromHex, formatBytes, bufferToBase64 } from 'common/libs/utilities';
 import hexToBinary from 'common/libs/hexToBinary';
 import { mask } from 'vue-the-mask';
 import ConfirmModal from '@/components/BaseConfirmModal';
@@ -73,6 +114,7 @@ export default {
       ConfirmModal
    },
    filters: {
+      formatBytes,
       cutText (val) {
          if (typeof val !== 'string') return val;
          return val.length > 128 ? `${val.substring(0, 128)}[...]` : val;
@@ -128,7 +170,14 @@ export default {
       return {
          isInlineEditor: false,
          isTextareaEditor: false,
-         localContent: null
+         isBlobEditor: false,
+         localContent: null,
+         contentInfo: {
+            ext: '',
+            mime: '',
+            size: null
+         },
+         fileToUpload: null
       };
    },
    computed: {
@@ -163,24 +212,52 @@ export default {
             default:
                return 'hidden';
          }
+      },
+      isImage () {
+         return ['gif', 'jpg', 'png'].includes(this.contentInfo.ext);
       }
    },
    methods: {
       isNull (value) {
          return value === null ? ' is-null' : '';
       },
+      bufferToBase64 (val) {
+         return bufferToBase64(val);
+      },
       editON () {
-         if (['file'].includes(this.inputProps.type)) return;// TODO: remove temporary file block
-         this.localContent = this.$options.filters.typeFormat(this.content, this.type);
-
          switch (this.type) {
+            // Large text editor
             case 'text':
             case 'mediumtext':
             case 'longtext':
                this.isTextareaEditor = true;
+               this.localContent = this.$options.filters.typeFormat(this.content, this.type);
                break;
+            // File fields editor
+            case 'blob':
+            case 'mediumblob':
+            case 'longblob':
+               this.isBlobEditor = true;
+               this.localContent = this.content ? this.content : '';
+               this.fileToUpload = null;
 
-            default:// Inline editable fields
+               if (this.content !== null) {
+                  const buff = Buffer.from(this.localContent);
+                  if (buff.length) {
+                     const hex = buff.toString('hex').substring(0, 8).toUpperCase();
+                     const { ext, mime } = mimeFromHex(hex);
+                     this.contentInfo = {
+                        ext,
+                        mime,
+                        size: this.localContent.length
+                     };
+                  }
+               }
+
+               break;
+            // Inline editable fields
+            default:
+               this.localContent = this.$options.filters.typeFormat(this.content, this.type);
                this.$nextTick(() => { // Focus on input
                   this.$refs.cell.blur();
 
@@ -192,13 +269,41 @@ export default {
       },
       editOFF () {
          this.isInlineEditor = false;
-         if (this.localContent === this.$options.filters.typeFormat(this.content, this.type)) return;// If not changed
+         let content;
+         if (!['blob', 'mediumblob', 'longblob'].includes(this.type)) {
+            if (this.localContent === this.$options.filters.typeFormat(this.content, this.type)) return;// If not changed
+            content = this.localContent;
+         }
+         else { // Handle file upload
+            if (!this.fileToUpload) return;
+            content = this.fileToUpload.file.path;
+         }
 
-         const { field, type, localContent: content } = this;
-         this.$emit('updateField', { field, type, content });
+         this.$emit('updateField', {
+            field: this.field,
+            type: this.type,
+            content
+         });
       },
       hideEditorModal () {
          this.isTextareaEditor = false;
+         this.isBlobEditor = false;
+      },
+      downloadFile () {
+         const downloadLink = document.createElement('a');
+
+         downloadLink.href = `data:${this.contentInfo.mime};base64, ${bufferToBase64(this.localContent)}`;
+         downloadLink.setAttribute('download', `${this.field}.${this.contentInfo.ext}`);
+         document.body.appendChild(downloadLink);
+
+         downloadLink.click();
+         downloadLink.remove();
+      },
+      filesChange (event) {
+         const { files } = event.target;
+         if (!files.length) return;
+
+         this.fileToUpload = { name: files[0].name, file: files[0] };
       }
    }
 };
@@ -228,5 +333,16 @@ export default {
   margin-top: 0.6rem;
   display: flex;
   justify-content: space-between;
+  white-space: normal;
+}
+
+.editor-buttons {
+  display: flex;
+  justify-content: center;
+
+  .btn {
+    display: flex;
+    align-items: center;
+  }
 }
 </style>

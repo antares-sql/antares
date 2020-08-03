@@ -7,7 +7,7 @@ export function mimeFromHex (hex) {
       case '424D':
          return { ext: 'bmp', mime: 'image/bmp' };
       case '1F8B':
-         return { ext: 'gz', mime: 'application/gzip' };
+         return { ext: 'tar.gz', mime: 'application/gzip' };
       case '0B77':
          return { ext: 'ac3', mime: 'audio/vnd.dolby.dd-raw' };
       case '7801':
@@ -20,7 +20,7 @@ export function mimeFromHex (hex) {
       default:
          switch (hex.substring(0, 6)) { // 3 bytes
             case 'FFD8FF':
-               return { ext: 'jpj', mime: 'image/jpeg' };
+               return { ext: 'jpg', mime: 'image/jpeg' };
             case '4949BC':
                return { ext: 'jxr', mime: 'image/vnd.ms-photo' };
             case '425A68':
@@ -40,7 +40,7 @@ export function mimeFromHex (hex) {
                   case '4D4D002A':
                      return { ext: 'tif', mime: 'image/tiff' };
                   default:
-                     return { ext: '???', mime: 'unknown ' + hex };
+                     return { ext: '', mime: 'unknown ' + hex };
                }
          }
    }
@@ -56,4 +56,11 @@ export function formatBytes (bytes, decimals = 2) {
    const i = Math.floor(Math.log(bytes) / Math.log(k));
 
    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+export function bufferToBase64 (buf) {
+   const binstr = Array.prototype.map.call(buf, ch => {
+      return String.fromCharCode(ch);
+   }).join('');
+   return btoa(binstr);
 }

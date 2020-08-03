@@ -1,5 +1,7 @@
 'use strict';
 import { sqlEscaper } from 'common/libs/sqlEscaper';
+import fs from 'fs';
+
 export default class {
    static async getTableData (connection, schema, table) {
       return connection
@@ -26,6 +28,13 @@ export default class {
          case 'mediumtext':
          case 'longtext':
             escapedParam = `"${sqlEscaper(params.content)}"`;
+            break;
+         case 'blob':
+         case 'mediumblob':
+         case 'longblob': {
+            const fileBlob = fs.readFileSync(params.content);
+            escapedParam = `0x${fileBlob.toString('hex')}`;
+         }
             break;
          default:
             escapedParam = `"${sqlEscaper(params.content)}"`;

@@ -40,8 +40,7 @@ export default {
       ModalSettings: () => import(/* webpackChunkName: "ModalSettings" */'@/components/ModalSettings')
    },
    data () {
-      return {
-      };
+      return {};
    },
    computed: {
       ...mapGetters({
@@ -64,30 +63,30 @@ export default {
 </script>
 
 <style lang="scss">
-   html,
-   body{
-      height: 100%;
-   }
+  html,
+  body {
+    height: 100%;
+  }
 
-   #wrapper{
-      height: 100vh;
-      position: relative;
-   }
+  #wrapper {
+    height: 100vh;
+    position: relative;
+  }
 
-   #window-content{
-      display: flex;
-      position: relative;
-      overflow: hidden;
-   }
+  #window-content {
+    display: flex;
+    position: relative;
+    overflow: hidden;
+  }
 
-   #main-content {
-      padding: 0;
-      justify-content: flex-start;
-      height: calc(100vh - #{$excluding-size});
-      width: calc(100% - #{$settingbar-width});
+  #main-content {
+    padding: 0;
+    justify-content: flex-start;
+    height: calc(100vh - #{$excluding-size});
+    width: calc(100% - #{$settingbar-width});
 
-      > .columns{
-         height: calc(100vh - #{$footer-height});
-      }
-   }
+    > .columns {
+      height: calc(100vh - #{$footer-height});
+    }
+  }
 </style>

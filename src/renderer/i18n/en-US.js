@@ -32,7 +32,9 @@ module.exports = {
       results: 'Results',
       size: 'Size',
       seconds: 'Seconds',
-      type: 'Type'
+      type: 'Type',
+      mimeType: 'Mime-Type',
+      download: 'Download'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -59,7 +61,8 @@ module.exports = {
       editCell: 'Edit cell',
       deleteRows: 'Delete row | Delete {count} rows',
       confirmToDeleteRows: 'Do you confirm to delete one row? | Do you confirm to delete {count} rows?',
-      notificationsTimeout: 'Notifications timeout'
+      notificationsTimeout: 'Notifications timeout',
+      uploadFile: 'Upload file'
    },
    // Date and Time
    short: {
