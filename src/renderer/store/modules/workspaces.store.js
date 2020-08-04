@@ -1,6 +1,6 @@
 'use strict';
 import Connection from '@/ipc-api/Connection';
-import { uidGen } from 'common/libs/utilities';
+import { uidGen } from 'common/libs/uidGen';
 
 function remapStructure (structure) {
    const databases = structure.map(table => table.TABLE_SCHEMA)

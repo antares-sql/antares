@@ -143,6 +143,9 @@ export default {
          }
 
          this.isQuering = false;
+      },
+      reloadTable () {
+         this.runQuery();// TODO: run last executed query
       }
    }
 };

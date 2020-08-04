@@ -1,7 +1,4 @@
-export function uidGen () {
-   return Math.random().toString(36).substr(2, 9).toUpperCase();
-};
-
+'use strict';
 export function mimeFromHex (hex) {
    switch (hex.substring(0, 4)) { // 2 bytes
       case '424D':
@@ -39,28 +36,11 @@ export function mimeFromHex (hex) {
                      return { ext: 'bpg', mime: 'image/bpg' };
                   case '4D4D002A':
                      return { ext: 'tif', mime: 'image/tiff' };
+                  case '00000100':
+                     return { ext: 'ico', mime: 'image/x-icon' };
                   default:
                      return { ext: '', mime: 'unknown ' + hex };
                }
          }
    }
 };
-
-export function formatBytes (bytes, decimals = 2) {
-   if (bytes === 0) return '0 Bytes';
-
-   const k = 1024;
-   const dm = decimals < 0 ? 0 : decimals;
-   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
-   const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-}
-
-export function bufferToBase64 (buf) {
-   const binstr = Array.prototype.map.call(buf, ch => {
-      return String.fromCharCode(ch);
-   }).join('');
-   return btoa(binstr);
-}

@@ -29,13 +29,13 @@
                class="btn btn-primary mr-2"
                @click="confirmModal"
             >
-               {{ $t('word.confirm') }}
+               {{ confirmText || $t('word.confirm') }}
             </button>
             <button
                class="btn btn-link"
                @click="hideModal"
             >
-               {{ $t('word.cancel') }}
+               {{ cancelText || $t('word.cancel') }}
             </button>
          </div>
       </div>
@@ -48,8 +48,11 @@ export default {
    props: {
       size: {
          type: String,
-         default: 'small' // small, medium, large
-      }
+         validator: prop => ['small', 'medium', 'large'].includes(prop),
+         default: 'small'
+      },
+      confirmText: String,
+      cancelText: String
    },
    computed: {
       hasHeader () {

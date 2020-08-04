@@ -11,3 +11,31 @@
   transform: translateX(10px);
   opacity: 0;
 }
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.jump-down-enter-active {
+  animation: jump-down-in 0.2s;
+}
+
+.jump-down-leave-active {
+  animation: jump-down-in 0.2s reverse;
+}
+
+@keyframes jump-down-in {
+  0% {
+    transform: scale(0);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}

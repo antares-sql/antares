@@ -6,7 +6,7 @@
                <button
                   class="btn btn-link btn-sm"
                   :class="{'loading':isQuering}"
-                  @click="getTableData"
+                  @click="reloadTable"
                >
                   <span>{{ $t('word.refresh') }}</span>
                   <i class="material-icons ml-1">refresh</i>
@@ -140,6 +140,9 @@ export default {
          }
 
          this.isQuering = false;
+      },
+      reloadTable () {
+         this.getTableData();
       }
    }
 };

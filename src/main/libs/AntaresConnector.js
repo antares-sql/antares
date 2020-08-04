@@ -248,7 +248,7 @@ export class AntaresConnector {
     * @memberof AntaresConnector
     */
    async raw (sql) {
-      if (process.env.NODE_ENV === 'development') this._logger(sql);
+      if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
 
       switch (this._client) { // TODO: uniform fields with every client type, needed table name and fields array
          case 'maria':

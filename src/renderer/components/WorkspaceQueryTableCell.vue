@@ -35,6 +35,7 @@
       </template>
       <ConfirmModal
          v-if="isTextareaEditor"
+         :confirm-text="$t('word.update')"
          size="medium"
          @confirm="editOFF"
          @hide="hideEditorModal"
@@ -59,6 +60,7 @@
       </ConfirmModal>
       <ConfirmModal
          v-if="isBlobEditor"
+         :confirm-text="$t('word.update')"
          @confirm="editOFF"
          @hide="hideEditorModal"
       >
@@ -67,19 +69,28 @@
          </template>
          <div :slot="'body'">
             <div class="mb-2">
-               <div>
-                  <img
-                     v-if="isImage"
-                     :src="`data:${contentInfo.mime};base64, ${bufferToBase64(localContent)}`"
-                     class="img-responsive p-centered"
-                  >
-                  <div v-if="contentInfo.size" class="editor-buttons mt-2">
-                     <button class="btn btn-link btn-sm" @click="downloadFile">
-                        <span>{{ $t('word.download') }}</span>
-                        <i class="material-icons ml-1">file_download</i>
-                     </button>
+               <transition name="jump-down">
+                  <div v-if="contentInfo.size">
+                     <img
+                        v-if="isImage"
+                        :src="`data:${contentInfo.mime};base64, ${bufferToBase64(localContent)}`"
+                        class="img-responsive p-centered bg-checkered"
+                     >
+                     <div v-else class="text-center">
+                        <i class="material-icons md-36">insert_drive_file</i>
+                     </div>
+                     <div class="editor-buttons mt-2">
+                        <button class="btn btn-link btn-sm" @click="downloadFile">
+                           <span>{{ $t('word.download') }}</span>
+                           <i class="material-icons ml-1">file_download</i>
+                        </button>
+                        <button class="btn btn-link btn-sm" @click="prepareToDelete">
+                           <span>{{ $t('word.delete') }}</span>
+                           <i class="material-icons ml-1">delete_forever</i>
+                        </button>
+                     </div>
                   </div>
-               </div>
+               </transition>
                <div class="editor-field-info">
                   <div>
                      <b>{{ $t('word.size') }}</b>: {{ localContent.length | formatBytes }}<br>
@@ -103,8 +114,11 @@
 
 <script>
 import moment from 'moment';
-import { mimeFromHex, formatBytes, bufferToBase64 } from 'common/libs/utilities';
+import { mimeFromHex } from 'common/libs/mimeFromHex';
+import { formatBytes } from 'common/libs/formatBytes';
+import { bufferToBase64 } from 'common/libs/bufferToBase64';
 import hexToBinary from 'common/libs/hexToBinary';
+import { TEXT, LONG_TEXT, NUMBER, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
 import { mask } from 'vue-the-mask';
 import ConfirmModal from '@/components/BaseConfirmModal';
 
@@ -122,39 +136,31 @@ export default {
       typeFormat (val, type, precision) {
          if (!val) return val;
 
-         switch (type) {
-            case 'char':
-            case 'varchar':
-            case 'text':
-            case 'mediumtext':
-               return val;
-            case 'date': {
-               return moment(val).isValid() ? moment(val).format('YYYY-MM-DD') : val;
-            }
-            case 'datetime':
-            case 'timestamp': {
-               let datePrecision = '';
-               for (let i = 0; i < precision; i++)
-                  datePrecision += i === 0 ? '.S' : 'S';
+         if (DATE.includes(type))
+            return moment(val).isValid() ? moment(val).format('YYYY-MM-DD') : val;
 
-               return moment(val).isValid() ? moment(val).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`) : val;
-            }
-            case 'blob':
-            case 'mediumblob':
-            case 'longblob': {
-               const buff = Buffer.from(val);
-               if (!buff.length) return '';
+         if (DATETIME.includes(type)) {
+            let datePrecision = '';
+            for (let i = 0; i < precision; i++)
+               datePrecision += i === 0 ? '.S' : 'S';
 
-               const hex = buff.toString('hex').substring(0, 8).toUpperCase();
-               return `${mimeFromHex(hex).mime} (${formatBytes(buff.length)})`;
-            }
-            case 'bit': {
-               const hex = Buffer.from(val).toString('hex');
-               return hexToBinary(hex);
-            }
-            default:
-               return val;
+            return moment(val).isValid() ? moment(val).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`) : val;
          }
+
+         if (BLOB.includes(type)) {
+            const buff = Buffer.from(val);
+            if (!buff.length) return '';
+
+            const hex = buff.toString('hex').substring(0, 8).toUpperCase();
+            return `${mimeFromHex(hex).mime} (${formatBytes(buff.length)})`;
+         }
+
+         if (BIT.includes(type)) {
+            const hex = Buffer.from(val).toString('hex');
+            return hexToBinary(hex);
+         }
+
+         return val;
       }
    },
    directives: {
@@ -171,6 +177,7 @@ export default {
          isInlineEditor: false,
          isTextareaEditor: false,
          isBlobEditor: false,
+         willBeDeleted: false,
          localContent: null,
          contentInfo: {
             ext: '',
@@ -182,39 +189,35 @@ export default {
    },
    computed: {
       inputProps () {
-         switch (this.type) {
-            case 'char':
-            case 'varchar':
-            case 'text':
-            case 'mediumtext':
-            case 'longtext':
-               return { type: 'text', mask: false };
-            case 'int':
-            case 'tinyint':
-            case 'smallint':
-            case 'mediumint':
-            case 'bigint':
-               return { type: 'number', mask: false };
-            case 'date':
-               return { type: 'text', mask: '####-##-##' };
-            case 'datetime':
-            case 'timestamp': {
-               let datetimeMask = '####-##-## ##:##:##';
-               for (let i = 0; i < this.precision; i++)
-                  datetimeMask += i === 0 ? '.#' : '#';
-               return { type: 'text', mask: datetimeMask };
-            }
-            case 'blob':
-            case 'mediumblob':
-            case 'longblob':
-            case 'bit':
-               return { type: 'file', mask: false };
-            default:
-               return 'hidden';
+         if ([...TEXT, ...LONG_TEXT].includes(this.type))
+            return { type: 'text', mask: false };
+
+         if (NUMBER.includes(this.type))
+            return { type: 'number', mask: false };
+
+         if (TIME.includes(this.type))
+            return { type: 'number', mask: false };
+
+         if (DATE.includes(this.type))
+            return { type: 'text', mask: '####-##-##' };
+
+         if (DATETIME.includes(this.type)) {
+            let datetimeMask = '####-##-## ##:##:##';
+            for (let i = 0; i < this.precision; i++)
+               datetimeMask += i === 0 ? '.#' : '#';
+            return { type: 'text', mask: datetimeMask };
          }
+
+         if (BLOB.includes(this.type))
+            return { type: 'file', mask: false };
+
+         if (BIT.includes(this.type))
+            return { type: 'text', mask: false };
+
+         return { type: 'text', mask: false };
       },
       isImage () {
-         return ['gif', 'jpg', 'png'].includes(this.contentInfo.ext);
+         return ['gif', 'jpg', 'png', 'bmp', 'ico', 'tif'].includes(this.contentInfo.ext);
       }
    },
    methods: {
@@ -225,47 +228,41 @@ export default {
          return bufferToBase64(val);
       },
       editON () {
-         switch (this.type) {
-            // Large text editor
-            case 'text':
-            case 'mediumtext':
-            case 'longtext':
-               this.isTextareaEditor = true;
-               this.localContent = this.$options.filters.typeFormat(this.content, this.type);
-               break;
-            // File fields editor
-            case 'blob':
-            case 'mediumblob':
-            case 'longblob':
-               this.isBlobEditor = true;
-               this.localContent = this.content ? this.content : '';
-               this.fileToUpload = null;
-
-               if (this.content !== null) {
-                  const buff = Buffer.from(this.localContent);
-                  if (buff.length) {
-                     const hex = buff.toString('hex').substring(0, 8).toUpperCase();
-                     const { ext, mime } = mimeFromHex(hex);
-                     this.contentInfo = {
-                        ext,
-                        mime,
-                        size: this.localContent.length
-                     };
-                  }
-               }
-
-               break;
-            // Inline editable fields
-            default:
-               this.localContent = this.$options.filters.typeFormat(this.content, this.type);
-               this.$nextTick(() => { // Focus on input
-                  this.$refs.cell.blur();
-
-                  this.$nextTick(() => this.$refs.editField.focus());
-               });
-               this.isInlineEditor = true;
-               break;
+         if (LONG_TEXT.includes(this.type)) {
+            this.isTextareaEditor = true;
+            this.localContent = this.$options.filters.typeFormat(this.content, this.type);
+            return;
          }
+
+         if (BLOB.includes(this.type)) {
+            this.isBlobEditor = true;
+            this.localContent = this.content ? this.content : '';
+            this.fileToUpload = null;
+            this.willBeDeleted = false;
+
+            if (this.content !== null) {
+               const buff = Buffer.from(this.localContent);
+               if (buff.length) {
+                  const hex = buff.toString('hex').substring(0, 8).toUpperCase();
+                  const { ext, mime } = mimeFromHex(hex);
+                  this.contentInfo = {
+                     ext,
+                     mime,
+                     size: this.localContent.length
+                  };
+               }
+            }
+            return;
+         }
+
+         // Inline editable fields
+         this.localContent = this.$options.filters.typeFormat(this.content, this.type);
+         this.$nextTick(() => { // Focus on input
+            this.$refs.cell.blur();
+
+            this.$nextTick(() => this.$refs.editField.focus());
+         });
+         this.isInlineEditor = true;
       },
       editOFF () {
          this.isInlineEditor = false;
@@ -275,8 +272,14 @@ export default {
             content = this.localContent;
          }
          else { // Handle file upload
-            if (!this.fileToUpload) return;
-            content = this.fileToUpload.file.path;
+            if (this.willBeDeleted) {
+               content = '';
+               this.willBeDeleted = false;
+            }
+            else {
+               if (!this.fileToUpload) return;
+               content = this.fileToUpload.file.path;
+            }
          }
 
          this.$emit('updateField', {
@@ -304,6 +307,16 @@ export default {
          if (!files.length) return;
 
          this.fileToUpload = { name: files[0].name, file: files[0] };
+         this.willBeDeleted = false;
+      },
+      prepareToDelete () {
+         this.localContent = '';
+         this.contentInfo = {
+            ext: '',
+            mime: '',
+            size: null
+         };
+         this.willBeDeleted = true;
       }
    }
 };
@@ -338,7 +351,7 @@ export default {
 
 .editor-buttons {
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
 
   .btn {
     display: flex;

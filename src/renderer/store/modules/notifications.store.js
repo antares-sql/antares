@@ -1,5 +1,5 @@
 'use strict';
-import { uidGen } from 'common/libs/utilities';
+import { uidGen } from 'common/libs/uidGen';
 
 export default {
    namespaced: true,

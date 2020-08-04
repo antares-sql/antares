@@ -1,5 +1,6 @@
 'use strict';
 import { sqlEscaper } from 'common/libs/sqlEscaper';
+import { TEXT, LONG_TEXT, NUMBER, BLOB } from 'common/fieldTypes';
 import fs from 'fs';
 
 export default class {
@@ -14,38 +15,32 @@ export default class {
 
    static async updateTableCell (connection, params) {
       let escapedParam;
-      switch (params.type) {
-         case 'int':
-         case 'tinyint':
-         case 'smallint':
-         case 'mediumint':
-         case 'bigint':
-            escapedParam = params.content;
-            break;
-         case 'char':
-         case 'varchar':
-         case 'text':
-         case 'mediumtext':
-         case 'longtext':
-            escapedParam = `"${sqlEscaper(params.content)}"`;
-            break;
-         case 'blob':
-         case 'mediumblob':
-         case 'longblob': {
+      let reload = false;
+
+      if (NUMBER.includes(params.type))
+         escapedParam = params.content;
+      else if ([...TEXT, ...LONG_TEXT].includes(params.type))
+         escapedParam = `"${sqlEscaper(params.content)}"`;
+      else if (BLOB.includes(params.type)) {
+         if (params.content) {
             const fileBlob = fs.readFileSync(params.content);
             escapedParam = `0x${fileBlob.toString('hex')}`;
+            reload = true;
          }
-            break;
-         default:
-            escapedParam = `"${sqlEscaper(params.content)}"`;
-            break;
+         else
+            escapedParam = '""';
       }
-      return connection
+      else
+         escapedParam = `"${sqlEscaper(params.content)}"`;
+
+      await connection
          .update({ [params.field]: `= ${escapedParam}` })
          .schema(params.schema)
          .from(params.table)
          .where({ [params.primary]: `= ${params.id}` })
          .run();
+
+      return { reload };
    }
 
    static async deleteTableRows (connection, params) {

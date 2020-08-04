@@ -148,7 +148,7 @@
 <script>
 import { mapActions } from 'vuex';
 import Connection from '@/ipc-api/Connection';
-import { uidGen } from 'common/libs/utilities';
+import { uidGen } from 'common/libs/uidGen';
 import ModalAskCredentials from '@/components/ModalAskCredentials';
 import BaseToast from '@/components/BaseToast';
 

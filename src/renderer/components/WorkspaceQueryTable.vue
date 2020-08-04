@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { uidGen } from 'common/libs/utilities';
+import { uidGen } from 'common/libs/uidGen';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
 import WorkspaceQueryTableCell from '@/components/WorkspaceQueryTableCell';
 import TableContext from '@/components/WorkspaceQueryTableContext';

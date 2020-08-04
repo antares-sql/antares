@@ -3,6 +3,8 @@ import Tables from '@/ipc-api/Tables';
 export default {
    methods: {
       async updateField (payload) {
+         this.isQuering = true;
+
          const params = {
             uid: this.connection.uid,
             schema: this.workspace.breadcrumbs.schema,
@@ -12,16 +14,24 @@ export default {
 
          try {
             const { status, response } = await Tables.updateTableCell(params);
-            if (status === 'success')
-               this.$refs.queryTable.applyUpdate(payload);
+            if (status === 'success') {
+               if (response.reload)// Needed for blob fields
+                  this.reloadTable();
+               else
+                  this.$refs.queryTable.applyUpdate(payload);
+            }
             else
                this.addNotification({ status: 'error', message: response });
          }
          catch (err) {
             this.addNotification({ status: 'error', message: err.stack });
          }
+
+         this.isQuering = false;
       },
       async deleteSelected (payload) {
+         this.isQuering = true;
+
          const params = {
             uid: this.connection.uid,
             schema: this.workspace.breadcrumbs.schema,
@@ -42,6 +52,8 @@ export default {
          catch (err) {
             this.addNotification({ status: 'error', message: err.stack });
          }
+
+         this.isQuering = false;
       }
    }
 };
