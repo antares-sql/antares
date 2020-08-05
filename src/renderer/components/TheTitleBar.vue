@@ -5,7 +5,7 @@
          <img class="titlebar-logo" :src="require('@/images/logo.svg').default">
       </div>
       <div class="titlebar-elements">
-         <!--  -->
+         {{ windowTitle }}
       </div>
       <div class="titlebar-elements">
          <div
@@ -38,6 +38,7 @@
 
 <script>
 import { remote, ipcRenderer } from 'electron';
+import { mapGetters } from 'vuex';
 
 export default {
    name: 'TheTitleBar',
@@ -47,6 +48,22 @@ export default {
          isMaximized: remote.getCurrentWindow().isMaximized(),
          isDevelopment: process.env.NODE_ENV === 'development'
       };
+   },
+   computed: {
+      ...mapGetters({
+         getConnectionName: 'connections/getConnectionName',
+         selectedWorkspace: 'workspaces/getSelected',
+         getWorkspace: 'workspaces/getWorkspace'
+      }),
+      windowTitle () {
+         if (!this.selectedWorkspace) return '';
+
+         const connectionName = this.getConnectionName(this.selectedWorkspace);
+         const workspace = this.getWorkspace(this.selectedWorkspace);
+         const breadcrumbs = Object.values(workspace.breadcrumbs).filter(breadcrumb => breadcrumb);
+
+         return [connectionName, ...breadcrumbs].join(' • ');
+      }
    },
    created () {
       window.addEventListener('resize', this.onResize);
