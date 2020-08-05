@@ -1,24 +1,56 @@
 {
   "name": "antares",
   "productName": "Antares",
-  "version": "0.0.3-alpha",
+  "version": "0.0.4",
   "description": "A cross-platform easy to use SQL client.",
+  "main": "src/main/index.js",
   "license": "MIT",
   "repository": "https://github.com/EStarium/antares.git",
   "scripts": {
     "dev": "cross-env NODE_ENV=development electron-webpack dev",
     "compile": "electron-webpack",
-    "dist": "cross-env NODE_ENV=production npm run compile && electron-builder",
-    "dist:dir": "cross-env NODE_ENV=production npm run dist --dir -c.compression=store -c.mac.identity=null",
-    "publish": "electron-builder -p always"
+    "build": "cross-env NODE_ENV=production npm run compile && electron-builder",
+    "release": "standard-version",
+    "release:pre": "npm run release -- --prerelease alpha"
   },
   "author": "Fabio Di Stasio <fabio286@gmail.com>",
   "build": {
+    "npmRebuild": false,
+    "asar": true,
     "appId": "com.estarium.antares",
     "artifactName": "${productName}-${version}-${os}_${arch}.${ext}",
     "files": [
-      "static/*"
-    ]
+      "dist/**/*",
+      "src/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "AppImage"
+      ],
+      "category": "Development"
+    }
   },
   "electronWebpack": {
     "whiteListedModules": [
@@ -64,6 +96,7 @@
     "eslint-plugin-vue": "^6.2.2",
     "node-sass": "^4.14.1",
     "sass-loader": "^9.0.2",
+    "standard-version": "^8.0.2",
     "stylelint": "^13.6.1",
     "stylelint-config-standard": "^20.0.0",
     "stylelint-scss": "^3.18.0",
