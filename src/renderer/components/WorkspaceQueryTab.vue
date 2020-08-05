@@ -8,15 +8,11 @@
                   class="btn btn-link btn-sm"
                   :class="{'loading':isQuering}"
                   :disabled="!query"
-                  @click="runQuery"
+                  @click="runQuery(query)"
                >
                   <span>{{ $t('word.run') }}</span>
                   <i class="material-icons text-success">play_arrow</i>
                </button>
-               <!-- <button class="btn btn-link btn-sm">
-                  <span>{{ $t('word.save') }}</span>
-                  <i class="material-icons ml-1">save</i>
-               </button> -->
             </div>
             <div class="workspace-query-info">
                <div v-if="results.rows">
@@ -33,7 +29,7 @@
             v-if="results"
             ref="queryTable"
             :results="results"
-            :fields="resultsFields"
+            :fields="fields"
             @updateField="updateField"
             @deleteSelected="deleteSelected"
          />
@@ -62,6 +58,7 @@ export default {
    data () {
       return {
          query: '',
+         lastQuery: '',
          isQuering: false,
          results: {},
          fields: []
@@ -74,25 +71,6 @@ export default {
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
-      resultsFields () {
-         if (this.results) {
-            return this.fields.map(field => { // TODO: move to main process
-               return {
-                  name: field.COLUMN_NAME,
-                  key: field.COLUMN_KEY.toLowerCase(),
-                  type: field.DATA_TYPE,
-                  precision: field.DATETIME_PRECISION
-               };
-            }).filter(field => {
-               if (this.results.fields) {
-                  const queryFields = this.results.fields.map(field => field.name);
-                  if (queryFields.includes(field.name)) return field;
-               }
-            });
-         }
-         else
-            return [];
-      },
       table () {
          if (this.results.fields.length)
             return this.results.fields[0].orgTable;
@@ -103,15 +81,15 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification'
       }),
-      async runQuery () {
-         if (!this.query) return;
+      async runQuery (query) {
+         if (!query) return;
          this.isQuering = true;
          this.results = {};
 
          try {
             const params = {
                uid: this.connection.uid,
-               query: this.query,
+               query,
                schema: this.workspace.breadcrumbs.schema
             };
 
@@ -134,7 +112,7 @@ export default {
 
             const { status, response } = await Tables.getTableColumns(params);
             if (status === 'success')
-               this.fields = response.rows;
+               this.fields = response;
             else
                this.addNotification({ status: 'error', message: response });
          }
@@ -143,9 +121,10 @@ export default {
          }
 
          this.isQuering = false;
+         this.lastQuery = query;
       },
       reloadTable () {
-         this.runQuery();// TODO: run last executed query
+         this.runQuery(this.lastQuery);
       }
    }
 };

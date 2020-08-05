@@ -11,10 +11,14 @@
                   <span>{{ $t('word.refresh') }}</span>
                   <i class="material-icons ml-1">refresh</i>
                </button>
-               <!-- <button class="btn btn-link btn-sm">
-                  <span>{{ $t('word.save') }}</span>
-                  <i class="material-icons ml-1">save</i>
-               </button> -->
+               <button
+                  class="btn btn-link btn-sm"
+                  :class="{'disabled':isQuering}"
+                  @click="showAddModal"
+               >
+                  <span>{{ $t('word.add') }}</span>
+                  <i class="material-icons ml-1">playlist_add</i>
+               </button>
             </div>
             <div class="workspace-query-info">
                <div v-if="results.rows">
@@ -31,7 +35,7 @@
             v-if="results"
             ref="queryTable"
             :results="results"
-            :fields="resultsFields"
+            :fields="fields"
             @updateField="updateField"
             @deleteSelected="deleteSelected"
          />
@@ -72,16 +76,6 @@ export default {
       },
       isSelected () {
          return this.workspace.selected_tab === 1;
-      },
-      resultsFields () {
-         return this.fields.map(field => { // TODO: move to main process
-            return {
-               name: field.COLUMN_NAME,
-               key: field.COLUMN_KEY.toLowerCase(),
-               type: field.DATA_TYPE,
-               precision: field.DATETIME_PRECISION
-            };
-         });
       }
    },
    watch: {
@@ -119,7 +113,7 @@ export default {
          try {
             const { status, response } = await Tables.getTableColumns(params);
             if (status === 'success')
-               this.fields = response.rows;
+               this.fields = response;
             else
                this.addNotification({ status: 'error', message: response });
          }
@@ -143,7 +137,8 @@ export default {
       },
       reloadTable () {
          this.getTableData();
-      }
+      },
+      showAddModal () {}
    }
 };
 </script>

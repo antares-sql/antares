@@ -13,13 +13,22 @@ export default class {
          .run();
    }
 
-   static getTableColumns (connection, schema, table) {
-      return connection
+   static async getTableColumns (connection, schema, table) {
+      const { rows } = await connection
          .select('*')
          .schema('information_schema')
          .from('COLUMNS')
          .where({ TABLE_SCHEMA: `= '${schema}'`, TABLE_NAME: `= '${table}'` })
          .orderBy({ ORDINAL_POSITION: 'ASC' })
          .run();
+
+      return rows.map(field => {
+         return {
+            name: field.COLUMN_NAME,
+            key: field.COLUMN_KEY.toLowerCase(),
+            type: field.DATA_TYPE,
+            precision: field.DATETIME_PRECISION
+         };
+      });
    }
 }

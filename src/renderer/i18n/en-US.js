@@ -34,7 +34,8 @@ module.exports = {
       seconds: 'Seconds',
       type: 'Type',
       mimeType: 'Mime-Type',
-      download: 'Download'
+      download: 'Download',
+      add: 'Add'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
