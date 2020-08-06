@@ -1,5 +1,3 @@
-sudo: false
-
 language: node_js
 node_js: 12
 
@@ -24,17 +22,17 @@ jobs:
     - stage: Test
       script:
         - npm test
-    - stage: Deploy Windows & Mac
-      if: tag IS present
-      os: osx
-      osx_image: xcode10.1
-      script:
-        - npm run build -- --mac --win -p always
-      before_cache:
-        - rm -rf $HOME/.cache/electron-builder/wine
-    - stage: Deploy linux
+    - stage: Deploy Linux & Windows
       if: tag IS present
       os: linux
-      dist: trusty
+      services: docker
       script:
-        - npm run build -- --linux -p always
+        - docker run --rm --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|NPM_|CI|CIRCLE|TRAVIS|APPVEYOR_|CSC_|_TOKEN|_KEY|AWS_|STRIP|BUILD_') -v ${PWD}:/project -v ~/.cache/electron:/root/.cache/electron -v ~/.cache/electron-builder:/root/.cache/electron-builder electronuserland/builder:wine /bin/bash -c "npm run build -- --linux --win -p always"
+      before_cache:
+        - rm -rf $HOME/.cache/electron-builder/wine
+    - stage: Deploy Mac
+      if: tag IS present
+      os: osx
+      osx_image: xcode10.2
+      script:
+        - npm run build -- -p always

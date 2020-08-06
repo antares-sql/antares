@@ -6,4 +6,4 @@ thumbs.db
 .vscode
 TODO.md
 *.txt
-dev-app-update.yml
+package-lock.json
