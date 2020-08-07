@@ -48,7 +48,7 @@ export default {
       checkScrollPosition () {
 
       },
-      updateWindow (e) {
+      updateWindow (e) { // TODO: no timeout on first render
          const visibleItemsCount = Math.ceil(this.$el.clientHeight / this.itemHeight);
          const totalScrollHeight = this.items.length * this.itemHeight;
          const offset = 50;

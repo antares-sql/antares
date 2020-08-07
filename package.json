@@ -3,7 +3,6 @@
   "productName": "Antares",
   "version": "0.0.4",
   "description": "A cross-platform easy to use SQL client.",
-  "main": "src/main/index.js",
   "license": "MIT",
   "repository": "https://github.com/EStarium/antares.git",
   "scripts": {
@@ -11,20 +10,13 @@
     "compile": "electron-webpack",
     "build": "cross-env NODE_ENV=production npm run compile && electron-builder",
     "release": "standard-version",
-    "release:pre": "npm run release -- --prerelease alpha"
+    "release:pre": "npm run release -- --prerelease alpha",
+    "lint": "eslint ."
   },
   "author": "Fabio Di Stasio <fabio286@gmail.com>",
   "build": {
-    "npmRebuild": false,
-    "asar": true,
     "appId": "com.estarium.antares",
     "artifactName": "${productName}-${version}-${os}_${arch}.${ext}",
-    "files": [
-      "dist/**/*",
-      "src/**/*",
-      "node_modules/**/*",
-      "package.json"
-    ],
     "dmg": {
       "contents": [
         {
@@ -37,11 +29,6 @@
           "type": "link",
           "path": "/Applications"
         }
-      ]
-    },
-    "win": {
-      "target": [
-        "nsis"
       ]
     },
     "linux": {
@@ -87,7 +74,7 @@
     "electron-devtools-installer": "^3.1.1",
     "electron-webpack": "^2.8.2",
     "electron-webpack-vue": "^2.4.0",
-    "eslint": "^6.8.0",
+    "eslint": "^7.6.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-node": "^11.1.0",
