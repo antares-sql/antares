@@ -1,38 +1,43 @@
 <template>
-   <div
-      v-if="field !== '_id'"
-      ref="cell"
-      class="td p-0"
-      tabindex="0"
-      @contextmenu.prevent="$emit('contextmenu', $event)"
-   >
-      <span
-         v-if="!isInlineEditor"
-         class="cell-content px-2"
-         :class="`${isNull(content)} type-${type}`"
-         @dblclick="editON"
-      >{{ content | typeFormat(type, precision) | cutText }}</span>
-      <template v-else>
-         <input
-            v-if="inputProps.mask"
-            ref="editField"
-            v-model="localContent"
-            v-mask="inputProps.mask"
-            :type="inputProps.type"
-            autofocus
-            class="editable-field px-2"
-            @blur="editOFF"
-         >
-         <input
-            v-else
-            ref="editField"
-            v-model="localContent"
-            :type="inputProps.type"
-            autofocus
-            class="editable-field px-2"
-            @blur="editOFF"
-         >
-      </template>
+   <div class="tr" @click="selectRow($event, row._id)">
+      <div
+         v-for="(col, cKey) in row"
+         :key="cKey"
+         class="td p-0"
+         tabindex="0"
+         @contextmenu.prevent="$emit('contextmenu', $event, {id: row._id, field: cKey})"
+         @updateField="updateField($event, row[primaryField.name])"
+      >
+         <template v-if="cKey !== '_id'">
+            <span
+               v-if="!isInlineEditor[cKey]"
+               class="cell-content px-2"
+               :class="`${isNull(col)} type-${fieldType(cKey)}`"
+               @dblclick="editON($event, col, cKey)"
+            >{{ col | typeFormat(fieldType(cKey), fieldPrecision(cKey)) | cutText }}</span>
+            <template v-else>
+               <input
+                  v-if="inputProps.mask"
+                  ref="editField"
+                  v-model="editingContent"
+                  v-mask="inputProps.mask"
+                  :type="inputProps.type"
+                  autofocus
+                  class="editable-field px-2"
+                  @blur="editOFF"
+               >
+               <input
+                  v-else
+                  ref="editField"
+                  v-model="editingContent"
+                  :type="inputProps.type"
+                  autofocus
+                  class="editable-field px-2"
+                  @blur="editOFF"
+               >
+            </template>
+         </template>
+      </div>
       <ConfirmModal
          v-if="isTextareaEditor"
          :confirm-text="$t('word.update')"
@@ -41,19 +46,19 @@
          @hide="hideEditorModal"
       >
          <template :slot="'header'">
-            {{ $t('word.edit') }} "{{ field }}"
+            {{ $t('word.edit') }} "{{ editingField }}"
          </template>
          <div :slot="'body'">
             <div class="mb-2">
                <div>
                   <textarea
-                     v-model="localContent"
+                     v-model="editingContent"
                      class="form-input textarea-editor"
                   />
                </div>
                <div class="editor-field-info">
-                  <div><b>{{ $t('word.size') }}</b>: {{ localContent.length }}</div>
-                  <div><b>{{ $t('word.type') }}</b>: {{ type.toUpperCase() }}</div>
+                  <div><b>{{ $t('word.size') }}</b>: {{ editingContent.length }}</div>
+                  <div><b>{{ $t('word.type') }}</b>: {{ editingType.toUpperCase() }}</div>
                </div>
             </div>
          </div>
@@ -65,7 +70,7 @@
          @hide="hideEditorModal"
       >
          <template :slot="'header'">
-            {{ $t('word.edit') }} "{{ field }}"
+            {{ $t('word.edit') }} "{{ editingField }}"
          </template>
          <div :slot="'body'">
             <div class="mb-2">
@@ -73,7 +78,7 @@
                   <div v-if="contentInfo.size">
                      <img
                         v-if="isImage"
-                        :src="`data:${contentInfo.mime};base64, ${bufferToBase64(localContent)}`"
+                        :src="`data:${contentInfo.mime};base64, ${bufferToBase64(editingContent)}`"
                         class="img-responsive p-centered bg-checkered"
                      >
                      <div v-else class="text-center">
@@ -93,10 +98,10 @@
                </transition>
                <div class="editor-field-info">
                   <div>
-                     <b>{{ $t('word.size') }}</b>: {{ localContent.length | formatBytes }}<br>
+                     <b>{{ $t('word.size') }}</b>: {{ editingContent.length | formatBytes }}<br>
                      <b>{{ $t('word.mimeType') }}</b>: {{ contentInfo.mime }}
                   </div>
-                  <div><b>{{ $t('word.type') }}</b>: {{ type.toUpperCase() }}</div>
+                  <div><b>{{ $t('word.type') }}</b>: {{ editingType.toUpperCase() }}</div>
                </div>
                <div class="mt-3">
                   <label>{{ $t('message.uploadFile') }}</label>
@@ -123,9 +128,12 @@ import { mask } from 'vue-the-mask';
 import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
-   name: 'WorkspaceQueryTableCell',
+   name: 'WorkspaceQueryTableRow',
    components: {
       ConfirmModal
+   },
+   directives: {
+      mask
    },
    filters: {
       formatBytes,
@@ -163,22 +171,20 @@ export default {
          return val;
       }
    },
-   directives: {
-      mask
-   },
    props: {
-      type: String,
-      field: String,
-      precision: [Number, null],
-      content: [String, Number, Object, Date, Uint8Array]
+      row: Object,
+      fields: Array
    },
    data () {
       return {
-         isInlineEditor: false,
+         isInlineEditor: {},
          isTextareaEditor: false,
          isBlobEditor: false,
          willBeDeleted: false,
-         localContent: null,
+         originalContent: null,
+         editingContent: null,
+         editingType: null,
+         editingField: null,
          contentInfo: {
             ext: '',
             mime: '',
@@ -220,35 +226,61 @@ export default {
          return ['gif', 'jpg', 'png', 'bmp', 'ico', 'tif'].includes(this.contentInfo.ext);
       }
    },
+   created () {
+      this.fields.forEach(field => {
+         this.isInlineEditor[field.name] = false;
+      });
+   },
    methods: {
+      fieldType (cKey) {
+         let type = 'unknown';
+         const field = this.fields.filter(field => field.name === cKey)[0];
+         if (field)
+            type = field.type;
+
+         return type;
+      },
+      fieldPrecision (cKey) {
+         let length = 0;
+         const field = this.fields.filter(field => field.name === cKey)[0];
+         if (field)
+            length = field.precision;
+
+         return length;
+      },
       isNull (value) {
          return value === null ? ' is-null' : '';
       },
       bufferToBase64 (val) {
          return bufferToBase64(val);
       },
-      editON () {
-         if (LONG_TEXT.includes(this.type)) {
+      editON (event, content, field) {
+         const type = this.fieldType(field);
+         this.originalContent = content;
+         this.editingType = type;
+         this.editingField = field;
+
+         if (LONG_TEXT.includes(type)) {
             this.isTextareaEditor = true;
-            this.localContent = this.$options.filters.typeFormat(this.content, this.type);
+            this.editingContent = this.$options.filters.typeFormat(this.originalContent, type);
             return;
          }
 
-         if (BLOB.includes(this.type)) {
+         if (BLOB.includes(type)) {
             this.isBlobEditor = true;
-            this.localContent = this.content ? this.content : '';
+            this.editingContent = this.originalContent || '';
             this.fileToUpload = null;
             this.willBeDeleted = false;
 
-            if (this.content !== null) {
-               const buff = Buffer.from(this.localContent);
+            if (this.originalContent !== null) {
+               const buff = Buffer.from(this.editingContent);
                if (buff.length) {
                   const hex = buff.toString('hex').substring(0, 8).toUpperCase();
                   const { ext, mime } = mimeFromHex(hex);
                   this.contentInfo = {
                      ext,
                      mime,
-                     size: this.localContent.length
+                     size: this.editingContent.length
                   };
                }
             }
@@ -256,20 +288,24 @@ export default {
          }
 
          // Inline editable fields
-         this.localContent = this.$options.filters.typeFormat(this.content, this.type);
+         this.editingContent = this.$options.filters.typeFormat(this.originalContent, type);
          this.$nextTick(() => { // Focus on input
-            this.$refs.cell.blur();
+            event.target.blur();
 
-            this.$nextTick(() => this.$refs.editField.focus());
+            this.$nextTick(() => document.querySelector('.editable-field').focus());
          });
-         this.isInlineEditor = true;
+
+         const obj = {
+            [field]: true
+         };
+         this.isInlineEditor = { ...this.isInlineEditor, ...obj };
       },
       editOFF () {
-         this.isInlineEditor = false;
+         this.isInlineEditor[this.editingField] = false;
          let content;
-         if (!['blob', 'mediumblob', 'longblob'].includes(this.type)) {
-            if (this.localContent === this.$options.filters.typeFormat(this.content, this.type)) return;// If not changed
-            content = this.localContent;
+         if (!['blob', 'mediumblob', 'longblob'].includes(this.editingType)) {
+            if (this.editingContent === this.$options.filters.typeFormat(this.originalContent, this.editingType)) return;// If not changed
+            content = this.editingContent;
          }
          else { // Handle file upload
             if (this.willBeDeleted) {
@@ -283,10 +319,13 @@ export default {
          }
 
          this.$emit('updateField', {
-            field: this.field,
-            type: this.type,
+            field: this.editingField,
+            type: this.editingType,
             content
          });
+
+         this.editingType = null;
+         this.editingField = null;
       },
       hideEditorModal () {
          this.isTextareaEditor = false;
@@ -295,7 +334,7 @@ export default {
       downloadFile () {
          const downloadLink = document.createElement('a');
 
-         downloadLink.href = `data:${this.contentInfo.mime};base64, ${bufferToBase64(this.localContent)}`;
+         downloadLink.href = `data:${this.contentInfo.mime};base64, ${bufferToBase64(this.editingContent)}`;
          downloadLink.setAttribute('download', `${this.field}.${this.contentInfo.ext}`);
          document.body.appendChild(downloadLink);
 
@@ -310,13 +349,22 @@ export default {
          this.willBeDeleted = false;
       },
       prepareToDelete () {
-         this.localContent = '';
+         this.editingContent = '';
          this.contentInfo = {
             ext: '',
             mime: '',
             size: null
          };
          this.willBeDeleted = true;
+      },
+      updateField (event, id) {
+         this.$emit('updateField', event, id);
+      },
+      contextMenu (event, cell) {
+         this.$emit('updateField', event, cell);
+      },
+      selectRow (event, row) {
+         this.$emit('selectRow', event, row);
       }
    }
 };

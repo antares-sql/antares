@@ -11,9 +11,10 @@
          v-if="results.rows"
          ref="resultTable"
          :items="sortedResults"
-         :item-height="25"
+         :item-height="22"
          class="vscroll"
          :style="{'height': resultsSize+'px'}"
+         :visible-height="resultsSize"
       >
          <template slot-scope="{ items }">
             <div class="table table-hover">
@@ -40,24 +41,17 @@
                   </div>
                </div>
                <div class="tbody">
-                  <div
+                  <WorkspaceQueryTableRow
                      v-for="row in items"
                      :key="row._id"
+                     :row="row"
+                     :fields="fields"
                      class="tr"
                      :class="{'selected': selectedRows.includes(row._id)}"
-                     @click="selectRow($event, row._id)"
-                  >
-                     <WorkspaceQueryTableCell
-                        v-for="(col, cKey) in row"
-                        :key="cKey"
-                        :content="col"
-                        :field="cKey"
-                        :precision="fieldPrecision(cKey)"
-                        :type="fieldType(cKey)"
-                        @updateField="updateField($event, row[primaryField.name])"
-                        @contextmenu="contextMenu($event, {id: row._id, field: cKey})"
-                     />
-                  </div>
+                     @selectRow="selectRow($event, row._id)"
+                     @updateField="updateField($event, row[primaryField.name])"
+                     @contextmenu="contextMenu"
+                  />
                </div>
             </div>
          </template>
@@ -68,7 +62,7 @@
 <script>
 import { uidGen } from 'common/libs/uidGen';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
-import WorkspaceQueryTableCell from '@/components/WorkspaceQueryTableCell';
+import WorkspaceQueryTableRow from '@/components/WorkspaceQueryTableRow';
 import TableContext from '@/components/WorkspaceQueryTableContext';
 import { mapActions } from 'vuex';
 
@@ -76,7 +70,7 @@ export default {
    name: 'WorkspaceQueryTable',
    components: {
       BaseVirtualScroll,
-      WorkspaceQueryTableCell,
+      WorkspaceQueryTableRow,
       TableContext
    },
    props: {
