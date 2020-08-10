@@ -2,7 +2,7 @@
 import Connection from '@/ipc-api/Connection';
 import { uidGen } from 'common/libs/uidGen';
 
-function remapStructure (structure) {
+function remapStructure (structure) { // TODO: move to main process and add fields (for autocomplete purpose)
    const databases = structure.map(table => table.TABLE_SCHEMA)
       .filter((value, index, self) => self.indexOf(value) === index);
 
