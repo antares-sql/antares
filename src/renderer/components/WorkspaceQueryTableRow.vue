@@ -196,29 +196,39 @@ export default {
    },
    computed: {
       inputProps () {
-         if ([...TEXT, ...LONG_TEXT].includes(this.type))
+         if ([...TEXT, ...LONG_TEXT].includes(this.editingType))
             return { type: 'text', mask: false };
 
-         if (NUMBER.includes(this.type))
+         if (NUMBER.includes(this.editingType))
             return { type: 'number', mask: false };
 
-         if (TIME.includes(this.type))
-            return { type: 'number', mask: false };
+         if (TIME.includes(this.editingType)) {
+            let timeMask = '##:##:##';
+            const precision = this.fieldPrecision(this.editingField);
 
-         if (DATE.includes(this.type))
+            for (let i = 0; i < precision; i++)
+               timeMask += i === 0 ? '.#' : '#';
+
+            return { type: 'text', mask: timeMask };
+         }
+
+         if (DATE.includes(this.editingType))
             return { type: 'text', mask: '####-##-##' };
 
-         if (DATETIME.includes(this.type)) {
+         if (DATETIME.includes(this.editingType)) {
             let datetimeMask = '####-##-## ##:##:##';
-            for (let i = 0; i < this.precision; i++)
+            const precision = this.fieldPrecision(this.editingField);
+
+            for (let i = 0; i < precision; i++)
                datetimeMask += i === 0 ? '.#' : '#';
+
             return { type: 'text', mask: datetimeMask };
          }
 
-         if (BLOB.includes(this.type))
+         if (BLOB.includes(this.editingType))
             return { type: 'file', mask: false };
 
-         if (BIT.includes(this.type))
+         if (BIT.includes(this.editingType))
             return { type: 'text', mask: false };
 
          return { type: 'text', mask: false };
