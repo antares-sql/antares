@@ -1,5 +1,5 @@
 <template>
-   <div :style="{'height': visibleHeight+'px'}" class="vscroll-holder">
+   <div class="vscroll-holder">
       <div
          class="vscroll-spacer"
          :style="{
@@ -26,48 +26,54 @@ export default {
    props: {
       items: Array,
       itemHeight: Number,
-      visibleHeight: Number
+      visibleHeight: Number,
+      scrollElement: {
+         type: HTMLDivElement,
+         default: null
+      }
    },
    data () {
       return {
          topHeight: 0,
          bottomHeight: 0,
          visibleItems: [],
-         renderTimeout: null
+         renderTimeout: null,
+         localScrollElement: null
       };
    },
    mounted () {
-      this._checkScrollPosition = this.updateWindow.bind(this);
+      this._checkScrollPosition = this.checkScrollPosition.bind(this);
+      this.localScrollElement = this.scrollElement ? this.scrollElement : this.$el;
       this.updateWindow();
-      this.$el.addEventListener('scroll', this._checkScrollPosition);
+      this.localScrollElement.addEventListener('scroll', this._checkScrollPosition);
    },
    beforeDestroy () {
-      this.$el.removeEventListener('scroll', this._checkScrollPosition);
+      this.localScrollElement.removeEventListener('scroll', this._checkScrollPosition);
    },
    methods: {
-      checkScrollPosition () {
-
-      },
-      updateWindow (e) { // TODO: no timeout on first render
-         const visibleItemsCount = Math.ceil(this.$el.clientHeight / this.itemHeight);
-         const totalScrollHeight = this.items.length * this.itemHeight;
-         const offset = 50;
-
-         const scrollTop = this.$el.scrollTop;
-
+      checkScrollPosition (e) {
          clearTimeout(this.renderTimeout);
 
          this.renderTimeout = setTimeout(() => {
-            const firstVisibleIndex = Math.floor(scrollTop / this.itemHeight);
-            const lastVisibleIndex = firstVisibleIndex + visibleItemsCount;
-            const firstCutIndex = Math.max(firstVisibleIndex - offset, 0);
-            const lastCutIndex = lastVisibleIndex + offset;
-
-            this.visibleItems = this.items.slice(firstCutIndex, lastCutIndex);
-
-            this.topHeight = firstCutIndex * this.itemHeight;
-            this.bottomHeight = totalScrollHeight - this.visibleItems.length * this.itemHeight - this.topHeight;
+            this.updateWindow(e);
          }, 200);
+      },
+      updateWindow (e) {
+         const visibleItemsCount = Math.ceil(this.visibleHeight / this.itemHeight);
+         const totalScrollHeight = this.items.length * this.itemHeight;
+         const offset = 50;
+
+         const scrollTop = this.localScrollElement.scrollTop;
+
+         const firstVisibleIndex = Math.floor(scrollTop / this.itemHeight);
+         const lastVisibleIndex = firstVisibleIndex + visibleItemsCount;
+         const firstCutIndex = Math.max(firstVisibleIndex - offset, 0);
+         const lastCutIndex = lastVisibleIndex + offset;
+
+         this.visibleItems = this.items.slice(firstCutIndex, lastCutIndex);
+
+         this.topHeight = firstCutIndex * this.itemHeight;
+         this.bottomHeight = totalScrollHeight - this.visibleItems.length * this.itemHeight - this.topHeight;
       }
    }
 };

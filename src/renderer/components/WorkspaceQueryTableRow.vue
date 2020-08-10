@@ -2,6 +2,7 @@
    <div class="tr" @click="selectRow($event, row._id)">
       <div
          v-for="(col, cKey) in row"
+         v-show="cKey !== '_id'"
          :key="cKey"
          class="td p-0"
          tabindex="0"
@@ -376,6 +377,9 @@ export default {
   border: none;
   line-height: 1;
   width: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
 }
 
 .cell-content {

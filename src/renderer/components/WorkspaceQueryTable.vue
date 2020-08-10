@@ -1,5 +1,9 @@
 <template>
-   <div>
+   <div
+      ref="tableWrapper"
+      class="vscroll"
+      :style="{'height': resultsSize+'px'}"
+   >
       <TableContext
          v-if="isContext"
          :context-event="contextEvent"
@@ -7,55 +11,53 @@
          @deleteSelected="deleteSelected"
          @closeContext="isContext = false"
       />
-      <BaseVirtualScroll
-         v-if="results.rows"
-         ref="resultTable"
-         :items="sortedResults"
-         :item-height="22"
-         class="vscroll"
-         :style="{'height': resultsSize+'px'}"
-         :visible-height="resultsSize"
-      >
-         <template slot-scope="{ items }">
-            <div class="table table-hover">
-               <div class="thead">
-                  <div class="tr">
-                     <div
-                        v-for="field in fields"
-                        :key="field.name"
-                        class="th c-hand"
-                     >
-                        <div ref="columnResize" class="column-resizable">
-                           <div class="table-column-title" @click="sort(field.name)">
-                              <i
-                                 v-if="field.key"
-                                 class="material-icons column-key c-help"
-                                 :class="`key-${field.key}`"
-                                 :title="keyName(field.key)"
-                              >vpn_key</i>
-                              <span>{{ field.name }}</span>
-                              <i v-if="currentSort === field.name" class="material-icons sort-icon">{{ currentSortDir === 'asc' ? 'arrow_upward':'arrow_downward' }}</i>
-                           </div>
-                        </div>
+      <div ref="table" class="table table-hover">
+         <div class="thead">
+            <div class="tr">
+               <div
+                  v-for="field in fields"
+                  :key="field.name"
+                  class="th c-hand"
+               >
+                  <div ref="columnResize" class="column-resizable">
+                     <div class="table-column-title" @click="sort(field.name)">
+                        <i
+                           v-if="field.key"
+                           class="material-icons column-key c-help"
+                           :class="`key-${field.key}`"
+                           :title="keyName(field.key)"
+                        >vpn_key</i>
+                        <span>{{ field.name }}</span>
+                        <i v-if="currentSort === field.name" class="material-icons sort-icon">{{ currentSortDir === 'asc' ? 'arrow_upward':'arrow_downward' }}</i>
                      </div>
                   </div>
                </div>
-               <div class="tbody">
-                  <WorkspaceQueryTableRow
-                     v-for="row in items"
-                     :key="row._id"
-                     :row="row"
-                     :fields="fields"
-                     class="tr"
-                     :class="{'selected': selectedRows.includes(row._id)}"
-                     @selectRow="selectRow($event, row._id)"
-                     @updateField="updateField($event, row[primaryField.name])"
-                     @contextmenu="contextMenu"
-                  />
-               </div>
             </div>
-         </template>
-      </BaseVirtualScroll>
+         </div>
+         <BaseVirtualScroll
+            v-if="results.rows"
+            ref="resultTable"
+            :items="sortedResults"
+            :item-height="22"
+            class="tbody"
+            :visible-height="resultsSize"
+            :scroll-element="scrollElement"
+         >
+            <template slot-scope="{ items }">
+               <WorkspaceQueryTableRow
+                  v-for="row in items"
+                  :key="row._id"
+                  :row="row"
+                  :fields="fields"
+                  class="tr"
+                  :class="{'selected': selectedRows.includes(row._id)}"
+                  @selectRow="selectRow($event, row._id)"
+                  @updateField="updateField($event, row[primaryField.name])"
+                  @contextmenu="contextMenu"
+               />
+            </template>
+         </basevirtualscroll>
+      </div>
    </div>
 </template>
 
@@ -107,6 +109,9 @@ export default {
          }
          else
             return this.localResults;
+      },
+      scrollElement () {
+         return this.$refs.tableWrapper;
       }
    },
    watch: {
@@ -118,7 +123,7 @@ export default {
       }
    },
    updated () {
-      if (this.$refs.resultTable)
+      if (this.$refs.table)
          this.refreshScroller();
    },
    mounted () {
@@ -161,10 +166,10 @@ export default {
       },
       resizeResults () {
          if (this.$refs.resultTable) {
-            const el = this.$refs.resultTable.$el;
-            const footer = document.getElementById('footer');
+            const el = this.$refs.table;
 
             if (el) {
+               const footer = document.getElementById('footer');
                const size = window.innerHeight - el.getBoundingClientRect().top - footer.offsetHeight;
                this.resultsSize = size;
             }

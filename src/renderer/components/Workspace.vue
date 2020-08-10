@@ -6,12 +6,21 @@
             <li
                v-if="workspace.breadcrumbs.table"
                class="tab-item"
+            >
+               <a class="tab-link">
+                  <i class="material-icons md-18 mr-1">tune</i>
+                  <span :title="workspace.breadcrumbs.table">{{ $t('word.properties').toUpperCase() }}: {{ workspace.breadcrumbs.table }}</span>
+               </a>
+            </li>
+            <li
+               v-if="workspace.breadcrumbs.table"
+               class="tab-item"
                :class="{'active': selectedTab === 1}"
                @click="selectTab({uid: workspace.uid, tab: 1})"
             >
                <a class="tab-link">
                   <i class="material-icons md-18 mr-1">grid_on</i>
-                  <span :title="workspace.breadcrumbs.table">{{ workspace.breadcrumbs.table }}</span>
+                  <span :title="workspace.breadcrumbs.table">{{ $t('word.data').toUpperCase() }}: {{ workspace.breadcrumbs.table }}</span>
                </a>
             </li>
             <li
@@ -109,10 +118,6 @@ export default {
         width: fit-content;
         flex: initial;
 
-        &.active a {
-          opacity: 1;
-        }
-
         > a {
           padding: 0.2rem 0.8rem;
           color: $body-font-color;
@@ -131,6 +136,10 @@ export default {
             white-space: nowrap;
             text-overflow: ellipsis;
           }
+        }
+
+        &.active a {
+          opacity: 1;
         }
       }
     }
@@ -155,6 +164,7 @@ export default {
         padding: 0;
         font-weight: 700;
         font-size: 0.7rem;
+        z-index: 1;
 
         > div {
           padding: 0.1rem 0.4rem;
@@ -172,6 +182,7 @@ export default {
         white-space: nowrap;
         overflow: hidden;
         font-size: 0.7rem;
+        position: relative;
 
         &:focus {
           box-shadow: inset 0 0 0 1px $body-font-color;
