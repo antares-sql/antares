@@ -4,7 +4,7 @@
       <div class="titlebar-elements">
          <img class="titlebar-logo" :src="require('@/images/logo.svg').default">
       </div>
-      <div class="titlebar-elements">
+      <div class="titlebar-elements titlebar-title">
          {{ windowTitle }}
       </div>
       <div class="titlebar-elements">
@@ -122,6 +122,15 @@ export default {
     .titlebar-elements {
       display: flex;
       align-items: center;
+
+      &.titlebar-title {
+        position: absolute;
+        left: 0;
+        right: 0;
+        text-align: center;
+        display: block;
+        pointer-events: none;
+      }
 
       .titlebar-logo {
         height: $titlebar-height;
