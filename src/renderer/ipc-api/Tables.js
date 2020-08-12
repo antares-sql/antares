@@ -17,4 +17,8 @@ export default class {
    static deleteTableRows (params) {
       return ipcRenderer.invoke('deleteTableRows', params);
    }
+
+   static insertTableRows (params) {
+      return ipcRenderer.invoke('insertTableRows', params);
+   }
 }

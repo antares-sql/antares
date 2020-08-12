@@ -31,7 +31,10 @@ export default class {
             datePrecision: field.DATETIME_PRECISION,
             charLength: field.CHARACTER_MAXIMUM_LENGTH,
             isNullable: field.IS_NULLABLE,
-            default: field.COLUMN_DEFAULT
+            default: field.COLUMN_DEFAULT,
+            charset: field.CHARACTER_SET_NAME,
+            collation: field.COLLATION_NAME,
+            autoIncrement: field.EXTRA.includes('auto_increment')
          };
       });
    }

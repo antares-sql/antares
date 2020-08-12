@@ -40,19 +40,28 @@
             @deleteSelected="deleteSelected"
          />
       </div>
+      <ModalNewTableRow
+         v-if="isAddModal"
+         :fields="fields"
+         :connection="connection"
+         @hide="hideAddModal"
+         @reload="reloadTable"
+      />
    </div>
 </template>
 
 <script>
 import Tables from '@/ipc-api/Tables';
 import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
+import ModalNewTableRow from '@/components/ModalNewTableRow';
 import { mapGetters, mapActions } from 'vuex';
 import tableTabs from '@/mixins/tableTabs';
 
 export default {
    name: 'WorkspaceTableTab',
    components: {
-      WorkspaceQueryTable
+      WorkspaceQueryTable,
+      ModalNewTableRow
    },
    mixins: [tableTabs],
    props: {

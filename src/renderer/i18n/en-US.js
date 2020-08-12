@@ -37,7 +37,8 @@ module.exports = {
       download: 'Download',
       add: 'Add',
       data: 'Data',
-      properties: 'Properties'
+      properties: 'Properties',
+      insert: 'Insert'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -65,7 +66,9 @@ module.exports = {
       deleteRows: 'Delete row | Delete {count} rows',
       confirmToDeleteRows: 'Do you confirm to delete one row? | Do you confirm to delete {count} rows?',
       notificationsTimeout: 'Notifications timeout',
-      uploadFile: 'Upload file'
+      uploadFile: 'Upload file',
+      addNewRow: 'Add new row',
+      numberOfInserts: 'Number of inserts'
    },
    // Date and Time
    short: {

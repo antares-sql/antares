@@ -50,4 +50,14 @@ export default class {
          .where({ [params.primary]: `IN (${params.rows.join(',')})` })
          .run();
    }
+
+   static async insertTableRows (connection, params) { // Prepare every field like updateTableCell method
+      for (let i = 0; i < params.repeat; i++) {
+         await connection
+            .schema(params.schema)
+            .into(params.table)
+            .insert(params.row)
+            .run();
+      }
+   }
 }

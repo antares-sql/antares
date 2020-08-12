@@ -32,7 +32,7 @@ export class AntaresConnector {
          limit: [],
          join: [],
          update: [],
-         insert: [],
+         insert: {},
          delete: false
       };
       this._query = Object.assign({}, this._queryDefaults);
@@ -108,6 +108,11 @@ export class AntaresConnector {
       return this;
    }
 
+   into (table) {
+      this._query.from = table;
+      return this;
+   }
+
    delete (table) {
       this._query.delete = true;
       this.from(table);
@@ -163,6 +168,16 @@ export class AntaresConnector {
    }
 
    /**
+    * @param {Object} obj field: value
+    * @returns
+    * @memberof AntaresConnector
+    */
+   insert (obj) {
+      this._query.insert = { ...this._query.insert, ...obj };
+      return this;
+   }
+
+   /**
     * @returns {string} SQL string
     * @memberof AntaresConnector
     */
@@ -188,8 +203,10 @@ export class AntaresConnector {
 
       // FROM
       let fromRaw = '';
-      if (!this._query.update.length && !!this._query.from)
+      if (!this._query.update.length && !Object.keys(this._query.insert).length && !!this._query.from)
          fromRaw = 'FROM';
+      else if (Object.keys(this._query.insert).length)
+         fromRaw = 'INTO';
 
       switch (this._client) {
          case 'maria':
@@ -208,6 +225,21 @@ export class AntaresConnector {
 
       const updateArray = this._query.update.reduce(this._reducer, []);
       const updateRaw = updateArray.length ? `SET ${updateArray.join(', ')} ` : '';
+
+      let insertRaw = '';
+      if (Object.keys(this._query.insert).length) {
+         const fieldsList = [];
+         const valueList = [];
+         const fields = this._query.insert;
+
+         for (const key in fields) {
+            if (fields[key] === null) continue;
+            fieldsList.push(key);
+            valueList.push(typeof fields[key] === 'number' ? fields[key] : `"${fields[key]}"`);
+         }
+
+         insertRaw = ` (${fieldsList.join(',')}) VALUES (${valueList.join(',')}) `;
+      }
 
       const groupByArray = this._query.groupBy.reduce(this._reducer, []);
       const groupByRaw = groupByArray.length ? `GROUP BY ${groupByArray.join(', ')} ` : '';
@@ -229,7 +261,7 @@ export class AntaresConnector {
             break;
       }
 
-      return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}`;
+      return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}${insertRaw}`;
    }
 
    /**

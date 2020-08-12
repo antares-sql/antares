@@ -44,4 +44,14 @@ export default (connections) => {
          return { status: 'error', response: err.toString() };
       }
    });
+
+   ipcMain.handle('insertTableRows', async (event, params) => {
+      try {
+         await Tables.insertTableRows(connections[params.uid], params);
+         return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
 };
