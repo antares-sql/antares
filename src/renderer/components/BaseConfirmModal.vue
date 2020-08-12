@@ -2,7 +2,7 @@
    <div class="modal active" :class="modalSizeClass">
       <a class="modal-overlay" @click="hideModal" />
       <div class="modal-container">
-         <div v-if="hasHeader" class="modal-header">
+         <div v-if="hasHeader" class="modal-header pl-2">
             <div class="modal-title h6">
                <slot name="header" />
             </div>

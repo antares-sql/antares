@@ -6,7 +6,7 @@
          @click="changeBreadcrumbs({schema: database.name, table:null})"
       >
          <i class="icon mdi mdi-18px mdi-chevron-right" />
-         <i class="mdi mdi-18px mdi-database mr-1" />
+         <i class="database-icon mdi mdi-18px mdi-database mr-1" />
          <span>{{ database.name }}</span>
       </summary>
       <div class="accordion-body">
@@ -20,7 +20,7 @@
                   @click="changeBreadcrumbs({schema: database.name, table: table.TABLE_NAME})"
                >
                   <a class="table-name">
-                     <i class="mdi mdi-18px mdi-table mr-1" />
+                     <i class="table-icon mdi mdi-18px mdi-table mr-1" />
                      <span>{{ table.TABLE_NAME }}</span>
                   </a>
                </li>
@@ -76,6 +76,11 @@ export default {
         color: $body-font-color;
         background: rgba($color: #fff, $alpha: 0.05);
         border-radius: 2px;
+      }
+
+      .database-icon,
+      .table-icon {
+        opacity: 0.7;
       }
     }
 

@@ -9,7 +9,7 @@
          :context-event="contextEvent"
          :selected-rows="selectedRows"
          @deleteSelected="deleteSelected"
-         @closeContext="isContext = false"
+         @close-context="isContext = false"
       />
       <div ref="table" class="table table-hover">
          <div class="thead">

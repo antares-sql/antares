@@ -2,9 +2,11 @@
    <div class="modal active modal-sm">
       <a class="modal-overlay" />
       <div class="modal-container p-0">
-         <div class="modal-header">
+         <div class="modal-header pl-2">
             <div class="modal-title h6">
-               {{ $t('word.credentials') }}
+               <div class="d-flex">
+                  <i class="mdi mdi-24px mdi-key-variant mr-1" /> {{ $t('word.credentials') }}
+               </div>
             </div>
             <a class="btn btn-clear c-hand" @click.stop="closeModal" />
          </div>

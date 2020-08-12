@@ -2,9 +2,12 @@
    <div id="settings" class="modal active">
       <a class="modal-overlay c-hand" @click="closeModal" />
       <div class="modal-container">
-         <div class="modal-header">
-            <div class="modal-title h5">
-               {{ $t('word.settings') }}
+         <div class="modal-header pl-2">
+            <div class="modal-title h6">
+               <div class="d-flex">
+                  <i class="mdi mdi-24px mdi-cog mr-1" />
+                  {{ $t('word.settings') }}
+               </div>
             </div>
             <a class="btn btn-clear c-hand" @click="closeModal" />
          </div>

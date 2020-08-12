@@ -1,7 +1,7 @@
 <template>
    <BaseContextMenu
       :context-event="contextEvent"
-      @closeContext="$emit('closeContext')"
+      @close-context="$emit('close-context')"
    >
       <div class="context-element" @click="showEditModal(contextConnection)">
          <i class="mdi mdi-18px mdi-pencil text-light pr-1" /> {{ $t('word.edit') }}
@@ -16,7 +16,9 @@
          @hide="hideConfirmModal"
       >
          <template :slot="'header'">
-            {{ $t('message.deleteConnection') }}
+            <div class="d-flex">
+               <i class="mdi mdi-24px mdi-server-remove mr-1" /> {{ $t('message.deleteConnection') }}
+            </div>
          </template>
          <div :slot="'body'">
             <div class="mb-2">

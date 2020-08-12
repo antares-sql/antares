@@ -77,7 +77,7 @@ export default {
 <style lang="scss">
   #notifications-board {
     position: absolute;
-    z-index: 9;
+    z-index: 999;
     right: 1rem;
     bottom: 1rem;
   }

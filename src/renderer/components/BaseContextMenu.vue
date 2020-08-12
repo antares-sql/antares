@@ -31,7 +31,7 @@ export default {
    },
    methods: {
       close () {
-         this.$emit('closeContext');
+         this.$emit('close-context');
       }
    }
 };
@@ -57,7 +57,7 @@ export default {
     .context-container {
       min-width: 100px;
       max-width: 150px;
-      z-index: 1;
+      z-index: 10;
       box-shadow: 0 0 1px 0 #000;
       padding: 0;
       background: #1d1d1d;

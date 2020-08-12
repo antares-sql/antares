@@ -1,7 +1,7 @@
 <template>
    <BaseContextMenu
       :context-event="contextEvent"
-      @closeContext="closeContext"
+      @close-context="closeContext"
    >
       <div class="context-element" @click="showConfirmModal">
          <i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ $tc('message.deleteRows', selectedRows.length) }}
@@ -13,7 +13,9 @@
          @hide="hideConfirmModal"
       >
          <template :slot="'header'">
-            {{ $tc('message.deleteRows', selectedRows.length) }}
+            <div class="d-flex">
+               <i class="mdi mdi-24px mdi-delete mr-1" /> {{ $tc('message.deleteRows', selectedRows.length) }}
+            </div>
          </template>
          <div :slot="'body'">
             <div class="mb-2">
@@ -58,7 +60,7 @@ export default {
          this.isConfirmModal = false;
       },
       closeContext () {
-         this.$emit('closeContext');
+         this.$emit('close-context');
       },
       deleteRows () {
          this.$emit('deleteSelected');

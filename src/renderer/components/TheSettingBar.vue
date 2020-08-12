@@ -5,7 +5,7 @@
             v-if="isContext"
             :context-event="contextEvent"
             :context-connection="contextConnection"
-            @closeContext="isContext = false"
+            @close-context="isContext = false"
          />
          <ul class="settingbar-elements">
             <draggable v-model="connections">
