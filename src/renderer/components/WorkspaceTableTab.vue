@@ -9,7 +9,7 @@
                   @click="reloadTable"
                >
                   <span>{{ $t('word.refresh') }}</span>
-                  <i class="material-icons ml-1">refresh</i>
+                  <i class="mdi mdi-24px mdi-refresh ml-1" />
                </button>
                <button
                   class="btn btn-link btn-sm"
@@ -17,7 +17,7 @@
                   @click="showAddModal"
                >
                   <span>{{ $t('word.add') }}</span>
-                  <i class="material-icons ml-1">playlist_add</i>
+                  <i class="mdi mdi-24px mdi-playlist-plus ml-1" />
                </button>
             </div>
             <div class="workspace-query-info">
@@ -64,7 +64,8 @@ export default {
          isQuering: false,
          results: {},
          fields: [],
-         lastTable: null
+         lastTable: null,
+         isAddModal: false
       };
    },
    computed: {
@@ -138,7 +139,12 @@ export default {
       reloadTable () {
          this.getTableData();
       },
-      showAddModal () {}
+      showAddModal () {
+         this.isAddModal = true;
+      },
+      hideAddModal () {
+         this.isAddModal = false;
+      }
    }
 };
 </script>

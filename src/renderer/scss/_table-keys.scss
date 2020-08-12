@@ -1,0 +1,18 @@
+.column-key {
+  transform: rotate(90deg);
+  font-size: 0.7rem;
+  line-height: 1.5;
+  margin-right: 0.2rem;
+
+  &.key-pri {
+    color: goldenrod;
+  }
+
+  &.key-uni {
+    color: deepskyblue;
+  }
+
+  &.key-mul {
+    color: palegreen;
+  }
+}

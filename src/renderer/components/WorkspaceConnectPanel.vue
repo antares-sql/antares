@@ -2,7 +2,7 @@
    <div class="columns">
       <div class="column col-12 empty text-light">
          <div class="empty-icon">
-            <i class="material-icons md-48">cloud_off</i>
+            <i class="mdi mdi-48px mdi-power-plug-off" />
          </div>
          <p class="empty-title h5">
             {{ $t('word.disconnected') }}

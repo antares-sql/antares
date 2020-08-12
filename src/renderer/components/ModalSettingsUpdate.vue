@@ -1,7 +1,7 @@
 <template>
    <div class="empty">
       <div class="empty-icon">
-         <i class="material-icons md-48">system_update_alt</i>
+         <i class="mdi mdi-48px mdi-cloud-download" />
       </div>
       <p class="empty-title h5">
          {{ updateMessage }}

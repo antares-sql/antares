@@ -27,7 +27,11 @@ export default class {
             name: field.COLUMN_NAME,
             key: field.COLUMN_KEY.toLowerCase(),
             type: field.DATA_TYPE,
-            precision: field.DATETIME_PRECISION
+            numPrecision: field.NUMERIC_PRECISION,
+            datePrecision: field.DATETIME_PRECISION,
+            charLength: field.CHARACTER_MAXIMUM_LENGTH,
+            isNullable: field.IS_NULLABLE,
+            default: field.COLUMN_DEFAULT
          };
       });
    }

@@ -2,7 +2,7 @@
 
 import Vue from 'vue';
 
-import 'material-design-icons/iconfont/material-icons.css';
+import '@mdi/font/css/materialdesignicons.css';
 import '@/scss/main.scss';
 
 import App from '@/App.vue';

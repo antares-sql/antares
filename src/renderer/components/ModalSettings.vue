@@ -49,7 +49,7 @@
                         <div class="form-group mb-4">
                            <div class="col-6 col-sm-12">
                               <label class="form-label">
-                                 <i class="material-icons md-18 mr-1">translate</i>
+                                 <i class="mdi mdi-18px mdi-translate mr-1" />
                                  {{ $t('word.language') }}:
                               </label>
                            </div>

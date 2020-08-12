@@ -34,19 +34,19 @@ export default {
          switch (this.status) {
             case 'success':
                className = 'toast-success';
-               iconTag = '<i class="material-icons mr-1">done</i>';
+               iconTag = '<i class="mdi mdi-24px mdi-check mr-1"></i>';
                break;
             case 'error':
                className = 'toast-error';
-               iconTag = '<i class="material-icons mr-1">error</i>';
+               iconTag = '<i class="mdi mdi-24px mdi-alert-rhombus mr-1"></i>';
                break;
             case 'warning':
                className = 'toast-warning';
-               iconTag = '<i class="material-icons mr-1">warning</i>';
+               iconTag = '<i class="mdi mdi-24px mdi-alert mr-1"></i>';
                break;
             case 'primary':
                className = 'toast-primary';
-               iconTag = '<i class="material-icons mr-1">info_outline</i>';
+               iconTag = '<i class="mdi mdi-24px mdi-information-outline mr-1"></i>';
                break;
          }
 

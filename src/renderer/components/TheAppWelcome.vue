@@ -2,7 +2,7 @@
    <div class="columns">
       <div class="column col-12 empty text-light">
          <div class="empty-icon">
-            <i class="material-icons md-48">mood</i>
+            <i class="mdi mdi-48px mdi-emoticon" />
          </div>
          <p class="empty-title h5">
             {{ $t('message.appWelcome') }}

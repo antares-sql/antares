@@ -4,10 +4,10 @@
       @closeContext="$emit('closeContext')"
    >
       <div class="context-element" @click="showEditModal(contextConnection)">
-         <i class="material-icons md-18 text-light pr-1">edit</i> {{ $t('word.edit') }}
+         <i class="mdi mdi-18px mdi-pencil text-light pr-1" /> {{ $t('word.edit') }}
       </div>
       <div class="context-element" @click="showConfirmModal">
-         <i class="material-icons md-18 text-light pr-1">delete</i> {{ $t('word.delete') }}
+         <i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ $t('word.delete') }}
       </div>
 
       <ConfirmModal

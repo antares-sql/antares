@@ -48,11 +48,11 @@
     }
   },
   "dependencies": {
+    "@mdi/font": "^5.5.55",
     "codemirror": "^5.56.0",
     "electron-log": "^4.2.2",
     "electron-updater": "^4.3.4",
     "lodash": "^4.17.19",
-    "material-design-icons": "^3.0.1",
     "moment": "^2.27.0",
     "mssql": "^6.2.1",
     "mysql": "^2.18.1",

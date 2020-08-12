@@ -1,14 +1,15 @@
 <template>
    <div class="toast mt-2" :class="notificationStatus.className">
       <span class="p-vcentered text-left" :class="{'expanded': isExpanded}">
-         <i class="material-icons mr-1">{{ notificationStatus.iconName }}</i>
+         <i class="mdi mdi-24px mr-2" :class="notificationStatus.iconName" />
          <span class="notification-message">{{ message }}</span>
       </span>
       <i
          v-if="isExpandable"
-         class="material-icons c-hand"
+         class="mdi mdi-24px c-hand expand-btn"
+         :class="isExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down'"
          @click="toggleExpand"
-      >{{ isExpanded ? 'expand_less' : 'expand_more' }}</i>
+      />
       <button class="btn btn-clear ml-2" @click="hideToast" />
    </div>
 </template>
@@ -38,19 +39,19 @@ export default {
          switch (this.status) {
             case 'success':
                className = 'toast-success';
-               iconName = 'done';
+               iconName = 'mdi-check';
                break;
             case 'error':
                className = 'toast-error';
-               iconName = 'error';
+               iconName = 'mdi-alert-rhombus';
                break;
             case 'warning':
                className = 'toast-warning';
-               iconName = 'warning';
+               iconName = 'mdi-alert';
                break;
             case 'primary':
                className = 'toast-primary';
-               iconName = 'info_outline';
+               iconName = 'mdi-information-outline';
                break;
          }
 
@@ -86,6 +87,10 @@ export default {
     text-overflow: ellipsis;
     display: inline-block;
     max-width: 30rem;
+  }
+
+  .expand-btn {
+    align-items: initial;
   }
 
   .expanded .notification-message {

@@ -5,8 +5,8 @@
          :class="{'text-bold': breadcrumbs.schema === database.name}"
          @click="changeBreadcrumbs({schema: database.name, table:null})"
       >
-         <i class="icon material-icons md-18 mr-1">navigate_next</i>
-         <i class="material-icons md-18 mr-1">view_agenda</i>
+         <i class="icon mdi mdi-18px mdi-chevron-right" />
+         <i class="mdi mdi-18px mdi-database mr-1" />
          <span>{{ database.name }}</span>
       </summary>
       <div class="accordion-body">
@@ -20,7 +20,7 @@
                   @click="changeBreadcrumbs({schema: database.name, table: table.TABLE_NAME})"
                >
                   <a class="table-name">
-                     <i class="material-icons md-18 mr-1">grid_on</i>
+                     <i class="mdi mdi-18px mdi-table mr-1" />
                      <span>{{ table.TABLE_NAME }}</span>
                   </a>
                </li>

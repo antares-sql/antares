@@ -8,7 +8,7 @@
                class="tab-item"
             >
                <a class="tab-link">
-                  <i class="material-icons md-18 mr-1">tune</i>
+                  <i class="mdi mdi-18px mdi-tune mr-1" />
                   <span :title="workspace.breadcrumbs.table">{{ $t('word.properties').toUpperCase() }}: {{ workspace.breadcrumbs.table }}</span>
                </a>
             </li>
@@ -19,7 +19,7 @@
                @click="selectTab({uid: workspace.uid, tab: 1})"
             >
                <a class="tab-link">
-                  <i class="material-icons md-18 mr-1">grid_on</i>
+                  <i class="mdi mdi-18px mdi-table mr-1" />
                   <span :title="workspace.breadcrumbs.table">{{ $t('word.data').toUpperCase() }}: {{ workspace.breadcrumbs.table }}</span>
                </a>
             </li>

@@ -28,7 +28,7 @@
                @click="showNewConnModal"
                @mouseover.self="tooltipPosition"
             >
-               <i class="settingbar-element-icon material-icons text-light">add</i>
+               <i class="settingbar-element-icon mdi mdi-24px mdi-plus text-light" />
                <span class="ex-tooltip-content">{{ $t('message.addConnection') }}</span>
             </li>
          </ul>
@@ -37,7 +37,7 @@
       <div class="settingbar-bottom-elements">
          <ul class="settingbar-elements">
             <li class="settingbar-element btn btn-link ex-tooltip" @click="showSettingModal('general')">
-               <i class="settingbar-element-icon material-icons text-light">settings</i>
+               <i class="settingbar-element-icon mdi mdi-24px mdi-cog text-light" />
                <span class="ex-tooltip-content">{{ $t('word.settings') }}</span>
             </li>
          </ul>

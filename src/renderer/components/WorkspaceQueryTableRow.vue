@@ -83,16 +83,16 @@
                         class="img-responsive p-centered bg-checkered"
                      >
                      <div v-else class="text-center">
-                        <i class="material-icons md-36">insert_drive_file</i>
+                        <i class="mdi mdi-36px mdi-file" />
                      </div>
                      <div class="editor-buttons mt-2">
                         <button class="btn btn-link btn-sm" @click="downloadFile">
                            <span>{{ $t('word.download') }}</span>
-                           <i class="material-icons ml-1">file_download</i>
+                           <i class="mdi mdi-24px mdi-download ml-1" />
                         </button>
                         <button class="btn btn-link btn-sm" @click="prepareToDelete">
                            <span>{{ $t('word.delete') }}</span>
-                           <i class="material-icons ml-1">delete_forever</i>
+                           <i class="mdi mdi-24px mdi-delete-forever ml-1" />
                         </button>
                      </div>
                   </div>
@@ -255,7 +255,7 @@ export default {
          let length = 0;
          const field = this.fields.filter(field => field.name === cKey)[0];
          if (field)
-            length = field.precision;
+            length = field.datePrecision;
 
          return length;
       },
@@ -346,7 +346,7 @@ export default {
          const downloadLink = document.createElement('a');
 
          downloadLink.href = `data:${this.contentInfo.mime};base64, ${bufferToBase64(this.editingContent)}`;
-         downloadLink.setAttribute('download', `${this.field}.${this.contentInfo.ext}`);
+         downloadLink.setAttribute('download', `${this.editingField}.${this.contentInfo.ext}`);
          document.body.appendChild(downloadLink);
 
          downloadLink.click();

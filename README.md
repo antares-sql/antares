@@ -17,7 +17,7 @@ If you are curious to try this early state of Antares you can download and insta
 
 Why am I developing an SQL client when there are a lot of thom on the market?-->
 
-## Hot to contribute
+## How to contribute
 
 - [Translate Antares](https://github.com/EStarium/antares/wiki/Translate-Antares)
 
@@ -25,19 +25,19 @@ Why am I developing an SQL client when there are a lot of thom on the market?-->
 
 This is a roadmap with major features will come in near future.
 
-- [ ] Options to insert new database records.
-- [ ] Improvements of query editor area.
-- [ ] Multiple query tabs.
-- [ ] Tables management (add/edit/delete).
-- [ ] Stored procedures, schedulers and trigger support.
-- [ ] Database tools.
-- [ ] Context menu shortcuts.
-- [ ] Keyboard shortcuts.
-- [ ] More secure password storage.
-- [ ] Query logs console.
-- [ ] Fake data filler.
-- [ ] Import/export and migration.
-- [ ] Themes.
+- Options to insert new database records.
+- Improvements of query editor area.
+- Multiple query tabs.
+- Tables management (add/edit/delete).
+- Stored procedures, views, schedulers and trigger support.
+- Database tools.
+- Context menu shortcuts.
+- Keyboard shortcuts.
+- More secure password storage.
+- Query logs console.
+- Fake data filler.
+- Import/export and migration.
+- Themes.
 
 ## Currently supported
 

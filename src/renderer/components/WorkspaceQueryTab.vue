@@ -11,7 +11,7 @@
                   @click="runQuery(query)"
                >
                   <span>{{ $t('word.run') }}</span>
-                  <i class="material-icons text-success">play_arrow</i>
+                  <i class="mdi mdi-24px mdi-play text-success" />
                </button>
             </div>
             <div class="workspace-query-info">

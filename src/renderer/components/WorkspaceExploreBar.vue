@@ -10,16 +10,16 @@
             <span class="workspace-explorebar-title">{{ connectionName }}</span>
             <span v-if="workspace.connected" class="workspace-explorebar-tools">
                <i
-                  class="material-icons md-18 c-hand"
+                  class="mdi mdi-18px mdi-refresh c-hand"
                   :class="{'rotate':isRefreshing}"
                   :title="$t('word.refresh')"
                   @click="refresh"
-               >refresh</i>
+               />
                <i
-                  class="material-icons md-18 c-hand mr-1 ml-2"
+                  class="mdi mdi-18px mdi-power-plug-off c-hand mr-1 ml-2"
                   :title="$t('word.disconnect')"
                   @click="disconnectWorkspace(connection.uid)"
-               >exit_to_app</i>
+               />
             </span>
          </div>
          <WorkspaceConnectPanel

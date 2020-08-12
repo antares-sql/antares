@@ -13,24 +13,24 @@
             class="titlebar-element"
             @click="openDevTools"
          >
-            <i class="material-icons">code</i>
+            <i class="mdi mdi-24px mdi-code-tags" />
          </div>
          <div
             v-if="isDevelopment"
             class="titlebar-element"
             @click="reload"
          >
-            <i class="material-icons">refresh</i>
+            <i class="mdi mdi-24px mdi-refresh" />
          </div>
          <div class="titlebar-element" @click="minimizeApp">
-            <i class="material-icons">remove</i>
+            <i class="mdi mdi-24px mdi-minus" />
          </div>
          <div class="titlebar-element" @click="toggleFullScreen">
-            <i v-if="isMaximized" class="material-icons">fullscreen_exit</i>
-            <i v-else class="material-icons">fullscreen</i>
+            <i v-if="isMaximized" class="mdi mdi-24px mdi-fullscreen-exit" />
+            <i v-else class="mdi mdi-24px mdi-fullscreen" />
          </div>
          <div class="titlebar-element close-button" @click="closeApp">
-            <i class="material-icons">close</i>
+            <i class="mdi mdi-24px mdi-close" />
          </div>
       </div>
    </div>

@@ -23,12 +23,16 @@
                      <div class="table-column-title" @click="sort(field.name)">
                         <i
                            v-if="field.key"
-                           class="material-icons column-key c-help"
+                           class="mdi mdi-key column-key c-help"
                            :class="`key-${field.key}`"
                            :title="keyName(field.key)"
-                        >vpn_key</i>
+                        />
                         <span>{{ field.name }}</span>
-                        <i v-if="currentSort === field.name" class="material-icons sort-icon">{{ currentSortDir === 'asc' ? 'arrow_upward':'arrow_downward' }}</i>
+                        <i
+                           v-if="currentSort === field.name"
+                           class="mdi sort-icon"
+                           :class="currentSortDir === 'asc' ? 'mdi-sort-ascending':'mdi-sort-descending'"
+                        />
                      </div>
                   </div>
                </div>
@@ -148,7 +152,7 @@ export default {
          let length = 0;
          const field = this.fields.filter(field => field.name === cKey)[0];
          if (field)
-            length = field.precision;
+            length = field.datePrecision;
 
          return length;
       },
@@ -290,24 +294,5 @@ export default {
   font-size: 0.7rem;
   line-height: 1;
   margin-left: 0.2rem;
-}
-
-.column-key {
-  transform: rotate(90deg);
-  font-size: 0.7rem;
-  line-height: 1.5;
-  margin-right: 0.2rem;
-
-  &.key-pri {
-    color: goldenrod;
-  }
-
-  &.key-uni {
-    color: deepskyblue;
-  }
-
-  &.key-mul {
-    color: palegreen;
-  }
 }
 </style>

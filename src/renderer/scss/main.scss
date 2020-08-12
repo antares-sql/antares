@@ -2,6 +2,7 @@
 @import "variables";
 @import "transitions";
 @import "data-types";
+@import "table-keys";
 @import "fake-tables";
 @import "mdi-additions";
 @import "db-icons";
@@ -133,6 +134,10 @@ body {
   background: $bg-color-gray;
 }
 
+.form-input:not(:placeholder-shown):invalid:focus {
+  background: $bg-color-gray;
+}
+
 .form-select:not([multiple]):not([size]):focus {
   border-color: $primary-color;
 }
@@ -156,7 +161,7 @@ body {
 }
 
 .btn.loading {
-  > .material-icons,
+  > .mdi,
   > span {
     visibility: hidden;
   }

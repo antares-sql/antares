@@ -3,7 +3,7 @@
       <div class="footer-left-elements">
          <ul class="footer-elements">
             <li class="footer-element">
-               <i class="material-icons md-18 mr-1">memory</i>
+               <i class="mdi mdi-18px mdi-memory mr-1" />
                <small>{{ appVersion }}</small>
             </li>
          </ul>
@@ -12,14 +12,14 @@
       <div class="footer-right-elements">
          <ul class="footer-elements">
             <li class="footer-element footer-link" @click="openOutside('https://www.patreon.com/fabio286')">
-               <i class="material-icons md-18 mr-1">favorite</i>
+               <i class="mdi mdi-18px mdi-coffee mr-1" />
                <small>{{ $t('word.donate') }}</small>
             </li>
             <li class="footer-element footer-link" @click="openOutside('https://github.com/EStarium/antares/issues')">
-               <i class="material-icons md-18">bug_report</i>
+               <i class="mdi mdi-18px mdi-bug" />
             </li>
             <li class="footer-element footer-link" @click="showSettingModal('about')">
-               <i class="material-icons md-18">info_outline</i>
+               <i class="mdi mdi-18px mdi-information-outline" />
             </li>
          </ul>
       </div>
