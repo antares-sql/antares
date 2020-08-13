@@ -85,6 +85,8 @@ export default {
          if (!query) return;
          this.isQuering = true;
          this.results = {};
+         this.fields = [];
+         let selectedFields = [];
 
          try {
             const params = {
@@ -94,8 +96,10 @@ export default {
             };
 
             const { status, response } = await Connection.rawQuery(params);
-            if (status === 'success')
+            if (status === 'success') {
                this.results = response;
+               selectedFields = response.fields.map(field => field.orgName);
+            }
             else
                this.addNotification({ status: 'error', message: response });
          }
@@ -112,7 +116,7 @@ export default {
 
             const { status, response } = await Tables.getTableColumns(params);
             if (status === 'success')
-               this.fields = response;
+               this.fields = response.filter(field => selectedFields.includes(field.name));
             else
                this.addNotification({ status: 'error', message: response });
          }

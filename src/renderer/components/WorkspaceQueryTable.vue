@@ -97,7 +97,7 @@ export default {
    },
    computed: {
       primaryField () {
-         return this.fields.filter(field => field.key === 'pri')[0] || false;
+         return this.fields.filter(field => ['pri', 'uni'].includes(field.key))[0] || false;
       },
       sortedResults () {
          if (this.currentSort) {
