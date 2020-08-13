@@ -16,6 +16,7 @@ export default class {
    static async updateTableCell (connection, params) {
       let escapedParam;
       let reload = false;
+      const id = typeof params.id === 'number' ? params.id : `"${params.id}"`;
 
       if (NUMBER.includes(params.type))
          escapedParam = params.content;
@@ -37,7 +38,7 @@ export default class {
          .update({ [params.field]: `= ${escapedParam}` })
          .schema(params.schema)
          .from(params.table)
-         .where({ [params.primary]: `= ${params.id}` })
+         .where({ [params.primary]: `= ${id}` })
          .run();
 
       return { reload };
