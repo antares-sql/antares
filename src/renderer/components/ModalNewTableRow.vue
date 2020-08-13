@@ -33,6 +33,14 @@
                               :tabindex="key+1"
                            >
                            <input
+                              v-else-if="inputProps(field).type === 'file'"
+                              class="form-input"
+                              type="file"
+                              :disabled="fieldsToExclude.includes(field.name)"
+                              :tabindex="key+1"
+                              @change="filesChange($event,field.name)"
+                           >
+                           <input
                               v-else
                               v-model="localRow[field.name]"
                               class="form-input"
@@ -148,7 +156,7 @@ export default {
                fieldDefault = field.default;
 
             if (DATETIME.includes(field.type)) {
-               if (field.default && field.default.includes('current_timestamp')) {
+               if (field.default && field.default.toLowerCase().includes('current_timestamp')) {
                   let datePrecision = '';
                   for (let i = 0; i < field.datePrecision; i++)
                      datePrecision += i === 0 ? '.S' : 'S';
@@ -175,6 +183,13 @@ export default {
          Object.keys(rowToInsert).forEach(key => {
             if (this.fieldsToExclude.includes(key))
                delete rowToInsert[key];
+            if (typeof rowToInsert[key] === 'undefined')
+               delete rowToInsert[key];
+         });
+
+         const fieldTypes = {};
+         this.fields.forEach(field => {
+            fieldTypes[field.name] = field.type;
          });
 
          try {
@@ -183,7 +198,8 @@ export default {
                schema: this.workspace.breadcrumbs.schema,
                table: this.workspace.breadcrumbs.table,
                row: rowToInsert,
-               repeat: this.nInserts
+               repeat: this.nInserts,
+               fields: fieldTypes
             });
 
             if (status === 'success') {
@@ -249,6 +265,12 @@ export default {
             this.fieldsToExclude = this.fieldsToExclude.filter(f => f !== field.name);
          else
             this.fieldsToExclude = [...this.fieldsToExclude, field.name];
+      },
+      filesChange (event, field) {
+         const { files } = event.target;
+         if (!files.length) return;
+
+         this.localRow[field] = files[0].path;
       }
    }
 };

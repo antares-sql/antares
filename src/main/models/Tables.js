@@ -51,12 +51,36 @@ export default class {
          .run();
    }
 
-   static async insertTableRows (connection, params) { // Prepare every field like updateTableCell method
+   static async insertTableRows (connection, params) {
+      const insertObj = {};
+      console.log(params);
+      for (const key in params.row) {
+         const type = params.fields[key];
+         let escapedParam;
+
+         if (NUMBER.includes(type))
+            escapedParam = params.row[key];
+         else if ([...TEXT, ...LONG_TEXT].includes(type))
+            escapedParam = `"${sqlEscaper(params.row[key])}"`;
+         else if (BLOB.includes(type)) {
+            if (params.row[key]) {
+               const fileBlob = fs.readFileSync(params.row[key]);
+               escapedParam = `0x${fileBlob.toString('hex')}`;
+            }
+            else
+               escapedParam = '""';
+         }
+         else
+            escapedParam = `"${sqlEscaper(params.row[key])}"`;
+
+         insertObj[key] = escapedParam;
+      }
+
       for (let i = 0; i < params.repeat; i++) {
          await connection
             .schema(params.schema)
             .into(params.table)
-            .insert(params.row)
+            .insert(insertObj)
             .run();
       }
    }

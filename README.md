@@ -25,7 +25,6 @@ Why am I developing an SQL client when there are a lot of thom on the market?-->
 
 This is a roadmap with major features will come in near future.
 
-- Options to insert new database records.
 - Improvements of query editor area.
 - Multiple query tabs.
 - Tables management (add/edit/delete).

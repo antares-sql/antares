@@ -47,7 +47,9 @@
          @hide="hideEditorModal"
       >
          <template :slot="'header'">
-            {{ $t('word.edit') }} "{{ editingField }}"
+            <div class="d-flex">
+               <i class="mdi mdi-24px mdi-playlist-edit mr-1" /> {{ $t('word.edit') }} "{{ editingField }}"
+            </div>
          </template>
          <div :slot="'body'">
             <div class="mb-2">
@@ -71,7 +73,9 @@
          @hide="hideEditorModal"
       >
          <template :slot="'header'">
-            {{ $t('word.edit') }} "{{ editingField }}"
+            <div class="d-flex">
+               <i class="mdi mdi-24px mdi-playlist-edit mr-1" /> {{ $t('word.edit') }} "{{ editingField }}"
+            </div>
          </template>
          <div :slot="'body'">
             <div class="mb-2">
@@ -299,7 +303,7 @@ export default {
          }
 
          // Inline editable fields
-         this.editingContent = this.$options.filters.typeFormat(this.originalContent, type);
+         this.editingContent = this.$options.filters.typeFormat(this.originalContent, type, this.fieldPrecision(field));
          this.$nextTick(() => { // Focus on input
             event.target.blur();
 

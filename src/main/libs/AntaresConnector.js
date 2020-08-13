@@ -235,10 +235,10 @@ export class AntaresConnector {
          for (const key in fields) {
             if (fields[key] === null) continue;
             fieldsList.push(key);
-            valueList.push(typeof fields[key] === 'number' ? fields[key] : `"${fields[key]}"`);
+            valueList.push(fields[key]);
          }
 
-         insertRaw = ` (${fieldsList.join(',')}) VALUES (${valueList.join(',')}) `;
+         insertRaw = `(${fieldsList.join(', ')}) VALUES (${valueList.join(', ')}) `;
       }
 
       const groupByArray = this._query.groupBy.reduce(this._reducer, []);
