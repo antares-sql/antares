@@ -75,6 +75,11 @@ export default {
          if (this.results.fields.length)
             return this.results.fields[0].orgTable;
          return '';
+      },
+      schema () {
+         if (this.results.fields.length)
+            return this.results.fields[0].db;
+         return '';
       }
    },
    methods: {
@@ -91,8 +96,7 @@ export default {
          try {
             const params = {
                uid: this.connection.uid,
-               query,
-               schema: this.workspace.breadcrumbs.schema
+               query
             };
 
             const { status, response } = await Connection.rawQuery(params);
@@ -110,7 +114,7 @@ export default {
          try {
             const params = {
                uid: this.connection.uid,
-               schema: this.workspace.breadcrumbs.schema,
+               schema: this.schema,
                table: this.table
             };
 
