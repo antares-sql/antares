@@ -170,7 +170,7 @@ export default {
             user: 'root',
             password: '',
             ask: false,
-            uid: uidGen()
+            uid: uidGen('C')
          },
          toast: {
             status: '',

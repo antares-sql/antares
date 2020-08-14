@@ -27,9 +27,10 @@
       <div class="workspace-query-results column col-12">
          <WorkspaceQueryTable
             v-if="results"
+            v-show="!isQuering"
             ref="queryTable"
             :results="results"
-            :fields="fields"
+            :tab-uid="tabUid"
             @updateField="updateField"
             @deleteSelected="deleteSelected"
          />
@@ -53,7 +54,8 @@ export default {
    },
    mixins: [tableTabs],
    props: {
-      connection: Object
+      connection: Object,
+      tabUid: String
    },
    data () {
       return {
@@ -61,7 +63,7 @@ export default {
          lastQuery: '',
          isQuering: false,
          results: {},
-         fields: []
+         selectedFields: []
       };
    },
    computed: {
@@ -72,37 +74,39 @@ export default {
          return this.getWorkspace(this.connection.uid);
       },
       table () {
-         if (this.results.fields.length)
+         if ('fields' in this.results && this.results.fields.length)
             return this.results.fields[0].orgTable;
          return '';
       },
       schema () {
-         if (this.results.fields.length)
+         if ('fields' in this.results && this.results.fields.length)
             return this.results.fields[0].db;
-         return '';
+         return this.workspace.breadcrumbs.schema;
       }
    },
    methods: {
       ...mapActions({
-         addNotification: 'notifications/addNotification'
+         addNotification: 'notifications/addNotification',
+         setTabFields: 'workspaces/setTabFields',
+         setTabKeyUsage: 'workspaces/setTabKeyUsage'
       }),
       async runQuery (query) {
          if (!query) return;
          this.isQuering = true;
          this.results = {};
-         this.fields = [];
-         let selectedFields = [];
+         this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: [] });
 
-         try {
+         try { // Query Data
             const params = {
                uid: this.connection.uid,
+               schema: this.schema,
                query
             };
 
             const { status, response } = await Connection.rawQuery(params);
             if (status === 'success') {
                this.results = response;
-               selectedFields = response.fields.map(field => field.orgName);
+               this.selectedFields = response.fields.map(field => field.orgName);
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -111,7 +115,7 @@ export default {
             this.addNotification({ status: 'error', message: err.stack });
          }
 
-         try {
+         try { // Table data
             const params = {
                uid: this.connection.uid,
                schema: this.schema,
@@ -119,8 +123,27 @@ export default {
             };
 
             const { status, response } = await Tables.getTableColumns(params);
+            if (status === 'success') {
+               const fields = response.filter(field => this.selectedFields.includes(field.name));
+               this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields });
+            }
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         try { // Key usage (foreign keys)
+            const params = {
+               uid: this.connection.uid,
+               schema: this.schema,
+               table: this.table
+            };
+
+            const { status, response } = await Tables.getKeyUsage(params);
             if (status === 'success')
-               this.fields = response.filter(field => selectedFields.includes(field.name));
+               this.setTabKeyUsage({ cUid: this.connection.uid, tUid: this.tabUid, keyUsage: response });
             else
                this.addNotification({ status: 'error', message: response });
          }

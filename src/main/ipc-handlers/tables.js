@@ -25,6 +25,16 @@ export default (connections) => {
       }
    });
 
+   ipcMain.handle('get-key-usage', async (event, { uid, schema, table }) => {
+      try {
+         const result = await InformationSchema.getKeyUsage(connections[uid], schema, table);
+         return { status: 'success', response: result };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
    ipcMain.handle('updateTableCell', async (event, params) => {
       try {
          const result = await Tables.updateTableCell(connections[params.uid], params);

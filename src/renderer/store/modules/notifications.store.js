@@ -20,7 +20,7 @@ export default {
    },
    actions: {
       addNotification ({ commit }, payload) {
-         payload.uid = uidGen();
+         payload.uid = uidGen('N');
          commit('ADD_NOTIFICATION', payload);
       },
       removeNotification ({ commit }, uid) {

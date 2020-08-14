@@ -33,9 +33,10 @@
       <div class="workspace-query-results column col-12">
          <WorkspaceQueryTable
             v-if="results"
+            v-show="!isQuering"
             ref="queryTable"
             :results="results"
-            :fields="fields"
+            :tab-uid="tabUid"
             @updateField="updateField"
             @deleteSelected="deleteSelected"
          />
@@ -56,6 +57,7 @@ import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
 import ModalNewTableRow from '@/components/ModalNewTableRow';
 import { mapGetters, mapActions } from 'vuex';
 import tableTabs from '@/mixins/tableTabs';
+// import { TEXT, LONG_TEXT } from 'common/fieldTypes';
 
 export default {
    name: 'WorkspaceTableTab',
@@ -70,9 +72,11 @@ export default {
    },
    data () {
       return {
+         tabUid: 1,
          isQuering: false,
          results: {},
          fields: [],
+         keyUsage: [],
          lastTable: null,
          isAddModal: false
       };
@@ -86,6 +90,13 @@ export default {
       },
       isSelected () {
          return this.workspace.selected_tab === 1;
+      },
+      firstTextField () { // TODO: move inside new row modal and row components
+         if (this.fields.length) {
+            const textField = this.fields.find(field => [...TEXT, ...LONG_TEXT].includes(field.type));
+            return textField ? textField.name : '';
+         }
+         return '';
       }
    },
    watch: {
@@ -107,12 +118,15 @@ export default {
    },
    methods: {
       ...mapActions({
-         addNotification: 'notifications/addNotification'
+         addNotification: 'notifications/addNotification',
+         setTabFields: 'workspaces/setTabFields',
+         setTabKeyUsage: 'workspaces/setTabKeyUsage'
       }),
       async getTableData () {
          if (!this.table) return;
          this.isQuering = true;
          this.results = {};
+         this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: [] });
 
          const params = {
             uid: this.connection.uid,
@@ -120,10 +134,12 @@ export default {
             table: this.workspace.breadcrumbs.table
          };
 
-         try {
+         try { // Columns data
             const { status, response } = await Tables.getTableColumns(params);
-            if (status === 'success')
-               this.fields = response;
+            if (status === 'success') {
+               this.fields = response;// Needed to add new rows
+               this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: response });
+            }
             else
                this.addNotification({ status: 'error', message: response });
          }
@@ -131,11 +147,24 @@ export default {
             this.addNotification({ status: 'error', message: err.stack });
          }
 
-         try {
+         try { // Table data
             const { status, response } = await Tables.getTableData(params);
 
             if (status === 'success')
                this.results = response;
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         try { // Key usage (foreign keys)
+            const { status, response } = await Tables.getKeyUsage(params);
+            if (status === 'success') {
+               this.keyUsage = response;// Needed to add new rows
+               this.setTabKeyUsage({ cUid: this.connection.uid, tUid: this.tabUid, keyUsage: response });
+            }
             else
                this.addNotification({ status: 'error', message: response });
          }

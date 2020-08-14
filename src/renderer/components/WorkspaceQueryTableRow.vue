@@ -178,7 +178,8 @@ export default {
    },
    props: {
       row: Object,
-      fields: Array
+      fields: Array,
+      keyUsage: Array
    },
    data () {
       return {
@@ -318,7 +319,7 @@ export default {
       editOFF () {
          this.isInlineEditor[this.editingField] = false;
          let content;
-         if (!['blob', 'mediumblob', 'longblob'].includes(this.editingType)) {
+         if (!BLOB.includes(this.editingType)) {
             if (this.editingContent === this.$options.filters.typeFormat(this.originalContent, this.editingType)) return;// If not changed
             content = this.editingContent;
          }

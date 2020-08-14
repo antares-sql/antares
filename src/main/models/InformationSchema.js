@@ -38,4 +38,29 @@ export default class {
          };
       });
    }
+
+   static async getKeyUsage (connection, schema, table) {
+      // SELECT * FROM information_schema.KEY_COLUMN_USAGE WHERE   TABLE_SCHEMA='fep-gprs'   AND TABLE_NAME='struttura_macchine'   AND REFERENCED_TABLE_NAME IS NOT NULL;
+
+      const { rows } = await connection
+         .select('*')
+         .schema('information_schema')
+         .from('KEY_COLUMN_USAGE')
+         .where({ TABLE_SCHEMA: `= '${schema}'`, TABLE_NAME: `= '${table}'`, REFERENCED_TABLE_NAME: 'IS NOT NULL' })
+         .run();
+
+      return rows.map(field => {
+         return {
+            schema: field.TABLE_SCHEMA,
+            table: field.TABLE_NAME,
+            column: field.COLUMN_NAME,
+            position: field.ORDINAL_POSITION,
+            constraintPosition: field.POSITION_IN_UNIQUE_CONSTRAINT,
+            constraintName: field.CONSTRAINT_NAME,
+            refSchema: field.REFERENCED_TABLE_SCHEMA,
+            refTable: field.REFERENCED_TABLE_NAME,
+            refColumn: field.REFERENCED_COLUMN_NAME
+         };
+      });
+   }
 }

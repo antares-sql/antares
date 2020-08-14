@@ -10,6 +10,10 @@ export default class {
       return ipcRenderer.invoke('getTableData', params);
    }
 
+   static getKeyUsage (params) {
+      return ipcRenderer.invoke('get-key-usage', params);
+   }
+
    static updateTableCell (params) {
       return ipcRenderer.invoke('updateTableCell', params);
    }

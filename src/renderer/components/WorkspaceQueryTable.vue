@@ -53,6 +53,7 @@
                   :key="row._id"
                   :row="row"
                   :fields="fields"
+                  :key-usage="keyUsage"
                   class="tr"
                   :class="{'selected': selectedRows.includes(row._id)}"
                   @selectRow="selectRow($event, row._id)"
@@ -70,7 +71,7 @@ import { uidGen } from 'common/libs/uidGen';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
 import WorkspaceQueryTableRow from '@/components/WorkspaceQueryTableRow';
 import TableContext from '@/components/WorkspaceQueryTableContext';
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
    name: 'WorkspaceQueryTable',
@@ -81,7 +82,7 @@ export default {
    },
    props: {
       results: Object,
-      fields: Array
+      tabUid: [String, Number]
    },
    data () {
       return {
@@ -96,6 +97,9 @@ export default {
       };
    },
    computed: {
+      ...mapGetters({
+         getWorkspaceTab: 'workspaces/getWorkspaceTab'
+      }),
       primaryField () {
          return this.fields.filter(field => ['pri', 'uni'].includes(field.key))[0] || false;
       },
@@ -113,6 +117,12 @@ export default {
          }
          else
             return this.localResults;
+      },
+      fields () {
+         return this.getWorkspaceTab(this.tabUid) ? this.getWorkspaceTab(this.tabUid).fields : [];
+      },
+      keyUsage () {
+         return this.getWorkspaceTab(this.tabUid) ? this.getWorkspaceTab(this.tabUid).keyUsage : [];
       },
       scrollElement () {
          return this.$refs.tableWrapper;

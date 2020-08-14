@@ -28,8 +28,14 @@ export default {
          return null;
       },
       getWorkspace: state => uid => {
-         const workspace = state.workspaces.filter(workspace => workspace.uid === uid);
-         return workspace.length ? workspace[0] : {};
+         return state.workspaces.find(workspace => workspace.uid === uid);
+      },
+      getWorkspaceTab: (state, getters) => tUid => {
+         if (!getters.getSelected) return;
+         const workspace = state.workspaces.find(workspace => workspace.uid === getters.getSelected);
+         if ('tabs' in workspace)
+            return workspace.tabs.find(tab => tab.uid === tUid);
+         return {};
       },
       getConnected: state => {
          return state.workspaces
@@ -58,9 +64,11 @@ export default {
       },
       NEW_TAB (state, uid) {
          const newTab = {
-            uid: uidGen(),
+            uid: uidGen('T'),
             selected: false,
-            type: 'query'
+            type: 'query',
+            fields: [],
+            keyUsage: []
          };
          state.workspaces = state.workspaces.map(workspace => {
             if (workspace.uid === uid) {
@@ -75,6 +83,40 @@ export default {
       },
       SELECT_TAB (state, { uid, tab }) {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, selected_tab: tab } : workspace);
+      },
+      SET_TAB_FIELDS (state, { cUid, tUid, fields }) {
+         state.workspaces = state.workspaces.map(workspace => {
+            if (workspace.uid === cUid) {
+               return {
+                  ...workspace,
+                  tabs: workspace.tabs.map(tab => {
+                     if (tab.uid === tUid)
+                        return { ...tab, fields };
+                     else
+                        return tab;
+                  })
+               };
+            }
+            else
+               return workspace;
+         });
+      },
+      SET_TAB_KEY_USAGE (state, { cUid, tUid, keyUsage }) {
+         state.workspaces = state.workspaces.map(workspace => {
+            if (workspace.uid === cUid) {
+               return {
+                  ...workspace,
+                  tabs: workspace.tabs.map(tab => {
+                     if (tab.uid === tUid)
+                        return { ...tab, keyUsage };
+                     else
+                        return tab;
+                  })
+               };
+            }
+            else
+               return workspace;
+         });
       }
    },
    actions: {
@@ -115,7 +157,12 @@ export default {
             uid,
             connected: false,
             selected_tab: 0,
-            tabs: [{ uid: 1, type: 'table' }],
+            tabs: [{
+               uid: 1,
+               type: 'table',
+               fields: [],
+               keyUsage: []
+            }],
             structure: {},
             breadcrumbs: {}
          };
@@ -133,6 +180,12 @@ export default {
       },
       selectTab ({ commit }, payload) {
          commit('SELECT_TAB', payload);
+      },
+      setTabFields ({ commit }, payload) {
+         commit('SET_TAB_FIELDS', payload);
+      },
+      setTabKeyUsage ({ commit }, payload) {
+         commit('SET_TAB_KEY_USAGE', payload);
       }
    }
 };

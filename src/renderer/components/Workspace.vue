@@ -42,6 +42,7 @@
             v-for="tab of queryTabs"
             v-show="selectedTab === tab.uid"
             :key="tab.uid"
+            :tab-uid="tab.uid"
             :connection="connection"
          />
       </div>
