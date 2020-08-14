@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
 // eslint-disable-next-line no-control-regex
-const regex = new RegExp(/[\0\x08\x09\x1a\n\r"'\\\%]/g);
+const regex = new RegExp(/[\0\x08\x09\x1a\n\r"'\\\%]/gm);
 
 /**
  * Escapes a string
@@ -9,10 +9,10 @@ const regex = new RegExp(/[\0\x08\x09\x1a\n\r"'\\\%]/g);
  * @returns {String}
  */
 function sqlEscaper (string) {
-   return string.replace(regex, (char) => {
+   return string.replace(regex, char => {
       const m = ['\\0', '\\x08', '\\x09', '\\x1a', '\\n', '\\r', '\'', '"', '\\', '\\\\', '%'];
       const r = ['\\\\0', '\\\\b', '\\\\t', '\\\\z', '\\\\n', '\\\\r', '\'\'', '""', '\\\\', '\\\\\\\\', '\\%'];
-      return r[m.indexOf(char)];
+      return r[m.indexOf(char)] || char;
    });
 }
 
