@@ -16,6 +16,13 @@
                :class="`${isNull(col)} type-${fieldType(cKey)}`"
                @dblclick="editON($event, col, cKey)"
             >{{ col | typeFormat(fieldType(cKey), fieldPrecision(cKey)) | cutText }}</span>
+            <ForeignKeySelect
+               v-else-if="foreignKeys.includes(cKey)"
+               class="editable-field"
+               :value.sync="editingContent"
+               :key-usage="getKeyUsage(cKey)"
+               @blur="editOFF"
+            />
             <template v-else>
                <input
                   v-if="inputProps.mask"
@@ -131,11 +138,13 @@ import hexToBinary from 'common/libs/hexToBinary';
 import { TEXT, LONG_TEXT, NUMBER, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
 import { mask } from 'vue-the-mask';
 import ConfirmModal from '@/components/BaseConfirmModal';
+import ForeignKeySelect from '@/components/ForeignKeySelect';
 
 export default {
    name: 'WorkspaceQueryTableRow',
    components: {
-      ConfirmModal
+      ConfirmModal,
+      ForeignKeySelect
    },
    directives: {
       mask
@@ -240,6 +249,9 @@ export default {
       },
       isImage () {
          return ['gif', 'jpg', 'png', 'bmp', 'ico', 'tif'].includes(this.contentInfo.ext);
+      },
+      foreignKeys () {
+         return this.keyUsage.map(key => key.column);
       }
    },
    created () {
@@ -381,6 +393,9 @@ export default {
       },
       selectRow (event, row) {
          this.$emit('selectRow', event, row);
+      },
+      getKeyUsage (keyName) {
+         return this.keyUsage.find(key => key.column === keyName);
       }
    }
 };

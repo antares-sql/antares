@@ -25,4 +25,8 @@ export default class {
    static insertTableRows (params) {
       return ipcRenderer.invoke('insertTableRows', params);
    }
+
+   static getForeignList (params) {
+      return ipcRenderer.invoke('get-foreign-list', params);
+   }
 }

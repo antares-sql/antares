@@ -40,8 +40,6 @@ export default class {
    }
 
    static async getKeyUsage (connection, schema, table) {
-      // SELECT * FROM information_schema.KEY_COLUMN_USAGE WHERE   TABLE_SCHEMA='fep-gprs'   AND TABLE_NAME='struttura_macchine'   AND REFERENCED_TABLE_NAME IS NOT NULL;
-
       const { rows } = await connection
          .select('*')
          .schema('information_schema')

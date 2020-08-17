@@ -33,7 +33,6 @@
       <div class="workspace-query-results column col-12">
          <WorkspaceQueryTable
             v-if="results"
-            v-show="!isQuering"
             ref="queryTable"
             :results="results"
             :tab-uid="tabUid"
@@ -43,8 +42,7 @@
       </div>
       <ModalNewTableRow
          v-if="isAddModal"
-         :fields="fields"
-         :connection="connection"
+         :tab-uid="tabUid"
          @hide="hideAddModal"
          @reload="reloadTable"
       />
@@ -57,7 +55,6 @@ import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
 import ModalNewTableRow from '@/components/ModalNewTableRow';
 import { mapGetters, mapActions } from 'vuex';
 import tableTabs from '@/mixins/tableTabs';
-// import { TEXT, LONG_TEXT } from 'common/fieldTypes';
 
 export default {
    name: 'WorkspaceTableTab',
@@ -90,13 +87,6 @@ export default {
       },
       isSelected () {
          return this.workspace.selected_tab === 1;
-      },
-      firstTextField () { // TODO: move inside new row modal and row components
-         if (this.fields.length) {
-            const textField = this.fields.find(field => [...TEXT, ...LONG_TEXT].includes(field.type));
-            return textField ? textField.name : '';
-         }
-         return '';
       }
    },
    watch: {

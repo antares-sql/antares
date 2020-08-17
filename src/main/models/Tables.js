@@ -54,12 +54,13 @@ export default class {
 
    static async insertTableRows (connection, params) {
       const insertObj = {};
-      console.log(params);
       for (const key in params.row) {
          const type = params.fields[key];
          let escapedParam;
 
-         if (NUMBER.includes(type))
+         if (params.row[key] === null)
+            escapedParam = 'NULL';
+         else if (NUMBER.includes(type))
             escapedParam = params.row[key];
          else if ([...TEXT, ...LONG_TEXT].includes(type))
             escapedParam = `"${sqlEscaper(params.row[key])}"`;
@@ -84,5 +85,18 @@ export default class {
             .insert(insertObj)
             .run();
       }
+   }
+
+   static async getForeignList (connection, params) {
+      const query = connection
+         .select(`${params.column} AS foreignColumn`)
+         .schema(params.schema)
+         .from(params.table)
+         .orderBy('foreignColumn ASC');
+
+      if (params.description)
+         query.select(`LEFT(${params.description}, 20) AS foreignDescription`);
+
+      return query.run();
    }
 }

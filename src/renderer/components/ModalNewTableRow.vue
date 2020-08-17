@@ -23,8 +23,15 @@
                            <label class="form-label" :title="field.name">{{ field.name }}</label>
                         </div>
                         <div class="input-group col-8 col-sm-12">
+                           <ForeignKeySelect
+                              v-if="foreignKeys.includes(field.name)"
+                              class="form-select"
+                              :value.sync="localRow[field.name]"
+                              :key-usage="getKeyUsage(field.name)"
+                              :disabled="fieldsToExclude.includes(field.name)"
+                           />
                            <input
-                              v-if="inputProps(field).mask"
+                              v-else-if="inputProps(field).mask"
                               v-model="localRow[field.name]"
                               v-mask="inputProps(field).mask"
                               class="form-input"
@@ -100,9 +107,13 @@ import { TEXT, LONG_TEXT, NUMBER, DATE, TIME, DATETIME, BLOB, BIT } from 'common
 import { mask } from 'vue-the-mask';
 import { mapGetters, mapActions } from 'vuex';
 import Tables from '@/ipc-api/Tables';
+import ForeignKeySelect from '@/components/ForeignKeySelect';
 
 export default {
    name: 'ModalNewTableRow',
+   components: {
+      ForeignKeySelect
+   },
    directives: {
       mask
    },
@@ -113,8 +124,8 @@ export default {
       }
    },
    props: {
-      fields: Array,
-      connection: Object
+      connection: Object,
+      tabUid: [String, Number]
    },
    data () {
       return {
@@ -126,10 +137,21 @@ export default {
    },
    computed: {
       ...mapGetters({
-         getWorkspace: 'workspaces/getWorkspace'
+         selectedWorkspace: 'workspaces/getSelected',
+         getWorkspace: 'workspaces/getWorkspace',
+         getWorkspaceTab: 'workspaces/getWorkspaceTab'
       }),
       workspace () {
-         return this.getWorkspace(this.connection.uid);
+         return this.getWorkspace(this.selectedWorkspace);
+      },
+      foreignKeys () {
+         return this.keyUsage.map(key => key.column);
+      },
+      fields () {
+         return this.getWorkspaceTab(this.tabUid) ? this.getWorkspaceTab(this.tabUid).fields : [];
+      },
+      keyUsage () {
+         return this.getWorkspaceTab(this.tabUid) ? this.getWorkspaceTab(this.tabUid).keyUsage : [];
       }
    },
    watch: {
@@ -194,7 +216,7 @@ export default {
 
          try {
             const { status, response } = await Tables.insertTableRows({
-               uid: this.connection.uid,
+               uid: this.selectedWorkspace,
                schema: this.workspace.breadcrumbs.schema,
                table: this.workspace.breadcrumbs.table,
                row: rowToInsert,
@@ -271,6 +293,10 @@ export default {
          if (!files.length) return;
 
          this.localRow[field] = files[0].path;
+      },
+
+      getKeyUsage (keyName) {
+         return this.keyUsage.find(key => key.column === keyName);
       }
    }
 };

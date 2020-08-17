@@ -64,4 +64,14 @@ export default (connections) => {
          return { status: 'error', response: err.toString() };
       }
    });
+
+   ipcMain.handle('get-foreign-list', async (event, params) => {
+      try {
+         const results = await Tables.getForeignList(connections[params.uid], params);
+         return { status: 'success', response: results };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
 };

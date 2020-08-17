@@ -3,7 +3,6 @@
 import { app, BrowserWindow, nativeImage } from 'electron';
 import * as path from 'path';
 import { format as formatUrl } from 'url';
-
 import ipcHandlers from './ipc-handlers';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
