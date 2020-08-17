@@ -1,7 +1,7 @@
 {
   "name": "antares",
   "productName": "Antares",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A cross-platform easy to use SQL client.",
   "license": "MIT",
   "repository": "https://github.com/EStarium/antares.git",
