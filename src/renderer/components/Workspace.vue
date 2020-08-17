@@ -3,7 +3,7 @@
       <WorkspaceExploreBar :connection="connection" :is-selected="isSelected" />
       <div v-if="workspace.connected" class="workspace-tabs column columns col-gapless">
          <ul class="tab tab-block column col-12">
-            <li
+            <!-- <li
                v-if="workspace.breadcrumbs.table"
                class="tab-item"
             >
@@ -11,7 +11,7 @@
                   <i class="mdi mdi-18px mdi-tune mr-1" />
                   <span :title="workspace.breadcrumbs.table">{{ $t('word.properties').toUpperCase() }}: {{ workspace.breadcrumbs.table }}</span>
                </a>
-            </li>
+            </li> -->
             <li
                v-if="workspace.breadcrumbs.table"
                class="tab-item"

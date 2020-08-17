@@ -37,7 +37,7 @@
       <div class="settingbar-bottom-elements">
          <ul class="settingbar-elements">
             <li class="settingbar-element btn btn-link ex-tooltip" @click="showSettingModal('general')">
-               <i class="settingbar-element-icon mdi mdi-24px mdi-cog text-light" />
+               <i class="settingbar-element-icon mdi mdi-24px mdi-cog text-light" :class="{' badge badge-update': hasUpdates}" />
                <span class="ex-tooltip-content">{{ $t('word.settings') }}</span>
             </li>
          </ul>
@@ -70,7 +70,8 @@ export default {
          getConnections: 'connections/getConnections',
          getConnectionName: 'connections/getConnectionName',
          connected: 'workspaces/getConnected',
-         selectedWorkspace: 'workspaces/getSelected'
+         selectedWorkspace: 'workspaces/getSelected',
+         updateStatus: 'application/getUpdateStatus'
       }),
       connections: {
          get () {
@@ -79,6 +80,9 @@ export default {
          set (value) {
             this.updateConnections(value);
          }
+      },
+      hasUpdates () {
+         return ['available', 'downloading', 'downloaded'].includes(this.updateStatus);
       }
    },
    methods: {
@@ -168,6 +172,11 @@ export default {
             right: 0;
             position: absolute;
             background: $success-color;
+          }
+
+          &.badge-update::after {
+            bottom: initial;
+            background: $primary-color;
           }
         }
       }

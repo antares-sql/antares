@@ -34,7 +34,7 @@
                         :class="{'active': selectedTab === 'update'}"
                         @click="selectTab('update')"
                      >
-                        <a class="c-hand" :class="{'badge': isUpdate}">{{ $t('word.update') }}</a>
+                        <a class="c-hand" :class="{'badge badge-update': hasUpdates}">{{ $t('word.update') }}</a>
                      </li>
                      <li
                         class="tab-item"
@@ -135,7 +135,6 @@ export default {
    },
    data () {
       return {
-         isUpdate: false,
          localLocale: null,
          localTimeout: null,
          selectedTab: 'general'
@@ -147,7 +146,8 @@ export default {
          appVersion: 'application/appVersion',
          selectedSettingTab: 'application/selectedSettingTab',
          selectedLocale: 'settings/getLocale',
-         notificationsTimeout: 'settings/getNotificationsTimeout'
+         notificationsTimeout: 'settings/getNotificationsTimeout',
+         updateStatus: 'application/getUpdateStatus'
       }),
       locales () {
          const locales = [];
@@ -155,6 +155,9 @@ export default {
             locales.push({ code: locale, name: localesNames[locale] });
 
          return locales;
+      },
+      hasUpdates () {
+         return ['available', 'downloading', 'downloaded'].includes(this.updateStatus);
       }
    },
    created () {
@@ -196,6 +199,11 @@ export default {
 
     .badge::after {
       background: #32b643;
+    }
+
+    .badge-update::after {
+      bottom: initial;
+      background: $primary-color;
     }
 
     .form-label {
