@@ -71,7 +71,7 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('rawQuery', async (event, { uid, query, schema }) => {
+   ipcMain.handle('raw-query', async (event, { uid, query, schema }) => {
       if (!query) return;
       try {
          const result = await Generic.raw(connections[uid], query, schema);

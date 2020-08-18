@@ -4,37 +4,37 @@ import { autoUpdater } from 'electron-updater';
 let mainWindow;
 
 export default () => {
-   ipcMain.on('checkForUpdates', event => {
+   ipcMain.on('check-for-updates', event => {
       mainWindow = event;
 
       autoUpdater.checkForUpdatesAndNotify().catch(() => {
-         mainWindow.reply('checkFailed');
+         mainWindow.reply('check-failed');
       });
    });
 
-   ipcMain.on('restartToUpdate', () => {
+   ipcMain.on('restart-to-update', () => {
       autoUpdater.quitAndInstall();
    });
 
    // auto-updater events
    autoUpdater.on('checking-for-update', () => {
-      mainWindow.reply('checkingForUpdate');
+      mainWindow.reply('checking-for-update');
    });
 
    autoUpdater.on('update-available', () => {
-      mainWindow.reply('updateAvailable');
+      mainWindow.reply('update-available');
    });
 
    autoUpdater.on('update-not-available', () => {
-      mainWindow.reply('updateNotAvailable');
+      mainWindow.reply('update-not-available');
    });
 
-   autoUpdater.on('download-progress', (data) => {
-      mainWindow.reply('downloadProgress', data);
+   autoUpdater.on('download-progress', data => {
+      mainWindow.reply('download-progress', data);
    });
 
    autoUpdater.on('update-downloaded', () => {
-      mainWindow.reply('updateDownloaded');
+      mainWindow.reply('update-downloaded');
    });
 
    autoUpdater.logger = require('electron-log');

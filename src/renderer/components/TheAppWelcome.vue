@@ -11,7 +11,7 @@
             {{ $t('message.appFirstStep') }}
          </p>
          <div class="empty-action">
-            <button class="btn btn-primary" @click="$emit('newConn')">
+            <button class="btn btn-primary" @click="$emit('new-conn')">
                {{ $t('message.createConnection') }}
             </button>
          </div>

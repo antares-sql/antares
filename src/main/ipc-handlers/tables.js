@@ -5,7 +5,7 @@ import Tables from '../models/Tables';
 // TODO: remap objects based on client
 
 export default (connections) => {
-   ipcMain.handle('getTableColumns', async (event, { uid, schema, table }) => {
+   ipcMain.handle('get-table-columns', async (event, { uid, schema, table }) => {
       try {
          const result = await InformationSchema.getTableColumns(connections[uid], schema, table);// TODO: uniform column properties
          return { status: 'success', response: result };
@@ -15,7 +15,7 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('getTableData', async (event, { uid, schema, table }) => {
+   ipcMain.handle('get-table-data', async (event, { uid, schema, table }) => {
       try {
          const result = await Tables.getTableData(connections[uid], schema, table);
          return { status: 'success', response: result };
@@ -35,7 +35,7 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('updateTableCell', async (event, params) => {
+   ipcMain.handle('update-table-cell', async (event, params) => {
       try {
          const result = await Tables.updateTableCell(connections[params.uid], params);
          return { status: 'success', response: result };
@@ -45,7 +45,7 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('deleteTableRows', async (event, params) => {
+   ipcMain.handle('delete-table-rows', async (event, params) => {
       try {
          const result = await Tables.deleteTableRows(connections[params.uid], params);
          return { status: 'success', response: result };
@@ -55,7 +55,7 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('insertTableRows', async (event, params) => {
+   ipcMain.handle('insert-table-rows', async (event, params) => {
       try {
          await Tables.insertTableRows(connections[params.uid], params);
          return { status: 'success' };

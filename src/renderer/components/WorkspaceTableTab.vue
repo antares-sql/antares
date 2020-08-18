@@ -36,8 +36,8 @@
             ref="queryTable"
             :results="results"
             :tab-uid="tabUid"
-            @updateField="updateField"
-            @deleteSelected="deleteSelected"
+            @update-field="updateField"
+            @delete-selected="deleteSelected"
          />
       </div>
       <ModalNewTableRow

@@ -65,7 +65,7 @@ export default {
    },
    methods: {
       closeModal () {
-         this.$emit('closeAsking');
+         this.$emit('close-asking');
       },
       sendCredentials () {
          this.$emit('credentials', this.credentials);

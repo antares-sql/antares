@@ -68,10 +68,10 @@ export default {
    },
    methods: {
       checkForUpdates () {
-         ipcRenderer.send('checkForUpdates');
+         ipcRenderer.send('check-for-updates');
       },
       restartToUpdate () {
-         ipcRenderer.send('restartToUpdate');
+         ipcRenderer.send('restart-to-update');
       }
    }
 };

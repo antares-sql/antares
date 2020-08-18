@@ -11,7 +11,7 @@
 
       <div class="footer-right-elements">
          <ul class="footer-elements">
-            <li class="footer-element footer-link" @click="openOutside('https://www.patreon.com/fabio286')">
+            <li class="footer-element footer-link" @click="openOutside('https://github.com/sponsors/Fabio286')">
                <i class="mdi mdi-18px mdi-coffee mr-1" />
                <small>{{ $t('word.donate') }}</small>
             </li>

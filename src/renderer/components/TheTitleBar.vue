@@ -73,7 +73,7 @@ export default {
    },
    methods: {
       closeApp () {
-         ipcRenderer.send('closeApp');
+         ipcRenderer.send('close-app');
       },
       minimizeApp () {
          this.w.minimize();

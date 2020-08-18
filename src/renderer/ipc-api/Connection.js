@@ -23,6 +23,6 @@ export default class {
    }
 
    static rawQuery (params) {
-      return ipcRenderer.invoke('rawQuery', params);
+      return ipcRenderer.invoke('raw-query', params);
    }
 }

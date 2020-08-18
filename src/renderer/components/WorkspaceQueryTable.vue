@@ -8,7 +8,7 @@
          v-if="isContext"
          :context-event="contextEvent"
          :selected-rows="selectedRows"
-         @deleteSelected="deleteSelected"
+         @delete-selected="deleteSelected"
          @close-context="isContext = false"
       />
       <div ref="table" class="table table-hover">
@@ -56,8 +56,8 @@
                   :key-usage="keyUsage"
                   class="tr"
                   :class="{'selected': selectedRows.includes(row._id)}"
-                  @selectRow="selectRow($event, row._id)"
-                  @updateField="updateField($event, row[primaryField.name])"
+                  @select-row="selectRow($event, row._id)"
+                  @update-field="updateField($event, row[primaryField.name])"
                   @contextmenu="contextMenu"
                />
             </template>
@@ -202,7 +202,7 @@ export default {
                id,
                ...payload
             };
-            this.$emit('updateField', params);
+            this.$emit('update-field', params);
          }
       },
       deleteSelected () {
@@ -214,7 +214,7 @@ export default {
                primary: this.primaryField.name,
                rows: rowIDs
             };
-            this.$emit('deleteSelected', params);
+            this.$emit('delete-selected', params);
          }
       },
       applyUpdate (params) {

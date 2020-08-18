@@ -4,7 +4,7 @@
       <div id="window-content">
          <TheSettingBar />
          <div id="main-content" class="container">
-            <TheAppWelcome v-if="!connections.length" @newConn="showNewConnModal" />
+            <TheAppWelcome v-if="!connections.length" @new-conn="showNewConnModal" />
             <div v-else class="columns col-gapless">
                <Workspace
                   v-for="connection in connections"
@@ -52,7 +52,7 @@ export default {
       })
    },
    mounted () {
-      ipcRenderer.send('checkForUpdates');
+      ipcRenderer.send('check-for-updates');
    },
    methods: {
       ...mapActions({

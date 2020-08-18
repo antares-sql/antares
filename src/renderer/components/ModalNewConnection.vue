@@ -141,7 +141,7 @@
       </div>
       <ModalAskCredentials
          v-if="isAsking"
-         @closeAsking="closeAsking"
+         @close-asking="closeAsking"
          @credentials="continueTest"
       />
    </div>

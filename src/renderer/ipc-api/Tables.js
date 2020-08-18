@@ -3,11 +3,11 @@ import { ipcRenderer } from 'electron';
 
 export default class {
    static getTableColumns (params) {
-      return ipcRenderer.invoke('getTableColumns', params);
+      return ipcRenderer.invoke('get-table-columns', params);
    }
 
    static getTableData (params) {
-      return ipcRenderer.invoke('getTableData', params);
+      return ipcRenderer.invoke('get-table-data', params);
    }
 
    static getKeyUsage (params) {
@@ -15,15 +15,15 @@ export default class {
    }
 
    static updateTableCell (params) {
-      return ipcRenderer.invoke('updateTableCell', params);
+      return ipcRenderer.invoke('update-table-cell', params);
    }
 
    static deleteTableRows (params) {
-      return ipcRenderer.invoke('deleteTableRows', params);
+      return ipcRenderer.invoke('delete-table-rows', params);
    }
 
    static insertTableRows (params) {
-      return ipcRenderer.invoke('insertTableRows', params);
+      return ipcRenderer.invoke('insert-table-rows', params);
    }
 
    static getForeignList (params) {

@@ -7,7 +7,7 @@
          class="td p-0"
          tabindex="0"
          @contextmenu.prevent="$emit('contextmenu', $event, {id: row._id, field: cKey})"
-         @updateField="updateField($event, row[primaryField.name])"
+         @update-field="updateField($event, row[primaryField.name])"
       >
          <template v-if="cKey !== '_id'">
             <span
@@ -346,7 +346,7 @@ export default {
             }
          }
 
-         this.$emit('updateField', {
+         this.$emit('update-field', {
             field: this.editingField,
             type: this.editingType,
             content
@@ -386,13 +386,13 @@ export default {
          this.willBeDeleted = true;
       },
       updateField (event, id) {
-         this.$emit('updateField', event, id);
+         this.$emit('update-field', event, id);
       },
       contextMenu (event, cell) {
-         this.$emit('updateField', event, cell);
+         this.$emit('update-field', event, cell);
       },
       selectRow (event, row) {
-         this.$emit('selectRow', event, row);
+         this.$emit('select-row', event, row);
       },
       getKeyUsage (keyName) {
          return this.keyUsage.find(key => key.column === keyName);

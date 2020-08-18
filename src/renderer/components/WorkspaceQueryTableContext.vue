@@ -63,7 +63,7 @@ export default {
          this.$emit('close-context');
       },
       deleteRows () {
-         this.$emit('deleteSelected');
+         this.$emit('delete-selected');
          this.closeContext();
       }
    }
