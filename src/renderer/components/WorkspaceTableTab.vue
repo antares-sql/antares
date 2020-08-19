@@ -69,7 +69,7 @@ export default {
    },
    data () {
       return {
-         tabUid: 1,
+         tabUid: 'data',
          isQuering: false,
          results: {},
          fields: [],
@@ -86,7 +86,7 @@ export default {
          return this.getWorkspace(this.connection.uid);
       },
       isSelected () {
-         return this.workspace.selected_tab === 1;
+         return this.workspace.selected_tab === 'data';
       }
    },
    watch: {

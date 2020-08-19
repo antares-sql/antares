@@ -3,20 +3,22 @@
       <WorkspaceExploreBar :connection="connection" :is-selected="isSelected" />
       <div v-if="workspace.connected" class="workspace-tabs column columns col-gapless">
          <ul class="tab tab-block column col-12">
-            <!-- <li
+            <li
                v-if="workspace.breadcrumbs.table"
                class="tab-item"
+               :class="{'active': selectedTab === 'prop'}"
+               @click="selectTab({uid: workspace.uid, tab: 'prop'})"
             >
                <a class="tab-link">
                   <i class="mdi mdi-18px mdi-tune mr-1" />
                   <span :title="workspace.breadcrumbs.table">{{ $t('word.properties').toUpperCase() }}: {{ workspace.breadcrumbs.table }}</span>
                </a>
-            </li> -->
+            </li>
             <li
                v-if="workspace.breadcrumbs.table"
                class="tab-item"
-               :class="{'active': selectedTab === 1}"
-               @click="selectTab({uid: workspace.uid, tab: 1})"
+               :class="{'active': selectedTab === 'data'}"
+               @click="selectTab({uid: workspace.uid, tab: 'data'})"
             >
                <a class="tab-link">
                   <i class="mdi mdi-18px mdi-table mr-1" />
@@ -30,11 +32,30 @@
                :class="{'active': selectedTab === tab.uid}"
                @click="selectTab({uid: workspace.uid, tab: tab.uid})"
             >
-               <a><span>Query #{{ key+1 }} <span v-if="queryTabs.length > 1" class="btn btn-clear" /></span></a>
+               <a>
+                  <span>
+                     Query #{{ key+1 }}
+                     <span
+                        v-if="queryTabs.length > 1"
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab.uid)"
+                     />
+                  </span>
+               </a>
+            </li>
+            <li class="tab-item">
+               <a
+                  class="tab-add"
+                  :title="$t('message.openNewTab')"
+                  @click="addTab"
+               >
+                  <i class="mdi mdi-24px mdi-plus" />
+               </a>
             </li>
          </ul>
          <WorkspaceTableTab
-            v-show="selectedTab === 1"
+            v-show="selectedTab === 'data'"
             :connection="connection"
             :table="workspace.breadcrumbs.table"
          />
@@ -78,7 +99,7 @@ export default {
          return this.selectedWorkspace === this.connection.uid;
       },
       selectedTab () {
-         return this.workspace.selected_tab || this.queryTabs[0].uid;
+         return this.queryTabs.find(tab => tab.uid === this.workspace.selected_tab) || ['data', 'prop'].includes(this.workspace.selected_tab) ? this.workspace.selected_tab : this.queryTabs[0].uid;
       },
       queryTabs () {
          return this.workspace.tabs.filter(tab => tab.type === 'query');
@@ -95,8 +116,16 @@ export default {
          addWorkspace: 'workspaces/addWorkspace',
          connectWorkspace: 'workspaces/connectWorkspace',
          removeConnected: 'workspaces/removeConnected',
-         selectTab: 'workspaces/selectTab'
-      })
+         selectTab: 'workspaces/selectTab',
+         newTab: 'workspaces/newTab',
+         removeTab: 'workspaces/removeTab'
+      }),
+      addTab () {
+         this.newTab(this.connection.uid);
+      },
+      closeTab (tUid) {
+         this.removeTab({ uid: this.connection.uid, tab: tUid });
+      }
    }
 };
 </script>
@@ -132,10 +161,16 @@ export default {
             opacity: 1;
           }
 
+          &.tab-add {
+            padding: 0.2rem 0.4rem;
+            border: 0;
+          }
+
           > span {
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+            padding: 0 0.2rem;
           }
         }
 

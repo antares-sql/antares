@@ -68,7 +68,8 @@ module.exports = {
       notificationsTimeout: 'Notifications timeout',
       uploadFile: 'Upload file',
       addNewRow: 'Add new row',
-      numberOfInserts: 'Number of inserts'
+      numberOfInserts: 'Number of inserts',
+      openNewTab: 'Open a new tab'
    },
    // Date and Time
    short: {

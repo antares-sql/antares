@@ -81,6 +81,18 @@ export default {
                return workspace;
          });
       },
+      REMOVE_TAB (state, { uid, tab: tUid }) {
+         state.workspaces = state.workspaces.map(workspace => {
+            if (workspace.uid === uid) {
+               return {
+                  ...workspace,
+                  tabs: workspace.tabs.filter(tab => tab.uid !== tUid)
+               };
+            }
+            else
+               return workspace;
+         });
+      },
       SELECT_TAB (state, { uid, tab }) {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, selected_tab: tab } : workspace);
       },
@@ -158,7 +170,13 @@ export default {
             connected: false,
             selected_tab: 0,
             tabs: [{
-               uid: 1,
+               uid: 'data',
+               type: 'table',
+               fields: [],
+               keyUsage: []
+            },
+            {
+               uid: 'prop',
                type: 'table',
                fields: [],
                keyUsage: []
@@ -169,7 +187,7 @@ export default {
 
          commit('ADD_WORKSPACE', workspace);
 
-         if (getters.getWorkspace(uid).tabs.length < 2)
+         if (getters.getWorkspace(uid).tabs.length < 3)
             dispatch('newTab', uid);
       },
       changeBreadcrumbs ({ commit, getters }, payload) {
@@ -177,6 +195,9 @@ export default {
       },
       newTab ({ commit }, uid) {
          commit('NEW_TAB', uid);
+      },
+      removeTab ({ commit }, payload) {
+         commit('REMOVE_TAB', payload);
       },
       selectTab ({ commit }, payload) {
          commit('SELECT_TAB', payload);
