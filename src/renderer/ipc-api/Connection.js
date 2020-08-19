@@ -3,11 +3,11 @@ import { ipcRenderer } from 'electron';
 
 export default class {
    static makeTest (params) {
-      return ipcRenderer.invoke('testConnection', params);
+      return ipcRenderer.invoke('test-connection', params);
    }
 
    static checkConnection (params) {
-      return ipcRenderer.invoke('checkConnection', params);
+      return ipcRenderer.invoke('check-connection', params);
    }
 
    static connect (params) {

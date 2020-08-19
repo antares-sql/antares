@@ -46,8 +46,8 @@ export default {
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    padding: 0.4rem;
     position: fixed;
+    height: 100vh;
     right: 0;
     top: 0;
     left: 0;

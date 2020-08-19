@@ -180,7 +180,7 @@ export default {
       },
       resizeResults () {
          if (this.$refs.resultTable) {
-            const el = this.$refs.table;
+            const el = this.$refs.tableWrapper;
 
             if (el) {
                const footer = document.getElementById('footer');

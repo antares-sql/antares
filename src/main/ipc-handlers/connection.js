@@ -4,8 +4,8 @@ import { AntaresConnector } from '../libs/AntaresConnector';
 import InformationSchema from '../models/InformationSchema';
 import Generic from '../models/Generic';
 
-export default (connections) => {
-   ipcMain.handle('testConnection', async (event, conn) => {
+export default connections => {
+   ipcMain.handle('test-connection', async (event, conn) => {
       const Connection = new AntaresConnector({
          client: conn.client,
          params: {
@@ -28,7 +28,7 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('checkConnection', async (event, uid) => {
+   ipcMain.handle('check-connection', async (event, uid) => {
       return uid in connections;
    });
 
