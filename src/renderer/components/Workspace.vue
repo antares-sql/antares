@@ -2,7 +2,7 @@
    <div v-show="isSelected" class="workspace column columns col-gapless">
       <WorkspaceExploreBar :connection="connection" :is-selected="isSelected" />
       <div v-if="workspace.connected" class="workspace-tabs column columns col-gapless">
-         <ul class="tab tab-block column col-12">
+         <ul ref="tabWrap" class="tab tab-block column col-12">
             <li
                v-if="workspace.breadcrumbs.table"
                class="tab-item"
@@ -26,7 +26,7 @@
                </a>
             </li>
             <li
-               v-for="(tab, key) of queryTabs"
+               v-for="tab of queryTabs"
                :key="tab.uid"
                class="tab-item"
                :class="{'active': selectedTab === tab.uid}"
@@ -34,7 +34,7 @@
             >
                <a>
                   <span>
-                     Query #{{ key+1 }}
+                     Query #{{ tab.index }}
                      <span
                         v-if="queryTabs.length > 1"
                         class="btn btn-clear"
@@ -111,6 +111,14 @@ export default {
       if (isInitiated)
          this.connectWorkspace(this.connection);
    },
+   mounted () {
+      if (this.$refs.tabWrap) {
+         this.$refs.tabWrap.addEventListener('wheel', e => {
+            if (e.deltaY > 0) this.$refs.tabWrap.scrollLeft += 50;
+            else this.$refs.tabWrap.scrollLeft -= 50;
+         });
+      }
+   },
    methods: {
       ...mapActions({
          addWorkspace: 'workspaces/addWorkspace',
@@ -136,12 +144,21 @@ export default {
   margin: 0;
 
   .workspace-tabs {
-    overflow: auto;
+    overflow: hidden;
     height: calc(100vh - #{$excluding-size});
 
     .tab-block {
       background: $bg-color-light;
       margin-top: 0;
+      flex-direction: row;
+      align-items: flex-start;
+      flex-wrap: nowrap;
+      overflow: auto;
+
+      &::-webkit-scrollbar {
+        width: 2px;
+        height: 2px;
+      }
 
       .tab-item {
         max-width: 12rem;
@@ -163,6 +180,7 @@ export default {
 
           &.tab-add {
             padding: 0.2rem 0.4rem;
+            margin-top: 2px;
             border: 0;
           }
 

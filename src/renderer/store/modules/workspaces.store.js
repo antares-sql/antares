@@ -1,6 +1,7 @@
 'use strict';
 import Connection from '@/ipc-api/Connection';
 import { uidGen } from 'common/libs/uidGen';
+const tabIndex = [];
 
 function remapStructure (structure) { // TODO: move to main process and add fields (for autocomplete purpose)
    const databases = structure.map(table => table.TABLE_SCHEMA)
@@ -63,8 +64,11 @@ export default {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, breadcrumbs } : workspace);
       },
       NEW_TAB (state, uid) {
+         tabIndex[uid] = tabIndex[uid] ? ++tabIndex[uid] : 1;
+
          const newTab = {
             uid: uidGen('T'),
+            index: tabIndex[uid],
             selected: false,
             type: 'query',
             fields: [],
