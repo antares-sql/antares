@@ -1,25 +1,26 @@
 <template>
    <div class="editor-wrapper">
-      <textarea
-         ref="codemirror"
-         :options="cmOptions"
-      />
+      <div ref="editor" class="editor" />
    </div>
 </template>
 
 <script>
-import CodeMirror from 'codemirror';
 
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/material-darker.css';
-import 'codemirror/mode/sql/sql';
-import 'codemirror/addon/edit/closebrackets';
-import 'codemirror/addon/selection/active-line';
-import 'codemirror/addon/hint/show-hint';
-import 'codemirror/addon/hint/show-hint.css';
-import 'codemirror/addon/hint/sql-hint';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 
-CodeMirror.defineOption('sql-hint');
+monaco.languages.registerCompletionItemProvider('sql', {
+   provideCompletionItems: () => {
+      const suggestions = [// TODO: complete in a separate file
+         {
+            label: 'SELECT',
+            kind: monaco.languages.CompletionItemKind.Keyword,
+            insertText: 'SELECT'
+         }
+      ];
+
+      return { suggestions };
+   }
+});
 
 export default {
    name: 'QueryEditor',
@@ -28,42 +29,31 @@ export default {
    },
    data () {
       return {
-         cminstance: null,
-         content: '',
-         cmOptions: {
-            tabSize: 3,
-            smartIndent: true,
-            styleActiveLine: true,
-            lineNumbers: true,
-            line: true,
-            mode: 'text/x-sql',
-            theme: 'material-darker',
-            extraKeys: {
-               'Ctrl-Space': 'autocomplete'
-            },
-            hintOptions: {
-               tables: {
-                  users: ['name', 'score', 'birthDate'],
-                  countries: ['name', 'population', 'size']
-               }
-            },
-            autoCloseBrackets: true
-         }
+         editor: null
       };
    },
    mounted () {
-      this.initialize();
-   },
-   methods: {
-      initialize () {
-         this.cminstance = CodeMirror.fromTextArea(this.$refs.codemirror, this.cmOptions);
-         this.cminstance.setValue(this.value || this.content);
+      this.editor = monaco.editor.create(this.$refs.editor, {
+         value: this.value,
+         language: 'sql',
+         theme: 'vs-dark',
+         autoIndent: true,
+         minimap: {
+            enabled: false
+         },
+         contextmenu: false,
+         acceptSuggestionOnEnter: 'smart',
+         quickSuggestions: true,
+         wordBasedSuggestions: true
+      });
 
-         this.cminstance.on('change', cm => {
-            this.content = cm.getValue();
-            this.$emit('input', this.content);
-         });
-      }
+      this.editor.onDidChangeModelContent(e => {
+         const content = this.editor.getValue();
+         this.$emit('update:value', content);
+      });
+   },
+   beforeDestroy () {
+      this.editor && this.editor.dispose();
    }
 };
 </script>
@@ -71,11 +61,14 @@ export default {
 <style lang="scss">
   .editor-wrapper {
     border-bottom: 1px solid #444;
+
+    .editor {
+      height: 200px;
+      width: 100%;
+    }
   }
 
   .CodeMirror {
-    height: 200px;
-
     .CodeMirror-scroll {
       max-width: 100%;
     }

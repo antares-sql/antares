@@ -61,9 +61,9 @@
          />
          <WorkspaceQueryTab
             v-for="tab of queryTabs"
-            v-show="selectedTab === tab.uid"
             :key="tab.uid"
             :tab-uid="tab.uid"
+            :is-selected="selectedTab === tab.uid"
             :connection="connection"
          />
       </div>

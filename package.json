@@ -40,20 +40,17 @@
     }
   },
   "electronWebpack": {
-    "whiteListedModules": [
-      "codemirror"
-    ],
     "renderer": {
       "webpackConfig": "webpack.config.js"
     }
   },
   "dependencies": {
     "@mdi/font": "^5.5.55",
-    "codemirror": "^5.56.0",
     "electron-log": "^4.2.4",
     "electron-updater": "^4.3.4",
     "lodash": "^4.17.20",
     "moment": "^2.27.0",
+    "monaco-editor": "^0.20.0",
     "mssql": "^6.2.1",
     "mysql": "^2.18.1",
     "pg": "^8.3.2",
@@ -81,6 +78,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "eslint-plugin-vue": "^6.2.2",
+    "monaco-editor-webpack-plugin": "^1.9.0",
     "node-sass": "^4.14.1",
     "sass-loader": "^9.0.3",
     "standard-version": "^9.0.0",
