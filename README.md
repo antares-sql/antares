@@ -57,4 +57,5 @@ This is a roadmap with major features will come in near future.
 
 ## Translations
 
-[Giuseppe Gigliotti](https://github.com/ReverbOD) / [Italian Translation](https://github.com/EStarium/antares/pull/20)
+[Giuseppe Gigliotti](https://github.com/ReverbOD) / [Italian Translation](https://github.com/EStarium/antares/pull/20)  
+[Mohd-PH](https://github.com/Mohd-PH) / [Arabic Translation](https://github.com/EStarium/antares/pull/29)
