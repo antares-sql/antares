@@ -1,4 +1,5 @@
 export default {
    'en-US': 'English',
-   'it-IT': 'Italiano'
+   'it-IT': 'Italiano',
+   'ar-SA': 'Arabic'
 };
