@@ -31,6 +31,7 @@
                class="tab-item"
                :class="{'active': selectedTab === tab.uid}"
                @click="selectTab({uid: workspace.uid, tab: tab.uid})"
+               @mousedown.middle="closeTab(tab.uid)"
             >
                <a>
                   <span>
@@ -132,6 +133,7 @@ export default {
          this.newTab(this.connection.uid);
       },
       closeTab (tUid) {
+         if (this.queryTabs.length === 1) return;
          this.removeTab({ uid: this.connection.uid, tab: tUid });
       }
    }
