@@ -2,6 +2,7 @@ import { ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 
 let mainWindow;
+autoUpdater.allowPrerelease = true;
 
 export default () => {
    ipcMain.on('check-for-updates', event => {

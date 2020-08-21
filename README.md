@@ -9,13 +9,15 @@
 Antares is an SQL client based on [Electron.js](https://github.com/electron/electron) and [Vue.js](https://github.com/vuejs/vue) that aims to become a useful tool, especially for developers.  
 My target is to support as many databases as possible, and all major operating systems, including the ARM versions.  
 
-**At the moment this application is in a development state, it lacks many features, and is''t ready as a main SQL client**. However i'm actively working on it, hoping to provide all essential features as soon as possible.
+**At the moment this application is an alpha, it lacks many features, and isn't ready as a main SQL client**. However i'm actively working on it, hoping to provide all essential features as soon as possible.
 
-If you are curious to try this early state of Antares you can download and install the [latest release](https://github.com/EStarium/antares/releases), and stay tuned for updates. At moment i'm testing only on Windows.
+If you are curious to try this early state of Antares you can download and install the [latest release](https://github.com/EStarium/antares/releases), and stay tuned for updates.
 
-<!--## Philosophy
+## Philosophy
 
-Why am I developing an SQL client when there are a lot of thom on the market?-->
+Why am I developing an SQL client when there are a lot of them on the market?  
+The main goal is to develop a totally free, cross platform and open source alternative, empowered by JavaScript's ecosystem.  
+An application created with minimalism and semplicity in mind, with features in the righ places, not hundreds of tiny buttons or submenu.
 
 ## How to contribute
 
@@ -51,9 +53,17 @@ This is a roadmap with major features will come in near future.
 
 ### Operating Systems
 
+#### • x86
+
 - [x] Windows
 - [x] Linux
 - [x] MacOS (needs tests)
+
+#### • ARM
+
+- [ ] Windows
+- [ ] Linux
+- [ ] MacOS
 
 ## Translations
 
