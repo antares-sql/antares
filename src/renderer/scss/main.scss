@@ -106,6 +106,13 @@ body {
 
 .tab {
   border-color: #272727;
+
+  .tab-item {
+    .btn-clear {
+      margin-top: -0.1rem;
+      font-size: 0.6rem;
+    }
+  }
 }
 
 .panel {

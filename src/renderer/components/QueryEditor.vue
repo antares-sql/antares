@@ -7,20 +7,9 @@
 <script>
 
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { completionItemProvider } from '@/suggestions/sql';
 
-monaco.languages.registerCompletionItemProvider('sql', {
-   provideCompletionItems: () => {
-      const suggestions = [// TODO: complete in a separate file
-         {
-            label: 'SELECT',
-            kind: monaco.languages.CompletionItemKind.Keyword,
-            insertText: 'SELECT'
-         }
-      ];
-
-      return { suggestions };
-   }
-});
+monaco.languages.registerCompletionItemProvider('sql', completionItemProvider(monaco));
 
 export default {
    name: 'QueryEditor',
@@ -42,9 +31,9 @@ export default {
             enabled: false
          },
          contextmenu: false,
+         wordBasedSuggestions: true,
          acceptSuggestionOnEnter: 'smart',
-         quickSuggestions: true,
-         wordBasedSuggestions: true
+         quickSuggestions: true
       });
 
       this.editor.onDidChangeModelContent(e => {
