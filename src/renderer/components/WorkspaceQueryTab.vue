@@ -124,8 +124,15 @@ export default {
             };
 
             const { status, response } = await Tables.getTableColumns(params);
+
             if (status === 'success') {
-               const fields = response.filter(field => this.selectedFields.includes(field.name));
+               let fields = response.filter(field => this.selectedFields.includes(field.name));
+               if (this.selectedFields.length) {
+                  fields = fields.map((field, index) => {
+                     return { ...field, alias: this.results.fields[index].name };
+                  });
+               }
+
                this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields });
             }
             else

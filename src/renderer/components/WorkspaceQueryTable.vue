@@ -57,7 +57,7 @@
                   class="tr"
                   :class="{'selected': selectedRows.includes(row._id)}"
                   @select-row="selectRow($event, row._id)"
-                  @update-field="updateField($event, row[primaryField.name])"
+                  @update-field="updateField($event, row[primaryField.alias || primaryField.name])"
                   @contextmenu="contextMenu"
                />
             </template>

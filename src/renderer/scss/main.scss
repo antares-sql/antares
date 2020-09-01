@@ -133,12 +133,12 @@ body {
 }
 
 .form-select,
-.form-select:not([multiple]):not([size]),
 .form-input,
+.form-select:not([multiple]):not([size]),
 .form-checkbox .form-icon,
 .form-radio .form-icon {
   border-color: $bg-color-light;
-  background: $bg-color-gray;
+  background-color: $bg-color-gray;
 }
 
 .form-input:not(:placeholder-shown):invalid:focus {

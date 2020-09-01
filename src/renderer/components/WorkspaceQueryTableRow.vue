@@ -7,15 +7,14 @@
          class="td p-0"
          tabindex="0"
          @contextmenu.prevent="$emit('contextmenu', $event, {id: row._id, field: cKey})"
-         @update-field="updateField($event, row[primaryField.name])"
       >
          <template v-if="cKey !== '_id'">
             <span
                v-if="!isInlineEditor[cKey]"
                class="cell-content px-2"
-               :class="`${isNull(col)} type-${fieldType(cKey)}`"
+               :class="`${isNull(col)} type-${getFieldType(cKey)}`"
                @dblclick="editON($event, col, cKey)"
-            >{{ col | typeFormat(fieldType(cKey), fieldPrecision(cKey)) | cutText }}</span>
+            >{{ col | typeFormat(getFieldType(cKey), getFieldPrecision(cKey)) | cutText }}</span>
             <ForeignKeySelect
                v-else-if="foreignKeys.includes(cKey)"
                class="editable-field"
@@ -218,7 +217,7 @@ export default {
 
          if (TIME.includes(this.editingType)) {
             let timeMask = '##:##:##';
-            const precision = this.fieldPrecision(this.editingField);
+            const precision = this.getFieldPrecision(this.editingField);
 
             for (let i = 0; i < precision; i++)
                timeMask += i === 0 ? '.#' : '#';
@@ -231,7 +230,7 @@ export default {
 
          if (DATETIME.includes(this.editingType)) {
             let datetimeMask = '####-##-## ##:##:##';
-            const precision = this.fieldPrecision(this.editingField);
+            const precision = this.getFieldPrecision(this.editingField);
 
             for (let i = 0; i < precision; i++)
                datetimeMask += i === 0 ? '.#' : '#';
@@ -260,21 +259,24 @@ export default {
       });
    },
    methods: {
-      fieldType (cKey) {
+      getFieldType (cKey) {
          let type = 'unknown';
-         const field = this.fields.filter(field => field.name === cKey)[0];
+         const field = this.getFieldObj(cKey);
          if (field)
             type = field.type;
 
          return type;
       },
-      fieldPrecision (cKey) {
+      getFieldPrecision (cKey) {
          let length = 0;
-         const field = this.fields.filter(field => field.name === cKey)[0];
+         const field = this.getFieldObj(cKey);
          if (field)
             length = field.datePrecision;
 
          return length;
+      },
+      getFieldObj (cKey) {
+         return this.fields.filter(field => field.name === cKey || field.alias === cKey)[0];
       },
       isNull (value) {
          return value === null ? ' is-null' : '';
@@ -283,7 +285,7 @@ export default {
          return bufferToBase64(val);
       },
       editON (event, content, field) {
-         const type = this.fieldType(field);
+         const type = this.getFieldType(field);
          this.originalContent = content;
          this.editingType = type;
          this.editingField = field;
@@ -316,7 +318,7 @@ export default {
          }
 
          // Inline editable fields
-         this.editingContent = this.$options.filters.typeFormat(this.originalContent, type, this.fieldPrecision(field));
+         this.editingContent = this.$options.filters.typeFormat(this.originalContent, type, this.getFieldPrecision(field));
          this.$nextTick(() => { // Focus on input
             event.target.blur();
 
@@ -347,7 +349,7 @@ export default {
          }
 
          this.$emit('update-field', {
-            field: this.editingField,
+            field: this.getFieldObj(this.editingField).name,
             type: this.editingType,
             content
          });
@@ -384,9 +386,6 @@ export default {
             size: null
          };
          this.willBeDeleted = true;
-      },
-      updateField (event, id) {
-         this.$emit('update-field', event, id);
       },
       contextMenu (event, cell) {
          this.$emit('update-field', event, cell);
