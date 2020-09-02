@@ -27,7 +27,7 @@
                            :class="`key-${field.key}`"
                            :title="keyName(field.key)"
                         />
-                        <span>{{ field.name }}</span>
+                        <span>{{ field.alias || field.name }}</span>
                         <i
                            v-if="currentSort === field.name"
                            class="mdi sort-icon"
