@@ -28,7 +28,6 @@ An application created with minimalism and semplicity in mind, with features in 
 This is a roadmap with major features will come in near future.
 
 - Improvements of query editor area.
-- Multiple query tabs.
 - Tables management (add/edit/delete).
 - Stored procedures, views, schedulers and trigger support.
 - Database tools.
