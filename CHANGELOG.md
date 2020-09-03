@@ -7,19 +7,19 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* aliases support ([264de9c](https://github.com/EStarium/antares/commit/264de9c5686fb3a2ef22d96171f45b915ba1b34b))
-* middle click to close tabs ([256ec76](https://github.com/EStarium/antares/commit/256ec765883fcf247355190827e943c76e95f13b))
-* monaco-editor as query editor ([196a3e0](https://github.com/EStarium/antares/commit/196a3e0185a3d68b7c4ade8dbf187d2b216cc00b))
-* sql suggestions in query editor ([8dc74ef](https://github.com/EStarium/antares/commit/8dc74ef2c335e8ae4a69f5d2651df65939139b1b))
-* support to multiple query tabs ([d7ed00f](https://github.com/EStarium/antares/commit/d7ed00f4a3613da9015c9fc48c4d8062d292e416))
-* tabs horizontal scroll with mouse wheel ([3a6ea76](https://github.com/EStarium/antares/commit/3a6ea76b93682ebd50908df7368c62c2c1e27958))
-
+* Aliases support ([264de9c](https://github.com/EStarium/antares/commit/264de9c5686fb3a2ef22d96171f45b915ba1b34b))
+* Middle click to close tabs ([256ec76](https://github.com/EStarium/antares/commit/256ec765883fcf247355190827e943c76e95f13b))
+* Monaco-editor as query editor ([196a3e0](https://github.com/EStarium/antares/commit/196a3e0185a3d68b7c4ade8dbf187d2b216cc00b))
+* Sql suggestions in query editor ([8dc74ef](https://github.com/EStarium/antares/commit/8dc74ef2c335e8ae4a69f5d2651df65939139b1b))
+* Support to multiple query tabs ([d7ed00f](https://github.com/EStarium/antares/commit/d7ed00f4a3613da9015c9fc48c4d8062d292e416))
+* Tabs horizontal scroll with mouse wheel ([3a6ea76](https://github.com/EStarium/antares/commit/3a6ea76b93682ebd50908df7368c62c2c1e27958))
+* **Arabic translation** thanks to [Mohd-PH](https://github.com/Mohd-PH) ([#29](https://github.com/EStarium/antares/pull/29))
 
 ### Bug Fixes
 
-* error when launching queries without a result from query tabs ([a1a6f51](https://github.com/EStarium/antares/commit/a1a6f51f2fba5140f5e3bd9cd6557c8a13dfaa2c))
-* field name displayed instead of alias ([801a0de](https://github.com/EStarium/antares/commit/801a0de1865dea2a59ff057b7c2cc988cc9c87ed))
-* wrong table height calc in some cases ([fd6d517](https://github.com/EStarium/antares/commit/fd6d5177efb6161aab01f9e108eda60df6c7d8c4))
+* Error when launching queries without a result from query tabs ([a1a6f51](https://github.com/EStarium/antares/commit/a1a6f51f2fba5140f5e3bd9cd6557c8a13dfaa2c))
+* Field name displayed instead of alias ([801a0de](https://github.com/EStarium/antares/commit/801a0de1865dea2a59ff057b7c2cc988cc9c87ed))
+* Wrong table height calc in some cases ([fd6d517](https://github.com/EStarium/antares/commit/fd6d5177efb6161aab01f9e108eda60df6c7d8c4))
 
 ### [0.0.5](https://github.com/EStarium/antares/compare/v0.0.4...v0.0.5) (2020-08-17)
 
