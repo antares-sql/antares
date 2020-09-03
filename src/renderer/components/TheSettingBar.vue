@@ -201,6 +201,7 @@ export default {
       max-width: 320px;
       pointer-events: none;
       text-overflow: ellipsis;
+      overflow: hidden;
       transition: opacity 0.2s;
     }
 

@@ -69,7 +69,8 @@ module.exports = {
       uploadFile: 'Upload file',
       addNewRow: 'Add new row',
       numberOfInserts: 'Number of inserts',
-      openNewTab: 'Open a new tab'
+      openNewTab: 'Open a new tab',
+      affectedRows: 'Affected rows'
    },
    // Date and Time
    short: {

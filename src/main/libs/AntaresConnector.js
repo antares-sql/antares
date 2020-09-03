@@ -285,15 +285,20 @@ export class AntaresConnector {
       switch (this._client) { // TODO: uniform fields with every client type, needed table name and fields array
          case 'maria':
          case 'mysql': {
-            const { rows, fields } = await new Promise((resolve, reject) => {
-               this._connection.query(sql, (err, rows, fields) => {
+            const { rows, report, fields } = await new Promise((resolve, reject) => {
+               this._connection.query(sql, (err, response, fields) => {
                   if (err)
                      reject(err);
-                  else
-                     resolve({ rows, fields });
+                  else {
+                     resolve({
+                        rows: Array.isArray(response) ? response : false,
+                        report: !Array.isArray(response) ? response : false,
+                        fields
+                     });
+                  }
                });
             });
-            return { rows, fields };
+            return { rows, report, fields };
          }
          case 'mssql': {
             const results = await this._connection.request().query(sql);
