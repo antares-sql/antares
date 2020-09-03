@@ -16,6 +16,9 @@
             {{ downloadPercentage }}%
          </p>
       </div>
+      <div v-if="updateStatus === 'available'">
+         <progress class="progress" max="100" />
+      </div>
       <div class="empty-action">
          <button
             v-if="['noupdate', 'checking', 'nocheck'].includes(updateStatus)"
