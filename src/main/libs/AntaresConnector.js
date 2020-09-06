@@ -280,33 +280,44 @@ export class AntaresConnector {
     * @memberof AntaresConnector
     */
    async raw (sql) {
+      const resultsArr = [];
+      const queries = sql.split(';');
+
       if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
 
-      switch (this._client) { // TODO: uniform fields with every client type, needed table name and fields array
-         case 'maria':
-         case 'mysql': {
-            const { rows, report, fields } = await new Promise((resolve, reject) => {
-               this._connection.query(sql, (err, response, fields) => {
-                  if (err)
-                     reject(err);
-                  else {
-                     resolve({
-                        rows: Array.isArray(response) ? response : false,
-                        report: !Array.isArray(response) ? response : false,
-                        fields
-                     });
-                  }
+      for (const query of queries) {
+         if (!query) continue;
+
+         switch (this._client) { // TODO: uniform fields with every client type, needed table name and fields array
+            case 'maria':
+            case 'mysql': {
+               const { rows, report, fields } = await new Promise((resolve, reject) => {
+                  this._connection.query(query, (err, response, fields) => {
+                     if (err)
+                        reject(err);
+                     else {
+                        resolve({
+                           rows: Array.isArray(response) ? response : false,
+                           report: !Array.isArray(response) ? response : false,
+                           fields
+                        });
+                     }
+                  });
                });
-            });
-            return { rows, report, fields };
+               resultsArr.push({ rows, report, fields });
+               break;
+            }
+            case 'mssql': {
+               const results = await this._connection.request().query(query);
+               resultsArr.push({ rows: results.recordsets[0] });// TODO: fields
+               break;
+            }
+            default:
+               break;
          }
-         case 'mssql': {
-            const results = await this._connection.request().query(sql);
-            return { rows: results.recordsets[0] };// TODO: fields
-         }
-         default:
-            break;
       }
+
+      return resultsArr.length === 1 ? resultsArr[0] : resultsArr;
    }
 
    /**

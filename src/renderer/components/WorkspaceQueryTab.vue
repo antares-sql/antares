@@ -15,11 +15,11 @@
                </button>
             </div>
             <div class="workspace-query-info">
-               <div v-if="results.rows">
-                  {{ $t('word.results') }}: <b>{{ results.rows.length }}</b>
+               <div v-if="results[selectedResultsset] && results[selectedResultsset].rows">
+                  {{ $t('word.results') }}: <b>{{ resultsCount }}</b>
                </div>
-               <div v-if="results.report">
-                  {{ $t('message.affectedRows') }}: <b>{{ results.report.affectedRows }}</b>
+               <div v-if="results[selectedResultsset] && results[selectedResultsset].report">
+                  {{ $t('message.affectedRows') }}: <b>{{ affectedCount }}</b>
                </div>
                <div v-if="workspace.breadcrumbs.schema">
                   {{ $t('word.schema') }}: <b>{{ workspace.breadcrumbs.schema }}</b>
@@ -66,8 +66,10 @@ export default {
          query: '',
          lastQuery: '',
          isQuering: false,
-         results: {},
-         selectedFields: []
+         results: [],
+         resultsCount: 0,
+         affectedCount: 0,
+         selectedResultsset: 0
       };
    },
    computed: {
@@ -76,11 +78,6 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
-      },
-      table () {
-         if ('fields' in this.results && this.results.fields.length)
-            return this.results.fields[0].orgTable;
-         return '';
       },
       schema () {
          if ('fields' in this.results && this.results.fields.length)
@@ -94,6 +91,11 @@ export default {
          setTabFields: 'workspaces/setTabFields',
          setTabKeyUsage: 'workspaces/setTabKeyUsage'
       }),
+      getTable (index) {
+         if ('fields' in this.results[index] && this.results[index].fields.length)
+            return this.results[index].fields[0].orgTable;
+         return '';
+      },
       async runQuery (query) {
          if (!query) return;
          this.isQuering = true;
@@ -107,56 +109,69 @@ export default {
             };
 
             const { status, response } = await Connection.rawQuery(params);
+
             if (status === 'success') {
-               this.results = response;
-               if (response.rows) { // if is a select
-                  this.selectedFields = response.fields.map(field => field.orgName);
+               this.results = Array.isArray(response) ? response : [response];
 
-                  try { // Table data
-                     const params = {
-                        uid: this.connection.uid,
-                        schema: this.schema,
-                        table: this.table
-                     };
+               let selectedFields = [];
+               const fieldsArr = [];
+               const keysArr = [];
 
-                     const { status, response } = await Tables.getTableColumns(params);
+               for (const [index, result] of this.results.entries()) {
+                  if (result.rows) { // if is a select
+                     selectedFields = result.fields.map(field => field.orgName);
+                     this.resultsCount += result.rows.length;
 
-                     if (status === 'success') {
-                        let fields = response.filter(field => this.selectedFields.includes(field.name));
-                        if (this.selectedFields.length) {
-                           fields = fields.map((field, index) => {
-                              return { ...field, alias: this.results.fields[index].name };
-                           });
+                     try { // Table data
+                        const params = {
+                           uid: this.connection.uid,
+                           schema: this.schema,
+                           table: this.getTable(index)
+                        };
+
+                        const { status, response } = await Tables.getTableColumns(params);
+
+                        if (status === 'success') {
+                           let fields = response.filter(field => selectedFields.includes(field.name));
+                           if (selectedFields.length) {
+                              fields = fields.map((field, index) => {
+                                 return { ...field, alias: result.fields[index].name };
+                              });
+                           }
+
+                           fieldsArr.push(fields);
                         }
-
-                        this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields });
+                        else
+                           this.addNotification({ status: 'error', message: response });
                      }
-                     else
-                        this.addNotification({ status: 'error', message: response });
-                  }
-                  catch (err) {
-                     this.addNotification({ status: 'error', message: err.stack });
-                  }
+                     catch (err) {
+                        this.addNotification({ status: 'error', message: err.stack });
+                     }
 
-                  try { // Key usage (foreign keys)
-                     const params = {
-                        uid: this.connection.uid,
-                        schema: this.schema,
-                        table: this.table
-                     };
+                     try { // Key usage (foreign keys)
+                        const params = {
+                           uid: this.connection.uid,
+                           schema: this.schema,
+                           table: this.getTable(index)
+                        };
 
-                     const { status, response } = await Tables.getKeyUsage(params);
-                     if (status === 'success')
-                        this.setTabKeyUsage({ cUid: this.connection.uid, tUid: this.tabUid, keyUsage: response });
-                     else
-                        this.addNotification({ status: 'error', message: response });
+                        const { status, response } = await Tables.getKeyUsage(params);
+                        if (status === 'success')
+                           keysArr.push(response);
+                        else
+                           this.addNotification({ status: 'error', message: response });
+                     }
+                     catch (err) {
+                        this.addNotification({ status: 'error', message: err.stack });
+                     }
                   }
-                  catch (err) {
-                     this.addNotification({ status: 'error', message: err.stack });
+                  else { // if is a query without results
+                     this.affectedCount += result.report.affectedRows;
                   }
                }
-               else { // if is a query without results
-               }
+               console.log(fieldsArr);
+               this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: fieldsArr });
+               this.setTabKeyUsage({ cUid: this.connection.uid, tUid: this.tabUid, keyUsage: keysArr });
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -172,7 +187,9 @@ export default {
          this.runQuery(this.lastQuery);
       },
       clearTabData () {
-         this.results = {};
+         this.results = [];
+         this.resultsCount = 0;
+         this.affectedCount = 0;
          this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: [] });
       }
    }

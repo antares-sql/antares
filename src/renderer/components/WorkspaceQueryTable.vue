@@ -11,6 +11,17 @@
          @delete-selected="deleteSelected"
          @close-context="isContext = false"
       />
+      <ul v-if="results.length > 1" class="tab tab-block result-tabs">
+         <li
+            v-for="(result, index) in results"
+            :key="index"
+            class="tab-item"
+            :class="{'active': resultsetIndex === index}"
+            @click="selectResultset(index)"
+         >
+            <a>{{ result.fields[0].orgTable }} ({{ result.rows.length }})</a>
+         </li>
+      </ul>
       <div ref="table" class="table table-hover">
          <div class="thead">
             <div class="tr">
@@ -39,7 +50,7 @@
             </div>
          </div>
          <BaseVirtualScroll
-            v-if="results.rows"
+            v-if="results[resultsetIndex] && results[resultsetIndex].rows"
             ref="resultTable"
             :items="sortedResults"
             :item-height="22"
@@ -81,7 +92,7 @@ export default {
       TableContext
    },
    props: {
-      results: Object,
+      results: Array,
       tabUid: [String, Number]
    },
    data () {
@@ -93,7 +104,9 @@ export default {
          selectedCell: null,
          selectedRows: [],
          currentSort: '',
-         currentSortDir: 'asc'
+         currentSortDir: 'asc',
+         resultsetIndex: 0,
+         scrollElement: null
       };
    },
    computed: {
@@ -119,26 +132,27 @@ export default {
             return this.localResults;
       },
       fields () {
-         return this.getWorkspaceTab(this.tabUid) ? this.getWorkspaceTab(this.tabUid).fields : [];
+         return this.getWorkspaceTab(this.tabUid) && this.getWorkspaceTab(this.tabUid).fields[this.resultsetIndex] ? this.getWorkspaceTab(this.tabUid).fields[this.resultsetIndex] : [];
       },
       keyUsage () {
-         return this.getWorkspaceTab(this.tabUid) ? this.getWorkspaceTab(this.tabUid).keyUsage : [];
-      },
-      scrollElement () {
-         return this.$refs.tableWrapper;
+         return this.getWorkspaceTab(this.tabUid) && this.getWorkspaceTab(this.tabUid).keyUsage[this.resultsetIndex] ? this.getWorkspaceTab(this.tabUid).keyUsage[this.resultsetIndex] : [];
       }
    },
    watch: {
       results () {
-         this.resetSort();
-         this.localResults = this.results.rows ? this.results.rows.map(item => {
-            return { ...item, _id: uidGen() };
-         }) : [];
+         this.setLocalResults();
+         this.resultsetIndex = 0;
+      },
+      resultsetIndex () {
+         this.setLocalResults();
       }
    },
    updated () {
       if (this.$refs.table)
          this.refreshScroller();
+
+      if (this.$refs.tableWrapper)
+         this.scrollElement = this.$refs.tableWrapper;
    },
    mounted () {
       window.addEventListener('resize', this.resizeResults);
@@ -177,6 +191,12 @@ export default {
             default:
                return 'UNKNOWN ' + key;
          }
+      },
+      setLocalResults () {
+         this.resetSort();
+         this.localResults = this.results[this.resultsetIndex] && this.results[this.resultsetIndex].rows ? this.results[this.resultsetIndex].rows.map(item => {
+            return { ...item, _id: uidGen() };
+         }) : [];
       },
       resizeResults () {
          if (this.$refs.resultTable) {
@@ -275,12 +295,15 @@ export default {
       resetSort () {
          this.currentSort = '';
          this.currentSortDir = 'asc';
+      },
+      selectResultset (index) {
+         this.resultsetIndex = index;
       }
    }
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .vscroll {
   height: 1000px;
   overflow: auto;
@@ -304,5 +327,10 @@ export default {
   font-size: 0.7rem;
   line-height: 1;
   margin-left: 0.2rem;
+}
+
+.result-tabs {
+  background: transparent !important;
+  margin: 0;
 }
 </style>

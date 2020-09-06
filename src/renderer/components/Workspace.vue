@@ -55,6 +55,11 @@
                </a>
             </li>
          </ul>
+         <div v-show="selectedTab === 'prop'" class="column col-12">
+            <p class="px-2">
+               In future releases
+            </p>
+         </div>
          <WorkspaceTableTab
             v-show="selectedTab === 'data'"
             :connection="connection"

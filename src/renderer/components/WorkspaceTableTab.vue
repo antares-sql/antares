@@ -33,8 +33,9 @@
       <div class="workspace-query-results column col-12">
          <WorkspaceQueryTable
             v-if="results"
+            v-show="!isQuering"
             ref="queryTable"
-            :results="results"
+            :results="[results]"
             :tab-uid="tabUid"
             @update-field="updateField"
             @delete-selected="deleteSelected"
@@ -116,6 +117,8 @@ export default {
          if (!this.table) return;
          this.isQuering = true;
          this.results = {};
+         const fieldsArr = [];
+         const keysArr = [];
          this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: [] });
 
          const params = {
@@ -128,7 +131,7 @@ export default {
             const { status, response } = await Tables.getTableColumns(params);
             if (status === 'success') {
                this.fields = response;// Needed to add new rows
-               this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: response });
+               fieldsArr.push(response);
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -153,7 +156,7 @@ export default {
             const { status, response } = await Tables.getKeyUsage(params);
             if (status === 'success') {
                this.keyUsage = response;// Needed to add new rows
-               this.setTabKeyUsage({ cUid: this.connection.uid, tUid: this.tabUid, keyUsage: response });
+               keysArr.push(response);
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -162,6 +165,8 @@ export default {
             this.addNotification({ status: 'error', message: err.stack });
          }
 
+         this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: fieldsArr });
+         this.setTabKeyUsage({ cUid: this.connection.uid, tUid: this.tabUid, keyUsage: keysArr });
          this.isQuering = false;
       },
       reloadTable () {

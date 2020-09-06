@@ -186,7 +186,10 @@ export default {
    },
    props: {
       row: Object,
-      fields: Array,
+      fields: {
+         type: Array,
+         default: () => []
+      },
       keyUsage: Array
    },
    data () {
@@ -253,10 +256,12 @@ export default {
          return this.keyUsage.map(key => key.column);
       }
    },
-   created () {
-      this.fields.forEach(field => {
-         this.isInlineEditor[field.name] = false;
-      });
+   watch: {
+      fields () {
+         this.fields.forEach(field => {
+            this.isInlineEditor[field.name] = false;
+         });
+      }
    },
    methods: {
       getFieldType (cKey) {
