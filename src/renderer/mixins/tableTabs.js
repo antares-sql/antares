@@ -7,8 +7,8 @@ export default {
 
          const params = {
             uid: this.connection.uid,
-            schema: this.workspace.breadcrumbs.schema,
-            table: this.table,
+            schema: this.schema,
+            table: this.getTable(this.selectedResultsset),
             ...payload
          };
 
@@ -34,16 +34,32 @@ export default {
 
          const params = {
             uid: this.connection.uid,
-            schema: this.workspace.breadcrumbs.schema,
-            table: this.workspace.breadcrumbs.table,
+            schema: this.schema,
+            table: this.getTable(this.selectedResultsset),
             ...payload
          };
 
          try {
             const { status, response } = await Tables.deleteTableRows(params);
+
             if (status === 'success') {
                const { primary, rows } = params;
-               this.results = { ...this.results, rows: this.results.rows.filter(row => !rows.includes(row[primary])) };
+
+               if (Array.isArray(this.results)) {
+                  this.results = this.results.map((result, index) => {
+                     if (index === this.selectedResultsset) {
+                        return {
+                           ...result,
+                           rows: result.rows.filter(row => !rows.includes(row[primary]))
+                        };
+                     }
+                     else
+                        return result;
+                  });
+               }
+               else
+                  this.results = { ...this.results, rows: this.results.rows.filter(row => !rows.includes(row[primary])) };
+
                this.$refs.queryTable.refreshScroller();// Necessary to re-render virtual scroller
             }
             else

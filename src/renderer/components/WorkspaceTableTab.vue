@@ -169,6 +169,9 @@ export default {
          this.setTabKeyUsage({ cUid: this.connection.uid, tUid: this.tabUid, keyUsage: keysArr });
          this.isQuering = false;
       },
+      getTable () {
+         return this.table;
+      },
       reloadTable () {
          this.getTableData();
       },

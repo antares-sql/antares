@@ -80,8 +80,8 @@ export default {
          return this.getWorkspace(this.connection.uid);
       },
       schema () {
-         if ('fields' in this.results && this.results.fields.length)
-            return this.results.fields[0].db;
+         if ('fields' in this.results && this.results[this.selectedResultsset].fields.length)
+            return this.results[this.selectedResultsset].fields[0].db;
          return this.workspace.breadcrumbs.schema;
       }
    },
