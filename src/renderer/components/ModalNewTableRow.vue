@@ -148,10 +148,10 @@ export default {
          return this.keyUsage.map(key => key.column);
       },
       fields () {
-         return this.getWorkspaceTab(this.tabUid) ? this.getWorkspaceTab(this.tabUid).fields : [];
+         return this.getWorkspaceTab(this.tabUid) ? this.getWorkspaceTab(this.tabUid).fields[0] : [];
       },
       keyUsage () {
-         return this.getWorkspaceTab(this.tabUid) ? this.getWorkspaceTab(this.tabUid).keyUsage : [];
+         return this.getWorkspaceTab(this.tabUid) ? this.getWorkspaceTab(this.tabUid).keyUsage[0] : [];
       }
    },
    watch: {
