@@ -1,6 +1,17 @@
 import Tables from '@/ipc-api/Tables';
 
 export default {
+   computed: {
+      schema () {
+         if (Array.isArray(this.results)) {
+            const resultsWithRows = this.results.filter(result => result.rows);
+
+            if (resultsWithRows[this.selectedResultsset] && resultsWithRows[this.selectedResultsset].fields.length)
+               return resultsWithRows[this.selectedResultsset].fields[0].db;
+         }
+         return this.workspace.breadcrumbs.schema;
+      }
+   },
    methods: {
       async updateField (payload) {
          this.isQuering = true;
@@ -8,7 +19,6 @@ export default {
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            table: this.getTable(this.selectedResultsset),
             ...payload
          };
 
@@ -35,7 +45,6 @@ export default {
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            table: this.getTable(this.selectedResultsset),
             ...payload
          };
 

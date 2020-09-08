@@ -15,10 +15,10 @@
                </button>
             </div>
             <div class="workspace-query-info">
-               <div v-if="results[selectedResultsset] && results[selectedResultsset].rows">
+               <div v-if="resultsCount !== false">
                   {{ $t('word.results') }}: <b>{{ resultsCount }}</b>
                </div>
-               <div v-if="results[selectedResultsset] && results[selectedResultsset].report">
+               <div v-if="affectedCount !== false">
                   {{ $t('message.affectedRows') }}: <b>{{ affectedCount }}</b>
                </div>
                <div v-if="workspace.breadcrumbs.schema">
@@ -67,9 +67,8 @@ export default {
          lastQuery: '',
          isQuering: false,
          results: [],
-         resultsCount: 0,
-         affectedCount: 0,
-         selectedResultsset: 0
+         resultsCount: false,
+         affectedCount: false
       };
    },
    computed: {
@@ -78,11 +77,6 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
-      },
-      schema () {
-         if ('fields' in this.results && this.results[this.selectedResultsset].fields.length)
-            return this.results[this.selectedResultsset].fields[0].db;
-         return this.workspace.breadcrumbs.schema;
       }
    },
    methods: {
@@ -92,8 +86,10 @@ export default {
          setTabKeyUsage: 'workspaces/setTabKeyUsage'
       }),
       getTable (index) {
-         if ('fields' in this.results[index] && this.results[index].fields.length)
-            return this.results[index].fields[0].orgTable;
+         const resultsWithRows = this.results.filter(result => result.rows);
+
+         if (resultsWithRows[index] && resultsWithRows[index].fields && resultsWithRows[index].fields.length)
+            return resultsWithRows[index].fields[0].orgTable;
          return '';
       },
       async runQuery (query) {
@@ -116,17 +112,20 @@ export default {
                let selectedFields = [];
                const fieldsArr = [];
                const keysArr = [];
+               let index = 0;
 
-               for (const [index, result] of this.results.entries()) {
-                  if (result.rows) { // if is a select
-                     selectedFields = result.fields.map(field => field.orgName);
-                     this.resultsCount += result.rows.length;
+               for (let i = 0; i < this.results.length; i++) {
+                  if (this.results[i].rows) { // if is a select
+                     const table = this.getTable(index);
+
+                     selectedFields = this.results[i].fields.map(field => field.orgName);
+                     this.resultsCount += this.results[i].rows.length;
 
                      try { // Table data
                         const params = {
                            uid: this.connection.uid,
                            schema: this.schema,
-                           table: this.getTable(index)
+                           table
                         };
 
                         const { status, response } = await Tables.getTableColumns(params);
@@ -135,7 +134,7 @@ export default {
                            let fields = response.filter(field => selectedFields.includes(field.name));
                            if (selectedFields.length) {
                               fields = fields.map((field, index) => {
-                                 return { ...field, alias: result.fields[index].name };
+                                 return { ...field, alias: this.results[i].fields[index].name };
                               });
                            }
 
@@ -152,7 +151,7 @@ export default {
                         const params = {
                            uid: this.connection.uid,
                            schema: this.schema,
-                           table: this.getTable(index)
+                           table
                         };
 
                         const { status, response } = await Tables.getKeyUsage(params);
@@ -165,11 +164,13 @@ export default {
                         this.addNotification({ status: 'error', message: err.stack });
                      }
                   }
-                  else { // if is a query without results
-                     this.affectedCount += result.report.affectedRows;
+                  else if (this.results[i].report) { // if is a query without output
+                     this.affectedCount += this.results[i].report.affectedRows;
                   }
+
+                  index++;
                }
-               console.log(fieldsArr);
+
                this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: fieldsArr });
                this.setTabKeyUsage({ cUid: this.connection.uid, tUid: this.tabUid, keyUsage: keysArr });
             }
@@ -188,8 +189,8 @@ export default {
       },
       clearTabData () {
          this.results = [];
-         this.resultsCount = 0;
-         this.affectedCount = 0;
+         this.resultsCount = false;
+         this.affectedCount = false;
          this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: [] });
       }
    }

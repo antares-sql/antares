@@ -11,15 +11,15 @@
          @delete-selected="deleteSelected"
          @close-context="isContext = false"
       />
-      <ul v-if="results.length > 1" class="tab tab-block result-tabs">
+      <ul v-if="resultsWithRows.length > 1" class="tab tab-block result-tabs">
          <li
-            v-for="(result, index) in results"
+            v-for="(result, index) in resultsWithRows"
             :key="index"
             class="tab-item"
             :class="{'active': resultsetIndex === index}"
             @click="selectResultset(index)"
          >
-            <a>{{ result.fields[0].orgTable }} ({{ result.rows.length }})</a>
+            <a>{{ result.fields ? result.fields[0].orgTable : '' }} ({{ result.rows.length }})</a>
          </li>
       </ul>
       <div ref="table" class="table table-hover">
@@ -50,7 +50,7 @@
             </div>
          </div>
          <BaseVirtualScroll
-            v-if="results[resultsetIndex] && results[resultsetIndex].rows"
+            v-if="resultsWithRows[resultsetIndex] && resultsWithRows[resultsetIndex].rows"
             ref="resultTable"
             :items="sortedResults"
             :item-height="22"
@@ -131,6 +131,9 @@ export default {
          else
             return this.localResults;
       },
+      resultsWithRows () {
+         return this.results.filter(result => result.rows);
+      },
       fields () {
          return this.getWorkspaceTab(this.tabUid) && this.getWorkspaceTab(this.tabUid).fields[this.resultsetIndex] ? this.getWorkspaceTab(this.tabUid).fields[this.resultsetIndex] : [];
       },
@@ -192,9 +195,14 @@ export default {
                return 'UNKNOWN ' + key;
          }
       },
+      getTable (index) {
+         if (this.resultsWithRows[index] && this.resultsWithRows[index].fields && this.resultsWithRows[index].fields.length)
+            return this.resultsWithRows[index].fields[0].orgTable;
+         return '';
+      },
       setLocalResults () {
          this.resetSort();
-         this.localResults = this.results[this.resultsetIndex] && this.results[this.resultsetIndex].rows ? this.results[this.resultsetIndex].rows.map(item => {
+         this.localResults = this.resultsWithRows[this.resultsetIndex] && this.resultsWithRows[this.resultsetIndex].rows ? this.resultsWithRows[this.resultsetIndex].rows.map(item => {
             return { ...item, _id: uidGen() };
          }) : [];
       },
@@ -219,6 +227,7 @@ export default {
          else {
             const params = {
                primary: this.primaryField.name,
+               table: this.getTable(this.resultsetIndex),
                id,
                ...payload
             };
@@ -232,6 +241,7 @@ export default {
             const rowIDs = this.localResults.filter(row => this.selectedRows.includes(row._id)).map(row => row[this.primaryField.name]);
             const params = {
                primary: this.primaryField.name,
+               table: this.getTable(this.resultsetIndex),
                rows: rowIDs
             };
             this.$emit('delete-selected', params);

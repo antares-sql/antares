@@ -123,7 +123,7 @@ export default {
 
          const params = {
             uid: this.connection.uid,
-            schema: this.workspace.breadcrumbs.schema,
+            schema: this.schema,
             table: this.workspace.breadcrumbs.table
          };
 
