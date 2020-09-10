@@ -119,12 +119,13 @@ export default {
                      const table = this.getTable(index);
 
                      selectedFields = this.results[i].fields.map(field => field.orgName);
+                     const selectedSchema = this.results[i].fields[0].db;
                      this.resultsCount += this.results[i].rows.length;
 
                      try { // Table data
                         const params = {
                            uid: this.connection.uid,
-                           schema: this.schema,
+                           schema: selectedSchema,
                            table
                         };
 
@@ -150,7 +151,7 @@ export default {
                      try { // Key usage (foreign keys)
                         const params = {
                            uid: this.connection.uid,
-                           schema: this.schema,
+                           schema: selectedSchema,
                            table
                         };
 
