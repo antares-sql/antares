@@ -26,8 +26,8 @@
          <div class="thead">
             <div class="tr">
                <div
-                  v-for="field in fields"
-                  :key="field.name"
+                  v-for="(field, index) in fields"
+                  :key="index"
                   class="th c-hand"
                >
                   <div ref="columnResize" class="column-resizable">

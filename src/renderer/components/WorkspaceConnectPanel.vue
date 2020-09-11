@@ -5,7 +5,7 @@
             <i class="mdi mdi-48px mdi-power-plug-off" />
          </div>
          <p class="empty-title h5">
-            {{ $t('word.disconnected') }}
+            {{ isConnecting ? $t('word.connecting') : $t('word.disconnected') }}
          </p>
          <div class="empty-action">
             <button

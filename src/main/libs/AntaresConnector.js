@@ -292,7 +292,7 @@ export class AntaresConnector {
             case 'maria':
             case 'mysql': {
                const { rows, report, fields } = await new Promise((resolve, reject) => {
-                  this._connection.query(query, (err, response, fields) => {
+                  this._connection.query({ sql: query, nestTables: false }, (err, response, fields) => {
                      if (err)
                         reject(err);
                      else {

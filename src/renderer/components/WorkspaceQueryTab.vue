@@ -85,12 +85,15 @@ export default {
          setTabFields: 'workspaces/setTabFields',
          setTabKeyUsage: 'workspaces/setTabKeyUsage'
       }),
-      getTable (index) {
+      getResultParams (index) {
          const resultsWithRows = this.results.filter(result => result.rows);
 
-         if (resultsWithRows[index] && resultsWithRows[index].fields && resultsWithRows[index].fields.length)
-            return resultsWithRows[index].fields[0].orgTable;
-         return '';
+         if (resultsWithRows[index] && resultsWithRows[index].fields && resultsWithRows[index].fields.length) {
+            return resultsWithRows[index].fields.map(field => {
+               return { table: field.orgTable, schema: field.db };
+            }).filter((val, i, arr) => arr.findIndex(el => el.schema === val.schema && el.table === val.table) === i);
+         }
+         return [];
       },
       async runQuery (query) {
          if (!query) return;
@@ -112,68 +115,69 @@ export default {
                let selectedFields = [];
                const fieldsArr = [];
                const keysArr = [];
-               let index = 0;
+               let qI = 0;
 
-               for (let i = 0; i < this.results.length; i++) {
-                  if (this.results[i].rows) { // if is a select
-                     const table = this.getTable(index);
+               for (const result of this.results) { // cycle queries
+                  let fI = 0;
 
-                     selectedFields = this.results[i].fields.map(field => field.orgName);
-                     const selectedSchema = this.results[i].fields[0].db;
-                     this.resultsCount += this.results[i].rows.length;
+                  if (result.rows) { // if is a select
+                     const paramsArr = this.getResultParams(qI);
 
-                     try { // Table data
-                        const params = {
-                           uid: this.connection.uid,
-                           schema: selectedSchema,
-                           table
-                        };
+                     selectedFields = result.fields.map(field => field.orgName);
+                     this.resultsCount += result.rows.length;
 
-                        const { status, response } = await Tables.getTableColumns(params);
+                     for (const paramObj of paramsArr) {
+                        try { // Table data
+                           const params = {
+                              uid: this.connection.uid,
+                              ...paramObj
+                           };
 
-                        if (status === 'success') {
-                           let fields = response.filter(field => selectedFields.includes(field.name));
-                           if (selectedFields.length) {
-                              fields = fields.map((field, index) => {
-                                 return { ...field, alias: this.results[i].fields[index].name };
-                              });
+                           const { status, response } = await Tables.getTableColumns(params);
+
+                           if (status === 'success') {
+                              let fields = response.filter(field => selectedFields.includes(field.name));
+                              if (selectedFields.length) {
+                                 fields = fields.map(field => {
+                                    return { ...field, alias: result.fields[fI++].name };
+                                 });
+                              }
+
+                              fieldsArr.push(fields);
                            }
-
-                           fieldsArr.push(fields);
+                           else
+                              this.addNotification({ status: 'error', message: response });
                         }
-                        else
-                           this.addNotification({ status: 'error', message: response });
-                     }
-                     catch (err) {
-                        this.addNotification({ status: 'error', message: err.stack });
-                     }
+                        catch (err) {
+                           this.addNotification({ status: 'error', message: err.stack });
+                        }
 
-                     try { // Key usage (foreign keys)
-                        const params = {
-                           uid: this.connection.uid,
-                           schema: selectedSchema,
-                           table
-                        };
+                        try { // Key usage (foreign keys)
+                           const params = {
+                              uid: this.connection.uid,
+                              ...paramObj
+                           };
 
-                        const { status, response } = await Tables.getKeyUsage(params);
-                        if (status === 'success')
-                           keysArr.push(response);
-                        else
-                           this.addNotification({ status: 'error', message: response });
-                     }
-                     catch (err) {
-                        this.addNotification({ status: 'error', message: err.stack });
+                           const { status, response } = await Tables.getKeyUsage(params);
+                           if (status === 'success')
+                              keysArr.push(response);
+                           else
+                              this.addNotification({ status: 'error', message: response });
+                        }
+                        catch (err) {
+                           this.addNotification({ status: 'error', message: err.stack });
+                        }
                      }
                   }
-                  else if (this.results[i].report) { // if is a query without output
-                     this.affectedCount += this.results[i].report.affectedRows;
+                  else if (result.report) { // if is a query without output
+                     this.affectedCount += result.report.affectedRows;
                   }
 
-                  index++;
+                  qI++;
                }
 
-               this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: fieldsArr });
-               this.setTabKeyUsage({ cUid: this.connection.uid, tUid: this.tabUid, keyUsage: keysArr });
+               this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: [fieldsArr.flat()] });
+               this.setTabKeyUsage({ cUid: this.connection.uid, tUid: this.tabUid, keyUsage: [keysArr.flat()] });
             }
             else
                this.addNotification({ status: 'error', message: response });

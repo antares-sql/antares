@@ -38,7 +38,8 @@ module.exports = {
       add: 'Add',
       data: 'Data',
       properties: 'Properties',
-      insert: 'Insert'
+      insert: 'Insert',
+      connecting: 'Connecting'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
