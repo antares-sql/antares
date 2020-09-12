@@ -7,7 +7,8 @@ const i18n = new VueI18n({
    messages: {
       'en-US': require('./en-US'),
       'it-IT': require('./it-IT'),
-      'ar-SA': require('./ar-SA')
+      'ar-SA': require('./ar-SA'),
+      'es-ES': require('./es-ES')
    }
 });
 export default i18n;
