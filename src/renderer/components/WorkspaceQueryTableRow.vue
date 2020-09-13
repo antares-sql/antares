@@ -281,7 +281,11 @@ export default {
          return length;
       },
       getFieldObj (cKey) {
-         return this.fields.filter(field => field.name === cKey || field.alias === cKey)[0];
+         return this.fields.filter(field =>
+            field.name === cKey ||
+            field.alias === cKey ||
+            `${field.table}.${field.name}` === cKey ||
+            `${field.table}.${field.alias}` === cKey)[0];
       },
       isNull (value) {
          return value === null ? ' is-null' : '';

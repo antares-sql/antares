@@ -27,6 +27,8 @@ export default class {
             name: field.COLUMN_NAME,
             key: field.COLUMN_KEY.toLowerCase(),
             type: field.DATA_TYPE,
+            schema: field.TABLE_SCHEMA,
+            table: field.TABLE_NAME,
             numPrecision: field.NUMERIC_PRECISION,
             datePrecision: field.DATETIME_PRECISION,
             charLength: field.CHARACTER_MAXIMUM_LENGTH,

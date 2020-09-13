@@ -68,7 +68,7 @@
                   class="tr"
                   :class="{'selected': selectedRows.includes(row._id)}"
                   @select-row="selectRow($event, row._id)"
-                  @update-field="updateField($event, row[primaryField.alias || primaryField.name])"
+                  @update-field="updateField($event, getPrimaryValue(row))"
                   @contextmenu="contextMenu"
                />
             </template>
@@ -199,6 +199,15 @@ export default {
          if (this.resultsWithRows[index] && this.resultsWithRows[index].fields && this.resultsWithRows[index].fields.length)
             return this.resultsWithRows[index].fields[0].orgTable;
          return '';
+      },
+      getPrimaryValue (row) {
+         const primaryFieldName = Object.keys(row).find(prop => [
+            this.primaryField.alias,
+            this.primaryField.name,
+            `${this.primaryField.table}.${this.primaryField.alias}`,
+            `${this.primaryField.table}.${this.primaryField.name}`
+         ].includes(prop));
+         return row[primaryFieldName];
       },
       setLocalResults () {
          this.resetSort();

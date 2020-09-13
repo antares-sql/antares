@@ -9,6 +9,6 @@ export default class {
             return err;
          }
       }
-      return connection.raw(query);
+      return connection.raw(query, true);
    }
 }

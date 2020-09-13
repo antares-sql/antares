@@ -276,10 +276,12 @@ export class AntaresConnector {
 
    /**
     * @param {string} sql raw SQL query
+    * @param {boolean} [nest]
     * @returns {Promise}
     * @memberof AntaresConnector
     */
-   async raw (sql) {
+   async raw (sql, nest) {
+      const nestTables = nest ? '.' : false;
       const resultsArr = [];
       const queries = sql.split(';');
 
@@ -292,7 +294,7 @@ export class AntaresConnector {
             case 'maria':
             case 'mysql': {
                const { rows, report, fields } = await new Promise((resolve, reject) => {
-                  this._connection.query({ sql: query, nestTables: false }, (err, response, fields) => {
+                  this._connection.query({ sql: query, nestTables }, (err, response, fields) => {
                      if (err)
                         reject(err);
                      else {
