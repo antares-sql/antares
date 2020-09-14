@@ -36,7 +36,7 @@ module.exports = {
       mimeType: 'Mime-Type',
       download: 'Scarica',
       add: 'Aggiungi',
-      data: 'Data',
+      data: 'Dati',
       properties: 'Proprietà',
       insert: 'Inserisci',
       connecting: 'Connessione'
@@ -69,7 +69,7 @@ module.exports = {
       notificationsTimeout: 'Notifica scaduta',
       uploadFile: 'Carica file',
       addNewRow: 'Aggiungi nuova riga',
-      numberOfInserts: 'numero di insert',
+      numberOfInserts: 'Numero di insert',
       openNewTab: 'Apri nuova scheda',
       affectedRows: 'Righe interessate'
    },
