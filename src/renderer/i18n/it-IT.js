@@ -39,7 +39,7 @@ module.exports = {
       data: 'Dati',
       properties: 'Proprietà',
       insert: 'Inserisci',
-      connecting: 'Connessione'
+      connecting: 'Connessione in corso'
    },
    message: {
       appWelcome: 'Benvenuto in Antares SQL Client!',
@@ -66,7 +66,7 @@ module.exports = {
       editCell: 'Modifica cella',
       deleteRows: 'Elimina riga | Elimina {count} righe',
       confirmToDeleteRows: 'Confermi di voler cancellare una riga? | Confermi di voler cancellare {count} righe?',
-      notificationsTimeout: 'Timeout Notifica',
+      notificationsTimeout: 'Timeout Notifiche',
       uploadFile: 'Carica file',
       addNewRow: 'Aggiungi nuova riga',
       numberOfInserts: 'Numero di insert',
