@@ -66,7 +66,7 @@ module.exports = {
       editCell: 'Modifica cella',
       deleteRows: 'Elimina riga | Elimina {count} righe',
       confirmToDeleteRows: 'Confermi di voler cancellare una riga? | Confermi di voler cancellare {count} righe?',
-      notificationsTimeout: 'Notifica scaduta',
+      notificationsTimeout: 'Timeout Notifica',
       uploadFile: 'Carica file',
       addNewRow: 'Aggiungi nuova riga',
       numberOfInserts: 'Numero di insert',
