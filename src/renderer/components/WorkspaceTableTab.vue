@@ -21,8 +21,8 @@
                </button>
             </div>
             <div class="workspace-query-info">
-               <div v-if="results.rows">
-                  {{ $t('word.results') }}: <b>{{ results.rows.length }}</b>
+               <div v-if="results.length && results[0].rows">
+                  {{ $t('word.results') }}: <b>{{ results[0].rows.length }}</b>
                </div>
                <div v-if="workspace.breadcrumbs.database">
                   {{ $t('word.schema') }}: <b>{{ workspace.breadcrumbs.database }}</b>
