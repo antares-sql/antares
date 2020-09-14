@@ -29,7 +29,17 @@ module.exports = {
       donate: 'Dona',
       run: 'Esegui',
       schema: 'Schema',
-      results: 'Results'
+      results: 'Results',
+      size: 'Dimensioni',
+      seconds: 'Secondi',
+      type: 'tipologia',
+      mimeType: 'Mime-Type',
+      download: 'Scarica',
+      add: 'Aggiungi',
+      data: 'Data',
+      properties: 'Proprietà',
+      insert: 'Inserisci',
+      connecting: 'Connessione'
    },
    message: {
       appWelcome: 'Benvenuto in Antares SQL Client!',
@@ -55,7 +65,13 @@ module.exports = {
       unableEditFieldWithoutPrimary: 'Impossibile modificare il campo senza una primary key nel resultset',
       editCell: 'Modifica cella',
       deleteRows: 'Elimina riga | Elimina {count} righe',
-      confirmToDeleteRows: 'Confermi di voler cancellare una riga? | Confermi di voler cancellare {count} righe?'
+      confirmToDeleteRows: 'Confermi di voler cancellare una riga? | Confermi di voler cancellare {count} righe?',
+      notificationsTimeout: 'Notifica scaduta',
+      uploadFile: 'Carica file',
+      addNewRow: 'Aggiungi nuova riga',
+      numberOfInserts: 'numero di insert',
+      openNewTab: 'Apri nuova scheda',
+      affectedRows: 'Righe interessate'
    },
    // Date and Time
    short: {
