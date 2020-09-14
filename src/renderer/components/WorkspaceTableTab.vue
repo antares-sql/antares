@@ -35,7 +35,7 @@
             v-if="results"
             v-show="!isQuering"
             ref="queryTable"
-            :results="[results]"
+            :results="results"
             :tab-uid="tabUid"
             @update-field="updateField"
             @delete-selected="deleteSelected"
@@ -72,7 +72,7 @@ export default {
       return {
          tabUid: 'data',
          isQuering: false,
-         results: {},
+         results: [],
          fields: [],
          keyUsage: [],
          lastTable: null,
@@ -116,7 +116,7 @@ export default {
       async getTableData () {
          if (!this.table) return;
          this.isQuering = true;
-         this.results = {};
+         this.results = [];
          const fieldsArr = [];
          const keysArr = [];
          this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: [] });
@@ -144,7 +144,7 @@ export default {
             const { status, response } = await Tables.getTableData(params);
 
             if (status === 'success')
-               this.results = response;
+               this.results = [response];
             else
                this.addNotification({ status: 'error', message: response });
          }

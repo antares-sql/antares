@@ -257,10 +257,13 @@ export default {
          }
       },
       applyUpdate (params) {
-         const { primary, id, field, content } = params;
+         const { primary, id, field, table, content } = params;
+
          this.localResults = this.localResults.map(row => {
-            if (row[primary] === id)
+            if (row[primary] === id)// only fieldName
                row[field] = content;
+            else if (row[`${table}.${primary}`] === id)// table.fieldName
+               row[`${table}.${field}`] = content;
 
             return row;
          });
