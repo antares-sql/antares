@@ -6,6 +6,8 @@ import { format as formatUrl } from 'url';
 import ipcHandlers from './ipc-handlers';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
+const gotTheLock = app.requestSingleInstanceLock();
+
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
@@ -67,23 +69,27 @@ async function createMainWindow () {
    return window;
 };
 
-// Initialize ipcHandlers
-ipcHandlers();
+if (!gotTheLock)
+   app.quit();
+else {
+   // Initialize ipcHandlers
+   ipcHandlers();
 
-// quit application when all windows are closed
-app.on('window-all-closed', () => {
-   // on macOS it is common for applications to stay open until the user explicitly quits
-   if (process.platform !== 'darwin')
-      app.quit();
-});
+   // quit application when all windows are closed
+   app.on('window-all-closed', () => {
+      // on macOS it is common for applications to stay open until the user explicitly quits
+      if (process.platform !== 'darwin')
+         app.quit();
+   });
 
-app.on('activate', () => {
-   // on macOS it is common to re-create a window even after all windows have been closed
-   if (mainWindow === null)
+   app.on('activate', () => {
+      // on macOS it is common to re-create a window even after all windows have been closed
+      if (mainWindow === null)
+         mainWindow = createMainWindow();
+   });
+
+   // create main BrowserWindow when electron is ready
+   app.on('ready', () => {
       mainWindow = createMainWindow();
-});
-
-// create main BrowserWindow when electron is ready
-app.on('ready', () => {
-   mainWindow = createMainWindow();
-});
+   });
+}
