@@ -36,7 +36,8 @@ export default class {
             default: field.COLUMN_DEFAULT,
             charset: field.CHARACTER_SET_NAME,
             collation: field.COLLATION_NAME,
-            autoIncrement: field.EXTRA.includes('auto_increment')
+            autoIncrement: field.EXTRA.includes('auto_increment'),
+            comment: field.COLUMN_COMMENT
          };
       });
    }
