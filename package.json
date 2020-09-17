@@ -11,7 +11,9 @@
     "build": "cross-env NODE_ENV=production npm run compile && electron-builder",
     "release": "standard-version",
     "release:pre": "npm run release -- --prerelease alpha",
-    "lint": "eslint ."
+    "test": "npm run lint",
+    "lint": "eslint . --ext .js,.vue && stylelint \"./src/**/*.{css,scss,sass,vue}\"",
+    "lint:fix": "eslint . --ext .js,.vue --fix && stylelint \"./src/**/*.{css,scss,sass,vue}\" --fix"
   },
   "author": "Fabio Di Stasio <fabio286@gmail.com>",
   "build": {
@@ -45,9 +47,9 @@
     }
   },
   "dependencies": {
-    "@mdi/font": "^5.5.55",
+    "@mdi/font": "^5.6.55",
     "electron-log": "^4.2.4",
-    "electron-updater": "^4.3.4",
+    "electron-updater": "^4.3.5",
     "lodash": "^4.17.20",
     "moment": "^2.27.0",
     "monaco-editor": "^0.20.0",
@@ -67,7 +69,7 @@
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.2",
     "electron": "^10.1.0",
-    "electron-builder": "^22.8.0",
+    "electron-builder": "^22.8.1",
     "electron-devtools-installer": "^3.1.1",
     "electron-webpack": "^2.8.2",
     "electron-webpack-vue": "^2.4.0",

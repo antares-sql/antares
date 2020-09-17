@@ -29,6 +29,7 @@
                   v-for="(field, index) in fields"
                   :key="index"
                   class="th c-hand"
+                  :title="field.comment ? field.comment : false"
                >
                   <div ref="columnResize" class="column-resizable">
                      <div class="table-column-title" @click="sort(field.name)">
@@ -38,7 +39,7 @@
                            :class="`key-${field.key}`"
                            :title="keyName(field.key)"
                         />
-                        <span :title="field.comment ? field.comment : false">{{ field.alias || field.name }}</span>
+                        <span>{{ field.alias || field.name }}</span>
                         <i
                            v-if="currentSort === field.name"
                            class="mdi sort-icon"

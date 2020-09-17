@@ -1,12 +1,12 @@
 
 import { ipcMain } from 'electron';
-import { AntaresConnector } from '../libs/AntaresConnector';
+import { ClientsFactory } from '../libs/ClientsFactory';
 import InformationSchema from '../models/InformationSchema';
 import Generic from '../models/Generic';
 
 export default connections => {
    ipcMain.handle('test-connection', async (event, conn) => {
-      const Connection = new AntaresConnector({
+      const Connection = ClientsFactory.getConnection({
          client: conn.client,
          params: {
             host: conn.host,
@@ -33,7 +33,7 @@ export default connections => {
    });
 
    ipcMain.handle('connect', async (event, conn) => {
-      const Connection = new AntaresConnector({
+      const Connection = ClientsFactory.getConnection({
          client: conn.client,
          params: {
             host: conn.host,

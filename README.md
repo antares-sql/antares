@@ -37,6 +37,7 @@ This is a roadmap with major features will come in near future.
 - Query logs console.
 - Fake data filler.
 - Import/export and migration.
+- SSH tunnel.
 - Themes.
 
 ## Currently supported
