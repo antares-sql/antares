@@ -41,7 +41,7 @@
                         />
                         <span>{{ field.alias || field.name }}</span>
                         <i
-                           v-if="currentSort === field.name"
+                           v-if="currentSort === field.name || currentSort === `${field.table}.${field.name}`"
                            class="mdi sort-icon"
                            :class="currentSortDir === 'asc' ? 'mdi-sort-ascending':'mdi-sort-descending'"
                         />
@@ -94,7 +94,9 @@ export default {
    },
    props: {
       results: Array,
-      tabUid: [String, Number]
+      tabUid: [String, Number],
+      connUid: String,
+      mode: String
    },
    data () {
       return {
@@ -112,8 +114,12 @@ export default {
    },
    computed: {
       ...mapGetters({
-         getWorkspaceTab: 'workspaces/getWorkspaceTab'
+         getWorkspaceTab: 'workspaces/getWorkspaceTab',
+         getWorkspace: 'workspaces/getWorkspace'
       }),
+      workspaceSchema () {
+         return this.getWorkspace(this.connUid).breadcrumbs.schema;
+      },
       primaryField () {
          return this.fields.filter(field => ['pri', 'uni'].includes(field.key))[0] || false;
       },
@@ -201,6 +207,11 @@ export default {
             return this.resultsWithRows[index].fields[0].orgTable;
          return '';
       },
+      getSchema (index) {
+         if (this.resultsWithRows[index] && this.resultsWithRows[index].fields && this.resultsWithRows[index].fields.length)
+            return this.resultsWithRows[index].fields[0].db;
+         return this.workspaceSchema;
+      },
       getPrimaryValue (row) {
          const primaryFieldName = Object.keys(row).find(prop => [
             this.primaryField.alias,
@@ -237,6 +248,7 @@ export default {
          else {
             const params = {
                primary: this.primaryField.name,
+               schema: this.getSchema(this.resultsetIndex),
                table: this.getTable(this.resultsetIndex),
                id,
                ...payload
@@ -251,6 +263,7 @@ export default {
             const rowIDs = this.localResults.filter(row => this.selectedRows.includes(row._id)).map(row => row[this.primaryField.name]);
             const params = {
                primary: this.primaryField.name,
+               schema: this.getSchema(this.resultsetIndex),
                table: this.getTable(this.resultsetIndex),
                rows: rowIDs
             };
@@ -304,6 +317,9 @@ export default {
          this.isContext = true;
       },
       sort (field) {
+         if (this.mode === 'query')
+            field = `${this.getTable(this.resultsetIndex)}.${field}`;
+
          if (field === this.currentSort) {
             if (this.currentSortDir === 'asc')
                this.currentSortDir = 'desc';

@@ -37,6 +37,8 @@
             ref="queryTable"
             :results="results"
             :tab-uid="tabUid"
+            :conn-uid="connection.uid"
+            mode="table"
             @update-field="updateField"
             @delete-selected="deleteSelected"
          />

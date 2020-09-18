@@ -34,6 +34,8 @@
             ref="queryTable"
             :results="results"
             :tab-uid="tabUid"
+            :conn-uid="connection.uid"
+            mode="query"
             @update-field="updateField"
             @delete-selected="deleteSelected"
          />
@@ -115,10 +117,10 @@ export default {
                let selectedFields = [];
                const fieldsArr = [];
                const keysArr = [];
-               let qI = 0;
+               let qI = 0;// queries index
 
                for (const result of this.results) { // cycle queries
-                  let fI = 0;
+                  let fI = 0;// fields index
 
                   if (result.rows) { // if is a select
                      const paramsArr = this.getResultParams(qI);
@@ -143,7 +145,7 @@ export default {
                                  });
                               }
 
-                              fieldsArr.push(fields);
+                              fieldsArr[qI] = fieldsArr[qI] ? [...fieldsArr[qI], ...fields] : fields;
                            }
                            else
                               this.addNotification({ status: 'error', message: response });
@@ -160,7 +162,7 @@ export default {
 
                            const { status, response } = await Tables.getKeyUsage(params);
                            if (status === 'success')
-                              keysArr.push(response);
+                              keysArr[qI] = keysArr[qI] ? [...keysArr[qI], ...response] : response;
                            else
                               this.addNotification({ status: 'error', message: response });
                         }
@@ -176,8 +178,16 @@ export default {
                   qI++;
                }
 
-               this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: [fieldsArr.flat()] });
-               this.setTabKeyUsage({ cUid: this.connection.uid, tUid: this.tabUid, keyUsage: [keysArr.flat()] });
+               this.setTabFields({
+                  cUid: this.connection.uid,
+                  tUid: this.tabUid,
+                  fields: fieldsArr
+               });
+               this.setTabKeyUsage({
+                  cUid: this.connection.uid,
+                  tUid: this.tabUid,
+                  keyUsage: keysArr
+               });
             }
             else
                this.addNotification({ status: 'error', message: response });
