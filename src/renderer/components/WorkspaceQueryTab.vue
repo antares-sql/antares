@@ -92,7 +92,10 @@ export default {
 
          if (resultsWithRows[index] && resultsWithRows[index].fields && resultsWithRows[index].fields.length) {
             return resultsWithRows[index].fields.map(field => {
-               return { table: field.orgTable, schema: field.db };
+               return {
+                  table: field.orgTable,
+                  schema: field.db || 'INFORMATION_SCHEMA'
+               };
             }).filter((val, i, arr) => arr.findIndex(el => el.schema === val.schema && el.table === val.table) === i);
          }
          return [];

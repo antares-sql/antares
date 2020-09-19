@@ -285,7 +285,9 @@ export default {
             field.name === cKey ||
             field.alias === cKey ||
             `${field.table}.${field.name}` === cKey ||
-            `${field.table}.${field.alias}` === cKey)[0];
+            `${field.table}.${field.alias}` === cKey ||
+            `${field.table.toLowerCase()}.${field.name}` === cKey ||
+            `${field.table.toLowerCase()}.${field.alias}` === cKey)[0];
       },
       isNull (value) {
          return value === null ? ' is-null' : '';

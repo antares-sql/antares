@@ -20,6 +20,7 @@ export default connections => {
 
       try {
          await InformationSchema.testConnection(Connection);
+         Connection.destroy();
 
          return { status: 'success' };
       }
@@ -49,6 +50,7 @@ export default connections => {
 
          const { rows: structure } = await InformationSchema.getStructure(Connection);
          connections[conn.uid] = Connection;
+
          return { status: 'success', response: structure };
       }
       catch (err) {
