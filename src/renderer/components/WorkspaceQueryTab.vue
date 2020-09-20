@@ -89,11 +89,13 @@ export default {
       }),
       getResultParams (index) {
          const resultsWithRows = this.results.filter(result => result.rows);
+         let cachedTable;
 
          if (resultsWithRows[index] && resultsWithRows[index].fields && resultsWithRows[index].fields.length) {
             return resultsWithRows[index].fields.map(field => {
+               if (field.orgTable) cachedTable = field.orgTable;// Needed for some queries on information_schema
                return {
-                  table: field.orgTable,
+                  table: field.orgTable || cachedTable,
                   schema: field.db || 'INFORMATION_SCHEMA'
                };
             }).filter((val, i, arr) => arr.findIndex(el => el.schema === val.schema && el.table === val.table) === i);
@@ -144,6 +146,11 @@ export default {
                               let fields = response.filter(field => selectedFields.includes(field.name));
                               if (selectedFields.length) {
                                  fields = fields.map(field => {
+                                    return { ...field, alias: result.fields[fI++].name };
+                                 });
+                              }
+                              if (!fields.length) {
+                                 fields = response.map(field => {
                                     return { ...field, alias: result.fields[fI++].name };
                                  });
                               }

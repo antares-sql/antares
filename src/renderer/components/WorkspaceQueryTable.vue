@@ -141,11 +141,14 @@ export default {
       resultsWithRows () {
          return this.results.filter(result => result.rows);
       },
+      tabProperties () {
+         return this.getWorkspaceTab(this.tabUid);
+      },
       fields () {
-         return this.getWorkspaceTab(this.tabUid) && this.getWorkspaceTab(this.tabUid).fields[this.resultsetIndex] ? this.getWorkspaceTab(this.tabUid).fields[this.resultsetIndex] : [];
+         return this.tabProperties && this.tabProperties.fields[this.resultsetIndex] ? this.tabProperties.fields[this.resultsetIndex] : [];
       },
       keyUsage () {
-         return this.getWorkspaceTab(this.tabUid) && this.getWorkspaceTab(this.tabUid).keyUsage[this.resultsetIndex] ? this.getWorkspaceTab(this.tabUid).keyUsage[this.resultsetIndex] : [];
+         return this.tabProperties && this.tabProperties.keyUsage[this.resultsetIndex] ? this.tabProperties.keyUsage[this.resultsetIndex] : [];
       }
    },
    watch: {

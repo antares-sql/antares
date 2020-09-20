@@ -7,7 +7,7 @@ export default {
    state: {
       locale: 'en-US',
       explorebar_size: null,
-      notifications_timeout: 10
+      notifications_timeout: 5
    },
    getters: {
       getLocale: state => state.locale,
