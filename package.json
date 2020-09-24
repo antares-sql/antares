@@ -51,9 +51,9 @@
     "electron-log": "^4.2.4",
     "electron-updater": "^4.3.5",
     "lodash": "^4.17.20",
-    "moment": "^2.27.0",
+    "moment": "^2.29.0",
     "monaco-editor": "^0.20.0",
-    "mssql": "^6.2.1",
+    "mssql": "^6.2.2",
     "mysql": "^2.18.1",
     "pg": "^8.3.3",
     "source-map-support": "^0.5.16",
@@ -80,7 +80,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "eslint-plugin-vue": "^6.2.2",
-    "monaco-editor-webpack-plugin": "^1.9.0",
+    "monaco-editor-webpack-plugin": "^1.9.1",
     "node-sass": "^4.14.1",
     "sass-loader": "^10.0.2",
     "standard-version": "^9.0.0",
@@ -89,6 +89,6 @@
     "stylelint-scss": "^3.18.0",
     "vue": "^2.6.12",
     "vue-template-compiler": "^2.6.12",
-    "webpack": "^4.44.1"
+    "webpack": "^4.44.2"
   }
 }

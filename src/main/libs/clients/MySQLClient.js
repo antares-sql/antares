@@ -31,6 +31,11 @@ export class MySQLClient extends AntaresCore {
       return this.raw(sql);
    }
 
+   getCollations () {
+      const sql = 'SHOW COLLATION';
+      return this.raw(sql);
+   }
+
    /**
     * @returns {string} SQL string
     * @memberof MySQLClient

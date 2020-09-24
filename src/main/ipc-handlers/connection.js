@@ -1,12 +1,10 @@
 
 import { ipcMain } from 'electron';
 import { ClientsFactory } from '../libs/ClientsFactory';
-import InformationSchema from '../models/InformationSchema';
-import Generic from '../models/Generic';
 
 export default connections => {
    ipcMain.handle('test-connection', async (event, conn) => {
-      const Connection = ClientsFactory.getConnection({
+      const connection = ClientsFactory.getConnection({
          client: conn.client,
          params: {
             host: conn.host,
@@ -16,11 +14,11 @@ export default connections => {
          }
       });
 
-      await Connection.connect();
+      await connection.connect();
 
       try {
-         await InformationSchema.testConnection(Connection);
-         Connection.destroy();
+         await connection.select('1+1').run();
+         connection.destroy();
 
          return { status: 'success' };
       }
@@ -34,7 +32,7 @@ export default connections => {
    });
 
    ipcMain.handle('connect', async (event, conn) => {
-      const Connection = ClientsFactory.getConnection({
+      const connection = ClientsFactory.getConnection({
          client: conn.client,
          params: {
             host: conn.host,
@@ -46,10 +44,16 @@ export default connections => {
       });
 
       try {
-         await Connection.connect();
+         await connection.connect();
 
-         const { rows: structure } = await InformationSchema.getStructure(Connection);
-         connections[conn.uid] = Connection;
+         const { rows: structure } = await connection
+            .select('*')
+            .schema('information_schema')
+            .from('TABLES')
+            .orderBy({ TABLE_SCHEMA: 'ASC', TABLE_NAME: 'ASC' })
+            .run();
+
+         connections[conn.uid] = connection;
 
          return { status: 'success', response: structure };
       }
@@ -63,9 +67,15 @@ export default connections => {
       delete connections[uid];
    });
 
-   ipcMain.handle('refresh', async (event, uid) => {
+   ipcMain.handle('get-structure', async (event, uid) => {
       try {
-         const { rows: structure } = await InformationSchema.getStructure(connections[uid]);
+         const { rows: structure } = await connections[uid]
+            .select('*')
+            .schema('information_schema')
+            .from('TABLES')
+            .orderBy({ TABLE_SCHEMA: 'ASC', TABLE_NAME: 'ASC' })
+            .run();
+
          return { status: 'success', response: structure };
       }
       catch (err) {
@@ -75,8 +85,13 @@ export default connections => {
 
    ipcMain.handle('raw-query', async (event, { uid, query, schema }) => {
       if (!query) return;
+
       try {
-         const result = await Generic.raw(connections[uid], query, schema);
+         if (schema)
+            await connections[uid].use(schema);
+
+         const result = await connections[uid].raw(query, true);
+
          return { status: 'success', response: result };
       }
       catch (err) {

@@ -156,6 +156,7 @@ export default {
 
          try { // Key usage (foreign keys)
             const { status, response } = await Tables.getKeyUsage(params);
+
             if (status === 'success') {
                this.keyUsage = response;// Needed to add new rows
                keysArr.push(response);

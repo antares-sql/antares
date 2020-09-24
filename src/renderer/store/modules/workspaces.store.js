@@ -57,6 +57,9 @@ export default {
       REFRESH_STRUCTURE (state, { uid, structure }) {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, structure } : workspace);
       },
+      REFRESH_COLLATIONS (state, { uid, collations }) { // TODO: Save collations
+         // state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, structure } : workspace);
+      },
       ADD_WORKSPACE (state, workspace) {
          state.workspaces.push(workspace);
       },
@@ -136,7 +139,7 @@ export default {
       }
    },
    actions: {
-      selectWorkspace ({ commit }, uid) {
+      selectWorkspace ({ commit, dispatch }, uid) {
          commit('SELECT_WORKSPACE', uid);
       },
       async connectWorkspace ({ dispatch, commit }, connection) {
@@ -144,8 +147,10 @@ export default {
             const { status, response } = await Connection.connect(connection);
             if (status === 'error')
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
-            else
+            else {
                commit('ADD_CONNECTED', { uid: connection.uid, structure: remapStructure(response) });
+               dispatch('refreshCollations', connection.uid);
+            }
          }
          catch (err) {
             dispatch('notifications/addNotification', { status: 'error', message: err.stack }, { root: true });
@@ -153,11 +158,23 @@ export default {
       },
       async refreshStructure ({ dispatch, commit }, uid) {
          try {
-            const { status, response } = await Connection.refresh(uid);
+            const { status, response } = await Connection.getStructure(uid);
             if (status === 'error')
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
             else
                commit('REFRESH_STRUCTURE', { uid, structure: remapStructure(response) });
+         }
+         catch (err) {
+            dispatch('notifications/addNotification', { status: 'error', message: err.stack }, { root: true });
+         }
+      },
+      async refreshCollations ({ dispatch, commit }, uid) {
+         try {
+            const { status, response } = await Connection.getCollations(uid);
+            if (status === 'error')
+               dispatch('notifications/addNotification', { status, message: response }, { root: true });
+            else
+               commit('REFRESH_COLLATIONS', { uid, collations: response });
          }
          catch (err) {
             dispatch('notifications/addNotification', { status: 'error', message: err.stack }, { root: true });

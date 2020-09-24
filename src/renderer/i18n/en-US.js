@@ -39,7 +39,9 @@ module.exports = {
       data: 'Data',
       properties: 'Properties',
       insert: 'Insert',
-      connecting: 'Connecting'
+      connecting: 'Connecting',
+      name: 'Name',
+      collation: 'Collation'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -71,7 +73,9 @@ module.exports = {
       addNewRow: 'Add new row',
       numberOfInserts: 'Number of inserts',
       openNewTab: 'Open a new tab',
-      affectedRows: 'Affected rows'
+      affectedRows: 'Affected rows',
+      createNewDatabase: 'Create new Database',
+      databaseName: 'Database name'
    },
    // Date and Time
    short: {

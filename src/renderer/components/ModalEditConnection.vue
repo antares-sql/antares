@@ -10,7 +10,7 @@
             </div>
             <a class="btn btn-clear c-hand" @click="closeModal" />
          </div>
-         <div class="modal-body">
+         <div class="modal-body pb-0">
             <div class="content">
                <form class="form-horizontal">
                   <fieldset class="m-0" :disabled="isTesting">
@@ -113,13 +113,13 @@
                   </fieldset>
                </form>
             </div>
-         </div>
-         <div class="modal-footer text-light">
             <BaseToast
                class="mb-2"
                :message="toast.message"
                :status="toast.status"
             />
+         </div>
+         <div class="modal-footer text-light">
             <button
                class="btn btn-gray mr-2"
                :class="{'loading': isTesting}"
