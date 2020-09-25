@@ -75,7 +75,8 @@ module.exports = {
       openNewTab: 'Open a new tab',
       affectedRows: 'Affected rows',
       createNewDatabase: 'Create new Database',
-      databaseName: 'Database name'
+      databaseName: 'Database name',
+      serverDefault: 'Server default'
    },
    // Date and Time
    short: {

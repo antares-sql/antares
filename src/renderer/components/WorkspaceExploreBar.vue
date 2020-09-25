@@ -10,13 +10,18 @@
             <span class="workspace-explorebar-title">{{ connectionName }}</span>
             <span v-if="workspace.connected" class="workspace-explorebar-tools">
                <i
-                  class="mdi mdi-18px mdi-refresh c-hand"
+                  class="mdi mdi-18px mdi-database-plus c-hand mr-2"
+                  :title="$t('message.createNewDatabase')"
+                  @click="showNewDBModal"
+               />
+               <i
+                  class="mdi mdi-18px mdi-refresh c-hand mr-2"
                   :class="{'rotate':isRefreshing}"
                   :title="$t('word.refresh')"
                   @click="refresh"
                />
                <i
-                  class="mdi mdi-18px mdi-power-plug-off c-hand mr-1 ml-2"
+                  class="mdi mdi-18px mdi-power-plug-off c-hand"
                   :title="$t('word.disconnect')"
                   @click="disconnectWorkspace(connection.uid)"
                />
@@ -36,6 +41,11 @@
             />
          </div>
       </div>
+      <ModalNewDB
+         v-if="isNewDBModal"
+         @close="hideNewDBModal"
+         @reload="refresh"
+      />
    </div>
 </template>
 
@@ -44,12 +54,14 @@ import { mapGetters, mapActions } from 'vuex';
 import _ from 'lodash';
 import WorkspaceConnectPanel from '@/components/WorkspaceConnectPanel';
 import WorkspaceExploreBarDatabase from '@/components/WorkspaceExploreBarDatabase';
+import ModalNewDB from '@/components/ModalNewDB';
 
 export default {
    name: 'WorkspaceExploreBar',
    components: {
       WorkspaceConnectPanel,
-      WorkspaceExploreBarDatabase
+      WorkspaceExploreBarDatabase,
+      ModalNewDB
    },
    props: {
       connection: Object,
@@ -58,6 +70,7 @@ export default {
    data () {
       return {
          isRefreshing: false,
+         isNewDBModal: false,
          localWidth: null
       };
    },
@@ -117,6 +130,12 @@ export default {
       },
       stopResize () {
          window.removeEventListener('mousemove', this.resize);
+      },
+      showNewDBModal () {
+         this.isNewDBModal = true;
+      },
+      hideNewDBModal () {
+         this.isNewDBModal = false;
       }
    }
 };

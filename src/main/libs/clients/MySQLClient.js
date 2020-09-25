@@ -31,9 +31,44 @@ export class MySQLClient extends AntaresCore {
       return this.raw(sql);
    }
 
-   getCollations () {
+   /**
+    * SHOW COLLATION
+    *
+    * @returns
+    * @memberof MySQLClient
+    */
+   async getCollations () {
       const sql = 'SHOW COLLATION';
-      return this.raw(sql);
+      const results = await this.raw(sql);
+
+      return results.rows.map(row => {
+         return {
+            charset: row.Charset,
+            collation: row.Collation,
+            compiled: row.Compiled.includes('Yes'),
+            default: row.Default.includes('Yes'),
+            id: row.Id,
+            sortLen: row.Sortlen
+         };
+      });
+   }
+
+   /**
+    * SHOW VARIABLES
+    *
+    * @returns
+    * @memberof MySQLClient
+    */
+   async getVariables () {
+      const sql = 'SHOW VARIABLES';
+      const results = await this.raw(sql);
+
+      return results.rows.map(row => {
+         return {
+            name: row.Variable_name,
+            value: row.Value
+         };
+      });
    }
 
    /**

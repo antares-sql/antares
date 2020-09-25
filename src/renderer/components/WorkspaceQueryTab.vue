@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import Connection from '@/ipc-api/Connection';
+import Database from '@/ipc-api/Database';
 import Tables from '@/ipc-api/Tables';
 import QueryEditor from '@/components/QueryEditor';
 import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
@@ -114,7 +114,7 @@ export default {
                query
             };
 
-            const { status, response } = await Connection.rawQuery(params);
+            const { status, response } = await Database.rawQuery(params);
 
             if (status === 'success') {
                this.results = Array.isArray(response) ? response : [response];

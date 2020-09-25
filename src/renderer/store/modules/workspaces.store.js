@@ -1,9 +1,10 @@
 'use strict';
 import Connection from '@/ipc-api/Connection';
+import Database from '@/ipc-api/Database';
 import { uidGen } from 'common/libs/uidGen';
 const tabIndex = [];
 
-function remapStructure (structure) { // TODO: move to main process and add fields (for autocomplete purpose)
+function remapStructure (structure) { // TODO: move to main process and add fields (for autocomplete purpose), also add empty database
    const databases = structure.map(table => table.TABLE_SCHEMA)
       .filter((value, index, self) => self.indexOf(value) === index);
 
@@ -31,6 +32,9 @@ export default {
       getWorkspace: state => uid => {
          return state.workspaces.find(workspace => workspace.uid === uid);
       },
+      getDatabaseVariable: state => (uid, name) => {
+         return state.workspaces.find(workspace => workspace.uid === uid).variables.find(variable => variable.name === name);
+      },
       getWorkspaceTab: (state, getters) => tUid => {
          if (!getters.getSelected) return;
          const workspace = state.workspaces.find(workspace => workspace.uid === getters.getSelected);
@@ -57,8 +61,11 @@ export default {
       REFRESH_STRUCTURE (state, { uid, structure }) {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, structure } : workspace);
       },
-      REFRESH_COLLATIONS (state, { uid, collations }) { // TODO: Save collations
-         // state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, structure } : workspace);
+      REFRESH_COLLATIONS (state, { uid, collations }) {
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, collations } : workspace);
+      },
+      REFRESH_VARIABLES (state, { uid, variables }) {
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, variables } : workspace);
       },
       ADD_WORKSPACE (state, workspace) {
          state.workspaces.push(workspace);
@@ -150,6 +157,7 @@ export default {
             else {
                commit('ADD_CONNECTED', { uid: connection.uid, structure: remapStructure(response) });
                dispatch('refreshCollations', connection.uid);
+               dispatch('refreshVariables', connection.uid);
             }
          }
          catch (err) {
@@ -158,7 +166,7 @@ export default {
       },
       async refreshStructure ({ dispatch, commit }, uid) {
          try {
-            const { status, response } = await Connection.getStructure(uid);
+            const { status, response } = await Database.getStructure(uid);
             if (status === 'error')
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
             else
@@ -170,11 +178,23 @@ export default {
       },
       async refreshCollations ({ dispatch, commit }, uid) {
          try {
-            const { status, response } = await Connection.getCollations(uid);
+            const { status, response } = await Database.getCollations(uid);
             if (status === 'error')
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
             else
                commit('REFRESH_COLLATIONS', { uid, collations: response });
+         }
+         catch (err) {
+            dispatch('notifications/addNotification', { status: 'error', message: err.stack }, { root: true });
+         }
+      },
+      async refreshVariables ({ dispatch, commit }, uid) {
+         try {
+            const { status, response } = await Database.getVariables(uid);
+            if (status === 'error')
+               dispatch('notifications/addNotification', { status, message: response }, { root: true });
+            else
+               commit('REFRESH_VARIABLES', { uid, variables: response });
          }
          catch (err) {
             dispatch('notifications/addNotification', { status: 'error', message: err.stack }, { root: true });
@@ -203,6 +223,8 @@ export default {
                keyUsage: []
             }],
             structure: {},
+            variables: [],
+            collations: [],
             breadcrumbs: {}
          };
 

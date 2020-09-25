@@ -17,16 +17,4 @@ export default class {
    static disconnect (uid) {
       return ipcRenderer.invoke('disconnect', uid);
    }
-
-   static getStructure (uid) {
-      return ipcRenderer.invoke('get-structure', uid);
-   }
-
-   static getCollations (uid) {
-      return ipcRenderer.invoke('get-collations', uid);
-   }
-
-   static rawQuery (params) {
-      return ipcRenderer.invoke('raw-query', params);
-   }
 }
