@@ -23,7 +23,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * Executes an USE query
     *
-    * @param {*} schema
+    * @param {String} schema
     * @memberof MySQLClient
     */
    use (schema) {
@@ -32,14 +32,35 @@ export class MySQLClient extends AntaresCore {
    }
 
    /**
+    * @returns {Array.<Object>} databases scructure
+    * @memberof MySQLClient
+    */
+   async getStructure () {
+      const { rows: databases } = await this.raw('SHOW DATABASES');
+
+      const { rows: tables } = await this
+         .select('*')
+         .schema('information_schema')
+         .from('TABLES')
+         .orderBy({ TABLE_SCHEMA: 'ASC', TABLE_NAME: 'ASC' })
+         .run();
+
+      return databases.map(db => {
+         return {
+            name: db.Database,
+            tables: tables.filter(table => table.TABLE_SCHEMA === db.Database)
+         };
+      });
+   }
+
+   /**
     * SHOW COLLATION
     *
-    * @returns
+    * @returns {Array.<Object>} collations list
     * @memberof MySQLClient
     */
    async getCollations () {
-      const sql = 'SHOW COLLATION';
-      const results = await this.raw(sql);
+      const results = await this.raw('SHOW COLLATION');
 
       return results.rows.map(row => {
          return {
@@ -56,7 +77,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * SHOW VARIABLES
     *
-    * @returns
+    * @returns {Array.<Object>} variables list
     * @memberof MySQLClient
     */
    async getVariables () {
@@ -72,7 +93,7 @@ export class MySQLClient extends AntaresCore {
    }
 
    /**
-    * @returns {string} SQL string
+    * @returns {String} SQL string
     * @memberof MySQLClient
     */
    getSQL () {

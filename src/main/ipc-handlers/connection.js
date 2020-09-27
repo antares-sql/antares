@@ -46,12 +46,7 @@ export default connections => {
       try {
          await connection.connect();
 
-         const { rows: structure } = await connection
-            .select('*')
-            .schema('information_schema')
-            .from('TABLES')
-            .orderBy({ TABLE_SCHEMA: 'ASC', TABLE_NAME: 'ASC' })
-            .run();
+         const structure = await connection.getStructure();
 
          connections[conn.uid] = connection;
 

@@ -16,12 +16,7 @@ export default connections => {
 
    ipcMain.handle('get-structure', async (event, uid) => {
       try {
-         const { rows: structure } = await connections[uid]
-            .select('*')
-            .schema('information_schema')
-            .from('TABLES')
-            .orderBy({ TABLE_SCHEMA: 'ASC', TABLE_NAME: 'ASC' })
-            .run();
+         const structure = await connections[uid].getStructure();
 
          return { status: 'success', response: structure };
       }

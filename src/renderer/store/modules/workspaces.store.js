@@ -4,18 +4,6 @@ import Database from '@/ipc-api/Database';
 import { uidGen } from 'common/libs/uidGen';
 const tabIndex = [];
 
-function remapStructure (structure) { // TODO: move to main process and add fields (for autocomplete purpose), also add empty database
-   const databases = structure.map(table => table.TABLE_SCHEMA)
-      .filter((value, index, self) => self.indexOf(value) === index);
-
-   return databases.map(db => {
-      return {
-         name: db,
-         tables: structure.filter(table => table.TABLE_SCHEMA === db)
-      };
-   });
-}
-
 export default {
    namespaced: true,
    strict: true,
@@ -155,7 +143,7 @@ export default {
             if (status === 'error')
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
             else {
-               commit('ADD_CONNECTED', { uid: connection.uid, structure: remapStructure(response) });
+               commit('ADD_CONNECTED', { uid: connection.uid, structure: response });
                dispatch('refreshCollations', connection.uid);
                dispatch('refreshVariables', connection.uid);
             }
@@ -170,7 +158,7 @@ export default {
             if (status === 'error')
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
             else
-               commit('REFRESH_STRUCTURE', { uid, structure: remapStructure(response) });
+               commit('REFRESH_STRUCTURE', { uid, structure: response });
          }
          catch (err) {
             dispatch('notifications/addNotification', { status: 'error', message: err.stack }, { root: true });
