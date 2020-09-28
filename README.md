@@ -11,7 +11,9 @@ My target is to support as many databases as possible, and all major operating s
 
 **At the moment this application is an alpha, it lacks many features, and isn't ready as a main SQL client**. However i'm actively working on it, hoping to provide all essential features as soon as possible.
 
-If you are curious to try this early state of Antares you can download and install the [latest release](https://github.com/EStarium/antares/releases), and stay tuned for updates.
+🔗 If you are curious to try this early state of Antares you can download and install the [latest release](https://github.com/EStarium/antares/releases).  
+👁 To stay tuned for new releases watch this repo on **Release only** channel.  
+🌟 Don't forget to **leave a star** if you appreciate this project.
 
 ## Philosophy
 
@@ -28,7 +30,9 @@ An application created with minimalism and semplicity in mind, with features in 
 This is a roadmap with major features will come in near future.
 
 - Improvements of query editor area.
+- Database management (add/edit/delete).
 - Tables management (add/edit/delete).
+- Users management (add/edit/delete).
 - Stored procedures, views, schedulers and trigger support.
 - Database tools.
 - Context menu shortcuts.
