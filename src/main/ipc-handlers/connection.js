@@ -39,8 +39,7 @@ export default connections => {
             port: +conn.port,
             user: conn.user,
             password: conn.password
-         },
-         poolSize: 3
+         }
       });
 
       try {

@@ -18,6 +18,10 @@ export default class {
       return ipcRenderer.invoke('get-variables', uid);
    }
 
+   static useSchema (params) {
+      return ipcRenderer.invoke('use-schema', params);
+   }
+
    static rawQuery (params) {
       return ipcRenderer.invoke('raw-query', params);
    }

@@ -27,8 +27,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    use (schema) {
-      const sql = `USE \`${schema}\``;
-      return this.raw(sql);
+      return this.raw(`USE \`${schema}\``);
    }
 
    /**
@@ -48,7 +47,7 @@ export class MySQLClient extends AntaresCore {
       return databases.map(db => {
          return {
             name: db.Database,
-            tables: tables.filter(table => table.TABLE_SCHEMA === db.Database)
+            tables: tables.filter(table => table.TABLE_SCHEMA === db.Database)// TODO: remap tables objects
          };
       });
    }

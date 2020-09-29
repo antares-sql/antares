@@ -5,9 +5,9 @@ export default connections => {
    ipcMain.handle('create-database', async (event, params) => {
       try {
          const query = `CREATE DATABASE \`${params.name}\` COLLATE ${params.collation}`;
-         const result = await connections[params.uid].raw(query, true);
+         await connections[params.uid].raw(query);
 
-         return { status: 'success', response: result };
+         return { status: 'success' };
       }
       catch (err) {
          return { status: 'error', response: err.toString() };
@@ -47,13 +47,22 @@ export default connections => {
       }
    });
 
+   ipcMain.handle('use-schema', async (event, { uid, schema }) => {
+      if (!schema) return;
+
+      try {
+         await connections[uid].use(schema);
+         return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
    ipcMain.handle('raw-query', async (event, { uid, query, schema }) => {
       if (!query) return;
 
       try {
-         if (schema)
-            await connections[uid].use(schema);
-
          const result = await connections[uid].raw(query, true);
 
          return { status: 'success', response: result };
