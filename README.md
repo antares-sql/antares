@@ -19,7 +19,7 @@ My target is to support as many databases as possible, and all major operating s
 
 Why am I developing an SQL client when there are a lot of them on the market?  
 The main goal is to develop a totally free, cross platform and open source alternative, empowered by JavaScript's ecosystem.  
-An application created with minimalism and semplicity in mind, with features in the righ places, not hundreds of tiny buttons or submenu.
+An application created with minimalism and semplicity in mind, with features in the right places, not hundreds of tiny buttons or submenu.
 
 ## How to contribute
 

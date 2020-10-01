@@ -72,6 +72,7 @@ export default {
         align-items: center;
         padding: 0.1rem 0.3rem;
         cursor: pointer;
+        justify-content: space-between;
 
         &:hover {
           background: $primary-color;

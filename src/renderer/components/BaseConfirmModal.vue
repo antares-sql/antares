@@ -27,7 +27,7 @@
          <div class="modal-footer">
             <button
                class="btn btn-primary mr-2"
-               @click="confirmModal"
+               @click.stop="confirmModal"
             >
                {{ confirmText || $t('word.confirm') }}
             </button>

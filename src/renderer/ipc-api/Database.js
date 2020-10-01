@@ -6,6 +6,10 @@ export default class {
       return ipcRenderer.invoke('create-database', params);
    }
 
+   static deleteDatabase (params) {
+      return ipcRenderer.invoke('delete-database', params);
+   }
+
    static getStructure (uid) {
       return ipcRenderer.invoke('get-structure', uid);
    }

@@ -4,7 +4,7 @@
       @close-context="closeContext"
    >
       <div class="context-element" @click="showConfirmModal">
-         <i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ $tc('message.deleteRows', selectedRows.length) }}
+         <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ $tc('message.deleteRows', selectedRows.length) }}</span>
       </div>
 
       <ConfirmModal

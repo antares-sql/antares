@@ -14,6 +14,18 @@ export default connections => {
       }
    });
 
+   ipcMain.handle('delete-database', async (event, params) => {
+      try {
+         const query = `DROP DATABASE \`${params.database}\``;
+         await connections[params.uid].raw(query);
+
+         return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
    ipcMain.handle('get-structure', async (event, uid) => {
       try {
          const structure = await connections[uid].getStructure();

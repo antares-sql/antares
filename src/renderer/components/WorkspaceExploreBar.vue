@@ -38,12 +38,20 @@
                :key="db.name"
                :database="db"
                :connection="connection"
+               @show-database-context="openDatabaseContext"
             />
          </div>
       </div>
       <ModalNewDB
          v-if="isNewDBModal"
          @close="hideNewDBModal"
+         @reload="refresh"
+      />
+      <DatabaseContext
+         v-if="isDatabaseContext"
+         :selected-database="selectedDatabase"
+         :context-event="databaseContextEvent"
+         @close-context="closeDatabaseContext"
          @reload="refresh"
       />
    </div>
@@ -54,6 +62,7 @@ import { mapGetters, mapActions } from 'vuex';
 import _ from 'lodash';
 import WorkspaceConnectPanel from '@/components/WorkspaceConnectPanel';
 import WorkspaceExploreBarDatabase from '@/components/WorkspaceExploreBarDatabase';
+import DatabaseContext from '@/components/WorkspaceExploreBarDatabaseContext';
 import ModalNewDB from '@/components/ModalNewDB';
 
 export default {
@@ -61,6 +70,7 @@ export default {
    components: {
       WorkspaceConnectPanel,
       WorkspaceExploreBarDatabase,
+      DatabaseContext,
       ModalNewDB
    },
    props: {
@@ -71,7 +81,13 @@ export default {
       return {
          isRefreshing: false,
          isNewDBModal: false,
-         localWidth: null
+         localWidth: null,
+         isDatabaseContext: false,
+         isTableContext: false,
+         databaseContextEvent: null,
+         tableContextEvent: null,
+         selectedDatabase: '',
+         selectedTable: ''
       };
    },
    computed: {
@@ -115,6 +131,7 @@ export default {
          changeExplorebarSize: 'settings/changeExplorebarSize'
       }),
       async refresh () {
+         console.log('refresh');
          if (!this.isRefreshing) {
             this.isRefreshing = true;
             await this.refreshStructure(this.connection.uid);
@@ -136,6 +153,16 @@ export default {
       },
       hideNewDBModal () {
          this.isNewDBModal = false;
+      },
+      openDatabaseContext (payload) {
+         this.isTableContext = false;
+         this.selectedDatabase = payload.database;
+         this.databaseContextEvent = payload.event;
+         this.isDatabaseContext = true;
+      },
+      closeDatabaseContext () {
+         this.isDatabaseContext = false;
+         this.selectedDatabase = '';
       }
    }
 };

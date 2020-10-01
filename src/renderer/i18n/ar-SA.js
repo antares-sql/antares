@@ -50,7 +50,7 @@ module.exports = {
       testConnection: 'إختبر الإتصال',
       editConnection: 'عدل الإتصال',
       deleteConnection: 'إحذف الإتصال',
-      deleteConnectionCorfirm: 'هل أنت متأكد من حذف الإتصال؟',
+      deleteCorfirm: 'هل أنت متأكد من حذف الإتصال؟',
       connectionSuccessfullyMade: 'تم الإتصال بنجاح!',
       madeWithJS: 'بني بـ  💛 و جافاسكربت!',
       checkForUpdates: 'تأكد من التحديثات',

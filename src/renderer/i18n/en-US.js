@@ -53,7 +53,7 @@ module.exports = {
       testConnection: 'Test connection',
       editConnection: 'Edit connection',
       deleteConnection: 'Delete connection',
-      deleteConnectionCorfirm: 'Do you confirm the cancellation of',
+      deleteCorfirm: 'Do you confirm the cancellation of',
       connectionSuccessfullyMade: 'Connection successfully made!',
       madeWithJS: 'Made with 💛 and JavaScript!',
       checkForUpdates: 'Check for updates',
@@ -76,7 +76,9 @@ module.exports = {
       affectedRows: 'Affected rows',
       createNewDatabase: 'Create new Database',
       databaseName: 'Database name',
-      serverDefault: 'Server default'
+      serverDefault: 'Server default',
+      deleteDatabase: 'Delete database',
+      editDatabase: 'Edit database'
    },
    // Date and Time
    short: {

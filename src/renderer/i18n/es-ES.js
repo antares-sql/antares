@@ -51,7 +51,7 @@ module.exports = {
       testConnection: 'Comprobar conexión',
       editConnection: 'Editar conexión',
       deleteConnection: 'Eliminar conexión',
-      deleteConnectionCorfirm: 'Confirmas la cancelación de',
+      deleteCorfirm: 'Confirmas la cancelación de',
       connectionSuccessfullyMade: 'Conexión realizada correctamente!',
       madeWithJS: 'Hecho con 💛 y JavaScript!',
       checkForUpdates: 'Comprobar actualizaciones',

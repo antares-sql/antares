@@ -4,10 +4,10 @@
       @close-context="$emit('close-context')"
    >
       <div class="context-element" @click="showEditModal(contextConnection)">
-         <i class="mdi mdi-18px mdi-pencil text-light pr-1" /> {{ $t('word.edit') }}
+         <span class="d-flex"><i class="mdi mdi-18px mdi-pencil text-light pr-1" /> {{ $t('word.edit') }}</span>
       </div>
       <div class="context-element" @click="showConfirmModal">
-         <i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ $t('word.delete') }}
+         <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ $t('word.delete') }}</span>
       </div>
 
       <ConfirmModal
@@ -22,7 +22,7 @@
          </template>
          <div :slot="'body'">
             <div class="mb-2">
-               {{ $t('message.deleteConnectionCorfirm') }} <b>{{ connectionName }}</b>?
+               {{ $t('message.deleteCorfirm') }} <b>{{ connectionName }}</b>?
             </div>
          </div>
       </ConfirmModal>

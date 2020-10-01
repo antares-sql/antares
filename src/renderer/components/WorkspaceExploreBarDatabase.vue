@@ -4,6 +4,7 @@
          class="accordion-header database-name pb-0"
          :class="{'text-bold': breadcrumbs.schema === database.name}"
          @click="changeBreadcrumbs({schema: database.name, table:null})"
+         @contextmenu.prevent="showDatabaseContext($event, database.name)"
       >
          <i class="icon mdi mdi-18px mdi-chevron-right" />
          <i class="database-icon mdi mdi-18px mdi-database mr-1" />
@@ -18,6 +19,7 @@
                   class="menu-item"
                   :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.table === table.TABLE_NAME}"
                   @click="changeBreadcrumbs({schema: database.name, table: table.TABLE_NAME})"
+                  @contextmenu.prevent="showTableContext($event, table.TABLE_NAME)"
                >
                   <a class="table-name">
                      <i class="table-icon mdi mdi-18px mdi-table mr-1" />
@@ -50,7 +52,13 @@ export default {
    methods: {
       ...mapActions({
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
-      })
+      }),
+      showDatabaseContext (event, database) {
+         this.$emit('show-database-context', { event, database });
+      },
+      showTableContext (table) {
+         this.$emit('show-table-context', table);
+      }
    }
 };
 </script>
