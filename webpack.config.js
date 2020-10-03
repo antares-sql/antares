@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const MonacoEditorPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
+   stats: 'errors-warnings',
    plugins: [
       new MonacoEditorPlugin({
          languages: ['sql']
