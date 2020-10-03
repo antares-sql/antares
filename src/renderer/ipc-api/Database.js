@@ -6,6 +6,14 @@ export default class {
       return ipcRenderer.invoke('create-database', params);
    }
 
+   static updateDatabase (params) {
+      return ipcRenderer.invoke('update-database', params);
+   }
+
+   static getDatabaseCollation (params) {
+      return ipcRenderer.invoke('get-database-collation', params);
+   }
+
    static deleteDatabase (params) {
       return ipcRenderer.invoke('delete-database', params);
    }

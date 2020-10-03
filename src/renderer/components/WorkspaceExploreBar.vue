@@ -42,7 +42,7 @@
             />
          </div>
       </div>
-      <ModalNewDB
+      <ModalNewDatabase
          v-if="isNewDBModal"
          @close="hideNewDBModal"
          @reload="refresh"
@@ -63,7 +63,7 @@ import _ from 'lodash';
 import WorkspaceConnectPanel from '@/components/WorkspaceConnectPanel';
 import WorkspaceExploreBarDatabase from '@/components/WorkspaceExploreBarDatabase';
 import DatabaseContext from '@/components/WorkspaceExploreBarDatabaseContext';
-import ModalNewDB from '@/components/ModalNewDB';
+import ModalNewDatabase from '@/components/ModalNewDatabase';
 
 export default {
    name: 'WorkspaceExploreBar',
@@ -71,7 +71,7 @@ export default {
       WorkspaceConnectPanel,
       WorkspaceExploreBarDatabase,
       DatabaseContext,
-      ModalNewDB
+      ModalNewDatabase
    },
    props: {
       connection: Object,
@@ -131,7 +131,6 @@ export default {
          changeExplorebarSize: 'settings/changeExplorebarSize'
       }),
       async refresh () {
-         console.log('refresh');
          if (!this.isRefreshing) {
             this.isRefreshing = true;
             await this.refreshStructure(this.connection.uid);

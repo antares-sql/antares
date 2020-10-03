@@ -14,12 +14,36 @@ export default connections => {
       }
    });
 
+   ipcMain.handle('update-database', async (event, params) => {
+      try {
+         const query = `ALTER DATABASE \`${params.name}\` COLLATE ${params.collation}`;
+         await connections[params.uid].raw(query);
+
+         return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
    ipcMain.handle('delete-database', async (event, params) => {
       try {
          const query = `DROP DATABASE \`${params.database}\``;
          await connections[params.uid].raw(query);
 
          return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
+   ipcMain.handle('get-database-collation', async (event, params) => {
+      try {
+         const query = `SELECT \`DEFAULT_COLLATION_NAME\` FROM \`information_schema\`.\`SCHEMATA\` WHERE \`SCHEMA_NAME\`='${params.database}'`;
+         const collation = await connections[params.uid].raw(query);
+
+         return { status: 'success', response: collation.rows.length ? collation.rows[0].DEFAULT_COLLATION_NAME : '' };
       }
       catch (err) {
          return { status: 'error', response: err.toString() };

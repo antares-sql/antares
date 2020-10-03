@@ -5,7 +5,7 @@
          <div class="modal-header pl-2">
             <div class="modal-title h6">
                <div class="d-flex">
-                  <i class="mdi mdi-24px mdi-database-plus mr-1" /> {{ $t('message.createNewDatabase') }}
+                  <i class="mdi mdi-24px mdi-database-edit mr-1" /> {{ $t('message.editDatabase') }}
                </div>
             </div>
             <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -24,6 +24,7 @@
                            type="text"
                            required
                            :placeholder="$t('message.databaseName')"
+                           readonly
                         >
                      </div>
                   </div>
@@ -48,8 +49,8 @@
             </div>
          </div>
          <div class="modal-footer text-light">
-            <button class="btn btn-primary mr-2" @click.stop="createDatabase">
-               {{ $t('word.add') }}
+            <button class="btn btn-primary mr-2" @click.stop="updateDatabase">
+               {{ $t('word.update') }}
             </button>
             <button class="btn btn-link" @click.stop="closeModal">
                {{ $t('word.close') }}
@@ -64,11 +65,15 @@ import { mapGetters, mapActions } from 'vuex';
 import Database from '@/ipc-api/Database';
 
 export default {
-   name: 'ModalNewDB',
+   name: 'ModalEditDatabase',
+   props: {
+      selectedDatabase: String
+   },
    data () {
       return {
          database: {
             name: '',
+            prevName: '',
             collation: ''
          }
       };
@@ -86,30 +91,51 @@ export default {
          return this.getDatabaseVariable(this.selectedWorkspace, 'collation_server').value || '';
       }
    },
-   created () {
-      this.database = { ...this.database, collation: this.defaultCollation };
+   async created () {
+      let actualCollation;
+      try {
+         const { status, response } = await Database.getDatabaseCollation({ uid: this.selectedWorkspace, database: this.selectedDatabase });
+
+         if (status === 'success')
+            actualCollation = response;
+
+         else
+            this.addNotification({ status: 'error', message: response });
+      }
+      catch (err) {
+         this.addNotification({ status: 'error', message: err.stack });
+      }
+
+      this.database = {
+         name: this.selectedDatabase,
+         prevName: this.selectedDatabase,
+         collation: actualCollation || this.defaultCollation,
+         prevCollation: actualCollation || this.defaultCollation
+      };
    },
    methods: {
       ...mapActions({
          addNotification: 'notifications/addNotification'
       }),
-      async createDatabase () {
-         try {
-            const { status, response } = await Database.createDatabase({
-               uid: this.selectedWorkspace,
-               ...this.database
-            });
+      async updateDatabase () {
+         if (this.database.collation !== this.database.prevCollation) {
+            try {
+               const { status, response } = await Database.updateDatabase({
+                  uid: this.selectedWorkspace,
+                  ...this.database
+               });
 
-            if (status === 'success') {
-               this.closeModal();
-               this.$emit('reload');
+               if (status === 'success')
+                  this.closeModal();
+               else
+                  this.addNotification({ status: 'error', message: response });
             }
-            else
-               this.addNotification({ status: 'error', message: response });
+            catch (err) {
+               this.addNotification({ status: 'error', message: err.stack });
+            }
          }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
+         else
+            this.closeModal();
       },
       closeModal () {
          this.$emit('close');

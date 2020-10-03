@@ -7,17 +7,17 @@
          <span class="d-flex"><i class="mdi mdi-18px mdi-plus text-light pr-1" /> {{ $t('word.add') }}</span>
          <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
       </div> -->
-      <div class="context-element">
+      <div class="context-element" @click="showEditModal">
          <span class="d-flex"><i class="mdi mdi-18px mdi-pencil text-light pr-1" /> {{ $t('word.edit') }}</span>
       </div>
-      <div class="context-element" @click="showConfirmModal">
+      <div class="context-element" @click="showDeleteModal">
          <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ $t('word.delete') }}</span>
       </div>
 
       <ConfirmModal
-         v-if="isConfirmModal"
+         v-if="isDeleteModal"
          @confirm="deleteDatabase"
-         @hide="hideConfirmModal"
+         @hide="hideDeleteModal"
       >
          <template slot="header">
             <div class="d-flex">
@@ -30,6 +30,11 @@
             </div>
          </div>
       </ConfirmModal>
+      <ModalEditDatabase
+         v-if="isEditModal"
+         :selected-database="selectedDatabase"
+         @close="hideEditModal"
+      />
    </BaseContextMenu>
 </template>
 
@@ -37,13 +42,15 @@
 import { mapGetters, mapActions } from 'vuex';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
+import ModalEditDatabase from '@/components/ModalEditDatabase';
 import Database from '@/ipc-api/Database';
 
 export default {
    name: 'WorkspaceExploreBarDatabaseContext',
    components: {
       BaseContextMenu,
-      ConfirmModal
+      ConfirmModal,
+      ModalEditDatabase
    },
    props: {
       contextEvent: MouseEvent,
@@ -51,7 +58,8 @@ export default {
    },
    data () {
       return {
-         isConfirmModal: false
+         isDeleteModal: false,
+         isEditModal: false
       };
    },
    computed: {
@@ -65,11 +73,18 @@ export default {
          showEditModal: 'application/showEditConnModal',
          addNotification: 'notifications/addNotification'
       }),
-      showConfirmModal () {
-         this.isConfirmModal = true;
+      showDeleteModal () {
+         this.isDeleteModal = true;
       },
-      hideConfirmModal () {
-         this.isConfirmModal = false;
+      hideDeleteModal () {
+         this.isDeleteModal = false;
+      },
+      showEditModal () {
+         this.isEditModal = true;
+      },
+      hideEditModal () {
+         this.isEditModal = false;
+         this.closeContext();
       },
       closeContext () {
          this.$emit('close-context');

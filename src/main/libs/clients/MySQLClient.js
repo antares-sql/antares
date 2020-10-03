@@ -36,6 +36,7 @@ export class MySQLClient extends AntaresCore {
     */
    async getStructure () {
       const { rows: databases } = await this.raw('SHOW DATABASES');
+      // TODO: SHOW TABLE STATUS FROM `{DATABASE_NAME}`;
 
       const { rows: tables } = await this
          .select('*')
@@ -44,10 +45,30 @@ export class MySQLClient extends AntaresCore {
          .orderBy({ TABLE_SCHEMA: 'ASC', TABLE_NAME: 'ASC' })
          .run();
 
-      return databases.map(db => {
+      const { rows: functions } = await this.raw('SHOW FUNCTION STATUS');
+      const { rows: procedures } = await this.raw('SHOW PROCEDURE STATUS');
+      const { rows: schedulers } = await this.raw('SELECT *, EVENT_SCHEMA AS `Db`, EVENT_NAME AS `Name` FROM information_schema.`EVENTS`');
+
+      const triggersArr = [];
+      for (const db of databases) {
+         let { rows: triggers } = await this.raw(`SHOW TRIGGERS FROM \`${db.Database}\``);
+         if (triggers.length) {
+            triggers = triggers.map(trigger => {
+               trigger.Db = db.Database;
+               return trigger;
+            });
+            triggersArr.push(...triggers);
+         }
+      }
+
+      return databases.map(db => { // TODO: remap all objects,
          return {
             name: db.Database,
-            tables: tables.filter(table => table.TABLE_SCHEMA === db.Database)// TODO: remap tables objects
+            tables: tables.filter(table => table.TABLE_SCHEMA === db.Database),
+            functions: functions.filter(func => func.Db === db.Database),
+            procedures: procedures.filter(procedure => procedure.Db === db.Database),
+            triggers: triggersArr.filter(trigger => trigger.Db === db.Database),
+            schedulers: schedulers.filter(scheduler => scheduler.Db === db.Database)
          };
       });
    }
