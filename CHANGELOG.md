@@ -7,31 +7,31 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* database creation ([3d0a83f](https://github.com/EStarium/antares/commit/3d0a83f2cf68c4dd412fd7679c39d63f081b7c19))
-* databases deletion ([4288a1f](https://github.com/EStarium/antares/commit/4288a1fd331f4a28de2e756f898d208a6a6599c4))
-* edit database collation ([54717e1](https://github.com/EStarium/antares/commit/54717e1f6a36ec0b3dd096d0e1e747512f6dda09))
-* field comment on mouse over a table field name ([2554444](https://github.com/EStarium/antares/commit/2554444322b59a6b1ab3ff05ccf8604bf6f8c8b8))
-* support to multiple queries in the same tab ([48f77ba](https://github.com/EStarium/antares/commit/48f77bae01efbff40bd0f5ce8c66e2619f44bf3a))
-* update italian translation ([89c3dc9](https://github.com/EStarium/antares/commit/89c3dc9fede63c77eb22b48df1a375ea44830306))
-* Update italian translation ([fe3d741](https://github.com/EStarium/antares/commit/fe3d7416013c44a4974471ab59b7c9a98afb7255))
-
+* Database creation ([3d0a83f](https://github.com/EStarium/antares/commit/3d0a83f2cf68c4dd412fd7679c39d63f081b7c19))
+* Database deletion ([4288a1f](https://github.com/EStarium/antares/commit/4288a1fd331f4a28de2e756f898d208a6a6599c4))
+* Edit database collation ([54717e1](https://github.com/EStarium/antares/commit/54717e1f6a36ec0b3dd096d0e1e747512f6dda09))
+* Field comment on mouse over a table field name ([2554444](https://github.com/EStarium/antares/commit/2554444322b59a6b1ab3ff05ccf8604bf6f8c8b8))
+* Support to multiple queries in the same tab ([48f77ba](https://github.com/EStarium/antares/commit/48f77bae01efbff40bd0f5ce8c66e2619f44bf3a))
+* Update italian translation ([89c3dc9](https://github.com/EStarium/antares/commit/89c3dc9fede63c77eb22b48df1a375ea44830306))
+* **Spanish translation** thanks to 
+[hongkfui](https://github.com/hongkfui) ([#32](https://github.com/EStarium/antares/pull/32))
 
 ### Bug Fixes
 
-* cell update soft reload doesn't apply changes ([1b04b21](https://github.com/EStarium/antares/commit/1b04b216b21b697e47062a9366bc1b6a040a1a72))
-* empty databases not shown in explore bar ([3e737cb](https://github.com/EStarium/antares/commit/3e737cba62f795f225e944939c6bff04b27fa3d4))
-* glitch on table data tab ([10b426b](https://github.com/EStarium/antares/commit/10b426b90b6b9461cfffce3026c982463f6e0599))
-* lack of loading progressbar when an update is available ([86aec4f](https://github.com/EStarium/antares/commit/86aec4f5e41c059e88066a01f0d85155de99a5ee))
-* missing schema when queryng INFORMATION_SCHEMA ([530d1bd](https://github.com/EStarium/antares/commit/530d1bd43fa95de05f594b9b5cae2f4b397f96e0))
-* prevent multiple app instances ([12fbe8c](https://github.com/EStarium/antares/commit/12fbe8c1a03259648554f2a5c69b5abbedc18a48))
-* several fix on data and query tabs ([530907d](https://github.com/EStarium/antares/commit/530907d097ac4d995e1bfcb02e6c890fd6007e21))
-* unable to obtain fields informations for some queries ([43c7072](https://github.com/EStarium/antares/commit/43c7072c1c83a2455ae48a37be69b444b3eb6560))
-* unable to obtain keyUsage informations when adding new row ([023c6a6](https://github.com/EStarium/antares/commit/023c6a633a7f268b1a97b748ad08d2416cc30ffe))
-* value overridden when join tables with fields with same name ([78965d2](https://github.com/EStarium/antares/commit/78965d23e3efb7d8d6d110d79142966e57200757))
-* wrong field names when join tables ([ad0bad8](https://github.com/EStarium/antares/commit/ad0bad8486c3d67ec14ec1aed3d8aff6cce9df87))
-* wrong italian translation ([b29e07c](https://github.com/EStarium/antares/commit/b29e07c3b722aec7e78f3cef2e357a53cbcac474))
-* wrong schema fetching table fields and key usage ([8e71f42](https://github.com/EStarium/antares/commit/8e71f42a28060fdfeeb81502b0759d0d11f5bcfd))
-* wrong table and schema when more than one query in a tab ([4684b41](https://github.com/EStarium/antares/commit/4684b4114b9c9c253120292d7d164d7676011f86))
+* Cell update soft reload doesn't apply changes ([1b04b21](https://github.com/EStarium/antares/commit/1b04b216b21b697e47062a9366bc1b6a040a1a72))
+* Empty databases not shown in explore bar ([3e737cb](https://github.com/EStarium/antares/commit/3e737cba62f795f225e944939c6bff04b27fa3d4))
+* Glitch on table data tab ([10b426b](https://github.com/EStarium/antares/commit/10b426b90b6b9461cfffce3026c982463f6e0599))
+* Lack of loading progressbar when an update is available ([86aec4f](https://github.com/EStarium/antares/commit/86aec4f5e41c059e88066a01f0d85155de99a5ee))
+* Missing schema when queryng INFORMATION_SCHEMA ([530d1bd](https://github.com/EStarium/antares/commit/530d1bd43fa95de05f594b9b5cae2f4b397f96e0))
+* Prevent multiple app instances ([12fbe8c](https://github.com/EStarium/antares/commit/12fbe8c1a03259648554f2a5c69b5abbedc18a48))
+* Several fix on data and query tabs ([530907d](https://github.com/EStarium/antares/commit/530907d097ac4d995e1bfcb02e6c890fd6007e21))
+* Unable to obtain fields informations for some queries ([43c7072](https://github.com/EStarium/antares/commit/43c7072c1c83a2455ae48a37be69b444b3eb6560))
+* Unable to obtain keyUsage informations when adding new row ([023c6a6](https://github.com/EStarium/antares/commit/023c6a633a7f268b1a97b748ad08d2416cc30ffe))
+* Value overridden when join tables with fields with same name ([78965d2](https://github.com/EStarium/antares/commit/78965d23e3efb7d8d6d110d79142966e57200757))
+* Wrong field names when join tables ([ad0bad8](https://github.com/EStarium/antares/commit/ad0bad8486c3d67ec14ec1aed3d8aff6cce9df87))
+* Wrong italian translation ([b29e07c](https://github.com/EStarium/antares/commit/b29e07c3b722aec7e78f3cef2e357a53cbcac474))
+* Wrong schema fetching table fields and key usage ([8e71f42](https://github.com/EStarium/antares/commit/8e71f42a28060fdfeeb81502b0759d0d11f5bcfd))
+* Wrong table and schema when more than one query in a tab ([4684b41](https://github.com/EStarium/antares/commit/4684b4114b9c9c253120292d7d164d7676011f86))
 
 ### [0.0.6](https://github.com/EStarium/antares/compare/v0.0.5...v0.0.6) (2020-09-03)
 
