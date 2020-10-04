@@ -13,7 +13,7 @@ export default {
          return connection.name
             ? connection.name
             : connection.ask
-               ? ''
+               ? `${connection.host}:${connection.port}`
                : `${connection.user + '@'}${connection.host}:${connection.port}`;
       }
    },
