@@ -58,7 +58,6 @@
     "pg": "^8.3.3",
     "source-map-support": "^0.5.16",
     "spectre.css": "^0.5.9",
-    "vue-click-outside": "^1.1.0",
     "vue-i18n": "^8.21.0",
     "vue-the-mask": "^0.11.1",
     "vuedraggable": "^2.24.1",

@@ -16,7 +16,6 @@
          <TheFooter />
          <TheNotificationsBoard />
          <ModalNewConnection v-if="isNewConnModal" />
-         <ModalEditConnection v-if="isEditModal" />
          <ModalSettings v-if="isSettingModal" />
       </div>
    </div>
@@ -36,7 +35,6 @@ export default {
       TheAppWelcome: () => import(/* webpackChunkName: "TheAppWelcome" */'@/components/TheAppWelcome'),
       Workspace: () => import(/* webpackChunkName: "Workspace" */'@/components/Workspace'),
       ModalNewConnection: () => import(/* webpackChunkName: "ModalNewConnection" */'@/components/ModalNewConnection'),
-      ModalEditConnection: () => import(/* webpackChunkName: "ModalEditConnection" */'@/components/ModalEditConnection'),
       ModalSettings: () => import(/* webpackChunkName: "ModalSettings" */'@/components/ModalSettings')
    },
    data () {

@@ -180,7 +180,6 @@ export default {
    },
    methods: {
       ...mapActions({
-         closeModal: 'application/hideEditConnModal',
          editConnection: 'connections/editConnection'
       }),
       async startTest () {
@@ -230,6 +229,9 @@ export default {
       closeAsking () {
          this.isTesting = false;
          this.isAsking = false;
+      },
+      closeModal () {
+         this.$emit('close');
       },
       onKey (e) {
          e.stopPropagation();

@@ -15,13 +15,8 @@
 </template>
 
 <script>
-import ClickOutside from 'vue-click-outside';
-
 export default {
    name: 'BaseContextMenu',
-   directives: {
-      ClickOutside
-   },
    props: {
       contextEvent: MouseEvent
    },

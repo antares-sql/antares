@@ -10,9 +10,10 @@
          <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ $t('word.delete') }}</span>
       </div>
 
+      <ModalEditConnection v-if="isEditModal" @close="hideEditModal" />
       <ConfirmModal
          v-if="isConfirmModal"
-         @confirm="deleteConnection(contextConnection)"
+         @confirm="confirmDeleteConnection"
          @hide="hideConfirmModal"
       >
          <template :slot="'header'">
@@ -33,11 +34,13 @@
 import { mapActions, mapGetters } from 'vuex';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
+import ModalEditConnection from '@/components/ModalEditConnection';
 
 export default {
    name: 'SettingBarContext',
    components: {
       BaseContextMenu,
+      ModalEditConnection,
       ConfirmModal
    },
    props: {
@@ -46,7 +49,8 @@ export default {
    },
    data () {
       return {
-         isConfirmModal: false
+         isConfirmModal: false,
+         isEditModal: false
       };
    },
    computed: {
@@ -59,14 +63,27 @@ export default {
    },
    methods: {
       ...mapActions({
-         deleteConnection: 'connections/deleteConnection',
-         showEditModal: 'application/showEditConnModal'
+         deleteConnection: 'connections/deleteConnection'
       }),
+      confirmDeleteConnection () {
+         this.deleteConnection(this.contextConnection);
+         this.$emit('close-context');
+      },
+      showEditModal () {
+         this.isEditModal = true;
+      },
+      hideEditModal () {
+         this.isEditModal = false;
+         this.closeContext();
+      },
       showConfirmModal () {
          this.isConfirmModal = true;
       },
       hideConfirmModal () {
          this.isConfirmModal = false;
+      },
+      closeContext () {
+         this.$emit('close-context');
       }
    }
 };
