@@ -30,7 +30,6 @@ An application created with minimalism and semplicity in mind, with features in 
 This is a roadmap with major features will come in near future.
 
 - Improvements of query editor area.
-- Database management (add/edit/delete).
 - Tables management (add/edit/delete).
 - Users management (add/edit/delete).
 - Stored procedures, views, schedulers and trigger support.
@@ -57,7 +56,7 @@ This is a roadmap with major features will come in near future.
 
 ### Operating Systems
 
-#### • x86
+#### • x64
 
 - [x] Windows
 - [x] Linux

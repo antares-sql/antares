@@ -1,7 +1,11 @@
 <template>
    <div class="context">
+      <a
+         class="context-overlay"
+         @click="close"
+         @contextmenu="close"
+      />
       <div
-         v-click-outside="close"
          class="context-container"
          :style="position"
       >
@@ -29,9 +33,20 @@ export default {
          };
       }
    },
+   created () {
+      window.addEventListener('keydown', this.onKey);
+   },
+   beforeDestroy () {
+      window.removeEventListener('keydown', this.onKey);
+   },
    methods: {
       close () {
          this.$emit('close-context');
+      },
+      onKey (e) {
+         e.stopPropagation();
+         if (e.key === 'Escape')
+            this.close();
       }
    }
 };
@@ -52,7 +67,6 @@ export default {
     top: 0;
     left: 0;
     bottom: 0;
-    pointer-events: none;
 
     .context-container {
       min-width: 100px;

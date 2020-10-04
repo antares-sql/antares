@@ -180,6 +180,12 @@ export default {
          isAsking: false
       };
    },
+   created () {
+      window.addEventListener('keydown', this.onKey);
+   },
+   beforeDestroy () {
+      window.removeEventListener('keydown', this.onKey);
+   },
    methods: {
       ...mapActions({
          closeModal: 'application/hideNewConnModal',
@@ -249,6 +255,11 @@ export default {
       closeAsking () {
          this.isAsking = false;
          this.isTesting = false;
+      },
+      onKey (e) {
+         e.stopPropagation();
+         if (e.key === 'Escape')
+            this.closeModal();
       }
    }
 };

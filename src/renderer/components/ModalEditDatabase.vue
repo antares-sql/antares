@@ -112,6 +112,11 @@ export default {
          collation: actualCollation || this.defaultCollation,
          prevCollation: actualCollation || this.defaultCollation
       };
+
+      window.addEventListener('keydown', this.onKey);
+   },
+   beforeDestroy () {
+      window.removeEventListener('keydown', this.onKey);
    },
    methods: {
       ...mapActions({
@@ -139,6 +144,11 @@ export default {
       },
       closeModal () {
          this.$emit('close');
+      },
+      onKey (e) {
+         e.stopPropagation();
+         if (e.key === 'Escape')
+            this.closeModal();
       }
    }
 };

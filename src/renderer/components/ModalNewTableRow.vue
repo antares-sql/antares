@@ -160,6 +160,9 @@ export default {
             this.nInserts = 1;
       }
    },
+   created () {
+      window.addEventListener('keydown', this.onKey);
+   },
    mounted () {
       const rowObj = {};
 
@@ -194,6 +197,9 @@ export default {
       }
 
       this.localRow = { ...rowObj };
+   },
+   beforeDestroy () {
+      window.removeEventListener('keydown', this.onKey);
    },
    methods: {
       ...mapActions({
@@ -294,9 +300,13 @@ export default {
 
          this.localRow[field] = files[0].path;
       },
-
       getKeyUsage (keyName) {
          return this.keyUsage.find(key => key.column === keyName);
+      },
+      onKey (e) {
+         e.stopPropagation();
+         if (e.key === 'Escape')
+            this.closeModal();
       }
    }
 };

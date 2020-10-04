@@ -173,6 +173,10 @@ export default {
    },
    created () {
       this.localConnection = Object.assign({}, this.connection);
+      window.addEventListener('keydown', this.onKey);
+   },
+   beforeDestroy () {
+      window.removeEventListener('keydown', this.onKey);
    },
    methods: {
       ...mapActions({
@@ -226,6 +230,11 @@ export default {
       closeAsking () {
          this.isTesting = false;
          this.isAsking = false;
+      },
+      onKey (e) {
+         e.stopPropagation();
+         if (e.key === 'Escape')
+            this.closeModal();
       }
    }
 };
