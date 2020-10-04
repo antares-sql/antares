@@ -8,6 +8,7 @@
                   class="btn btn-link btn-sm"
                   :class="{'loading':isQuering}"
                   :disabled="!query"
+                  title="F9"
                   @click="runQuery(query)"
                >
                   <span>{{ $t('word.run') }}</span>
@@ -81,6 +82,12 @@ export default {
          return this.getWorkspace(this.connection.uid);
       }
    },
+   created () {
+      window.addEventListener('keydown', this.onKey);
+   },
+   beforeDestroy () {
+      window.removeEventListener('keydown', this.onKey);
+   },
    methods: {
       ...mapActions({
          addNotification: 'notifications/addNotification',
@@ -103,7 +110,7 @@ export default {
          return [];
       },
       async runQuery (query) {
-         if (!query) return;
+         if (!query || this.isQuering) return;
          this.isQuering = true;
          this.clearTabData();
 
@@ -217,6 +224,11 @@ export default {
          this.resultsCount = false;
          this.affectedCount = false;
          this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: [] });
+      },
+      onKey (e) {
+         e.stopPropagation();
+         if (e.key === 'F9')
+            this.runQuery(this.query);
       }
    }
 };

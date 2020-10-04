@@ -6,6 +6,7 @@
                <button
                   class="btn btn-link btn-sm"
                   :class="{'loading':isQuering}"
+                  title="F5"
                   @click="reloadTable"
                >
                   <span>{{ $t('word.refresh') }}</span>
@@ -108,6 +109,10 @@ export default {
    },
    created () {
       this.getTableData();
+      window.addEventListener('keydown', this.onKey);
+   },
+   beforeDestroy () {
+      window.removeEventListener('keydown', this.onKey);
    },
    methods: {
       ...mapActions({
@@ -176,13 +181,18 @@ export default {
          return this.table;
       },
       reloadTable () {
-         this.getTableData();
+         if (!this.isQuering) this.getTableData();
       },
       showAddModal () {
          this.isAddModal = true;
       },
       hideAddModal () {
          this.isAddModal = false;
+      },
+      onKey (e) {
+         e.stopPropagation();
+         if (e.key === 'F5')
+            this.reloadTable();
       }
    }
 };
