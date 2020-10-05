@@ -10,7 +10,11 @@
          <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ $t('word.delete') }}</span>
       </div>
 
-      <ModalEditConnection v-if="isEditModal" @close="hideEditModal" />
+      <ModalEditConnection
+         v-if="isEditModal"
+         :connection="contextConnection"
+         @close="hideEditModal"
+      />
       <ConfirmModal
          v-if="isConfirmModal"
          @confirm="confirmDeleteConnection"

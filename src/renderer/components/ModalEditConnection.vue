@@ -144,7 +144,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 import Connection from '@/ipc-api/Connection';
 import ModalAskCredentials from '@/components/ModalAskCredentials';
 import BaseToast from '@/components/BaseToast';
@@ -154,6 +154,9 @@ export default {
    components: {
       ModalAskCredentials,
       BaseToast
+   },
+   props: {
+      connection: Object
    },
    data () {
       return {
@@ -165,11 +168,6 @@ export default {
          isAsking: false,
          localConnection: null
       };
-   },
-   computed: {
-      ...mapGetters({
-         connection: 'application/getSelectedConnection'
-      })
    },
    created () {
       this.localConnection = Object.assign({}, this.connection);
