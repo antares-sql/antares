@@ -78,7 +78,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "eslint-plugin-vue": "^6.2.2",
+    "eslint-plugin-vue": "^7.0.1",
     "monaco-editor-webpack-plugin": "^1.9.1",
     "node-sass": "^4.14.1",
     "sass-loader": "^10.0.2",
