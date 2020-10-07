@@ -4,7 +4,7 @@
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
                <button
-                  class="btn btn-link btn-sm"
+                  class="btn btn-link btn-sm mr-0 pr-0"
                   :class="{'loading':isQuering}"
                   title="F5"
                   @click="reloadTable"
@@ -14,7 +14,6 @@
                </button>
                <button
                   class="btn btn-link btn-sm"
-                  :class="{'disabled':isQuering}"
                   @click="showAddModal"
                >
                   <span>{{ $t('word.add') }}</span>
@@ -34,7 +33,6 @@
       <div class="workspace-query-results column col-12">
          <WorkspaceQueryTable
             v-if="results"
-            v-show="!isQuering"
             ref="queryTable"
             :results="results"
             :tab-uid="tabUid"
@@ -123,10 +121,14 @@ export default {
       async getTableData () {
          if (!this.table) return;
          this.isQuering = true;
-         this.results = [];
          const fieldsArr = [];
          const keysArr = [];
-         this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: [] });
+
+         // if table changes clear cached values
+         if (this.lastTable !== this.table) {
+            this.results = [];
+            this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: [] });
+         }
 
          const params = {
             uid: this.connection.uid,
@@ -140,18 +142,6 @@ export default {
                this.fields = response;// Needed to add new rows
                fieldsArr.push(response);
             }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         try { // Table data
-            const { status, response } = await Tables.getTableData(params);
-
-            if (status === 'success')
-               this.results = [response];
             else
                this.addNotification({ status: 'error', message: response });
          }
@@ -173,15 +163,28 @@ export default {
             this.addNotification({ status: 'error', message: err.stack });
          }
 
+         try { // Table data
+            const { status, response } = await Tables.getTableData(params);
+
+            if (status === 'success')
+               this.results = [response];
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
          this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: fieldsArr });
          this.setTabKeyUsage({ cUid: this.connection.uid, tUid: this.tabUid, keyUsage: keysArr });
+
          this.isQuering = false;
       },
       getTable () {
          return this.table;
       },
       reloadTable () {
-         if (!this.isQuering) this.getTableData();
+         this.getTableData();
       },
       showAddModal () {
          this.isAddModal = true;

@@ -3,7 +3,7 @@
       <summary
          class="accordion-header database-name pb-0"
          :class="{'text-bold': breadcrumbs.schema === database.name}"
-         @click="changeBreadcrumbs({schema: database.name, table:null})"
+         @click="changeBreadcrumbs({schema: database.name, table: null})"
          @contextmenu.prevent="showDatabaseContext($event, database.name)"
       >
          <i class="icon mdi mdi-18px mdi-chevron-right" />
@@ -22,7 +22,7 @@
                   @contextmenu.prevent="showTableContext($event, table.TABLE_NAME)"
                >
                   <a class="table-name">
-                     <i class="table-icon mdi mdi-18px mdi-table mr-1" />
+                     <i class="table-icon mdi mdi-18px mr-1" :class="table.TABLE_TYPE === 'VIEW' ? 'mdi-table-eye' : 'mdi-table'" />
                      <span>{{ table.TABLE_NAME }}</span>
                   </a>
                </li>
