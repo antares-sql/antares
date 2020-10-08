@@ -3,15 +3,35 @@
       <div class="workspace-query-runner column col-12">
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
-               <button
-                  class="btn btn-link btn-sm mr-0 pr-0"
-                  :class="{'loading':isQuering}"
-                  title="F5"
-                  @click="reloadTable"
-               >
-                  <span>{{ $t('word.refresh') }}</span>
-                  <i class="mdi mdi-24px mdi-refresh ml-1" />
-               </button>
+               <div class="dropdown">
+                  <div class="btn-group">
+                     <button
+                        class="btn btn-link btn-sm mr-0 pr-1"
+                        :class="{'loading':isQuering}"
+                        title="F5"
+                        @click="reloadTable"
+                     >
+                        <span>{{ $t('word.refresh') }}</span>
+                        <i v-if="!+autorefreshTimer" class="mdi mdi-24px mdi-refresh ml-1" />
+                        <i v-else class="mdi mdi-24px mdi-history mdi-flip-h ml-1" />
+                     </button>
+                     <div class="btn btn-link btn-sm dropdown-toggle pl-0 pr-0" tabindex="0">
+                        <i class="mdi mdi-24px mdi-menu-down" />
+                     </div>
+                     <div class="menu px-3">
+                        <span>{{ $t('word.autoRefresh') }}: <b>{{ +autorefreshTimer ? `${autorefreshTimer}s` : 'OFF' }}</b></span>
+                        <input
+                           v-model="autorefreshTimer"
+                           class="slider no-border"
+                           type="range"
+                           min="0"
+                           max="30"
+                           step="1"
+                           @change="setRefreshInterval"
+                        >
+                     </div>
+                  </div>
+               </div>
                <button
                   class="btn btn-link btn-sm"
                   @click="showAddModal"
@@ -77,7 +97,9 @@ export default {
          fields: [],
          keyUsage: [],
          lastTable: null,
-         isAddModal: false
+         isAddModal: false,
+         autorefreshTimer: 0,
+         refreshInterval: null
       };
    },
    computed: {
@@ -111,6 +133,7 @@ export default {
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);
+      clearInterval(this.refreshInterval);
    },
    methods: {
       ...mapActions({
@@ -196,6 +219,17 @@ export default {
          e.stopPropagation();
          if (e.key === 'F5')
             this.reloadTable();
+      },
+      setRefreshInterval () {
+         if (this.refreshInterval)
+            clearInterval(this.refreshInterval);
+
+         if (+this.autorefreshTimer) {
+            this.refreshInterval = setInterval(() => {
+               if (!this.isQuering)
+                  this.reloadTable();
+            }, this.autorefreshTimer * 1000);
+         }
       }
    }
 };

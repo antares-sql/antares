@@ -37,6 +37,12 @@ body {
   cursor: help;
 }
 
+.no-border {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
 .bg-checkered {
   background-image:
     linear-gradient(to right, rgba(192, 192, 192, 0.75), rgba(192, 192, 192, 0.75)),

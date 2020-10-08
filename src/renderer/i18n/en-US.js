@@ -41,7 +41,8 @@ module.exports = {
       insert: 'Insert',
       connecting: 'Connecting',
       name: 'Name',
-      collation: 'Collation'
+      collation: 'Collation',
+      autoRefresh: 'Auto-refresh'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
