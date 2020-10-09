@@ -100,9 +100,9 @@ export default {
 
          if (resultsWithRows[index] && resultsWithRows[index].fields && resultsWithRows[index].fields.length) {
             return resultsWithRows[index].fields.map(field => {
-               if (field.orgTable) cachedTable = field.orgTable;// Needed for some queries on information_schema
+               if (field.table) cachedTable = field.table;// Needed for some queries on information_schema
                return {
-                  table: field.orgTable || cachedTable,
+                  table: field.table || cachedTable,
                   schema: field.db || 'INFORMATION_SCHEMA'
                };
             }).filter((val, i, arr) => arr.findIndex(el => el.schema === val.schema && el.table === val.table) === i);
@@ -137,7 +137,7 @@ export default {
                   if (result.rows) { // if is a select
                      const paramsArr = this.getResultParams(qI);
 
-                     selectedFields = result.fields.map(field => field.orgName);
+                     selectedFields = result.fields.map(field => field.name);
                      this.resultsCount += result.rows.length;
 
                      for (const paramObj of paramsArr) {
@@ -162,7 +162,7 @@ export default {
                                  });
                               }
 
-                              fieldsArr[qI] = fieldsArr[qI] ? [...fieldsArr[qI], ...fields] : fields;
+                              fieldsArr[qI] = fieldsArr[qI] ? [...fieldsArr[qI], ...fields] : fields.length ? fields : result.fields;
                            }
                            else
                               this.addNotification({ status: 'error', message: response });

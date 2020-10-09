@@ -194,10 +194,18 @@ export class MySQLClient extends AntaresCore {
                if (err)
                   reject(err);
                else {
+                  const remappedFields = fields ? fields.map(field => {
+                     return {
+                        name: field.name,
+                        db: field.db,
+                        table: field.orgTable
+                     };
+                  }) : [];
+
                   resolve({
                      rows: Array.isArray(response) ? response : false,
                      report: !Array.isArray(response) ? response : false,
-                     fields
+                     fields: remappedFields
                   });
                }
             });

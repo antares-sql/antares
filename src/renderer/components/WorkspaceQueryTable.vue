@@ -19,7 +19,7 @@
             :class="{'active': resultsetIndex === index}"
             @click="selectResultset(index)"
          >
-            <a>{{ result.fields ? result.fields[0].orgTable : '' }} ({{ result.rows.length }})</a>
+            <a>{{ result.fields ? result.fields[0].table : '' }} ({{ result.rows.length }})</a>
          </li>
       </ul>
       <div ref="table" class="table table-hover">
@@ -207,7 +207,7 @@ export default {
       },
       getTable (index) {
          if (this.resultsWithRows[index] && this.resultsWithRows[index].fields && this.resultsWithRows[index].fields.length)
-            return this.resultsWithRows[index].fields[0].orgTable;
+            return this.resultsWithRows[index].fields[0].table;
          return '';
       },
       getSchema (index) {
