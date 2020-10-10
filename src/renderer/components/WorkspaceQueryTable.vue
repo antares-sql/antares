@@ -212,7 +212,7 @@ export default {
       },
       getSchema (index) {
          if (this.resultsWithRows[index] && this.resultsWithRows[index].fields && this.resultsWithRows[index].fields.length)
-            return this.resultsWithRows[index].fields[0].db;
+            return this.resultsWithRows[index].fields[0].schema;
          return this.workspaceSchema;
       },
       getPrimaryValue (row) {

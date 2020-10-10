@@ -103,7 +103,7 @@ export default {
                if (field.table) cachedTable = field.table;// Needed for some queries on information_schema
                return {
                   table: field.table || cachedTable,
-                  schema: field.db || 'INFORMATION_SCHEMA'
+                  schema: field.schema || 'INFORMATION_SCHEMA'
                };
             }).filter((val, i, arr) => arr.findIndex(el => el.schema === val.schema && el.table === val.table) === i);
          }
@@ -162,7 +162,7 @@ export default {
                                  });
                               }
 
-                              fieldsArr[qI] = fieldsArr[qI] ? [...fieldsArr[qI], ...fields] : fields.length ? fields : result.fields;
+                              fieldsArr[qI] = fieldsArr[qI] ? [...fieldsArr[qI], ...fields] : fields.length >= result.fields.length ? fields : result.fields;
                            }
                            else
                               this.addNotification({ status: 'error', message: response });

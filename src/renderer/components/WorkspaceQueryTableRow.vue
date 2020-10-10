@@ -254,6 +254,9 @@ export default {
       },
       foreignKeys () {
          return this.keyUsage.map(key => key.column);
+      },
+      isEditable () {
+         return this.fields ? !!(this.fields[0].schema && this.fields[0].table) : false;
       }
    },
    watch: {
@@ -296,6 +299,8 @@ export default {
          return bufferToBase64(val);
       },
       editON (event, content, field) {
+         if (!this.isEditable) return;
+
          const type = this.getFieldType(field);
          this.originalContent = content;
          this.editingType = type;

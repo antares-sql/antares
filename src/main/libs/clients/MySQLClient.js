@@ -197,8 +197,9 @@ export class MySQLClient extends AntaresCore {
                   const remappedFields = fields ? fields.map(field => {
                      return {
                         name: field.name,
-                        db: field.db,
-                        table: field.orgTable
+                        schema: field.db,
+                        table: field.orgTable,
+                        type: 'varchar'
                      };
                   }) : [];
 
