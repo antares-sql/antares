@@ -34,6 +34,7 @@ This is a roadmap with major features will come in near future.
 - Users management (add/edit/delete).
 - Stored procedures, views, schedulers and trigger support.
 - Database tools.
+- Improve query suggestions.
 - Context menu shortcuts.
 - Keyboard shortcuts.
 - More secure password storage.
@@ -48,7 +49,7 @@ This is a roadmap with major features will come in near future.
 ### Databases
 
 - [x] MySQL/MariaDB
-- [ ] PostrgreSQL
+- [ ] PostgreSQL
 - [ ] MSSQL
 - [ ] SQLite
 - [ ] OracleDB

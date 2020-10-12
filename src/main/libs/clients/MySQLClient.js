@@ -62,9 +62,34 @@ export class MySQLClient extends AntaresCore {
       }
 
       return databases.map(db => { // TODO: remap all objects,
+         const tablesRemapped = tables.filter(table => table.TABLE_SCHEMA === db.Database).map(table => {
+            let tableType;
+            switch (table.TABLE_TYPE) {
+               case 'VIEW':
+                  tableType = 'view';
+                  break;
+               default:
+                  tableType = 'table';
+                  break;
+            }
+
+            return {
+               name: table.TABLE_NAME,
+               type: tableType,
+               rows: table.TABLE_ROWS,
+               created: table.CREATE_TIME,
+               updated: table.UPDATE_TIME,
+               engine: table.ENGINE,
+               comment: table.TABLE_COMMENT,
+               size: table.DATA_LENGTH + table.INDEX_LENGTH,
+               autoIncrement: table.AUTO_INCREMENT,
+               collation: table.TABLE_COLLATION
+            };
+         });
+
          return {
             name: db.Database,
-            tables: tables.filter(table => table.TABLE_SCHEMA === db.Database),
+            tables: tablesRemapped,
             functions: functions.filter(func => func.Db === db.Database),
             procedures: procedures.filter(procedure => procedure.Db === db.Database),
             triggers: triggersArr.filter(trigger => trigger.Db === db.Database),

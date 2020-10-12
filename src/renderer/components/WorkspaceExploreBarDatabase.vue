@@ -15,15 +15,15 @@
             <ul class="menu menu-nav pt-0">
                <li
                   v-for="table of database.tables"
-                  :key="table.TABLE_NAME"
+                  :key="table.name"
                   class="menu-item"
-                  :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.table === table.TABLE_NAME}"
-                  @click="changeBreadcrumbs({schema: database.name, table: table.TABLE_NAME})"
-                  @contextmenu.prevent="showTableContext($event, table.TABLE_NAME)"
+                  :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.table === table.name}"
+                  @click="changeBreadcrumbs({schema: database.name, table: table.name})"
+                  @contextmenu.prevent="showTableContext($event, table.name)"
                >
                   <a class="table-name">
-                     <i class="table-icon mdi mdi-18px mr-1" :class="table.TABLE_TYPE === 'VIEW' ? 'mdi-table-eye' : 'mdi-table'" />
-                     <span>{{ table.TABLE_NAME }}</span>
+                     <i class="table-icon mdi mdi-18px mr-1" :class="table.type === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
+                     <span>{{ table.name }}</span>
                   </a>
                </li>
             </ul>
