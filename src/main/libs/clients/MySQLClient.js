@@ -61,8 +61,9 @@ export class MySQLClient extends AntaresCore {
          }
       }
 
-      return databases.map(db => { // TODO: remap all objects,
-         const tablesRemapped = tables.filter(table => table.TABLE_SCHEMA === db.Database).map(table => {
+      return databases.map(db => {
+         // TABLES
+         const remappedTables = tables.filter(table => table.TABLE_SCHEMA === db.Database).map(table => {
             let tableType;
             switch (table.TABLE_TYPE) {
                case 'VIEW':
@@ -87,13 +88,68 @@ export class MySQLClient extends AntaresCore {
             };
          });
 
+         // PROCEDURES
+         const remappedProcedures = procedures.filter(procedure => procedure.Db === db.Database).map(procedure => {
+            return {
+               name: procedure.Name,
+               type: procedure.Type,
+               definer: procedure.Definer,
+               created: procedure.Created,
+               updated: procedure.Modified,
+               comment: procedure.Comment,
+               charset: procedure.character_set_client,
+               security: procedure.Security_type
+            };
+         });
+
+         // SCHEDULERS
+         const remappedSchedulers = schedulers.filter(scheduler => scheduler.Db === db.Database).map(scheduler => {
+            return {
+               name: scheduler.EVENT_NAME,
+               definition: scheduler.EVENT_DEFINITION,
+               type: scheduler.EVENT_TYPE,
+               definer: scheduler.DEFINER,
+               body: scheduler.EVENT_BODY,
+               starts: scheduler.STARTS,
+               ends: scheduler.ENDS,
+               status: scheduler.STATUS,
+               executeAt: scheduler.EXECUTE_AT,
+               intervalField: scheduler.INTERVAL_FIELD,
+               intervalValue: scheduler.INTERVAL_VALUE,
+               onCompletion: scheduler.ON_COMPLETION,
+               originator: scheduler.ORIGINATOR,
+               sqlMode: scheduler.SQL_MODE,
+               created: scheduler.CREATED,
+               updated: scheduler.LAST_ALTERED,
+               lastExecuted: scheduler.LAST_EXECUTED,
+               comment: scheduler.EVENT_COMMENT,
+               charset: scheduler.CHARACTER_SET_CLIENT,
+               timezone: scheduler.TIME_ZONE
+            };
+         });
+
+         // TRIGGERS
+         const remappedTriggers = triggersArr.filter(trigger => trigger.Db === db.Database).map(trigger => {
+            return {
+               name: trigger.Trigger,
+               statement: trigger.Statement,
+               timing: trigger.Timing,
+               definer: trigger.Definer,
+               event: trigger.Event,
+               table: trigger.Table,
+               sqlMode: trigger.sql_mode,
+               created: trigger.Created,
+               charset: trigger.character_set_client
+            };
+         });
+
          return {
             name: db.Database,
-            tables: tablesRemapped,
-            functions: functions.filter(func => func.Db === db.Database),
-            procedures: procedures.filter(procedure => procedure.Db === db.Database),
-            triggers: triggersArr.filter(trigger => trigger.Db === db.Database),
-            schedulers: schedulers.filter(scheduler => scheduler.Db === db.Database)
+            tables: remappedTables,
+            functions: functions.filter(func => func.Db === db.Database), // TODO: remap functions
+            procedures: remappedProcedures,
+            triggers: remappedTriggers,
+            schedulers: remappedSchedulers
          };
       });
    }
