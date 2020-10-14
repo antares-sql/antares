@@ -6,6 +6,7 @@
          @contextmenu="close"
       />
       <div
+         ref="contextContent"
          class="context-container"
          :style="position"
       >
@@ -20,16 +21,36 @@ export default {
    props: {
       contextEvent: MouseEvent
    },
+   data () {
+      return {
+         contextSize: null
+      };
+   },
    computed: {
       position () {
-         return { // TODO: calc direction if near corners
-            top: this.contextEvent.clientY + 5 + 'px',
-            left: this.contextEvent.clientX + 5 + 'px'
+         const { clientY, clientX } = this.contextEvent;
+         let topCord = `${clientY + 5}px`;
+         let leftCord = `${clientX + 5}px`;
+
+         if (this.contextSize) {
+            if (clientY + this.contextSize.height + 5 >= window.innerHeight)
+               topCord = `${clientY - this.contextSize.height}px`;
+
+            if (clientX + this.contextSize.width + 5 >= window.innerWidth)
+               leftCord = `${clientX - this.contextSize.width}px`;
+         }
+
+         return {
+            top: topCord,
+            left: leftCord
          };
       }
    },
    created () {
       window.addEventListener('keydown', this.onKey);
+   },
+   mounted () {
+      this.contextSize = this.$refs.contextContent.getBoundingClientRect();
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);
