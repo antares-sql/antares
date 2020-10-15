@@ -25,6 +25,11 @@
                      <i class="table-icon mdi mdi-18px mr-1" :class="table.type === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
                      <span>{{ table.name }}</span>
                   </a>
+                  <div class="table-size  tooltip tooltip-left mr-1" :data-tooltip="formatBytes(table.size)">
+                     <div class="pie" :style="piePercentage(table.size)">
+                        <div class="pie-center" />
+                     </div>
+                  </div>
                </li>
             </ul>
          </div>
@@ -34,6 +39,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { formatBytes } from 'common/libs/formatBytes';
 
 export default {
    name: 'WorkspaceExploreBarDatabase',
@@ -47,57 +53,104 @@ export default {
       }),
       breadcrumbs () {
          return this.getWorkspace(this.connection.uid).breadcrumbs;
+      },
+      maxSize () {
+         return this.database.tables.reduce((acc, curr) => {
+            if (curr.size > acc) acc = curr.size;
+            return acc;
+         }, 0);
       }
    },
    methods: {
       ...mapActions({
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
+      formatBytes,
       showDatabaseContext (event, database) {
          this.$emit('show-database-context', { event, database });
       },
       showTableContext (table) {
          this.$emit('show-table-context', table);
+      },
+      piePercentage (val) {
+         const perc = val / this.maxSize * 100;
+         return { background: `conic-gradient(lime ${perc}%, white 0)` };
       }
    }
 };
 </script>
 
 <style lang="scss">
-  .workspace-explorebar-database {
-    .database-name,
-    a.table-name {
-      display: flex;
-      align-items: center;
-      padding: 0.1rem;
-      cursor: pointer;
-      font-size: 0.7rem;
+.workspace-explorebar-database {
+  .database-name,
+  a.table-name {
+    display: flex;
+    align-items: center;
+    padding: 0.1rem;
+    cursor: pointer;
+    font-size: 0.7rem;
 
-      > span {
-        overflow: hidden;
-        white-space: nowrap;
-        display: block;
-        text-overflow: ellipsis;
-      }
-
-      &:hover {
-        color: $body-font-color;
-        background: rgba($color: #fff, $alpha: 0.05);
-        border-radius: 2px;
-      }
-
-      .database-icon,
-      .table-icon {
-        opacity: 0.7;
-      }
+    > span {
+      overflow: hidden;
+      white-space: nowrap;
+      display: block;
+      text-overflow: ellipsis;
     }
 
-    .menu-item {
-      line-height: 1.2;
+    &:hover {
+      color: inherit;
+      background: inherit;
     }
 
-    .database-tables {
-      margin-left: 1.2rem;
+    .database-icon,
+    .table-icon {
+      opacity: 0.7;
     }
   }
+
+  .menu-item {
+    line-height: 1.2;
+    position: relative;
+
+    &:hover {
+      color: $body-font-color;
+      background: rgba($color: #fff, $alpha: 0.05);
+      border-radius: 2px;
+    }
+  }
+
+  .database-tables {
+    margin-left: 1.2rem;
+  }
+
+  .table-size {
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    opacity: 0.1;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &::after {
+      font-weight: 400;
+      font-size: 0.5rem;
+    }
+
+    .pie {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}
 </style>
