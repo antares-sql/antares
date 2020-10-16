@@ -3,37 +3,10 @@ import { sqlEscaper } from 'common/libs/sqlEscaper';
 import { TEXT, LONG_TEXT, NUMBER, BLOB } from 'common/fieldTypes';
 import fs from 'fs';
 
-// TODO: remap objects based on client
-
 export default (connections) => {
-   ipcMain.handle('get-table-columns', async (event, { uid, schema, table }) => {
+   ipcMain.handle('get-table-columns', async (event, params) => {
       try {
-         const { rows } = await connections[uid]
-            .select('*')
-            .schema('information_schema')
-            .from('COLUMNS')
-            .where({ TABLE_SCHEMA: `= '${schema}'`, TABLE_NAME: `= '${table}'` })
-            .orderBy({ ORDINAL_POSITION: 'ASC' })
-            .run();
-
-         const result = rows.map(field => {
-            return {
-               name: field.COLUMN_NAME,
-               key: field.COLUMN_KEY.toLowerCase(),
-               type: field.DATA_TYPE,
-               schema: field.TABLE_SCHEMA,
-               table: field.TABLE_NAME,
-               numPrecision: field.NUMERIC_PRECISION,
-               datePrecision: field.DATETIME_PRECISION,
-               charLength: field.CHARACTER_MAXIMUM_LENGTH,
-               isNullable: field.IS_NULLABLE,
-               default: field.COLUMN_DEFAULT,
-               charset: field.CHARACTER_SET_NAME,
-               collation: field.COLLATION_NAME,
-               autoIncrement: field.EXTRA.includes('auto_increment'),
-               comment: field.COLUMN_COMMENT
-            };
-         });
+         const result = await connections[params.uid].getTableColumns(params);
          return { status: 'success', response: result };
       }
       catch (err) {
@@ -57,28 +30,9 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('get-key-usage', async (event, { uid, schema, table }) => {
+   ipcMain.handle('get-key-usage', async (event, params) => {
       try {
-         const { rows } = await connections[uid]
-            .select('*')
-            .schema('information_schema')
-            .from('KEY_COLUMN_USAGE')
-            .where({ TABLE_SCHEMA: `= '${schema}'`, TABLE_NAME: `= '${table}'`, REFERENCED_TABLE_NAME: 'IS NOT NULL' })
-            .run();
-
-         const result = rows.map(field => {
-            return {
-               schema: field.TABLE_SCHEMA,
-               table: field.TABLE_NAME,
-               column: field.COLUMN_NAME,
-               position: field.ORDINAL_POSITION,
-               constraintPosition: field.POSITION_IN_UNIQUE_CONSTRAINT,
-               constraintName: field.CONSTRAINT_NAME,
-               refSchema: field.REFERENCED_TABLE_SCHEMA,
-               refTable: field.REFERENCED_TABLE_NAME,
-               refColumn: field.REFERENCED_COLUMN_NAME
-            };
-         });
+         const result = await connections[params.uid].getKeyUsage(params);
 
          return { status: 'success', response: result };
       }
@@ -180,16 +134,16 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('get-foreign-list', async (event, params) => {
+   ipcMain.handle('get-foreign-list', async (event, { uid, schema, table, description }) => {
       try {
-         const query = connections[params.uid]
-            .select(`${params.column} AS foreignColumn`)
-            .schema(params.schema)
-            .from(params.table)
+         const query = connections[uid]
+            .select(`${column} AS foreignColumn`)
+            .schema(schema)
+            .from(table)
             .orderBy('foreignColumn ASC');
 
-         if (params.description)
-            query.select(`LEFT(${params.description}, 20) AS foreignDescription`);
+         if (description)
+            query.select(`LEFT(${description}, 20) AS foreignDescription`);
 
          const results = await query.run();
 

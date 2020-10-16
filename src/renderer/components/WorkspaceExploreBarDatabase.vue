@@ -26,9 +26,7 @@
                      <span>{{ table.name }}</span>
                   </a>
                   <div class="table-size  tooltip tooltip-left mr-1" :data-tooltip="formatBytes(table.size)">
-                     <div class="pie" :style="piePercentage(table.size)">
-                        <div class="pie-center" />
-                     </div>
+                     <div class="pie" :style="piePercentage(table.size)" />
                   </div>
                </li>
             </ul>
@@ -86,7 +84,7 @@ export default {
   a.table-name {
     display: flex;
     align-items: center;
-    padding: 0.1rem;
+    padding: 0.1rem 1rem 0.1rem 0.1rem;
     cursor: pointer;
     font-size: 0.7rem;
 
@@ -97,14 +95,24 @@ export default {
       text-overflow: ellipsis;
     }
 
-    &:hover {
-      color: inherit;
-      background: inherit;
-    }
-
     .database-icon,
     .table-icon {
       opacity: 0.7;
+    }
+  }
+
+  .database-name {
+    &:hover {
+      color: $body-font-color;
+      background: rgba($color: #fff, $alpha: 0.05);
+      border-radius: 2px;
+    }
+  }
+
+  a.table-name {
+    &:hover {
+      color: inherit;
+      background: inherit;
     }
   }
 
@@ -131,7 +139,7 @@ export default {
     display: flex;
     align-items: center;
     height: 100%;
-    opacity: 0.1;
+    opacity: 0.15;
     transition: opacity 0.2s;
 
     &:hover {

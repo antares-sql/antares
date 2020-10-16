@@ -38,7 +38,7 @@ export default connections => {
       }
    });
 
-   ipcMain.handle('get-database-collation', async (event, params) => {
+   ipcMain.handle('get-database-collation', async (event, params) => { // TODO: move to mysql class
       try {
          const query = `SELECT \`DEFAULT_COLLATION_NAME\` FROM \`information_schema\`.\`SCHEMATA\` WHERE \`SCHEMA_NAME\`='${params.database}'`;
          const collation = await connections[params.uid].raw(query);
