@@ -9,7 +9,7 @@
 Antares is an SQL client based on [Electron.js](https://github.com/electron/electron) and [Vue.js](https://github.com/vuejs/vue) that aims to become a useful tool, especially for developers.  
 My target is to support as many databases as possible, and all major operating systems, including the ARM versions.  
 
-**At the moment this application is an alpha, it lacks many features, and isn't ready as a main SQL client**. However i'm actively working on it, hoping to provide all essential features as soon as possible.
+**At the moment this application is an alpha, it lacks many features, and isn't ready as a main SQL client**. However i'm actively working on it (yes, i'm a lone dev), hoping to provide all essential features as soon as possible.
 
 🔗 If you are curious to try this early state of Antares you can download and install the [latest release](https://github.com/EStarium/antares/releases).  
 👁 To stay tuned for new releases watch this repo on **Release only** channel.  
@@ -18,14 +18,25 @@ My target is to support as many databases as possible, and all major operating s
 ## Philosophy
 
 Why am I developing an SQL client when there are a lot of them on the market?  
-The main goal is to develop a totally free, cross platform and open source alternative, empowered by JavaScript's ecosystem.  
+The main goal is to develop a totally free, full featured, cross platform and open source alternative, empowered by JavaScript's ecosystem.  
 An application created with minimalism and semplicity in mind, with features in the right places, not hundreds of tiny buttons or submenu.
 
 ## How to contribute
 
 - [Translate Antares](https://github.com/EStarium/antares/wiki/Translate-Antares)
 
-## Roadmap
+## Current main features
+
+- Multiple database connections at same time.
+- Table's content management (add/edit/delete).
+- Run queries on multiple tabs.
+- Query suggestions.
+- Database management (add/edit/delete).
+- Native dark theme.
+- Multi language.
+- Auto updates.
+
+## Coming soon
 
 This is a roadmap with major features will come in near future.
 
@@ -33,15 +44,17 @@ This is a roadmap with major features will come in near future.
 - Tables management (add/edit/delete).
 - Users management (add/edit/delete).
 - Stored procedures, views, schedulers and trigger support.
-- Database tools.
-- Improve query suggestions.
-- Context menu shortcuts.
-- Keyboard shortcuts.
 - More secure password storage.
+- Database tools (variables, process list...).
+- Support for other databases.
+- Improvements of query suggestions.
+- Query history.
+- More context menu shortcuts.
+- More keyboard shortcuts.
 - Query logs console.
 - Fake data filler.
 - Import/export and migration.
-- SSH tunnel.
+- SSL and SSH tunnel support.
 - Themes.
 
 ## Currently supported
