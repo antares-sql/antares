@@ -248,7 +248,7 @@ export default {
       },
       fieldLength (field) {
          if ([...BLOB, ...LONG_TEXT].includes(field.type)) return null;
-         return field.numPrecision || field.datePrecision || field.charLength || 0;
+         return field.numLength || field.datePrecision || field.charLength || 0;
       },
       inputProps (field) {
          if ([...TEXT, ...LONG_TEXT].includes(field.type))

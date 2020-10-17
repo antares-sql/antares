@@ -22,8 +22,12 @@
                <div v-if="affectedCount !== false">
                   {{ $t('message.affectedRows') }}: <b>{{ affectedCount }}</b>
                </div>
-               <div v-if="workspace.breadcrumbs.schema">
-                  {{ $t('word.schema') }}: <b>{{ workspace.breadcrumbs.schema }}</b>
+               <div
+                  v-if="workspace.breadcrumbs.schema"
+                  class="d-flex"
+                  :title="$t('word.schema')"
+               >
+                  <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ workspace.breadcrumbs.schema }}</b>
                </div>
             </div>
          </div>

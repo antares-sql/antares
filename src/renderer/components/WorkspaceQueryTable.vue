@@ -39,7 +39,7 @@
                            :class="`key-${field.key}`"
                            :title="keyName(field.key)"
                         />
-                        <span>{{ field.alias || field.name }}</span>
+                        <span :title="`${field.type} ${fieldLength(field) ? `(${fieldLength(field)})` : ''}`">{{ field.alias || field.name }}</span>
                         <i
                            v-if="currentSort === field.name || currentSort === `${field.table}.${field.name}`"
                            class="mdi sort-icon"
@@ -80,6 +80,7 @@
 
 <script>
 import { uidGen } from 'common/libs/uidGen';
+import { LONG_TEXT, BLOB } from 'common/fieldTypes';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
 import WorkspaceQueryTableRow from '@/components/WorkspaceQueryTableRow';
 import TableContext from '@/components/WorkspaceQueryTableContext';
@@ -91,6 +92,12 @@ export default {
       BaseVirtualScroll,
       WorkspaceQueryTableRow,
       TableContext
+   },
+   filters: {
+      wrapNumber (num) {
+         if (!num) return '';
+         return `(${num})`;
+      }
    },
    props: {
       results: Array,
@@ -192,6 +199,10 @@ export default {
             length = field.datePrecision;
 
          return length;
+      },
+      fieldLength (field) {
+         if ([...BLOB, ...LONG_TEXT].includes(field.type)) return null;
+         return field.numLength || field.datePrecision || field.charLength || 0;
       },
       keyName (key) {
          switch (key) {

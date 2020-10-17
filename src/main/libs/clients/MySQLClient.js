@@ -171,6 +171,9 @@ export class MySQLClient extends AntaresCore {
          .run();
 
       return rows.map(field => {
+         let numLength = field.COLUMN_TYPE.match(/int\(([^)]+)\)/);
+         numLength = numLength ? +numLength.pop() : null;
+
          return {
             name: field.COLUMN_NAME,
             key: field.COLUMN_KEY.toLowerCase(),
@@ -178,9 +181,13 @@ export class MySQLClient extends AntaresCore {
             schema: field.TABLE_SCHEMA,
             table: field.TABLE_NAME,
             numPrecision: field.NUMERIC_PRECISION,
+            numLength,
             datePrecision: field.DATETIME_PRECISION,
             charLength: field.CHARACTER_MAXIMUM_LENGTH,
-            isNullable: field.IS_NULLABLE,
+            nullable: field.IS_NULLABLE.includes('YES'),
+            unsigned: field.COLUMN_TYPE.includes('unsigned'),
+            zerofill: field.COLUMN_TYPE.includes('zerofill'),
+            order: field.ORDINAL_POSITION,
             default: field.COLUMN_DEFAULT,
             charset: field.CHARACTER_SET_NAME,
             collation: field.COLLATION_NAME,

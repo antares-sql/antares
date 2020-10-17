@@ -33,7 +33,8 @@
                @click="selectTab({uid: workspace.uid, tab: tab.uid})"
                @mousedown.middle="closeTab(tab.uid)"
             >
-               <a>
+               <a class="tab-link">
+                  <i class="mdi mdi-18px mdi-code-tags mr-1" />
                   <span>
                      Query #{{ tab.index }}
                      <span
