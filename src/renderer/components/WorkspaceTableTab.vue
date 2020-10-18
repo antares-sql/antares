@@ -6,7 +6,7 @@
                <div class="dropdown">
                   <div class="btn-group">
                      <button
-                        class="btn btn-link btn-sm mr-0 pr-1"
+                        class="btn btn-dark btn-sm mr-0 pr-1"
                         :class="{'loading':isQuering}"
                         title="F5"
                         @click="reloadTable"
@@ -15,7 +15,7 @@
                         <i v-if="!+autorefreshTimer" class="mdi mdi-24px mdi-refresh ml-1" />
                         <i v-else class="mdi mdi-24px mdi-history mdi-flip-h ml-1" />
                      </button>
-                     <div class="btn btn-link btn-sm dropdown-toggle pl-0 pr-0" tabindex="0">
+                     <div class="btn btn-dark btn-sm dropdown-toggle pl-0 pr-0" tabindex="0">
                         <i class="mdi mdi-24px mdi-menu-down" />
                      </div>
                      <div class="menu px-3">
@@ -33,7 +33,7 @@
                   </div>
                </div>
                <button
-                  class="btn btn-link btn-sm"
+                  class="btn btn-dark btn-sm"
                   @click="showAddModal"
                >
                   <span>{{ $t('word.add') }}</span>

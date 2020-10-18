@@ -5,14 +5,14 @@
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
                <button
-                  class="btn btn-link btn-sm"
+                  class="btn btn-primary btn-sm"
                   :class="{'loading':isQuering}"
                   :disabled="!query"
                   title="F9"
                   @click="runQuery(query)"
                >
                   <span>{{ $t('word.run') }}</span>
-                  <i class="mdi mdi-24px mdi-play text-success" />
+                  <i class="mdi mdi-24px mdi-play" />
                </button>
             </div>
             <div class="workspace-query-info">

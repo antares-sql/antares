@@ -2,7 +2,7 @@
    <div id="footer" class="text-light">
       <div class="footer-left-elements">
          <ul class="footer-elements">
-            <li class="footer-element">
+            <li class="footer-element" :title="$t('word.version')">
                <i class="mdi mdi-18px mdi-memory mr-1" />
                <small>{{ appVersion }}</small>
             </li>

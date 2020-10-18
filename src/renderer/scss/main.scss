@@ -19,12 +19,24 @@ body {
 @include padding-variant(3, $unit-3);
 @include padding-variant(4, $unit-4);
 
-.btn.btn-gray {
-  color: #fff;
-  background: $bg-color-gray;
+.btn {
+  &.btn-gray {
+    color: #fff;
+    background: $bg-color-gray;
 
-  &:hover {
-    background: $bg-color;
+    &:hover {
+      background: $bg-color;
+    }
+  }
+
+  &.btn-dark {
+    color: #fff;
+    background: $bg-color-light;
+    border-color: $bg-color-light;
+
+    &:hover {
+      background: $bg-color-gray;
+    }
   }
 }
 

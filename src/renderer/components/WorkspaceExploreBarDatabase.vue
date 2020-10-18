@@ -1,7 +1,7 @@
 <template>
    <details class="accordion workspace-explorebar-database">
       <summary
-         class="accordion-header database-name pb-0"
+         class="accordion-header database-name"
          :class="{'text-bold': breadcrumbs.schema === database.name}"
          @click="changeBreadcrumbs({schema: database.name, table: null})"
          @contextmenu.prevent="showDatabaseContext($event, database.name)"
@@ -57,6 +57,9 @@ export default {
             if (curr.size > acc) acc = curr.size;
             return acc;
          }, 0);
+      },
+      totalSize () {
+         return this.database.tables.reduce((acc, curr) => acc + curr.size, 0);
       }
    },
    methods: {
@@ -139,7 +142,7 @@ export default {
     display: flex;
     align-items: center;
     height: 100%;
-    opacity: 0.15;
+    opacity: 0.2;
     transition: opacity 0.2s;
 
     &:hover {
