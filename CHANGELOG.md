@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.8](https://github.com/EStarium/antares/compare/v0.0.7...v0.0.8) (2020-10-18)
+
+
+### Features
+
+* **render:** field type and length on table header mouse hover ([04804b0](https://github.com/EStarium/antares/commit/04804b07c71cec271c31ace13bd41b2c7415e892))
+* close modals pressing ESC ([d563cec](https://github.com/EStarium/antares/commit/d563cec70d996f66c4f724bba7de618fc8678e66))
+* data table autorefresh, closes [#36](https://github.com/EStarium/antares/issues/36) ([9ecd888](https://github.com/EStarium/antares/commit/9ecd88870d1fcf32bb2c970a1506206c477810a0))
+* pie chart with table size in database explore bar ([426628f](https://github.com/EStarium/antares/commit/426628f268c77496a13b3498f03fd7b11fee299a))
+* query and data tabs keyboard shortcuts (F5, F9) ([0bf2c8d](https://github.com/EStarium/antares/commit/0bf2c8dc9dd9bdf7a8f48bed61eed7f1f1aacf71))
+
+
+### Bug Fixes
+
+* context menu outside window when near bottom or right edge ([d4ecaf6](https://github.com/EStarium/antares/commit/d4ecaf65e56044170139bac61c3ee69efc35a8f0))
+* disable cell editor for not editable results ([b7c779e](https://github.com/EStarium/antares/commit/b7c779eef63c257c166e7128ea643bdd6142aa88))
+* missing connection name when "ask for crendential" selected ([c70e5b4](https://github.com/EStarium/antares/commit/c70e5b422c3534e92a64a0b534eb58663621489c))
+* missing header for some query results ([d560c38](https://github.com/EStarium/antares/commit/d560c384f5aed58ea975935975843c3b9061dd85))
+* no connection passed to connection's edit modal ([ce25cd0](https://github.com/EStarium/antares/commit/ce25cd0a3130db486ea4da24dd393d45c2ef9e0d))
+
 ### [0.0.7](https://github.com/EStarium/antares/compare/v0.0.6...v0.0.7) (2020-10-03)
 
 
