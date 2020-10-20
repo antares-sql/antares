@@ -1,5 +1,5 @@
 <template>
-   <div class="workspace-query-tab column col-12 columns col-gapless">
+   <div v-show="isSelected" class="workspace-query-tab column col-12 columns col-gapless">
       <div class="workspace-query-runner column col-12">
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
@@ -234,38 +234,3 @@ export default {
    }
 };
 </script>
-
-<style lang="scss">
-.workspace-tabs {
-  align-content: baseline;
-
-  .workspace-query-runner {
-    .workspace-query-runner-footer {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.3rem 0.6rem 0.4rem;
-      align-items: center;
-
-      .workspace-query-buttons {
-        display: flex;
-
-        .btn {
-          display: flex;
-          align-self: center;
-          color: $body-font-color;
-          margin-right: 0.4rem;
-        }
-      }
-
-      .workspace-query-info {
-        display: flex;
-
-        > div + div {
-          padding-left: 0.6rem;
-        }
-      }
-    }
-  }
-}
-
-</style>

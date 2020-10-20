@@ -288,10 +288,18 @@ export default {
          return this.fields.filter(field =>
             field.name === cKey ||
             field.alias === cKey ||
+
             `${field.table}.${field.name}` === cKey ||
             `${field.table}.${field.alias}` === cKey ||
+
             `${field.table.toLowerCase()}.${field.name}` === cKey ||
-            `${field.table.toLowerCase()}.${field.alias}` === cKey)[0];
+            `${field.table.toLowerCase()}.${field.alias}` === cKey ||
+
+            `${field.tableAlias}.${field.name}` === cKey ||
+            `${field.tableAlias}.${field.alias}` === cKey ||
+
+            `${field.tableAlias.toLowerCase()}.${field.name}` === cKey ||
+            `${field.tableAlias.toLowerCase()}.${field.alias}` === cKey)[0];
       },
       isNull (value) {
          return value === null ? ' is-null' : '';

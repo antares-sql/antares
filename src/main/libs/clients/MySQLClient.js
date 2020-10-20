@@ -353,7 +353,8 @@ export class MySQLClient extends AntaresCore {
                         name: field.name,
                         orgName: field.orgName,
                         schema: field.db,
-                        table: field.orgTable,
+                        table: field.table,
+                        orgTable: field.orgTable,
                         type: 'varchar'
                      };
                   }) : [];

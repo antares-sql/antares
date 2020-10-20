@@ -106,7 +106,7 @@ export default {
             return resultsWithRows[index].fields.map(field => {
                if (field.table) cachedTable = field.table;// Needed for some queries on information_schema
                return {
-                  table: field.table || cachedTable,
+                  table: field.orgTable || cachedTable,
                   schema: field.schema || 'INFORMATION_SCHEMA'
                };
             }).filter((val, i, arr) => arr.findIndex(el => el.schema === val.schema && el.table === val.table) === i);
@@ -158,8 +158,12 @@ export default {
 
                               if (selectedFields.length) {
                                  fields = fields.map(field => {
-                                    const alias = result.fields.find(resField => resField.orgName === field.name).name || field.name;
-                                    return { ...field, alias };
+                                    const aliasObj = result.fields.find(resField => resField.orgName === field.name);
+                                    return {
+                                       ...field,
+                                       alias: aliasObj.name || field.name,
+                                       tableAlias: aliasObj.table || field.table
+                                    };
                                  });
                               }
 
