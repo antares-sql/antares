@@ -73,7 +73,7 @@
                   @contextmenu="contextMenu"
                />
             </template>
-         </basevirtualscroll>
+         </BaseVirtualScroll>
       </div>
    </div>
 </template>

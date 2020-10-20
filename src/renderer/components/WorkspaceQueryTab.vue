@@ -136,12 +136,10 @@ export default {
                let qI = 0;// queries index
 
                for (const result of this.results) { // cycle queries
-                  let fI = 0;// fields index
-
                   if (result.rows) { // if is a select
                      const paramsArr = this.getResultParams(qI);
 
-                     selectedFields = result.fields.map(field => field.name);
+                     selectedFields = result.fields.map(field => field.orgName || field.name);
                      this.resultsCount += result.rows.length;
 
                      for (const paramObj of paramsArr) {
@@ -154,15 +152,20 @@ export default {
                            const { status, response } = await Tables.getTableColumns(params);
 
                            if (status === 'success') {
-                              let fields = response.filter(field => selectedFields.includes(field.name));
+                              let fields = response.length ? selectedFields.map(selField => {
+                                 return response.find(field => field.name === selField);
+                              }) : [];
+
                               if (selectedFields.length) {
                                  fields = fields.map(field => {
-                                    return { ...field, alias: result.fields[fI++].name };
+                                    const alias = result.fields.find(resField => resField.orgName === field.name).name || field.name;
+                                    return { ...field, alias };
                                  });
                               }
+
                               if (!fields.length) {
-                                 fields = response.map(field => {
-                                    return { ...field, alias: result.fields[fI++].name };
+                                 fields = result.fields.map(field => {
+                                    return { ...field, alias: field.name };
                                  });
                               }
 

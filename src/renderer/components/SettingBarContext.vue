@@ -71,7 +71,7 @@ export default {
       }),
       confirmDeleteConnection () {
          this.deleteConnection(this.contextConnection);
-         this.$emit('close-context');
+         this.closeContext();
       },
       showEditModal () {
          this.isEditModal = true;
@@ -85,6 +85,7 @@ export default {
       },
       hideConfirmModal () {
          this.isConfirmModal = false;
+         this.closeContext();
       },
       closeContext () {
          this.$emit('close-context');

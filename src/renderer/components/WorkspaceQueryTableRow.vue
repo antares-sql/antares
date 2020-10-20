@@ -177,6 +177,7 @@ export default {
          }
 
          if (BIT.includes(type)) {
+            if (typeof val === 'number') val = [val];
             const hex = Buffer.from(val).toString('hex');
             return hexToBinary(hex);
          }
