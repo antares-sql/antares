@@ -212,7 +212,7 @@ export default {
       },
       getTable (index) {
          if (this.resultsWithRows[index] && this.resultsWithRows[index].fields && this.resultsWithRows[index].fields.length)
-            return this.resultsWithRows[index].fields[0].table;
+            return this.resultsWithRows[index].fields[0].orgTable;
          return '';
       },
       getSchema (index) {
@@ -221,11 +221,14 @@ export default {
          return this.workspaceSchema;
       },
       getPrimaryValue (row) {
+         console.log(row);
          const primaryFieldName = Object.keys(row).find(prop => [
             this.primaryField.alias,
             this.primaryField.name,
             `${this.primaryField.table}.${this.primaryField.alias}`,
-            `${this.primaryField.table}.${this.primaryField.name}`
+            `${this.primaryField.table}.${this.primaryField.name}`,
+            `${this.primaryField.tableAlias}.${this.primaryField.alias}`,
+            `${this.primaryField.tableAlias}.${this.primaryField.name}`
          ].includes(prop));
          return row[primaryFieldName];
       },

@@ -139,7 +139,13 @@ export default {
                   if (result.rows) { // if is a select
                      const paramsArr = this.getResultParams(qI);
 
-                     selectedFields = result.fields.map(field => field.orgName || field.name);
+                     selectedFields = result.fields.map(field => {
+                        return {
+                           name: field.orgName || field.name,
+                           table: field.orgTable || field.table
+                        };
+                     });
+
                      this.resultsCount += result.rows.length;
 
                      for (const paramObj of paramsArr) {
@@ -153,8 +159,8 @@ export default {
 
                            if (status === 'success') {
                               let fields = response.length ? selectedFields.map(selField => {
-                                 return response.find(field => field.name === selField);
-                              }) : [];
+                                 return response.find(field => field.name === selField.name && field.table === selField.table);
+                              }).filter(el => !!el) : [];
 
                               if (selectedFields.length) {
                                  fields = fields.map(field => {
@@ -169,11 +175,15 @@ export default {
 
                               if (!fields.length) {
                                  fields = result.fields.map(field => {
-                                    return { ...field, alias: field.name };
+                                    return {
+                                       ...field,
+                                       alias: field.name,
+                                       tableAlias: field.table
+                                    };
                                  });
                               }
 
-                              fieldsArr[qI] = fieldsArr[qI] ? [...fieldsArr[qI], ...fields] : fields.length >= result.fields.length ? fields : result.fields;
+                              fieldsArr[qI] = fieldsArr[qI] ? [...fieldsArr[qI], ...fields] : fields;
                            }
                            else
                               this.addNotification({ status: 'error', message: response });

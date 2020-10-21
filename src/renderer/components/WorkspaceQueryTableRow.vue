@@ -285,21 +285,24 @@ export default {
          return length;
       },
       getFieldObj (cKey) {
-         return this.fields.filter(field =>
-            field.name === cKey ||
-            field.alias === cKey ||
+         return this.fields.filter(field => {
+            let fieldNames = [
+               field.name,
+               field.alias,
+               `${field.table}.${field.name}`,
+               `${field.table}.${field.alias}`,
+               `${field.tableAlias}.${field.name}`,
+               `${field.tableAlias}.${field.alias}`
+            ];
 
-            `${field.table}.${field.name}` === cKey ||
-            `${field.table}.${field.alias}` === cKey ||
+            if (field.table)
+               fieldNames = [...fieldNames, `${field.table.toLowerCase()}.${field.name}`, `${field.table.toLowerCase()}.${field.alias}`];
 
-            `${field.table.toLowerCase()}.${field.name}` === cKey ||
-            `${field.table.toLowerCase()}.${field.alias}` === cKey ||
+            if (field.tableAlias)
+               fieldNames = [...fieldNames, `${field.tableAlias.toLowerCase()}.${field.name}`, `${field.tableAlias.toLowerCase()}.${field.alias}`];
 
-            `${field.tableAlias}.${field.name}` === cKey ||
-            `${field.tableAlias}.${field.alias}` === cKey ||
-
-            `${field.tableAlias.toLowerCase()}.${field.name}` === cKey ||
-            `${field.tableAlias.toLowerCase()}.${field.alias}` === cKey)[0];
+            return fieldNames.includes(cKey);
+         })[0];
       },
       isNull (value) {
          return value === null ? ' is-null' : '';
