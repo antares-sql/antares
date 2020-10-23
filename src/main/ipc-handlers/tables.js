@@ -134,7 +134,7 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('get-foreign-list', async (event, { uid, schema, table, description }) => {
+   ipcMain.handle('get-foreign-list', async (event, { uid, schema, table, column, description }) => {
       try {
          const query = connections[uid]
             .select(`${column} AS foreignColumn`)
