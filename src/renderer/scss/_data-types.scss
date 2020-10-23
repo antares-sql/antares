@@ -12,35 +12,35 @@
 
 @include type-colors(
   (
-    "char": seagreen,
-    "varchar": seagreen,
-    "text": seagreen,
-    "mediumtext": seagreen,
-    "longtext": seagreen,
-    "int": cornflowerblue,
-    "tinyint": cornflowerblue,
-    "smallint": cornflowerblue,
-    "mediumint": cornflowerblue,
-    "float": cornflowerblue,
-    "double": cornflowerblue,
-    "decimal": cornflowerblue,
-    "bigint": cornflowerblue,
-    "datetime": coral,
-    "date": coral,
-    "time": coral,
-    "timestamp": coral,
-    "bit": lightskyblue,
-    "blob": darkorchid,
-    "mediumblob": darkorchid,
-    "longblob": darkorchid,
-    "enum": gold,
-    "set": gold,
-    "unknown": gray,
+    "char": $string-color,
+    "varchar": $string-color,
+    "text": $string-color,
+    "mediumtext": $string-color,
+    "longtext": $string-color,
+    "int": $number-color,
+    "tinyint": $number-color,
+    "smallint": $number-color,
+    "mediumint": $number-color,
+    "float": $number-color,
+    "double": $number-color,
+    "decimal": $number-color,
+    "bigint": $number-color,
+    "datetime": $date-color,
+    "date": $date-color,
+    "time": $date-color,
+    "timestamp": $date-color,
+    "bit": $bit-color,
+    "blob": $blob-color,
+    "mediumblob": $blob-color,
+    "longblob": $blob-color,
+    "enum": $enum-color,
+    "set": $enum-color,
+    "unknown": $unknown-color,
   )
 );
 
 .is-null {
-  color: gray;
+  color: $unknown-color;
 
   &::after {
     content: "NULL";
