@@ -42,7 +42,17 @@ module.exports = {
       connecting: 'Connecting',
       name: 'Name',
       collation: 'Collation',
-      autoRefresh: 'Auto-refresh'
+      clear: 'Clear',
+      options: 'Options',
+      autoRefresh: 'Auto-refresh',
+      indexes: 'Indexes',
+      foreignKeys: 'Foreign keys',
+      length: 'Length',
+      unsigned: 'Unsigned',
+      default: 'Default',
+      comment: 'Comment',
+      key: 'Key | Keys',
+      order: 'Order'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -79,7 +89,13 @@ module.exports = {
       databaseName: 'Database name',
       serverDefault: 'Server default',
       deleteDatabase: 'Delete database',
-      editDatabase: 'Edit database'
+      editDatabase: 'Edit database',
+      clearChanges: 'Clear changes',
+      addNewField: 'Add new field',
+      manageIndexes: 'Manage indexes',
+      manageForeignKeys: 'Manage foreign keys',
+      allowNull: 'Allow NULL',
+      zeroFill: 'Zero fill'
    },
    // Date and Time
    short: {

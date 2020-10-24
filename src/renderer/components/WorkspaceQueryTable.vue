@@ -221,7 +221,6 @@ export default {
          return this.workspaceSchema;
       },
       getPrimaryValue (row) {
-         console.log(row);
          const primaryFieldName = Object.keys(row).find(prop => [
             this.primaryField.alias,
             this.primaryField.name,

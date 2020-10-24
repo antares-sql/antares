@@ -3,6 +3,11 @@
       <WorkspaceExploreBar :connection="connection" :is-selected="isSelected" />
       <div v-if="workspace.connected" class="workspace-tabs column columns col-gapless">
          <ul ref="tabWrap" class="tab tab-block column col-12">
+            <li class="tab-item">
+               <a class="tab-link workspace-tools-link">
+                  <i class="mdi mdi-24px mdi-tools" />
+               </a>
+            </li>
             <li
                v-if="workspace.breadcrumbs.table"
                class="tab-item"
@@ -56,11 +61,11 @@
                </a>
             </li>
          </ul>
-         <div v-show="selectedTab === 'prop'" class="column col-12">
-            <p class="px-2">
-               In future releases
-            </p>
-         </div>
+         <WorkspacePropsTab
+            v-show="selectedTab === 'prop'"
+            :connection="connection"
+            :table="workspace.breadcrumbs.table"
+         />
          <WorkspaceTableTab
             v-show="selectedTab === 'data'"
             :connection="connection"
@@ -83,13 +88,15 @@ import Connection from '@/ipc-api/Connection';
 import WorkspaceExploreBar from '@/components/WorkspaceExploreBar';
 import WorkspaceQueryTab from '@/components/WorkspaceQueryTab';
 import WorkspaceTableTab from '@/components/WorkspaceTableTab';
+import WorkspacePropsTab from '@/components/WorkspacePropsTab';
 
 export default {
    name: 'Workspace',
    components: {
       WorkspaceExploreBar,
       WorkspaceQueryTab,
-      WorkspaceTableTab
+      WorkspaceTableTab,
+      WorkspacePropsTab
    },
    props: {
       connection: Object
@@ -202,6 +209,11 @@ export default {
 
         &.active a {
           opacity: 1;
+        }
+
+        .workspace-tools-link {
+          padding-bottom: 0;
+          padding-top: 0.3rem;
         }
       }
     }
