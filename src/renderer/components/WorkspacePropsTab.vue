@@ -3,9 +3,7 @@
       <div class="workspace-query-runner column col-12">
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
-               <button
-                  class="btn btn-primary btn-sm"
-               >
+               <button class="btn btn-primary btn-sm">
                   <span>{{ $t('word.save') }}</span>
                   <i class="mdi mdi-24px mdi-content-save ml-1" />
                </button>

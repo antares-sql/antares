@@ -2,7 +2,11 @@
    <div v-show="isSelected" class="workspace column columns col-gapless">
       <WorkspaceExploreBar :connection="connection" :is-selected="isSelected" />
       <div v-if="workspace.connected" class="workspace-tabs column columns col-gapless">
-         <ul ref="tabWrap" class="tab tab-block column col-12">
+         <ul
+            id="tabWrap"
+            ref="tabWrap"
+            class="tab tab-block column col-12"
+         >
             <li class="tab-item">
                <a class="tab-link workspace-tools-link">
                   <i class="mdi mdi-24px mdi-tools" />
@@ -36,7 +40,7 @@
                class="tab-item"
                :class="{'active': selectedTab === tab.uid}"
                @click="selectTab({uid: workspace.uid, tab: tab.uid})"
-               @mousedown.middle="closeTab(tab.uid)"
+               @mouseup.middle="closeTab(tab.uid)"
             >
                <a class="tab-link">
                   <i class="mdi mdi-18px mdi-code-tags mr-1" />
@@ -101,6 +105,11 @@ export default {
    props: {
       connection: Object
    },
+   data () {
+      return {
+         hasWheelEvent: false
+      };
+   },
    computed: {
       ...mapGetters({
          selectedWorkspace: 'workspaces/getSelected',
@@ -144,6 +153,14 @@ export default {
       }),
       addTab () {
          this.newTab(this.connection.uid);
+
+         if (!this.hasWheelEvent) {
+            this.$refs.tabWrap.addEventListener('wheel', e => {
+               if (e.deltaY > 0) this.$refs.tabWrap.scrollLeft += 50;
+               else this.$refs.tabWrap.scrollLeft -= 50;
+            });
+            this.hasWheelEvent = true;
+         }
       },
       closeTab (tUid) {
          if (this.queryTabs.length === 1) return;
