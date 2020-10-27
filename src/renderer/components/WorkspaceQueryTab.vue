@@ -134,8 +134,10 @@ export default {
       },
       onKey (e) {
          e.stopPropagation();
-         if (e.key === 'F9')
-            this.runQuery(this.query);
+         if (this.tabUid === this.workspace.selected_tab) {
+            if (e.key === 'F9')
+               this.runQuery(this.query);
+         }
       }
    }
 };

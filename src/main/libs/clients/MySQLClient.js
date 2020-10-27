@@ -372,7 +372,6 @@ export class MySQLClient extends AntaresCore {
                      };
                   }) : [];
 
-                  // TODO: move here fields and keys requests
                   if (args.details) {
                      let cachedTable;
 

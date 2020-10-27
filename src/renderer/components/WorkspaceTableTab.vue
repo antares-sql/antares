@@ -187,8 +187,10 @@ export default {
       },
       onKey (e) {
          e.stopPropagation();
-         if (e.key === 'F5')
-            this.reloadTable();
+         if (this.workspace.selected_tab === 'data') {
+            if (e.key === 'F5')
+               this.reloadTable();
+         }
       },
       setRefreshInterval () {
          if (this.refreshInterval)
