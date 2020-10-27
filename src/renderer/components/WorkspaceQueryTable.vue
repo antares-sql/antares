@@ -115,7 +115,6 @@ export default {
    },
    computed: {
       ...mapGetters({
-         getWorkspaceTab: 'workspaces/getWorkspaceTab',
          getWorkspace: 'workspaces/getWorkspace'
       }),
       workspaceSchema () {
@@ -142,14 +141,11 @@ export default {
       resultsWithRows () {
          return this.results.filter(result => result.rows);
       },
-      tabProperties () {
-         return this.getWorkspaceTab(this.tabUid);
-      },
       fields () {
-         return this.tabProperties && this.tabProperties.fields[this.resultsetIndex] ? this.tabProperties.fields[this.resultsetIndex] : [];
+         return this.resultsWithRows.length ? this.resultsWithRows[this.resultsetIndex].fields : [];
       },
       keyUsage () {
-         return this.tabProperties && this.tabProperties.keyUsage[this.resultsetIndex] ? this.tabProperties.keyUsage[this.resultsetIndex] : [];
+         return this.resultsWithRows.length ? this.resultsWithRows[this.resultsetIndex].keys : [];
       }
    },
    watch: {
@@ -212,7 +208,7 @@ export default {
       },
       getTable (index) {
          if (this.resultsWithRows[index] && this.resultsWithRows[index].fields && this.resultsWithRows[index].fields.length)
-            return this.resultsWithRows[index].fields[0].orgTable;
+            return this.resultsWithRows[index].fields[0].table;
          return '';
       },
       getSchema (index) {
@@ -270,7 +266,11 @@ export default {
          if (!this.primaryField)
             this.addNotification({ status: 'warning', message: this.$t('message.unableEditFieldWithoutPrimary') });
          else {
-            const rowIDs = this.localResults.filter(row => this.selectedRows.includes(row._id)).map(row => row[this.primaryField.name]);
+            const rowIDs = this.localResults.filter(row => this.selectedRows.includes(row._id)).map(row =>
+               row[this.primaryField.name] ||
+               row[`${this.primaryField.table}.${this.primaryField.name}`] ||
+               row[`${this.primaryField.tableAlias}.${this.primaryField.name}`]
+            );
             const params = {
                primary: this.primaryField.name,
                schema: this.getSchema(this.resultsetIndex),

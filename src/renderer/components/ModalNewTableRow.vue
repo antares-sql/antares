@@ -124,8 +124,9 @@ export default {
       }
    },
    props: {
-      connection: Object,
-      tabUid: [String, Number]
+      tabUid: [String, Number],
+      fields: Array,
+      keyUsage: Array
    },
    data () {
       return {
@@ -146,12 +147,6 @@ export default {
       },
       foreignKeys () {
          return this.keyUsage.map(key => key.column);
-      },
-      fields () {
-         return this.getWorkspaceTab(this.tabUid) ? this.getWorkspaceTab(this.tabUid).fields[0] : [];
-      },
-      keyUsage () {
-         return this.getWorkspaceTab(this.tabUid) ? this.getWorkspaceTab(this.tabUid).keyUsage[0] : [];
       }
    },
    watch: {

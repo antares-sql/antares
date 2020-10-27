@@ -130,12 +130,13 @@ export class AntaresCore {
    }
 
    /**
+    * @param {Object} args
     * @returns {Promise}
     * @memberof AntaresCore
     */
-   async run () {
+   async run (args) {
       const rawQuery = this.getSQL();
       this._resetQuery();
-      return this.raw(rawQuery);
+      return this.raw(rawQuery, args);
    }
 }

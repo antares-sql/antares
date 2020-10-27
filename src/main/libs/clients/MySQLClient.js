@@ -329,22 +329,35 @@ export class MySQLClient extends AntaresCore {
 
    /**
     * @param {string} sql raw SQL query
-    * @param {boolean} [nest]
+    * @param {object} args
+    * @param {boolean} args.nest
+    * @param {boolean} args.details
     * @returns {Promise}
     * @memberof MySQLClient
     */
-   async raw (sql, nest) {
-      const nestTables = nest ? '.' : false;
+   async raw (sql, args) {
+      args = {
+         nest: false,
+         details: false,
+         ...args
+      };
+      const nestTables = args.nest ? '.' : false;
       const resultsArr = [];
+      let paramsArr = [];
+      let selectedFields = [];
       const queries = sql.split(';');
 
       if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
 
       for (const query of queries) {
          if (!query) continue;
+         let fieldsArr = [];
+         let keysArr = [];
 
-         const { rows, report, fields } = await new Promise((resolve, reject) => {
-            this._connection.query({ sql: query, nestTables }, (err, response, fields) => {
+         const { rows, report, fields, keys } = await new Promise((resolve, reject) => {
+            this._connection.query({ sql: query, nestTables }, async (err, response, fields) => {
+               const queryResult = response;
+
                if (err)
                   reject(err);
                else {
@@ -359,15 +372,83 @@ export class MySQLClient extends AntaresCore {
                      };
                   }) : [];
 
+                  // TODO: move here fields and keys requests
+                  if (args.details) {
+                     let cachedTable;
+
+                     if (remappedFields.length) {
+                        selectedFields = remappedFields.map(field => {
+                           return {
+                              name: field.orgName || field.name,
+                              table: field.orgTable || field.table
+                           };
+                        });
+
+                        paramsArr = remappedFields.map(field => {
+                           if (field.table) cachedTable = field.table;// Needed for some queries on information_schema
+                           return {
+                              table: field.orgTable || cachedTable,
+                              schema: field.schema || 'INFORMATION_SCHEMA'
+                           };
+                        }).filter((val, i, arr) => arr.findIndex(el => el.schema === val.schema && el.table === val.table) === i);
+
+                        for (const paramObj of paramsArr) {
+                           try { // Table data
+                              const response = await this.getTableColumns(paramObj);
+
+                              let detailedFields = response.length ? selectedFields.map(selField => {
+                                 return response.find(field => field.name === selField.name && field.table === selField.table);
+                              }).filter(el => !!el) : [];
+
+                              if (selectedFields.length) {
+                                 detailedFields = detailedFields.map(field => {
+                                    const aliasObj = remappedFields.find(resField => resField.orgName === field.name);
+                                    return {
+                                       ...field,
+                                       alias: aliasObj.name || field.name,
+                                       tableAlias: aliasObj.table || field.table
+                                    };
+                                 });
+                              }
+
+                              if (!detailedFields.length) {
+                                 detailedFields = remappedFields.map(field => {
+                                    return {
+                                       ...field,
+                                       alias: field.name,
+                                       tableAlias: field.table
+                                    };
+                                 });
+                              }
+
+                              fieldsArr = fieldsArr ? [...fieldsArr, ...detailedFields] : detailedFields;
+                           }
+                           catch (err) {
+                              reject(err);
+                           }
+
+                           try { // Key usage (foreign keys)
+                              const response = await this.getKeyUsage(paramObj);
+                              keysArr = keysArr ? [...keysArr, ...response] : response;
+                           }
+                           catch (err) {
+                              reject(err);
+                           }
+                        }
+                     }
+                  }
+
                   resolve({
-                     rows: Array.isArray(response) ? response : false,
-                     report: !Array.isArray(response) ? response : false,
-                     fields: remappedFields
+                     rows: Array.isArray(queryResult) ? queryResult : false,
+                     report: !Array.isArray(queryResult) ? queryResult : false,
+                     fields: fieldsArr.length ? fieldsArr : remappedFields,
+                     keys: keysArr
                   });
                }
             });
          });
-         resultsArr.push({ rows, report, fields });
+
+         resultsArr.push({ rows, report, fields, keys });
       }
 
       return resultsArr.length === 1 ? resultsArr[0] : resultsArr;

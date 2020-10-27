@@ -64,6 +64,8 @@
       </div>
       <ModalNewTableRow
          v-if="isAddModal"
+         :fields="fields"
+         :key-usage="keyUsage"
          :tab-uid="tabUid"
          @hide="hideAddModal"
          @reload="reloadTable"
@@ -94,8 +96,6 @@ export default {
          tabUid: 'data',
          isQuering: false,
          results: [],
-         fields: [],
-         keyUsage: [],
          lastTable: null,
          isAddModal: false,
          autorefreshTimer: 0,
@@ -111,6 +111,12 @@ export default {
       },
       isSelected () {
          return this.workspace.selected_tab === 'data';
+      },
+      fields () {
+         return this.results.length ? this.results[0].fields : [];
+      },
+      keyUsage () {
+         return this.results.length ? this.results[0].keys : [];
       }
    },
    watch: {
@@ -137,54 +143,21 @@ export default {
    },
    methods: {
       ...mapActions({
-         addNotification: 'notifications/addNotification',
-         setTabFields: 'workspaces/setTabFields',
-         setTabKeyUsage: 'workspaces/setTabKeyUsage'
+         addNotification: 'notifications/addNotification'
       }),
       async getTableData () {
          if (!this.table) return;
          this.isQuering = true;
-         const fieldsArr = [];
-         const keysArr = [];
 
          // if table changes clear cached values
-         if (this.lastTable !== this.table) {
+         if (this.lastTable !== this.table)
             this.results = [];
-            this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: [] });
-         }
 
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
             table: this.workspace.breadcrumbs.table
          };
-
-         try { // Columns data
-            const { status, response } = await Tables.getTableColumns(params);
-            if (status === 'success') {
-               this.fields = response;// Needed to add new rows
-               fieldsArr.push(response);
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         try { // Key usage (foreign keys)
-            const { status, response } = await Tables.getKeyUsage(params);
-
-            if (status === 'success') {
-               this.keyUsage = response;// Needed to add new rows
-               keysArr.push(response);
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
 
          try { // Table data
             const { status, response } = await Tables.getTableData(params);
@@ -197,9 +170,6 @@ export default {
          catch (err) {
             this.addNotification({ status: 'error', message: err.stack });
          }
-
-         this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: fieldsArr });
-         this.setTabKeyUsage({ cUid: this.connection.uid, tUid: this.tabUid, keyUsage: keysArr });
 
          this.isQuering = false;
       },

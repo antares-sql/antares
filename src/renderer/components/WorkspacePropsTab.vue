@@ -17,28 +17,19 @@
 
                <div class="divider-vert py-3" />
 
-               <button
-                  class="btn btn-dark btn-sm"
-                  :title="$t('message.addNewField')"
-               >
+               <button class="btn btn-dark btn-sm" :title="$t('message.addNewField')">
                   <span>{{ $t('word.add') }}</span>
                   <i class="mdi mdi-24px mdi-playlist-plus ml-1" />
                </button>
-               <button
-                  class="btn btn-dark btn-sm"
-               >
+               <button class="btn btn-dark btn-sm">
                   <span>{{ $t('word.indexes') }}</span>
                   <i class="mdi mdi-24px mdi-key mdi-rotate-45 ml-1" />
                </button>
-               <button
-                  class="btn btn-dark btn-sm"
-               >
+               <button class="btn btn-dark btn-sm">
                   <span>{{ $t('word.foreignKeys') }}</span>
                   <i class="mdi mdi-24px mdi-key-link ml-1" />
                </button>
-               <button
-                  class="btn btn-dark btn-sm"
-               >
+               <button class="btn btn-dark btn-sm">
                   <span>{{ $t('word.options') }}</span>
                   <i class="mdi mdi-24px mdi-cogs ml-1" />
                </button>

@@ -16,10 +16,10 @@
                </button>
             </div>
             <div class="workspace-query-info">
-               <div v-if="resultsCount !== false">
+               <div v-if="resultsCount">
                   {{ $t('word.results') }}: <b>{{ resultsCount }}</b>
                </div>
-               <div v-if="affectedCount !== false">
+               <div v-if="affectedCount">
                   {{ $t('message.affectedRows') }}: <b>{{ affectedCount }}</b>
                </div>
                <div
@@ -50,7 +50,6 @@
 
 <script>
 import Database from '@/ipc-api/Database';
-import Tables from '@/ipc-api/Tables';
 import QueryEditor from '@/components/QueryEditor';
 import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
 import { mapGetters, mapActions } from 'vuex';
@@ -74,8 +73,8 @@ export default {
          lastQuery: '',
          isQuering: false,
          results: [],
-         resultsCount: false,
-         affectedCount: false
+         resultsCount: 0,
+         affectedCount: 0
       };
    },
    computed: {
@@ -94,25 +93,8 @@ export default {
    },
    methods: {
       ...mapActions({
-         addNotification: 'notifications/addNotification',
-         setTabFields: 'workspaces/setTabFields',
-         setTabKeyUsage: 'workspaces/setTabKeyUsage'
+         addNotification: 'notifications/addNotification'
       }),
-      getResultParams (index) {
-         const resultsWithRows = this.results.filter(result => result.rows);
-         let cachedTable;
-
-         if (resultsWithRows[index] && resultsWithRows[index].fields && resultsWithRows[index].fields.length) {
-            return resultsWithRows[index].fields.map(field => {
-               if (field.table) cachedTable = field.table;// Needed for some queries on information_schema
-               return {
-                  table: field.orgTable || cachedTable,
-                  schema: field.schema || 'INFORMATION_SCHEMA'
-               };
-            }).filter((val, i, arr) => arr.findIndex(el => el.schema === val.schema && el.table === val.table) === i);
-         }
-         return [];
-      },
       async runQuery (query) {
          if (!query || this.isQuering) return;
          this.isQuering = true;
@@ -129,103 +111,8 @@ export default {
 
             if (status === 'success') {
                this.results = Array.isArray(response) ? response : [response];
-
-               let selectedFields = [];
-               const fieldsArr = [];
-               const keysArr = [];
-               let qI = 0;// queries index
-
-               for (const result of this.results) { // cycle queries
-                  if (result.rows) { // if is a select
-                     const paramsArr = this.getResultParams(qI);
-
-                     selectedFields = result.fields.map(field => {
-                        return {
-                           name: field.orgName || field.name,
-                           table: field.orgTable || field.table
-                        };
-                     });
-
-                     this.resultsCount += result.rows.length;
-
-                     for (const paramObj of paramsArr) {
-                        try { // Table data
-                           const params = {
-                              uid: this.connection.uid,
-                              ...paramObj
-                           };
-
-                           const { status, response } = await Tables.getTableColumns(params);
-
-                           if (status === 'success') {
-                              let fields = response.length ? selectedFields.map(selField => {
-                                 return response.find(field => field.name === selField.name && field.table === selField.table);
-                              }).filter(el => !!el) : [];
-
-                              if (selectedFields.length) {
-                                 fields = fields.map(field => {
-                                    const aliasObj = result.fields.find(resField => resField.orgName === field.name);
-                                    return {
-                                       ...field,
-                                       alias: aliasObj.name || field.name,
-                                       tableAlias: aliasObj.table || field.table
-                                    };
-                                 });
-                              }
-
-                              if (!fields.length) {
-                                 fields = result.fields.map(field => {
-                                    return {
-                                       ...field,
-                                       alias: field.name,
-                                       tableAlias: field.table
-                                    };
-                                 });
-                              }
-
-                              fieldsArr[qI] = fieldsArr[qI] ? [...fieldsArr[qI], ...fields] : fields;
-                           }
-                           else
-                              this.addNotification({ status: 'error', message: response });
-                        }
-                        catch (err) {
-                           this.addNotification({ status: 'error', message: err.stack });
-                        }
-
-                        try { // Key usage (foreign keys)
-                           const params = {
-                              uid: this.connection.uid,
-                              ...paramObj
-                           };
-
-                           const { status, response } = await Tables.getKeyUsage(params);
-                           if (status === 'success')
-                              keysArr[qI] = keysArr[qI] ? [...keysArr[qI], ...response] : response;
-                           else
-                              this.addNotification({ status: 'error', message: response });
-                        }
-                        catch (err) {
-                           this.addNotification({ status: 'error', message: err.stack });
-                        }
-                     }
-                  }
-                  else if (result.report) { // if is a query without output
-                     this.affectedCount += result.report.affectedRows;
-                  }
-
-                  qI++;
-               }
-
-               this.setTabFields({
-                  cUid: this.connection.uid,
-                  tUid: this.tabUid,
-                  fields: fieldsArr
-               });
-               this.setTabKeyUsage({
-                  cUid: this.connection.uid,
-                  tUid: this.tabUid,
-                  keyUsage: keysArr
-               });
+               this.resultsCount += this.results.reduce((acc, curr) => acc + (curr.rows ? curr.rows.length : 0), 0);
+               this.affectedCount += this.results.reduce((acc, curr) => acc + (curr.report ? curr.report.affectedRows : 0), 0);
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -242,9 +129,8 @@ export default {
       },
       clearTabData () {
          this.results = [];
-         this.resultsCount = false;
-         this.affectedCount = false;
-         this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: [] });
+         this.resultsCount = 0;
+         this.affectedCount = 0;
       },
       onKey (e) {
          e.stopPropagation();

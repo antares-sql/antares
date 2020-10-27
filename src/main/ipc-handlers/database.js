@@ -99,7 +99,7 @@ export default connections => {
       if (!query) return;
 
       try {
-         const result = await connections[uid].raw(query, true);
+         const result = await connections[uid].raw(query, { nest: true, details: true });
 
          return { status: 'success', response: result };
       }

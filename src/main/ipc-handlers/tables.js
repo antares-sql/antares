@@ -21,7 +21,7 @@ export default (connections) => {
             .schema(schema)
             .from(table)
             .limit(1000)
-            .run();
+            .run({ details: true });
 
          return { status: 'success', response: result };
       }
