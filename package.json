@@ -80,7 +80,7 @@
     "eslint-plugin-standard": "^4.0.2",
     "eslint-plugin-vue": "^7.1.0",
     "monaco-editor-webpack-plugin": "^1.9.1",
-    "node-sass": "^4.14.1",
+    "node-sass": "^5.0.0",
     "sass-loader": "^10.0.4",
     "standard-version": "^9.0.0",
     "stylelint": "^13.7.2",
