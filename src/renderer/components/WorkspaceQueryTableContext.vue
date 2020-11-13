@@ -27,7 +27,6 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
 
@@ -49,10 +48,6 @@ export default {
    computed: {
    },
    methods: {
-      ...mapActions({
-         deleteConnection: 'connections/deleteConnection',
-         showEditModal: 'application/showEditConnModal'
-      }),
       showConfirmModal () {
          this.isConfirmModal = true;
       },

@@ -32,15 +32,15 @@
                   <span>{{ $t('word.add') }}</span>
                   <i class="mdi mdi-24px mdi-playlist-plus ml-1" />
                </button>
-               <button class="btn btn-dark btn-sm">
+               <button class="btn btn-dark btn-sm d-none">
                   <span>{{ $t('word.indexes') }}</span>
                   <i class="mdi mdi-24px mdi-key mdi-rotate-45 ml-1" />
                </button>
-               <button class="btn btn-dark btn-sm">
+               <button class="btn btn-dark btn-sm d-none">
                   <span>{{ $t('word.foreignKeys') }}</span>
                   <i class="mdi mdi-24px mdi-key-link ml-1" />
                </button>
-               <button class="btn btn-dark btn-sm">
+               <button class="btn btn-dark btn-sm d-none">
                   <span>{{ $t('word.options') }}</span>
                   <i class="mdi mdi-24px mdi-cogs ml-1" />
                </button>
@@ -57,6 +57,7 @@
             :table="table"
             :schema="schema"
             mode="table"
+            @remove-field="removeField"
          />
       </div>
    </div>
@@ -193,7 +194,7 @@ export default {
             const orgName = originalField.name;
 
             if (JSON.stringify(originalField) !== JSON.stringify(this.localFields[lI]) || originalSibling !== localSibling)
-               changes.push({ ...this.localFields[lI], after, orgName });
+               if (this.localFields[lI]) changes.push({ ...this.localFields[lI], after, orgName });
          });
 
          const params = {

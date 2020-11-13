@@ -1,5 +1,5 @@
 <template>
-   <div class="tr">
+   <div class="tr" @contextmenu.prevent="$emit('contextmenu', $event, localRow._id)">
       <div class="td">
          <div class="row-draggable">
             <i class="mdi mdi-drag-horizontal row-draggable-icon" />

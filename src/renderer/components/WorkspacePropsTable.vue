@@ -7,8 +7,8 @@
       <TableContext
          v-if="isContext"
          :context-event="contextEvent"
-         :selected-rows="selectedRows"
-         @delete-selected="deleteSelected"
+         :selected-field="selectedField"
+         @delete-selected="removeField"
          @close-context="isContext = false"
       />
       <div ref="propTable" class="table table-hover">
@@ -100,6 +100,7 @@
                :key="row._id"
                :row="row"
                :data-types="dataTypes"
+               @contextmenu="contextMenu"
             />
          </draggable>
       </div>
@@ -110,11 +111,13 @@
 import { mapActions, mapGetters } from 'vuex';
 import draggable from 'vuedraggable';
 import TableRow from '@/components/WorkspacePropsTableRow';
+import TableContext from '@/components/WorkspacePropsTableContext';
 
 export default {
    name: 'WorkspacePropsTable',
    components: {
       TableRow,
+      TableContext,
       draggable
    },
    props: {
@@ -131,8 +134,7 @@ export default {
          localResults: [],
          isContext: false,
          contextEvent: null,
-         selectedCell: null,
-         selectedRows: [],
+         selectedField: null,
          scrollElement: null
       };
    },
@@ -186,12 +188,13 @@ export default {
       refreshScroller () {
          this.resizeResults();
       },
-      contextMenu (event, cell) {
-         this.selectedCell = cell;
-         if (!this.selectedRows.includes(cell.id))
-            this.selectedRows = [cell.id];
+      contextMenu (event, uid) {
+         this.selectedField = uid;
          this.contextEvent = event;
          this.isContext = true;
+      },
+      removeField () {
+         this.$emit('remove-field', this.selectedField);
       }
    }
 };

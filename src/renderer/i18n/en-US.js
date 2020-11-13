@@ -98,7 +98,8 @@ module.exports = {
       allowNull: 'Allow NULL',
       zeroFill: 'Zero fill',
       customValue: 'Custom value',
-      onUpdate: 'On update'
+      onUpdate: 'On update',
+      deleteField: 'Delete field'
    },
    // Date and Time
    short: {

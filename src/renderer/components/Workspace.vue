@@ -7,7 +7,7 @@
             ref="tabWrap"
             class="tab tab-block column col-12"
          >
-            <li class="tab-item">
+            <li class="tab-item d-none">
                <a class="tab-link workspace-tools-link">
                   <i class="mdi mdi-24px mdi-tools" />
                </a>
