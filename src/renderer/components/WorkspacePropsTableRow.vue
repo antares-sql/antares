@@ -385,8 +385,8 @@ export default {
       },
       editON (event, content, field) {
          if (field === 'length') {
-            if (['integer', 'float', 'binary', 'spatial', 'other'].includes(this.fieldType.group)) this.editingField = 'numLength';
-            if (['string'].includes(this.fieldType.group)) this.editingField = 'charLength';
+            if (['integer', 'float', 'binary', 'spatial'].includes(this.fieldType.group)) this.editingField = 'numLength';
+            if (['string', 'other'].includes(this.fieldType.group)) this.editingField = 'charLength';
             if (['time'].includes(this.fieldType.group)) this.editingField = 'datePrecision';
          }
          else
@@ -416,8 +416,8 @@ export default {
             this.localRow.datePrecision = false;
 
             if (this.fieldType.length) {
-               if (['integer', 'float', 'binary', 'spatial', 'other'].includes(this.fieldType.group)) this.localRow.numLength = 11;
-               if (['string'].includes(this.fieldType.group)) this.localRow.charLength = 15;
+               if (['integer', 'float', 'binary', 'spatial'].includes(this.fieldType.group)) this.localRow.numLength = 11;
+               if (['string', 'other'].includes(this.fieldType.group)) this.localRow.charLength = 15;
                if (['time'].includes(this.fieldType.group)) this.localRow.datePrecision = 0;
             }
 
