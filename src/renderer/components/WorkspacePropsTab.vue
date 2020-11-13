@@ -3,13 +3,20 @@
       <div class="workspace-query-runner column col-12">
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
-               <button class="btn btn-primary btn-sm">
+               <button
+                  class="btn btn-primary btn-sm"
+                  :disabled="!isChanged"
+                  :class="{'loading':isSaving}"
+                  @click="saveChanges"
+               >
                   <span>{{ $t('word.save') }}</span>
                   <i class="mdi mdi-24px mdi-content-save ml-1" />
                </button>
                <button
+                  :disabled="!isChanged"
                   class="btn btn-link btn-sm mr-0"
                   :title="$t('message.clearChanges')"
+                  @click="clearChanges"
                >
                   <span>{{ $t('word.clear') }}</span>
                   <i class="mdi mdi-24px mdi-delete-sweep ml-1" />
@@ -40,7 +47,7 @@
          <WorkspacePropsTable
             v-if="localFields"
             ref="queryTable"
-            :results="localFields"
+            :fields="localFields"
             :tab-uid="tabUid"
             :conn-uid="connection.uid"
             :table="table"
@@ -52,9 +59,10 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
+import { uidGen } from 'common/libs/uidGen';
 import Tables from '@/ipc-api/Tables';
 import WorkspacePropsTable from '@/components/WorkspacePropsTable';
-import { mapGetters, mapActions } from 'vuex';
 
 export default {
    name: 'WorkspacePropsTab',
@@ -69,7 +77,10 @@ export default {
       return {
          tabUid: 'prop',
          isQuering: false,
+         isSaving: false,
+         originalFields: [],
          localFields: [],
+         originalKeyUsage: [],
          localKeyUsage: [],
          lastTable: null,
          isAddModal: false
@@ -87,6 +98,9 @@ export default {
       },
       schema () {
          return this.workspace.breadcrumbs.schema;
+      },
+      isChanged () {
+         return JSON.stringify(this.originalFields) !== JSON.stringify(this.localFields) || JSON.stringify(this.originalKeyUsage) !== JSON.stringify(this.localKeyUsage);
       }
    },
    watch: {
@@ -103,25 +117,13 @@ export default {
          }
       }
    },
-   created () {
-      this.getFieldsData();
-      window.addEventListener('keydown', this.onKey);
-   },
    methods: {
       ...mapActions({
-         addNotification: 'notifications/addNotification',
-         setTabFields: 'workspaces/setTabFields',
-         setTabKeyUsage: 'workspaces/setTabKeyUsage'
+         addNotification: 'notifications/addNotification'
       }),
       async getFieldsData () {
          if (!this.table) return;
          this.isQuering = true;
-         const fieldsArr = [];
-         const keysArr = [];
-
-         // if table changes clear cached values
-         if (this.lastTable !== this.table)
-            this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: [] });
 
          const params = {
             uid: this.connection.uid,
@@ -132,8 +134,10 @@ export default {
          try { // Columns data
             const { status, response } = await Tables.getTableColumns(params);
             if (status === 'success') {
-               this.localFields = response;
-               fieldsArr.push(response);
+               this.originalFields = response.map(field => {
+                  return { ...field, _id: uidGen() };
+               });
+               this.localFields = JSON.parse(JSON.stringify(this.originalFields));
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -146,8 +150,8 @@ export default {
             const { status, response } = await Tables.getKeyUsage(params);
 
             if (status === 'success') {
-               this.localKeyUsage = response;
-               keysArr.push(response);
+               this.originalKeyUsage = response;
+               this.localKeyUsage = JSON.parse(JSON.stringify(response));
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -156,35 +160,62 @@ export default {
             this.addNotification({ status: 'error', message: err.stack });
          }
 
-         this.setTabFields({ cUid: this.connection.uid, tUid: this.tabUid, fields: fieldsArr });
-         this.setTabKeyUsage({ cUid: this.connection.uid, tUid: this.tabUid, keyUsage: keysArr });
-
          this.isQuering = false;
       },
-      reloadFields () {
-         this.getFieldsData();
+      async saveChanges () {
+         if (this.isSaving) return;
+         this.isSaving = true;
+
+         const originalIDs = this.originalFields.reduce((acc, curr) => [...acc, curr._id], []);
+         const localIDs = this.localFields.reduce((acc, curr) => [...acc, curr._id], []);
+         const additions = this.localFields.filter(field => !originalIDs.includes(field._id));
+         const deletions = this.originalFields.filter(field => !localIDs.includes(field._id));
+
+         // Changes
+         const changes = [];
+         this.originalFields.forEach((originalField, oI) => {
+            const lI = this.localFields.findIndex(localField => localField._id === originalField._id);
+            const originalSibling = oI > 0 ? this.originalFields[oI - 1]._id : false;
+            const localSibling = lI > 0 ? this.localFields[lI - 1]._id : false;
+            const after = lI > 0 ? this.localFields[lI - 1].name : false;
+            const orgName = originalField.name;
+
+            if (JSON.stringify(originalField) !== JSON.stringify(this.localFields[lI]) || originalSibling !== localSibling)
+               changes.push({ ...this.localFields[lI], after, orgName });
+         });
+
+         const params = {
+            uid: this.connection.uid,
+            schema: this.schema,
+            table: this.workspace.breadcrumbs.table,
+            additions,
+            changes,
+            deletions
+         };
+
+         try { // Key usage (foreign keys)
+            const { status, response } = await Tables.alterTable(params);
+
+            if (status === 'success')
+               this.getFieldsData();
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         this.isSaving = false;
+      },
+      clearChanges () {
+         this.localFields = JSON.parse(JSON.stringify(this.originalFields));
+         this.localKeyUsage = JSON.parse(JSON.stringify(this.originalKeyUsage));
       },
       showAddModal () {
          this.isAddModal = true;
       },
       hideAddModal () {
          this.isAddModal = false;
-      },
-      onKey (e) {
-         e.stopPropagation();
-         if (e.key === 'F5')
-            this.reloadFields();
-      },
-      setRefreshInterval () {
-         if (this.refreshInterval)
-            clearInterval(this.refreshInterval);
-
-         if (+this.autorefreshTimer) {
-            this.refreshInterval = setInterval(() => {
-               if (!this.isQuering)
-                  this.reloadFields();
-            }, this.autorefreshTimer * 1000);
-         }
       }
    }
 };

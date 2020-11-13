@@ -133,8 +133,8 @@ export default {
          this.affectedCount = 0;
       },
       onKey (e) {
-         e.stopPropagation();
-         if (this.tabUid === this.workspace.selected_tab) {
+         if (this.isSelected) {
+            e.stopPropagation();
             if (e.key === 'F9')
                this.runQuery(this.query);
          }

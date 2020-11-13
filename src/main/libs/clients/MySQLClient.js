@@ -192,6 +192,7 @@ export class MySQLClient extends AntaresCore {
             charset: field.CHARACTER_SET_NAME,
             collation: field.COLLATION_NAME,
             autoIncrement: field.EXTRA.includes('auto_increment'),
+            onUpdate: field.EXTRA.toLowerCase().includes('on update') ? field.EXTRA.replace('on update', '') : '',
             comment: field.COLUMN_COMMENT
          };
       });
@@ -264,6 +265,43 @@ export class MySQLClient extends AntaresCore {
             value: row.Value
          };
       });
+   }
+
+   /**
+    * ALTER TABLE
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async alterTable (params) {
+      const {
+         table,
+         // additions,
+         // deletions,
+         changes
+      } = params;
+
+      let sql = `ALTER TABLE \`${table}\` `;
+      const alterColumns = [];
+
+      changes.forEach(change => {
+         const length = change.numLength || change.charLength || change.datePrecision;
+
+         alterColumns.push(`CHANGE COLUMN \`${change.orgName}\` \`${change.name}\` 
+            ${change.type.toUpperCase()}${length ? `(${length})` : ''} 
+            ${change.unsigned ? 'UNSIGNED' : ''} 
+            ${change.nullable ? 'NULL' : 'NOT NULL'}
+            ${change.autoIncrement ? 'AUTO_INCREMENT' : ''}
+            ${change.default ? `DEFAULT ${change.default}` : ''}
+            ${change.comment ? `COMMENT '${change.comment}'` : ''}
+            ${change.collation ? `COLLATE ${change.collation}` : ''}
+            ${change.onUpdate ? `ON UPDATE ${change.onUpdate}` : ''}
+            ${change.after ? `AFTER \`${change.after}\`` : 'FIRST'}`);
+      });
+
+      sql += alterColumns.join(', ');
+
+      return await this.raw(sql);
    }
 
    /**
@@ -361,16 +399,18 @@ export class MySQLClient extends AntaresCore {
                if (err)
                   reject(err);
                else {
-                  const remappedFields = fields ? fields.map(field => {
-                     return {
-                        name: field.name,
-                        orgName: field.orgName,
-                        schema: field.db,
-                        table: field.table,
-                        orgTable: field.orgTable,
-                        type: 'varchar'
-                     };
-                  }) : [];
+                  const remappedFields = fields
+                     ? fields.map(field => {
+                        return {
+                           name: field.name,
+                           orgName: field.orgName,
+                           schema: field.db,
+                           table: field.table,
+                           orgTable: field.orgTable,
+                           type: 'varchar'
+                        };
+                     })
+                     : [];
 
                   if (args.details) {
                      let cachedTable;
@@ -395,9 +435,11 @@ export class MySQLClient extends AntaresCore {
                            try { // Table data
                               const response = await this.getTableColumns(paramObj);
 
-                              let detailedFields = response.length ? selectedFields.map(selField => {
-                                 return response.find(field => field.name === selField.name && field.table === selField.table);
-                              }).filter(el => !!el) : [];
+                              let detailedFields = response.length
+                                 ? selectedFields.map(selField => {
+                                    return response.find(field => field.name === selField.name && field.table === selField.table);
+                                 }).filter(el => !!el)
+                                 : [];
 
                               if (selectedFields.length) {
                                  detailedFields = detailedFields.map(field => {

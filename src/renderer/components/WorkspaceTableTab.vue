@@ -186,8 +186,8 @@ export default {
          this.isAddModal = false;
       },
       onKey (e) {
-         e.stopPropagation();
-         if (this.workspace.selected_tab === 'data') {
+         if (this.isSelected) {
+            e.stopPropagation();
             if (e.key === 'F5')
                this.reloadTable();
          }

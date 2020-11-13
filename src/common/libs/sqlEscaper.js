@@ -1,6 +1,7 @@
 /* eslint-disable no-useless-escape */
 // eslint-disable-next-line no-control-regex
-const regex = new RegExp(/[\0\x08\x09\x1a\n\r"'\\\%]/gm);
+const pattern = /[\0\x08\x09\x1a\n\r"'\\\%]/gm;
+const regex = new RegExp(pattern);
 
 /**
  * Escapes a string

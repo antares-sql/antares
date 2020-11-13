@@ -229,9 +229,11 @@ export default {
       },
       setLocalResults () {
          this.resetSort();
-         this.localResults = this.resultsWithRows[this.resultsetIndex] && this.resultsWithRows[this.resultsetIndex].rows ? this.resultsWithRows[this.resultsetIndex].rows.map(item => {
-            return { ...item, _id: uidGen() };
-         }) : [];
+         this.localResults = this.resultsWithRows[this.resultsetIndex] && this.resultsWithRows[this.resultsetIndex].rows
+            ? this.resultsWithRows[this.resultsetIndex].rows.map(item => {
+               return { ...item, _id: uidGen() };
+            })
+            : [];
       },
       resizeResults () {
          if (this.$refs.resultTable) {

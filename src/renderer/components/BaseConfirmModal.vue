@@ -48,7 +48,7 @@ export default {
    props: {
       size: {
          type: String,
-         validator: prop => ['small', 'medium', 'large'].includes(prop),
+         validator: prop => ['small', 'medium', '400', 'large'].includes(prop),
          default: 'small'
       },
       confirmText: String,
@@ -67,6 +67,8 @@ export default {
       modalSizeClass () {
          if (this.size === 'small')
             return 'modal-sm';
+         if (this.size === '400')
+            return 'modal-400';
          else if (this.size === 'large')
             return 'modal-lg';
          else return '';
@@ -86,7 +88,12 @@ export default {
 </script>
 
 <style scoped>
-  .modal.modal-sm .modal-container {
-    padding: 0;
-  }
+.modal-400 .modal-container {
+  max-width: 400px;
+}
+
+.modal.modal-sm .modal-container {
+  padding: 0;
+}
+
 </style>

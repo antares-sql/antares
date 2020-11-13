@@ -41,26 +41,60 @@ export default {
       SELECT_WORKSPACE (state, uid) {
          state.selected_workspace = uid;
       },
-      ADD_CONNECTED (state, { uid, structure }) {
-         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, structure, connected: true } : workspace);
+      ADD_CONNECTED (state, { uid, client, dataTypes, structure }) {
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
+            ? {
+               ...workspace,
+               client,
+               dataTypes,
+               structure,
+               connected: true
+            }
+            : workspace);
       },
       REMOVE_CONNECTED (state, uid) {
-         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, structure: {}, connected: false } : workspace);
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
+            ? {
+               ...workspace,
+               structure: {},
+               connected: false
+            }
+            : workspace);
       },
       REFRESH_STRUCTURE (state, { uid, structure }) {
-         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, structure } : workspace);
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
+            ? {
+               ...workspace,
+               structure
+            }
+            : workspace);
       },
       REFRESH_COLLATIONS (state, { uid, collations }) {
-         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, collations } : workspace);
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
+            ? {
+               ...workspace,
+               collations
+            }
+            : workspace);
       },
       REFRESH_VARIABLES (state, { uid, variables }) {
-         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, variables } : workspace);
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
+            ? {
+               ...workspace,
+               variables
+            }
+            : workspace);
       },
       ADD_WORKSPACE (state, workspace) {
          state.workspaces.push(workspace);
       },
       CHANGE_BREADCRUMBS (state, { uid, breadcrumbs }) {
-         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, breadcrumbs } : workspace);
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
+            ? {
+               ...workspace,
+               breadcrumbs
+            }
+            : workspace);
       },
       NEW_TAB (state, uid) {
          tabIndex[uid] = tabIndex[uid] ? ++tabIndex[uid] : 1;
@@ -135,7 +169,7 @@ export default {
       }
    },
    actions: {
-      selectWorkspace ({ commit, dispatch }, uid) {
+      selectWorkspace ({ commit }, uid) {
          commit('SELECT_WORKSPACE', uid);
       },
       async connectWorkspace ({ dispatch, commit }, connection) {
@@ -144,7 +178,20 @@ export default {
             if (status === 'error')
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
             else {
-               commit('ADD_CONNECTED', { uid: connection.uid, structure: response });
+               let dataTypes = [];
+
+               switch (connection.client) {
+                  case 'mysql':
+                  case 'maria':
+                     dataTypes = require('common/data-types/mysql');
+                     break;
+               }
+               commit('ADD_CONNECTED', { // TODO: add data types
+                  uid: connection.uid,
+                  client: connection.client,
+                  dataTypes,
+                  structure: response
+               });
                dispatch('refreshCollations', connection.uid);
                dispatch('refreshVariables', connection.uid);
             }

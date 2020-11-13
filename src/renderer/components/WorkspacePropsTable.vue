@@ -89,79 +89,36 @@
                </div>
             </div>
          </div>
-         <div ref="resultTable" class="tbody">
-            <div
-               v-for="row in results"
-               :key="row.name"
-               class="tr"
-            >
-               <div class="td">
-                  <div class="row-draggable">
-                     <i class="mdi mdi-drag-horizontal row-draggable-icon" />
-                     {{ row.order }}
-                  </div>
-               </div>
-               <div class="td">
-                  <i
-                     v-if="row.key"
-                     :title="keyName(row.key)"
-                     class="mdi mdi-key column-key c-help pl-1"
-                     :class="`key-${row.key}`"
-                  />
-               </div>
-               <div class="td">
-                  {{ row.name }}
-               </div>
-               <div class="td text-uppercase" :class="`type-${row.type}`">
-                  {{ row.type }}
-               </div>
-               <div class="td type-int">
-                  {{ row.numLength || row.charLength || row.datePrecision }}
-               </div>
-               <div class="td">
-                  <label class="form-checkbox">
-                     <input type="checkbox" :checked="row.unsigned ">
-                     <i class="form-icon" />
-                  </label>
-               </div>
-               <div class="td">
-                  <label class="form-checkbox">
-                     <input type="checkbox" :checked="row.nullable ">
-                     <i class="form-icon" />
-                  </label>
-               </div>
-               <div class="td">
-                  <label class="form-checkbox">
-                     <input type="checkbox" :checked="row.zerofill ">
-                     <i class="form-icon" />
-                  </label>
-               </div>
-               <div class="td">
-                  {{ (row.autoIncrement ? 'AUTO_INCREMENT' : false) || row.default }}
-               </div>
-               <div class="td type-varchar">
-                  {{ row.comment }}
-               </div>
-               <div class="td">
-                  {{ row.collation }}
-               </div>
-            </div>
-         </div>
+         <draggable
+            ref="resultTable"
+            :list="fields"
+            class="tbody"
+            handle=".row-draggable"
+         >
+            <TableRow
+               v-for="row in fields"
+               :key="row._id"
+               :row="row"
+               :data-types="dataTypes"
+            />
+         </draggable>
       </div>
    </div>
 </template>
 
 <script>
-import TableContext from '@/components/WorkspaceQueryTableContext';
 import { mapActions, mapGetters } from 'vuex';
+import draggable from 'vuedraggable';
+import TableRow from '@/components/WorkspacePropsTableRow';
 
 export default {
    name: 'WorkspacePropsTable',
    components: {
-      TableContext
+      TableRow,
+      draggable
    },
    props: {
-      results: Array,
+      fields: Array,
       tabUid: [String, Number],
       connUid: String,
       table: String,
@@ -187,13 +144,15 @@ export default {
       workspaceSchema () {
          return this.getWorkspace(this.connUid).breadcrumbs.schema;
       },
+      dataTypes () {
+         return this.getWorkspace(this.connUid).dataTypes;
+      },
       primaryField () {
-         return this.results.filter(field => ['pri', 'uni'].includes(field.key))[0] || false;
+         return this.fields.filter(field => ['pri', 'uni'].includes(field.key))[0] || false;
       },
       tabProperties () {
          return this.getWorkspaceTab(this.tabUid);
       }
-
    },
    updated () {
       if (this.$refs.propTable)
@@ -212,18 +171,6 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification'
       }),
-      keyName (key) {
-         switch (key) {
-            case 'pri':
-               return 'PRIMARY';
-            case 'uni':
-               return 'UNIQUE';
-            case 'mul':
-               return 'INDEX';
-            default:
-               return 'UNKNOWN ' + key;
-         }
-      },
       resizeResults () {
          if (this.$refs.resultTable) {
             const el = this.$refs.tableWrapper;
@@ -256,36 +203,6 @@ export default {
   &:active {
     resize: horizontal;
     overflow: hidden;
-  }
-}
-
-.row-draggable {
-  position: relative;
-  text-align: right;
-  padding-left: 28px;
-  cursor: grab;
-
-  .row-draggable-icon {
-    position: absolute;
-    left: 0;
-    font-size: 22px;
-  }
-}
-
-.table-column-title {
-  display: flex;
-  align-items: center;
-}
-
-.form-checkbox {
-  padding: 0;
-  margin: 0;
-  line-height: 1;
-  min-height: auto;
-
-  .form-icon {
-    top: 0.15rem;
-    left: calc(50% - 8px);
   }
 }
 </style>

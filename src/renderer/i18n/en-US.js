@@ -52,7 +52,8 @@ module.exports = {
       default: 'Default',
       comment: 'Comment',
       key: 'Key | Keys',
-      order: 'Order'
+      order: 'Order',
+      expression: 'Expression'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -95,7 +96,9 @@ module.exports = {
       manageIndexes: 'Manage indexes',
       manageForeignKeys: 'Manage foreign keys',
       allowNull: 'Allow NULL',
-      zeroFill: 'Zero fill'
+      zeroFill: 'Zero fill',
+      customValue: 'Custom value',
+      onUpdate: 'On update'
    },
    // Date and Time
    short: {

@@ -29,4 +29,8 @@ export default class {
    static getForeignList (params) {
       return ipcRenderer.invoke('get-foreign-list', params);
    }
+
+   static alterTable (params) {
+      return ipcRenderer.invoke('alter-table', params);
+   }
 }

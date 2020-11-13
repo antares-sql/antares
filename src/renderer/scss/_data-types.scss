@@ -1,9 +1,12 @@
+
 @mixin type-colors($types) {
+  $numbers: ('int','tinyint','smallint','mediumint','float','double','decimal');
+
   @each $type, $color in $types {
     .type-#{$type} {
       color: $color;
 
-      @if $type == "number" {
+      @if index($numbers, $type) {
         text-align: right;
       }
     }
@@ -15,8 +18,10 @@
     "char": $string-color,
     "varchar": $string-color,
     "text": $string-color,
+    "tinytext": $string-color,
     "mediumtext": $string-color,
     "longtext": $string-color,
+    "json": $string-color,
     "int": $number-color,
     "tinyint": $number-color,
     "smallint": $number-color,
@@ -28,9 +33,13 @@
     "datetime": $date-color,
     "date": $date-color,
     "time": $date-color,
+    "year": $date-color,
     "timestamp": $date-color,
     "bit": $bit-color,
+    "binary": $blob-color,
+    "varbinary": $blob-color,
     "blob": $blob-color,
+    "tinyblob": $blob-color,
     "mediumblob": $blob-color,
     "longblob": $blob-color,
     "enum": $enum-color,

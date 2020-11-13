@@ -66,7 +66,7 @@
                   />
                </div>
                <div class="editor-field-info">
-                  <div><b>{{ $t('word.size') }}</b>: {{ editingContent.length }}</div>
+                  <div><b>{{ $t('word.size') }}</b>: {{ editingContent ? editingContent.length : 0 }}</div>
                   <div><b>{{ $t('word.type') }}</b>: {{ editingType.toUpperCase() }}</div>
                </div>
             </div>
@@ -353,9 +353,7 @@ export default {
             this.$nextTick(() => document.querySelector('.editable-field').focus());
          });
 
-         const obj = {
-            [field]: true
-         };
+         const obj = { [field]: true };
          this.isInlineEditor = { ...this.isInlineEditor, ...obj };
       },
       editOFF () {
