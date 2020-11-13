@@ -276,14 +276,31 @@ export class MySQLClient extends AntaresCore {
    async alterTable (params) {
       const {
          table,
-         // additions,
-         // deletions,
+         additions,
+         deletions,
          changes
       } = params;
 
       let sql = `ALTER TABLE \`${table}\` `;
       const alterColumns = [];
 
+      // ADD
+      additions.forEach(addition => {
+         const length = addition.numLength || addition.charLength || addition.datePrecision;
+
+         alterColumns.push(`ADD COLUMN \`${addition.name}\` 
+            ${addition.type.toUpperCase()}${length ? `(${length})` : ''} 
+            ${addition.unsigned ? 'UNSIGNED' : ''} 
+            ${addition.nullable ? 'NULL' : 'NOT NULL'}
+            ${addition.autoIncrement ? 'AUTO_INCREMENT' : ''}
+            ${addition.default ? `DEFAULT ${addition.default}` : ''}
+            ${addition.comment ? `COMMENT '${addition.comment}'` : ''}
+            ${addition.collation ? `COLLATE ${addition.collation}` : ''}
+            ${addition.onUpdate ? `ON UPDATE ${addition.onUpdate}` : ''}
+            ${addition.after ? `AFTER \`${addition.after}\`` : 'FIRST'}`);
+      });
+
+      // CHANGE
       changes.forEach(change => {
          const length = change.numLength || change.charLength || change.datePrecision;
 
@@ -297,6 +314,11 @@ export class MySQLClient extends AntaresCore {
             ${change.collation ? `COLLATE ${change.collation}` : ''}
             ${change.onUpdate ? `ON UPDATE ${change.onUpdate}` : ''}
             ${change.after ? `AFTER \`${change.after}\`` : 'FIRST'}`);
+      });
+
+      // DROP
+      deletions.forEach(deletion => {
+         alterColumns.push(`DROP COLUMN \`${deletion.name}\``);
       });
 
       sql += alterColumns.join(', ');

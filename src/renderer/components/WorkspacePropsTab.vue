@@ -24,7 +24,11 @@
 
                <div class="divider-vert py-3" />
 
-               <button class="btn btn-dark btn-sm" :title="$t('message.addNewField')">
+               <button
+                  class="btn btn-dark btn-sm"
+                  :title="$t('message.addNewField')"
+                  @click="addField"
+               >
                   <span>{{ $t('word.add') }}</span>
                   <i class="mdi mdi-24px mdi-playlist-plus ml-1" />
                </button>
@@ -168,7 +172,15 @@ export default {
 
          const originalIDs = this.originalFields.reduce((acc, curr) => [...acc, curr._id], []);
          const localIDs = this.localFields.reduce((acc, curr) => [...acc, curr._id], []);
-         const additions = this.localFields.filter(field => !originalIDs.includes(field._id));
+
+         // Additions
+         const additions = this.localFields.filter((field, i) => !originalIDs.includes(field._id)).map(field => {
+            const lI = this.localFields.findIndex(localField => localField._id === field._id);
+            const after = lI > 0 ? this.localFields[lI - 1].name : false;
+            return { ...field, after };
+         });
+
+         // Deletions
          const deletions = this.originalFields.filter(field => !localIDs.includes(field._id));
 
          // Changes
@@ -210,6 +222,33 @@ export default {
       clearChanges () {
          this.localFields = JSON.parse(JSON.stringify(this.originalFields));
          this.localKeyUsage = JSON.parse(JSON.stringify(this.originalKeyUsage));
+      },
+      addField () {
+         this.localFields.push({
+            _id: uidGen(),
+            name: '',
+            key: '',
+            type: 'int',
+            schema: this.schema,
+            table: this.table,
+            numPrecision: null,
+            numLength: null,
+            datePrecision: null,
+            charLength: null,
+            nullable: false,
+            unsigned: false,
+            zerofill: false,
+            order: this.localFields.length + 1,
+            default: null,
+            charset: null,
+            collation: null,
+            autoIncrement: false,
+            onUpdate: '',
+            comment: ''
+         });
+      },
+      removeField (uid) {
+         this.localFields = this.localFields.filter(field => field._id !== uid);
       },
       showAddModal () {
          this.isAddModal = true;

@@ -186,7 +186,7 @@ export default {
                      dataTypes = require('common/data-types/mysql');
                      break;
                }
-               commit('ADD_CONNECTED', { // TODO: add data types
+               commit('ADD_CONNECTED', {
                   uid: connection.uid,
                   client: connection.client,
                   dataTypes,
