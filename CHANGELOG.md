@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.9](https://github.com/EStarium/antares/compare/v0.0.8...v0.0.9) (2020-11-13)
+
+
+### Features
+
+* ability to edit table fields ([249926b](https://github.com/EStarium/antares/commit/249926b8e040d62d50244362b7f999f26337b93c))
+* support to aliased tables ([1658432](https://github.com/EStarium/antares/commit/1658432fd30073ba3bffb39b5c4ca69194ae1330))
+* table fields addition ([0765403](https://github.com/EStarium/antares/commit/07654039b6a99f3115c378b53d659593e5c81f35))
+* table fields deletion ([242ddec](https://github.com/EStarium/antares/commit/242ddec744814d15657db1ca88b2d865045ea219))
+* **ui:** display table properties tab ([2dc16e8](https://github.com/EStarium/antares/commit/2dc16e8ea8d6d9b79288335888e155ff180eebf5))
+
+
+### Bug Fixes
+
+* duplicate header fields on join result tables ([ea9b489](https://github.com/EStarium/antares/commit/ea9b489f5f45cffa4a7ac87873fff070205e88c4))
+* F9 key shortcut refresh all query tabs instead of just selected one ([c9ba2e5](https://github.com/EStarium/antares/commit/c9ba2e5962eae1afc46daf35e55fb0ea5c3af5a4))
+* issue with tabs horizontal scroll with wheel ([c393f86](https://github.com/EStarium/antares/commit/c393f86947d1f65f896cadaa39d53f13e0a1f4eb))
+* zero fill field option was not saved ([3e5770f](https://github.com/EStarium/antares/commit/3e5770f7de51bdf2bc0f1f38c7ceb9ef0f4dcd00))
+* **mysql:** error getting foreign key list ([ee18388](https://github.com/EStarium/antares/commit/ee183886f64947305cc4f0d38dbdf7919953ec01))
+* wrong result fields type and order with some queries ([a8cd177](https://github.com/EStarium/antares/commit/a8cd17748f4ac7d75092f65ae7ca5f96a8a9e8c5))
+
 ### [0.0.8](https://github.com/EStarium/antares/compare/v0.0.7...v0.0.8) (2020-10-18)
 
 
