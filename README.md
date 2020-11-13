@@ -28,10 +28,11 @@ An application created with minimalism and semplicity in mind, with features in 
 ## Current main features
 
 - Multiple database connections at same time.
-- Table's content management (add/edit/delete).
+- Database management (add/edit/delete).
+- Tables fields management (add/edit/delete).
+- Tables content management (add/edit/delete).
 - Run queries on multiple tabs.
 - Query suggestions.
-- Database management (add/edit/delete).
 - Native dark theme.
 - Multi language.
 - Auto updates.
@@ -40,13 +41,13 @@ An application created with minimalism and semplicity in mind, with features in 
 
 This is a roadmap with major features will come in near future.
 
-- Improvements of query editor area.
 - Tables management (add/edit/delete).
 - Users management (add/edit/delete).
-- Stored procedures, views, schedulers and trigger support.
+- Stored procedures, views, schedulers and triggers support.
 - More secure password storage.
 - Database tools (variables, process list...).
 - Support for other databases.
+- Improvements of query editor area.
 - Improvements of query suggestions.
 - Query history.
 - More context menu shortcuts.

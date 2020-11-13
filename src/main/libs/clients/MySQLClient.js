@@ -291,6 +291,7 @@ export class MySQLClient extends AntaresCore {
          alterColumns.push(`ADD COLUMN \`${addition.name}\` 
             ${addition.type.toUpperCase()}${length ? `(${length})` : ''} 
             ${addition.unsigned ? 'UNSIGNED' : ''} 
+            ${addition.zerofill ? 'ZEROFILL' : ''}
             ${addition.nullable ? 'NULL' : 'NOT NULL'}
             ${addition.autoIncrement ? 'AUTO_INCREMENT' : ''}
             ${addition.default ? `DEFAULT ${addition.default}` : ''}
@@ -307,6 +308,7 @@ export class MySQLClient extends AntaresCore {
          alterColumns.push(`CHANGE COLUMN \`${change.orgName}\` \`${change.name}\` 
             ${change.type.toUpperCase()}${length ? `(${length})` : ''} 
             ${change.unsigned ? 'UNSIGNED' : ''} 
+            ${change.zerofill ? 'ZEROFILL' : ''}
             ${change.nullable ? 'NULL' : 'NOT NULL'}
             ${change.autoIncrement ? 'AUTO_INCREMENT' : ''}
             ${change.default ? `DEFAULT ${change.default}` : ''}
