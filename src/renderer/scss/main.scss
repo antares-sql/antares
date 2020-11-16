@@ -191,6 +191,11 @@ body {
   background-color: $bg-color-gray;
 }
 
+.form-input.is-error,
+.form-select.is-error {
+  background-color: $bg-color-gray;
+}
+
 .form-input:not(:placeholder-shown):invalid:focus {
   background: $bg-color-gray;
 }

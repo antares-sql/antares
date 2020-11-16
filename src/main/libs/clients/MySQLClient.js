@@ -268,6 +268,28 @@ export class MySQLClient extends AntaresCore {
    }
 
    /**
+    * SHOW ENGINES
+    *
+    * @returns {Array.<Object>} engines list
+    * @memberof MySQLClient
+    */
+   async getEngines () {
+      const sql = 'SHOW ENGINES';
+      const results = await this.raw(sql);
+
+      return results.rows.map(row => {
+         return {
+            name: row.Engine,
+            support: row.Support,
+            comment: row.Comment,
+            transactions: row.Trasactions,
+            xa: row.XA,
+            savepoints: row.Savepoints
+         };
+      });
+   }
+
+   /**
     * ALTER TABLE
     *
     * @returns {Array.<Object>} parameters
@@ -278,11 +300,18 @@ export class MySQLClient extends AntaresCore {
          table,
          additions,
          deletions,
-         changes
+         changes,
+         options
       } = params;
 
       let sql = `ALTER TABLE \`${table}\` `;
       const alterColumns = [];
+
+      // OPTIONS
+      if ('comment' in options) alterColumns.push(`COMMENT='${options.comment}'`);
+      if ('engine' in options) alterColumns.push(`ENGINE=${options.engine}`);
+      if ('autoIncrement' in options) alterColumns.push(`AUTO_INCREMENT=${+options.autoIncrement}`);
+      if ('collation' in options) alterColumns.push(`COLLATE='${options.collation}'`);
 
       // ADD
       additions.forEach(addition => {
@@ -324,6 +353,9 @@ export class MySQLClient extends AntaresCore {
       });
 
       sql += alterColumns.join(', ');
+
+      // RENAME
+      if (options.name) sql += `; RENAME TABLE \`${table}\` TO \`${options.name}\``;
 
       return await this.raw(sql);
    }

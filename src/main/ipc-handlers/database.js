@@ -83,6 +83,17 @@ export default connections => {
       }
    });
 
+   ipcMain.handle('get-engines', async (event, uid) => {
+      try {
+         const result = await connections[uid].getEngines();
+
+         return { status: 'success', response: result };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
    ipcMain.handle('use-schema', async (event, { uid, schema }) => {
       if (!schema) return;
 

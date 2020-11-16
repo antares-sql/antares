@@ -85,6 +85,14 @@ export default {
             }
             : workspace);
       },
+      REFRESH_ENGINES (state, { uid, engines }) {
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
+            ? {
+               ...workspace,
+               engines
+            }
+            : workspace);
+      },
       ADD_WORKSPACE (state, workspace) {
          state.workspaces.push(workspace);
       },
@@ -194,6 +202,7 @@ export default {
                });
                dispatch('refreshCollations', connection.uid);
                dispatch('refreshVariables', connection.uid);
+               dispatch('refreshEngines', connection.uid);
             }
          }
          catch (err) {
@@ -231,6 +240,18 @@ export default {
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
             else
                commit('REFRESH_VARIABLES', { uid, variables: response });
+         }
+         catch (err) {
+            dispatch('notifications/addNotification', { status: 'error', message: err.stack }, { root: true });
+         }
+      },
+      async refreshEngines ({ dispatch, commit }, uid) {
+         try {
+            const { status, response } = await Database.getEngines(uid);
+            if (status === 'error')
+               dispatch('notifications/addNotification', { status, message: response }, { root: true });
+            else
+               commit('REFRESH_ENGINES', { uid, engines: response });
          }
          catch (err) {
             dispatch('notifications/addNotification', { status: 'error', message: err.stack }, { root: true });

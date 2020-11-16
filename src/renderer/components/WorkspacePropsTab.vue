@@ -40,7 +40,7 @@
                   <span>{{ $t('word.foreignKeys') }}</span>
                   <i class="mdi mdi-24px mdi-key-link ml-1" />
                </button>
-               <button class="btn btn-dark btn-sm d-none">
+               <button class="btn btn-dark btn-sm" @click="showOptionsModal">
                   <span>{{ $t('word.options') }}</span>
                   <i class="mdi mdi-24px mdi-cogs ml-1" />
                </button>
@@ -60,6 +60,92 @@
             @remove-field="removeField"
          />
       </div>
+      <ConfirmModal
+         v-if="isOptionsModal"
+         :confirm-text="$t('word.confirm')"
+         size="400"
+         @confirm="confirmOptionsChange"
+         @hide="hideOptionsModal"
+      >
+         <template :slot="'header'">
+            <div class="d-flex">
+               <i class="mdi mdi-24px mdi-cogs mr-1" /> {{ $t('word.options') }} "{{ table }}"
+            </div>
+         </template>
+         <div :slot="'body'">
+            <form class="form-horizontal">
+               <div class="form-group">
+                  <label class="form-label col-4">
+                     {{ $t('word.name') }}
+                  </label>
+                  <div class="column">
+                     <input
+                        v-model="localOptions.name"
+                        class="form-input"
+                        :class="{'is-error': !isTableNameValid}"
+                        type="text"
+                     >
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label class="form-label col-4">
+                     {{ $t('word.comment') }}
+                  </label>
+                  <div class="column">
+                     <input
+                        v-model="localOptions.comment"
+                        class="form-input"
+                        type="text"
+                     >
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label class="form-label col-4">
+                     {{ $t('word.autoIncrement') }}
+                  </label>
+                  <div class="column">
+                     <input
+                        v-model="localOptions.autoIncrement"
+                        class="form-input"
+                        type="number"
+                     >
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label class="form-label col-4">
+                     {{ $t('word.collation') }}
+                  </label>
+                  <div class="column">
+                     <select v-model="localOptions.collation" class="form-select">
+                        <option
+                           v-for="collation in workspace.collations"
+                           :key="collation.id"
+                           :value="collation.collation"
+                        >
+                           {{ collation.collation }}
+                        </option>
+                     </select>
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label class="form-label col-4">
+                     {{ $t('word.engine') }}
+                  </label>
+                  <div class="column">
+                     <select v-model="localOptions.engine" class="form-select">
+                        <option
+                           v-for="engine in workspace.engines"
+                           :key="engine.name"
+                           :value="engine.name"
+                        >
+                           {{ engine.name }}
+                        </option>
+                     </select>
+                  </div>
+               </div>
+            </form>
+         </div>
+      </ConfirmModal>
    </div>
 </template>
 
@@ -68,11 +154,13 @@ import { mapGetters, mapActions } from 'vuex';
 import { uidGen } from 'common/libs/uidGen';
 import Tables from '@/ipc-api/Tables';
 import WorkspacePropsTable from '@/components/WorkspacePropsTable';
+import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
    name: 'WorkspacePropsTab',
    components: {
-      WorkspacePropsTable
+      WorkspacePropsTable,
+      ConfirmModal
    },
    props: {
       connection: Object,
@@ -83,20 +171,31 @@ export default {
          tabUid: 'prop',
          isQuering: false,
          isSaving: false,
+         isAddModal: false,
+         isOptionsModal: false,
+         isOptionsChanging: false,
          originalFields: [],
          localFields: [],
          originalKeyUsage: [],
          localKeyUsage: [],
-         lastTable: null,
-         isAddModal: false
+         localOptions: [],
+         lastTable: null
       };
    },
    computed: {
       ...mapGetters({
-         getWorkspace: 'workspaces/getWorkspace'
+         getWorkspace: 'workspaces/getWorkspace',
+         getDatabaseVariable: 'workspaces/getDatabaseVariable'
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
+      },
+      tableOptions () {
+         const db = this.workspace.structure.find(db => db.name === this.schema);
+         return db ? db.tables.find(table => table.name === this.table) : {};
+      },
+      defaultEngine () {
+         return this.getDatabaseVariable(this.connection.uid, 'default_storage_engine').value || '';
       },
       isSelected () {
          return this.workspace.selected_tab === 'prop';
@@ -105,7 +204,12 @@ export default {
          return this.workspace.breadcrumbs.schema;
       },
       isChanged () {
-         return JSON.stringify(this.originalFields) !== JSON.stringify(this.localFields) || JSON.stringify(this.originalKeyUsage) !== JSON.stringify(this.localKeyUsage);
+         return JSON.stringify(this.originalFields) !== JSON.stringify(this.localFields) ||
+            JSON.stringify(this.originalKeyUsage) !== JSON.stringify(this.localKeyUsage) ||
+            JSON.stringify(this.tableOptions) !== JSON.stringify(this.localOptions);
+      },
+      isTableNameValid () {
+         return this.localOptions.name !== '';
       }
    },
    watch: {
@@ -124,11 +228,13 @@ export default {
    },
    methods: {
       ...mapActions({
-         addNotification: 'notifications/addNotification'
+         addNotification: 'notifications/addNotification',
+         refreshStructure: 'workspaces/refreshStructure'
       }),
       async getFieldsData () {
          if (!this.table) return;
          this.isQuering = true;
+         this.localOptions = JSON.parse(JSON.stringify(this.tableOptions));
 
          const params = {
             uid: this.connection.uid,
@@ -197,20 +303,30 @@ export default {
                if (this.localFields[lI]) changes.push({ ...this.localFields[lI], after, orgName });
          });
 
+         // OPTIONS
+         const options = Object.keys(this.localOptions).reduce((acc, option) => {
+            if (this.localOptions[option] !== this.tableOptions[option])
+               acc[option] = this.localOptions[option];
+            return acc;
+         }, {});
+
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
             table: this.workspace.breadcrumbs.table,
             additions,
             changes,
-            deletions
+            deletions,
+            options
          };
 
          try { // Key usage (foreign keys)
             const { status, response } = await Tables.alterTable(params);
 
-            if (status === 'success')
+            if (status === 'success') {
+               await this.refreshStructure(this.connection.uid);
                this.getFieldsData();
+            }
             else
                this.addNotification({ status: 'error', message: response });
          }
@@ -223,6 +339,7 @@ export default {
       clearChanges () {
          this.localFields = JSON.parse(JSON.stringify(this.originalFields));
          this.localKeyUsage = JSON.parse(JSON.stringify(this.originalKeyUsage));
+         this.localOptions = JSON.parse(JSON.stringify(this.tableOptions));
       },
       addField () {
          this.localFields.push({
@@ -256,6 +373,22 @@ export default {
       },
       hideAddModal () {
          this.isAddModal = false;
+      },
+      showOptionsModal () {
+         this.isOptionsModal = true;
+      },
+      hideOptionsModal () {
+         if (this.isOptionsChanging && !this.isTableNameValid) {
+            this.isOptionsChanging = false;
+            return;
+         }
+
+         this.isOptionsModal = false;
+         if (!this.isOptionsChanging) this.localOptions = JSON.parse(JSON.stringify(this.tableOptions));
+         this.isOptionsChanging = false;
+      },
+      confirmOptionsChange () {
+         this.isOptionsChanging = true;
       }
    }
 };

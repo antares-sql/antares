@@ -3,10 +3,10 @@
       :context-event="contextEvent"
       @close-context="closeContext"
    >
-      <!-- <div class="context-element">
+      <div class="context-element">
          <span class="d-flex"><i class="mdi mdi-18px mdi-plus text-light pr-1" /> {{ $t('word.add') }}</span>
          <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
-      </div> -->
+      </div>
       <div class="context-element" @click="showEditModal">
          <span class="d-flex"><i class="mdi mdi-18px mdi-pencil text-light pr-1" /> {{ $t('word.edit') }}</span>
       </div>

@@ -53,7 +53,9 @@ module.exports = {
       comment: 'Comment',
       key: 'Key | Keys',
       order: 'Order',
-      expression: 'Expression'
+      expression: 'Expression',
+      autoIncrement: 'Auto Increment',
+      engine: 'Engine'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',

@@ -30,6 +30,10 @@ export default class {
       return ipcRenderer.invoke('get-variables', uid);
    }
 
+   static getEngines (uid) {
+      return ipcRenderer.invoke('get-engines', uid);
+   }
+
    static useSchema (params) {
       return ipcRenderer.invoke('use-schema', params);
    }
