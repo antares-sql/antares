@@ -80,7 +80,7 @@ This is a roadmap with major features will come in near future.
 #### • ARM
 
 - [ ] Windows
-- [x] Linux
+- [ ] Linux
 - [ ] MacOS
 
 ## Translations

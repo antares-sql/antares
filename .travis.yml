@@ -39,9 +39,9 @@ jobs:
       script:
         - npm run build -- -p always
     
-    - stage: Deploy ARM Linux
-      if: tag IS present
-      os: linux
-      arch: arm64
-      script:
-        - npm run build -- --linux AppImage -p always
+    # - stage: Deploy ARM Linux
+    #   if: tag IS present
+    #   os: linux
+    #   arch: arm64
+    #   script:
+    #     - npm run build -- --linux AppImage -p always
