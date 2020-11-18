@@ -3,7 +3,7 @@ import Connection from '@/ipc-api/Connection';
 import Database from '@/ipc-api/Database';
 import { uidGen } from 'common/libs/uidGen';
 const tabIndex = [];
-let lastSchema = '';
+let lastBreadcrumb = '';
 
 export default {
    namespaced: true,
@@ -291,12 +291,13 @@ export default {
             dispatch('newTab', uid);
       },
       changeBreadcrumbs ({ commit, getters }, payload) {
-         if (lastSchema !== payload.schema) {
+         if (lastBreadcrumb.schema === payload.schema && lastBreadcrumb.table !== null && payload.table === null) return;
+
+         if (lastBreadcrumb.schema !== payload.schema)
             Database.useSchema({ uid: getters.getSelected, schema: payload.schema });
-            lastSchema = payload.schema;
-         }
 
          commit('CHANGE_BREADCRUMBS', { uid: getters.getSelected, breadcrumbs: payload });
+         lastBreadcrumb = { ...payload };
       },
       newTab ({ commit }, uid) {
          commit('NEW_TAB', uid);

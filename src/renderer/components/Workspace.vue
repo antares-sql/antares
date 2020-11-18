@@ -122,7 +122,13 @@ export default {
          return this.selectedWorkspace === this.connection.uid;
       },
       selectedTab () {
-         return this.queryTabs.find(tab => tab.uid === this.workspace.selected_tab) || ['data', 'prop'].includes(this.workspace.selected_tab) ? this.workspace.selected_tab : this.queryTabs[0].uid;
+         if (this.workspace.breadcrumbs.table === null)
+            return this.queryTabs[0].uid;
+
+         return this.queryTabs.find(tab => tab.uid === this.workspace.selected_tab) ||
+         ['data', 'prop'].includes(this.workspace.selected_tab)
+            ? this.workspace.selected_tab
+            : this.queryTabs[0].uid;
       },
       queryTabs () {
          return this.workspace.tabs.filter(tab => tab.type === 'query');
