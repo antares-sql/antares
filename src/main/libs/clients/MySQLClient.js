@@ -202,6 +202,30 @@ export class MySQLClient extends AntaresCore {
     * @param {Object} params
     * @param {String} params.schema
     * @param {String} params.table
+    * @returns {Object} table indexes
+    * @memberof MySQLClient
+    */
+   async getTableIndexes ({ schema, table }) {
+      const { rows } = await this.raw(`SHOW INDEXES FROM \`${table}\` FROM \`${schema}\``);
+
+      return rows.map(row => {
+         return {
+            unique: !row.Non_unique,
+            name: row.Key_name,
+            column: row.Column_name,
+            indexType: row.Index_type,
+            type: row.Key_name === 'PRIMARY' ? 'PRIMARY' : !row.Non_unique ? 'UNIQUE' : row.Index_type === 'FULLTEXT' ? 'FULLTEXT' : 'INDEX',
+            cardinality: row.Cardinality,
+            comment: row.Comment,
+            indexComment: row.Index_comment
+         };
+      });
+   }
+
+   /**
+    * @param {Object} params
+    * @param {String} params.schema
+    * @param {String} params.table
     * @returns {Object} table key usage
     * @memberof MySQLClient
     */

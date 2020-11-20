@@ -99,6 +99,7 @@
                v-for="row in fields"
                :key="row._id"
                :row="row"
+               :indexes="getIndexes(row.name)"
                :data-types="dataTypes"
                @contextmenu="contextMenu"
             />
@@ -122,6 +123,7 @@ export default {
    },
    props: {
       fields: Array,
+      indexes: Array,
       tabUid: [String, Number],
       connUid: String,
       table: String,
@@ -195,6 +197,9 @@ export default {
       },
       removeField () {
          this.$emit('remove-field', this.selectedField);
+      },
+      getIndexes (field) {
+         return this.indexes.filter(index => index.column === field);
       }
    }
 };

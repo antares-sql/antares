@@ -10,6 +10,10 @@ export default class {
       return ipcRenderer.invoke('get-table-data', params);
    }
 
+   static getTableIndexes (params) {
+      return ipcRenderer.invoke('get-table-indexes', params);
+   }
+
    static getKeyUsage (params) {
       return ipcRenderer.invoke('get-key-usage', params);
    }

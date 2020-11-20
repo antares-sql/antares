@@ -4,15 +4,22 @@
   line-height: 1.5;
   margin-right: 0.2rem;
 
-  &.key-pri {
+  &.key-pri,
+  &.key-PRIMARY {
     color: goldenrod;
   }
 
-  &.key-uni {
+  &.key-uni,
+  &.key-UNIQUE {
     color: deepskyblue;
   }
 
-  &.key-mul {
+  &.key-mul,
+  &.key-INDEX {
     color: palegreen;
+  }
+
+  &.key-FULLTEXT {
+    color: mediumvioletred;
   }
 }

@@ -32,7 +32,7 @@
                   <span>{{ $t('word.add') }}</span>
                   <i class="mdi mdi-24px mdi-playlist-plus ml-1" />
                </button>
-               <button class="btn btn-dark btn-sm d-none">
+               <button class="btn btn-dark btn-sm">
                   <span>{{ $t('word.indexes') }}</span>
                   <i class="mdi mdi-24px mdi-key mdi-rotate-45 ml-1" />
                </button>
@@ -52,6 +52,7 @@
             v-if="localFields"
             ref="queryTable"
             :fields="localFields"
+            :indexes="localIndexes"
             :tab-uid="tabUid"
             :conn-uid="connection.uid"
             :table="table"
@@ -178,6 +179,8 @@ export default {
          localFields: [],
          originalKeyUsage: [],
          localKeyUsage: [],
+         originalIndexes: [],
+         localIndexes: [],
          localOptions: [],
          lastTable: null
       };
@@ -249,6 +252,20 @@ export default {
                   return { ...field, _id: uidGen() };
                });
                this.localFields = JSON.parse(JSON.stringify(this.originalFields));
+            }
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         try { // Indexes
+            const { status, response } = await Tables.getTableIndexes(params);
+
+            if (status === 'success') {
+               this.originalIndexes = response;
+               this.localIndexes = JSON.parse(JSON.stringify(response));
             }
             else
                this.addNotification({ status: 'error', message: response });

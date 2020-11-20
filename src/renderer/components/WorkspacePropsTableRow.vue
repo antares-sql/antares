@@ -7,12 +7,15 @@
          </div>
       </div>
       <div class="td" tabindex="0">
-         <i
-            v-if="localRow.key"
-            :title="keyName(localRow.key)"
-            class="mdi mdi-key column-key c-help pl-1"
-            :class="`key-${localRow.key}`"
-         />
+         <div class="text-center">
+            <i
+               v-for="index in indexes"
+               :key="index.name"
+               :title="index.type"
+               class="d-inline-block mdi mdi-key column-key c-help"
+               :class="`key-${index.type}`"
+            />
+         </div>
       </div>
       <div class="td">
          <span
@@ -279,7 +282,8 @@ export default {
    },
    props: {
       row: Object,
-      dataTypes: Array
+      dataTypes: Array,
+      indexes: Array
    },
    data () {
       return {

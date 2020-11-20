@@ -30,6 +30,17 @@ export default (connections) => {
       }
    });
 
+   ipcMain.handle('get-table-indexes', async (event, params) => {
+      try {
+         const result = await connections[params.uid].getTableIndexes(params);
+
+         return { status: 'success', response: result };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
    ipcMain.handle('get-key-usage', async (event, params) => {
       try {
          const result = await connections[params.uid].getKeyUsage(params);
