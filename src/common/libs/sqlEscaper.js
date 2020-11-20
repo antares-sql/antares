@@ -11,8 +11,8 @@ const regex = new RegExp(pattern);
  */
 function sqlEscaper (string) {
    return string.replace(regex, char => {
-      const m = ['\\0', '\\x08', '\\x09', '\\x1a', '\\n', '\\r', '\'', '"', '\\', '\\\\', '%'];
-      const r = ['\\\\0', '\\\\b', '\\\\t', '\\\\z', '\\\\n', '\\\\r', '\'\'', '""', '\\\\', '\\\\\\\\', '\\%'];
+      const m = ['\\0', '\\x08', '\\x09', '\\x1a', '\\n', '\\r', '\'', '\"', '\\', '\\\\', '%'];
+      const r = ['\\\\0', '\\\\b', '\\\\t', '\\\\z', '\\\\n', '\\\\r', '\\\'', '\\\"', '\\\\', '\\\\\\\\', '\\%'];
       return r[m.indexOf(char)] || char;
    });
 }
