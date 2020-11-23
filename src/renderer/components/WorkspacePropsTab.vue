@@ -32,7 +32,7 @@
                   <span>{{ $t('word.add') }}</span>
                   <i class="mdi mdi-24px mdi-playlist-plus ml-1" />
                </button>
-               <button class="btn btn-dark btn-sm">
+               <button class="btn btn-dark btn-sm" :title="$t('message.manageIndexes')">
                   <span>{{ $t('word.indexes') }}</span>
                   <i class="mdi mdi-24px mdi-key mdi-rotate-45 ml-1" />
                </button>
@@ -61,92 +61,15 @@
             @remove-field="removeField"
          />
       </div>
-      <ConfirmModal
+      <WorkspacePropsOptionsModal
          v-if="isOptionsModal"
-         :confirm-text="$t('word.confirm')"
-         size="400"
-         @confirm="confirmOptionsChange"
+         :local-options="localOptions"
+         :table-options="tableOptions"
+         :table="table"
+         :workspace="workspace"
          @hide="hideOptionsModal"
-      >
-         <template :slot="'header'">
-            <div class="d-flex">
-               <i class="mdi mdi-24px mdi-cogs mr-1" /> {{ $t('word.options') }} "{{ table }}"
-            </div>
-         </template>
-         <div :slot="'body'">
-            <form class="form-horizontal">
-               <div class="form-group">
-                  <label class="form-label col-4">
-                     {{ $t('word.name') }}
-                  </label>
-                  <div class="column">
-                     <input
-                        v-model="localOptions.name"
-                        class="form-input"
-                        :class="{'is-error': !isTableNameValid}"
-                        type="text"
-                     >
-                  </div>
-               </div>
-               <div class="form-group">
-                  <label class="form-label col-4">
-                     {{ $t('word.comment') }}
-                  </label>
-                  <div class="column">
-                     <input
-                        v-model="localOptions.comment"
-                        class="form-input"
-                        type="text"
-                     >
-                  </div>
-               </div>
-               <div class="form-group">
-                  <label class="form-label col-4">
-                     {{ $t('word.autoIncrement') }}
-                  </label>
-                  <div class="column">
-                     <input
-                        v-model="localOptions.autoIncrement"
-                        class="form-input"
-                        type="number"
-                     >
-                  </div>
-               </div>
-               <div class="form-group">
-                  <label class="form-label col-4">
-                     {{ $t('word.collation') }}
-                  </label>
-                  <div class="column">
-                     <select v-model="localOptions.collation" class="form-select">
-                        <option
-                           v-for="collation in workspace.collations"
-                           :key="collation.id"
-                           :value="collation.collation"
-                        >
-                           {{ collation.collation }}
-                        </option>
-                     </select>
-                  </div>
-               </div>
-               <div class="form-group">
-                  <label class="form-label col-4">
-                     {{ $t('word.engine') }}
-                  </label>
-                  <div class="column">
-                     <select v-model="localOptions.engine" class="form-select">
-                        <option
-                           v-for="engine in workspace.engines"
-                           :key="engine.name"
-                           :value="engine.name"
-                        >
-                           {{ engine.name }}
-                        </option>
-                     </select>
-                  </div>
-               </div>
-            </form>
-         </div>
-      </ConfirmModal>
+         @options-update="optionsUpdate"
+      />
    </div>
 </template>
 
@@ -155,13 +78,13 @@ import { mapGetters, mapActions } from 'vuex';
 import { uidGen } from 'common/libs/uidGen';
 import Tables from '@/ipc-api/Tables';
 import WorkspacePropsTable from '@/components/WorkspacePropsTable';
-import ConfirmModal from '@/components/BaseConfirmModal';
+import WorkspacePropsOptionsModal from '@/components/WorkspacePropsOptionsModal';
 
 export default {
    name: 'WorkspacePropsTab',
    components: {
       WorkspacePropsTable,
-      ConfirmModal
+      WorkspacePropsOptionsModal
    },
    props: {
       connection: Object,
@@ -181,7 +104,7 @@ export default {
          localKeyUsage: [],
          originalIndexes: [],
          localIndexes: [],
-         localOptions: [],
+         localOptions: {},
          lastTable: null
       };
    },
@@ -210,9 +133,6 @@ export default {
          return JSON.stringify(this.originalFields) !== JSON.stringify(this.localFields) ||
             JSON.stringify(this.originalKeyUsage) !== JSON.stringify(this.localKeyUsage) ||
             JSON.stringify(this.tableOptions) !== JSON.stringify(this.localOptions);
-      },
-      isTableNameValid () {
-         return this.localOptions.name !== '';
       }
    },
    watch: {
@@ -385,27 +305,14 @@ export default {
       removeField (uid) {
          this.localFields = this.localFields.filter(field => field._id !== uid);
       },
-      showAddModal () {
-         this.isAddModal = true;
-      },
-      hideAddModal () {
-         this.isAddModal = false;
-      },
       showOptionsModal () {
          this.isOptionsModal = true;
       },
       hideOptionsModal () {
-         if (this.isOptionsChanging && !this.isTableNameValid) {
-            this.isOptionsChanging = false;
-            return;
-         }
-
          this.isOptionsModal = false;
-         if (!this.isOptionsChanging) this.localOptions = JSON.parse(JSON.stringify(this.tableOptions));
-         this.isOptionsChanging = false;
       },
-      confirmOptionsChange () {
-         this.isOptionsChanging = true;
+      optionsUpdate (options) {
+         this.localOptions = options;
       }
    }
 };

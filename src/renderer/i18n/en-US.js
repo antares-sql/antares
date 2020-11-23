@@ -101,7 +101,9 @@ module.exports = {
       zeroFill: 'Zero fill',
       customValue: 'Custom value',
       onUpdate: 'On update',
-      deleteField: 'Delete field'
+      deleteField: 'Delete field',
+      createNewIndex: 'Create new index',
+      addToIndex: 'Add to index'
    },
    // Date and Time
    short: {
