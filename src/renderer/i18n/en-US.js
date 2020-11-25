@@ -55,7 +55,10 @@ module.exports = {
       order: 'Order',
       expression: 'Expression',
       autoIncrement: 'Auto Increment',
-      engine: 'Engine'
+      engine: 'Engine',
+      field: 'Field | Fields',
+      approximately: 'Approximately',
+      total: 'Total'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',

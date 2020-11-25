@@ -17,7 +17,7 @@
             </div>
             <div class="workspace-query-info">
                <div v-if="resultsCount">
-                  {{ $t('word.results') }}: <b>{{ resultsCount }}</b>
+                  {{ $t('word.results') }}: <b>{{ resultsCount.toLocaleString() }}</b>
                </div>
                <div v-if="affectedCount">
                   {{ $t('message.affectedRows') }}: <b>{{ affectedCount }}</b>
