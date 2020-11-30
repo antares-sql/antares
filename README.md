@@ -4,14 +4,14 @@
 
 # Antares SQL Client
 
-![GitHub package.json version](https://img.shields.io/github/package-json/v/estarium/antares) [![Build Status](https://travis-ci.com/EStarium/antares.svg?branch=master)](https://travis-ci.com/EStarium/antares) ![GitHub All Releases](https://img.shields.io/github/downloads/estarium/antares/total) ![GitHub](https://img.shields.io/github/license/estarium/antares)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/fabio286/antares) [![Build Status](https://travis-ci.com/Fabio286/antares.svg?branch=master)](https://travis-ci.com/Fabio286/antares) ![GitHub All Releases](https://img.shields.io/github/downloads/fabio286/antares/total) ![GitHub](https://img.shields.io/github/license/fabio286/antares)
 
 Antares is an SQL client based on [Electron.js](https://github.com/electron/electron) and [Vue.js](https://github.com/vuejs/vue) that aims to become a useful tool, especially for developers.  
 My target is to support as many databases as possible, and all major operating systems, including the ARM versions.  
 
 **At the moment this application is an alpha, it lacks many features, and isn't ready as a main SQL client**. However i'm actively working on it (yes, i'm a lone dev), hoping to provide all essential features as soon as possible.
 
-🔗 If you are curious to try this early state of Antares you can download and install the [latest release](https://github.com/EStarium/antares/releases).  
+🔗 If you are curious to try this early state of Antares you can download and install the [latest release](https://github.com/Fabio286/antares/releases).  
 👁 To stay tuned for new releases watch this repo on **Release only** channel.  
 🌟 Don't forget to **leave a star** if you appreciate this project.
 
@@ -23,7 +23,7 @@ An application created with minimalism and semplicity in mind, with features in 
 
 ## How to contribute
 
-- [Translate Antares](https://github.com/EStarium/antares/wiki/Translate-Antares)
+- [Translate Antares](https://github.com/Fabio286/antares/wiki/Translate-Antares)
 
 ## Current main features
 
@@ -85,6 +85,6 @@ This is a roadmap with major features will come in near future.
 
 ## Translations
 
-[Giuseppe Gigliotti](https://github.com/ReverbOD) / [Italian Translation](https://github.com/EStarium/antares/pull/20)  
-[Mohd-PH](https://github.com/Mohd-PH) / [Arabic Translation](https://github.com/EStarium/antares/pull/29)  
-[hongkfui](https://github.com/hongkfui) / [Spanish Translation](https://github.com/EStarium/antares/pull/32)
+[Giuseppe Gigliotti](https://github.com/ReverbOD) / [Italian Translation](https://github.com/Fabio286/antares/pull/20)  
+[Mohd-PH](https://github.com/Mohd-PH) / [Arabic Translation](https://github.com/Fabio286/antares/pull/29)  
+[hongkfui](https://github.com/hongkfui) / [Spanish Translation](https://github.com/Fabio286/antares/pull/32)
