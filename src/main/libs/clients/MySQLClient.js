@@ -329,8 +329,6 @@ export class MySQLClient extends AntaresCore {
          options
       } = params;
 
-      console.log(params);
-
       let sql = `ALTER TABLE \`${table}\` `;
       const alterColumns = [];
 

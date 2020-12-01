@@ -303,11 +303,13 @@ export default {
          this.originalIndexes.forEach(originalIndex => {
             const lI = this.localIndexes.findIndex(localIndex => localIndex._id === originalIndex._id);
             if (JSON.stringify(originalIndex) !== JSON.stringify(this.localIndexes[lI])) {
-               indexChanges.changes.push({
-                  ...this.localIndexes[lI],
-                  oldName: originalIndex.name,
-                  oldType: originalIndex.type
-               });
+               if (this.localIndexes[lI]) {
+                  indexChanges.changes.push({
+                     ...this.localIndexes[lI],
+                     oldName: originalIndex.name,
+                     oldType: originalIndex.type
+                  });
+               }
             }
          });
 
