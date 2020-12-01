@@ -9,8 +9,8 @@
       <div class="td" tabindex="0">
          <div class="text-center">
             <i
-               v-for="index in indexes"
-               :key="index.name"
+               v-for="(index, i) in indexes"
+               :key="`${index.name}-${i}`"
                :title="index.type"
                class="d-inline-block mdi mdi-key column-key c-help"
                :class="`key-${index.type}`"

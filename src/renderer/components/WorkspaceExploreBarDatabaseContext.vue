@@ -6,6 +6,11 @@
       <div class="context-element">
          <span class="d-flex"><i class="mdi mdi-18px mdi-plus text-light pr-1" /> {{ $t('word.add') }}</span>
          <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
+         <div class="context-submenu">
+            <div class="context-element">
+               <span class="d-flex"><i class="mdi mdi-18px mdi-table text-light pr-1" /> {{ $t('word.table') }}</span>
+            </div>
+         </div>
       </div>
       <div class="context-element" @click="showEditModal">
          <span class="d-flex"><i class="mdi mdi-18px mdi-pencil text-light pr-1" /> {{ $t('word.edit') }}</span>

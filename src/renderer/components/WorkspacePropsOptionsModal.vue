@@ -96,7 +96,6 @@ export default {
    },
    props: {
       localOptions: Object,
-      tableOptions: Object,
       table: String,
       workspace: Object
    },

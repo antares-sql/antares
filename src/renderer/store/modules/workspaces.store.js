@@ -41,12 +41,13 @@ export default {
       SELECT_WORKSPACE (state, uid) {
          state.selected_workspace = uid;
       },
-      ADD_CONNECTED (state, { uid, client, dataTypes, structure }) {
+      ADD_CONNECTED (state, { uid, client, dataTypes, indexTypes, structure }) {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
             ? {
                ...workspace,
                client,
                dataTypes,
+               indexTypes,
                structure,
                connected: true
             }
@@ -187,17 +188,20 @@ export default {
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
             else {
                let dataTypes = [];
+               let indexTypes = [];
 
                switch (connection.client) {
                   case 'mysql':
                   case 'maria':
                      dataTypes = require('common/data-types/mysql');
+                     indexTypes = require('common/index-types/mysql');
                      break;
                }
                commit('ADD_CONNECTED', {
                   uid: connection.uid,
                   client: connection.client,
                   dataTypes,
+                  indexTypes,
                   structure: response
                });
                dispatch('refreshCollations', connection.uid);

@@ -86,9 +86,8 @@ export default {
 
     .context-container {
       min-width: 100px;
-      max-width: 150px;
       z-index: 10;
-      box-shadow: 0 0 1px 0 #000;
+      box-shadow: 0 0 2px 0 #000;
       padding: 0;
       background: #1d1d1d;
       border-radius: 0.1rem;
@@ -103,9 +102,28 @@ export default {
         padding: 0.1rem 0.3rem;
         cursor: pointer;
         justify-content: space-between;
+        position: relative;
+
+        .context-submenu {
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.2s;
+          position: absolute;
+          left: 100%;
+          top: 0;
+          background: #1d1d1d;
+          box-shadow: 0 0 2px 0 #000;
+          min-width: 100px;
+        }
 
         &:hover {
           background: $primary-color;
+
+          .context-submenu {
+            display: block;
+            visibility: visible;
+            opacity: 1;
+          }
         }
       }
     }

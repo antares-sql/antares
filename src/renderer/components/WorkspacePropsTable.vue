@@ -8,8 +8,12 @@
          v-if="isContext"
          :context-event="contextEvent"
          :selected-field="selectedField"
+         :index-types="indexTypes"
+         :indexes="indexes"
          @delete-selected="removeField"
          @close-context="isContext = false"
+         @add-new-index="$emit('add-new-index', $event)"
+         @add-to-index="$emit('add-to-index', $event)"
       />
       <div ref="propTable" class="table table-hover">
          <div class="thead">
@@ -124,6 +128,7 @@ export default {
    props: {
       fields: Array,
       indexes: Array,
+      indexTypes: Array,
       tabUid: [String, Number],
       connUid: String,
       table: String,
@@ -133,7 +138,6 @@ export default {
    data () {
       return {
          resultsSize: 1000,
-         localResults: [],
          isContext: false,
          contextEvent: null,
          selectedField: null,
@@ -156,6 +160,14 @@ export default {
       },
       tabProperties () {
          return this.getWorkspaceTab(this.tabUid);
+      },
+      fieldsLength () {
+         return this.fields.length;
+      }
+   },
+   watch: {
+      fieldsLength () {
+         this.refreshScroller();
       }
    },
    updated () {
@@ -184,22 +196,24 @@ export default {
                const size = window.innerHeight - el.getBoundingClientRect().top - footer.offsetHeight;
                this.resultsSize = size;
             }
-            // this.$refs.resultTable.updateWindow();
          }
       },
       refreshScroller () {
          this.resizeResults();
       },
       contextMenu (event, uid) {
-         this.selectedField = uid;
+         this.selectedField = this.fields.find(field => field._id === uid);
          this.contextEvent = event;
          this.isContext = true;
       },
       removeField () {
-         this.$emit('remove-field', this.selectedField);
+         this.$emit('remove-field', this.selectedField._id);
       },
       getIndexes (field) {
-         return this.indexes.filter(index => index.column === field);
+         return this.indexes.reduce((acc, curr) => {
+            acc.push(...curr.fields.map(f => ({ name: f, type: curr.type })));
+            return acc;
+         }, []).filter(f => f.name === field);
       }
    }
 };
@@ -212,5 +226,9 @@ export default {
     resize: horizontal;
     overflow: hidden;
   }
+}
+
+.vscroll {
+  overflow: auto;
 }
 </style>

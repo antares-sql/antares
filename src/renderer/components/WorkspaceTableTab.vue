@@ -44,7 +44,7 @@
                <div v-if="results.length && results[0].rows">
                   {{ $t('word.results') }}: <b>{{ results[0].rows.length.toLocaleString() }}</b>
                </div>
-               <div v-if="results.length && results[0].rows && results[0].rows.length < tableInfo.rows">
+               <div v-if="results.length && results[0].rows && tableInfo && results[0].rows.length < tableInfo.rows">
                   {{ $t('word.total') }}: <b>{{ tableInfo.rows.toLocaleString() }}</b> <small>({{ $t('word.approximately') }})</small>
                </div>
                <div v-if="workspace.breadcrumbs.database">

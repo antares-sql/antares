@@ -4,7 +4,7 @@
   "version": "0.0.9",
   "description": "A cross-platform easy to use SQL client.",
   "license": "MIT",
-  "repository": "https://github.com/EStarium/antares.git",
+  "repository": "https://github.com/Fabio286/antares.git",
   "scripts": {
     "dev": "cross-env NODE_ENV=development electron-webpack dev",
     "compile": "electron-webpack",
@@ -17,7 +17,7 @@
   },
   "author": "Fabio Di Stasio <fabio286@gmail.com>",
   "build": {
-    "appId": "com.estarium.antares",
+    "appId": "com.fabio286.antares",
     "artifactName": "${productName}-${version}-${os}_${arch}.${ext}",
     "dmg": {
       "contents": [
@@ -58,10 +58,10 @@
     "pg": "^8.5.1",
     "source-map-support": "^0.5.16",
     "spectre.css": "^0.5.9",
-    "vue-i18n": "^8.22.1",
+    "vue-i18n": "^8.22.2",
     "vue-the-mask": "^0.11.1",
     "vuedraggable": "^2.24.3",
-    "vuex": "^3.5.1",
+    "vuex": "^3.6.0",
     "vuex-persist": "^3.1.3"
   },
   "devDependencies": {
@@ -72,8 +72,8 @@
     "electron-devtools-installer": "^3.1.1",
     "electron-webpack": "^2.8.2",
     "electron-webpack-vue": "^2.4.0",
-    "eslint": "^7.13.0",
-    "eslint-config-standard": "^16.0.1",
+    "eslint": "^7.14.0",
+    "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
@@ -82,7 +82,7 @@
     "node-sass": "^5.0.0",
     "sass-loader": "^10.1.0",
     "standard-version": "^9.0.0",
-    "stylelint": "^13.7.2",
+    "stylelint": "^13.8.0",
     "stylelint-config-standard": "^20.0.0",
     "stylelint-scss": "^3.18.0",
     "vue": "^2.6.12",

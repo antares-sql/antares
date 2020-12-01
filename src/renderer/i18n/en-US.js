@@ -58,7 +58,8 @@ module.exports = {
       engine: 'Engine',
       field: 'Field | Fields',
       approximately: 'Approximately',
-      total: 'Total'
+      total: 'Total',
+      table: 'Table'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',

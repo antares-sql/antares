@@ -325,8 +325,11 @@ export class MySQLClient extends AntaresCore {
          additions,
          deletions,
          changes,
+         indexChanges,
          options
       } = params;
+
+      console.log(params);
 
       let sql = `ALTER TABLE \`${table}\` `;
       const alterColumns = [];
@@ -337,7 +340,7 @@ export class MySQLClient extends AntaresCore {
       if ('autoIncrement' in options) alterColumns.push(`AUTO_INCREMENT=${+options.autoIncrement}`);
       if ('collation' in options) alterColumns.push(`COLLATE='${options.collation}'`);
 
-      // ADD
+      // ADD FIELDS
       additions.forEach(addition => {
          const length = addition.numLength || addition.charLength || addition.datePrecision;
 
@@ -354,7 +357,22 @@ export class MySQLClient extends AntaresCore {
             ${addition.after ? `AFTER \`${addition.after}\`` : 'FIRST'}`);
       });
 
-      // CHANGE
+      // ADD INDEX
+      indexChanges.additions.forEach(addition => {
+         const fields = addition.fields.map(field => `\`${field}\``).join(',');
+         let type = addition.type;
+
+         if (type === 'PRIMARY')
+            alterColumns.push(`ADD PRIMARY KEY (${fields})`);
+         else {
+            if (type === 'UNIQUE')
+               type = 'UNIQUE INDEX';
+
+            alterColumns.push(`ADD ${type} \`${addition.name}\` (${fields})`);
+         }
+      });
+
+      // CHANGE FIELDS
       changes.forEach(change => {
          const length = change.numLength || change.charLength || change.datePrecision;
 
@@ -371,9 +389,37 @@ export class MySQLClient extends AntaresCore {
             ${change.after ? `AFTER \`${change.after}\`` : 'FIRST'}`);
       });
 
-      // DROP
+      // CHANGE INDEX
+      indexChanges.changes.forEach(change => {
+         if (change.oldType === 'PRIMARY')
+            alterColumns.push('DROP PRIMARY KEY');
+         else
+            alterColumns.push(`DROP INDEX \`${change.oldName}\``);
+
+         const fields = change.fields.map(field => `\`${field}\``).join(',');
+         let type = change.type;
+
+         if (type === 'PRIMARY')
+            alterColumns.push(`ADD PRIMARY KEY (${fields})`);
+         else {
+            if (type === 'UNIQUE')
+               type = 'UNIQUE INDEX';
+
+            alterColumns.push(`ADD ${type} \`${change.name}\` (${fields})`);
+         }
+      });
+
+      // DROP FIELDS
       deletions.forEach(deletion => {
          alterColumns.push(`DROP COLUMN \`${deletion.name}\``);
+      });
+
+      // DROP INDEX
+      indexChanges.deletions.forEach(deletion => {
+         if (deletion.type === 'PRIMARY')
+            alterColumns.push('DROP PRIMARY KEY');
+         else
+            alterColumns.push(`DROP INDEX \`${deletion.name}\``);
       });
 
       sql += alterColumns.join(', ');
