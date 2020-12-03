@@ -62,6 +62,13 @@
          @show-create-table-modal="showCreateTableModal"
          @reload="refresh"
       />
+      <TableContext
+         v-if="isTableContext"
+         :selected-table="selectedTable"
+         :context-event="tableContextEvent"
+         @close-context="closeTableContext"
+         @reload="refresh"
+      />
    </div>
 </template>
 
@@ -72,6 +79,7 @@ import Tables from '@/ipc-api/Tables';
 import WorkspaceConnectPanel from '@/components/WorkspaceConnectPanel';
 import WorkspaceExploreBarDatabase from '@/components/WorkspaceExploreBarDatabase';
 import DatabaseContext from '@/components/WorkspaceExploreBarDatabaseContext';
+import TableContext from '@/components/WorkspaceExploreBarTableContext';
 import ModalNewDatabase from '@/components/ModalNewDatabase';
 import ModalNewTable from '@/components/ModalNewTable';
 
@@ -81,6 +89,7 @@ export default {
       WorkspaceConnectPanel,
       WorkspaceExploreBarDatabase,
       DatabaseContext,
+      TableContext,
       ModalNewDatabase,
       ModalNewTable
    },
@@ -205,7 +214,7 @@ export default {
          this.isTableContext = true;
       },
       closeTableContext () {
-         this.isDatabaseContext = false;
+         this.isTableContext = false;
       }
    }
 };

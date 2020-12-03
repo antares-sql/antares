@@ -13,10 +13,10 @@
          </div>
       </div>
       <div class="context-element" @click="showEditModal">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-pencil text-light pr-1" /> {{ $t('word.edit') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-database-edit text-light pr-1" /> {{ $t('word.edit') }}</span>
       </div>
       <div class="context-element" @click="showDeleteModal">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ $t('word.delete') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-database-remove text-light pr-1" /> {{ $t('word.delete') }}</span>
       </div>
 
       <ConfirmModal
@@ -69,12 +69,17 @@ export default {
    },
    computed: {
       ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected'
-      })
+         selectedWorkspace: 'workspaces/getSelected',
+         getWorkspace: 'workspaces/getWorkspace'
+      }),
+      workspace () {
+         return this.getWorkspace(this.selectedWorkspace);
+      }
    },
    methods: {
       ...mapActions({
-         addNotification: 'notifications/addNotification'
+         addNotification: 'notifications/addNotification',
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
       showCreateTableModal () {
          this.$emit('show-create-table-modal');
@@ -103,6 +108,9 @@ export default {
             });
 
             if (status === 'success') {
+               if (this.selectedDatabase === this.workspace.breadcrumbs.schema)
+                  this.changeBreadcrumbs({ schema: null });
+
                this.closeContext();
                this.$emit('reload');
             }

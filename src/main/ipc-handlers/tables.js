@@ -184,4 +184,24 @@ export default (connections) => {
          return { status: 'error', response: err.toString() };
       }
    });
+
+   ipcMain.handle('truncate-table', async (event, params) => {
+      try {
+         await connections[params.uid].truncateTable(params);
+         return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
+   ipcMain.handle('drop-table', async (event, params) => {
+      try {
+         await connections[params.uid].dropTable(params);
+         return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
 };

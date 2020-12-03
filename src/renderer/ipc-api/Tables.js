@@ -41,4 +41,12 @@ export default class {
    static alterTable (params) {
       return ipcRenderer.invoke('alter-table', params);
    }
+
+   static truncateTable (params) {
+      return ipcRenderer.invoke('truncate-table', params);
+   }
+
+   static dropTable (params) {
+      return ipcRenderer.invoke('drop-table', params);
+   }
 }

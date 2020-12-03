@@ -122,7 +122,12 @@ export default {
          return this.results.length ? this.results[0].keys : [];
       },
       tableInfo () {
-         return this.workspace.structure.find(db => db.name === this.schema).tables.find(table => table.name === this.table);
+         try {
+            return this.workspace.structure.find(db => db.name === this.schema).tables.find(table => table.name === this.table);
+         }
+         catch (err) {
+            return { rows: 0 };
+         }
       }
    },
    watch: {

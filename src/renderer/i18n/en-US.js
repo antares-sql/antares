@@ -109,7 +109,9 @@ module.exports = {
       createNewIndex: 'Create new index',
       addToIndex: 'Add to index',
       createNewTable: 'Create new table',
-      emptyTable: 'Empty table'
+      emptyTable: 'Empty table',
+      deleteTable: 'Delete table',
+      emptyCorfirm: 'Do you confirm to empty'
    },
    // Date and Time
    short: {

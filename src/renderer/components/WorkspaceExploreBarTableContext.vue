@@ -3,43 +3,45 @@
       :context-event="contextEvent"
       @close-context="closeContext"
    >
-      <div class="context-element">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-plus text-light pr-1" /> {{ $t('word.add') }}</span>
-         <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
-         <div class="context-submenu">
-            <div class="context-element" @click="showCreateTableModal">
-               <span class="d-flex"><i class="mdi mdi-18px mdi-table text-light pr-1" /> {{ $t('word.table') }}</span>
-            </div>
-         </div>
-      </div>
-      <div class="context-element" @click="showEditModal">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-pencil text-light pr-1" /> {{ $t('word.edit') }}</span>
+      <div class="context-element" @click="showEmptyModal">
+         <span class="d-flex"><i class="mdi mdi-18px mdi-table-off text-light pr-1" /> {{ $t('message.emptyTable') }}</span>
       </div>
       <div class="context-element" @click="showDeleteModal">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ $t('word.delete') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-table-remove text-light pr-1" /> {{ $t('word.delete') }}</span>
       </div>
 
       <ConfirmModal
-         v-if="isDeleteModal"
-         @confirm="deleteDatabase"
-         @hide="hideDeleteModal"
+         v-if="isEmptyModal"
+         @confirm="emptyTable"
+         @hide="hideEmptyModal"
       >
          <template slot="header">
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-database-remove mr-1" /> {{ $t('message.deleteDatabase') }}
+               <i class="mdi mdi-24px mdi-table-off mr-1" /> {{ $t('message.emptyTable') }}
             </div>
          </template>
          <div slot="body">
             <div class="mb-2">
-               {{ $t('message.deleteCorfirm') }} "<b>{{ selectedDatabase }}</b>"?
+               {{ $t('message.emptyCorfirm') }} "<b>{{ selectedTable }}</b>"?
             </div>
          </div>
       </ConfirmModal>
-      <ModalEditDatabase
-         v-if="isEditModal"
-         :selected-database="selectedDatabase"
-         @close="hideEditModal"
-      />
+      <ConfirmModal
+         v-if="isDeleteModal"
+         @confirm="deleteTable"
+         @hide="hideDeleteModal"
+      >
+         <template slot="header">
+            <div class="d-flex">
+               <i class="mdi mdi-24px mdi-table-remove mr-1" /> {{ $t('message.deleteTable') }}
+            </div>
+         </template>
+         <div slot="body">
+            <div class="mb-2">
+               {{ $t('message.deleteCorfirm') }} "<b>{{ selectedTable }}</b>"?
+            </div>
+         </div>
+      </ConfirmModal>
    </BaseContextMenu>
 </template>
 
@@ -61,17 +63,23 @@ export default {
    },
    data () {
       return {
-         isDeleteModal: false
+         isDeleteModal: false,
+         isEmptyModal: false
       };
    },
    computed: {
       ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected'
-      })
+         selectedWorkspace: 'workspaces/getSelected',
+         getWorkspace: 'workspaces/getWorkspace'
+      }),
+      workspace () {
+         return this.getWorkspace(this.selectedWorkspace);
+      }
    },
    methods: {
       ...mapActions({
-         addNotification: 'notifications/addNotification'
+         addNotification: 'notifications/addNotification',
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
       showCreateTableModal () {
          this.$emit('show-create-table-modal');
@@ -82,24 +90,47 @@ export default {
       hideDeleteModal () {
          this.isDeleteModal = false;
       },
-      showEditModal () {
-         this.isEditModal = true;
+      showEmptyModal () {
+         this.isEmptyModal = true;
       },
-      hideEditModal () {
-         this.isEditModal = false;
-         this.closeContext();
+      hideEmptyModal () {
+         this.isEmptyModal = false;
       },
       closeContext () {
          this.$emit('close-context');
       },
-      async deleteDatabase () {
+      async emptyTable () {
          try {
-            const { status, response } = await Database.deleteDatabase({
+            const { status, response } = await Tables.truncateTable({
                uid: this.selectedWorkspace,
-               database: this.selectedDatabase
+               table: this.selectedTable
             });
 
             if (status === 'success') {
+               if (this.selectedTable === this.workspace.breadcrumbs.table)
+                  this.changeBreadcrumbs({ table: null });
+
+               this.closeContext();
+               this.$emit('reload');
+            }
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+      },
+      async deleteTable () {
+         try {
+            const { status, response } = await Tables.dropTable({
+               uid: this.selectedWorkspace,
+               table: this.selectedTable
+            });
+
+            if (status === 'success') {
+               if (this.selectedTable === this.workspace.breadcrumbs.table)
+                  this.changeBreadcrumbs({ table: null });
+
                this.closeContext();
                this.$emit('reload');
             }

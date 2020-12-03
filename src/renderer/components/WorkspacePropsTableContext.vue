@@ -18,7 +18,7 @@
             </div>
          </div>
       </div>
-      <div class="context-element">
+      <div v-if="indexes.length" class="context-element">
          <span class="d-flex"><i class="mdi mdi-18px mdi-key-arrow-right text-light pr-1" /> {{ $t('message.addToIndex') }}</span>
          <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
          <div class="context-submenu">

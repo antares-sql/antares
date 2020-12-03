@@ -449,6 +449,28 @@ export class MySQLClient extends AntaresCore {
    }
 
    /**
+    * TRUNCATE TABLE
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async truncateTable (params) {
+      const sql = `TRUNCATE TABLE \`${params.table}\``;
+      return await this.raw(sql);
+   }
+
+   /**
+    * DROP TABLE
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async dropTable (params) {
+      const sql = `DROP TABLE \`${params.table}\``;
+      return await this.raw(sql);
+   }
+
+   /**
     * @returns {String} SQL string
     * @memberof MySQLClient
     */
