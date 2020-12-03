@@ -47,24 +47,21 @@
 import { mapGetters, mapActions } from 'vuex';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
-import ModalEditDatabase from '@/components/ModalEditDatabase';
-import Database from '@/ipc-api/Database';
+import Tables from '@/ipc-api/Tables';
 
 export default {
-   name: 'WorkspaceExploreBarDatabaseContext',
+   name: 'WorkspaceExploreBarTableContext',
    components: {
       BaseContextMenu,
-      ConfirmModal,
-      ModalEditDatabase
+      ConfirmModal
    },
    props: {
       contextEvent: MouseEvent,
-      selectedDatabase: String
+      selectedTable: String
    },
    data () {
       return {
-         isDeleteModal: false,
-         isEditModal: false
+         isDeleteModal: false
       };
    },
    computed: {

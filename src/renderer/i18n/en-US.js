@@ -107,7 +107,9 @@ module.exports = {
       onUpdate: 'On update',
       deleteField: 'Delete field',
       createNewIndex: 'Create new index',
-      addToIndex: 'Add to index'
+      addToIndex: 'Add to index',
+      createNewTable: 'Create new table',
+      emptyTable: 'Empty table'
    },
    // Date and Time
    short: {

@@ -165,6 +165,16 @@ export default (connections) => {
       }
    });
 
+   ipcMain.handle('create-table', async (event, params) => {
+      try {
+         await connections[params.uid].createTable(params);
+         return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
    ipcMain.handle('alter-table', async (event, params) => {
       try {
          await connections[params.uid].alterTable(params);

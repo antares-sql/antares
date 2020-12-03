@@ -34,6 +34,10 @@ export default class {
       return ipcRenderer.invoke('get-foreign-list', params);
    }
 
+   static createTable (params) {
+      return ipcRenderer.invoke('create-table', params);
+   }
+
    static alterTable (params) {
       return ipcRenderer.invoke('alter-table', params);
    }

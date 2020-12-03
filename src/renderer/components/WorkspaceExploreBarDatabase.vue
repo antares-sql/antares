@@ -70,8 +70,8 @@ export default {
       showDatabaseContext (event, database) {
          this.$emit('show-database-context', { event, database });
       },
-      showTableContext (table) {
-         this.$emit('show-table-context', table);
+      showTableContext (event, table) {
+         this.$emit('show-table-context', { event, table });
       },
       piePercentage (val) {
          const perc = val / this.maxSize * 100;

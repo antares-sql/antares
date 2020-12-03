@@ -39,6 +39,7 @@
                :database="db"
                :connection="connection"
                @show-database-context="openDatabaseContext"
+               @show-table-context="openTableContext"
             />
          </div>
       </div>
@@ -47,11 +48,18 @@
          @close="hideNewDBModal"
          @reload="refresh"
       />
+      <ModalNewTable
+         v-if="isNewTableModal"
+         :workspace="workspace"
+         @close="hideCreateTableModal"
+         @open-create-table-editor="openCreateTableEditor"
+      />
       <DatabaseContext
          v-if="isDatabaseContext"
          :selected-database="selectedDatabase"
          :context-event="databaseContextEvent"
          @close-context="closeDatabaseContext"
+         @show-create-table-modal="showCreateTableModal"
          @reload="refresh"
       />
    </div>
@@ -60,10 +68,12 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import _ from 'lodash';
+import Tables from '@/ipc-api/Tables';
 import WorkspaceConnectPanel from '@/components/WorkspaceConnectPanel';
 import WorkspaceExploreBarDatabase from '@/components/WorkspaceExploreBarDatabase';
 import DatabaseContext from '@/components/WorkspaceExploreBarDatabaseContext';
 import ModalNewDatabase from '@/components/ModalNewDatabase';
+import ModalNewTable from '@/components/ModalNewTable';
 
 export default {
    name: 'WorkspaceExploreBar',
@@ -71,7 +81,8 @@ export default {
       WorkspaceConnectPanel,
       WorkspaceExploreBarDatabase,
       DatabaseContext,
-      ModalNewDatabase
+      ModalNewDatabase,
+      ModalNewTable
    },
    props: {
       connection: Object,
@@ -81,6 +92,7 @@ export default {
       return {
          isRefreshing: false,
          isNewDBModal: false,
+         isNewTableModal: false,
          localWidth: null,
          isDatabaseContext: false,
          isTableContext: false,
@@ -128,6 +140,9 @@ export default {
       ...mapActions({
          disconnectWorkspace: 'workspaces/removeConnected',
          refreshStructure: 'workspaces/refreshStructure',
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         selectTab: 'workspaces/selectTab',
+         addNotification: 'notifications/addNotification',
          changeExplorebarSize: 'settings/changeExplorebarSize'
       }),
       async refresh () {
@@ -153,15 +168,44 @@ export default {
       hideNewDBModal () {
          this.isNewDBModal = false;
       },
+      showCreateTableModal () {
+         this.closeDatabaseContext();
+         this.isNewTableModal = true;
+      },
+      hideCreateTableModal () {
+         this.isNewTableModal = false;
+      },
+      async openCreateTableEditor (payload) {
+         const params = {
+            uid: this.connection.uid,
+            ...payload
+         };
+
+         const { status, response } = await Tables.createTable(params);
+
+         if (status === 'success') {
+            await this.refresh();
+            this.changeBreadcrumbs({ schema: this.selectedDatabase, table: payload.name });
+            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+         }
+         else
+            this.addNotification({ status: 'error', message: response });
+      },
       openDatabaseContext (payload) {
-         this.isTableContext = false;
          this.selectedDatabase = payload.database;
          this.databaseContextEvent = payload.event;
          this.isDatabaseContext = true;
       },
       closeDatabaseContext () {
          this.isDatabaseContext = false;
-         this.selectedDatabase = '';
+      },
+      openTableContext (payload) {
+         this.selectedTable = payload.table;
+         this.tableContextEvent = payload.event;
+         this.isTableContext = true;
+      },
+      closeTableContext () {
+         this.isDatabaseContext = false;
       }
    }
 };

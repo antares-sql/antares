@@ -3,14 +3,15 @@ import Connection from '@/ipc-api/Connection';
 import Database from '@/ipc-api/Database';
 import { uidGen } from 'common/libs/uidGen';
 const tabIndex = [];
-let lastBreadcrumb = '';
+let lastBreadcrumbs = {};
 
 export default {
    namespaced: true,
    strict: true,
    state: {
       workspaces: [],
-      selected_workspace: null
+      selected_workspace: null,
+      has_unsaved_changes: false
    },
    getters: {
       getSelected: state => {
@@ -295,13 +296,24 @@ export default {
             dispatch('newTab', uid);
       },
       changeBreadcrumbs ({ commit, getters }, payload) {
-         if (lastBreadcrumb.schema === payload.schema && lastBreadcrumb.table !== null && payload.table === null) return;
+         const breadcrumbsObj = {
+            schema: null,
+            table: null,
+            trigger: null,
+            procedure: null,
+            scheduler: null
+         };
 
-         if (lastBreadcrumb.schema !== payload.schema)
+         const hasLastChildren = Object.keys(lastBreadcrumbs).filter(b => b !== 'schema').some(b => lastBreadcrumbs[b]);
+         const hasChildren = Object.keys(payload).filter(b => b !== 'schema').some(b => payload[b]);
+
+         if (lastBreadcrumbs.schema === payload.schema && hasLastChildren && !hasChildren) return;
+
+         if (lastBreadcrumbs.schema !== payload.schema)
             Database.useSchema({ uid: getters.getSelected, schema: payload.schema });
 
-         commit('CHANGE_BREADCRUMBS', { uid: getters.getSelected, breadcrumbs: payload });
-         lastBreadcrumb = { ...payload };
+         commit('CHANGE_BREADCRUMBS', { uid: getters.getSelected, breadcrumbs: { ...breadcrumbsObj, ...payload } });
+         lastBreadcrumbs = { ...breadcrumbsObj, ...payload };
       },
       newTab ({ commit }, uid) {
          commit('NEW_TAB', uid);

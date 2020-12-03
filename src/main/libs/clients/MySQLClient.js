@@ -306,11 +306,31 @@ export class MySQLClient extends AntaresCore {
             name: row.Engine,
             support: row.Support,
             comment: row.Comment,
-            transactions: row.Trasactions,
+            transactions: row.Transactions,
             xa: row.XA,
-            savepoints: row.Savepoints
+            savepoints: row.Savepoints,
+            isDefault: row.Support.includes('DEFAULT')
          };
       });
+   }
+
+   /**
+    * CREATE TABLE
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async createTable (params) {
+      const {
+         name,
+         collation,
+         comment,
+         engine
+      } = params;
+
+      const sql = `CREATE TABLE \`${name}\` (\`${name}_ID\` INT NULL) COMMENT='${comment}', COLLATE='${collation}', ENGINE=${engine}`;
+
+      return await this.raw(sql);
    }
 
    /**
