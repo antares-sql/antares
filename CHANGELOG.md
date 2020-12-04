@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.10](https://github.com/Fabio286/antares/compare/v0.0.9...v0.0.10) (2020-12-04)
+
+
+### Features
+
+* approximate totals in table tata tab ([e95d29c](https://github.com/Fabio286/antares/commit/e95d29c7c37e24e7cc14b466f9b539fa667042c2))
+* create new tables ([e6602d1](https://github.com/Fabio286/antares/commit/e6602d1bfa9ca10c6bb078ee80ddc94fb338763d))
+* display all keys in properties tab ([27769f2](https://github.com/Fabio286/antares/commit/27769f204f731d20c7ba2f838c02b7c2f28fa0c3))
+* drop and truncate tables ([a4122b4](https://github.com/Fabio286/antares/commit/a4122b4eaaa5b30d97ba5a93df8c9d21c30bc40b))
+* index management ([41505bd](https://github.com/Fabio286/antares/commit/41505bde6547c0af3c3413248ad8a0d182838bb1))
+* tables options edit ([0805b96](https://github.com/Fabio286/antares/commit/0805b96a75e439a7d65e8341ecc86fa938679a9f))
+* unsaved changes reminder ([33d1fa2](https://github.com/Fabio286/antares/commit/33d1fa22905f477924292135b0dcfefe168ee641))
+
+
+### Bug Fixes
+
+* index deletion issue ([f8cf90a](https://github.com/Fabio286/antares/commit/f8cf90a89e7367c95e164b7dc669506df392b700))
+* some problems with properties and data tabs when changing database from sidebar ([0fe7157](https://github.com/Fabio286/antares/commit/0fe71572a5e74c17a5c66237351bb0b02c33e824))
+* sqlEscaper function wrong quotes conversion ([dfb24c6](https://github.com/Fabio286/antares/commit/dfb24c65f3c395d78d27a2f29e9aa8eeb427cff7))
+
 ### [0.0.9](https://github.com/EStarium/antares/compare/v0.0.8...v0.0.9) (2020-11-13)
 
 
