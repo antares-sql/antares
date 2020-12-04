@@ -17,6 +17,7 @@
          <TheNotificationsBoard />
          <ModalNewConnection v-if="isNewConnModal" />
          <ModalSettings v-if="isSettingModal" />
+         <ModalDiscardChanges v-if="isUnsavedDiscardModal" />
       </div>
    </div>
 </template>
@@ -35,7 +36,8 @@ export default {
       TheAppWelcome: () => import(/* webpackChunkName: "TheAppWelcome" */'@/components/TheAppWelcome'),
       Workspace: () => import(/* webpackChunkName: "Workspace" */'@/components/Workspace'),
       ModalNewConnection: () => import(/* webpackChunkName: "ModalNewConnection" */'@/components/ModalNewConnection'),
-      ModalSettings: () => import(/* webpackChunkName: "ModalSettings" */'@/components/ModalSettings')
+      ModalSettings: () => import(/* webpackChunkName: "ModalSettings" */'@/components/ModalSettings'),
+      ModalDiscardChanges: () => import(/* webpackChunkName: "ModalDiscardChanges" */'@/components/ModalDiscardChanges')
    },
    data () {
       return {};
@@ -46,7 +48,8 @@ export default {
          isNewConnModal: 'application/isNewModal',
          isEditModal: 'application/isEditModal',
          isSettingModal: 'application/isSettingModal',
-         connections: 'connections/getConnections'
+         connections: 'connections/getConnections',
+         isUnsavedDiscardModal: 'workspaces/isUnsavedDiscardModal'
       })
    },
    mounted () {

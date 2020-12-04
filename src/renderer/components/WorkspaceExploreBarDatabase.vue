@@ -18,7 +18,7 @@
                   :key="table.name"
                   class="menu-item"
                   :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.table === table.name}"
-                  @click="changeBreadcrumbs({schema: database.name, table: table.name})"
+                  @click="setBreadcrumbs({schema: database.name, table: table.name})"
                   @contextmenu.prevent="showTableContext($event, table.name)"
                >
                   <a class="table-name">
@@ -76,6 +76,10 @@ export default {
       piePercentage (val) {
          const perc = val / this.maxSize * 100;
          return { background: `conic-gradient(lime ${perc}%, white 0)` };
+      },
+      setBreadcrumbs (payload) {
+         if (this.breadcrumbs.schema === payload.schema && this.breadcrumbs.table === payload.table) return;
+         this.changeBreadcrumbs(payload);
       }
    }
 };

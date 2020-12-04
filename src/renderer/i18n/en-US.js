@@ -59,7 +59,9 @@ module.exports = {
       field: 'Field | Fields',
       approximately: 'Approximately',
       total: 'Total',
-      table: 'Table'
+      table: 'Table',
+      discard: 'Discard',
+      stay: 'Stay'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -111,7 +113,9 @@ module.exports = {
       createNewTable: 'Create new table',
       emptyTable: 'Empty table',
       deleteTable: 'Delete table',
-      emptyCorfirm: 'Do you confirm to empty'
+      emptyCorfirm: 'Do you confirm to empty',
+      unsavedChanges: 'Unsaved changes',
+      discardUnsavedChanges: 'You have some unsaved changes. By leaving this tab these changes will be discarded.'
    },
    // Date and Time
    short: {

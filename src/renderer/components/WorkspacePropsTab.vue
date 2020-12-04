@@ -137,7 +137,7 @@ export default {
       },
       tableOptions () {
          const db = this.workspace.structure.find(db => db.name === this.schema);
-         return db ? db.tables.find(table => table.name === this.table) : {};
+         return db && this.table ? db.tables.find(table => table.name === this.table) : {};
       },
       defaultEngine () {
          return this.getDatabaseVariable(this.connection.uid, 'default_storage_engine').value || '';
@@ -167,12 +167,17 @@ export default {
             this.getFieldsData();
             this.lastTable = this.table;
          }
+      },
+      isChanged (val) {
+         if (this.isSelected && this.lastTable === this.table && this.table !== null)
+            this.setUnsavedChanges(val);
       }
    },
    methods: {
       ...mapActions({
          addNotification: 'notifications/addNotification',
-         refreshStructure: 'workspaces/refreshStructure'
+         refreshStructure: 'workspaces/refreshStructure',
+         setUnsavedChanges: 'workspaces/setUnsavedChanges'
       }),
       async getFieldsData () {
          if (!this.table) return;

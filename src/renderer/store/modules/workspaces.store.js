@@ -11,7 +11,9 @@ export default {
    state: {
       workspaces: [],
       selected_workspace: null,
-      has_unsaved_changes: false
+      has_unsaved_changes: false,
+      is_unsaved_discard_modal: false,
+      pending_breadcrumbs: {}
    },
    getters: {
       getSelected: state => {
@@ -36,6 +38,9 @@ export default {
          return state.workspaces
             .filter(workspace => workspace.connected)
             .map(workspace => workspace.uid);
+      },
+      isUnsavedDiscardModal: state => {
+         return state.is_unsaved_discard_modal;
       }
    },
    mutations: {
@@ -176,6 +181,15 @@ export default {
             else
                return workspace;
          });
+      },
+      SET_UNSAVED_CHANGES (state, val) {
+         state.has_unsaved_changes = !!val;
+      },
+      SET_UNSAVED_DISCARD_MODAL (state, val) {
+         state.is_unsaved_discard_modal = !!val;
+      },
+      SET_PENDING_BREADCRUMBS (state, payload) {
+         state.pending_breadcrumbs = payload;
       }
    },
    actions: {
@@ -294,8 +308,16 @@ export default {
 
          if (getters.getWorkspace(uid).tabs.length < 3)
             dispatch('newTab', uid);
+
+         dispatch('setUnsavedChanges', false);
       },
-      changeBreadcrumbs ({ commit, getters }, payload) {
+      changeBreadcrumbs ({ state, commit, getters }, payload) {
+         if (state.has_unsaved_changes) {
+            commit('SET_UNSAVED_DISCARD_MODAL', true);
+            commit('SET_PENDING_BREADCRUMBS', payload);
+            return;
+         }
+
          const breadcrumbsObj = {
             schema: null,
             table: null,
@@ -329,6 +351,18 @@ export default {
       },
       setTabKeyUsage ({ commit }, payload) {
          commit('SET_TAB_KEY_USAGE', payload);
+      },
+      setUnsavedChanges ({ commit }, val) {
+         commit('SET_UNSAVED_CHANGES', val);
+      },
+      discardUnsavedChanges ({ state, commit, dispatch }) {
+         dispatch('setUnsavedChanges', false);
+         dispatch('changeBreadcrumbs', state.pending_breadcrumbs);
+         commit('SET_UNSAVED_DISCARD_MODAL', false);
+         commit('SET_PENDING_BREADCRUMBS', {});
+      },
+      closeUnsavedChangesModal ({ commit }) {
+         commit('SET_UNSAVED_DISCARD_MODAL', false);
       }
    }
 };

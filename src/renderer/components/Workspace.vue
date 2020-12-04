@@ -67,6 +67,7 @@
          </ul>
          <WorkspacePropsTab
             v-show="selectedTab === 'prop'"
+            :is-selected="selectedTab === 'prop'"
             :connection="connection"
             :table="workspace.breadcrumbs.table"
          />
