@@ -9,7 +9,9 @@
 Antares is an SQL client based on [Electron.js](https://github.com/electron/electron) and [Vue.js](https://github.com/vuejs/vue) that aims to become a useful tool, especially for developers.  
 My target is to support as many databases as possible, and all major operating systems, including the ARM versions.  
 
-**At the moment this application is an alpha, it lacks many features, and isn't ready as a main SQL client**. However i'm actively working on it (yes, i'm a lone dev), hoping to provide all essential features as soon as possible.
+**At the moment this application is an alpha, it lacks many features** and supports only MySQL.  
+Most of its current features might be enough for basic MySQL use, so give it a chance and send me your feedback, I would really appreciate it.  
+I'm actively working on it (yes, i'm a lone dev), hoping to provide cool features and fixes as soon as possible.
 
 🔗 If you are curious to try this early state of Antares you can download and install the [latest release](https://github.com/Fabio286/antares/releases).  
 👁 To stay tuned for new releases watch this repo on **Release only** channel.  
@@ -29,6 +31,8 @@ An application created with minimalism and semplicity in mind, with features in 
 
 - Multiple database connections at same time.
 - Database management (add/edit/delete).
+- Tables management (add/edit/delete/empty).
+- Tables index management (add/edit/delete).
 - Tables fields management (add/edit/delete).
 - Tables content management (add/edit/delete).
 - Run queries on multiple tabs.
@@ -41,7 +45,6 @@ An application created with minimalism and semplicity in mind, with features in 
 
 This is a roadmap with major features will come in near future.
 
-- Tables management (add/edit/delete).
 - Users management (add/edit/delete).
 - Stored procedures, views, schedulers and triggers support.
 - More secure password storage.
