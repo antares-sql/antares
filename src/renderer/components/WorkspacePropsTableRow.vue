@@ -1,6 +1,6 @@
 <template>
    <div class="tr" @contextmenu.prevent="$emit('contextmenu', $event, localRow._id)">
-      <div class="td">
+      <div class="td" tabindex="0">
          <div class="row-draggable">
             <i class="mdi mdi-drag-horizontal row-draggable-icon" />
             {{ localRow.order }}
@@ -17,7 +17,7 @@
             />
          </div>
       </div>
-      <div class="td">
+      <div class="td" tabindex="0">
          <span
             v-if="!isInlineEditor.name"
             class="cell-content"
@@ -35,7 +35,11 @@
             @blur="editOFF"
          >
       </div>
-      <div class="td text-uppercase text-left" :class="`type-${lowerCase(localRow.type)}`">
+      <div
+         class="td text-uppercase text-left"
+         tabindex="0"
+         :class="`type-${lowerCase(localRow.type)}`"
+      >
          <span
             v-if="!isInlineEditor.type"
             class="cell-content"
@@ -66,7 +70,7 @@
             </optgroup>
          </select>
       </div>
-      <div class="td type-int">
+      <div class="td type-int" tabindex="0">
          <template v-if="fieldType.length">
             <span
                v-if="!isInlineEditor.length"
@@ -86,7 +90,7 @@
             >
          </template>
       </div>
-      <div class="td">
+      <div class="td" tabindex="0">
          <label class="form-checkbox">
             <input
                v-model="localRow.unsigned"
@@ -96,7 +100,7 @@
             <i class="form-icon" />
          </label>
       </div>
-      <div class="td">
+      <div class="td" tabindex="0">
          <label class="form-checkbox">
             <input
                v-model="localRow.nullable"
@@ -106,7 +110,7 @@
             <i class="form-icon" />
          </label>
       </div>
-      <div class="td">
+      <div class="td" tabindex="0">
          <label class="form-checkbox">
             <input
                v-model="localRow.zerofill"
@@ -116,12 +120,12 @@
             <i class="form-icon" />
          </label>
       </div>
-      <div class="td">
+      <div class="td" tabindex="0">
          <span class="cell-content" @dblclick="editON($event, localRow.default, 'default')">
             {{ fieldDefault }}
          </span>
       </div>
-      <div class="td type-varchar">
+      <div class="td type-varchar" tabindex="0">
          <span
             v-if="!isInlineEditor.comment"
             class="cell-content"
@@ -139,7 +143,7 @@
             @blur="editOFF"
          >
       </div>
-      <div class="td">
+      <div class="td" tabindex="0">
          <template v-if="fieldType.collation">
             <span
                v-if="!isInlineEditor.collation"

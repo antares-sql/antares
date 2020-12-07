@@ -89,11 +89,18 @@ export default (connections) => {
    });
 
    ipcMain.handle('delete-table-rows', async (event, params) => {
+      let idString;
+
+      if (typeof params.rows[0] === 'string')
+         idString = params.rows.map(row => `"${row}"`).join(',');
+      else
+         idString = params.rows.join(',');
+
       try {
          const result = await connections[params.uid]
             .schema(params.schema)
             .delete(params.table)
-            .where({ [params.primary]: `IN (${params.rows.join(',')})` })
+            .where({ [params.primary]: `IN (${idString})` })
             .run();
 
          return { status: 'success', response: result };
