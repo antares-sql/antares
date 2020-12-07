@@ -123,8 +123,11 @@ export default {
       primaryField () {
          return this.fields.filter(field => ['pri', 'uni'].includes(field.key))[0] || false;
       },
+      isHardSort () {
+         return this.mode === 'table' && this.localResults.length === 1000;
+      },
       sortedResults () {
-         if (this.currentSort) {
+         if (this.currentSort && !this.isHardSort) {
             return [...this.localResults].sort((a, b) => {
                let modifier = 1;
                const valA = typeof a[this.currentSort] === 'string' ? a[this.currentSort].toLowerCase() : a[this.currentSort];
@@ -228,7 +231,7 @@ export default {
          return row[primaryFieldName];
       },
       setLocalResults () {
-         this.resetSort();
+         // this.resetSort();
          this.localResults = this.resultsWithRows[this.resultsetIndex] && this.resultsWithRows[this.resultsetIndex].rows
             ? this.resultsWithRows[this.resultsetIndex].rows.map(item => {
                return { ...item, _id: uidGen() };
@@ -342,6 +345,9 @@ export default {
             this.currentSortDir = 'asc';
             this.currentSort = field;
          }
+
+         if (this.isHardSort)
+            this.$emit('hard-sort', { field: this.currentSort, dir: this.currentSortDir });
       },
       resetSort () {
          this.currentSort = '';

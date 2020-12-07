@@ -99,6 +99,7 @@ export default {
          if (!query || this.isQuering) return;
          this.isQuering = true;
          this.clearTabData();
+         this.$refs.queryTable.resetSort();
 
          try { // Query Data
             const params = {

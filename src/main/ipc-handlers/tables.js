@@ -14,14 +14,18 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('get-table-data', async (event, { uid, schema, table }) => {
+   ipcMain.handle('get-table-data', async (event, { uid, schema, table, sortParams }) => {
       try {
-         const result = await connections[uid]
+         const query = connections[uid]
             .select('*')
             .schema(schema)
             .from(table)
-            .limit(1000)
-            .run({ details: true });
+            .limit(1000);
+
+         if (sortParams && sortParams.field && sortParams.dir)
+            query.orderBy({ [sortParams.field]: sortParams.dir.toUpperCase() });
+
+         const result = await query.run({ details: true });
 
          return { status: 'success', response: result };
       }

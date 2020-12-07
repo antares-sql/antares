@@ -63,6 +63,7 @@
             mode="table"
             @update-field="updateField"
             @delete-selected="deleteSelected"
+            @hard-sort="hardSort"
          />
       </div>
       <ModalNewTableRow
@@ -135,6 +136,7 @@ export default {
          if (this.isSelected) {
             this.getTableData();
             this.lastTable = this.table;
+            this.$refs.queryTable.resetSort();
          }
       },
       isSelected (val) {
@@ -156,7 +158,7 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification'
       }),
-      async getTableData () {
+      async getTableData (sortParams) {
          if (!this.table) return;
          this.isQuering = true;
 
@@ -167,7 +169,8 @@ export default {
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            table: this.workspace.breadcrumbs.table
+            table: this.workspace.breadcrumbs.table,
+            sortParams
          };
 
          try { // Table data
@@ -189,6 +192,9 @@ export default {
       },
       reloadTable () {
          this.getTableData();
+      },
+      hardSort (sortParams) {
+         this.getTableData(sortParams);
       },
       showAddModal () {
          this.isAddModal = true;
