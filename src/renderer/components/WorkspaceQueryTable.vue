@@ -231,7 +231,6 @@ export default {
          return row[primaryFieldName];
       },
       setLocalResults () {
-         // this.resetSort();
          this.localResults = this.resultsWithRows[this.resultsetIndex] && this.resultsWithRows[this.resultsetIndex].rows
             ? this.resultsWithRows[this.resultsetIndex].rows.map(item => {
                return { ...item, _id: uidGen() };

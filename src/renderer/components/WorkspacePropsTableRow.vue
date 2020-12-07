@@ -36,14 +36,14 @@
          >
       </div>
       <div
-         class="td text-uppercase text-left"
+         class="td text-uppercase"
          tabindex="0"
-         :class="`type-${lowerCase(localRow.type)}`"
       >
          <span
             v-if="!isInlineEditor.type"
-            class="cell-content"
-            @dblclick="editON($event, localRow.type.toUpperCase(), 'type')"
+            class="cell-content text-left"
+            :class="`type-${lowerCase(localRow.type)}`"
+            @click="editON($event, localRow.type.toUpperCase(), 'type')"
          >
             {{ localRow.type }}
          </span>
@@ -51,7 +51,7 @@
             v-else
             ref="editField"
             v-model="editingContent"
-            class="editable-field px-1 text-uppercase"
+            class="form-select editable-field small-select text-uppercase"
             @blur="editOFF"
          >
             <optgroup
@@ -148,7 +148,7 @@
             <span
                v-if="!isInlineEditor.collation"
                class="cell-content"
-               @dblclick="editON($event, localRow.collation, 'collation')"
+               @click="editON($event, localRow.collation, 'collation')"
             >
                {{ localRow.collation }}
             </span>
@@ -156,7 +156,7 @@
                v-else
                ref="editField"
                v-model="editingContent"
-               class="editable-field px-1"
+               class="form-select small-select editable-field"
                @blur="editOFF"
             >
                <option
@@ -301,6 +301,7 @@ export default {
             onUpdate: ''
          },
          editingContent: null,
+         originalContent: null,
          editingField: null
       };
    },
@@ -401,6 +402,7 @@ export default {
             this.editingField = field;
 
          this.editingContent = content;
+         this.originalContent = content;
 
          const obj = { [field]: true };
          this.isInlineEditor = { ...this.isInlineEditor, ...obj };
@@ -418,10 +420,10 @@ export default {
       editOFF () {
          this.localRow[this.editingField] = this.editingContent;
 
-         if (this.editingField === 'type') {
-            this.localRow.numLength = false;
-            this.localRow.charLength = false;
-            this.localRow.datePrecision = false;
+         if (this.editingField === 'type' && this.editingContent !== this.originalContent) {
+            this.localRow.numLength = null;
+            this.localRow.charLength = null;
+            this.localRow.datePrecision = null;
 
             if (this.fieldType.length) {
                if (['integer', 'float', 'binary', 'spatial'].includes(this.fieldType.group)) this.localRow.numLength = 11;
@@ -464,6 +466,7 @@ export default {
          });
 
          this.editingContent = null;
+         this.originalContent = null;
          this.editingField = null;
       },
       hideDefaultModal () {

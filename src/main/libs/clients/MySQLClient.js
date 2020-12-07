@@ -177,7 +177,7 @@ export class MySQLClient extends AntaresCore {
          return {
             name: field.COLUMN_NAME,
             key: field.COLUMN_KEY.toLowerCase(),
-            type: field.DATA_TYPE,
+            type: field.DATA_TYPE.toUpperCase(),
             schema: field.TABLE_SCHEMA,
             table: field.TABLE_NAME,
             numPrecision: field.NUMERIC_PRECISION,

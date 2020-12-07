@@ -180,6 +180,12 @@ body {
 
 .form-select {
   cursor: pointer;
+
+  &.small-select {
+    height: 1rem;
+    font-size: 0.7rem;
+    padding: 1px 0.4rem 0;
+  }
 }
 
 .form-select,

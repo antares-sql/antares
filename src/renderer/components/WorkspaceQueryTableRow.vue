@@ -274,7 +274,7 @@ export default {
          if (field)
             type = field.type;
 
-         return type;
+         return type.toLowerCase();
       },
       getFieldPrecision (cKey) {
          let length = 0;
