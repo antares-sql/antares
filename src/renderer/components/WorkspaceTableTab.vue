@@ -103,7 +103,8 @@ export default {
          lastTable: null,
          isAddModal: false,
          autorefreshTimer: 0,
-         refreshInterval: null
+         refreshInterval: null,
+         sortParams: {}
       };
    },
    computed: {
@@ -134,6 +135,7 @@ export default {
    watch: {
       table () {
          if (this.isSelected) {
+            this.sortParams = {};
             this.getTableData();
             this.lastTable = this.table;
             this.$refs.queryTable.resetSort();
@@ -191,9 +193,10 @@ export default {
          return this.table;
       },
       reloadTable () {
-         this.getTableData();
+         this.getTableData(this.sortParams);
       },
       hardSort (sortParams) {
+         this.sortParams = sortParams;
          this.getTableData(sortParams);
       },
       showAddModal () {

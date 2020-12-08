@@ -40,7 +40,7 @@
                   <span>{{ $t('word.indexes') }}</span>
                   <i class="mdi mdi-24px mdi-key mdi-rotate-45 ml-1" />
                </button>
-               <button class="btn btn-dark btn-sm d-none">
+               <button class="btn btn-dark btn-sm">
                   <span>{{ $t('word.foreignKeys') }}</span>
                   <i class="mdi mdi-24px mdi-key-link ml-1" />
                </button>
