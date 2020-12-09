@@ -157,6 +157,8 @@ export default {
       typeFormat (val, type, precision) {
          if (!val) return val;
 
+         type = type.toUpperCase();
+
          if (DATE.includes(type))
             return moment(val).isValid() ? moment(val).format('YYYY-MM-DD') : val;
 

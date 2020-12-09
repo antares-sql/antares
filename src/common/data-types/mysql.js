@@ -206,7 +206,7 @@ module.exports = [
          },
          {
             name: 'TIMESTAMP',
-            length: true,
+            length: false,
             collation: false,
             unsigned: false,
             zerofill: false

@@ -55,7 +55,7 @@
                               :disabled="fieldsToExclude.includes(field.name)"
                               :tabindex="key+1"
                            >
-                           <span class="input-group-addon" :class="`type-${field.type}`">
+                           <span class="input-group-addon" :class="`type-${field.type.toLowerCase()}`">
                               {{ field.type }} {{ fieldLength(field) | wrapNumber }}
                            </span>
                            <label class="form-checkbox ml-3" :title="$t('word.insert')">

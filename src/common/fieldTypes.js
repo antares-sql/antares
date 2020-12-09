@@ -1,12 +1,12 @@
-export const TEXT = ['char', 'varchar'];
-export const LONG_TEXT = ['text', 'mediumtext', 'longtext'];
+export const TEXT = ['CHAR', 'VARCHAR'];
+export const LONG_TEXT = ['TEXT', 'MEDIUMTEXT', 'longtext'];
 
-export const NUMBER = ['int', 'tinyint', 'smallint', 'mediumint', 'bigint', 'float', 'double', 'decimal', 'bool'];
+export const NUMBER = ['INT', 'TINYINT', 'SMALLINT', 'MEDIUMINT', 'BIGINT', 'FLOAT', 'DOUBLE', 'DECIMAL', 'BOOL'];
 
-export const DATE = ['date'];
-export const TIME = ['time'];
-export const DATETIME = ['datetime', 'timestamp'];
+export const DATE = ['DATE'];
+export const TIME = ['TIME'];
+export const DATETIME = ['DATETIME', 'TIMESTAMP'];
 
-export const BLOB = ['blob', 'mediumblob', 'longblob'];
+export const BLOB = ['BLOB', 'MEDIUMBLOB', 'LONGBLOB'];
 
-export const BIT = ['bit'];
+export const BIT = ['BIT'];
