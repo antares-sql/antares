@@ -315,7 +315,7 @@ export default {
       editON (event, content, field) {
          if (!this.isEditable) return;
 
-         const type = this.getFieldType(field);
+         const type = this.getFieldType(field).toUpperCase(); ;
          this.originalContent = content;
          this.editingType = type;
          this.editingField = field;
