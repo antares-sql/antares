@@ -123,7 +123,7 @@ export default {
          return this.selectedWorkspace === this.connection.uid;
       },
       selectedTab () {
-         if (this.workspace.breadcrumbs.table === null)
+         if (this.workspace.breadcrumbs.table === null && ['data', 'prop'].includes(this.workspace.selected_tab))
             return this.queryTabs[0].uid;
 
          return this.queryTabs.find(tab => tab.uid === this.workspace.selected_tab) ||
