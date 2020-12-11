@@ -105,7 +105,7 @@
             <input
                v-model="localRow.nullable"
                type="checkbox"
-               :disabled="localRow.key === 'pri'"
+               :disabled="!isNullable"
             >
             <i class="form-icon" />
          </label>
@@ -228,7 +228,7 @@
                   <label class="form-radio form-inline">
                      <input
                         v-model="defaultValue.type"
-                        :disabled="localRow.key !== 'pri'"
+                        :disabled="!canAutoincrement"
                         type="radio"
                         name="default"
                         value="autoincrement"
@@ -330,6 +330,12 @@ export default {
       },
       collations () {
          return this.getWorkspace(this.selectedWorkspace).collations;
+      },
+      canAutoincrement () {
+         return this.indexes.some(index => ['PRIMARY', 'UNIQUE'].includes(index.type));
+      },
+      isNullable () {
+         return !this.indexes.some(index => ['PRIMARY'].includes(index.type));
       }
    },
    watch: {
@@ -338,6 +344,13 @@ export default {
       },
       row () {
          this.localRow = this.row;
+      },
+      indexes () {
+         if (!this.canAutoincrement)
+            this.localRow.autoIncrement = false;
+
+         if (!this.isNullable)
+            this.localRow.nullable = false;
       }
    },
    mounted () {
@@ -433,6 +446,12 @@ export default {
 
             if (!this.fieldType.collation)
                this.localRow.collation = null;
+
+            if (!this.fieldType.unsigned)
+               this.localRow.unsigned = false;
+
+            if (!this.fieldType.zerofill)
+               this.localRow.zerofill = false;
          }
 
          if (this.editingField === 'default') {
