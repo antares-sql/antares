@@ -111,7 +111,8 @@
                      <h4>{{ appName }}</h4>
                      <p>
                         {{ $t('word.version') }}: {{ appVersion }}<br>
-                        <a class="c-hand" @click="openOutside('https://github.com/EStarium/antares')">GitHub</a><br>
+                        <a class="c-hand" @click="openOutside('https://github.com/Fabio286/antares')">GitHub</a><br>
+                        <small>{{ $t('word.author') }}: <a class="c-hand" @click="openOutside('https://github.com/Fabio286')">Fabio Di Stasio</a></small><br>
                         <small>{{ $t('message.madeWithJS') }}</small>
                      </p>
                   </div>

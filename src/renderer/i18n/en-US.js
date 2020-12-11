@@ -61,7 +61,8 @@ module.exports = {
       total: 'Total',
       table: 'Table',
       discard: 'Discard',
-      stay: 'Stay'
+      stay: 'Stay',
+      author: 'Author'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
