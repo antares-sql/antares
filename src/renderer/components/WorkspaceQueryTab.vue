@@ -1,7 +1,11 @@
 <template>
    <div v-show="isSelected" class="workspace-query-tab column col-12 columns col-gapless">
       <div class="workspace-query-runner column col-12">
-         <QueryEditor v-if="isSelected" :value.sync="query" />
+         <QueryEditor
+            v-if="isSelected"
+            :auto-focus="true"
+            :value.sync="query"
+         />
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
                <button

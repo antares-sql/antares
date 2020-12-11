@@ -111,11 +111,10 @@ export default {
             }
             : workspace);
       },
-      NEW_TAB (state, uid) {
+      NEW_TAB (state, { uid, tab }) {
          tabIndex[uid] = tabIndex[uid] ? ++tabIndex[uid] : 1;
-
          const newTab = {
-            uid: uidGen('T'),
+            uid: tab,
             index: tabIndex[uid],
             selected: false,
             type: 'query',
@@ -338,7 +337,10 @@ export default {
          lastBreadcrumbs = { ...breadcrumbsObj, ...payload };
       },
       newTab ({ commit }, uid) {
-         commit('NEW_TAB', uid);
+         const tab = uidGen('T');
+
+         commit('NEW_TAB', { uid, tab });
+         commit('SELECT_TAB', { uid, tab });
       },
       removeTab ({ commit }, payload) {
          commit('REMOVE_TAB', payload);

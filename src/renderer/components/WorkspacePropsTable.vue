@@ -29,14 +29,14 @@
                   </div>
                </div>
                <div class="th">
-                  <div class="column-resizable">
+                  <div class="column-resizable min-100">
                      <div class="table-column-title">
                         {{ $t('word.name') }}
                      </div>
                   </div>
                </div>
                <div class="th">
-                  <div class="column-resizable">
+                  <div class="column-resizable min-100">
                      <div class="table-column-title">
                         {{ $t('word.type') }}
                      </div>
@@ -230,5 +230,9 @@ export default {
 
 .vscroll {
   overflow: auto;
+}
+
+.min-100 {
+  min-width: 100px !important;
 }
 </style>

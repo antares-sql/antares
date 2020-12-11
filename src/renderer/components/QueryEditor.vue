@@ -14,7 +14,8 @@ monaco.languages.registerCompletionItemProvider('sql', completionItemProvider(mo
 export default {
    name: 'QueryEditor',
    props: {
-      value: String
+      value: String,
+      autoFocus: { type: Boolean, default: false }
    },
    data () {
       return {
@@ -40,6 +41,12 @@ export default {
          const content = this.editor.getValue();
          this.$emit('update:value', content);
       });
+
+      if (this.autoFocus) {
+         setTimeout(() => {
+            this.editor.focus();
+         }, 20);
+      }
    },
    beforeDestroy () {
       this.editor && this.editor.dispose();
