@@ -18,6 +18,7 @@
                </label>
                <div class="column">
                   <input
+                     ref="firstInput"
                      v-model="optionsProxy.name"
                      class="form-input"
                      :class="{'is-error': !isTableNameValid}"
@@ -112,6 +113,10 @@ export default {
    },
    created () {
       this.optionsProxy = JSON.parse(JSON.stringify(this.localOptions));
+
+      setTimeout(() => {
+         this.$refs.firstInput.focus();
+      }, 20);
    },
    methods: {
       confirmOptionsChange () {

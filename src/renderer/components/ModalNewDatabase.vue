@@ -19,6 +19,7 @@
                      </div>
                      <div class="col-9">
                         <input
+                           ref="firstInput"
                            v-model="database.name"
                            class="form-input"
                            type="text"
@@ -89,6 +90,9 @@ export default {
    created () {
       this.database = { ...this.database, collation: this.defaultCollation };
       window.addEventListener('keydown', this.onKey);
+      setTimeout(() => {
+         this.$refs.firstInput.focus();
+      }, 20);
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);

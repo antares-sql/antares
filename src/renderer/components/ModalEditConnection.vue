@@ -20,6 +20,7 @@
                         </div>
                         <div class="col-8 col-sm-12">
                            <input
+                              ref="firstInput"
                               v-model="localConnection.name"
                               class="form-input"
                               type="text"
@@ -172,6 +173,10 @@ export default {
    created () {
       this.localConnection = Object.assign({}, this.connection);
       window.addEventListener('keydown', this.onKey);
+
+      setTimeout(() => {
+         this.$refs.firstInput.focus();
+      }, 20);
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);

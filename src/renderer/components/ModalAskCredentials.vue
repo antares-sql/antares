@@ -19,6 +19,7 @@
                      </div>
                      <div class="col-9">
                         <input
+                           ref="firstInput"
                            v-model="credentials.user"
                            class="form-input"
                            type="text"
@@ -62,6 +63,11 @@ export default {
             password: ''
          }
       };
+   },
+   created () {
+      setTimeout(() => {
+         this.$refs.firstInput.focus();
+      }, 20);
    },
    methods: {
       closeModal () {

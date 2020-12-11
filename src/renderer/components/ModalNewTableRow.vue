@@ -25,6 +25,7 @@
                         <div class="input-group col-8 col-sm-12">
                            <ForeignKeySelect
                               v-if="foreignKeys.includes(field.name)"
+                              ref="formInput"
                               class="form-select"
                               :value.sync="localRow[field.name]"
                               :key-usage="getKeyUsage(field.name)"
@@ -32,6 +33,7 @@
                            />
                            <input
                               v-else-if="inputProps(field).mask"
+                              ref="formInput"
                               v-model="localRow[field.name]"
                               v-mask="inputProps(field).mask"
                               class="form-input"
@@ -41,6 +43,7 @@
                            >
                            <input
                               v-else-if="inputProps(field).type === 'file'"
+                              ref="formInput"
                               class="form-input"
                               type="file"
                               :disabled="fieldsToExclude.includes(field.name)"
@@ -49,6 +52,7 @@
                            >
                            <input
                               v-else
+                              ref="formInput"
                               v-model="localRow[field.name]"
                               class="form-input"
                               :type="inputProps(field).type"
@@ -192,6 +196,12 @@ export default {
       }
 
       this.localRow = { ...rowObj };
+
+      // Auto focus
+      setTimeout(() => {
+         const firstSelectableInput = this.$refs.formInput.find(input => !input.disabled);
+         firstSelectableInput.focus();
+      }, 20);
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);

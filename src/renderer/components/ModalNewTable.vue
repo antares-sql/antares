@@ -18,6 +18,7 @@
                </label>
                <div class="column">
                   <input
+                     ref="firstInput"
                      v-model="localOptions.name"
                      class="form-input"
                      type="text"
@@ -112,6 +113,10 @@ export default {
    mounted () {
       this.localOptions.collation = this.defaultCollation;
       this.localOptions.engine = this.defaultEngine;
+
+      setTimeout(() => {
+         this.$refs.firstInput.focus();
+      }, 20);
    },
    methods: {
       confirmOptionsChange () {

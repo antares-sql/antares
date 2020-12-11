@@ -33,7 +33,11 @@
                         <label class="form-label">{{ $t('word.collation') }}:</label>
                      </div>
                      <div class="col-9">
-                        <select v-model="database.collation" class="form-select">
+                        <select
+                           ref="firstInput"
+                           v-model="database.collation"
+                           class="form-select"
+                        >
                            <option
                               v-for="collation in collations"
                               :key="collation.id"
@@ -114,6 +118,10 @@ export default {
       };
 
       window.addEventListener('keydown', this.onKey);
+
+      setTimeout(() => {
+         this.$refs.firstInput.focus();
+      }, 20);
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);

@@ -108,6 +108,19 @@
                      </div>
                   </div>
                </form>
+               <div v-if="!indexesProxy.length" class="empty">
+                  <div class="empty-icon">
+                     <i class="mdi mdi-key-outline mdi-48px" />
+                  </div>
+                  <p class="empty-title h5">
+                     {{ $t('message.thereAreNoIndexes') }}
+                  </p>
+                  <div class="empty-action">
+                     <button class="btn btn-primary" @click="addIndex">
+                        {{ $t('message.createNewIndex') }}
+                     </button>
+                  </div>
+               </div>
             </div>
          </div>
       </div>
@@ -216,7 +229,7 @@ export default {
          });
       },
       resetSelectedID () {
-         this.selectedIndexID = this.indexesProxy[0]._id;
+         this.selectedIndexID = this.indexesProxy.length ? this.indexesProxy[0]._id : '';
       }
    }
 };
