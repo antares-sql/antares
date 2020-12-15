@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.11](https://github.com/Fabio286/antares/compare/v0.0.10...v0.0.11) (2020-12-15)
+
+
+### Features
+
+* auto focus on first input in modals ([1476e89](https://github.com/Fabio286/antares/commit/1476e899d164562f12342ced8c76903b9bdcfa55))
+* foreign keys management ([206597e](https://github.com/Fabio286/antares/commit/206597e5b891e13e6f7635075bd11599355ab778))
+* improved data table sorts ([5712b80](https://github.com/Fabio286/antares/commit/5712b8002203b32027f0e820f98a61e2ec965e79))
+* query tabs auto focus ([f81312a](https://github.com/Fabio286/antares/commit/f81312aeb02ef55affd2ae9e81a9b4cb4c2e6da2))
+
+
+### Bug Fixes
+
+* data tab sort not maintained at refresh ([15b08d7](https://github.com/Fabio286/antares/commit/15b08d7ea858cb28111c7b548af9a13b1bf0da91))
+* deletion of rows with non-numeric ID ([d385832](https://github.com/Fabio286/antares/commit/d38583262e672a2b47c5ad0aca0f13c129830a7b))
+* file field editor not show ([9291a7a](https://github.com/Fabio286/antares/commit/9291a7a7b41e7aeb9b65c7f32e496f523e482272))
+* improved changes dedection in props tab ([acebe43](https://github.com/Fabio286/antares/commit/acebe435ff6fa1581692fbf7ee1bc23b334e3947))
+* some properties do not reset after fields changes ([3ed5ea0](https://github.com/Fabio286/antares/commit/3ed5ea023e1852d724b2b59ab156f8722876f85b))
+* unable to switch tabs when no table selected ([c545815](https://github.com/Fabio286/antares/commit/c5458159d1e30cecf6615086c074d98b4b599637))
+* wrong field type detection ([5cfdc9b](https://github.com/Fabio286/antares/commit/5cfdc9b92d4b778a7863b02fd64e6445236c89bc))
+
 ### [0.0.10](https://github.com/Fabio286/antares/compare/v0.0.9...v0.0.10) (2020-12-04)
 
 
