@@ -15,6 +15,12 @@
                class="d-inline-block mdi mdi-key column-key c-help"
                :class="`key-${index.type}`"
             />
+            <i
+               v-for="foreign in foreigns"
+               :key="foreign"
+               :title="foreign"
+               class="d-inline-block mdi mdi-key-link c-help"
+            />
          </div>
       </div>
       <div class="td" tabindex="0">
@@ -287,7 +293,8 @@ export default {
    props: {
       row: Object,
       dataTypes: Array,
-      indexes: Array
+      indexes: Array,
+      foreigns: Array
    },
    data () {
       return {

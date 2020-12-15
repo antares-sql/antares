@@ -40,7 +40,7 @@
                   <span>{{ $t('word.indexes') }}</span>
                   <i class="mdi mdi-24px mdi-key mdi-rotate-45 ml-1" />
                </button>
-               <button class="btn btn-dark btn-sm">
+               <button class="btn btn-dark btn-sm" @click="showForeignModal">
                   <span>{{ $t('word.foreignKeys') }}</span>
                   <i class="mdi mdi-24px mdi-key-link ml-1" />
                </button>
@@ -57,6 +57,7 @@
             ref="indexTable"
             :fields="localFields"
             :indexes="localIndexes"
+            :foreigns="localKeyUsage"
             :tab-uid="tabUid"
             :conn-uid="connection.uid"
             :index-types="workspace.indexTypes"
@@ -86,6 +87,18 @@
          @hide="hideIndexesModal"
          @indexes-update="indexesUpdate"
       />
+      <WorkspacePropsForeignModal
+         v-if="isForeignModal"
+         :local-key-usage="localKeyUsage"
+         :connection="connection"
+         :table="table"
+         :schema="schema"
+         :schema-tables="schemaTables"
+         :fields="localFields"
+         :workspace="workspace"
+         @hide="hideForeignModal"
+         @foreigns-update="foreignsUpdate"
+      />
    </div>
 </template>
 
@@ -96,13 +109,15 @@ import Tables from '@/ipc-api/Tables';
 import WorkspacePropsTable from '@/components/WorkspacePropsTable';
 import WorkspacePropsOptionsModal from '@/components/WorkspacePropsOptionsModal';
 import WorkspacePropsIndexesModal from '@/components/WorkspacePropsIndexesModal';
+import WorkspacePropsForeignModal from '@/components/WorkspacePropsForeignModal';
 
 export default {
    name: 'WorkspacePropsTab',
    components: {
       WorkspacePropsTable,
       WorkspacePropsOptionsModal,
-      WorkspacePropsIndexesModal
+      WorkspacePropsIndexesModal,
+      WorkspacePropsForeignModal
    },
    props: {
       connection: Object,
@@ -115,6 +130,7 @@ export default {
          isSaving: false,
          isOptionsModal: false,
          isIndexesModal: false,
+         isForeignModal: false,
          isOptionsChanging: false,
          originalFields: [],
          localFields: [],
@@ -147,6 +163,13 @@ export default {
       },
       schema () {
          return this.workspace.breadcrumbs.schema;
+      },
+      schemaTables () {
+         const schemaTables = this.workspace.structure
+            .filter(schema => schema.name === this.schema)
+            .map(schema => schema.tables);
+
+         return schemaTables.length ? schemaTables[0].filter(table => table.type === 'table') : [];
       },
       isChanged () {
          return JSON.stringify(this.originalFields) !== JSON.stringify(this.localFields) ||
@@ -242,8 +265,13 @@ export default {
             const { status, response } = await Tables.getKeyUsage(params);
 
             if (status === 'success') {
-               this.originalKeyUsage = response;
-               this.localKeyUsage = JSON.parse(JSON.stringify(response));
+               this.originalKeyUsage = response.map(foreign => {
+                  return {
+                     _id: uidGen(),
+                     ...foreign
+                  };
+               });
+               this.localKeyUsage = JSON.parse(JSON.stringify(this.originalKeyUsage));
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -321,6 +349,35 @@ export default {
          // Index Deletions
          indexChanges.deletions = this.originalIndexes.filter(index => !localIndexIDs.includes(index._id));
 
+         // FOREIGN KEYS
+         const foreignChanges = {
+            additions: [],
+            changes: [],
+            deletions: []
+         };
+         const originalForeignIDs = this.originalKeyUsage.reduce((acc, curr) => [...acc, curr._id], []);
+         const localForeignIDs = this.localKeyUsage.reduce((acc, curr) => [...acc, curr._id], []);
+
+         // Foreigns Additions
+         foreignChanges.additions = this.localKeyUsage.filter(foreign => !originalForeignIDs.includes(foreign._id));
+
+         // Foreigns Changes
+         this.originalKeyUsage.forEach(originalForeign => {
+            const lI = this.localKeyUsage.findIndex(localForeign => localForeign._id === originalForeign._id);
+            if (JSON.stringify(originalForeign) !== JSON.stringify(this.localKeyUsage[lI])) {
+               if (this.localKeyUsage[lI]) {
+                  foreignChanges.changes.push({
+                     ...this.localKeyUsage[lI],
+                     oldName: originalForeign.constraintName
+                  });
+               }
+            }
+         });
+
+         // Foreigns Deletions
+         foreignChanges.deletions = this.originalKeyUsage.filter(foreign => !localForeignIDs.includes(foreign._id));
+
+         // ALTER
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
@@ -329,10 +386,11 @@ export default {
             changes,
             deletions,
             indexChanges,
+            foreignChanges,
             options
          };
 
-         try { // Key usage (foreign keys)
+         try {
             const { status, response } = await Tables.alterTable(params);
 
             if (status === 'success') {
@@ -423,6 +481,15 @@ export default {
       },
       indexesUpdate (indexes) {
          this.localIndexes = indexes;
+      },
+      showForeignModal () {
+         this.isForeignModal = true;
+      },
+      hideForeignModal () {
+         this.isForeignModal = false;
+      },
+      foreignsUpdate (foreigns) {
+         this.localKeyUsage = foreigns;
       }
    }
 };

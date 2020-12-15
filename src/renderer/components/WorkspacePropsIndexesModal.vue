@@ -65,37 +65,45 @@
             </div>
 
             <div class="column col-7 pl-2 editor-col">
-               <form v-if="selectedIndexObj" :style="{ height: modalInnerHeight + 'px'}">
+               <form
+                  v-if="selectedIndexObj"
+                  :style="{ height: modalInnerHeight + 'px'}"
+                  class="form-horizontal"
+               >
                   <div class="form-group">
-                     <label class="form-label">
+                     <label class="form-label col-3">
                         {{ $t('word.name') }}
                      </label>
-                     <input
-                        v-model="selectedIndexObj.name"
-                        class="form-input"
-                        type="text"
-                     >
+                     <div class="column">
+                        <input
+                           v-model="selectedIndexObj.name"
+                           class="form-input"
+                           type="text"
+                        >
+                     </div>
                   </div>
                   <div class="form-group">
-                     <label class="form-label">
+                     <label class="form-label col-3">
                         {{ $t('word.type') }}
                      </label>
-                     <select v-model="selectedIndexObj.type" class="form-select">
-                        <option
-                           v-for="index in indexTypes"
-                           :key="index"
-                           :value="index"
-                           :disabled="index === 'PRIMARY' && hasPrimary"
-                        >
-                           {{ index }}
-                        </option>
-                     </select>
+                     <div class="column">
+                        <select v-model="selectedIndexObj.type" class="form-select">
+                           <option
+                              v-for="index in indexTypes"
+                              :key="index"
+                              :value="index"
+                              :disabled="index === 'PRIMARY' && hasPrimary"
+                           >
+                              {{ index }}
+                           </option>
+                        </select>
+                     </div>
                   </div>
                   <div class="form-group">
-                     <label class="form-label">
+                     <label class="form-label col-3">
                         {{ $tc('word.field', fields.length) }}
                      </label>
-                     <div class="fields-list">
+                     <div class="fields-list column pt-1">
                         <label
                            v-for="(field, i) in fields"
                            :key="`${field.name}-${i}`"
@@ -266,7 +274,7 @@ export default {
 }
 
 .fields-list {
-  max-height: 200px;
+  max-height: 300px;
   overflow: auto;
 }
 

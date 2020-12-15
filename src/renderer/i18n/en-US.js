@@ -117,7 +117,14 @@ module.exports = {
       emptyCorfirm: 'Do you confirm to empty',
       unsavedChanges: 'Unsaved changes',
       discardUnsavedChanges: 'You have some unsaved changes. By leaving this tab these changes will be discarded.',
-      thereAreNoIndexes: 'There are no indexes'
+      thereAreNoIndexes: 'There are no indexes',
+      thereAreNoForeign: 'There are no foreign keys',
+      createNewForeign: 'Create new foreign key',
+      referenceTable: 'Ref. table',
+      referenceField: 'Ref. field',
+      foreignFields: 'Foreign fields',
+      invalidDefault: 'Invalid default',
+      onDelete: 'On delete'
    },
    // Date and Time
    short: {

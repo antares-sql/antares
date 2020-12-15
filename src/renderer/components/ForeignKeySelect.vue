@@ -1,10 +1,14 @@
 <template>
    <select
       ref="editField"
-      class="px-1"
+      class="form-select pl-1 pr-4"
+      :class="{'small-select': size === 'small'}"
       @change="onChange"
       @blur="$emit('blur')"
    >
+      <option v-if="!isValidDefault" :value="value">
+         {{ value }} - {{ $t('message.invalidDefault') }}
+      </option>
       <option
          v-for="row in foreignList"
          :key="row.foreignColumn"
@@ -30,7 +34,11 @@ export default {
    },
    props: {
       value: [String, Number],
-      keyUsage: Object
+      keyUsage: Object,
+      size: {
+         type: String,
+         default: ''
+      }
    },
    data () {
       return {
@@ -40,7 +48,10 @@ export default {
    computed: {
       ...mapGetters({
          selectedWorkspace: 'workspaces/getSelected'
-      })
+      }),
+      isValidDefault () {
+         return this.foreignList.some(foreign => foreign.foreignColumn.toString() === this.value.toString());
+      }
    },
    async created () {
       let firstTextField;
@@ -64,7 +75,7 @@ export default {
       try { // Foregn list
          const { status, response } = await Tables.getForeignList({
             ...params,
-            column: this.keyUsage.refColumn,
+            column: this.keyUsage.refField,
             description: firstTextField
          });
 

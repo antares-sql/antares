@@ -85,7 +85,7 @@
                   </div>
                </div>
                <div class="th">
-                  <div class="column-resizable">
+                  <div class="column-resizable min-100">
                      <div class="table-column-title">
                         {{ $t('word.collation') }}
                      </div>
@@ -104,6 +104,7 @@
                :key="row._id"
                :row="row"
                :indexes="getIndexes(row.name)"
+               :foreigns="getForeigns(row.name)"
                :data-types="dataTypes"
                @contextmenu="contextMenu"
             />
@@ -128,6 +129,7 @@ export default {
    props: {
       fields: Array,
       indexes: Array,
+      foreigns: Array,
       indexTypes: Array,
       tabUid: [String, Number],
       connUid: String,
@@ -214,6 +216,13 @@ export default {
             acc.push(...curr.fields.map(f => ({ name: f, type: curr.type })));
             return acc;
          }, []).filter(f => f.name === field);
+      },
+      getForeigns (field) {
+         return this.foreigns.reduce((acc, curr) => {
+            if (curr.field === field)
+               acc.push(`${curr.refTable}.${curr.refField}`);
+            return acc;
+         }, []);
       }
    }
 };

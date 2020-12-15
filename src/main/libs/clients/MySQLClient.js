@@ -237,17 +237,27 @@ export class MySQLClient extends AntaresCore {
          .where({ TABLE_SCHEMA: `= '${schema}'`, TABLE_NAME: `= '${table}'`, REFERENCED_TABLE_NAME: 'IS NOT NULL' })
          .run();
 
+      const { rows: extras } = await this
+         .select('*')
+         .schema('information_schema')
+         .from('REFERENTIAL_CONSTRAINTS')
+         .where({ CONSTRAINT_SCHEMA: `= '${schema}'`, TABLE_NAME: `= '${table}'`, REFERENCED_TABLE_NAME: 'IS NOT NULL' })
+         .run();
+
       return rows.map(field => {
+         const extra = extras.find(x => x.CONSTRAINT_NAME === field.CONSTRAINT_NAME);
          return {
             schema: field.TABLE_SCHEMA,
             table: field.TABLE_NAME,
-            column: field.COLUMN_NAME,
+            field: field.COLUMN_NAME,
             position: field.ORDINAL_POSITION,
             constraintPosition: field.POSITION_IN_UNIQUE_CONSTRAINT,
             constraintName: field.CONSTRAINT_NAME,
             refSchema: field.REFERENCED_TABLE_SCHEMA,
             refTable: field.REFERENCED_TABLE_NAME,
-            refColumn: field.REFERENCED_COLUMN_NAME
+            refField: field.REFERENCED_COLUMN_NAME,
+            onUpdate: extra.UPDATE_RULE,
+            onDelete: extra.DELETE_RULE
          };
       });
    }
@@ -346,6 +356,7 @@ export class MySQLClient extends AntaresCore {
          deletions,
          changes,
          indexChanges,
+         foreignChanges,
          options
       } = params;
 
@@ -390,6 +401,11 @@ export class MySQLClient extends AntaresCore {
          }
       });
 
+      // ADD FOREIGN KEYS
+      foreignChanges.additions.forEach(addition => {
+         alterColumns.push(`ADD CONSTRAINT \`${addition.constraintName}\` FOREIGN KEY (\`${addition.field}\`) REFERENCES \`${addition.refTable}\` (\`${addition.refField}\`) ON UPDATE ${addition.onUpdate} ON DELETE ${addition.onDelete}`);
+      });
+
       // CHANGE FIELDS
       changes.forEach(change => {
          const length = change.numLength || change.charLength || change.datePrecision;
@@ -427,6 +443,12 @@ export class MySQLClient extends AntaresCore {
          }
       });
 
+      // CHANGE FOREIGN KEYS
+      foreignChanges.changes.forEach(change => {
+         alterColumns.push(`DROP FOREIGN KEY \`${change.oldName}\``);
+         alterColumns.push(`ADD CONSTRAINT \`${change.constraintName}\` FOREIGN KEY (\`${change.field}\`) REFERENCES \`${change.refTable}\` (\`${change.refField}\`) ON UPDATE ${change.onUpdate} ON DELETE ${change.onDelete}`);
+      });
+
       // DROP FIELDS
       deletions.forEach(deletion => {
          alterColumns.push(`DROP COLUMN \`${deletion.name}\``);
@@ -438,6 +460,11 @@ export class MySQLClient extends AntaresCore {
             alterColumns.push('DROP PRIMARY KEY');
          else
             alterColumns.push(`DROP INDEX \`${deletion.name}\``);
+      });
+
+      // DROP FOREIGN KEYS
+      foreignChanges.deletions.forEach(deletion => {
+         alterColumns.push(`DROP FOREIGN KEY \`${deletion.constraintName}\``);
       });
 
       sql += alterColumns.join(', ');

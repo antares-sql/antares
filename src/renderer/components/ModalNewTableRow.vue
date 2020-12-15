@@ -150,7 +150,7 @@ export default {
          return this.getWorkspace(this.selectedWorkspace);
       },
       foreignKeys () {
-         return this.keyUsage.map(key => key.column);
+         return this.keyUsage.map(key => key.field);
       }
    },
    watch: {
@@ -306,7 +306,7 @@ export default {
          this.localRow[field] = files[0].path;
       },
       getKeyUsage (keyName) {
-         return this.keyUsage.find(key => key.column === keyName);
+         return this.keyUsage.find(key => key.field === keyName);
       },
       onKey (e) {
          e.stopPropagation();

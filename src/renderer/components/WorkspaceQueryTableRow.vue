@@ -20,6 +20,7 @@
                class="editable-field"
                :value.sync="editingContent"
                :key-usage="getKeyUsage(cKey)"
+               size="small"
                @blur="editOFF"
             />
             <template v-else>
@@ -256,7 +257,7 @@ export default {
          return ['gif', 'jpg', 'png', 'bmp', 'ico', 'tif'].includes(this.contentInfo.ext);
       },
       foreignKeys () {
-         return this.keyUsage.map(key => key.column);
+         return this.keyUsage.map(key => key.field);
       },
       isEditable () {
          return this.fields ? !!(this.fields[0].schema && this.fields[0].table) : false;
@@ -422,7 +423,7 @@ export default {
          this.$emit('select-row', event, row);
       },
       getKeyUsage (keyName) {
-         return this.keyUsage.find(key => key.column === keyName);
+         return this.keyUsage.find(key => key.field === keyName);
       }
    }
 };
