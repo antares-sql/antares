@@ -31,10 +31,7 @@ An application created with minimalism and semplicity in mind, with features in 
 
 - Multiple database connections at same time.
 - Database management (add/edit/delete).
-- Tables management (add/edit/delete/empty).
-- Tables index management (add/edit/delete).
-- Tables fields management (add/edit/delete).
-- Tables content management (add/edit/delete).
+- Full tables management, including indexes and foreign keys.
 - Run queries on multiple tabs.
 - Query suggestions.
 - Native dark theme.
@@ -45,11 +42,13 @@ An application created with minimalism and semplicity in mind, with features in 
 
 This is a roadmap with major features will come in near future.
 
-- Users management (add/edit/delete).
 - Stored procedures, views, schedulers and triggers support.
+- Users management (add/edit/delete).
 - More secure password storage.
 - Database tools (variables, process list...).
+- SSL and SSH tunnel support.
 - Support for other databases.
+- UI/UX improvements.
 - Improvements of query editor area.
 - Improvements of query suggestions.
 - Query history.
@@ -58,7 +57,6 @@ This is a roadmap with major features will come in near future.
 - Query logs console.
 - Fake data filler.
 - Import/export and migration.
-- SSL and SSH tunnel support.
 - Themes.
 
 ## Currently supported
