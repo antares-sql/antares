@@ -1,10 +1,20 @@
 'use strict';
+import Store from 'electron-store';
+import Application from '../../ipc-api/Application';
+const key = Application.getKey();
+
+console.log(key);
+
+const persistentStore = new Store({
+   name: 'connections',
+   encryptionKey: key
+});
 
 export default {
    namespaced: true,
    strict: true,
    state: {
-      connections: []
+      connections: persistentStore.get('connections') || []
    },
    getters: {
       getConnections: state => state.connections,
@@ -20,9 +30,11 @@ export default {
    mutations: {
       ADD_CONNECTION (state, connection) {
          state.connections.push(connection);
+         persistentStore.set('connections', state.connections);
       },
       DELETE_CONNECTION (state, connection) {
          state.connections = state.connections.filter(el => el.uid !== connection.uid);
+         persistentStore.set('connections', state.connections);
       },
       EDIT_CONNECTION (state, connection) {
          const editedConnections = state.connections.map(conn => {
@@ -31,9 +43,11 @@ export default {
          });
          state.connections = editedConnections;
          state.selected_conection = {};
+         persistentStore.set('connections', state.connections);
       },
       UPDATE_CONNECTIONS (state, connections) {
          state.connections = connections;
+         persistentStore.set('connections', state.connections);
       }
    },
    actions: {

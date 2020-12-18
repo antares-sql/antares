@@ -36,6 +36,7 @@ An application created with minimalism and semplicity in mind, with features in 
 - Query suggestions.
 - Native dark theme.
 - Multi language.
+- Secure password storage.
 - Auto updates.
 
 ## Coming soon
@@ -44,7 +45,6 @@ This is a roadmap with major features will come in near future.
 
 - Stored procedures, views, schedulers and triggers support.
 - Users management (add/edit/delete).
-- More secure password storage.
 - Database tools (variables, process list...).
 - SSL and SSH tunnel support.
 - Support for other databases.
