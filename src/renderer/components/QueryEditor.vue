@@ -5,11 +5,9 @@
 </template>
 
 <script>
-
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import { completionItemProvider } from '@/suggestions/sql';
-
-monaco.languages.registerCompletionItemProvider('sql', completionItemProvider(monaco));
+import * as ace from 'ace-builds';
+import 'ace-builds/webpack-resolver';
+import 'ace-builds/src-noconflict/ext-language_tools';
 
 export default {
    name: 'QueryEditor',
@@ -23,21 +21,21 @@ export default {
       };
    },
    mounted () {
-      this.editor = monaco.editor.create(this.$refs.editor, {
+      this.editor = ace.edit(this.$refs.editor, {
+         mode: 'ace/mode/sql',
+         theme: 'ace/theme/twilight',
          value: this.value,
-         language: 'sql',
-         theme: 'vs-dark',
-         autoIndent: true,
-         minimap: {
-            enabled: false
-         },
-         contextmenu: false,
-         wordBasedSuggestions: true,
-         acceptSuggestionOnEnter: 'smart',
-         quickSuggestions: true
+         fontSize: '14px',
+         printMargin: false
       });
 
-      this.editor.onDidChangeModelContent(e => {
+      this.editor.setOptions({
+         enableBasicAutocompletion: true,
+         enableSnippets: true,
+         enableLiveAutocompletion: true
+      });
+
+      this.editor.session.on('change', () => {
          const content = this.editor.getValue();
          this.$emit('update:value', content);
       });
@@ -47,9 +45,6 @@ export default {
             this.editor.focus();
          }, 20);
       }
-   },
-   beforeDestroy () {
-      this.editor && this.editor.dispose();
    }
 };
 </script>
@@ -61,17 +56,6 @@ export default {
     .editor {
       height: 200px;
       width: 100%;
-    }
-  }
-
-  .CodeMirror {
-    .CodeMirror-scroll {
-      max-width: 100%;
-    }
-
-    .CodeMirror-line {
-      word-break: break-word !important;
-      white-space: pre-wrap !important;
     }
   }
 </style>

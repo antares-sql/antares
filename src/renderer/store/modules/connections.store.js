@@ -3,8 +3,6 @@ import Store from 'electron-store';
 import Application from '../../ipc-api/Application';
 const key = Application.getKey();
 
-console.log(key);
-
 const persistentStore = new Store({
    name: 'connections',
    encryptionKey: key

@@ -1,12 +1,8 @@
 const webpack = require('webpack');
-const MonacoEditorPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
    stats: 'errors-warnings',
    plugins: [
-      new MonacoEditorPlugin({
-         languages: ['sql']
-      }),
       new webpack.DefinePlugin({
          'process.env': {
             PACKAGE_VERSION: JSON.stringify(require('./package.json').version)
