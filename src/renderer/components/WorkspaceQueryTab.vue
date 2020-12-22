@@ -5,6 +5,8 @@
             v-if="isSelected"
             :auto-focus="true"
             :value.sync="query"
+            :workspace="workspace"
+            :schema="schema"
          />
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
