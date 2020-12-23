@@ -96,8 +96,65 @@
                </div>
 
                <div v-if="selectedTab === 'themes'" class="panel-body py-4">
-                  <div class="text-center">
-                     <p>In future releases</p>
+                  <div class="container">
+                     <div class="columns">
+                        <div class="column col-12 h5 mb-2 ">
+                           {{ $t('message.applicationTheme') }}
+                        </div>
+                        <div class="column col-6 c-hand theme-block" :class="{'selected': applicationTheme === 'dark'}">
+                           <img :src="require('@/images/dark.png').default" class="img-responsive img-fit-cover s-rounded">
+                           <div class="theme-name">
+                              <i class="mdi mdi-moon-waning-crescent mdi-48px" />
+                              <div class="h6 mt-4">
+                                 {{ $t('word.dark') }}
+                              </div>
+                           </div>
+                        </div>
+                        <div class="column col-6 theme-block disabled" :class="{'selected': applicationTheme === 'light'}">
+                           <div class="theme-name">
+                              <i class="mdi mdi-white-balance-sunny mdi-48px" />
+                              <div class="h6 mt-4">
+                                 {{ $t('word.light') }} (Coming)
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+
+                     <div class="columns mt-4">
+                        <div class="column col-12 h5 mb-2">
+                           {{ $t('message.editorTheme') }}
+                        </div>
+                        <div class="column col-6 h5 mb-4">
+                           <select
+                              v-model="localEditorTheme"
+                              class="form-select"
+                              @change="changeEditorTheme(localEditorTheme)"
+                           >
+                              <optgroup
+                                 v-for="group in editorThemes"
+                                 :key="group.group"
+                                 :label="group.group"
+                              >
+                                 <option
+                                    v-for="theme in group.themes"
+                                    :key="theme.name"
+                                    :value="theme.code"
+                                    :selected="editorTheme === theme.code"
+                                 >
+                                    {{ theme.name }}
+                                 </option>
+                              </optgroup>
+                           </select>
+                        </div>
+                        <div class="column col-12">
+                           <QueryEditor
+                              :value="exampleQuery"
+                              :workspace="workspace"
+                              :read-only="true"
+                              :height="270"
+                           />
+                        </div>
+                     </div>
                   </div>
                </div>
 
@@ -127,18 +184,70 @@
 import { mapActions, mapGetters } from 'vuex';
 import localesNames from '@/i18n/supported-locales';
 import ModalSettingsUpdate from '@/components/ModalSettingsUpdate';
+import QueryEditor from '@/components/QueryEditor';
 const { shell } = require('electron');
 
 export default {
    name: 'ModalSettings',
    components: {
-      ModalSettingsUpdate
+      ModalSettingsUpdate,
+      QueryEditor
    },
    data () {
       return {
          localLocale: null,
          localTimeout: null,
-         selectedTab: 'general'
+         localEditorTheme: null,
+         selectedTab: 'general',
+         editorThemes: [
+            {
+               group: this.$t('word.light'),
+               themes: [
+                  { code: 'chrome', name: 'Chrome' },
+                  { code: 'clouds', name: 'Clouds' },
+                  { code: 'crimson_editor', name: 'Crimson Editor' },
+                  { code: 'dawn', name: 'Dawn' },
+                  { code: 'dreamweaver', name: 'Dreamweaver' },
+                  { code: 'eclupse', name: 'Eclipse' },
+                  { code: 'github', name: 'GitHub' },
+                  { code: 'iplastic', name: 'IPlastic' },
+                  { code: 'solarized_light', name: 'Solarized Light' },
+                  { code: 'textmate', name: 'TextMate' },
+                  { code: 'tomorrow', name: 'Tomorrow' },
+                  { code: 'xcode', name: 'Xcode' },
+                  { code: 'kuroir', name: 'Kuroir' },
+                  { code: 'katzenmilch', name: 'KatzenMilch' },
+                  { code: 'sqlserver', name: 'SQL Server' }
+               ]
+            },
+            {
+               group: this.$t('word.dark'),
+               themes: [
+                  { code: 'ambiance', name: 'Ambiance' },
+                  { code: 'chaos', name: 'Chaos' },
+                  { code: 'clouds_midnight', name: 'Clouds Midnight' },
+                  { code: 'dracula', name: 'Dracula' },
+                  { code: 'cobalt', name: 'Cobalt' },
+                  { code: 'gruvbox', name: 'Gruvbox' },
+                  { code: 'gob', name: 'Green on Black' },
+                  { code: 'idle_fingers', name: 'Idle Fingers' },
+                  { code: 'kr_theme', name: 'krTheme' },
+                  { code: 'merbivore', name: 'Merbivore' },
+                  { code: 'mono_industrial', name: 'Mono Industrial' },
+                  { code: 'monokai', name: 'Monokai' },
+                  { code: 'nord_dark', name: 'Nord Dark' },
+                  { code: 'pastel_on_dark', name: 'Pastel on Dark' },
+                  { code: 'solarized_dark', name: 'Solarized Dark' },
+                  { code: 'terminal', name: 'Terminal' },
+                  { code: 'tomorrow_night', name: 'Tomorrow Night' },
+                  { code: 'tomorrow_night_blue', name: 'Tomorrow Night Blue' },
+                  { code: 'tomorrow_night_bright', name: 'Tomorrow Night Bright' },
+                  { code: 'tomorrow_night_eighties', name: 'Tomorrow Night 80s' },
+                  { code: 'twilight', name: 'Twilight' },
+                  { code: 'vibrant_ink', name: 'Vibrant Ink' }
+               ]
+            }
+         ]
       };
    },
    computed: {
@@ -148,7 +257,11 @@ export default {
          selectedSettingTab: 'application/selectedSettingTab',
          selectedLocale: 'settings/getLocale',
          notificationsTimeout: 'settings/getNotificationsTimeout',
-         updateStatus: 'application/getUpdateStatus'
+         applicationTheme: 'settings/getApplicationTheme',
+         editorTheme: 'settings/getEditorTheme',
+         updateStatus: 'application/getUpdateStatus',
+         selectedWorkspace: 'workspaces/getSelected',
+         getWorkspace: 'workspaces/getWorkspace'
       }),
       locales () {
          const locales = [];
@@ -159,11 +272,32 @@ export default {
       },
       hasUpdates () {
          return ['available', 'downloading', 'downloaded'].includes(this.updateStatus);
+      },
+      workspace () {
+         return this.getWorkspace(this.selectedWorkspace);
+      },
+      exampleQuery () {
+         return `-- This is an example
+SELECT 
+    employee.id,
+    employee.first_name,
+    employee.last_name,
+    SUM(DATEDIFF("SECOND", call.start, call.end)) AS call_duration
+FROM call
+INNER JOIN employee ON call.employee_id = employee.id
+GROUP BY
+    employee.id,
+    employee.first_name,
+    employee.last_name
+ORDER BY
+    employee.id ASC;
+`;
       }
    },
    created () {
       this.localLocale = this.selectedLocale;
       this.localTimeout = this.notificationsTimeout;
+      this.localEditorTheme = this.editorTheme;
       this.selectedTab = this.selectedSettingTab;
       window.addEventListener('keydown', this.onKey);
    },
@@ -174,6 +308,7 @@ export default {
       ...mapActions({
          closeModal: 'application/hideSettingModal',
          changeLocale: 'settings/changeLocale',
+         changeEditorTheme: 'settings/changeEditorTheme',
          updateNotificationsTimeout: 'settings/updateNotificationsTimeout'
       }),
       selectTab (tab) {
@@ -205,6 +340,34 @@ export default {
     .panel-body {
       height: calc(70vh - 70px);
       overflow: auto;
+
+      .theme-block {
+        position: relative;
+        text-align: center;
+
+        &.selected {
+          img {
+            box-shadow: 0 0 0 3px $primary-color;
+          }
+        }
+
+        &.disabled {
+          cursor: not-allowed;
+          opacity: 0.5;
+        }
+
+        .theme-name {
+          position: absolute;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          top: 0;
+          height: 100%;
+          width: 100%;
+          text-shadow: 0 0 8px #000;
+        }
+      }
     }
 
     .badge::after {

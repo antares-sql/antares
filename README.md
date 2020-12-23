@@ -33,7 +33,7 @@ An application created with minimalism and semplicity in mind, with features in 
 - Database management (add/edit/delete).
 - Full tables management, including indexes and foreign keys.
 - Run queries on multiple tabs.
-- Query suggestions.
+- Query suggestions and auto complete.
 - Native dark theme.
 - Multi language.
 - Secure password storage.
@@ -49,8 +49,6 @@ This is a roadmap with major features will come in near future.
 - SSL and SSH tunnel support.
 - Support for other databases.
 - UI/UX improvements.
-- Improvements of query editor area.
-- Improvements of query suggestions.
 - Query history.
 - More context menu shortcuts.
 - More keyboard shortcuts.

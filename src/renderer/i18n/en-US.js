@@ -62,7 +62,9 @@ module.exports = {
       table: 'Table',
       discard: 'Discard',
       stay: 'Stay',
-      author: 'Author'
+      author: 'Author',
+      light: 'Light',
+      dark: 'Dark'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -124,7 +126,9 @@ module.exports = {
       referenceField: 'Ref. field',
       foreignFields: 'Foreign fields',
       invalidDefault: 'Invalid default',
-      onDelete: 'On delete'
+      onDelete: 'On delete',
+      applicationTheme: 'Application Theme',
+      editorTheme: 'Editor Theme'
    },
    // Date and Time
    short: {

@@ -9,12 +9,16 @@ export default {
    state: {
       locale: persistentStore.get('locale') || 'en-US',
       explorebar_size: persistentStore.get('explorebar_size') || null,
-      notifications_timeout: persistentStore.get('notifications_timeout') || 5
+      notifications_timeout: persistentStore.get('notifications_timeout') || 5,
+      application_theme: persistentStore.get('application_theme') || 'dark',
+      editor_theme: persistentStore.get('editor_theme') || 'twilight'
    },
    getters: {
       getLocale: state => state.locale,
       getExplorebarSize: state => state.explorebar_size,
-      getNotificationsTimeout: state => state.notifications_timeout
+      getNotificationsTimeout: state => state.notifications_timeout,
+      getApplicationTheme: state => state.application_theme,
+      getEditorTheme: state => state.editor_theme
    },
    mutations: {
       SET_LOCALE (state, locale) {
@@ -29,6 +33,9 @@ export default {
       SET_EXPLOREBAR_SIZE (state, size) {
          state.explorebar_size = size;
          persistentStore.set('explorebar_size', state.explorebar_size);
+      },
+      SET_EDITOR_THEME (state, theme) {
+         state.editor_theme = theme;
       }
    },
    actions: {
@@ -40,6 +47,9 @@ export default {
       },
       changeExplorebarSize ({ commit }, size) {
          commit('SET_EXPLOREBAR_SIZE', size);
+      },
+      changeEditorTheme ({ commit }, theme) {
+         commit('SET_EDITOR_THEME', theme);
       }
    }
 };

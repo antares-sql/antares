@@ -1,6 +1,10 @@
 <template>
    <div class="editor-wrapper">
-      <div ref="editor" class="editor" />
+      <div
+         ref="editor"
+         class="editor"
+         :style="{height: `${height}px`}"
+      />
    </div>
 </template>
 
@@ -8,15 +12,18 @@
 import * as ace from 'ace-builds';
 import 'ace-builds/webpack-resolver';
 import '../libs/ext-language_tools';
+import { mapGetters } from 'vuex';
 import Tables from '@/ipc-api/Tables';
 
 export default {
    name: 'QueryEditor',
    props: {
       value: String,
-      schema: String,
+      workspace: Object,
+      schema: { type: String, default: '' },
       autoFocus: { type: Boolean, default: false },
-      workspace: Object
+      readOnly: { type: Boolean, default: false },
+      height: { type: Number, default: 200 }
    },
    data () {
       return {
@@ -26,6 +33,9 @@ export default {
       };
    },
    computed: {
+      ...mapGetters({
+         editorTheme: 'settings/getEditorTheme'
+      }),
       tables () {
          return this.workspace.structure.filter(schema => schema.name === this.schema)
             .reduce((acc, curr) => {
@@ -36,7 +46,7 @@ export default {
                   name: table.name,
                   comment: table.comment,
                   type: table.type,
-                  fields: ['TODO']
+                  fields: []
                };
             });
       },
@@ -76,13 +86,20 @@ export default {
          };
       }
    },
+   watch: {
+      editorTheme () {
+         if (this.editor)
+            this.editor.setTheme(`ace/theme/${this.editorTheme}`);
+      }
+   },
    mounted () {
       this.editor = ace.edit(this.$refs.editor, {
          mode: `ace/mode/${this.mode}`,
-         theme: 'ace/theme/twilight',
+         theme: `ace/theme/${this.editorTheme}`,
          value: this.value,
          fontSize: '14px',
-         printMargin: false
+         printMargin: false,
+         readOnly: this.readOnly
       });
 
       this.editor.setOptions({
@@ -157,7 +174,6 @@ export default {
   border-bottom: 1px solid #444;
 
   .editor {
-    height: 200px;
     width: 100%;
   }
 }

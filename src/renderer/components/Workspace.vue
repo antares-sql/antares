@@ -193,6 +193,7 @@ export default {
       align-items: flex-start;
       flex-wrap: nowrap;
       overflow: auto;
+      margin-bottom: 0;
 
       &::-webkit-scrollbar {
         width: 2px;
