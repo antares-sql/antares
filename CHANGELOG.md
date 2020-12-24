@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.12](https://github.com/Fabio286/antares/compare/v0.0.11...v0.0.12) (2020-12-24)
+
+
+### Features
+
+* better security connections credentials storage ([fc35f27](https://github.com/Fabio286/antares/commit/fc35f271d7fe384cd786ce33547c0ef17135ddd8))
+* option to change editor theme ([a95b8d1](https://github.com/Fabio286/antares/commit/a95b8d188cfcc8f563ad73b4f0b676d068775d36))
+* option to toggle editor auto completion ([155154b](https://github.com/Fabio286/antares/commit/155154b43d0cd02ae875ded3ce865a37a999da5c))
+* query editor auto-completer for tables and columns ([cb1fce6](https://github.com/Fabio286/antares/commit/cb1fce6f998ea7332886820910e245ab19416a9d))
+
 ### [0.0.11](https://github.com/Fabio286/antares/compare/v0.0.10...v0.0.11) (2020-12-15)
 
 
