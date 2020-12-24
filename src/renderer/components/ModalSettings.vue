@@ -45,60 +45,83 @@
                      </li>
                   </ul>
                </div>
-
                <div v-if="selectedTab === 'general'" class="panel-body py-4">
-                  <form class="form-horizontal">
-                     <div class="col-8 col-sm-12">
-                        <div class="form-group mb-4">
-                           <div class="col-6 col-sm-12">
-                              <label class="form-label">
-                                 <i class="mdi mdi-18px mdi-translate mr-1" />
-                                 {{ $t('word.language') }}:
-                              </label>
-                           </div>
-                           <div class="col-6 col-sm-12">
-                              <select
-                                 v-model="localLocale"
-                                 class="form-select"
-                                 @change="changeLocale(localLocale)"
-                              >
-                                 <option
-                                    v-for="(locale, key) in locales"
-                                    :key="key"
-                                    :value="locale.code"
-                                 >
-                                    {{ locale.name }}
-                                 </option>
-                              </select>
-                           </div>
+                  <div class="container">
+                     <form class="form-horizontal columns">
+                        <div class="column col-12 h6 text-uppercase mb-1">
+                           {{ $t('word.application') }}
                         </div>
-                        <div class="form-group">
-                           <div class="col-6 col-sm-12">
-                              <label class="form-label">
-                                 {{ $t('message.notificationsTimeout') }}:
-                              </label>
-                           </div>
-                           <div class="col-6 col-sm-12">
-                              <div class="input-group">
-                                 <input
-                                    v-model="localTimeout"
-                                    class="form-input"
-                                    type="number"
-                                    min="1"
-                                    @focusout="checkNotificationsTimeout"
+                        <div class="column col-8 col-sm-12 mb-2">
+                           <div class="form-group mb-4">
+                              <div class="col-6 col-sm-12">
+                                 <label class="form-label">
+                                    <i class="mdi mdi-18px mdi-translate mr-1" />
+                                    {{ $t('word.language') }}:
+                                 </label>
+                              </div>
+                              <div class="col-6 col-sm-12">
+                                 <select
+                                    v-model="localLocale"
+                                    class="form-select"
+                                    @change="changeLocale(localLocale)"
                                  >
-                                 <span class="input-group-addon">{{ $t('word.seconds') }}</span>
+                                    <option
+                                       v-for="(locale, key) in locales"
+                                       :key="key"
+                                       :value="locale.code"
+                                    >
+                                       {{ locale.name }}
+                                    </option>
+                                 </select>
+                              </div>
+                           </div>
+                           <div class="form-group">
+                              <div class="col-6 col-sm-12">
+                                 <label class="form-label">
+                                    {{ $t('message.notificationsTimeout') }}:
+                                 </label>
+                              </div>
+                              <div class="col-6 col-sm-12">
+                                 <div class="input-group">
+                                    <input
+                                       v-model="localTimeout"
+                                       class="form-input"
+                                       type="number"
+                                       min="1"
+                                       @focusout="checkNotificationsTimeout"
+                                    >
+                                    <span class="input-group-addon">{{ $t('word.seconds') }}</span>
+                                 </div>
                               </div>
                            </div>
                         </div>
-                     </div>
-                  </form>
+
+                        <div class="column col-12 h6 mt-4 text-uppercase mb-1">
+                           {{ $t('word.editor') }}
+                        </div>
+                        <div class="column col-8 col-sm-12">
+                           <div class="form-group">
+                              <div class="col-6 col-sm-12">
+                                 <label class="form-label">
+                                    {{ $t('word.autoCompletion') }}:
+                                 </label>
+                              </div>
+                              <div class="col-6 col-sm-12">
+                                 <label class="form-switch d-inline-block" @click.prevent="toggleAutoComplete">
+                                    <input type="checkbox" :checked="selectedAutoComplete">
+                                    <i class="form-icon" />
+                                 </label>
+                              </div>
+                           </div>
+                        </div>
+                     </form>
+                  </div>
                </div>
 
                <div v-if="selectedTab === 'themes'" class="panel-body py-4">
                   <div class="container">
                      <div class="columns">
-                        <div class="column col-12 h5 mb-2 ">
+                        <div class="column col-12 h6 text-uppercase mb-2">
                            {{ $t('message.applicationTheme') }}
                         </div>
                         <div class="column col-6 c-hand theme-block" :class="{'selected': applicationTheme === 'dark'}">
@@ -121,7 +144,7 @@
                      </div>
 
                      <div class="columns mt-4">
-                        <div class="column col-12 h5 mb-2">
+                        <div class="column col-12 h6 text-uppercase mb-2 mt-4">
                            {{ $t('message.editorTheme') }}
                         </div>
                         <div class="column col-6 h5 mb-4">
@@ -256,6 +279,7 @@ export default {
          appVersion: 'application/appVersion',
          selectedSettingTab: 'application/selectedSettingTab',
          selectedLocale: 'settings/getLocale',
+         selectedAutoComplete: 'settings/getAutoComplete',
          notificationsTimeout: 'settings/getNotificationsTimeout',
          applicationTheme: 'settings/getApplicationTheme',
          editorTheme: 'settings/getEditorTheme',
@@ -308,6 +332,7 @@ ORDER BY
       ...mapActions({
          closeModal: 'application/hideSettingModal',
          changeLocale: 'settings/changeLocale',
+         changeAutoComplete: 'settings/changeAutoComplete',
          changeEditorTheme: 'settings/changeEditorTheme',
          updateNotificationsTimeout: 'settings/updateNotificationsTimeout'
       }),
@@ -327,6 +352,9 @@ ORDER BY
          e.stopPropagation();
          if (e.key === 'Escape')
             this.closeModal();
+      },
+      toggleAutoComplete () {
+         this.changeAutoComplete(!this.selectedAutoComplete);
       }
    }
 };

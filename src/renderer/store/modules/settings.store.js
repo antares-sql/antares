@@ -10,6 +10,7 @@ export default {
       locale: persistentStore.get('locale') || 'en-US',
       explorebar_size: persistentStore.get('explorebar_size') || null,
       notifications_timeout: persistentStore.get('notifications_timeout') || 5,
+      auto_complete: persistentStore.get('auto_complete') || true,
       application_theme: persistentStore.get('application_theme') || 'dark',
       editor_theme: persistentStore.get('editor_theme') || 'twilight'
    },
@@ -17,6 +18,7 @@ export default {
       getLocale: state => state.locale,
       getExplorebarSize: state => state.explorebar_size,
       getNotificationsTimeout: state => state.notifications_timeout,
+      getAutoComplete: state => state.auto_complete,
       getApplicationTheme: state => state.application_theme,
       getEditorTheme: state => state.editor_theme
    },
@@ -29,6 +31,10 @@ export default {
       SET_NOTIFICATIONS_TIMEOUT (state, timeout) {
          state.notifications_timeout = timeout;
          persistentStore.set('notifications_timeout', state.notifications_timeout);
+      },
+      SET_AUTO_COMPLETE (state, val) {
+         state.auto_complete = val;
+         persistentStore.set('auto_complete', state.auto_complete);
       },
       SET_EXPLOREBAR_SIZE (state, size) {
          state.explorebar_size = size;
@@ -47,6 +53,9 @@ export default {
       },
       changeExplorebarSize ({ commit }, size) {
          commit('SET_EXPLOREBAR_SIZE', size);
+      },
+      changeAutoComplete ({ commit }, val) {
+         commit('SET_AUTO_COMPLETE', val);
       },
       changeEditorTheme ({ commit }, theme) {
          commit('SET_EDITOR_THEME', theme);

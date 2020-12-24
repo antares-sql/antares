@@ -34,21 +34,24 @@ export default {
    },
    computed: {
       ...mapGetters({
-         editorTheme: 'settings/getEditorTheme'
+         editorTheme: 'settings/getEditorTheme',
+         autoComplete: 'settings/getAutoComplete'
       }),
       tables () {
-         return this.workspace.structure.filter(schema => schema.name === this.schema)
-            .reduce((acc, curr) => {
-               acc.push(...curr.tables);
-               return acc;
-            }, []).map(table => {
-               return {
-                  name: table.name,
-                  comment: table.comment,
-                  type: table.type,
-                  fields: []
-               };
-            });
+         return this.workspace
+            ? this.workspace.structure.filter(schema => schema.name === this.schema)
+               .reduce((acc, curr) => {
+                  acc.push(...curr.tables);
+                  return acc;
+               }, []).map(table => {
+                  return {
+                     name: table.name,
+                     comment: table.comment,
+                     type: table.type,
+                     fields: []
+                  };
+               })
+            : [];
       },
       mode () {
          switch (this.workspace.client) {
@@ -90,6 +93,13 @@ export default {
       editorTheme () {
          if (this.editor)
             this.editor.setTheme(`ace/theme/${this.editorTheme}`);
+      },
+      autoComplete () {
+         if (this.editor) {
+            this.editor.setOptions({
+               enableLiveAutocompletion: this.autoComplete
+            });
+         }
       }
    },
    mounted () {
@@ -105,7 +115,7 @@ export default {
       this.editor.setOptions({
          enableBasicAutocompletion: true,
          enableSnippets: true,
-         enableLiveAutocompletion: true
+         enableLiveAutocompletion: this.autoComplete
       });
 
       this.editor.completers.push({

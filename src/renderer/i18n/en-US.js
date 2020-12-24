@@ -64,7 +64,10 @@ module.exports = {
       stay: 'Stay',
       author: 'Author',
       light: 'Light',
-      dark: 'Dark'
+      dark: 'Dark',
+      autoCompletion: 'Auto Completion',
+      application: 'Application',
+      editor: 'Editor'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
