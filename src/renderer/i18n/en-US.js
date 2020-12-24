@@ -67,7 +67,8 @@ module.exports = {
       dark: 'Dark',
       autoCompletion: 'Auto Completion',
       application: 'Application',
-      editor: 'Editor'
+      editor: 'Editor',
+      view: 'View'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -131,7 +132,8 @@ module.exports = {
       invalidDefault: 'Invalid default',
       onDelete: 'On delete',
       applicationTheme: 'Application Theme',
-      editorTheme: 'Editor Theme'
+      editorTheme: 'Editor Theme',
+      wrapLongLines: 'Wrap long lines'
    },
    // Date and Time
    short: {

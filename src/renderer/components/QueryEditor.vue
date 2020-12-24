@@ -35,7 +35,8 @@ export default {
    computed: {
       ...mapGetters({
          editorTheme: 'settings/getEditorTheme',
-         autoComplete: 'settings/getAutoComplete'
+         autoComplete: 'settings/getAutoComplete',
+         lineWrap: 'settings/getLineWrap'
       }),
       tables () {
          return this.workspace
@@ -100,6 +101,13 @@ export default {
                enableLiveAutocompletion: this.autoComplete
             });
          }
+      },
+      lineWrap () {
+         if (this.editor) {
+            this.editor.setOptions({
+               wrap: this.lineWrap
+            });
+         }
       }
    },
    mounted () {
@@ -114,6 +122,7 @@ export default {
 
       this.editor.setOptions({
          enableBasicAutocompletion: true,
+         wrap: this.lineWrap,
          enableSnippets: true,
          enableLiveAutocompletion: this.autoComplete
       });

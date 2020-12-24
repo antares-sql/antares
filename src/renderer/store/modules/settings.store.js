@@ -11,6 +11,7 @@ export default {
       explorebar_size: persistentStore.get('explorebar_size') || null,
       notifications_timeout: persistentStore.get('notifications_timeout') || 5,
       auto_complete: persistentStore.get('auto_complete') || true,
+      line_wrap: persistentStore.get('line_wrap') || true,
       application_theme: persistentStore.get('application_theme') || 'dark',
       editor_theme: persistentStore.get('editor_theme') || 'twilight'
    },
@@ -19,6 +20,7 @@ export default {
       getExplorebarSize: state => state.explorebar_size,
       getNotificationsTimeout: state => state.notifications_timeout,
       getAutoComplete: state => state.auto_complete,
+      getLineWrap: state => state.line_wrap,
       getApplicationTheme: state => state.application_theme,
       getEditorTheme: state => state.editor_theme
    },
@@ -35,6 +37,10 @@ export default {
       SET_AUTO_COMPLETE (state, val) {
          state.auto_complete = val;
          persistentStore.set('auto_complete', state.auto_complete);
+      },
+      SET_LINE_WRAP (state, val) {
+         state.line_wrap = val;
+         persistentStore.set('line_wrap', state.line_wrap);
       },
       SET_EXPLOREBAR_SIZE (state, size) {
          state.explorebar_size = size;
@@ -56,6 +62,9 @@ export default {
       },
       changeAutoComplete ({ commit }, val) {
          commit('SET_AUTO_COMPLETE', val);
+      },
+      changeLineWrap ({ commit }, val) {
+         commit('SET_LINE_WRAP', val);
       },
       changeEditorTheme ({ commit }, theme) {
          commit('SET_EDITOR_THEME', theme);

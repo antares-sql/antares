@@ -114,6 +114,21 @@
                               </div>
                            </div>
                         </div>
+                        <div class="column col-8 col-sm-12">
+                           <div class="form-group">
+                              <div class="col-6 col-sm-12">
+                                 <label class="form-label">
+                                    {{ $t('message.wrapLongLines') }}:
+                                 </label>
+                              </div>
+                              <div class="col-6 col-sm-12">
+                                 <label class="form-switch d-inline-block" @click.prevent="toggleLineWrap">
+                                    <input type="checkbox" :checked="selectedLineWrap">
+                                    <i class="form-icon" />
+                                 </label>
+                              </div>
+                           </div>
+                        </div>
                      </form>
                   </div>
                </div>
@@ -280,6 +295,7 @@ export default {
          selectedSettingTab: 'application/selectedSettingTab',
          selectedLocale: 'settings/getLocale',
          selectedAutoComplete: 'settings/getAutoComplete',
+         selectedLineWrap: 'settings/getLineWrap',
          notificationsTimeout: 'settings/getNotificationsTimeout',
          applicationTheme: 'settings/getApplicationTheme',
          editorTheme: 'settings/getEditorTheme',
@@ -333,6 +349,7 @@ ORDER BY
          closeModal: 'application/hideSettingModal',
          changeLocale: 'settings/changeLocale',
          changeAutoComplete: 'settings/changeAutoComplete',
+         changeLineWrap: 'settings/changeLineWrap',
          changeEditorTheme: 'settings/changeEditorTheme',
          updateNotificationsTimeout: 'settings/updateNotificationsTimeout'
       }),
@@ -355,6 +372,9 @@ ORDER BY
       },
       toggleAutoComplete () {
          this.changeAutoComplete(!this.selectedAutoComplete);
+      },
+      toggleLineWrap () {
+         this.changeLineWrap(!this.selectedLineWrap);
       }
    }
 };
