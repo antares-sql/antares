@@ -10,6 +10,18 @@
             <div class="context-element" @click="showCreateTableModal">
                <span class="d-flex"><i class="mdi mdi-18px mdi-table text-light pr-1" /> {{ $t('word.table') }}</span>
             </div>
+            <div class="context-element" @click="showCreateTableModal">
+               <span class="d-flex"><i class="mdi mdi-18px mdi-table-eye text-light pr-1" /> {{ $t('word.view') }}</span>
+            </div>
+            <div class="context-element d-none" @click="false">
+               <span class="d-flex"><i class="mdi mdi-18px mdi-table-cog text-light pr-1" /> {{ $t('word.trigger') }}</span>
+            </div>
+            <div class="context-element d-none" @click="false">
+               <span class="d-flex"><i class="mdi mdi-18px mdi-cog-box pr-1" /> {{ $t('word.storedRoutine') }}</span>
+            </div>
+            <div class="context-element d-none" @click="false">
+               <span class="d-flex"><i class="mdi mdi-18px mdi-calendar-clock text-light pr-1" /> {{ $t('word.scheduler') }}</span>
+            </div>
          </div>
       </div>
       <div class="context-element" @click="showEditModal">
@@ -124,3 +136,8 @@ export default {
    }
 };
 </script>
+<style lang="scss" scoped>
+.context-submenu {
+  min-width: 150px !important;
+}
+</style>

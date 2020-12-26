@@ -20,4 +20,14 @@ export default (connections) => {
          return { status: 'error', response: err.toString() };
       }
    });
+
+   ipcMain.handle('alter-view', async (event, params) => {
+      try {
+         await connections[params.uid].alterView(params);
+         return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
 };

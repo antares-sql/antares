@@ -13,25 +13,25 @@
                </a>
             </li>
             <li
-               v-if="workspace.breadcrumbs.table"
+               v-if="schemaChild"
                class="tab-item"
                :class="{'active': selectedTab === 'prop'}"
                @click="selectTab({uid: workspace.uid, tab: 'prop'})"
             >
                <a class="tab-link">
                   <i class="mdi mdi-18px mdi-tune mr-1" />
-                  <span :title="workspace.breadcrumbs.table">{{ $t('word.properties').toUpperCase() }}: {{ workspace.breadcrumbs.table }}</span>
+                  <span :title="schemaChild">{{ $t('word.properties').toUpperCase() }}: {{ schemaChild }}</span>
                </a>
             </li>
             <li
-               v-if="workspace.breadcrumbs.table"
+               v-if="workspace.breadcrumbs.table || workspace.breadcrumbs.view"
                class="tab-item"
                :class="{'active': selectedTab === 'data'}"
                @click="selectTab({uid: workspace.uid, tab: 'data'})"
             >
                <a class="tab-link">
-                  <i class="mdi mdi-18px mdi-table mr-1" />
-                  <span :title="workspace.breadcrumbs.table">{{ $t('word.data').toUpperCase() }}: {{ workspace.breadcrumbs.table }}</span>
+                  <i class="mdi mdi-18px mr-1" :class="workspace.breadcrumbs.table ? 'mdi-table' : 'mdi-table-eye'" />
+                  <span :title="schemaChild">{{ $t('word.data').toUpperCase() }}: {{ schemaChild }}</span>
                </a>
             </li>
             <li
@@ -66,15 +66,21 @@
             </li>
          </ul>
          <WorkspacePropsTab
-            v-show="selectedTab === 'prop'"
+            v-show="selectedTab === 'prop' && workspace.breadcrumbs.table"
             :is-selected="selectedTab === 'prop'"
             :connection="connection"
             :table="workspace.breadcrumbs.table"
          />
+         <WorkspacePropsTabView
+            v-show="selectedTab === 'prop' && workspace.breadcrumbs.view"
+            :is-selected="selectedTab === 'prop'"
+            :connection="connection"
+            :view="workspace.breadcrumbs.view"
+         />
          <WorkspaceTableTab
             v-show="selectedTab === 'data'"
             :connection="connection"
-            :table="workspace.breadcrumbs.table"
+            :table="workspace.breadcrumbs.table || workspace.breadcrumbs.view"
          />
          <WorkspaceQueryTab
             v-for="tab of queryTabs"
@@ -94,6 +100,7 @@ import WorkspaceExploreBar from '@/components/WorkspaceExploreBar';
 import WorkspaceQueryTab from '@/components/WorkspaceQueryTab';
 import WorkspaceTableTab from '@/components/WorkspaceTableTab';
 import WorkspacePropsTab from '@/components/WorkspacePropsTab';
+import WorkspacePropsTabView from '@/components/WorkspacePropsTabView';
 
 export default {
    name: 'Workspace',
@@ -101,7 +108,8 @@ export default {
       WorkspaceExploreBar,
       WorkspaceQueryTab,
       WorkspaceTableTab,
-      WorkspacePropsTab
+      WorkspacePropsTab,
+      WorkspacePropsTabView
    },
    props: {
       connection: Object
@@ -123,7 +131,7 @@ export default {
          return this.selectedWorkspace === this.connection.uid;
       },
       selectedTab () {
-         if (this.workspace.breadcrumbs.table === null && ['data', 'prop'].includes(this.workspace.selected_tab))
+         if (this.workspace.breadcrumbs.table === null && this.workspace.breadcrumbs.view === null && ['data', 'prop'].includes(this.workspace.selected_tab))
             return this.queryTabs[0].uid;
 
          return this.queryTabs.find(tab => tab.uid === this.workspace.selected_tab) ||
@@ -133,6 +141,13 @@ export default {
       },
       queryTabs () {
          return this.workspace.tabs.filter(tab => tab.type === 'query');
+      },
+      schemaChild () {
+         for (const key in this.workspace.breadcrumbs) {
+            if (key === 'schema') continue;
+            if (this.workspace.breadcrumbs[key]) return this.workspace.breadcrumbs[key];
+         }
+         return false;
       }
    },
    async created () {

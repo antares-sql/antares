@@ -9,4 +9,8 @@ export default class {
    static dropView (params) {
       return ipcRenderer.invoke('drop-view', params);
    }
+
+   static alterView (params) {
+      return ipcRenderer.invoke('alter-view', params);
+   }
 }

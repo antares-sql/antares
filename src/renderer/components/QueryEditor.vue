@@ -182,8 +182,13 @@ export default {
       if (this.autoFocus) {
          setTimeout(() => {
             this.editor.focus();
+            this.editor.resize();
          }, 20);
       }
+
+      setTimeout(() => {
+         this.editor.resize();
+      }, 20);
    }
 };
 </script>
