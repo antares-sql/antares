@@ -263,6 +263,39 @@ export class MySQLClient extends AntaresCore {
    }
 
    /**
+    * SHOW CREATE VIEW
+    *
+    * @returns {Array.<Object>} view informations
+    * @memberof MySQLClient
+    */
+   async getViewInformations ({ schema, view }) {
+      const sql = `SHOW CREATE VIEW \`${schema}\`.\`${view}\``;
+      const results = await this.raw(sql);
+
+      return results.rows.map(row => {
+         return {
+            algorithm: row['Create View'].match(/(?<=CREATE ALGORITHM=).*?(?=\s)/gs)[0],
+            definer: row['Create View'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
+            security: row['Create View'].match(/(?<=SQL SECURITY ).*?(?=\s)/gs)[0],
+            updateOption: row['Create View'].match(/(?<=WITH ).*?(?=\s)/gs) ? row['Create View'].match(/(?<=WITH ).*?(?=\s)/gs)[0] : '',
+            sql: row['Create View'].match(/(?<=AS ).*?$/gs)[0],
+            name: row.View
+         };
+      })[0];
+   }
+
+   /**
+    * DROP VIEW
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async dropView (params) {
+      const sql = `DROP VIEW \`${params.view}\``;// TODO: schema
+      return await this.raw(sql);
+   }
+
+   /**
     * SHOW COLLATION
     *
     * @returns {Array.<Object>} collations list
@@ -493,7 +526,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async dropTable (params) {
-      const sql = `DROP TABLE \`${params.table}\``;
+      const sql = `DROP TABLE \`${params.table}\``;// TODO: schema
       return await this.raw(sql);
    }
 

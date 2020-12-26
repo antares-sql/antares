@@ -68,7 +68,12 @@ module.exports = {
       autoCompletion: 'Auto Completion',
       application: 'Application',
       editor: 'Editor',
-      view: 'View'
+      view: 'View',
+      definer: 'Definer',
+      algorithm: 'Algorithm',
+      trigger: 'Trigger',
+      storedRoutine: 'Stored routine',
+      scheduler: 'Scheduler'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -133,7 +138,11 @@ module.exports = {
       onDelete: 'On delete',
       applicationTheme: 'Application Theme',
       editorTheme: 'Editor Theme',
-      wrapLongLines: 'Wrap long lines'
+      wrapLongLines: 'Wrap long lines',
+      selectStatement: 'Select statement',
+      sqlSecurity: 'SQL security',
+      updateOption: 'Update option',
+      deleteView: 'Delete view'
    },
    // Date and Time
    short: {

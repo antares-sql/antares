@@ -3,7 +3,11 @@
       :context-event="contextEvent"
       @close-context="closeContext"
    >
-      <div class="context-element" @click="showEmptyModal">
+      <div
+         v-if="selectedTable.type === 'table'"
+         class="context-element"
+         @click="showEmptyModal"
+      >
          <span class="d-flex"><i class="mdi mdi-18px mdi-table-off text-light pr-1" /> {{ $t('message.emptyTable') }}</span>
       </div>
       <div class="context-element" @click="showDeleteModal">
@@ -22,7 +26,7 @@
          </template>
          <div slot="body">
             <div class="mb-2">
-               {{ $t('message.emptyCorfirm') }} "<b>{{ selectedTable }}</b>"?
+               {{ $t('message.emptyCorfirm') }} "<b>{{ selectedTable.name }}</b>"?
             </div>
          </div>
       </ConfirmModal>
@@ -33,12 +37,12 @@
       >
          <template slot="header">
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-table-remove mr-1" /> {{ $t('message.deleteTable') }}
+               <i class="mdi mdi-24px mdi-table-remove mr-1" /> {{ selectedTable.type === 'table' ? $t('message.deleteTable') : $t('message.deleteView') }}
             </div>
          </template>
          <div slot="body">
             <div class="mb-2">
-               {{ $t('message.deleteCorfirm') }} "<b>{{ selectedTable }}</b>"?
+               {{ $t('message.deleteCorfirm') }} "<b>{{ selectedTable.name }}</b>"?
             </div>
          </div>
       </ConfirmModal>
@@ -50,6 +54,7 @@ import { mapGetters, mapActions } from 'vuex';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import Tables from '@/ipc-api/Tables';
+import Views from '@/ipc-api/Views';
 
 export default {
    name: 'WorkspaceExploreBarTableContext',
@@ -59,7 +64,7 @@ export default {
    },
    props: {
       contextEvent: MouseEvent,
-      selectedTable: String
+      selectedTable: Object
    },
    data () {
       return {
@@ -103,11 +108,11 @@ export default {
          try {
             const { status, response } = await Tables.truncateTable({
                uid: this.selectedWorkspace,
-               table: this.selectedTable
+               table: this.selectedTable.name
             });
 
             if (status === 'success') {
-               if (this.selectedTable === this.workspace.breadcrumbs.table)
+               if (this.selectedTable.name === this.workspace.breadcrumbs.table)
                   this.changeBreadcrumbs({ table: null });
 
                this.closeContext();
@@ -122,13 +127,25 @@ export default {
       },
       async deleteTable () {
          try {
-            const { status, response } = await Tables.dropTable({
-               uid: this.selectedWorkspace,
-               table: this.selectedTable
-            });
+            let res;
+
+            if (this.selectedTable.type === 'table') {
+               res = await Tables.dropTable({
+                  uid: this.selectedWorkspace,
+                  table: this.selectedTable.name
+               });
+            }
+            else if (this.selectedTable.type === 'view') {
+               res = await Views.dropView({
+                  uid: this.selectedWorkspace,
+                  view: this.selectedTable.name
+               });
+            }
+
+            const { status, response } = res;
 
             if (status === 'success') {
-               if (this.selectedTable === this.workspace.breadcrumbs.table)
+               if (this.selectedTable.name === this.workspace.breadcrumbs.table)
                   this.changeBreadcrumbs({ table: null });
 
                this.closeContext();

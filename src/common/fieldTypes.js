@@ -1,5 +1,5 @@
 export const TEXT = ['CHAR', 'VARCHAR'];
-export const LONG_TEXT = ['TEXT', 'MEDIUMTEXT', 'longtext'];
+export const LONG_TEXT = ['TEXT', 'MEDIUMTEXT', 'LONGTEXT'];
 
 export const NUMBER = ['INT', 'TINYINT', 'SMALLINT', 'MEDIUMINT', 'BIGINT', 'FLOAT', 'DOUBLE', 'DECIMAL', 'BOOL'];
 

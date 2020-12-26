@@ -108,7 +108,7 @@ export default {
          databaseContextEvent: null,
          tableContextEvent: null,
          selectedDatabase: '',
-         selectedTable: ''
+         selectedTable: null
       };
    },
    computed: {

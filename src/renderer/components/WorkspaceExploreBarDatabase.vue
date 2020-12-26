@@ -17,9 +17,9 @@
                   v-for="table of database.tables"
                   :key="table.name"
                   class="menu-item"
-                  :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.table === table.name}"
-                  @click="setBreadcrumbs({schema: database.name, table: table.name})"
-                  @contextmenu.prevent="showTableContext($event, table.name)"
+                  :class="{'text-bold': breadcrumbs.schema === database.name && [breadcrumbs.table, breadcrumbs.view].includes(table.name)}"
+                  @click="setBreadcrumbs({schema: database.name, [table.type]: table.name})"
+                  @contextmenu.prevent="showTableContext($event, table)"
                >
                   <a class="table-name">
                      <i class="table-icon mdi mdi-18px mr-1" :class="table.type === 'view' ? 'mdi-table-eye' : 'mdi-table'" />

@@ -171,7 +171,7 @@ export default {
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            table: this.workspace.breadcrumbs.table,
+            table: this.workspace.breadcrumbs.table || this.workspace.breadcrumbs.view,
             sortParams
          };
 
