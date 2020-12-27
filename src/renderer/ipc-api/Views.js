@@ -13,4 +13,8 @@ export default class {
    static alterView (params) {
       return ipcRenderer.invoke('alter-view', params);
    }
+
+   static createView (params) {
+      return ipcRenderer.invoke('create-view', params);
+   }
 }

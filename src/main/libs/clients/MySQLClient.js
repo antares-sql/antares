@@ -312,6 +312,17 @@ export class MySQLClient extends AntaresCore {
    }
 
    /**
+    * CREATE VIEW
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async createView (view) {
+      const sql = `CREATE ALGORITHM = ${view.algorithm} ${view.definer ? `DEFINER=${view.definer} ` : ''}SQL SECURITY ${view.security} VIEW \`${view.name}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}`;
+      return await this.raw(sql);
+   }
+
+   /**
     * SHOW COLLATION
     *
     * @returns {Array.<Object>} collations list

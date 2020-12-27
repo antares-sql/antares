@@ -145,8 +145,8 @@ export default {
             const { status, response } = res;
 
             if (status === 'success') {
-               if (this.selectedTable.name === this.workspace.breadcrumbs.table)
-                  this.changeBreadcrumbs({ table: null });
+               if (this.selectedTable.name === this.workspace.breadcrumbs.table || this.selectedTable.name === this.workspace.breadcrumbs.view)
+                  this.changeBreadcrumbs({ table: null, view: null });
 
                this.closeContext();
                this.$emit('reload');

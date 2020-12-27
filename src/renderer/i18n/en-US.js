@@ -142,7 +142,9 @@ module.exports = {
       selectStatement: 'Select statement',
       sqlSecurity: 'SQL security',
       updateOption: 'Update option',
-      deleteView: 'Delete view'
+      deleteView: 'Delete view',
+      createNewView: 'Create new view',
+      currentUser: 'Current user'
    },
    // Date and Time
    short: {

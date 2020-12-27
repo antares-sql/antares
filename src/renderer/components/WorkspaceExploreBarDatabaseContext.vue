@@ -10,7 +10,7 @@
             <div class="context-element" @click="showCreateTableModal">
                <span class="d-flex"><i class="mdi mdi-18px mdi-table text-light pr-1" /> {{ $t('word.table') }}</span>
             </div>
-            <div class="context-element" @click="showCreateTableModal">
+            <div class="context-element" @click="showCreateViewModal">
                <span class="d-flex"><i class="mdi mdi-18px mdi-table-eye text-light pr-1" /> {{ $t('word.view') }}</span>
             </div>
             <div class="context-element d-none" @click="false">
@@ -95,6 +95,9 @@ export default {
       }),
       showCreateTableModal () {
          this.$emit('show-create-table-modal');
+      },
+      showCreateViewModal () {
+         this.$emit('show-create-view-modal');
       },
       showDeleteModal () {
          this.isDeleteModal = true;

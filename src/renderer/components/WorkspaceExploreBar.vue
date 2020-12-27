@@ -54,12 +54,19 @@
          @close="hideCreateTableModal"
          @open-create-table-editor="openCreateTableEditor"
       />
+      <ModalNewView
+         v-if="isNewViewModal"
+         :workspace="workspace"
+         @close="hideCreateViewModal"
+         @open-create-view-editor="openCreateViewEditor"
+      />
       <DatabaseContext
          v-if="isDatabaseContext"
          :selected-database="selectedDatabase"
          :context-event="databaseContextEvent"
          @close-context="closeDatabaseContext"
          @show-create-table-modal="showCreateTableModal"
+         @show-create-view-modal="showCreateViewModal"
          @reload="refresh"
       />
       <TableContext
@@ -76,12 +83,14 @@
 import { mapGetters, mapActions } from 'vuex';
 import _ from 'lodash';
 import Tables from '@/ipc-api/Tables';
+import Views from '@/ipc-api/Views';
 import WorkspaceConnectPanel from '@/components/WorkspaceConnectPanel';
 import WorkspaceExploreBarDatabase from '@/components/WorkspaceExploreBarDatabase';
 import DatabaseContext from '@/components/WorkspaceExploreBarDatabaseContext';
 import TableContext from '@/components/WorkspaceExploreBarTableContext';
 import ModalNewDatabase from '@/components/ModalNewDatabase';
 import ModalNewTable from '@/components/ModalNewTable';
+import ModalNewView from '@/components/ModalNewView';
 
 export default {
    name: 'WorkspaceExploreBar',
@@ -91,7 +100,8 @@ export default {
       DatabaseContext,
       TableContext,
       ModalNewDatabase,
-      ModalNewTable
+      ModalNewTable,
+      ModalNewView
    },
    props: {
       connection: Object,
@@ -102,6 +112,7 @@ export default {
          isRefreshing: false,
          isNewDBModal: false,
          isNewTableModal: false,
+         isNewViewModal: false,
          localWidth: null,
          isDatabaseContext: false,
          isTableContext: false,
@@ -215,6 +226,29 @@ export default {
       },
       closeTableContext () {
          this.isTableContext = false;
+      },
+      showCreateViewModal () {
+         this.closeDatabaseContext();
+         this.isNewViewModal = true;
+      },
+      hideCreateViewModal () {
+         this.isNewViewModal = false;
+      },
+      async openCreateViewEditor (payload) {
+         const params = {
+            uid: this.connection.uid,
+            ...payload
+         };
+
+         const { status, response } = await Views.createView(params);
+
+         if (status === 'success') {
+            await this.refresh();
+            this.changeBreadcrumbs({ schema: this.selectedDatabase, view: payload.name });
+            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+         }
+         else
+            this.addNotification({ status: 'error', message: response });
       }
    }
 };

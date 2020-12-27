@@ -25,7 +25,11 @@
                      <i class="table-icon mdi mdi-18px mr-1" :class="table.type === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
                      <span>{{ table.name }}</span>
                   </a>
-                  <div class="table-size  tooltip tooltip-left mr-1" :data-tooltip="formatBytes(table.size)">
+                  <div
+                     v-if="table.type === 'table'"
+                     class="table-size  tooltip tooltip-left mr-1"
+                     :data-tooltip="formatBytes(table.size)"
+                  >
                      <div class="pie" :style="piePercentage(table.size)" />
                   </div>
                </li>
