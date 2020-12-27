@@ -200,7 +200,8 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification',
          refreshStructure: 'workspaces/refreshStructure',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges'
+         setUnsavedChanges: 'workspaces/setUnsavedChanges',
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
       async getFieldsData () {
          if (!this.table) return;
@@ -394,7 +395,15 @@ export default {
             const { status, response } = await Tables.alterTable(params);
 
             if (status === 'success') {
+               const oldName = this.tableOptions.name;
+
                await this.refreshStructure(this.connection.uid);
+
+               if (oldName !== this.localOptions.name) {
+                  this.setUnsavedChanges(false);
+                  this.changeBreadcrumbs({ schema: this.schema, table: this.localOptions.name });
+               }
+
                this.getFieldsData();
             }
             else
