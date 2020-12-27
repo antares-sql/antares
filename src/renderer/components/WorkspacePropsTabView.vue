@@ -225,7 +225,8 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification',
          refreshStructure: 'workspaces/refreshStructure',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges'
+         setUnsavedChanges: 'workspaces/setUnsavedChanges',
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
       async getViewData () {
          if (!this.view) return;
@@ -260,14 +261,25 @@ export default {
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            view: this.localView
+            view: {
+               ...this.localView,
+               oldName: this.originalView.name
+            }
          };
 
          try {
             const { status, response } = await Views.alterView(params);
 
             if (status === 'success') {
+               const oldName = this.originalView.name;
+
                await this.refreshStructure(this.connection.uid);
+
+               if (oldName !== this.localView.name) {
+                  this.setUnsavedChanges(false);
+                  this.changeBreadcrumbs({ schema: this.schema, view: this.localView.name });
+               }
+
                this.getViewData();
             }
             else

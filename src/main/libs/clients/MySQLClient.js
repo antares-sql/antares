@@ -303,7 +303,11 @@ export class MySQLClient extends AntaresCore {
     */
    async alterView (params) {
       const { view } = params;
-      const sql = `ALTER ALGORITHM = ${view.algorithm} DEFINER=${view.definer} SQL SECURITY ${view.security} VIEW \`${view.name}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}`;
+      let sql = `ALTER ALGORITHM = ${view.algorithm} DEFINER=${view.definer} SQL SECURITY ${view.security} VIEW \`${view.oldName}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}`;
+
+      if (view.name !== view.oldName)
+         sql += `; RENAME TABLE \`${view.oldName}\` TO \`${view.name}\``;
+
       return await this.raw(sql);
    }
 
