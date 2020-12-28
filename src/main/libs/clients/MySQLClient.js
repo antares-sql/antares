@@ -36,21 +36,23 @@ export class MySQLClient extends AntaresCore {
     */
    async getStructure () {
       const { rows: databases } = await this.raw('SHOW DATABASES');
-      // TODO: SHOW TABLE STATUS FROM `{DATABASE_NAME}`;
-
-      const { rows: tables } = await this
-         .select('*')
-         .schema('information_schema')
-         .from('TABLES')
-         .orderBy({ TABLE_SCHEMA: 'ASC', TABLE_NAME: 'ASC' })
-         .run();
-
       const { rows: functions } = await this.raw('SHOW FUNCTION STATUS');
       const { rows: procedures } = await this.raw('SHOW PROCEDURE STATUS');
       const { rows: schedulers } = await this.raw('SELECT *, EVENT_SCHEMA AS `Db`, EVENT_NAME AS `Name` FROM information_schema.`EVENTS`');
 
+      const tablesArr = [];
       const triggersArr = [];
+
       for (const db of databases) {
+         let { rows: tables } = await this.raw(`SHOW TABLE STATUS FROM \`${db.Database}\``);
+         if (tables.length) {
+            tables = tables.map(table => {
+               table.Db = db.Database;
+               return table;
+            });
+            tablesArr.push(...tables);
+         }
+
          let { rows: triggers } = await this.raw(`SHOW TRIGGERS FROM \`${db.Database}\``);
          if (triggers.length) {
             triggers = triggers.map(trigger => {
@@ -63,9 +65,9 @@ export class MySQLClient extends AntaresCore {
 
       return databases.map(db => {
          // TABLES
-         const remappedTables = tables.filter(table => table.TABLE_SCHEMA === db.Database).map(table => {
+         const remappedTables = tablesArr.filter(table => table.Db === db.Database).map(table => {
             let tableType;
-            switch (table.TABLE_TYPE) {
+            switch (table.Comment) {
                case 'VIEW':
                   tableType = 'view';
                   break;
@@ -75,16 +77,16 @@ export class MySQLClient extends AntaresCore {
             }
 
             return {
-               name: table.TABLE_NAME,
+               name: table.Name,
                type: tableType,
-               rows: table.TABLE_ROWS,
-               created: table.CREATE_TIME,
-               updated: table.UPDATE_TIME,
-               engine: table.ENGINE,
-               comment: table.TABLE_COMMENT,
-               size: table.DATA_LENGTH + table.INDEX_LENGTH,
-               autoIncrement: table.AUTO_INCREMENT,
-               collation: table.TABLE_COLLATION
+               rows: table.Rows,
+               created: table.Create_time,
+               updated: table.Update_time,
+               engine: table.Engine,
+               comment: table.Comment,
+               size: table.Data_length + table.Index_length,
+               autoIncrement: table.Auto_increment,
+               collation: table.Collation
             };
          });
 

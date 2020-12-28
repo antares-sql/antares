@@ -212,6 +212,7 @@ body {
 
 .input-group .input-group-addon {
   border-color: #3f3f3f;
+  z-index: 1;
 }
 
 .menu {
@@ -225,7 +226,7 @@ body {
 }
 
 .accordion-body {
-  max-height: 500rem !important;
+  max-height: 5000rem !important;
 }
 
 .btn.loading {
