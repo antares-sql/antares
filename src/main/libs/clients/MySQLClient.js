@@ -145,6 +145,9 @@ export class MySQLClient extends AntaresCore {
             };
          });
 
+         // USERS
+         // TODO: SELECT `user`, `host`, IF(LENGTH(password)>0, password, authentication_string) AS `password` FROM `mysql`.`user`;
+
          return {
             name: db.Database,
             tables: remappedTables,
@@ -662,7 +665,7 @@ export class MySQLClient extends AntaresCore {
                            schema: field.db,
                            table: field.table,
                            orgTable: field.orgTable,
-                           type: 'varchar'
+                           type: 'VARCHAR'
                         };
                      })
                      : [];
@@ -692,13 +695,13 @@ export class MySQLClient extends AntaresCore {
 
                               let detailedFields = response.length
                                  ? selectedFields.map(selField => {
-                                    return response.find(field => field.name === selField.name && field.table === selField.table);
+                                    return response.find(field => field.name.toLowerCase() === selField.name.toLowerCase() && field.table === selField.table);
                                  }).filter(el => !!el)
                                  : [];
 
                               if (selectedFields.length) {
                                  detailedFields = detailedFields.map(field => {
-                                    const aliasObj = remappedFields.find(resField => resField.orgName === field.name);
+                                    const aliasObj = remappedFields.find(resField => resField.orgName === field.name && resField.orgTable === field.table);
                                     return {
                                        ...field,
                                        alias: aliasObj.name || field.name,
@@ -709,12 +712,18 @@ export class MySQLClient extends AntaresCore {
 
                               if (!detailedFields.length) {
                                  detailedFields = remappedFields.map(field => {
-                                    return {
-                                       ...field,
-                                       alias: field.name,
-                                       tableAlias: field.table
-                                    };
-                                 });
+                                    const isInFields = fieldsArr.some(f => field.name.toLowerCase() === f.name.toLowerCase() && field.table === f.table);
+
+                                    if (!isInFields) {
+                                       return {
+                                          ...field,
+                                          alias: field.name,
+                                          tableAlias: field.table
+                                       };
+                                    }
+                                    else
+                                       return false;
+                                 }).filter(Boolean);
                               }
 
                               fieldsArr = fieldsArr ? [...fieldsArr, ...detailedFields] : detailedFields;
