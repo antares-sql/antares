@@ -39,12 +39,27 @@
             <div class="column col-3">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.definer') }}</label>
-                  <input
+                  <select
+                     v-if="workspace.users.length"
                      v-model="localView.definer"
-                     class="form-input"
-                     type="text"
-                     readonly
+                     class="form-select"
                   >
+                     <option value="">
+                        {{ $t('message.currentUser') }}
+                     </option>
+                     <option
+                        v-for="user in workspace.users"
+                        :key="`${user.name}@${user.host}`"
+                        :value="`\`${user.name}\`@\`${user.host}\``"
+                     >
+                        {{ user.name }}@{{ user.host }}
+                     </option>
+                  </select>
+                  <select v-if="!workspace.users.length" class="form-select">
+                     <option value="">
+                        {{ $t('message.currentUser') }}
+                     </option>
+                  </select>
                </div>
             </div>
          </div>

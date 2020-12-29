@@ -145,9 +145,6 @@ export class MySQLClient extends AntaresCore {
             };
          });
 
-         // USERS
-         // TODO: SELECT `user`, `host`, IF(LENGTH(password)>0, password, authentication_string) AS `password` FROM `mysql`.`user`;
-
          return {
             name: db.Database,
             tables: remappedTables,
@@ -268,6 +265,24 @@ export class MySQLClient extends AntaresCore {
    }
 
    /**
+    * SELECT `user`, `host`, IF(LENGTH(password)>0, password, authentication_string) AS `password` FROM `mysql`.`user`
+    *
+    * @returns {Array.<Object>} users list
+    * @memberof MySQLClient
+    */
+   async getUsers () {
+      const { rows } = await this.raw('SELECT `user`, `host`, IF(LENGTH(password)>0, password, authentication_string) AS `password` FROM `mysql`.`user`');
+
+      return rows.map(row => {
+         return {
+            name: row.user,
+            host: row.host,
+            password: row.password
+         };
+      });
+   }
+
+   /**
     * SHOW CREATE VIEW
     *
     * @returns {Array.<Object>} view informations
@@ -308,7 +323,7 @@ export class MySQLClient extends AntaresCore {
     */
    async alterView (params) {
       const { view } = params;
-      let sql = `ALTER ALGORITHM = ${view.algorithm} DEFINER=${view.definer} SQL SECURITY ${view.security} VIEW \`${view.oldName}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}`;
+      let sql = `ALTER ALGORITHM = ${view.algorithm}${view.definer ? ` DEFINER=${view.definer}` : ''} SQL SECURITY ${view.security} VIEW \`${view.oldName}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}`;
 
       if (view.name !== view.oldName)
          sql += `; RENAME TABLE \`${view.oldName}\` TO \`${view.name}\``;

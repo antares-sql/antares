@@ -1,6 +1,7 @@
 'use strict';
 import Connection from '@/ipc-api/Connection';
 import Database from '@/ipc-api/Database';
+import Users from '@/ipc-api/Users';
 import { uidGen } from 'common/libs/uidGen';
 const tabIndex = [];
 let lastBreadcrumbs = {};
@@ -97,6 +98,14 @@ export default {
             ? {
                ...workspace,
                engines
+            }
+            : workspace);
+      },
+      REFRESH_USERS (state, { uid, users }) {
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
+            ? {
+               ...workspace,
+               users
             }
             : workspace);
       },
@@ -221,6 +230,7 @@ export default {
                dispatch('refreshCollations', connection.uid);
                dispatch('refreshVariables', connection.uid);
                dispatch('refreshEngines', connection.uid);
+               dispatch('refreshUsers', connection.uid);
             }
          }
          catch (err) {
@@ -275,6 +285,18 @@ export default {
             dispatch('notifications/addNotification', { status: 'error', message: err.stack }, { root: true });
          }
       },
+      async refreshUsers ({ dispatch, commit }, uid) {
+         try {
+            const { status, response } = await Users.getUsers(uid);
+            if (status === 'error')
+               dispatch('notifications/addNotification', { status, message: response }, { root: true });
+            else
+               commit('REFRESH_USERS', { uid, users: response });
+         }
+         catch (err) {
+            dispatch('notifications/addNotification', { status: 'error', message: err.stack }, { root: true });
+         }
+      },
       removeConnected ({ commit }, uid) {
          Connection.disconnect(uid);
          commit('REMOVE_CONNECTED', uid);
@@ -300,6 +322,7 @@ export default {
             structure: {},
             variables: [],
             collations: [],
+            users: [],
             breadcrumbs: {}
          };
 

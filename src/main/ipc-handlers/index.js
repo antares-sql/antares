@@ -4,6 +4,7 @@ import views from './views';
 import updates from './updates';
 import application from './application';
 import database from './database';
+import users from './users';
 
 const connections = {};
 
@@ -12,6 +13,7 @@ export default () => {
    tables(connections);
    views(connections);
    database(connections);
+   users(connections);
    updates();
    application();
 };
