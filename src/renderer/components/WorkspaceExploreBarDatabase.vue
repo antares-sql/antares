@@ -35,6 +35,90 @@
                </li>
             </ul>
          </div>
+
+         <div v-if="database.triggers.length" class="database-misc">
+            <details class="accordion">
+               <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.trigger}">
+                  <i class="misc-icon mdi mdi-18px mdi-folder-cog mr-1" />
+                  {{ $tc('word.trigger', 2) }}
+               </summary>
+               <div class="accordion-body">
+                  <div>
+                     <ul class="menu menu-nav pt-0">
+                        <li
+                           v-for="trigger of database.triggers"
+                           :key="trigger.name"
+                           class="menu-item"
+                           :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.trigger === trigger.name}"
+                           @click="setBreadcrumbs({schema: database.name, trigger: trigger.name})"
+                           @contextmenu.prevent="showTableContext($event, trigger)"
+                        >
+                           <a class="table-name">
+                              <i class="table-icon mdi mdi-table-cog mdi-18px mr-1" />
+                              <span>{{ trigger.name }}</span>
+                           </a>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+            </details>
+         </div>
+
+         <div v-if="database.procedures.length" class="database-misc">
+            <details class="accordion">
+               <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.procedure}">
+                  <i class="misc-icon mdi mdi-18px mdi-folder-move mr-1" />
+                  {{ $tc('word.storedRoutine', 2) }}
+               </summary>
+               <div class="accordion-body">
+                  <div>
+                     <ul class="menu menu-nav pt-0">
+                        <li
+                           v-for="procedure of database.procedures"
+                           :key="procedure.name"
+                           class="menu-item"
+                           :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.procedure === procedure.name}"
+                           @click="setBreadcrumbs({schema: database.name, procedure: procedure.name})"
+                           @contextmenu.prevent="showTableContext($event, procedure)"
+                        >
+                           <a class="table-name">
+                              <i class="table-icon mdi mdi-arrow-right-bold-box mdi-18px mr-1" />
+                              <span>{{ procedure.name }}</span>
+                           </a>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+            </details>
+         </div>
+
+         <div v-if="database.schedulers.length" class="database-misc">
+            <details class="accordion">
+               <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.scheduler}">
+                  <i class="misc-icon mdi mdi-18px mdi-folder-clock mr-1" />
+                  {{ $tc('word.scheduler', 2) }}
+               </summary>
+               <div class="accordion-body">
+                  <div>
+                     <ul class="menu menu-nav pt-0">
+                        <li
+                           v-for="scheduler of database.schedulers"
+                           :key="scheduler.name"
+                           class="menu-item"
+                           :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.scheduler === scheduler.name}"
+                           @click="setBreadcrumbs({schema: database.name, scheduler: scheduler.name})"
+                           @contextmenu.prevent="showTableContext($event, scheduler)"
+                        >
+                           <a class="table-name">
+                              <i class="table-icon mdi mdi-calendar-clock mdi-18px mr-1" />
+                              <span>{{ scheduler.name }}</span>
+                           </a>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+            </details>
+         </div>
       </div>
    </details>
 </template>
@@ -72,9 +156,11 @@ export default {
       }),
       formatBytes,
       showDatabaseContext (event, database) {
+         this.changeBreadcrumbs({ schema: database, table: null });
          this.$emit('show-database-context', { event, database });
       },
       showTableContext (event, table) {
+         this.setBreadcrumbs({ schema: this.database.name, [table.type]: table.name });
          this.$emit('show-table-context', { event, table });
       },
       piePercentage (val) {
@@ -92,6 +178,7 @@ export default {
 <style lang="scss">
 .workspace-explorebar-database {
   .database-name,
+  .misc-name,
   a.table-name {
     display: flex;
     align-items: center;
@@ -107,12 +194,20 @@ export default {
     }
 
     .database-icon,
-    .table-icon {
+    .table-icon,
+    .misc-icon {
       opacity: 0.7;
     }
   }
 
-  .database-name {
+  .misc-name {
+    line-height: 1;
+    padding: 0.1rem 1rem 0.1rem 0.1rem;
+    position: relative;
+  }
+
+  .database-name,
+  .misc-name {
     &:hover {
       color: $body-font-color;
       background: rgba($color: #fff, $alpha: 0.05);
@@ -140,6 +235,18 @@ export default {
 
   .database-tables {
     margin-left: 1.2rem;
+  }
+
+  .database-misc {
+    margin-left: 1.6rem;
+
+    .accordion[open] .accordion-header > .misc-icon:first-child::before {
+      content: "\F0770";
+    }
+
+    .accordion-body {
+      margin-bottom: 0.2rem;
+    }
   }
 
   .table-size {

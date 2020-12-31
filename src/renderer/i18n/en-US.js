@@ -71,9 +71,10 @@ module.exports = {
       view: 'View',
       definer: 'Definer',
       algorithm: 'Algorithm',
-      trigger: 'Trigger',
-      storedRoutine: 'Stored routine',
-      scheduler: 'Scheduler'
+      trigger: 'Trigger | Triggers',
+      storedRoutine: 'Stored routine | Stored routines',
+      scheduler: 'Scheduler | Schedulers',
+      event: 'Event'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -140,6 +141,7 @@ module.exports = {
       editorTheme: 'Editor Theme',
       wrapLongLines: 'Wrap long lines',
       selectStatement: 'Select statement',
+      triggerStatement: 'Trigger statement',
       sqlSecurity: 'SQL security',
       updateOption: 'Update option',
       deleteView: 'Delete view',

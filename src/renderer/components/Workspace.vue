@@ -77,6 +77,12 @@
             :connection="connection"
             :view="workspace.breadcrumbs.view"
          />
+         <WorkspacePropsTabTrigger
+            v-show="selectedTab === 'prop' && workspace.breadcrumbs.trigger"
+            :is-selected="selectedTab === 'prop'"
+            :connection="connection"
+            :trigger="workspace.breadcrumbs.trigger"
+         />
          <WorkspaceTableTab
             v-show="selectedTab === 'data'"
             :connection="connection"
@@ -101,6 +107,7 @@ import WorkspaceQueryTab from '@/components/WorkspaceQueryTab';
 import WorkspaceTableTab from '@/components/WorkspaceTableTab';
 import WorkspacePropsTab from '@/components/WorkspacePropsTab';
 import WorkspacePropsTabView from '@/components/WorkspacePropsTabView';
+import WorkspacePropsTabTrigger from '@/components/WorkspacePropsTabTrigger';
 
 export default {
    name: 'Workspace',
@@ -109,7 +116,8 @@ export default {
       WorkspaceQueryTab,
       WorkspaceTableTab,
       WorkspacePropsTab,
-      WorkspacePropsTabView
+      WorkspacePropsTabView,
+      WorkspacePropsTabTrigger
    },
    props: {
       connection: Object
@@ -131,7 +139,14 @@ export default {
          return this.selectedWorkspace === this.connection.uid;
       },
       selectedTab () {
-         if (this.workspace.breadcrumbs.table === null && this.workspace.breadcrumbs.view === null && ['data', 'prop'].includes(this.workspace.selected_tab))
+         if (
+            this.workspace.breadcrumbs.table === null &&
+            this.workspace.breadcrumbs.view === null &&
+            this.workspace.breadcrumbs.trigger === null &&
+            this.workspace.breadcrumbs.procedure === null &&
+            this.workspace.breadcrumbs.scheduler === null &&
+            ['data', 'prop'].includes(this.workspace.selected_tab)
+         )
             return this.queryTabs[0].uid;
 
          return this.queryTabs.find(tab => tab.uid === this.workspace.selected_tab) ||

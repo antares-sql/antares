@@ -311,7 +311,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async dropView (params) {
-      const sql = `DROP VIEW \`${params.view}\``;// TODO: schema
+      const sql = `DROP VIEW \`${params.view}\``;
       return await this.raw(sql);
    }
 
@@ -339,6 +339,72 @@ export class MySQLClient extends AntaresCore {
     */
    async createView (view) {
       const sql = `CREATE ALGORITHM = ${view.algorithm} ${view.definer ? `DEFINER=${view.definer} ` : ''}SQL SECURITY ${view.security} VIEW \`${view.name}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}`;
+      return await this.raw(sql);
+   }
+
+   /**
+    * SHOW CREATE TRIGGER
+    *
+    * @returns {Array.<Object>} view informations
+    * @memberof MySQLClient
+    */
+   async getTriggerInformations ({ schema, trigger }) {
+      const sql = `SHOW CREATE TRIGGER \`${schema}\`.\`${trigger}\``;
+      const results = await this.raw(sql);
+
+      return results.rows.map(row => {
+         return {
+            definer: row['SQL Original Statement'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
+            sql: row['SQL Original Statement'].match(/BEGIN(.*)END/gs)[0],
+            name: row.Trigger,
+            table: row['SQL Original Statement'].match(/(?<=ON `).*?(?=`)/gs)[0],
+            event1: row['SQL Original Statement'].match(/(BEFORE|AFTER)/gs)[0],
+            event2: row['SQL Original Statement'].match(/(INSERT|UPDATE|DELETE)/gs)[0]
+         };
+      })[0];
+   }
+
+   /**
+    * DROP TRIGGER
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async dropTrigger (params) {
+      const sql = `DROP TRIGGER \`${params.trigger}\``;
+      return await this.raw(sql);
+   }
+
+   /**
+    * ALTER TRIGGER
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async alterTrigger (params) {
+      const { trigger } = params;
+      const tempTrigger = Object.assign({}, trigger);
+      tempTrigger.name = `Antares_${tempTrigger.name}_tmp`;
+
+      try {
+         await this.createTrigger(tempTrigger);
+         await this.dropTrigger({ trigger: tempTrigger.name });
+         await this.dropTrigger({ trigger: trigger.oldName });
+         await this.createTrigger(trigger);
+      }
+      catch (err) {
+         return Promise.reject(err);
+      }
+   }
+
+   /**
+    * CREATE TRIGGER
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async createTrigger (trigger) {
+      const sql = `CREATE ${trigger.definer ? `DEFINER=${trigger.definer} ` : ''}TRIGGER \`${trigger.name}\` ${trigger.event1} ${trigger.event2} ON \`${trigger.table}\` FOR EACH ROW ${trigger.sql}`;
       return await this.raw(sql);
    }
 
@@ -573,7 +639,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async dropTable (params) {
-      const sql = `DROP TABLE \`${params.table}\``;// TODO: schema
+      const sql = `DROP TABLE \`${params.table}\``;
       return await this.raw(sql);
    }
 

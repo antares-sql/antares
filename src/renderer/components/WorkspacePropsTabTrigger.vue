@@ -30,7 +30,7 @@
                <div class="form-group">
                   <label class="form-label">{{ $t('word.name') }}</label>
                   <input
-                     v-model="localView.name"
+                     v-model="localTrigger.name"
                      class="form-input"
                      type="text"
                   >
@@ -41,14 +41,14 @@
                   <label class="form-label">{{ $t('word.definer') }}</label>
                   <select
                      v-if="workspace.users.length"
-                     v-model="localView.definer"
+                     v-model="localTrigger.definer"
                      class="form-select"
                   >
                      <option value="">
                         {{ $t('message.currentUser') }}
                      </option>
-                     <option v-if="!isDefinerInUsers" :value="originalView.definer">
-                        {{ originalView.definer.replaceAll('`', '') }}
+                     <option v-if="!isDefinerInUsers" :value="originalTrigger.definer">
+                        {{ originalTrigger.definer.replaceAll('`', '') }}
                      </option>
                      <option
                         v-for="user in workspace.users"
@@ -67,101 +67,40 @@
             </div>
          </div>
          <div class="columns">
-            <div class="column col-2">
+            <div class="column col-3">
                <div class="form-group">
-                  <label class="form-label">{{ $t('message.sqlSecurity') }}</label>
-                  <label class="form-radio">
-                     <input
-                        v-model="localView.security"
-                        type="radio"
-                        name="security"
-                        value="DEFINER"
-                     >
-                     <i class="form-icon" /> DEFINER
-                  </label>
-                  <label class="form-radio">
-                     <input
-                        v-model="localView.security"
-                        type="radio"
-                        name="security"
-                        value="INVOKER"
-                     >
-                     <i class="form-icon" /> INVOKER
-                  </label>
+                  <label class="form-label">{{ $t('word.table') }}</label>
+                  <select v-model="localTrigger.table" class="form-select">
+                     <option v-for="table in schemaTables" :key="table.name">
+                        {{ table.name }}
+                     </option>
+                  </select>
                </div>
             </div>
-            <div class="column col-2">
+            <div class="column col-3">
                <div class="form-group">
-                  <label class="form-label">{{ $t('word.algorithm') }}</label>
-                  <label class="form-radio">
-                     <input
-                        v-model="localView.algorithm"
-                        type="radio"
-                        name="algorithm"
-                        value="UNDEFINED"
-                     >
-                     <i class="form-icon" /> UNDEFINED
-                  </label>
-                  <label class="form-radio">
-                     <input
-                        v-model="localView.algorithm"
-                        type="radio"
-                        value="MERGE"
-                        name="algorithm"
-                     >
-                     <i class="form-icon" /> MERGE
-                  </label>
-                  <label class="form-radio">
-                     <input
-                        v-model="localView.algorithm"
-                        type="radio"
-                        value="TEMPTABLE"
-                        name="algorithm"
-                     >
-                     <i class="form-icon" /> TEMPTABLE
-                  </label>
-               </div>
-            </div>
-            <div class="column col-2">
-               <div class="form-group">
-                  <label class="form-label">{{ $t('message.updateOption') }}</label>
-                  <label class="form-radio">
-                     <input
-                        v-model="localView.updateOption"
-                        type="radio"
-                        name="update"
-                        value=""
-                     >
-                     <i class="form-icon" /> None
-                  </label>
-                  <label class="form-radio">
-                     <input
-                        v-model="localView.updateOption"
-                        type="radio"
-                        name="update"
-                        value="CASCADED"
-                     >
-                     <i class="form-icon" /> CASCADED
-                  </label>
-                  <label class="form-radio">
-                     <input
-                        v-model="localView.updateOption"
-                        type="radio"
-                        name="update"
-                        value="LOCAL"
-                     >
-                     <i class="form-icon" /> LOCAL
-                  </label>
+                  <label class="form-label">{{ $t('word.event') }}</label>
+                  <div class="input-group">
+                     <select v-model="localTrigger.event1" class="form-select">
+                        <option>BEFORE</option>
+                        <option>AFTER</option>
+                     </select>
+                     <select v-model="localTrigger.event2" class="form-select">
+                        <option>INSERT</option>
+                        <option>UPDATE</option>
+                        <option>DELETE</option>
+                     </select>
+                  </div>
                </div>
             </div>
          </div>
       </div>
       <div class="workspace-query-results column col-12 mt-2">
-         <label class="form-label ml-2">{{ $t('message.selectStatement') }}</label>
+         <label class="form-label ml-2">{{ $t('message.triggerStatement') }}</label>
          <QueryEditor
             v-if="isSelected"
             ref="queryEditor"
-            :value.sync="localView.sql"
+            :value.sync="localTrigger.sql"
             :workspace="workspace"
             :schema="schema"
             :height="editorHeight"
@@ -173,25 +112,25 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import QueryEditor from '@/components/QueryEditor';
-import Views from '@/ipc-api/Views';
+import Triggers from '@/ipc-api/Triggers';
 
 export default {
-   name: 'WorkspacePropsTabView',
+   name: 'WorkspacePropsTabTrigger',
    components: {
       QueryEditor
    },
    props: {
       connection: Object,
-      view: String
+      trigger: String
    },
    data () {
       return {
          tabUid: 'prop',
          isQuering: false,
          isSaving: false,
-         originalView: null,
-         localView: { sql: '' },
-         lastView: null,
+         originalTrigger: null,
+         localTrigger: { sql: '' },
+         lastTrigger: null,
          sqlProxy: '',
          editorHeight: 300
       };
@@ -210,29 +149,36 @@ export default {
          return this.workspace.breadcrumbs.schema;
       },
       isChanged () {
-         return JSON.stringify(this.originalView) !== JSON.stringify(this.localView);
+         return JSON.stringify(this.originalTrigger) !== JSON.stringify(this.localTrigger);
       },
       isDefinerInUsers () {
-         return this.originalView ? this.workspace.users.some(user => this.originalView.definer === `\`${user.name}\`@\`${user.host}\``) : true;
+         return this.originalTrigger ? this.workspace.users.some(user => this.originalTrigger.definer === `\`${user.name}\`@\`${user.host}\``) : true;
+      },
+      schemaTables () {
+         const schemaTables = this.workspace.structure
+            .filter(schema => schema.name === this.schema)
+            .map(schema => schema.tables);
+
+         return schemaTables.length ? schemaTables[0].filter(table => table.type === 'table') : [];
       }
    },
    watch: {
-      async view () {
+      async trigger () {
          if (this.isSelected) {
-            await this.getViewData();
-            this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
-            this.lastView = this.view;
+            await this.getTriggerData();
+            this.$refs.queryEditor.editor.session.setValue(this.localTrigger.sql);
+            this.lastTrigger = this.trigger;
          }
       },
       async isSelected (val) {
-         if (val && this.lastView !== this.view) {
-            await this.getViewData();
-            this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
-            this.lastView = this.view;
+         if (val && this.lastTrigger !== this.trigger) {
+            await this.getTriggerData();
+            this.$refs.queryEditor.editor.session.setValue(this.localTrigger.sql);
+            this.lastTrigger = this.trigger;
          }
       },
       isChanged (val) {
-         if (this.isSelected && this.lastView === this.view && this.view !== null)
+         if (this.isSelected && this.lastTrigger === this.trigger && this.trigger !== null)
             this.setUnsavedChanges(val);
       }
    },
@@ -249,22 +195,22 @@ export default {
          setUnsavedChanges: 'workspaces/setUnsavedChanges',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
-      async getViewData () {
-         if (!this.view) return;
+      async getTriggerData () {
+         if (!this.trigger) return;
          this.isQuering = true;
 
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            view: this.workspace.breadcrumbs.view
+            trigger: this.workspace.breadcrumbs.trigger
          };
 
          try {
-            const { status, response } = await Views.getViewInformations(params);
+            const { status, response } = await Triggers.getTriggerInformations(params);
             if (status === 'success') {
-               this.originalView = response;
-               this.localView = JSON.parse(JSON.stringify(this.originalView));
-               this.sqlProxy = this.localView.sql;
+               this.originalTrigger = response;
+               this.localTrigger = JSON.parse(JSON.stringify(this.originalTrigger));
+               this.sqlProxy = this.localTrigger.sql;
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -282,26 +228,26 @@ export default {
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            view: {
-               ...this.localView,
-               oldName: this.originalView.name
+            trigger: {
+               ...this.localTrigger,
+               oldName: this.originalTrigger.name
             }
          };
 
          try {
-            const { status, response } = await Views.alterView(params);
+            const { status, response } = await Triggers.alterTrigger(params);
 
             if (status === 'success') {
-               const oldName = this.originalView.name;
+               const oldName = this.originalTrigger.name;
 
                await this.refreshStructure(this.connection.uid);
 
-               if (oldName !== this.localView.name) {
+               if (oldName !== this.localTrigger.name) {
                   this.setUnsavedChanges(false);
-                  this.changeBreadcrumbs({ schema: this.schema, view: this.localView.name });
+                  this.changeBreadcrumbs({ schema: this.schema, trigger: this.localTrigger.name });
                }
 
-               this.getViewData();
+               this.getTriggerData();
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -313,8 +259,8 @@ export default {
          this.isSaving = false;
       },
       clearChanges () {
-         this.localView = JSON.parse(JSON.stringify(this.originalView));
-         this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
+         this.localTrigger = JSON.parse(JSON.stringify(this.originalTrigger));
+         this.$refs.queryEditor.editor.session.setValue(this.localTrigger.sql);
       },
       resizeQueryEditor () {
          if (this.$refs.queryEditor) {
