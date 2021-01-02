@@ -51,7 +51,7 @@
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.trigger === trigger.name}"
                            @click="setBreadcrumbs({schema: database.name, trigger: trigger.name})"
-                           @contextmenu.prevent="showTableContext($event, trigger)"
+                           @contextmenu.prevent="showMiscContext($event, {...trigger, type: 'trigger'})"
                         >
                            <a class="table-name">
                               <i class="table-icon mdi mdi-table-cog mdi-18px mr-1" />
@@ -79,7 +79,7 @@
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.procedure === procedure.name}"
                            @click="setBreadcrumbs({schema: database.name, procedure: procedure.name})"
-                           @contextmenu.prevent="showTableContext($event, procedure)"
+                           @contextmenu.prevent="showMiscContext($event, {...procedure, type: 'procedure'})"
                         >
                            <a class="table-name">
                               <i class="table-icon mdi mdi-arrow-right-bold-box mdi-18px mr-1" />
@@ -107,7 +107,7 @@
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.scheduler === scheduler.name}"
                            @click="setBreadcrumbs({schema: database.name, scheduler: scheduler.name})"
-                           @contextmenu.prevent="showTableContext($event, scheduler)"
+                           @contextmenu.prevent="showMiscContext($event, {...scheduler, type: 'scheduler'})"
                         >
                            <a class="table-name">
                               <i class="table-icon mdi mdi-calendar-clock mdi-18px mr-1" />
@@ -162,6 +162,10 @@ export default {
       showTableContext (event, table) {
          this.setBreadcrumbs({ schema: this.database.name, [table.type]: table.name });
          this.$emit('show-table-context', { event, table });
+      },
+      showMiscContext (event, misc) {
+         this.setBreadcrumbs({ schema: this.database.name, [misc.type]: misc.name });
+         this.$emit('show-misc-context', { event, misc });
       },
       piePercentage (val) {
          const perc = val / this.maxSize * 100;

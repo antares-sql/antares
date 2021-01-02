@@ -146,6 +146,8 @@ module.exports = {
       updateOption: 'Update option',
       deleteView: 'Delete view',
       createNewView: 'Create new view',
+      deleteTrigger: 'Delete trigger',
+      createNewTrigger: 'Create new trigger',
       currentUser: 'Current user'
    },
    // Date and Time

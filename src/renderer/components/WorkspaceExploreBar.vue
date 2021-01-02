@@ -40,6 +40,7 @@
                :connection="connection"
                @show-database-context="openDatabaseContext"
                @show-table-context="openTableContext"
+               @show-misc-context="openMiscContext"
             />
          </div>
       </div>
@@ -76,6 +77,13 @@
          @close-context="closeTableContext"
          @reload="refresh"
       />
+      <MiscContext
+         v-if="isMiscContext"
+         :selected-misc="selectedMisc"
+         :context-event="miscContextEvent"
+         @close-context="closeMiscContext"
+         @reload="refresh"
+      />
    </div>
 </template>
 
@@ -88,6 +96,7 @@ import WorkspaceConnectPanel from '@/components/WorkspaceConnectPanel';
 import WorkspaceExploreBarDatabase from '@/components/WorkspaceExploreBarDatabase';
 import DatabaseContext from '@/components/WorkspaceExploreBarDatabaseContext';
 import TableContext from '@/components/WorkspaceExploreBarTableContext';
+import MiscContext from '@/components/WorkspaceExploreBarMiscContext';
 import ModalNewDatabase from '@/components/ModalNewDatabase';
 import ModalNewTable from '@/components/ModalNewTable';
 import ModalNewView from '@/components/ModalNewView';
@@ -99,6 +108,7 @@ export default {
       WorkspaceExploreBarDatabase,
       DatabaseContext,
       TableContext,
+      MiscContext,
       ModalNewDatabase,
       ModalNewTable,
       ModalNewView
@@ -116,10 +126,13 @@ export default {
          localWidth: null,
          isDatabaseContext: false,
          isTableContext: false,
+         isMiscContext: false,
          databaseContextEvent: null,
          tableContextEvent: null,
+         miscContextEvent: null,
          selectedDatabase: '',
-         selectedTable: null
+         selectedTable: null,
+         selectedMisc: null
       };
    },
    computed: {
@@ -226,6 +239,14 @@ export default {
       },
       closeTableContext () {
          this.isTableContext = false;
+      },
+      openMiscContext (payload) {
+         this.selectedMisc = payload.misc;
+         this.miscContextEvent = payload.event;
+         this.isMiscContext = true;
+      },
+      closeMiscContext () {
+         this.isMiscContext = false;
       },
       showCreateViewModal () {
          this.closeDatabaseContext();
