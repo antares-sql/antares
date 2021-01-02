@@ -13,7 +13,7 @@
             <div class="context-element" @click="showCreateViewModal">
                <span class="d-flex"><i class="mdi mdi-18px mdi-table-eye text-light pr-1" /> {{ $t('word.view') }}</span>
             </div>
-            <div class="context-element" @click="false">
+            <div class="context-element" @click="showCreateTriggerModal">
                <span class="d-flex"><i class="mdi mdi-18px mdi-table-cog text-light pr-1" /> {{ $tc('word.trigger', 1) }}</span>
             </div>
             <div class="context-element d-none" @click="false">
@@ -98,6 +98,9 @@ export default {
       },
       showCreateViewModal () {
          this.$emit('show-create-view-modal');
+      },
+      showCreateTriggerModal () {
+         this.$emit('show-create-trigger-modal');
       },
       showDeleteModal () {
          this.isDeleteModal = true;

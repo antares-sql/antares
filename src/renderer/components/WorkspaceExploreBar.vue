@@ -61,6 +61,12 @@
          @close="hideCreateViewModal"
          @open-create-view-editor="openCreateViewEditor"
       />
+      <ModalNewTrigger
+         v-if="isNewTriggerModal"
+         :workspace="workspace"
+         @close="hideCreateTriggerModal"
+         @open-create-trigger-editor="openCreateTriggerEditor"
+      />
       <DatabaseContext
          v-if="isDatabaseContext"
          :selected-database="selectedDatabase"
@@ -68,6 +74,7 @@
          @close-context="closeDatabaseContext"
          @show-create-table-modal="showCreateTableModal"
          @show-create-view-modal="showCreateViewModal"
+         @show-create-trigger-modal="showCreateTriggerModal"
          @reload="refresh"
       />
       <TableContext
@@ -89,9 +96,10 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import _ from 'lodash';
+import _ from 'lodash';// TODO: remove
 import Tables from '@/ipc-api/Tables';
 import Views from '@/ipc-api/Views';
+import Triggers from '@/ipc-api/Triggers';
 import WorkspaceConnectPanel from '@/components/WorkspaceConnectPanel';
 import WorkspaceExploreBarDatabase from '@/components/WorkspaceExploreBarDatabase';
 import DatabaseContext from '@/components/WorkspaceExploreBarDatabaseContext';
@@ -100,6 +108,7 @@ import MiscContext from '@/components/WorkspaceExploreBarMiscContext';
 import ModalNewDatabase from '@/components/ModalNewDatabase';
 import ModalNewTable from '@/components/ModalNewTable';
 import ModalNewView from '@/components/ModalNewView';
+import ModalNewTrigger from '@/components/ModalNewTrigger';
 
 export default {
    name: 'WorkspaceExploreBar',
@@ -111,7 +120,8 @@ export default {
       MiscContext,
       ModalNewDatabase,
       ModalNewTable,
-      ModalNewView
+      ModalNewView,
+      ModalNewTrigger
    },
    props: {
       connection: Object,
@@ -120,16 +130,21 @@ export default {
    data () {
       return {
          isRefreshing: false,
+
          isNewDBModal: false,
          isNewTableModal: false,
          isNewViewModal: false,
+         isNewTriggerModal: false,
+
          localWidth: null,
          isDatabaseContext: false,
          isTableContext: false,
          isMiscContext: false,
+
          databaseContextEvent: null,
          tableContextEvent: null,
          miscContextEvent: null,
+
          selectedDatabase: '',
          selectedTable: null,
          selectedMisc: null
@@ -266,6 +281,29 @@ export default {
          if (status === 'success') {
             await this.refresh();
             this.changeBreadcrumbs({ schema: this.selectedDatabase, view: payload.name });
+            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+         }
+         else
+            this.addNotification({ status: 'error', message: response });
+      },
+      showCreateTriggerModal () {
+         this.closeDatabaseContext();
+         this.isNewTriggerModal = true;
+      },
+      hideCreateTriggerModal () {
+         this.isNewTriggerModal = false;
+      },
+      async openCreateTriggerEditor (payload) {
+         const params = {
+            uid: this.connection.uid,
+            ...payload
+         };
+
+         const { status, response } = await Triggers.createTrigger(params);
+
+         if (status === 'success') {
+            await this.refresh();
+            this.changeBreadcrumbs({ schema: this.selectedDatabase, trigger: payload.name });
             this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
          }
          else

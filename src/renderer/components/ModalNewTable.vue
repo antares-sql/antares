@@ -84,7 +84,6 @@ export default {
       ConfirmModal
    },
    props: {
-      table: String,
       workspace: Object
    },
    data () {

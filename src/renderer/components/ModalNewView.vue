@@ -157,7 +157,6 @@ export default {
       QueryEditor
    },
    props: {
-      table: String,
       workspace: Object
    },
    data () {
