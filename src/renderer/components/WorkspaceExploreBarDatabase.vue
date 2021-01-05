@@ -67,7 +67,7 @@
          <div v-if="database.procedures.length" class="database-misc">
             <details class="accordion">
                <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.procedure}">
-                  <i class="misc-icon mdi mdi-18px mdi-folder-move mr-1" />
+                  <i class="misc-icon mdi mdi-18px mdi-folder-sync mr-1" />
                   {{ $tc('word.storedRoutine', 2) }}
                </summary>
                <div class="accordion-body">
@@ -82,8 +82,36 @@
                            @contextmenu.prevent="showMiscContext($event, {...procedure, type: 'procedure'})"
                         >
                            <a class="table-name">
-                              <i class="table-icon mdi mdi-arrow-right-bold-box mdi-18px mr-1" />
+                              <i class="table-icon mdi mdi-sync-circle mdi-18px mr-1" />
                               <span>{{ procedure.name }}</span>
+                           </a>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+            </details>
+         </div>
+
+         <div v-if="database.functions.length" class="database-misc">
+            <details class="accordion">
+               <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.function}">
+                  <i class="misc-icon mdi mdi-18px mdi-folder-move mr-1" />
+                  {{ $tc('word.function', 2) }}
+               </summary>
+               <div class="accordion-body">
+                  <div>
+                     <ul class="menu menu-nav pt-0">
+                        <li
+                           v-for="func of database.functions"
+                           :key="func.name"
+                           class="menu-item"
+                           :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.function === func.name}"
+                           @click="setBreadcrumbs({schema: database.name, function: func.name})"
+                           @contextmenu.prevent="showMiscContext($event, {...func, type: 'function'})"
+                        >
+                           <a class="table-name">
+                              <i class="table-icon mdi mdi-arrow-right-bold-box mdi-18px mr-1" />
+                              <span>{{ func.name }}</span>
                            </a>
                         </li>
                      </ul>

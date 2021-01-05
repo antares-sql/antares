@@ -2,6 +2,7 @@ import connection from './connection';
 import tables from './tables';
 import views from './views';
 import triggers from './triggers';
+import routines from './routines';
 import updates from './updates';
 import application from './application';
 import database from './database';
@@ -14,6 +15,7 @@ export default () => {
    tables(connections);
    views(connections);
    triggers(connections);
+   routines(connections);
    database(connections);
    users(connections);
    updates();

@@ -16,10 +16,13 @@
             <div class="context-element" @click="showCreateTriggerModal">
                <span class="d-flex"><i class="mdi mdi-18px mdi-table-cog text-light pr-1" /> {{ $tc('word.trigger', 1) }}</span>
             </div>
-            <div class="context-element d-none" @click="false">
-               <span class="d-flex"><i class="mdi mdi-18px mdi-arrow-right-bold-box pr-1" /> {{ $tc('word.storedRoutine', 1) }}</span>
+            <div class="context-element" @click="false">
+               <span class="d-flex"><i class="mdi mdi-18px mdi-sync-circle pr-1" /> {{ $tc('word.storedRoutine', 1) }}</span>
             </div>
-            <div class="context-element d-none" @click="false">
+            <div class="context-element" @click="false">
+               <span class="d-flex"><i class="mdi mdi-18px mdi-arrow-right-bold-box pr-1" /> {{ $tc('word.function', 1) }}</span>
+            </div>
+            <div class="context-element" @click="false">
                <span class="d-flex"><i class="mdi mdi-18px mdi-calendar-clock text-light pr-1" /> {{ $tc('word.scheduler', 1) }}</span>
             </div>
          </div>

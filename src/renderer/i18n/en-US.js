@@ -74,7 +74,11 @@ module.exports = {
       trigger: 'Trigger | Triggers',
       storedRoutine: 'Stored routine | Stored routines',
       scheduler: 'Scheduler | Schedulers',
-      event: 'Event'
+      event: 'Event',
+      parameters: 'Parameters',
+      function: 'Function | Functions',
+      deterministic: 'Deterministic',
+      context: 'Context'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -148,7 +152,11 @@ module.exports = {
       createNewView: 'Create new view',
       deleteTrigger: 'Delete trigger',
       createNewTrigger: 'Create new trigger',
-      currentUser: 'Current user'
+      currentUser: 'Current user',
+      routineBody: 'Routine body',
+      dataAccess: 'Data access',
+      thereAreNoParameters: 'There are no parameters',
+      createNewParameter: 'Create new parameter'
    },
    // Date and Time
    short: {

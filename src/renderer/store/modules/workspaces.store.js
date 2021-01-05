@@ -345,6 +345,7 @@ export default {
             table: null,
             trigger: null,
             procedure: null,
+            function: null,
             scheduler: null,
             view: null
          };

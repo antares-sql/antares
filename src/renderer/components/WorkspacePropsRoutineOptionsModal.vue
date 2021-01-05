@@ -3,11 +3,11 @@
       :confirm-text="$t('word.confirm')"
       size="400"
       @confirm="confirmOptionsChange"
-      @hide="$emit('close')"
+      @hide="$emit('hide')"
    >
       <template :slot="'header'">
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-plus mr-1" /> {{ $t('message.createNewTrigger') }}
+            <i class="mdi mdi-24px mdi-cogs mr-1" /> {{ $t('word.options') }} "{{ localOptions.name }}"
          </div>
       </template>
       <div :slot="'body'">
@@ -19,8 +19,9 @@
                <div class="column">
                   <input
                      ref="firstInput"
-                     v-model="localTrigger.name"
+                     v-model="optionsProxy.name"
                      class="form-input"
+                     :class="{'is-error': !isTableNameValid}"
                      type="text"
                   >
                </div>
@@ -32,7 +33,7 @@
                <div class="column">
                   <select
                      v-if="workspace.users.length"
-                     v-model="localTrigger.definer"
+                     v-model="optionsProxy.definer"
                      class="form-select"
                   >
                      <option value="">
@@ -55,32 +56,46 @@
             </div>
             <div class="form-group">
                <label class="form-label col-4">
-                  {{ $t('word.table') }}
+                  {{ $t('word.comment') }}
                </label>
                <div class="column">
-                  <select v-model="localTrigger.table" class="form-select">
-                     <option v-for="table in schemaTables" :key="table.name">
-                        {{ table.name }}
-                     </option>
+                  <input
+                     v-model="optionsProxy.comment"
+                     class="form-input"
+                     type="text"
+                  >
+               </div>
+            </div>
+            <div class="form-group">
+               <label class="form-label col-4">
+                  {{ $t('message.sqlSecurity') }}
+               </label>
+               <div class="column">
+                  <select v-model="optionsProxy.security" class="form-select">
+                     <option>DEFINER</option>
+                     <option>INVOKER</option>
                   </select>
                </div>
             </div>
             <div class="form-group">
                <label class="form-label col-4">
-                  {{ $t('word.event') }}
+                  {{ $t('message.dataAccess') }}
                </label>
                <div class="column">
-                  <div class="input-group">
-                     <select v-model="localTrigger.event1" class="form-select">
-                        <option>BEFORE</option>
-                        <option>AFTER</option>
-                     </select>
-                     <select v-model="localTrigger.event2" class="form-select">
-                        <option>INSERT</option>
-                        <option>UPDATE</option>
-                        <option>DELETE</option>
-                     </select>
-                  </div>
+                  <select v-model="optionsProxy.dataAccess" class="form-select">
+                     <option>CONTAINS SQL</option>
+                     <option>NO SQL</option>
+                     <option>READS SQL DATA</option>
+                     <option>MODIFIES SQL DATA</option>
+                  </select>
+               </div>
+            </div>
+            <div class="form-group">
+               <div class="col-4" />
+               <div class="column">
+                  <label class="form-checkbox form-inline">
+                     <input v-model="optionsProxy.deterministic" type="checkbox"><i class="form-icon" /> {{ $t('word.deterministic') }}
+                  </label>
                </div>
             </div>
          </form>
@@ -92,40 +107,27 @@
 import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
-   name: 'ModalNewTrigger',
+   name: 'WorkspacePropsRoutineOptionsModal',
    components: {
       ConfirmModal
    },
    props: {
+      localOptions: Object,
       workspace: Object
    },
    data () {
       return {
-         localTrigger: {
-            definer: '',
-            sql: 'BEGIN\r\n\r\nEND',
-            name: '',
-            table: '',
-            event1: 'BEFORE',
-            event2: 'INSERT'
-         },
+         optionsProxy: {},
          isOptionsChanging: false
       };
    },
    computed: {
-      schema () {
-         return this.workspace.breadcrumbs.schema;
-      },
-      schemaTables () {
-         const schemaTables = this.workspace.structure
-            .filter(schema => schema.name === this.schema)
-            .map(schema => schema.tables);
-
-         return schemaTables.length ? schemaTables[0].filter(table => table.type === 'table') : [];
+      isTableNameValid () {
+         return this.optionsProxy.name !== '';
       }
    },
-   mounted () {
-      this.localTrigger.table = this.schemaTables.length ? this.schemaTables[0].name : '';
+   created () {
+      this.optionsProxy = JSON.parse(JSON.stringify(this.localOptions));
 
       setTimeout(() => {
          this.$refs.firstInput.focus();
@@ -133,7 +135,10 @@ export default {
    },
    methods: {
       confirmOptionsChange () {
-         this.$emit('open-create-trigger-editor', this.localTrigger);
+         if (!this.isTableNameValid)
+            this.optionsProxy.name = this.localOptions.name;
+
+         this.$emit('options-update', this.optionsProxy);
       }
    }
 };

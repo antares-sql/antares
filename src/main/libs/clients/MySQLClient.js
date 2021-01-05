@@ -104,6 +104,20 @@ export class MySQLClient extends AntaresCore {
             };
          });
 
+         // FUNCTIONS
+         const remappedFunctions = functions.filter(func => func.Db === db.Database).map(func => {
+            return {
+               name: func.Name,
+               type: func.Type,
+               definer: func.Definer,
+               created: func.Created,
+               updated: func.Modified,
+               comment: func.Comment,
+               charset: func.character_set_client,
+               security: func.Security_type
+            };
+         });
+
          // SCHEDULERS
          const remappedSchedulers = schedulers.filter(scheduler => scheduler.Db === db.Database).map(scheduler => {
             return {
@@ -148,7 +162,7 @@ export class MySQLClient extends AntaresCore {
          return {
             name: db.Database,
             tables: remappedTables,
-            functions: functions.filter(func => func.Db === db.Database), // TODO: remap functions
+            functions: remappedFunctions,
             procedures: remappedProcedures,
             triggers: remappedTriggers,
             schedulers: remappedSchedulers
@@ -355,7 +369,7 @@ export class MySQLClient extends AntaresCore {
       return results.rows.map(row => {
          return {
             definer: row['SQL Original Statement'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
-            sql: row['SQL Original Statement'].match(/BEGIN(.*)END/gs)[0],
+            sql: row['SQL Original Statement'].match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
             name: row.Trigger,
             table: row['SQL Original Statement'].match(/(?<=ON `).*?(?=`)/gs)[0],
             event1: row['SQL Original Statement'].match(/(BEFORE|AFTER)/gs)[0],
@@ -405,7 +419,109 @@ export class MySQLClient extends AntaresCore {
     */
    async createTrigger (trigger) {
       const sql = `CREATE ${trigger.definer ? `DEFINER=${trigger.definer} ` : ''}TRIGGER \`${trigger.name}\` ${trigger.event1} ${trigger.event2} ON \`${trigger.table}\` FOR EACH ROW ${trigger.sql}`;
+      return await this.raw(sql, { split: false });
+   }
+
+   /**
+    * SHOW CREATE PROCEDURE
+    *
+    * @returns {Array.<Object>} view informations
+    * @memberof MySQLClient
+    */
+   async getRoutineInformations ({ schema, routine }) {
+      const sql = `SHOW CREATE PROCEDURE \`${schema}\`.\`${routine}\``;
+      const results = await this.raw(sql);
+
+      return results.rows.map(row => {
+         const parameters = row['Create Procedure']
+            .match(/(?<=\().*?(?=\))/s)[0]
+            .replaceAll('\r', '')
+            .replaceAll('\t', '')
+            .split(',')
+            .map(el => {
+               const param = el.split(' ');
+               return {
+                  name: param[1] ? param[1].replaceAll('`', '') : '',
+                  type: param[2] ? param[2].replace(',', '') : '',
+                  context: param[0] ? param[0].replace('\n', '') : ''
+               };
+            }).filter(el => el.name);
+
+         let dataAccess = 'CONTAINS SQL';
+         if (row['Create Procedure'].includes('NO SQL'))
+            dataAccess = 'NO SQL';
+         if (row['Create Procedure'].includes('READS SQL DATA'))
+            dataAccess = 'READS SQL DATA';
+         if (row['Create Procedure'].includes('MODIFIES SQL DATA'))
+            dataAccess = 'MODIFIES SQL DATA';
+
+         return {
+            definer: row['Create Procedure'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
+            sql: row['Create Procedure'].match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
+            parameters,
+            name: row.Procedure,
+            comment: row['Create Procedure'].match(/(?<=COMMENT ').*?(?=')/gs) ? row['Create Procedure'].match(/(?<=COMMENT ').*?(?=')/gs)[0] : '',
+            security: row['Create Procedure'].includes('SQL SECURITY INVOKER') ? 'INVOKER' : 'DEFINER',
+            deterministic: row['Create Procedure'].includes('DETERMINISTIC'),
+            dataAccess
+         };
+      })[0];
+   }
+
+   /**
+    * DROP PROCEDURE
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async dropRoutine (params) {
+      const sql = `DROP PROCEDURE \`${params.routine}\``;
       return await this.raw(sql);
+   }
+
+   /**
+    * ALTER PROCEDURE
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async alterRoutine (params) {
+      const { routine } = params;
+      const tempProcedure = Object.assign({}, routine);
+      tempProcedure.name = `Antares_${tempProcedure.name}_tmp`;
+
+      try {
+         await this.createRoutine(tempProcedure);
+         await this.dropRoutine({ routine: tempProcedure.name });
+         await this.dropRoutine({ routine: routine.oldName });
+         await this.createRoutine(routine);
+      }
+      catch (err) {
+         return Promise.reject(err);
+      }
+   }
+
+   /**
+    * CREATE PROCEDURE
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async createRoutine (routine) {
+      const parameters = routine.parameters.reduce((acc, curr) => {
+         acc.push(`${curr.context} \`${curr.name}\` ${curr.type}`);
+         return acc;
+      }, []).join(',');
+
+      const sql = `CREATE ${routine.definer ? `DEFINER=${routine.definer} ` : ''}PROCEDURE \`${routine.name}\`(${parameters})
+         LANGUAGE SQL
+         ${routine.deterministic ? 'DETERMINISTIC' : 'NOT DETERMINISTIC'}
+         ${routine.dataAccess}
+         SQL SECURITY ${routine.security}
+         COMMENT '${routine.comment}'
+         ${routine.sql}`;
+
+      return await this.raw(sql, { split: false });
    }
 
    /**
@@ -709,6 +825,7 @@ export class MySQLClient extends AntaresCore {
     * @param {object} args
     * @param {boolean} args.nest
     * @param {boolean} args.details
+    * @param {boolean} args.split
     * @returns {Promise}
     * @memberof MySQLClient
     */
@@ -716,13 +833,14 @@ export class MySQLClient extends AntaresCore {
       args = {
          nest: false,
          details: false,
+         split: true,
          ...args
       };
       const nestTables = args.nest ? '.' : false;
       const resultsArr = [];
       let paramsArr = [];
       let selectedFields = [];
-      const queries = sql.split(';');
+      const queries = args.split ? sql.split(';') : [sql];
 
       if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
 

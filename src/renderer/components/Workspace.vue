@@ -83,6 +83,12 @@
             :connection="connection"
             :trigger="workspace.breadcrumbs.trigger"
          />
+         <WorkspacePropsTabRoutine
+            v-show="selectedTab === 'prop' && workspace.breadcrumbs.procedure"
+            :is-selected="selectedTab === 'prop'"
+            :connection="connection"
+            :routine="workspace.breadcrumbs.procedure"
+         />
          <WorkspaceTableTab
             v-show="selectedTab === 'data'"
             :connection="connection"
@@ -108,6 +114,7 @@ import WorkspaceTableTab from '@/components/WorkspaceTableTab';
 import WorkspacePropsTab from '@/components/WorkspacePropsTab';
 import WorkspacePropsTabView from '@/components/WorkspacePropsTabView';
 import WorkspacePropsTabTrigger from '@/components/WorkspacePropsTabTrigger';
+import WorkspacePropsTabRoutine from '@/components/WorkspacePropsTabRoutine';
 
 export default {
    name: 'Workspace',
@@ -117,7 +124,8 @@ export default {
       WorkspaceTableTab,
       WorkspacePropsTab,
       WorkspacePropsTabView,
-      WorkspacePropsTabTrigger
+      WorkspacePropsTabTrigger,
+      WorkspacePropsTabRoutine
    },
    props: {
       connection: Object
@@ -144,6 +152,7 @@ export default {
             this.workspace.breadcrumbs.view === null &&
             this.workspace.breadcrumbs.trigger === null &&
             this.workspace.breadcrumbs.procedure === null &&
+            this.workspace.breadcrumbs.function === null &&
             this.workspace.breadcrumbs.scheduler === null &&
             ['data', 'prop'].includes(this.workspace.selected_tab)
          )
