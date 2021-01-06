@@ -7,7 +7,7 @@
    >
       <template :slot="'header'">
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-cogs mr-1" /> {{ $t('message.createNewRoutine') }}
+            <i class="mdi mdi-24px mdi-plus mr-1" /> {{ $t('message.createNewRoutine') }}
          </div>
       </template>
       <div :slot="'body'">
