@@ -2,12 +2,12 @@
    <ConfirmModal
       :confirm-text="$t('word.confirm')"
       size="400"
-      @confirm="confirmNewTrigger"
+      @confirm="confirmNewRoutine"
       @hide="$emit('close')"
    >
       <template :slot="'header'">
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-plus mr-1" /> {{ $t('message.createNewTrigger') }}
+            <i class="mdi mdi-24px mdi-cogs mr-1" /> {{ $t('message.createNewRoutine') }}
          </div>
       </template>
       <div :slot="'body'">
@@ -19,7 +19,7 @@
                <div class="column">
                   <input
                      ref="firstInput"
-                     v-model="localTrigger.name"
+                     v-model="localRoutine.name"
                      class="form-input"
                      type="text"
                   >
@@ -32,7 +32,7 @@
                <div class="column">
                   <select
                      v-if="workspace.users.length"
-                     v-model="localTrigger.definer"
+                     v-model="localRoutine.definer"
                      class="form-select"
                   >
                      <option value="">
@@ -55,32 +55,46 @@
             </div>
             <div class="form-group">
                <label class="form-label col-4">
-                  {{ $t('word.table') }}
+                  {{ $t('word.comment') }}
                </label>
                <div class="column">
-                  <select v-model="localTrigger.table" class="form-select">
-                     <option v-for="table in schemaTables" :key="table.name">
-                        {{ table.name }}
-                     </option>
+                  <input
+                     v-model="localRoutine.comment"
+                     class="form-input"
+                     type="text"
+                  >
+               </div>
+            </div>
+            <div class="form-group">
+               <label class="form-label col-4">
+                  {{ $t('message.sqlSecurity') }}
+               </label>
+               <div class="column">
+                  <select v-model="localRoutine.security" class="form-select">
+                     <option>DEFINER</option>
+                     <option>INVOKER</option>
                   </select>
                </div>
             </div>
             <div class="form-group">
                <label class="form-label col-4">
-                  {{ $t('word.event') }}
+                  {{ $t('message.dataAccess') }}
                </label>
                <div class="column">
-                  <div class="input-group">
-                     <select v-model="localTrigger.event1" class="form-select">
-                        <option>BEFORE</option>
-                        <option>AFTER</option>
-                     </select>
-                     <select v-model="localTrigger.event2" class="form-select">
-                        <option>INSERT</option>
-                        <option>UPDATE</option>
-                        <option>DELETE</option>
-                     </select>
-                  </div>
+                  <select v-model="localRoutine.dataAccess" class="form-select">
+                     <option>CONTAINS SQL</option>
+                     <option>NO SQL</option>
+                     <option>READS SQL DATA</option>
+                     <option>MODIFIES SQL DATA</option>
+                  </select>
+               </div>
+            </div>
+            <div class="form-group">
+               <div class="col-4" />
+               <div class="column">
+                  <label class="form-checkbox form-inline">
+                     <input v-model="localRoutine.deterministic" type="checkbox"><i class="form-icon" /> {{ $t('word.deterministic') }}
+                  </label>
                </div>
             </div>
          </form>
@@ -92,7 +106,7 @@
 import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
-   name: 'ModalNewTrigger',
+   name: 'ModalNewRoutine',
    components: {
       ConfirmModal
    },
@@ -101,13 +115,15 @@ export default {
    },
    data () {
       return {
-         localTrigger: {
+         localRoutine: {
             definer: '',
             sql: 'BEGIN\r\n\r\nEND',
+            parameters: [],
             name: '',
-            table: '',
-            event1: 'BEFORE',
-            event2: 'INSERT'
+            comment: '',
+            security: 'DEFINER',
+            deterministic: false,
+            dataAccess: 'CONTAINS SQL'
          },
          isOptionsChanging: false
       };
@@ -115,25 +131,16 @@ export default {
    computed: {
       schema () {
          return this.workspace.breadcrumbs.schema;
-      },
-      schemaTables () {
-         const schemaTables = this.workspace.structure
-            .filter(schema => schema.name === this.schema)
-            .map(schema => schema.tables);
-
-         return schemaTables.length ? schemaTables[0].filter(table => table.type === 'table') : [];
       }
    },
    mounted () {
-      this.localTrigger.table = this.schemaTables.length ? this.schemaTables[0].name : '';
-
       setTimeout(() => {
          this.$refs.firstInput.focus();
       }, 20);
    },
    methods: {
-      confirmNewTrigger () {
-         this.$emit('open-create-trigger-editor', this.localTrigger);
+      confirmNewRoutine () {
+         this.$emit('open-create-routine-editor', this.localRoutine);
       }
    }
 };

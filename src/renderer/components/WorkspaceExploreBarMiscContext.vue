@@ -4,11 +4,11 @@
       @close-context="closeContext"
    >
       <div
-         v-if="selectedMisc.type === 'table'"
-         class="context-element"
-         @click="showEmptyModal"
+         v-if="selectedMisc.type === 'procedure'"
+         class="context-element disabled"
+         @click="showRunModal"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-table-off text-light pr-1" /> {{ $t('message.emptyTable') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-play text-light pr-1" /> {{ $t('word.run') }}</span>
       </div>
       <div class="context-element" @click="showDeleteModal">
          <span class="d-flex"><i class="mdi mdi-18px mdi-table-remove text-light pr-1" /> {{ $t('word.delete') }}</span>
@@ -52,7 +52,7 @@ export default {
    data () {
       return {
          isDeleteModal: false,
-         isEmptyModal: false
+         isRunModal: false
       };
    },
    computed: {
@@ -88,11 +88,11 @@ export default {
       hideDeleteModal () {
          this.isDeleteModal = false;
       },
-      showEmptyModal () {
-         this.isEmptyModal = true;
+      showRunModal () {
+         this.isRunModal = true;
       },
-      hideEmptyModal () {
-         this.isEmptyModal = false;
+      hideRunModal () {
+         this.isRunModal = false;
       },
       closeContext () {
          this.$emit('close-context');

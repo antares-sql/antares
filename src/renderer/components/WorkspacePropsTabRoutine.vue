@@ -25,7 +25,7 @@
                <div class="divider-vert py-3" />
 
                <button
-                  class="btn btn-dark btn-sm"
+                  class="btn btn-dark btn-sm disabled"
                   :disabled="isChanged"
                   @click="false"
                >

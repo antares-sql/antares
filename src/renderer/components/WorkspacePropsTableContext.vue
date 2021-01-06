@@ -77,11 +77,3 @@ export default {
    }
 };
 </script>
-
-<style lang="scss" scoped>
-.disabled {
-  pointer-events: none;
-  filter: grayscale(100%);
-  opacity: 0.5;
-}
-</style>

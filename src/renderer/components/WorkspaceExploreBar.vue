@@ -67,6 +67,12 @@
          @close="hideCreateTriggerModal"
          @open-create-trigger-editor="openCreateTriggerEditor"
       />
+      <ModalNewRoutine
+         v-if="isNewRoutineModal"
+         :workspace="workspace"
+         @close="hideCreateRoutineModal"
+         @open-create-routine-editor="openCreateRoutineEditor"
+      />
       <DatabaseContext
          v-if="isDatabaseContext"
          :selected-database="selectedDatabase"
@@ -75,6 +81,7 @@
          @show-create-table-modal="showCreateTableModal"
          @show-create-view-modal="showCreateViewModal"
          @show-create-trigger-modal="showCreateTriggerModal"
+         @show-create-routine-modal="showCreateRoutineModal"
          @reload="refresh"
       />
       <TableContext
@@ -97,9 +104,12 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import _ from 'lodash';// TODO: remove
+
 import Tables from '@/ipc-api/Tables';
 import Views from '@/ipc-api/Views';
 import Triggers from '@/ipc-api/Triggers';
+import Routines from '@/ipc-api/Routines';
+
 import WorkspaceConnectPanel from '@/components/WorkspaceConnectPanel';
 import WorkspaceExploreBarDatabase from '@/components/WorkspaceExploreBarDatabase';
 import DatabaseContext from '@/components/WorkspaceExploreBarDatabaseContext';
@@ -109,6 +119,7 @@ import ModalNewDatabase from '@/components/ModalNewDatabase';
 import ModalNewTable from '@/components/ModalNewTable';
 import ModalNewView from '@/components/ModalNewView';
 import ModalNewTrigger from '@/components/ModalNewTrigger';
+import ModalNewRoutine from '@/components/ModalNewRoutine';
 
 export default {
    name: 'WorkspaceExploreBar',
@@ -121,7 +132,8 @@ export default {
       ModalNewDatabase,
       ModalNewTable,
       ModalNewView,
-      ModalNewTrigger
+      ModalNewTrigger,
+      ModalNewRoutine
    },
    props: {
       connection: Object,
@@ -135,6 +147,7 @@ export default {
          isNewTableModal: false,
          isNewViewModal: false,
          isNewTriggerModal: false,
+         isNewRoutineModal: false,
 
          localWidth: null,
          isDatabaseContext: false,
@@ -304,6 +317,29 @@ export default {
          if (status === 'success') {
             await this.refresh();
             this.changeBreadcrumbs({ schema: this.selectedDatabase, trigger: payload.name });
+            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+         }
+         else
+            this.addNotification({ status: 'error', message: response });
+      },
+      showCreateRoutineModal () {
+         this.closeDatabaseContext();
+         this.isNewRoutineModal = true;
+      },
+      hideCreateRoutineModal () {
+         this.isNewRoutineModal = false;
+      },
+      async openCreateRoutineEditor (payload) {
+         const params = {
+            uid: this.connection.uid,
+            ...payload
+         };
+
+         const { status, response } = await Routines.createRoutine(params);
+
+         if (status === 'success') {
+            await this.refresh();
+            this.changeBreadcrumbs({ schema: this.selectedDatabase, procedure: payload.name });
             this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
          }
          else

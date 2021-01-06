@@ -69,75 +69,81 @@ export default {
 </script>
 
 <style lang="scss">
-  .context {
+.context {
+  display: flex;
+  color: $body-font-color;
+  font-size: 16px;
+  z-index: 400;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: fixed;
+  height: 100vh;
+  right: 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
+
+  .context-container {
+    min-width: 100px;
+    z-index: 10;
+    box-shadow: 0 0 2px 0 #000;
+    padding: 0;
+    background: #1d1d1d;
+    border-radius: 0.1rem;
     display: flex;
-    color: $body-font-color;
-    font-size: 16px;
-    z-index: 400;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    position: fixed;
-    height: 100vh;
-    right: 0;
-    top: 0;
-    left: 0;
-    bottom: 0;
+    flex-direction: column;
+    position: absolute;
+    pointer-events: initial;
 
-    .context-container {
-      min-width: 100px;
-      z-index: 10;
-      box-shadow: 0 0 2px 0 #000;
-      padding: 0;
-      background: #1d1d1d;
-      border-radius: 0.1rem;
+    .context-element {
       display: flex;
-      flex-direction: column;
-      position: absolute;
-      pointer-events: initial;
+      align-items: center;
+      padding: 0.1rem 0.3rem;
+      cursor: pointer;
+      justify-content: space-between;
+      position: relative;
 
-      .context-element {
-        display: flex;
-        align-items: center;
-        padding: 0.1rem 0.3rem;
-        cursor: pointer;
-        justify-content: space-between;
-        position: relative;
+      .context-submenu {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s;
+        position: absolute;
+        left: 100%;
+        top: 0;
+        background: #1d1d1d;
+        box-shadow: 0 0 2px 0 #000;
+        min-width: 100px;
+      }
+
+      &:hover {
+        background: $primary-color;
 
         .context-submenu {
-          opacity: 0;
-          visibility: hidden;
-          transition: opacity 0.2s;
-          position: absolute;
-          left: 100%;
-          top: 0;
-          background: #1d1d1d;
-          box-shadow: 0 0 2px 0 #000;
-          min-width: 100px;
-        }
-
-        &:hover {
-          background: $primary-color;
-
-          .context-submenu {
-            display: block;
-            visibility: visible;
-            opacity: 1;
-          }
+          display: block;
+          visibility: visible;
+          opacity: 1;
         }
       }
     }
-
-    .context-overlay {
-      background: transparent;
-      bottom: 0;
-      cursor: default;
-      display: block;
-      left: 0;
-      position: absolute;
-      right: 0;
-      top: 0;
-    }
   }
+
+  .context-overlay {
+    background: transparent;
+    bottom: 0;
+    cursor: default;
+    display: block;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}
+
+.disabled {
+  pointer-events: none;
+  filter: grayscale(100%);
+  opacity: 0.5;
+}
 
 </style>

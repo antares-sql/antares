@@ -157,6 +157,7 @@ module.exports = {
       dataAccess: 'Data access',
       thereAreNoParameters: 'There are no parameters',
       createNewParameter: 'Create new parameter',
+      createNewRoutine: 'Create new stored routine',
       deleteRoutine: 'Delete stored routine'
    },
    // Date and Time
