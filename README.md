@@ -32,6 +32,7 @@ An application created with minimalism and semplicity in mind, with features in 
 - Multiple database connections at same time.
 - Database management (add/edit/delete).
 - Full tables management, including indexes and foreign keys.
+- Views, triggers and stored routines management (add/edit/delete).
 - Run queries on multiple tabs.
 - Query suggestions and auto complete.
 - Native dark theme.
@@ -43,7 +44,7 @@ An application created with minimalism and semplicity in mind, with features in 
 
 This is a roadmap with major features will come in near future.
 
-- Stored procedures, views, schedulers and triggers support.
+- Functions and schedulers support.
 - Users management (add/edit/delete).
 - Database tools (variables, process list...).
 - SSL and SSH tunnel support.
