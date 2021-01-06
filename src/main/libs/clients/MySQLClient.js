@@ -440,9 +440,12 @@ export class MySQLClient extends AntaresCore {
             .split(',')
             .map(el => {
                const param = el.split(' ');
+               const type = param[2] ? param[2].replace(')', '').split('(') : ['', null];
+
                return {
                   name: param[1] ? param[1].replaceAll('`', '') : '',
-                  type: param[2] ? param[2].replace(',', '') : '',
+                  type: type[0],
+                  length: +type[1],
                   context: param[0] ? param[0].replace('\n', '') : ''
                };
             }).filter(el => el.name);
@@ -509,7 +512,7 @@ export class MySQLClient extends AntaresCore {
     */
    async createRoutine (routine) {
       const parameters = routine.parameters.reduce((acc, curr) => {
-         acc.push(`${curr.context} \`${curr.name}\` ${curr.type}`);
+         acc.push(`${curr.context} \`${curr.name}\` ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
          return acc;
       }, []).join(',');
 

@@ -37,6 +37,7 @@ import { mapGetters, mapActions } from 'vuex';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import Triggers from '@/ipc-api/Triggers';
+import Routines from '@/ipc-api/Routines';
 
 export default {
    name: 'WorkspaceExploreBarMiscContext',
@@ -66,7 +67,8 @@ export default {
          switch (this.selectedMisc.type) {
             case 'trigger':
                return this.$t('message.deleteTrigger');
-
+            case 'procedure':
+               return this.$t('message.deleteRoutine');
             default:
                return '';
          }
@@ -106,12 +108,12 @@ export default {
                      trigger: this.selectedMisc.name
                   });
                   break;
-               // case 'procedure':
-               //    res = await Tables.dropProcedure({
-               //       uid: this.selectedWorkspace,
-               //       procedure: this.selectedMisc.name
-               //    });
-               //    break;
+               case 'procedure':
+                  res = await Routines.dropRoutine({
+                     uid: this.selectedWorkspace,
+                     routine: this.selectedMisc.name
+                  });
+                  break;
                // case 'schedules':
                //    res = await Tables.dropScheduler({
                //       uid: this.selectedWorkspace,

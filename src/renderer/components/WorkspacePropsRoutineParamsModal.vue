@@ -48,7 +48,7 @@
                            <div class="tile-title">
                               {{ param.name }}
                            </div>
-                           <small class="tile-subtitle text-gray">{{ param.type }} · {{ param.context }}</small>
+                           <small class="tile-subtitle text-gray">{{ param.type }}{{ param.length ? `(${param.length})` : '' }} · {{ param.context }}</small>
                         </div>
                         <div class="tile-action">
                            <button
@@ -103,6 +103,18 @@
                               </option>
                            </optgroup>
                         </select>
+                     </div>
+                  </div>
+                  <div class="form-group">
+                     <label class="form-label col-3">
+                        {{ $t('word.length') }}
+                     </label>
+                     <div class="column">
+                        <input
+                           v-model="selectedParamObj.length"
+                           class="form-input"
+                           type="number"
+                        >
                      </div>
                   </div>
                   <div class="form-group">
@@ -216,7 +228,8 @@ export default {
          this.parametersProxy = [...this.parametersProxy, {
             name: `Param${this.i++}`,
             type: 'INT',
-            context: 'IN'
+            context: 'IN',
+            length: 10
          }];
 
          if (this.parametersProxy.length === 1)

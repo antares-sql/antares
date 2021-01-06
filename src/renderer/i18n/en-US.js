@@ -156,7 +156,8 @@ module.exports = {
       routineBody: 'Routine body',
       dataAccess: 'Data access',
       thereAreNoParameters: 'There are no parameters',
-      createNewParameter: 'Create new parameter'
+      createNewParameter: 'Create new parameter',
+      deleteRoutine: 'Delete stored routine'
    },
    // Date and Time
    short: {
