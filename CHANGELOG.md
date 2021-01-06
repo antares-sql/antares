@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.13](https://github.com/Fabio286/antares/compare/v0.0.12...v0.0.13) (2021-01-06)
+
+
+### Features
+
+* option to toggle line wrap mode ([d94b49f](https://github.com/Fabio286/antares/commit/d94b49febf54b0200127859f2a8ed7ef591e56ab))
+* select definer in view creation/edit ([ab307f8](https://github.com/Fabio286/antares/commit/ab307f82b1d78c5f9571233090b6678a964bd674))
+* stored routines creation ([3bcd02f](https://github.com/Fabio286/antares/commit/3bcd02fc4ea9a4b780305212f906d6d78c7a8dae))
+* stored routines delete ([aa33850](https://github.com/Fabio286/antares/commit/aa3385028685417860b3ce985cc7a74f9da377ad))
+* stored routines edit ([82fdc0b](https://github.com/Fabio286/antares/commit/82fdc0bcd7514b321c1c9852a773adacf81baf87))
+* triggers creation ([d695c9f](https://github.com/Fabio286/antares/commit/d695c9f8d2418a6a4523a7a242fa1a8cba80e035))
+* triggers delete ([b32132a](https://github.com/Fabio286/antares/commit/b32132ad84d5798555b80eec3c624b681c37c339))
+* triggers edit ([3126625](https://github.com/Fabio286/antares/commit/3126625461f4b6d68d641b6b0eda8fcd390bb636))
+* views creation ([8c4aaec](https://github.com/Fabio286/antares/commit/8c4aaec167f58333a343b52927205b68137ad408))
+* views deletion ([dcf469e](https://github.com/Fabio286/antares/commit/dcf469ebed6252b4a496800206e0c34cd83b1f5e))
+* views edit ([56f2a27](https://github.com/Fabio286/antares/commit/56f2a27f0059cc10316204210db078a97408973c))
+
+
+### Bug Fixes
+
+* breadcrumb not change after table rename ([b6b7be0](https://github.com/Fabio286/antares/commit/b6b7be098ad5ab4d55bfe05a7f862f045c1f54da))
+* unable to rename views ([b7053bd](https://github.com/Fabio286/antares/commit/b7053bdf8036d027e1685d6b5080d6b927a80e08))
+* wrong new stored routine modal icon ([0ec2710](https://github.com/Fabio286/antares/commit/0ec2710872c692b3feac076a3250d3b760af4009))
+* wrong or duplicate fields in some queries ([0df2b83](https://github.com/Fabio286/antares/commit/0df2b836b15436a2397d6a2202bd049b5cd53de4))
+
 ### [0.0.12](https://github.com/Fabio286/antares/compare/v0.0.11...v0.0.12) (2020-12-24)
 
 
