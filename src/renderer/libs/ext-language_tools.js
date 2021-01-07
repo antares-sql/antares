@@ -1239,6 +1239,12 @@ ace.define('ace/autocomplete/popup', ['require', 'exports', 'module', 'ace/virtu
                case 'view':
                   iconClass = 'mdi-table-eye';
                   break;
+               case 'trigger':
+                  iconClass = 'mdi-table-cog';
+                  break;
+               case 'routine':
+                  iconClass = 'mdi-sync-circle';
+                  break;
                case 'keyword':
                   iconClass = 'mdi-cube';
                   break;

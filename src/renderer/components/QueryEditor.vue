@@ -47,9 +47,36 @@ export default {
                }, []).map(table => {
                   return {
                      name: table.name,
-                     comment: table.comment,
                      type: table.type,
                      fields: []
+                  };
+               })
+            : [];
+      },
+      triggers () {
+         return this.workspace
+            ? this.workspace.structure.filter(schema => schema.name === this.schema)
+               .reduce((acc, curr) => {
+                  acc.push(...curr.triggers);
+                  return acc;
+               }, []).map(trigger => {
+                  return {
+                     name: trigger.name,
+                     type: 'trigger'
+                  };
+               })
+            : [];
+      },
+      procedures () {
+         return this.workspace
+            ? this.workspace.structure.filter(schema => schema.name === this.schema)
+               .reduce((acc, curr) => {
+                  acc.push(...curr.procedures);
+                  return acc;
+               }, []).map(procedure => {
+                  return {
+                     name: `${procedure.name}()`,
+                     type: 'routine'
                   };
                })
             : [];
@@ -130,11 +157,14 @@ export default {
       this.editor.completers.push({
          getCompletions: (editor, session, pos, prefix, callback) => {
             const completions = [];
-            this.tables.forEach(table => {
+            [
+               ...this.tables,
+               ...this.triggers,
+               ...this.procedures
+            ].forEach(el => {
                completions.push({
-                  value: table.name,
-                  meta: table.type,
-                  caption: table.comment
+                  value: el.name,
+                  meta: el.type
                });
             });
             callback(null, completions);
