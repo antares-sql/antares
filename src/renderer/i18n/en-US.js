@@ -78,7 +78,8 @@ module.exports = {
       parameters: 'Parameters',
       function: 'Function | Functions',
       deterministic: 'Deterministic',
-      context: 'Context'
+      context: 'Context',
+      export: 'Export'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',

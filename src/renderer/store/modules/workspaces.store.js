@@ -307,18 +307,7 @@ export default {
             uid,
             connected: false,
             selected_tab: 0,
-            tabs: [{
-               uid: 'data',
-               type: 'table',
-               fields: [],
-               keyUsage: []
-            },
-            {
-               uid: 'prop',
-               type: 'table',
-               fields: [],
-               keyUsage: []
-            }],
+            tabs: [],
             structure: {},
             variables: [],
             collations: [],

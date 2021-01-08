@@ -80,6 +80,7 @@
 
 <script>
 import { uidGen } from 'common/libs/uidGen';
+import arrayToFile from '../libs/arrayToFile';
 import { LONG_TEXT, BLOB } from 'common/fieldTypes';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
 import WorkspaceQueryTableRow from '@/components/WorkspaceQueryTableRow';
@@ -354,6 +355,15 @@ export default {
       },
       selectResultset (index) {
          this.resultsetIndex = index;
+      },
+      downloadTable (format, filename) {
+         if (!this.sortedResults) return;
+
+         arrayToFile({
+            type: format,
+            content: this.sortedResults,
+            filename
+         });
       }
    }
 };

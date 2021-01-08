@@ -32,13 +32,30 @@
                      </div>
                   </div>
                </div>
-               <button
-                  class="btn btn-dark btn-sm"
-                  @click="showAddModal"
-               >
+
+               <button class="btn btn-dark btn-sm" @click="showAddModal">
                   <span>{{ $t('word.add') }}</span>
                   <i class="mdi mdi-24px mdi-playlist-plus ml-1" />
                </button>
+               <div class="dropdown export-dropdown">
+                  <button
+                     :disabled="isQuering"
+                     class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
+                     tabindex="0"
+                  >
+                     <span>{{ $t('word.export') }}</span>
+                     <i class="mdi mdi-24px mdi-file-export ml-1" />
+                     <i class="mdi mdi-24px mdi-menu-down" />
+                  </button>
+                  <ul class="menu text-left">
+                     <li class="menu-item">
+                        <a class="c-hand" @click="downloadTable('json')">JSON</a>
+                     </li>
+                     <li class="menu-item">
+                        <a class="c-hand" @click="downloadTable('csv')">CSV</a>
+                     </li>
+                  </ul>
+               </div>
             </div>
             <div class="workspace-query-info">
                <div v-if="results.length && results[0].rows">
@@ -222,7 +239,21 @@ export default {
                   this.reloadTable();
             }, this.autorefreshTimer * 1000);
          }
+      },
+      downloadTable (format) {
+         this.$refs.queryTable.downloadTable(format, this.table);
       }
    }
 };
 </script>
+<style lang="scss" scoped>
+.export-dropdown {
+  .menu {
+    min-width: 100%;
+
+    .menu-item a:hover {
+      background: $bg-color-gray;
+    }
+  }
+}
+</style>
