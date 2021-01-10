@@ -7,7 +7,7 @@
    >
       <template :slot="'header'">
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-dots-horizontal mr-1" /> {{ $t('word.parameters') }} "{{ routine }}"
+            <i class="mdi mdi-24px mdi-dots-horizontal mr-1" /> {{ $t('word.parameters') }} "{{ func }}"
          </div>
       </template>
       <div :slot="'body'">
@@ -48,7 +48,7 @@
                            <div class="tile-title">
                               {{ param.name }}
                            </div>
-                           <small class="tile-subtitle text-gray">{{ param.type }}{{ param.length ? `(${param.length})` : '' }} · {{ param.context }}</small>
+                           <small class="tile-subtitle text-gray">{{ param.type }}{{ param.length ? `(${param.length})` : '' }}</small>
                         </div>
                         <div class="tile-action">
                            <button
@@ -118,37 +118,6 @@
                         >
                      </div>
                   </div>
-                  <div class="form-group">
-                     <label class="form-label col-3">
-                        {{ $t('word.context') }}
-                     </label>
-                     <div class="column">
-                        <label class="form-radio">
-                           <input
-                              v-model="selectedParamObj.context"
-                              type="radio"
-                              name="context"
-                              value="IN"
-                           > <i class="form-icon" /> IN
-                        </label>
-                        <label class="form-radio">
-                           <input
-                              v-model="selectedParamObj.context"
-                              type="radio"
-                              value="OUT"
-                              name="context"
-                           > <i class="form-icon" /> OUT
-                        </label>
-                        <label class="form-radio">
-                           <input
-                              v-model="selectedParamObj.context"
-                              type="radio"
-                              value="INOUT"
-                              name="context"
-                           > <i class="form-icon" /> INOUT
-                        </label>
-                     </div>
-                  </div>
                </form>
                <div v-if="!parametersProxy.length" class="empty">
                   <div class="empty-icon">
@@ -179,7 +148,7 @@ export default {
    },
    props: {
       localParameters: Array,
-      routine: String,
+      func: String,
       workspace: Object
    },
    data () {

@@ -528,6 +528,114 @@ export class MySQLClient extends AntaresCore {
    }
 
    /**
+    * SHOW CREATE FUNCTION
+    *
+    * @returns {Array.<Object>} view informations
+    * @memberof MySQLClient
+    */
+   async getFunctionInformations ({ schema, func }) {
+      const sql = `SHOW CREATE FUNCTION \`${schema}\`.\`${func}\``;
+      const results = await this.raw(sql);
+
+      return results.rows.map(row => {
+         const parameters = row['Create Function']
+            .match(/(?<=\().*?(?=\))/s)[0]
+            .replaceAll('\r', '')
+            .replaceAll('\t', '')
+            .split(',')
+            .map(el => {
+               const param = el.split(' ');
+               const type = param[1] ? param[1].replace(')', '').split('(') : ['', null];
+
+               return {
+                  name: param[0] ? param[0].replaceAll('`', '') : '',
+                  type: type[0],
+                  length: +type[1]
+               };
+            }).filter(el => el.name);
+
+         let dataAccess = 'CONTAINS SQL';
+         if (row['Create Function'].includes('NO SQL'))
+            dataAccess = 'NO SQL';
+         if (row['Create Function'].includes('READS SQL DATA'))
+            dataAccess = 'READS SQL DATA';
+         if (row['Create Function'].includes('MODIFIES SQL DATA'))
+            dataAccess = 'MODIFIES SQL DATA';
+
+         const output = row['Create Function'].match(/(?<=RETURNS ).*?(?=\s)/gs).length ? row['Create Function'].match(/(?<=RETURNS ).*?(?=\s)/gs)[0].replace(')', '').split('(') : ['', null];
+
+         return {
+            definer: row['Create Function'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
+            sql: row['Create Function'].match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
+            parameters,
+            name: row.Function,
+            comment: row['Create Function'].match(/(?<=COMMENT ').*?(?=')/gs) ? row['Create Function'].match(/(?<=COMMENT ').*?(?=')/gs)[0] : '',
+            security: row['Create Function'].includes('SQL SECURITY INVOKER') ? 'INVOKER' : 'DEFINER',
+            deterministic: row['Create Function'].includes('DETERMINISTIC'),
+            dataAccess,
+            returns: output[0].toUpperCase(),
+            returnsLength: +output[1]
+         };
+      })[0];
+   }
+
+   /**
+    * DROP FUNCTION
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async dropFunction (params) {
+      const sql = `DROP FUNCTION \`${params.func}\``;
+      return await this.raw(sql);
+   }
+
+   /**
+    * ALTER FUNCTION
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async alterFunction (params) {
+      const { func } = params;
+      const tempProcedure = Object.assign({}, func);
+      tempProcedure.name = `Antares_${tempProcedure.name}_tmp`;
+
+      try {
+         await this.createFunction(tempProcedure);
+         await this.dropFunction({ func: tempProcedure.name });
+         await this.dropFunction({ func: func.oldName });
+         await this.createFunction(func);
+      }
+      catch (err) {
+         return Promise.reject(err);
+      }
+   }
+
+   /**
+    * CREATE FUNCTION
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async createFunction (func) {
+      const parameters = func.parameters.reduce((acc, curr) => {
+         acc.push(`\`${curr.name}\` ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
+         return acc;
+      }, []).join(',');
+
+      const sql = `CREATE ${func.definer ? `DEFINER=${func.definer} ` : ''}FUNCTION \`${func.name}\`(${parameters}) RETURNS ${func.returns}${func.returnsLength ? `(${func.returnsLength})` : ''}
+         LANGUAGE SQL
+         ${func.deterministic ? 'DETERMINISTIC' : 'NOT DETERMINISTIC'}
+         ${func.dataAccess}
+         SQL SECURITY ${func.security}
+         COMMENT '${func.comment}'
+         ${func.sql}`;
+
+      return await this.raw(sql, { split: false });
+   }
+
+   /**
     * SHOW COLLATION
     *
     * @returns {Array.<Object>} collations list

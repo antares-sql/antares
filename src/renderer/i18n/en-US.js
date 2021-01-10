@@ -79,7 +79,8 @@ module.exports = {
       function: 'Function | Functions',
       deterministic: 'Deterministic',
       context: 'Context',
-      export: 'Export'
+      export: 'Export',
+      returns: 'Returns'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -159,7 +160,10 @@ module.exports = {
       thereAreNoParameters: 'There are no parameters',
       createNewParameter: 'Create new parameter',
       createNewRoutine: 'Create new stored routine',
-      deleteRoutine: 'Delete stored routine'
+      deleteRoutine: 'Delete stored routine',
+      functionBody: 'Function body',
+      createNewFunction: 'Create new function',
+      deleteFunction: 'Delete function'
    },
    // Date and Time
    short: {
