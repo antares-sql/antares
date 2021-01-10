@@ -38,6 +38,7 @@ import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import Triggers from '@/ipc-api/Triggers';
 import Routines from '@/ipc-api/Routines';
+import Functions from '@/ipc-api/Functions';
 
 export default {
    name: 'WorkspaceExploreBarMiscContext',
@@ -69,6 +70,8 @@ export default {
                return this.$t('message.deleteTrigger');
             case 'procedure':
                return this.$t('message.deleteRoutine');
+            case 'function':
+               return this.$t('message.deleteFunction');
             default:
                return '';
          }
@@ -114,7 +117,13 @@ export default {
                      routine: this.selectedMisc.name
                   });
                   break;
-               // case 'schedules':
+               case 'function':
+                  res = await Functions.dropFunction({
+                     uid: this.selectedWorkspace,
+                     func: this.selectedMisc.name
+                  });
+                  break;
+               // case 'schedulers':
                //    res = await Tables.dropScheduler({
                //       uid: this.selectedWorkspace,
                //       scheduler: this.selectedMisc.name
