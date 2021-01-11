@@ -4,7 +4,7 @@
       @close-context="closeContext"
    >
       <div
-         v-if="selectedMisc.type === 'procedure'"
+         v-if="['procedure', 'function'].includes(selectedMisc.type)"
          class="context-element disabled"
          @click="showRunModal"
       >

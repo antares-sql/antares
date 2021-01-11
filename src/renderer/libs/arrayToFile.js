@@ -25,13 +25,14 @@ const arrayToFile = args => {
          break;
    }
 
-   const file = new Blob([content], { mime });
+   const file = new Blob([content], { type: mime });
    const downloadLink = document.createElement('a');
    downloadLink.download = `${args.filename}.${args.type}`;
    downloadLink.href = window.URL.createObjectURL(file);
    downloadLink.style.display = 'none';
    document.body.appendChild(downloadLink);
    downloadLink.click();
+   downloadLink.remove();
 };
 
 export default arrayToFile;

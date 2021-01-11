@@ -433,6 +433,19 @@ export class MySQLClient extends AntaresCore {
       const results = await this.raw(sql);
 
       return results.rows.map(row => {
+         if (!row['Create Procedure']) {
+            return {
+               definer: null,
+               sql: '',
+               parameters: [],
+               name: row.Procedure,
+               comment: '',
+               security: 'DEFINER',
+               deterministic: false,
+               dataAccess: 'CONTAINS SQL'
+            };
+         }
+
          const parameters = row['Create Procedure']
             .match(/(?<=\().*?(?=\))/s)[0]
             .replaceAll('\r', '')
@@ -538,6 +551,21 @@ export class MySQLClient extends AntaresCore {
       const results = await this.raw(sql);
 
       return results.rows.map(row => {
+         if (!row['Create Function']) {
+            return {
+               definer: null,
+               sql: '',
+               parameters: [],
+               name: row.Procedure,
+               comment: '',
+               security: 'DEFINER',
+               deterministic: false,
+               dataAccess: 'CONTAINS SQL',
+               returns: 'INT',
+               returnsLength: null
+            };
+         }
+
          const parameters = row['Create Function']
             .match(/(?<=\().*?(?=\))/s)[0]
             .replaceAll('\r', '')
