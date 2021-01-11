@@ -19,7 +19,7 @@
             <div class="context-element" @click="showCreateRoutineModal">
                <span class="d-flex"><i class="mdi mdi-18px mdi-sync-circle pr-1" /> {{ $tc('word.storedRoutine', 1) }}</span>
             </div>
-            <div class="context-element disabled" @click="false">
+            <div class="context-element" @click="showCreateFunctionModal">
                <span class="d-flex"><i class="mdi mdi-18px mdi-arrow-right-bold-box pr-1" /> {{ $tc('word.function', 1) }}</span>
             </div>
             <div class="context-element disabled" @click="false">
@@ -107,6 +107,9 @@ export default {
       },
       showCreateRoutineModal () {
          this.$emit('show-create-routine-modal');
+      },
+      showCreateFunctionModal () {
+         this.$emit('show-create-function-modal');
       },
       showDeleteModal () {
          this.isDeleteModal = true;

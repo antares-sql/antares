@@ -73,6 +73,12 @@
          @close="hideCreateRoutineModal"
          @open-create-routine-editor="openCreateRoutineEditor"
       />
+      <ModalNewFunction
+         v-if="isNewFunctionModal"
+         :workspace="workspace"
+         @close="hideCreateFunctionModal"
+         @open-create-function-editor="openCreateFunctionEditor"
+      />
       <DatabaseContext
          v-if="isDatabaseContext"
          :selected-database="selectedDatabase"
@@ -82,6 +88,7 @@
          @show-create-view-modal="showCreateViewModal"
          @show-create-trigger-modal="showCreateTriggerModal"
          @show-create-routine-modal="showCreateRoutineModal"
+         @show-create-function-modal="showCreateFunctionModal"
          @reload="refresh"
       />
       <TableContext
@@ -109,6 +116,7 @@ import Tables from '@/ipc-api/Tables';
 import Views from '@/ipc-api/Views';
 import Triggers from '@/ipc-api/Triggers';
 import Routines from '@/ipc-api/Routines';
+import Functions from '@/ipc-api/Functions';
 
 import WorkspaceConnectPanel from '@/components/WorkspaceConnectPanel';
 import WorkspaceExploreBarDatabase from '@/components/WorkspaceExploreBarDatabase';
@@ -120,6 +128,7 @@ import ModalNewTable from '@/components/ModalNewTable';
 import ModalNewView from '@/components/ModalNewView';
 import ModalNewTrigger from '@/components/ModalNewTrigger';
 import ModalNewRoutine from '@/components/ModalNewRoutine';
+import ModalNewFunction from '@/components/ModalNewFunction';
 
 export default {
    name: 'WorkspaceExploreBar',
@@ -133,7 +142,8 @@ export default {
       ModalNewTable,
       ModalNewView,
       ModalNewTrigger,
-      ModalNewRoutine
+      ModalNewRoutine,
+      ModalNewFunction
    },
    props: {
       connection: Object,
@@ -148,6 +158,7 @@ export default {
          isNewViewModal: false,
          isNewTriggerModal: false,
          isNewRoutineModal: false,
+         isNewFunctionModal: false,
 
          localWidth: null,
          isDatabaseContext: false,
@@ -340,6 +351,29 @@ export default {
          if (status === 'success') {
             await this.refresh();
             this.changeBreadcrumbs({ schema: this.selectedDatabase, procedure: payload.name });
+            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+         }
+         else
+            this.addNotification({ status: 'error', message: response });
+      },
+      showCreateFunctionModal () {
+         this.closeDatabaseContext();
+         this.isNewFunctionModal = true;
+      },
+      hideCreateFunctionModal () {
+         this.isNewFunctionModal = false;
+      },
+      async openCreateFunctionEditor (payload) {
+         const params = {
+            uid: this.connection.uid,
+            ...payload
+         };
+
+         const { status, response } = await Functions.createFunction(params);
+
+         if (status === 'success') {
+            await this.refresh();
+            this.changeBreadcrumbs({ schema: this.selectedDatabase, function: payload.name });
             this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
          }
          else
