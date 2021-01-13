@@ -359,9 +359,14 @@ export default {
       downloadTable (format, filename) {
          if (!this.sortedResults) return;
 
+         const rows = this.sortedResults.map(row => {
+            delete row._id;
+            return row;
+         });
+
          arrayToFile({
             type: format,
-            content: this.sortedResults,
+            content: rows,
             filename
          });
       }
