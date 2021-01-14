@@ -664,6 +664,96 @@ export class MySQLClient extends AntaresCore {
    }
 
    /**
+    * SHOW CREATE EVENT
+    *
+    * @returns {Array.<Object>} view informations
+    * @memberof MySQLClient
+    */
+   async getEventInformations ({ schema, scheduler }) {
+      const sql = `SHOW CREATE EVENT \`${schema}\`.\`${scheduler}\``;
+      const results = await this.raw(sql);
+
+      return results.rows.map(row => {
+         const schedule = row['Create Event'].match(/(?<=ON SCHEDULE\n*?\s*?).*?(?=\n)/gs)[0];
+         const execution = schedule.includes('EVERY') ? 'EVERY' : 'ONCE';
+         const every = execution === 'EVERY' ? row['Create Event'].match(/(?<=EVERY )(\s*(\w+)){0,2}/gs)[0].split(' ') : [];
+         const starts = execution === 'EVERY' && schedule.includes('STARTS') ? schedule.match(/(?<=STARTS ').*?(?='\s)/gs)[0] : '';
+         const ends = execution === 'EVERY' && schedule.includes('ENDS') ? schedule.match(/(?<=ENDS ').*?(?='\s)/gs)[0] : '';
+         const at = execution === 'ONCE' && schedule.includes('AT') ? schedule.match(/(?<=AT ').*?(?='\s)/gs)[0] : '';
+
+         return {
+            definer: row['Create Event'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
+            sql: row['Create Event'].match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
+            name: row.Event,
+            comment: row['Create Event'].match(/(?<=COMMENT ').*?(?=')/gs) ? row['Create Event'].match(/(?<=COMMENT ').*?(?=')/gs)[0] : '',
+            state: row['Create Event'].includes('ENABLE') ? 'ENABLE' : row['Create Event'].includes('DISABLE ON SLAVE') ? 'DISABLE ON SLAVE' : 'DISABLE',
+            preserve: row['Create Event'].includes('ON COMPLETION PRESERVE'),
+            execution,
+            every,
+            starts,
+            ends,
+            at
+         };
+      })[0];
+   }
+
+   /**
+    * DROP EVENT
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async dropEvent (params) {
+      const sql = `DROP EVENT \`${params.scheduler}\``;
+      return await this.raw(sql);
+   }
+
+   /**
+    * ALTER EVENT
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async alterEvent (params) {
+      const { scheduler } = params;
+      const tempProcedure = Object.assign({}, scheduler);
+      tempProcedure.name = `Antares_${tempProcedure.name}_tmp`;
+
+      try {
+         await this.createEvent(tempProcedure);
+         await this.dropEvent({ scheduler: tempProcedure.name });
+         await this.dropEvent({ scheduler: scheduler.oldName });
+         await this.createEvent(scheduler);
+      }
+      catch (err) {
+         return Promise.reject(err);
+      }
+   }
+
+   /**
+    * CREATE EVENT
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async createEvent (scheduler) {
+      const parameters = scheduler.parameters.reduce((acc, curr) => {
+         acc.push(`\`${curr.name}\` ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
+         return acc;
+      }, []).join(',');
+
+      const sql = `CREATE ${scheduler.definer ? `DEFINER=${scheduler.definer} ` : ''}FUNCTION \`${scheduler.name}\`(${parameters}) RETURNS ${scheduler.returns}${scheduler.returnsLength ? `(${scheduler.returnsLength})` : ''}
+         LANGUAGE SQL
+         ${scheduler.deterministic ? 'DETERMINISTIC' : 'NOT DETERMINISTIC'}
+         ${scheduler.dataAccess}
+         SQL SECURITY ${scheduler.security}
+         COMMENT '${scheduler.comment}'
+         ${scheduler.sql}`;
+
+      return await this.raw(sql, { split: false });
+   }
+
+   /**
     * SHOW COLLATION
     *
     * @returns {Array.<Object>} collations list

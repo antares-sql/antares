@@ -20,7 +20,6 @@ const arrayToFile = args => {
          mime = 'application/json';
          content = JSON.stringify(args.content, null, 3);
          break;
-
       default:
          break;
    }

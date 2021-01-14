@@ -80,7 +80,9 @@ module.exports = {
       deterministic: 'Deterministic',
       context: 'Context',
       export: 'Export',
-      returns: 'Returns'
+      returns: 'Returns',
+      timing: 'Timing',
+      state: 'State'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -163,7 +165,11 @@ module.exports = {
       deleteRoutine: 'Delete stored routine',
       functionBody: 'Function body',
       createNewFunction: 'Create new function',
-      deleteFunction: 'Delete function'
+      deleteFunction: 'Delete function',
+      schedulerBody: 'Scheduler body',
+      createNewScheduler: 'Create new scheduler',
+      deleteScheduler: 'Delete scheduler',
+      preserveOnCompletion: 'Preserve on completion'
    },
    // Date and Time
    short: {

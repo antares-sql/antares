@@ -4,6 +4,7 @@ import views from './views';
 import triggers from './triggers';
 import routines from './routines';
 import functions from './functions';
+import schedulers from './schedulers';
 import updates from './updates';
 import application from './application';
 import database from './database';
@@ -18,6 +19,7 @@ export default () => {
    triggers(connections);
    routines(connections);
    functions(connections);
+   schedulers(connections);
    database(connections);
    users(connections);
    updates();

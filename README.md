@@ -88,3 +88,7 @@ This is a roadmap with major features will come in near future.
 [Giuseppe Gigliotti](https://github.com/ReverbOD) / [Italian Translation](https://github.com/Fabio286/antares/pull/20)  
 [Mohd-PH](https://github.com/Mohd-PH) / [Arabic Translation](https://github.com/Fabio286/antares/pull/29)  
 [hongkfui](https://github.com/hongkfui) / [Spanish Translation](https://github.com/Fabio286/antares/pull/32)
+
+## Reviews
+
+<a target="_blank" href="https://www.softx64.com/windows/antares-sql-client.html" title="Antares SQL Client review"><img src="https://www.softx64.com/softx64-review.png" alt="Antares SQL Client review" /></a>

@@ -95,6 +95,12 @@
             :connection="connection"
             :function="workspace.breadcrumbs.function"
          />
+         <WorkspacePropsTabScheduler
+            v-show="selectedTab === 'prop' && workspace.breadcrumbs.scheduler"
+            :is-selected="selectedTab === 'prop'"
+            :connection="connection"
+            :scheduler="workspace.breadcrumbs.scheduler"
+         />
          <WorkspaceTableTab
             v-show="selectedTab === 'data'"
             :connection="connection"
@@ -122,6 +128,7 @@ import WorkspacePropsTabView from '@/components/WorkspacePropsTabView';
 import WorkspacePropsTabTrigger from '@/components/WorkspacePropsTabTrigger';
 import WorkspacePropsTabRoutine from '@/components/WorkspacePropsTabRoutine';
 import WorkspacePropsTabFunction from '@/components/WorkspacePropsTabFunction';
+import WorkspacePropsTabScheduler from '@/components/WorkspacePropsTabScheduler';
 
 export default {
    name: 'Workspace',
@@ -133,7 +140,8 @@ export default {
       WorkspacePropsTabView,
       WorkspacePropsTabTrigger,
       WorkspacePropsTabRoutine,
-      WorkspacePropsTabFunction
+      WorkspacePropsTabFunction,
+      WorkspacePropsTabScheduler
    },
    props: {
       connection: Object
