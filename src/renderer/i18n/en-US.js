@@ -82,7 +82,10 @@ module.exports = {
       export: 'Export',
       returns: 'Returns',
       timing: 'Timing',
-      state: 'State'
+      state: 'State',
+      execution: 'Execution',
+      starts: 'Starts',
+      ends: 'Ends'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',

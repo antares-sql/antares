@@ -15,7 +15,7 @@
                <form class="form-horizontal">
                   <div class="form-group">
                      <div class="col-3">
-                        <label class="form-label">{{ $t('word.name') }}:</label>
+                        <label class="form-label">{{ $t('word.name') }}</label>
                      </div>
                      <div class="col-9">
                         <input
@@ -30,7 +30,7 @@
                   </div>
                   <div class="form-group">
                      <div class="col-3">
-                        <label class="form-label">{{ $t('word.collation') }}:</label>
+                        <label class="form-label">{{ $t('word.collation') }}</label>
                      </div>
                      <div class="col-9">
                         <select

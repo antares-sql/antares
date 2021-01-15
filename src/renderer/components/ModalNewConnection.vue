@@ -16,7 +16,7 @@
                   <fieldset class="m-0" :disabled="isTesting">
                      <div class="form-group">
                         <div class="col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.connectionName') }}:</label>
+                           <label class="form-label">{{ $t('word.connectionName') }}</label>
                         </div>
                         <div class="col-8 col-sm-12">
                            <input
@@ -29,7 +29,7 @@
                      </div>
                      <div class="form-group">
                         <div class="col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.client') }}:</label>
+                           <label class="form-label">{{ $t('word.client') }}</label>
                         </div>
                         <div class="col-8 col-sm-12">
                            <select
@@ -57,7 +57,7 @@
                      </div>
                      <div class="form-group">
                         <div class="col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.hostName') }}/IP:</label>
+                           <label class="form-label">{{ $t('word.hostName') }}/IP</label>
                         </div>
                         <div class="col-8 col-sm-12">
                            <input
@@ -69,7 +69,7 @@
                      </div>
                      <div class="form-group">
                         <div class="col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.port') }}:</label>
+                           <label class="form-label">{{ $t('word.port') }}</label>
                         </div>
                         <div class="col-8 col-sm-12">
                            <input
@@ -83,7 +83,7 @@
                      </div>
                      <div class="form-group">
                         <div class="col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.user') }}:</label>
+                           <label class="form-label">{{ $t('word.user') }}</label>
                         </div>
                         <div class="col-8 col-sm-12">
                            <input
@@ -96,7 +96,7 @@
                      </div>
                      <div class="form-group">
                         <div class="col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.password') }}:</label>
+                           <label class="form-label">{{ $t('word.password') }}</label>
                         </div>
                         <div class="col-8 col-sm-12">
                            <input

@@ -56,7 +56,7 @@
                               <div class="col-6 col-sm-12">
                                  <label class="form-label">
                                     <i class="mdi mdi-18px mdi-translate mr-1" />
-                                    {{ $t('word.language') }}:
+                                    {{ $t('word.language') }}
                                  </label>
                               </div>
                               <div class="col-6 col-sm-12">
@@ -78,7 +78,7 @@
                            <div class="form-group">
                               <div class="col-6 col-sm-12">
                                  <label class="form-label">
-                                    {{ $t('message.notificationsTimeout') }}:
+                                    {{ $t('message.notificationsTimeout') }}
                                  </label>
                               </div>
                               <div class="col-6 col-sm-12">
@@ -103,7 +103,7 @@
                            <div class="form-group">
                               <div class="col-6 col-sm-12">
                                  <label class="form-label">
-                                    {{ $t('word.autoCompletion') }}:
+                                    {{ $t('word.autoCompletion') }}
                                  </label>
                               </div>
                               <div class="col-6 col-sm-12">
@@ -118,7 +118,7 @@
                            <div class="form-group">
                               <div class="col-6 col-sm-12">
                                  <label class="form-label">
-                                    {{ $t('message.wrapLongLines') }}:
+                                    {{ $t('message.wrapLongLines') }}
                                  </label>
                               </div>
                               <div class="col-6 col-sm-12">
@@ -205,9 +205,9 @@
                      <img :src="require('@/images/logo.svg').default" width="128">
                      <h4>{{ appName }}</h4>
                      <p>
-                        {{ $t('word.version') }}: {{ appVersion }}<br>
+                        {{ $t('word.version') }} {{ appVersion }}<br>
                         <a class="c-hand" @click="openOutside('https://github.com/Fabio286/antares')">GitHub</a> | <a class="c-hand" @click="openOutside('https://github.com/Fabio286/antares/blob/master/CHANGELOG.md')">CHANGELOG</a><br>
-                        <small>{{ $t('word.author') }}: <a class="c-hand" @click="openOutside('https://github.com/Fabio286')">Fabio Di Stasio</a></small><br>
+                        <small>{{ $t('word.author') }} <a class="c-hand" @click="openOutside('https://github.com/Fabio286')">Fabio Di Stasio</a></small><br>
                         <small>{{ $t('message.madeWithJS') }}</small>
                      </p>
                   </div>

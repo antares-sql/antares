@@ -676,7 +676,7 @@ export class MySQLClient extends AntaresCore {
       return results.rows.map(row => {
          const schedule = row['Create Event'].match(/(?<=ON SCHEDULE\n*?\s*?).*?(?=\n)/gs)[0];
          const execution = schedule.includes('EVERY') ? 'EVERY' : 'ONCE';
-         const every = execution === 'EVERY' ? row['Create Event'].match(/(?<=EVERY )(\s*(\w+)){0,2}/gs)[0].split(' ') : [];
+         const every = execution === 'EVERY' ? row['Create Event'].match(/(?<=EVERY )(\s*([^\s]+)){0,2}/gs)[0].replaceAll('\'', '').split(' ') : [];
          const starts = execution === 'EVERY' && schedule.includes('STARTS') ? schedule.match(/(?<=STARTS ').*?(?='\s)/gs)[0] : '';
          const ends = execution === 'EVERY' && schedule.includes('ENDS') ? schedule.match(/(?<=ENDS ').*?(?='\s)/gs)[0] : '';
          const at = execution === 'ONCE' && schedule.includes('AT') ? schedule.match(/(?<=AT ').*?(?='\s)/gs)[0] : '';
@@ -716,18 +716,22 @@ export class MySQLClient extends AntaresCore {
     */
    async alterEvent (params) {
       const { scheduler } = params;
-      const tempProcedure = Object.assign({}, scheduler);
-      tempProcedure.name = `Antares_${tempProcedure.name}_tmp`;
 
-      try {
-         await this.createEvent(tempProcedure);
-         await this.dropEvent({ scheduler: tempProcedure.name });
-         await this.dropEvent({ scheduler: scheduler.oldName });
-         await this.createEvent(scheduler);
-      }
-      catch (err) {
-         return Promise.reject(err);
-      }
+      if (scheduler.execution === 'EVERY' && scheduler.every[0].includes('-'))
+         scheduler.every[0] = `'${scheduler.every[0]}'`;
+
+      const sql = `ALTER ${scheduler.definer ? ` DEFINER=${scheduler.definer}` : ''} EVENT \`${scheduler.oldName}\` 
+      ON SCHEDULE
+         ${scheduler.execution === 'EVERY'
+      ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
+      : `AT '${scheduler.at}'`}
+      ON COMPLETION${!scheduler.preserve ? ' NOT' : ''} PRESERVE
+      ${scheduler.name !== scheduler.oldName ? `RENAME TO \`${scheduler.name}\`` : ''}
+      ${scheduler.state}
+      COMMENT '${scheduler.comment}'
+      DO ${scheduler.sql}`;
+
+      return await this.raw(sql);
    }
 
    /**

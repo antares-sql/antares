@@ -15,7 +15,7 @@
                <form class="form-horizontal">
                   <div class="form-group">
                      <div class="col-3">
-                        <label class="form-label">{{ $t('word.user') }}:</label>
+                        <label class="form-label">{{ $t('word.user') }}</label>
                      </div>
                      <div class="col-9">
                         <input
@@ -28,7 +28,7 @@
                   </div>
                   <div class="form-group">
                      <div class="col-3">
-                        <label class="form-label">{{ $t('word.password') }}:</label>
+                        <label class="form-label">{{ $t('word.password') }}</label>
                      </div>
                      <div class="col-9">
                         <input

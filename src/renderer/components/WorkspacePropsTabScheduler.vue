@@ -23,7 +23,7 @@
                </button>
 
                <div class="divider-vert py-3" />
-               <button class="btn btn-dark btn-sm" @click="false">
+               <button class="btn btn-dark btn-sm" @click="showTimingModal">
                   <span>{{ $t('word.timing') }}</span>
                   <i class="mdi mdi-24px mdi-timer ml-1" />
                </button>
@@ -83,13 +83,6 @@
             </div>
          </div>
          <div class="columns">
-            <!-- <div class="column"> TODO: move in timing modal
-               <label class="form-checkbox form-inline">
-                  <input v-model="localScheduler.preserve" type="checkbox"><i class="form-icon" /> {{ $t('message.preserveOnCompletion') }}
-               </label>
-            </div> -->
-         </div>
-         <div class="columns">
             <div class="column">
                <div class="form-group">
                   <label class="form-label mr-2">{{ $t('word.state') }}</label>
@@ -132,18 +125,27 @@
             :height="editorHeight"
          />
       </div>
+      <WorkspacePropsSchedulerTimingModal
+         v-if="isTimingModal"
+         :local-options="localScheduler"
+         :workspace="workspace"
+         @hide="hideTimingModal"
+         @options-update="timingUpdate"
+      />
    </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import QueryEditor from '@/components/QueryEditor';
+import WorkspacePropsSchedulerTimingModal from '@/components/WorkspacePropsSchedulerTimingModal';
 import Schedulers from '@/ipc-api/Schedulers';
 
 export default {
    name: 'WorkspacePropsTabScheduler',
    components: {
-      QueryEditor
+      QueryEditor,
+      WorkspacePropsSchedulerTimingModal
    },
    props: {
       connection: Object,
@@ -154,6 +156,7 @@ export default {
          tabUid: 'prop',
          isQuering: false,
          isSaving: false,
+         isTimingModal: false,
          originalScheduler: null,
          localScheduler: { sql: '' },
          lastScheduler: null,
@@ -295,6 +298,15 @@ export default {
             this.editorHeight = size;
             this.$refs.queryEditor.editor.resize();
          }
+      },
+      showTimingModal () {
+         this.isTimingModal = true;
+      },
+      hideTimingModal () {
+         this.isTimingModal = false;
+      },
+      timingUpdate (options) {
+         this.localScheduler = options;
       }
    }
 };
