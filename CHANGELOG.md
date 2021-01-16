@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.14](https://github.com/Fabio286/antares/compare/v0.0.13...v0.0.14) (2021-01-16)
+
+
+### Features
+
+* export data tables to json or csv file ([0cbea9d](https://github.com/Fabio286/antares/commit/0cbea9d1007304a5b9cf893d165b4b4104266651))
+* functions creation ([49d7172](https://github.com/Fabio286/antares/commit/49d71722e26172232f7b54c6568e1e588ce0d049))
+* functions delete ([59a50bc](https://github.com/Fabio286/antares/commit/59a50bc014facc9643f9153cff61dc9d5a8605a9))
+* functions edit ([41d75b1](https://github.com/Fabio286/antares/commit/41d75b127cbcf1481fd259a14e6e7688638e18a4))
+* scheduler edit ([ceab4ef](https://github.com/Fabio286/antares/commit/ceab4ef243881ba64517fb95320844a21fce4849))
+* schedulers creation ([dbe7b9d](https://github.com/Fabio286/antares/commit/dbe7b9dd239248e806377ae6236b477456f175a3))
+* schedulers delete ([1e7d4ca](https://github.com/Fabio286/antares/commit/1e7d4ca347f4b9337ff266ec78bb4bbc6dd20d4d))
+* triggers and stored routines in sql suggestions ([e351c90](https://github.com/Fabio286/antares/commit/e351c903a8a8d7e908d6a7d54c0491438ac6f024))
+
+
+### Bug Fixes
+
+* error with empty functions/procedures ([f150508](https://github.com/Fabio286/antares/commit/f1505085477a760a768a7d245c9517a858c1379c))
+* removed internal row _id from exported files ([c0a32c0](https://github.com/Fabio286/antares/commit/c0a32c040e653729ef80d580d6dd1796d1b2adcd))
+
 ### [0.0.13](https://github.com/Fabio286/antares/compare/v0.0.12...v0.0.13) (2021-01-06)
 
 
