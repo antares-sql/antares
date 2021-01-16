@@ -168,6 +168,8 @@ export default {
       this.hasEnd = !!this.optionsProxy.ends;
 
       if (!this.optionsProxy.at) this.optionsProxy.at = moment().format('YYYY-MM-DD HH:mm:ss');
+      if (!this.optionsProxy.starts) this.optionsProxy.starts = moment().format('YYYY-MM-DD HH:mm:ss');
+      if (!this.optionsProxy.ends) this.optionsProxy.ends = moment().format('YYYY-MM-DD HH:mm:ss');
       if (!this.optionsProxy.every.length) this.optionsProxy.every = ['1', 'DAY'];
 
       setTimeout(() => {

@@ -79,6 +79,12 @@
          @close="hideCreateFunctionModal"
          @open-create-function-editor="openCreateFunctionEditor"
       />
+      <ModalNewScheduler
+         v-if="isNewSchedulerModal"
+         :workspace="workspace"
+         @close="hideCreateSchedulerModal"
+         @open-create-scheduler-editor="openCreateSchedulerEditor"
+      />
       <DatabaseContext
          v-if="isDatabaseContext"
          :selected-database="selectedDatabase"
@@ -89,6 +95,7 @@
          @show-create-trigger-modal="showCreateTriggerModal"
          @show-create-routine-modal="showCreateRoutineModal"
          @show-create-function-modal="showCreateFunctionModal"
+         @show-create-scheduler-modal="showCreateSchedulerModal"
          @reload="refresh"
       />
       <TableContext
@@ -117,6 +124,7 @@ import Views from '@/ipc-api/Views';
 import Triggers from '@/ipc-api/Triggers';
 import Routines from '@/ipc-api/Routines';
 import Functions from '@/ipc-api/Functions';
+import Schedulers from '@/ipc-api/Schedulers';
 
 import WorkspaceConnectPanel from '@/components/WorkspaceConnectPanel';
 import WorkspaceExploreBarDatabase from '@/components/WorkspaceExploreBarDatabase';
@@ -129,6 +137,7 @@ import ModalNewView from '@/components/ModalNewView';
 import ModalNewTrigger from '@/components/ModalNewTrigger';
 import ModalNewRoutine from '@/components/ModalNewRoutine';
 import ModalNewFunction from '@/components/ModalNewFunction';
+import ModalNewScheduler from '@/components/ModalNewScheduler';
 
 export default {
    name: 'WorkspaceExploreBar',
@@ -143,7 +152,8 @@ export default {
       ModalNewView,
       ModalNewTrigger,
       ModalNewRoutine,
-      ModalNewFunction
+      ModalNewFunction,
+      ModalNewScheduler
    },
    props: {
       connection: Object,
@@ -159,6 +169,7 @@ export default {
          isNewTriggerModal: false,
          isNewRoutineModal: false,
          isNewFunctionModal: false,
+         isNewSchedulerModal: false,
 
          localWidth: null,
          isDatabaseContext: false,
@@ -363,6 +374,13 @@ export default {
       hideCreateFunctionModal () {
          this.isNewFunctionModal = false;
       },
+      showCreateSchedulerModal () {
+         this.closeDatabaseContext();
+         this.isNewSchedulerModal = true;
+      },
+      hideCreateSchedulerModal () {
+         this.isNewSchedulerModal = false;
+      },
       async openCreateFunctionEditor (payload) {
          const params = {
             uid: this.connection.uid,
@@ -374,6 +392,22 @@ export default {
          if (status === 'success') {
             await this.refresh();
             this.changeBreadcrumbs({ schema: this.selectedDatabase, function: payload.name });
+            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+         }
+         else
+            this.addNotification({ status: 'error', message: response });
+      },
+      async openCreateSchedulerEditor (payload) {
+         const params = {
+            uid: this.connection.uid,
+            ...payload
+         };
+
+         const { status, response } = await Schedulers.createScheduler(params);
+
+         if (status === 'success') {
+            await this.refresh();
+            this.changeBreadcrumbs({ schema: this.selectedDatabase, scheduler: payload.name });
             this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
          }
          else

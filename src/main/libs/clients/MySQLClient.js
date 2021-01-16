@@ -731,7 +731,7 @@ export class MySQLClient extends AntaresCore {
       COMMENT '${scheduler.comment}'
       DO ${scheduler.sql}`;
 
-      return await this.raw(sql);
+      return await this.raw(sql, { split: false });
    }
 
    /**
@@ -741,18 +741,15 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async createEvent (scheduler) {
-      const parameters = scheduler.parameters.reduce((acc, curr) => {
-         acc.push(`\`${curr.name}\` ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
-         return acc;
-      }, []).join(',');
-
-      const sql = `CREATE ${scheduler.definer ? `DEFINER=${scheduler.definer} ` : ''}FUNCTION \`${scheduler.name}\`(${parameters}) RETURNS ${scheduler.returns}${scheduler.returnsLength ? `(${scheduler.returnsLength})` : ''}
-         LANGUAGE SQL
-         ${scheduler.deterministic ? 'DETERMINISTIC' : 'NOT DETERMINISTIC'}
-         ${scheduler.dataAccess}
-         SQL SECURITY ${scheduler.security}
-         COMMENT '${scheduler.comment}'
-         ${scheduler.sql}`;
+      const sql = `CREATE ${scheduler.definer ? ` DEFINER=${scheduler.definer}` : ''} EVENT \`${scheduler.name}\` 
+      ON SCHEDULE
+         ${scheduler.execution === 'EVERY'
+      ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
+      : `AT '${scheduler.at}'`}
+      ON COMPLETION${!scheduler.preserve ? ' NOT' : ''} PRESERVE
+      ${scheduler.state}
+      COMMENT '${scheduler.comment}'
+      DO ${scheduler.sql}`;
 
       return await this.raw(sql, { split: false });
    }

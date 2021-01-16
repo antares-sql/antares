@@ -22,7 +22,7 @@
             <div class="context-element" @click="showCreateFunctionModal">
                <span class="d-flex"><i class="mdi mdi-18px mdi-arrow-right-bold-box pr-1" /> {{ $tc('word.function', 1) }}</span>
             </div>
-            <div class="context-element disabled" @click="false">
+            <div class="context-element" @click="showCreateSchedulerModal">
                <span class="d-flex"><i class="mdi mdi-18px mdi-calendar-clock text-light pr-1" /> {{ $tc('word.scheduler', 1) }}</span>
             </div>
          </div>
@@ -110,6 +110,9 @@ export default {
       },
       showCreateFunctionModal () {
          this.$emit('show-create-function-modal');
+      },
+      showCreateSchedulerModal () {
+         this.$emit('show-create-scheduler-modal');
       },
       showDeleteModal () {
          this.isDeleteModal = true;
