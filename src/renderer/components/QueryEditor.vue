@@ -81,6 +81,34 @@ export default {
                })
             : [];
       },
+      functions () {
+         return this.workspace
+            ? this.workspace.structure.filter(schema => schema.name === this.schema)
+               .reduce((acc, curr) => {
+                  acc.push(...curr.functions);
+                  return acc;
+               }, []).map(func => {
+                  return {
+                     name: `${func.name}()`,
+                     type: 'function'
+                  };
+               })
+            : [];
+      },
+      schedulers () {
+         return this.workspace
+            ? this.workspace.structure.filter(schema => schema.name === this.schema)
+               .reduce((acc, curr) => {
+                  acc.push(...curr.schedulers);
+                  return acc;
+               }, []).map(scheduler => {
+                  return {
+                     name: scheduler.name,
+                     type: 'scheduler'
+                  };
+               })
+            : [];
+      },
       mode () {
          switch (this.workspace.client) {
             case 'mysql':
@@ -160,7 +188,9 @@ export default {
             [
                ...this.tables,
                ...this.triggers,
-               ...this.procedures
+               ...this.procedures,
+               ...this.functions,
+               ...this.schedulers
             ].forEach(el => {
                completions.push({
                   value: el.name,

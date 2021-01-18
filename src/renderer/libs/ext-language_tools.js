@@ -1245,6 +1245,12 @@ ace.define('ace/autocomplete/popup', ['require', 'exports', 'module', 'ace/virtu
                case 'routine':
                   iconClass = 'mdi-sync-circle';
                   break;
+               case 'function':
+                  iconClass = 'mdi-arrow-right-bold-box';
+                  break;
+               case 'scheduler':
+                  iconClass = 'mdi-calendar-clock';
+                  break;
                case 'keyword':
                   iconClass = 'mdi-cube';
                   break;
