@@ -1088,6 +1088,9 @@ export class MySQLClient extends AntaresCore {
                else {
                   const remappedFields = fields
                      ? fields.map(field => {
+                        if (!field || Array.isArray(field))
+                           return false;
+
                         return {
                            name: field.name,
                            orgName: field.orgName,
@@ -1096,7 +1099,7 @@ export class MySQLClient extends AntaresCore {
                            orgTable: field.orgTable,
                            type: 'VARCHAR'
                         };
-                     })
+                     }).filter(Boolean)
                      : [];
 
                   if (args.details) {
@@ -1173,7 +1176,7 @@ export class MySQLClient extends AntaresCore {
                   }
 
                   resolve({
-                     rows: Array.isArray(queryResult) ? queryResult : false,
+                     rows: Array.isArray(queryResult) ? queryResult.some(el => Array.isArray(el)) ? [] : queryResult : false,
                      report: !Array.isArray(queryResult) ? queryResult : false,
                      fields: fieldsArr.length ? fieldsArr : remappedFields,
                      keys: keysArr
