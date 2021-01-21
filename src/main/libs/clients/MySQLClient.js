@@ -1,8 +1,95 @@
 'use strict';
 import mysql from 'mysql';
 import { AntaresCore } from '../AntaresCore';
+import dataTypes from 'common/data-types/mysql';
 
 export class MySQLClient extends AntaresCore {
+   constructor (args) {
+      super(args);
+
+      this.types = {
+         0: 'DECIMAL',
+         1: 'TINYINT',
+         2: 'SMALLINT',
+         3: 'INT',
+         4: 'FLOAT',
+         5: 'DOUBLE',
+         6: 'NULL',
+         7: 'TIMESTAMP',
+         8: 'BIGINT',
+         9: 'MEDIUMINT',
+         10: 'DATE',
+         11: 'TIME',
+         12: 'DATETIME',
+         13: 'YEAR',
+         14: 'NEWDATE',
+         15: 'VARCHAR',
+         16: 'BIT',
+         17: 'TIMESTAMP2',
+         18: 'DATETIME2',
+         19: 'TIME2',
+         245: 'JSON',
+         246: 'NEWDECIMAL',
+         247: 'ENUM',
+         248: 'SET',
+         249: 'TINY_BLOB',
+         250: 'MEDIUM_BLOB',
+         251: 'LONG_BLOB',
+         252: 'BLOB',
+         253: 'VARCHAR',
+         254: 'CHAR',
+         255: 'GEOMETRY'
+      };
+   }
+
+   _getType (field) {
+      let name = this.types[field.type];
+      let length = field.length;
+
+      if (['DATE', 'TIME', 'YEAR', 'DATETIME'].includes(name))
+         length = field.decimals;
+
+      if (name === 'CHAR' && field.charsetNr === 63)// if binary
+         name = 'BINARY';
+
+      if (name === 'VARCHAR' && field.charsetNr === 63)// if binary
+         name = 'VARBINARY';
+
+      if (name === 'BLOB') {
+         switch (length) {
+            case 765:
+               name = 'TYNITEXT';
+               break;
+            case 196605:
+               name = 'TEXT';
+               break;
+            case 50331645:
+               name = 'MEDIUMTEXT';
+               break;
+            case 4294967295:
+               name = field.charsetNr === 63 ? 'LONGBLOB' : 'LONGTEXT';
+               break;
+            case 255:
+               name = 'TINYBLOB';
+               break;
+            case 65535:
+               name = 'BLOB';
+               break;
+            case 16777215:
+               name = 'MEDIUMBLOB';
+               break;
+         }
+      }
+
+      return { name, length };
+   }
+
+   _getTypeInfo (type) {
+      return dataTypes
+         .reduce((acc, group) => [...acc, ...group.types], [])
+         .filter(_type => _type.name === type.toUpperCase())[0];
+   }
+
    /**
     * @memberof MySQLClient
     */
@@ -863,7 +950,8 @@ export class MySQLClient extends AntaresCore {
 
       // ADD FIELDS
       additions.forEach(addition => {
-         const length = addition.numLength || addition.charLength || addition.datePrecision;
+         const typeInfo = this._getTypeInfo(addition.type);
+         const length = typeInfo.length ? addition.numLength || addition.charLength || addition.datePrecision : false;
 
          alterColumns.push(`ADD COLUMN \`${addition.name}\` 
             ${addition.type.toUpperCase()}${length ? `(${length})` : ''} 
@@ -900,7 +988,8 @@ export class MySQLClient extends AntaresCore {
 
       // CHANGE FIELDS
       changes.forEach(change => {
-         const length = change.numLength || change.charLength || change.datePrecision;
+         const typeInfo = this._getTypeInfo(change.type);
+         const length = typeInfo.length ? change.numLength || change.charLength || change.datePrecision : false;
 
          alterColumns.push(`CHANGE COLUMN \`${change.orgName}\` \`${change.name}\` 
             ${change.type.toUpperCase()}${length ? `(${length})` : ''} 
@@ -1069,14 +1158,12 @@ export class MySQLClient extends AntaresCore {
       const nestTables = args.nest ? '.' : false;
       const resultsArr = [];
       let paramsArr = [];
-      let selectedFields = [];
       const queries = args.split ? sql.split(';') : [sql];
 
       if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
 
       for (const query of queries) {
          if (!query) continue;
-         let fieldsArr = [];
          let keysArr = [];
 
          const { rows, report, fields, keys } = await new Promise((resolve, reject) => {
@@ -1086,18 +1173,24 @@ export class MySQLClient extends AntaresCore {
                if (err)
                   reject(err);
                else {
-                  const remappedFields = fields
+                  let remappedFields = fields
                      ? fields.map(field => {
                         if (!field || Array.isArray(field))
                            return false;
 
+                        const type = this._getType(field);
+
                         return {
-                           name: field.name,
+                           name: field.orgName,
+                           alias: field.name,
                            orgName: field.orgName,
                            schema: field.db,
                            table: field.table,
+                           tableAlias: field.table,
+                           zerofill: field.zerofill,
                            orgTable: field.orgTable,
-                           type: 'VARCHAR'
+                           type: type.name,
+                           length: type.length
                         };
                      }).filter(Boolean)
                      : [];
@@ -1106,15 +1199,8 @@ export class MySQLClient extends AntaresCore {
                      let cachedTable;
 
                      if (remappedFields.length) {
-                        selectedFields = remappedFields.map(field => {
-                           return {
-                              name: field.orgName || field.name,
-                              table: field.orgTable || field.table
-                           };
-                        });
-
                         paramsArr = remappedFields.map(field => {
-                           if (field.table) cachedTable = field.table;// Needed for some queries on information_schema
+                           if (field.orgTable) cachedTable = field.orgTable;// Needed for some queries on information_schema
                            return {
                               table: field.orgTable || cachedTable,
                               schema: field.schema || 'INFORMATION_SCHEMA'
@@ -1122,43 +1208,16 @@ export class MySQLClient extends AntaresCore {
                         }).filter((val, i, arr) => arr.findIndex(el => el.schema === val.schema && el.table === val.table) === i);
 
                         for (const paramObj of paramsArr) {
-                           try { // Table data
+                           if (!paramObj.table || !paramObj.schema) continue;
+
+                           try { // Column details
                               const response = await this.getTableColumns(paramObj);
-
-                              let detailedFields = response.length
-                                 ? selectedFields.map(selField => {
-                                    return response.find(field => field.name.toLowerCase() === selField.name.toLowerCase() && field.table === selField.table);
-                                 }).filter(el => !!el)
-                                 : [];
-
-                              if (selectedFields.length) {
-                                 detailedFields = detailedFields.map(field => {
-                                    const aliasObj = remappedFields.find(resField => resField.orgName === field.name && resField.orgTable === field.table);
-                                    return {
-                                       ...field,
-                                       alias: aliasObj.name || field.name,
-                                       tableAlias: aliasObj.table || field.table
-                                    };
-                                 });
-                              }
-
-                              if (!detailedFields.length) {
-                                 detailedFields = remappedFields.map(field => {
-                                    const isInFields = fieldsArr.some(f => field.name.toLowerCase() === f.name.toLowerCase() && field.table === f.table);
-
-                                    if (!isInFields) {
-                                       return {
-                                          ...field,
-                                          alias: field.name,
-                                          tableAlias: field.table
-                                       };
-                                    }
-                                    else
-                                       return false;
-                                 }).filter(Boolean);
-                              }
-
-                              fieldsArr = fieldsArr ? [...fieldsArr, ...detailedFields] : detailedFields;
+                              remappedFields = remappedFields.map(field => {
+                                 const detailedField = response.find(f => f.name === field.name);
+                                 if (field.orgTable === paramObj.table && field.schema === paramObj.schema && detailedField.name === field.orgName)
+                                    field = { ...detailedField, ...field };
+                                 return field;
+                              });
                            }
                            catch (err) {
                               reject(err);
@@ -1178,7 +1237,7 @@ export class MySQLClient extends AntaresCore {
                   resolve({
                      rows: Array.isArray(queryResult) ? queryResult.some(el => Array.isArray(el)) ? [] : queryResult : false,
                      report: !Array.isArray(queryResult) ? queryResult : false,
-                     fields: fieldsArr.length ? fieldsArr : remappedFields,
+                     fields: remappedFields,
                      keys: keysArr
                   });
                }

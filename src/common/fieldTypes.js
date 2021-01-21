@@ -7,6 +7,6 @@ export const DATE = ['DATE'];
 export const TIME = ['TIME'];
 export const DATETIME = ['DATETIME', 'TIMESTAMP'];
 
-export const BLOB = ['BLOB', 'MEDIUMBLOB', 'LONGBLOB'];
+export const BLOB = ['BLOB', 'TINYBLOB', 'MEDIUMBLOB', 'LONGBLOB'];
 
 export const BIT = ['BIT'];

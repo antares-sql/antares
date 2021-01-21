@@ -91,7 +91,7 @@ module.exports = [
          },
          {
             name: 'TINYTEXT',
-            length: true,
+            length: false,
             collation: true,
             unsigned: false,
             zerofill: false
@@ -119,7 +119,7 @@ module.exports = [
          },
          {
             name: 'JSON',
-            length: true,
+            length: false,
             collation: true,
             unsigned: false,
             zerofill: false
@@ -279,7 +279,7 @@ module.exports = [
       types: [
          {
             name: 'UNKNOWN',
-            length: true,
+            length: false,
             collation: false,
             unsigned: false,
             zerofill: false
