@@ -761,7 +761,7 @@ export class MySQLClient extends AntaresCore {
       const results = await this.raw(sql);
 
       return results.rows.map(row => {
-         const schedule = row['Create Event'].match(/(?<=ON SCHEDULE\n*?\s*?).*?(?=\n)/gs)[0];
+         const schedule = row['Create Event'];
          const execution = schedule.includes('EVERY') ? 'EVERY' : 'ONCE';
          const every = execution === 'EVERY' ? row['Create Event'].match(/(?<=EVERY )(\s*([^\s]+)){0,2}/gs)[0].replaceAll('\'', '').split(' ') : [];
          const starts = execution === 'EVERY' && schedule.includes('STARTS') ? schedule.match(/(?<=STARTS ').*?(?='\s)/gs)[0] : '';
@@ -770,7 +770,7 @@ export class MySQLClient extends AntaresCore {
 
          return {
             definer: row['Create Event'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
-            sql: row['Create Event'].match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
+            sql: row['Create Event'].match(/(?<=DO )(.*)/gs)[0],
             name: row.Event,
             comment: row['Create Event'].match(/(?<=COMMENT ').*?(?=')/gs) ? row['Create Event'].match(/(?<=COMMENT ').*?(?=')/gs)[0] : '',
             state: row['Create Event'].includes('ENABLE') ? 'ENABLE' : row['Create Event'].includes('DISABLE ON SLAVE') ? 'DISABLE ON SLAVE' : 'DISABLE',
