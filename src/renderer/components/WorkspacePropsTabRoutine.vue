@@ -43,7 +43,8 @@
             </div>
          </div>
       </div>
-      <div class="workspace-query-results column col-12 mt-2">
+      <div class="workspace-query-results column col-12 mt-2 p-relative">
+         <BaseLoader v-if="isLoading" />
          <label class="form-label ml-2">{{ $t('message.routineBody') }}</label>
          <QueryEditor
             v-if="isSelected"
@@ -75,6 +76,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import QueryEditor from '@/components/QueryEditor';
+import BaseLoader from '@/components/BaseLoader';
 import WorkspacePropsRoutineOptionsModal from '@/components/WorkspacePropsRoutineOptionsModal';
 import WorkspacePropsRoutineParamsModal from '@/components/WorkspacePropsRoutineParamsModal';
 import Routines from '@/ipc-api/Routines';
@@ -83,6 +85,7 @@ export default {
    name: 'WorkspacePropsTabRoutine',
    components: {
       QueryEditor,
+      BaseLoader,
       WorkspacePropsRoutineOptionsModal,
       WorkspacePropsRoutineParamsModal
    },
@@ -93,7 +96,7 @@ export default {
    data () {
       return {
          tabUid: 'prop',
-         isQuering: false,
+         isLoading: false,
          isSaving: false,
          isOptionsModal: false,
          isParamsModal: false,
@@ -166,7 +169,8 @@ export default {
       }),
       async getRoutineData () {
          if (!this.routine) return;
-         this.isQuering = true;
+         this.localRoutine = { sql: '' };
+         this.isLoading = true;
 
          const params = {
             uid: this.connection.uid,
@@ -189,7 +193,7 @@ export default {
          }
 
          this.resizeQueryEditor();
-         this.isQuering = false;
+         this.isLoading = false;
       },
       async saveChanges () {
          if (this.isSaving) return;

@@ -156,7 +156,8 @@
             </div>
          </div>
       </div>
-      <div class="workspace-query-results column col-12 mt-2">
+      <div class="workspace-query-results column col-12 mt-2 p-relative">
+         <BaseLoader v-if="isLoading" />
          <label class="form-label ml-2">{{ $t('message.selectStatement') }}</label>
          <QueryEditor
             v-if="isSelected"
@@ -172,12 +173,14 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
 import Views from '@/ipc-api/Views';
 
 export default {
    name: 'WorkspacePropsTabView',
    components: {
+      BaseLoader,
       QueryEditor
    },
    props: {
@@ -187,7 +190,7 @@ export default {
    data () {
       return {
          tabUid: 'prop',
-         isQuering: false,
+         isLoading: false,
          isSaving: false,
          originalView: null,
          localView: { sql: '' },
@@ -251,7 +254,8 @@ export default {
       }),
       async getViewData () {
          if (!this.view) return;
-         this.isQuering = true;
+         this.isLoading = true;
+         this.localView = { sql: '' };
 
          const params = {
             uid: this.connection.uid,
@@ -274,7 +278,7 @@ export default {
          }
 
          this.resizeQueryEditor();
-         this.isQuering = false;
+         this.isLoading = false;
       },
       async saveChanges () {
          if (this.isSaving) return;

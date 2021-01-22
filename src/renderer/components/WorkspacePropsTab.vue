@@ -51,7 +51,8 @@
             </div>
          </div>
       </div>
-      <div class="workspace-query-results column col-12">
+      <div class="workspace-query-results column col-12 p-relative">
+         <BaseLoader v-if="isLoading" />
          <WorkspacePropsTable
             v-if="localFields"
             ref="indexTable"
@@ -106,6 +107,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import { uidGen } from 'common/libs/uidGen';
 import Tables from '@/ipc-api/Tables';
+import BaseLoader from '@/components/BaseLoader';
 import WorkspacePropsTable from '@/components/WorkspacePropsTable';
 import WorkspacePropsOptionsModal from '@/components/WorkspacePropsOptionsModal';
 import WorkspacePropsIndexesModal from '@/components/WorkspacePropsIndexesModal';
@@ -114,6 +116,7 @@ import WorkspacePropsForeignModal from '@/components/WorkspacePropsForeignModal'
 export default {
    name: 'WorkspacePropsTab',
    components: {
+      BaseLoader,
       WorkspacePropsTable,
       WorkspacePropsOptionsModal,
       WorkspacePropsIndexesModal,
@@ -126,7 +129,7 @@ export default {
    data () {
       return {
          tabUid: 'prop',
-         isQuering: false,
+         isLoading: false,
          isSaving: false,
          isOptionsModal: false,
          isIndexesModal: false,
@@ -205,8 +208,10 @@ export default {
       }),
       async getFieldsData () {
          if (!this.table) return;
+
+         this.localFields = [];
          this.newFieldsCounter = 0;
-         this.isQuering = true;
+         this.isLoading = true;
          this.localOptions = JSON.parse(JSON.stringify(this.tableOptions));
 
          const params = {
@@ -281,7 +286,7 @@ export default {
             this.addNotification({ status: 'error', message: err.stack });
          }
 
-         this.isQuering = false;
+         this.isLoading = false;
       },
       async saveChanges () {
          if (this.isSaving) return;

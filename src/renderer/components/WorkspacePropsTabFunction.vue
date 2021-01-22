@@ -43,7 +43,8 @@
             </div>
          </div>
       </div>
-      <div class="workspace-query-results column col-12 mt-2">
+      <div class="workspace-query-results column col-12 mt-2 p-relative">
+         <BaseLoader v-if="isLoading" />
          <label class="form-label ml-2">{{ $t('message.functionBody') }}</label>
          <QueryEditor
             v-if="isSelected"
@@ -74,6 +75,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
 import WorkspacePropsFunctionOptionsModal from '@/components/WorkspacePropsFunctionOptionsModal';
 import WorkspacePropsFunctionParamsModal from '@/components/WorkspacePropsFunctionParamsModal';
@@ -82,6 +84,7 @@ import Functions from '@/ipc-api/Functions';
 export default {
    name: 'WorkspacePropsTabFunction',
    components: {
+      BaseLoader,
       QueryEditor,
       WorkspacePropsFunctionOptionsModal,
       WorkspacePropsFunctionParamsModal
@@ -93,7 +96,7 @@ export default {
    data () {
       return {
          tabUid: 'prop',
-         isQuering: false,
+         isLoading: false,
          isSaving: false,
          isOptionsModal: false,
          isParamsModal: false,
@@ -166,7 +169,9 @@ export default {
       }),
       async getFunctionData () {
          if (!this.function) return;
-         this.isQuering = true;
+
+         this.isLoading = true;
+         this.localFunction = { sql: '' };
 
          const params = {
             uid: this.connection.uid,
@@ -189,7 +194,7 @@ export default {
          }
 
          this.resizeQueryEditor();
-         this.isQuering = false;
+         this.isLoading = false;
       },
       async saveChanges () {
          if (this.isSaving) return;
