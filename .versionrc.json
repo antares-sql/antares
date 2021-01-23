@@ -1,0 +1,7 @@
+{
+  "types": [
+    {"type":"feat","section":"Features"},
+    {"type":"perf","section":"Improvements"},
+    {"type":"fix","section":"Bug Fixes"}
+  ]
+}
