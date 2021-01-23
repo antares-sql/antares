@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.15](https://github.com/Fabio286/antares/compare/v0.0.14...v0.0.15) (2021-01-23)
+
+
+### Features
+
+* functions and schedulers in query suggestions ([8ff6e70](https://github.com/Fabio286/antares/commit/8ff6e70145ed2a207ae8b23a2c688258382a5d74))
+* loading animation in properties tabs ([1cf6485](https://github.com/Fabio286/antares/commit/1cf64858964f4894913db42f7c268013bb06e40b))
+
+
+### Bug Fixes
+
+* error retriving dato of some schedulers ([b9ed8dd](https://github.com/Fabio286/antares/commit/b9ed8dd610e3be1489e01cf53f7d632cb1bd6ac5))
+* unable to call stored routines from query tabs ([4923128](https://github.com/Fabio286/antares/commit/4923128236131482ca948ae8052c294bd9269ed0))
+
+
+### Improvements
+
+* better fields type detection ([4bc9bbf](https://github.com/Fabio286/antares/commit/4bc9bbfb34ebdc51061f718cdf9cbca8507fa0f4))
+* big performance improvement in database structure loading ([a11bac5](https://github.com/Fabio286/antares/commit/a11bac504cd4ee865ea6c614a15ee809dc38202e))
+
 ### [0.0.14](https://github.com/Fabio286/antares/compare/v0.0.13...v0.0.14) (2021-01-16)
 
 
