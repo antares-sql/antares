@@ -3,10 +3,11 @@
       <summary
          class="accordion-header database-name"
          :class="{'text-bold': breadcrumbs.schema === database.name}"
-         @click="changeBreadcrumbs({schema: database.name, table: null})"
+         @click="selectSchema(database.name)"
          @contextmenu.prevent="showDatabaseContext($event, database.name)"
       >
-         <i class="icon mdi mdi-18px mdi-chevron-right" />
+         <div v-if="isLoading" class="icon loading" />
+         <i v-else class="icon mdi mdi-18px mdi-chevron-right" />
          <i class="database-icon mdi mdi-18px mdi-database mr-1" />
          <span>{{ database.name }}</span>
       </summary>
@@ -161,12 +162,21 @@ export default {
       database: Object,
       connection: Object
    },
+   data () {
+      return {
+         isLoading: false
+      };
+   },
    computed: {
       ...mapGetters({
+         getLoadedSchemas: 'workspaces/getLoadedSchemas',
          getWorkspace: 'workspaces/getWorkspace'
       }),
       breadcrumbs () {
          return this.getWorkspace(this.connection.uid).breadcrumbs;
+      },
+      loadedSchemas () {
+         return this.getLoadedSchemas(this.connection.uid);
       },
       maxSize () {
          return this.database.tables.reduce((acc, curr) => {
@@ -180,9 +190,19 @@ export default {
    },
    methods: {
       ...mapActions({
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         refreshSchema: 'workspaces/refreshSchema'
       }),
       formatBytes,
+      async selectSchema (schema) {
+         if (!this.loadedSchemas.has(schema)) {
+            this.isLoading = true;
+            await this.refreshSchema({ uid: this.connection.uid, schema });
+            this.isLoading = false;
+         }
+
+         this.changeBreadcrumbs({ schema, table: null });
+      },
       showDatabaseContext (event, database) {
          this.changeBreadcrumbs({ schema: database, table: null });
          this.$emit('show-database-context', { event, database });
@@ -229,6 +249,16 @@ export default {
     .table-icon,
     .misc-icon {
       opacity: 0.7;
+    }
+
+    .loading {
+      height: 18px;
+      width: 18px;
+
+      &::after {
+        height: 0.6rem;
+        width: 0.6rem;
+      }
     }
   }
 

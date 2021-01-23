@@ -78,6 +78,8 @@ export class MySQLClient extends AntaresCore {
             case 16777215:
                name = 'MEDIUMBLOB';
                break;
+            default:
+               name = field.charsetNr === 63 ? 'BLOB' : 'TEXT';
          }
       }
 
@@ -118,10 +120,11 @@ export class MySQLClient extends AntaresCore {
    }
 
    /**
+    * @param {Array} schemas list
     * @returns {Array.<Object>} databases scructure
     * @memberof MySQLClient
     */
-   async getStructure () {
+   async getStructure (schemas) {
       const { rows: databases } = await this.raw('SHOW DATABASES');
       const { rows: functions } = await this.raw('SHOW FUNCTION STATUS');
       const { rows: procedures } = await this.raw('SHOW PROCEDURE STATUS');
@@ -131,6 +134,8 @@ export class MySQLClient extends AntaresCore {
       const triggersArr = [];
 
       for (const db of databases) {
+         if (!schemas.has(db.Database)) continue;
+
          let { rows: tables } = await this.raw(`SHOW TABLE STATUS FROM \`${db.Database}\``);
          if (tables.length) {
             tables = tables.map(table => {
@@ -151,109 +156,121 @@ export class MySQLClient extends AntaresCore {
       }
 
       return databases.map(db => {
-         // TABLES
-         const remappedTables = tablesArr.filter(table => table.Db === db.Database).map(table => {
-            let tableType;
-            switch (table.Comment) {
-               case 'VIEW':
-                  tableType = 'view';
-                  break;
-               default:
-                  tableType = 'table';
-                  break;
-            }
+         if (schemas.has(db.Database)) {
+            // TABLES
+            const remappedTables = tablesArr.filter(table => table.Db === db.Database).map(table => {
+               let tableType;
+               switch (table.Comment) {
+                  case 'VIEW':
+                     tableType = 'view';
+                     break;
+                  default:
+                     tableType = 'table';
+                     break;
+               }
+
+               return {
+                  name: table.Name,
+                  type: tableType,
+                  rows: table.Rows,
+                  created: table.Create_time,
+                  updated: table.Update_time,
+                  engine: table.Engine,
+                  comment: table.Comment,
+                  size: table.Data_length + table.Index_length,
+                  autoIncrement: table.Auto_increment,
+                  collation: table.Collation
+               };
+            });
+
+            // PROCEDURES
+            const remappedProcedures = procedures.filter(procedure => procedure.Db === db.Database).map(procedure => {
+               return {
+                  name: procedure.Name,
+                  type: procedure.Type,
+                  definer: procedure.Definer,
+                  created: procedure.Created,
+                  updated: procedure.Modified,
+                  comment: procedure.Comment,
+                  charset: procedure.character_set_client,
+                  security: procedure.Security_type
+               };
+            });
+
+            // FUNCTIONS
+            const remappedFunctions = functions.filter(func => func.Db === db.Database).map(func => {
+               return {
+                  name: func.Name,
+                  type: func.Type,
+                  definer: func.Definer,
+                  created: func.Created,
+                  updated: func.Modified,
+                  comment: func.Comment,
+                  charset: func.character_set_client,
+                  security: func.Security_type
+               };
+            });
+
+            // SCHEDULERS
+            const remappedSchedulers = schedulers.filter(scheduler => scheduler.Db === db.Database).map(scheduler => {
+               return {
+                  name: scheduler.EVENT_NAME,
+                  definition: scheduler.EVENT_DEFINITION,
+                  type: scheduler.EVENT_TYPE,
+                  definer: scheduler.DEFINER,
+                  body: scheduler.EVENT_BODY,
+                  starts: scheduler.STARTS,
+                  ends: scheduler.ENDS,
+                  status: scheduler.STATUS,
+                  executeAt: scheduler.EXECUTE_AT,
+                  intervalField: scheduler.INTERVAL_FIELD,
+                  intervalValue: scheduler.INTERVAL_VALUE,
+                  onCompletion: scheduler.ON_COMPLETION,
+                  originator: scheduler.ORIGINATOR,
+                  sqlMode: scheduler.SQL_MODE,
+                  created: scheduler.CREATED,
+                  updated: scheduler.LAST_ALTERED,
+                  lastExecuted: scheduler.LAST_EXECUTED,
+                  comment: scheduler.EVENT_COMMENT,
+                  charset: scheduler.CHARACTER_SET_CLIENT,
+                  timezone: scheduler.TIME_ZONE
+               };
+            });
+
+            // TRIGGERS
+            const remappedTriggers = triggersArr.filter(trigger => trigger.Db === db.Database).map(trigger => {
+               return {
+                  name: trigger.Trigger,
+                  statement: trigger.Statement,
+                  timing: trigger.Timing,
+                  definer: trigger.Definer,
+                  event: trigger.Event,
+                  table: trigger.Table,
+                  sqlMode: trigger.sql_mode,
+                  created: trigger.Created,
+                  charset: trigger.character_set_client
+               };
+            });
 
             return {
-               name: table.Name,
-               type: tableType,
-               rows: table.Rows,
-               created: table.Create_time,
-               updated: table.Update_time,
-               engine: table.Engine,
-               comment: table.Comment,
-               size: table.Data_length + table.Index_length,
-               autoIncrement: table.Auto_increment,
-               collation: table.Collation
+               name: db.Database,
+               tables: remappedTables,
+               functions: remappedFunctions,
+               procedures: remappedProcedures,
+               triggers: remappedTriggers,
+               schedulers: remappedSchedulers
             };
-         });
-
-         // PROCEDURES
-         const remappedProcedures = procedures.filter(procedure => procedure.Db === db.Database).map(procedure => {
+         }
+         else {
             return {
-               name: procedure.Name,
-               type: procedure.Type,
-               definer: procedure.Definer,
-               created: procedure.Created,
-               updated: procedure.Modified,
-               comment: procedure.Comment,
-               charset: procedure.character_set_client,
-               security: procedure.Security_type
+               name: db.Database,
+               tables: [],
+               functions: [],
+               procedures: [],
+               triggers: [],
+               schedulers: []
             };
-         });
-
-         // FUNCTIONS
-         const remappedFunctions = functions.filter(func => func.Db === db.Database).map(func => {
-            return {
-               name: func.Name,
-               type: func.Type,
-               definer: func.Definer,
-               created: func.Created,
-               updated: func.Modified,
-               comment: func.Comment,
-               charset: func.character_set_client,
-               security: func.Security_type
-            };
-         });
-
-         // SCHEDULERS
-         const remappedSchedulers = schedulers.filter(scheduler => scheduler.Db === db.Database).map(scheduler => {
-            return {
-               name: scheduler.EVENT_NAME,
-               definition: scheduler.EVENT_DEFINITION,
-               type: scheduler.EVENT_TYPE,
-               definer: scheduler.DEFINER,
-               body: scheduler.EVENT_BODY,
-               starts: scheduler.STARTS,
-               ends: scheduler.ENDS,
-               status: scheduler.STATUS,
-               executeAt: scheduler.EXECUTE_AT,
-               intervalField: scheduler.INTERVAL_FIELD,
-               intervalValue: scheduler.INTERVAL_VALUE,
-               onCompletion: scheduler.ON_COMPLETION,
-               originator: scheduler.ORIGINATOR,
-               sqlMode: scheduler.SQL_MODE,
-               created: scheduler.CREATED,
-               updated: scheduler.LAST_ALTERED,
-               lastExecuted: scheduler.LAST_EXECUTED,
-               comment: scheduler.EVENT_COMMENT,
-               charset: scheduler.CHARACTER_SET_CLIENT,
-               timezone: scheduler.TIME_ZONE
-            };
-         });
-
-         // TRIGGERS
-         const remappedTriggers = triggersArr.filter(trigger => trigger.Db === db.Database).map(trigger => {
-            return {
-               name: trigger.Trigger,
-               statement: trigger.Statement,
-               timing: trigger.Timing,
-               definer: trigger.Definer,
-               event: trigger.Event,
-               table: trigger.Table,
-               sqlMode: trigger.sql_mode,
-               created: trigger.Created,
-               charset: trigger.character_set_client
-            };
-         });
-
-         return {
-            name: db.Database,
-            tables: remappedTables,
-            functions: remappedFunctions,
-            procedures: remappedProcedures,
-            triggers: remappedTriggers,
-            schedulers: remappedSchedulers
-         };
+         }
       });
    }
 
@@ -366,13 +383,13 @@ export class MySQLClient extends AntaresCore {
    }
 
    /**
-    * SELECT `user`, `host`, IF(LENGTH(password)>0, password, authentication_string) AS `password` FROM `mysql`.`user`
+    * SELECT `user`, `host`, authentication_string) AS `password` FROM `mysql`.`user`
     *
     * @returns {Array.<Object>} users list
     * @memberof MySQLClient
     */
    async getUsers () {
-      const { rows } = await this.raw('SELECT `user`, `host`, IF(LENGTH(password)>0, password, authentication_string) AS `password` FROM `mysql`.`user`');
+      const { rows } = await this.raw('SELECT `user`, `host`, authentication_string AS `password` FROM `mysql`.`user`');
 
       return rows.map(row => {
          return {

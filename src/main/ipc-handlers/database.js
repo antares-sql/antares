@@ -50,9 +50,9 @@ export default connections => {
       }
    });
 
-   ipcMain.handle('get-structure', async (event, uid) => {
+   ipcMain.handle('get-structure', async (event, params) => {
       try {
-         const structure = await connections[uid].getStructure();
+         const structure = await connections[params.uid].getStructure(params.schemas);
 
          return { status: 'success', response: structure };
       }

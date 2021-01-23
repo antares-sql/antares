@@ -18,8 +18,8 @@ export default class {
       return ipcRenderer.invoke('delete-database', params);
    }
 
-   static getStructure (uid) {
-      return ipcRenderer.invoke('get-structure', uid);
+   static getStructure (params) {
+      return ipcRenderer.invoke('get-structure', params);
    }
 
    static getCollations (uid) {

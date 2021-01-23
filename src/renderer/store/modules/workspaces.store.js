@@ -40,6 +40,9 @@ export default {
             .filter(workspace => workspace.connected)
             .map(workspace => workspace.uid);
       },
+      getLoadedSchemas: state => uid => {
+         return state.workspaces.find(workspace => workspace.uid === uid).loaded_schemas;
+      },
       isUnsavedDiscardModal: state => {
          return state.is_unsaved_discard_modal;
       }
@@ -65,6 +68,8 @@ export default {
             ? {
                ...workspace,
                structure: {},
+               breadcrumbs: {},
+               loaded_schemas: new Set(),
                connected: false
             }
             : workspace);
@@ -76,6 +81,19 @@ export default {
                structure
             }
             : workspace);
+      },
+      REFRESH_SCHEMA (state, { uid, schema, schemaElements }) {
+         state.workspaces = state.workspaces.map(workspace => {
+            if (workspace.uid === uid) {
+               const schemaIndex = workspace.structure.findIndex(s => s.name === schema);
+
+               if (schemaIndex !== -1)
+                  workspace.structure[schemaIndex] = schemaElements;
+               else
+                  workspace.structure.push(schemaElements);
+            }
+            return workspace;
+         });
       },
       REFRESH_COLLATIONS (state, { uid, collations }) {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
@@ -198,6 +216,13 @@ export default {
       },
       SET_PENDING_BREADCRUMBS (state, payload) {
          state.pending_breadcrumbs = payload;
+      },
+      ADD_LOADED_SCHEMA (state, payload) {
+         state.workspaces = state.workspaces.map(workspace => {
+            if (workspace.uid === payload.uid)
+               workspace.loaded_schemas.add(payload.schema);
+            return workspace;
+         });
       }
    },
    actions: {
@@ -237,13 +262,26 @@ export default {
             dispatch('notifications/addNotification', { status: 'error', message: err.stack }, { root: true });
          }
       },
-      async refreshStructure ({ dispatch, commit }, uid) {
+      async refreshStructure ({ dispatch, commit, getters }, uid) {
          try {
-            const { status, response } = await Database.getStructure(uid);
+            const { status, response } = await Database.getStructure({ uid, schemas: getters.getLoadedSchemas(uid) });
+
             if (status === 'error')
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
             else
                commit('REFRESH_STRUCTURE', { uid, structure: response });
+         }
+         catch (err) {
+            dispatch('notifications/addNotification', { status: 'error', message: err.stack }, { root: true });
+         }
+      },
+      async refreshSchema ({ dispatch, commit }, { uid, schema }) {
+         try {
+            const { status, response } = await Database.getStructure({ uid, schemas: new Set([schema]) });
+            if (status === 'error')
+               dispatch('notifications/addNotification', { status, message: response }, { root: true });
+            else
+               commit('REFRESH_SCHEMA', { uid, schema, schemaElements: response.find(_schema => _schema.name === schema) });
          }
          catch (err) {
             dispatch('notifications/addNotification', { status: 'error', message: err.stack }, { root: true });
@@ -312,7 +350,8 @@ export default {
             variables: [],
             collations: [],
             users: [],
-            breadcrumbs: {}
+            breadcrumbs: {},
+            loaded_schemas: new Set()
          };
 
          commit('ADD_WORKSPACE', workspace);
@@ -349,6 +388,9 @@ export default {
 
          commit('CHANGE_BREADCRUMBS', { uid: getters.getSelected, breadcrumbs: { ...breadcrumbsObj, ...payload } });
          lastBreadcrumbs = { ...breadcrumbsObj, ...payload };
+
+         if (payload.schema)
+            commit('ADD_LOADED_SCHEMA', { uid: getters.getSelected, schema: payload.schema });
       },
       newTab ({ commit }, uid) {
          const tab = uidGen('T');

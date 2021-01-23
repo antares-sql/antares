@@ -46,7 +46,7 @@ export default connections => {
       try {
          await connection.connect();
 
-         const structure = await connection.getStructure();
+         const structure = await connection.getStructure(new Set());
 
          connections[conn.uid] = connection;
 
