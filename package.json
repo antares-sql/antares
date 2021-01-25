@@ -54,7 +54,7 @@
     "@mdi/font": "^5.8.55",
     "ace-builds": "^1.4.12",
     "electron-log": "^4.3.0",
-    "electron-store": "^6.0.1",
+    "electron-store": "^7.0.0",
     "electron-updater": "^4.3.5",
     "keytar": "^7.3.0",
     "lodash": "^4.17.20",
