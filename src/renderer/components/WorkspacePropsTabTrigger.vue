@@ -26,7 +26,7 @@
       </div>
       <div class="container">
          <div class="columns mb-4">
-            <div class="column col-3">
+            <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.name') }}</label>
                   <input
@@ -36,7 +36,7 @@
                   >
                </div>
             </div>
-            <div class="column col-3">
+            <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.definer') }}</label>
                   <select
@@ -67,7 +67,7 @@
             </div>
          </div>
          <div class="columns">
-            <div class="column col-3">
+            <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.table') }}</label>
                   <select v-model="localTrigger.table" class="form-select">
@@ -77,7 +77,7 @@
                   </select>
                </div>
             </div>
-            <div class="column col-3">
+            <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.event') }}</label>
                   <div class="input-group">

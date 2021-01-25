@@ -32,7 +32,7 @@
       </div>
       <div class="container">
          <div class="columns mb-4">
-            <div class="column col-3">
+            <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.name') }}</label>
                   <input
@@ -42,7 +42,7 @@
                   >
                </div>
             </div>
-            <div class="column col-3">
+            <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.definer') }}</label>
                   <select
@@ -71,7 +71,7 @@
                   </select>
                </div>
             </div>
-            <div class="column col-6">
+            <div class="column col-4">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.comment') }}</label>
                   <input

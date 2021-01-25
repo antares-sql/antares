@@ -26,7 +26,7 @@
       </div>
       <div class="container">
          <div class="columns mb-4">
-            <div class="column col-3">
+            <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.name') }}</label>
                   <input
@@ -36,7 +36,7 @@
                   >
                </div>
             </div>
-            <div class="column col-3">
+            <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.definer') }}</label>
                   <select
@@ -67,7 +67,7 @@
             </div>
          </div>
          <div class="columns">
-            <div class="column col-2">
+            <div class="column col-auto mr-2">
                <div class="form-group">
                   <label class="form-label">{{ $t('message.sqlSecurity') }}</label>
                   <label class="form-radio">
@@ -90,7 +90,7 @@
                   </label>
                </div>
             </div>
-            <div class="column col-2">
+            <div class="column col-auto mr-2">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.algorithm') }}</label>
                   <label class="form-radio">
@@ -122,7 +122,7 @@
                   </label>
                </div>
             </div>
-            <div class="column col-2">
+            <div class="column col-auto mr-2">
                <div class="form-group">
                   <label class="form-label">{{ $t('message.updateOption') }}</label>
                   <label class="form-radio">
