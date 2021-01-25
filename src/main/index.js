@@ -5,7 +5,11 @@ import * as path from 'path';
 import crypto from 'crypto';
 import { format as formatUrl } from 'url';
 import keytar from 'keytar';
+import Store from 'electron-store';
+
 import ipcHandlers from './ipc-handlers';
+
+Store.initRenderer();
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const gotTheLock = app.requestSingleInstanceLock();
