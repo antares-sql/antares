@@ -268,22 +268,18 @@ export default {
          }
       },
       deleteSelected () {
-         if (!this.primaryField)
-            this.addNotification({ status: 'warning', message: this.$t('message.unableEditFieldWithoutPrimary') });
-         else {
-            const rowIDs = this.localResults.filter(row => this.selectedRows.includes(row._id)).map(row =>
-               row[this.primaryField.name] ||
-               row[`${this.primaryField.table}.${this.primaryField.name}`] ||
-               row[`${this.primaryField.tableAlias}.${this.primaryField.name}`]
-            );
-            const params = {
-               primary: this.primaryField.name,
-               schema: this.getSchema(this.resultsetIndex),
-               table: this.getTable(this.resultsetIndex),
-               rows: rowIDs
-            };
-            this.$emit('delete-selected', params);
-         }
+         const rows = this.localResults.filter(row => this.selectedRows.includes(row._id)).map(row => {
+            delete row._id;
+            return row;
+         });
+
+         const params = {
+            primary: this.primaryField.name,
+            schema: this.getSchema(this.resultsetIndex),
+            table: this.getTable(this.resultsetIndex),
+            rows
+         };
+         this.$emit('delete-selected', params);
       },
       applyUpdate (params) {
          const { primary, id, field, table, content } = params;

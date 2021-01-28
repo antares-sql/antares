@@ -92,25 +92,48 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('delete-table-rows', async (event, params) => {
-      let idString;
+   ipcMain.handle('delete-table-rows', async (event, params) => { // TODO: check primary or try other
+      if (params.primary) {
+         const idString = params.rows.map(row => typeof row[params.primary] === 'string'
+            ? `"${row[params.primary]}"`
+            : row[params.primary]).join(',');
 
-      if (typeof params.rows[0] === 'string')
-         idString = params.rows.map(row => `"${row}"`).join(',');
-      else
-         idString = params.rows.join(',');
+         try {
+            const result = await connections[params.uid]
+               .schema(params.schema)
+               .delete(params.table)
+               .where({ [params.primary]: `IN (${idString})` })
+               .run();
 
-      try {
-         const result = await connections[params.uid]
-            .schema(params.schema)
-            .delete(params.table)
-            .where({ [params.primary]: `IN (${idString})` })
-            .run();
-
-         return { status: 'success', response: result };
+            return { status: 'success', response: result };
+         }
+         catch (err) {
+            return { status: 'error', response: err.toString() };
+         }
       }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
+      else {
+         try {
+            for (const row of params.rows) {
+               for (const key in row) {
+                  if (typeof row[key] === 'string')
+                     row[key] = `'${row[key]}'`;
+
+                  row[key] = `= ${row[key]}`;
+               }
+
+               await connections[params.uid]
+                  .schema(params.schema)
+                  .delete(params.table)
+                  .where(row)
+                  .limit(1)
+                  .run();
+            }
+
+            return { status: 'success', response: [] };
+         }
+         catch (err) {
+            return { status: 'error', response: err.toString() };
+         }
       }
    });
 
