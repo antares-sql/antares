@@ -69,7 +69,7 @@
                   class="tr"
                   :class="{'selected': selectedRows.includes(row._id)}"
                   @select-row="selectRow($event, row._id)"
-                  @update-field="updateField($event, getPrimaryValue(row))"
+                  @update-field="updateField($event, row)"
                   @contextmenu="contextMenu"
                />
             </template>
@@ -253,19 +253,18 @@ export default {
       refreshScroller () {
          this.resizeResults();
       },
-      updateField (payload, id) {
-         if (!this.primaryField)
-            this.addNotification({ status: 'warning', message: this.$t('message.unableEditFieldWithoutPrimary') });
-         else {
-            const params = {
-               primary: this.primaryField.name,
-               schema: this.getSchema(this.resultsetIndex),
-               table: this.getTable(this.resultsetIndex),
-               id,
-               ...payload
-            };
-            this.$emit('update-field', params);
-         }
+      updateField (payload, row) {
+         delete row._id;
+
+         const params = {
+            primary: this.primaryField.name,
+            schema: this.getSchema(this.resultsetIndex),
+            table: this.getTable(this.resultsetIndex),
+            id: this.getPrimaryValue(row),
+            row,
+            ...payload
+         };
+         this.$emit('update-field', params);
       },
       deleteSelected () {
          const rows = this.localResults.filter(row => this.selectedRows.includes(row._id)).map(row => {

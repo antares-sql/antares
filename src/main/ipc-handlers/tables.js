@@ -78,12 +78,33 @@ export default (connections) => {
          else
             escapedParam = `"${sqlEscaper(params.content)}"`;
 
-         await connections[params.uid]
-            .update({ [params.field]: `= ${escapedParam}` })
-            .schema(params.schema)
-            .from(params.table)
-            .where({ [params.primary]: `= ${id}` })
-            .run();
+         if (params.primary) {
+            await connections[params.uid]
+               .update({ [params.field]: `= ${escapedParam}` })
+               .schema(params.schema)
+               .from(params.table)
+               .where({ [params.primary]: `= ${id}` })
+               .run();
+         }
+         else {
+            const { row } = params;
+            reload = true;
+
+            for (const key in row) {
+               if (typeof row[key] === 'string')
+                  row[key] = `'${row[key]}'`;
+
+               row[key] = `= ${row[key]}`;
+            }
+
+            await connections[params.uid]
+               .schema(params.schema)
+               .update({ [params.field]: `= ${escapedParam}` })
+               .from(params.table)
+               .where(row)
+               .limit(1)
+               .run();
+         }
 
          return { status: 'success', response: { reload } };
       }
@@ -92,7 +113,7 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('delete-table-rows', async (event, params) => { // TODO: check primary or try other
+   ipcMain.handle('delete-table-rows', async (event, params) => {
       if (params.primary) {
          const idString = params.rows.map(row => typeof row[params.primary] === 'string'
             ? `"${row[params.primary]}"`
