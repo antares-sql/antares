@@ -212,7 +212,7 @@ export default {
    mounted () {
       const resizer = this.$refs.resizer;
 
-      resizer.addEventListener('mousedown', (e) => {
+      resizer.addEventListener('mousedown', e => {
          e.preventDefault();
 
          window.addEventListener('mousemove', this.resize);

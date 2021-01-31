@@ -3,11 +3,14 @@
       <div class="workspace-query-runner column col-12">
          <QueryEditor
             v-if="isSelected"
+            ref="queryEditor"
             :auto-focus="true"
             :value.sync="query"
             :workspace="workspace"
             :schema="schema"
+            :height="editorHeight"
          />
+         <div ref="resizer" class="query-area-resizer" />
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
                <button
@@ -80,7 +83,8 @@ export default {
          isQuering: false,
          results: [],
          resultsCount: 0,
-         affectedCount: 0
+         affectedCount: 0,
+         editorHeight: 200
       };
    },
    computed: {
@@ -93,6 +97,16 @@ export default {
    },
    created () {
       window.addEventListener('keydown', this.onKey);
+   },
+   mounted () {
+      const resizer = this.$refs.resizer;
+
+      resizer.addEventListener('mousedown', e => {
+         e.preventDefault();
+
+         window.addEventListener('mousemove', this.resize);
+         window.addEventListener('mouseup', this.stopResize);
+      });
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);
@@ -139,6 +153,21 @@ export default {
          this.resultsCount = 0;
          this.affectedCount = 0;
       },
+      resize (e) {
+         const el = this.$refs.queryEditor.$el;
+         let editorHeight = e.pageY - el.getBoundingClientRect().top;
+         if (editorHeight > 400) editorHeight = 400;
+         if (editorHeight < 50) editorHeight = 50;
+         this.editorHeight = editorHeight;
+      },
+      stopResize () {
+         window.removeEventListener('mousemove', this.resize);
+         if (this.$refs.queryTable && this.results.length)
+            this.$refs.queryTable.resizeResults();
+
+         if (this.$refs.queryEditor)
+            this.$refs.queryEditor.editor.resize();
+      },
       onKey (e) {
          if (this.isSelected) {
             e.stopPropagation();
@@ -155,11 +184,23 @@ export default {
   align-content: baseline;
 
   .workspace-query-runner {
+    position: relative;
+
+    .query-area-resizer {
+      position: absolute;
+      height: 5px;
+      bottom: 40px;
+      width: 100%;
+      cursor: ns-resize;
+      z-index: 99;
+    }
+
     .workspace-query-runner-footer {
       display: flex;
       justify-content: space-between;
       padding: 0.3rem 0.6rem 0.4rem;
       align-items: center;
+      height: 42px;
 
       .workspace-query-buttons {
         display: flex;
