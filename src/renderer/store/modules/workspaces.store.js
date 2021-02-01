@@ -51,7 +51,7 @@ export default {
       SELECT_WORKSPACE (state, uid) {
          state.selected_workspace = uid;
       },
-      ADD_CONNECTED (state, { uid, client, dataTypes, indexTypes, structure }) {
+      ADD_CONNECTED (state, { uid, client, dataTypes, indexTypes, structure, version }) {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
             ? {
                ...workspace,
@@ -59,7 +59,8 @@ export default {
                dataTypes,
                indexTypes,
                structure,
-               connected: true
+               connected: true,
+               version
             }
             : workspace);
       },
@@ -245,12 +246,22 @@ export default {
                      indexTypes = require('common/index-types/mysql');
                      break;
                }
+
+               const { status, response: version } = await Database.getVersion(connection.uid);
+
+               if (status === 'error')
+                  dispatch('notifications/addNotification', { status, message: version }, { root: true });
+               else {
+                  //
+               }
+
                commit('ADD_CONNECTED', {
                   uid: connection.uid,
                   client: connection.client,
                   dataTypes,
                   indexTypes,
-                  structure: response
+                  structure: response,
+                  version
                });
                dispatch('refreshCollations', connection.uid);
                dispatch('refreshVariables', connection.uid);

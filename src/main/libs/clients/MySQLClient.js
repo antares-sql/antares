@@ -921,6 +921,35 @@ export class MySQLClient extends AntaresCore {
    }
 
    /**
+    * SHOW VARIABLES LIKE '%vers%'
+    *
+    * @returns {Array.<Object>} version parameters
+    * @memberof MySQLClient
+    */
+   async getVersion () {
+      const sql = 'SHOW VARIABLES LIKE "%vers%"';
+      const { rows } = await this.raw(sql);
+
+      return rows.reduce((acc, curr) => {
+         switch (curr.Variable_name) {
+            case 'version':
+               acc.number = curr.Value.split('-')[0];
+               break;
+            case 'version_comment':
+               acc.name = curr.Value.replace('(GPL)', '');
+               break;
+            case 'version_compile_machine':
+               acc.arch = curr.Value;
+               break;
+            case 'version_compile_os':
+               acc.os = curr.Value;
+               break;
+         }
+         return acc;
+      }, {});
+   }
+
+   /**
     * CREATE TABLE
     *
     * @returns {Array.<Object>} parameters
@@ -1231,7 +1260,7 @@ export class MySQLClient extends AntaresCore {
                               const response = await this.getTableColumns(paramObj);
                               remappedFields = remappedFields.map(field => {
                                  const detailedField = response.find(f => f.name === field.name);
-                                 if (field.orgTable === paramObj.table && field.schema === paramObj.schema && detailedField.name === field.orgName)
+                                 if (detailedField && field.orgTable === paramObj.table && field.schema === paramObj.schema && detailedField.name === field.orgName)
                                     field = { ...detailedField, ...field };
                                  return field;
                               });

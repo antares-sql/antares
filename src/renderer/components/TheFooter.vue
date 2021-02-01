@@ -2,9 +2,9 @@
    <div id="footer" class="text-light">
       <div class="footer-left-elements">
          <ul class="footer-elements">
-            <li class="footer-element" :title="$t('word.version')">
-               <i class="mdi mdi-18px mdi-memory mr-1" />
-               <small>{{ appVersion }}</small>
+            <li class="footer-element">
+               <i class="mdi mdi-18px mdi-database mr-1" />
+               <small>{{ versionString }}</small>
             </li>
          </ul>
       </div>
@@ -34,9 +34,18 @@ export default {
    name: 'TheFooter',
    computed: {
       ...mapGetters({
-         appName: 'application/appName',
+         workspace: 'workspaces/getSelected',
+         getWorkspace: 'workspaces/getWorkspace',
          appVersion: 'application/appVersion'
-      })
+      }),
+      version () {
+         return this.getWorkspace(this.workspace) ? this.getWorkspace(this.workspace).version : null;
+      },
+      versionString () {
+         if (this.version)
+            return `${this.version.name} ${this.version.number} (${this.version.arch} ${this.version.os})`;
+         return '';
+      }
    },
    methods: {
       ...mapActions({

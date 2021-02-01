@@ -34,6 +34,10 @@ export default class {
       return ipcRenderer.invoke('get-engines', uid);
    }
 
+   static getVersion (uid) {
+      return ipcRenderer.invoke('get-version', uid);
+   }
+
    static useSchema (params) {
       return ipcRenderer.invoke('use-schema', params);
    }
