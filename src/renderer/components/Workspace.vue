@@ -20,7 +20,7 @@
             >
                <a class="tab-link">
                   <i class="mdi mdi-18px mdi-tune mr-1" />
-                  <span :title="schemaChild">{{ $t('word.properties').toUpperCase() }}: {{ schemaChild }}</span>
+                  <span :title="schemaChild">{{ $t('word.settings').toUpperCase() }}: {{ schemaChild }}</span>
                </a>
             </li>
             <li

@@ -210,6 +210,10 @@ body {
   border-color: $primary-color;
 }
 
+.form-input[type="file"] {
+  overflow: hidden;
+}
+
 .input-group .input-group-addon {
   border-color: #3f3f3f;
   z-index: 1;

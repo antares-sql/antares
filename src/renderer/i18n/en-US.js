@@ -85,7 +85,12 @@ module.exports = {
       state: 'State',
       execution: 'Execution',
       starts: 'Starts',
-      ends: 'Ends'
+      ends: 'Ends',
+      ssl: 'SSL',
+      privateKey: 'Private key',
+      certificate: 'Certificate',
+      caCertificate: 'CA certificate',
+      ciphers: 'Ciphers'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -172,7 +177,8 @@ module.exports = {
       schedulerBody: 'Scheduler body',
       createNewScheduler: 'Create new scheduler',
       deleteScheduler: 'Delete scheduler',
-      preserveOnCompletion: 'Preserve on completion'
+      preserveOnCompletion: 'Preserve on completion',
+      enableSsl: 'Enable SSL'
    },
    // Date and Time
    short: {
