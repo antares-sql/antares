@@ -46,7 +46,7 @@ This is a roadmap with major features will come in near future.
 
 - Support for other databases.
 - Database tools (variables, process list...).
-- SSL and SSH tunnel support.
+- SSH tunnel support.
 - Users management (add/edit/delete).
 - UI/UX improvements.
 - Query history.

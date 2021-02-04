@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import { sqlEscaper } from 'common/libs/sqlEscaper';
-import { TEXT, LONG_TEXT, NUMBER, BLOB } from 'common/fieldTypes';
+import { TEXT, LONG_TEXT, NUMBER, BLOB, BIT } from 'common/fieldTypes';
 import fs from 'fs';
 
 export default (connections) => {
@@ -74,6 +74,10 @@ export default (connections) => {
             }
             else
                escapedParam = '""';
+         }
+         else if ([...BIT].includes(params.type)) {
+            escapedParam = `b'${sqlEscaper(params.content)}'`;
+            reload = true;
          }
          else
             escapedParam = `"${sqlEscaper(params.content)}"`;
