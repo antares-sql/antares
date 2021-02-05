@@ -162,11 +162,11 @@
                                  <label class="form-label">{{ $t('word.privateKey') }}</label>
                               </div>
                               <div class="col-8 col-sm-12">
-                                 <input
-                                    class="form-input"
-                                    type="file"
+                                 <BaseUploadInput
+                                    :value="localConnection.key"
+                                    @clear="pathClear('key')"
                                     @change="pathSelection($event, 'key')"
-                                 >
+                                 />
                               </div>
                            </div>
                            <div class="form-group">
@@ -174,11 +174,11 @@
                                  <label class="form-label">{{ $t('word.certificate') }}</label>
                               </div>
                               <div class="col-8 col-sm-12">
-                                 <input
-                                    class="form-input"
-                                    type="file"
+                                 <BaseUploadInput
+                                    :value="localConnection.cert"
+                                    @clear="pathClear('cert')"
                                     @change="pathSelection($event, 'cert')"
-                                 >
+                                 />
                               </div>
                            </div>
                            <div class="form-group">
@@ -186,11 +186,11 @@
                                  <label class="form-label">{{ $t('word.caCertificate') }}</label>
                               </div>
                               <div class="col-8 col-sm-12">
-                                 <input
-                                    class="form-input"
-                                    type="file"
+                                 <BaseUploadInput
+                                    :value="localConnection.ca"
+                                    @clear="pathClear('ca')"
                                     @change="pathSelection($event, 'ca')"
-                                 >
+                                 />
                               </div>
                            </div>
 
@@ -247,12 +247,14 @@ import { mapActions } from 'vuex';
 import Connection from '@/ipc-api/Connection';
 import ModalAskCredentials from '@/components/ModalAskCredentials';
 import BaseToast from '@/components/BaseToast';
+import BaseUploadInput from '@/components/BaseUploadInput';
 
 export default {
    name: 'ModalEditConnection',
    components: {
       ModalAskCredentials,
-      BaseToast
+      BaseToast,
+      BaseUploadInput
    },
    props: {
       connection: Object
@@ -351,6 +353,9 @@ export default {
          if (!files.length) return;
 
          this.localConnection[name] = files[0].path;
+      },
+      pathClear (name) {
+         this.localConnection[name] = '';
       }
    }
 };

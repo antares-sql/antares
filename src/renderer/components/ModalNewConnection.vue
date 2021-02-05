@@ -166,11 +166,11 @@
                                  <label class="form-label">{{ $t('word.privateKey') }}</label>
                               </div>
                               <div class="col-8 col-sm-12">
-                                 <input
-                                    class="form-input"
-                                    type="file"
+                                 <BaseUploadInput
+                                    :value="connection.key"
+                                    @clear="pathClear('key')"
                                     @change="pathSelection($event, 'key')"
-                                 >
+                                 />
                               </div>
                            </div>
                            <div class="form-group">
@@ -178,11 +178,11 @@
                                  <label class="form-label">{{ $t('word.certificate') }}</label>
                               </div>
                               <div class="col-8 col-sm-12">
-                                 <input
-                                    class="form-input"
-                                    type="file"
+                                 <BaseUploadInput
+                                    :value="connection.cert"
+                                    @clear="pathClear('cert')"
                                     @change="pathSelection($event, 'cert')"
-                                 >
+                                 />
                               </div>
                            </div>
                            <div class="form-group">
@@ -190,11 +190,11 @@
                                  <label class="form-label">{{ $t('word.caCertificate') }}</label>
                               </div>
                               <div class="col-8 col-sm-12">
-                                 <input
-                                    class="form-input"
-                                    type="file"
+                                 <BaseUploadInput
+                                    :value="connection.ca"
+                                    @clear="pathClear('ca')"
                                     @change="pathSelection($event, 'ca')"
-                                 >
+                                 />
                               </div>
                            </div>
 
@@ -252,12 +252,14 @@ import Connection from '@/ipc-api/Connection';
 import { uidGen } from 'common/libs/uidGen';
 import ModalAskCredentials from '@/components/ModalAskCredentials';
 import BaseToast from '@/components/BaseToast';
+import BaseUploadInput from '@/components/BaseUploadInput';
 
 export default {
    name: 'ModalNewConnection',
    components: {
       ModalAskCredentials,
-      BaseToast
+      BaseToast,
+      BaseUploadInput
    },
    data () {
       return {
@@ -382,6 +384,9 @@ export default {
          if (!files.length) return;
 
          this.connection[name] = files[0].path;
+      },
+      pathClear (name) {
+         this.connection[name] = '';
       }
    }
 };
