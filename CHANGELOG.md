@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.16](https://github.com/Fabio286/antares/compare/v0.0.15...v0.0.16) (2021-02-06)
+
+
+### Features
+
+* MySQL and MariaDB auto detection ([02c03e3](https://github.com/Fabio286/antares/commit/02c03e3d266052872ac8edeb159ec8182f41c6a5))
+* **UI:** enanched file upload input ([a0d8552](https://github.com/Fabio286/antares/commit/a0d85520fb0669d5eec4475f5e255adb1e2a0159))
+* support to ssl connections ([4e72bb1](https://github.com/Fabio286/antares/commit/4e72bb15874324214aa0f5b89057cdd565744468))
+* **UI:** database version in app footer ([15417e8](https://github.com/Fabio286/antares/commit/15417e8a776c6aa9f90762d198d70b26163bb2df))
+* **UI:** resize query editor area ([88ab7c5](https://github.com/Fabio286/antares/commit/88ab7c5a62654c6a6026b63464224226d33b1950))
+* delete rows from tables without a primary key ([574d493](https://github.com/Fabio286/antares/commit/574d4939083577ffcb8e7c65f572c364eb8415fb))
+* edit rows from tables without a primary key ([5940b0b](https://github.com/Fabio286/antares/commit/5940b0b84207093da141b5c617c41e0a18fcb1d7))
+
+
+### Bug Fixes
+
+* compatibility with electron-store 7 ([bacf458](https://github.com/Fabio286/antares/commit/bacf45893676cb0744907703f6534ffd472bd1dd))
+* edit bit fields ([ede6fe8](https://github.com/Fabio286/antares/commit/ede6fe81cefc91cdce2bbb0cd7cd6f85bbca99b8))
+
 ### [0.0.15](https://github.com/Fabio286/antares/compare/v0.0.14...v0.0.15) (2021-01-23)
 
 
