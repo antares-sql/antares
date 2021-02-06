@@ -51,7 +51,9 @@ export default {
       SELECT_WORKSPACE (state, uid) {
          state.selected_workspace = uid;
       },
-      ADD_CONNECTED (state, { uid, client, dataTypes, indexTypes, structure, version }) {
+      ADD_CONNECTED (state, payload) {
+         const { uid, client, dataTypes, indexTypes, structure, version } = payload;
+
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
             ? {
                ...workspace,
@@ -251,8 +253,18 @@ export default {
 
                if (status === 'error')
                   dispatch('notifications/addNotification', { status, message: version }, { root: true });
-               else {
-                  //
+
+               const isMySQL = version.name.includes('MySQL');
+
+               if (isMySQL && connection.client !== 'mysql') {
+                  const connProxy = Object.assign({}, connection);
+                  connProxy.client = 'mysql';
+                  dispatch('connections/editConnection', connProxy, { root: true });
+               }
+               else if (!isMySQL && connection.client === 'mysql') {
+                  const connProxy = Object.assign({}, connection);
+                  connProxy.client = 'maria';
+                  dispatch('connections/editConnection', connProxy, { root: true });
                }
 
                commit('ADD_CONNECTED', {
