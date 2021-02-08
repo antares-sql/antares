@@ -90,7 +90,9 @@ module.exports = {
       privateKey: 'Private key',
       certificate: 'Certificate',
       caCertificate: 'CA certificate',
-      ciphers: 'Ciphers'
+      ciphers: 'Ciphers',
+      upload: 'Upload',
+      browse: 'Browse'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',

@@ -1,7 +1,7 @@
 <template>
    <label :for="`id_${id}`" class="file-uploader">
       <span class="file-uploader-message">
-         <i class="mdi mdi-upload mr-1" />{{ message }}
+         <i class="mdi mdi-folder-open mr-1" />{{ message }}
       </span>
       <span class="text-ellipsis file-uploader-value">
          {{ value | lastPart }}
@@ -37,7 +37,7 @@ export default {
    },
    props: {
       message: {
-         default: 'Upload',
+         default: 'Browse',
          type: String
       },
       value: {
@@ -97,7 +97,7 @@ export default {
     z-index: 1;
     position: absolute;
     right: 5px;
-    top: 25%;
+    top: calc(50% - 8px);
   }
 }
 

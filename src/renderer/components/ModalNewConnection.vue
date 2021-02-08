@@ -168,6 +168,7 @@
                               <div class="col-8 col-sm-12">
                                  <BaseUploadInput
                                     :value="connection.key"
+                                    :message="$t('word.browse')"
                                     @clear="pathClear('key')"
                                     @change="pathSelection($event, 'key')"
                                  />
@@ -180,6 +181,7 @@
                               <div class="col-8 col-sm-12">
                                  <BaseUploadInput
                                     :value="connection.cert"
+                                    :message="$t('word.browse')"
                                     @clear="pathClear('cert')"
                                     @change="pathSelection($event, 'cert')"
                                  />
@@ -192,6 +194,7 @@
                               <div class="col-8 col-sm-12">
                                  <BaseUploadInput
                                     :value="connection.ca"
+                                    :message="$t('word.browse')"
                                     @clear="pathClear('ca')"
                                     @change="pathSelection($event, 'ca')"
                                  />
