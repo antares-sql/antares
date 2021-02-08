@@ -157,6 +157,8 @@ export default {
       nInserts (val) {
          if (!val || val < 1)
             this.nInserts = 1;
+         if (!val || val > 1000)
+            this.nInserts = 1000;
       }
    },
    created () {

@@ -189,13 +189,13 @@ export default (connections) => {
             insertObj[key] = escapedParam;
          }
 
-         for (let i = 0; i < params.repeat; i++) {
-            await connections[params.uid]
-               .schema(params.schema)
-               .into(params.table)
-               .insert(insertObj)
-               .run();
-         }
+         const rows = new Array(+params.repeat).fill(insertObj);
+
+         await connections[params.uid]
+            .schema(params.schema)
+            .into(params.table)
+            .insert(rows)
+            .run();
 
          return { status: 'success' };
       }

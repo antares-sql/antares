@@ -1157,18 +1157,11 @@ export class MySQLClient extends AntaresCore {
       // INSERT
       let insertRaw = '';
 
-      if (Object.keys(this._query.insert).length) {
-         const fieldsList = [];
-         const valueList = [];
-         const fields = this._query.insert;
+      if (this._query.insert.length) {
+         const fieldsList = Object.keys(this._query.insert[0]);
+         const rowsList = this._query.insert.map(el => `(${Object.values(el).join(', ')})`);
 
-         for (const key in fields) {
-            if (fields[key] === null) continue;
-            fieldsList.push(key);
-            valueList.push(fields[key]);
-         }
-
-         insertRaw = `(${fieldsList.join(', ')}) VALUES (${valueList.join(', ')}) `;
+         insertRaw = `(${fieldsList.join(', ')}) VALUES ${rowsList.join(', ')} `;
       }
 
       // GROUP BY

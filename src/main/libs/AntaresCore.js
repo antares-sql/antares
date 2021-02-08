@@ -28,7 +28,7 @@ export class AntaresCore {
          limit: [],
          join: [],
          update: [],
-         insert: {},
+         insert: [],
          delete: false
       };
       this._query = Object.assign({}, this._queryDefaults);
@@ -120,12 +120,12 @@ export class AntaresCore {
    }
 
    /**
-    * @param {Object} obj field: value
+    * @param {Array} arr Array of row objects
     * @returns
     * @memberof AntaresCore
     */
-   insert (obj) {
-      this._query.insert = { ...this._query.insert, ...obj };
+   insert (arr) {
+      this._query.insert = [...this._query.insert, ...arr];
       return this;
    }
 
