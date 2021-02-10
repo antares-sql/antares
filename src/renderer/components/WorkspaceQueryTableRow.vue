@@ -135,7 +135,7 @@ import { mimeFromHex } from 'common/libs/mimeFromHex';
 import { formatBytes } from 'common/libs/formatBytes';
 import { bufferToBase64 } from 'common/libs/bufferToBase64';
 import hexToBinary from 'common/libs/hexToBinary';
-import { TEXT, LONG_TEXT, NUMBER, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
+import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
 import { mask } from 'vue-the-mask';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import ForeignKeySelect from '@/components/ForeignKeySelect';
@@ -219,7 +219,7 @@ export default {
          if ([...TEXT, ...LONG_TEXT].includes(this.editingType))
             return { type: 'text', mask: false };
 
-         if (NUMBER.includes(this.editingType))
+         if ([...NUMBER, ...FLOAT].includes(this.editingType))
             return { type: 'number', mask: false };
 
          if (TIME.includes(this.editingType)) {

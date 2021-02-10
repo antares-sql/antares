@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import { sqlEscaper } from 'common/libs/sqlEscaper';
-import { TEXT, LONG_TEXT, NUMBER, BLOB, BIT } from 'common/fieldTypes';
+import { TEXT, LONG_TEXT, NUMBER, FLOAT, BLOB, BIT } from 'common/fieldTypes';
 import fs from 'fs';
 
 export default (connections) => {
@@ -62,7 +62,7 @@ export default (connections) => {
          let reload = false;
          const id = typeof params.id === 'number' ? params.id : `"${params.id}"`;
 
-         if (NUMBER.includes(params.type))
+         if ([...NUMBER, ...FLOAT].includes(params.type))
             escapedParam = params.content;
          else if ([...TEXT, ...LONG_TEXT].includes(params.type))
             escapedParam = `"${sqlEscaper(params.content)}"`;
@@ -171,7 +171,7 @@ export default (connections) => {
 
             if (params.row[key] === null)
                escapedParam = 'NULL';
-            else if (NUMBER.includes(type))
+            else if ([...NUMBER, ...FLOAT].includes(type))
                escapedParam = params.row[key];
             else if ([...TEXT, ...LONG_TEXT].includes(type))
                escapedParam = `"${sqlEscaper(params.row[key])}"`;

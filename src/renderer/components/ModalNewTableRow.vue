@@ -107,7 +107,7 @@
 
 <script>
 import moment from 'moment';
-import { TEXT, LONG_TEXT, NUMBER, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
+import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
 import { mask } from 'vue-the-mask';
 import { mapGetters, mapActions } from 'vuex';
 import Tables from '@/ipc-api/Tables';
@@ -157,7 +157,7 @@ export default {
       nInserts (val) {
          if (!val || val < 1)
             this.nInserts = 1;
-         if (!val || val > 1000)
+         else if (val > 1000)
             this.nInserts = 1000;
       }
    },
@@ -172,7 +172,7 @@ export default {
 
          if (field.default === 'NULL') fieldDefault = null;
          else {
-            if (NUMBER.includes(field.type))
+            if ([...NUMBER, ...FLOAT].includes(field.type))
                fieldDefault = +field.default;
 
             if ([...TEXT, ...LONG_TEXT].includes(field.type))
@@ -261,7 +261,7 @@ export default {
          if ([...TEXT, ...LONG_TEXT].includes(field.type))
             return { type: 'text', mask: false };
 
-         if (NUMBER.includes(field.type))
+         if ([...NUMBER, ...FLOAT].includes(field.type))
             return { type: 'number', mask: false };
 
          if (TIME.includes(field.type)) {
