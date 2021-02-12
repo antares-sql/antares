@@ -81,7 +81,7 @@
 <script>
 import { uidGen } from 'common/libs/uidGen';
 import arrayToFile from '../libs/arrayToFile';
-import { LONG_TEXT, BLOB } from 'common/fieldTypes';
+import { TEXT, LONG_TEXT, BLOB } from 'common/fieldTypes';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
 import WorkspaceQueryTableRow from '@/components/WorkspaceQueryTableRow';
 import TableContext from '@/components/WorkspaceQueryTableContext';
@@ -196,6 +196,7 @@ export default {
       },
       fieldLength (field) {
          if ([...BLOB, ...LONG_TEXT].includes(field.type)) return null;
+         else if (TEXT.includes(field.type)) return field.charLength;
          return field.length;
       },
       keyName (key) {
