@@ -437,7 +437,7 @@ export default {
             schema: this.schema,
             table: this.table,
             numPrecision: null,
-            numLength: null,
+            numLength: 11,
             datePrecision: null,
             charLength: null,
             nullable: false,

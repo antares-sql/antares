@@ -56,6 +56,7 @@
     "electron-log": "^4.3.0",
     "electron-store": "^7.0.0",
     "electron-updater": "^4.3.5",
+    "faker": "^5.3.1",
     "keytar": "^7.3.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",

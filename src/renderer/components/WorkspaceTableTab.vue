@@ -37,7 +37,13 @@
                   <span>{{ $t('word.add') }}</span>
                   <i class="mdi mdi-24px mdi-playlist-plus ml-1" />
                </button>
-               <div class="dropdown export-dropdown">
+
+               <button class="btn btn-dark btn-sm" @click="showFakerModal">
+                  <span>{{ $t('word.faker') }}</span>
+                  <i class="mdi mdi-24px mdi-drama-masks ml-1" />
+               </button>
+
+               <div class="dropdown export-dropdown pr-2">
                   <button
                      :disabled="isQuering"
                      class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
@@ -91,6 +97,14 @@
          @hide="hideAddModal"
          @reload="reloadTable"
       />
+      <ModalFakerRows
+         v-if="isFakerModal"
+         :fields="fields"
+         :key-usage="keyUsage"
+         :tab-uid="tabUid"
+         @hide="hideFakerModal"
+         @reload="reloadTable"
+      />
    </div>
 </template>
 
@@ -98,6 +112,7 @@
 import Tables from '@/ipc-api/Tables';
 import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
 import ModalNewTableRow from '@/components/ModalNewTableRow';
+import ModalFakerRows from '@/components/ModalFakerRows';
 import { mapGetters, mapActions } from 'vuex';
 import tableTabs from '@/mixins/tableTabs';
 
@@ -105,7 +120,8 @@ export default {
    name: 'WorkspaceTableTab',
    components: {
       WorkspaceQueryTable,
-      ModalNewTableRow
+      ModalNewTableRow,
+      ModalFakerRows
    },
    mixins: [tableTabs],
    props: {
@@ -119,6 +135,7 @@ export default {
          results: [],
          lastTable: null,
          isAddModal: false,
+         isFakerModal: false,
          autorefreshTimer: 0,
          refreshInterval: null,
          sortParams: {}
@@ -221,6 +238,12 @@ export default {
       },
       hideAddModal () {
          this.isAddModal = false;
+      },
+      showFakerModal () {
+         this.isFakerModal = true;
+      },
+      hideFakerModal () {
+         this.isFakerModal = false;
       },
       onKey (e) {
          if (this.isSelected) {

@@ -5,7 +5,7 @@
          <div class="modal-header pl-2">
             <div class="modal-title h6">
                <div class="d-flex">
-                  <i class="mdi mdi-24px mdi-playlist-plus mr-1" /> {{ $t('message.addNewRow') }}
+                  <i class="mdi mdi-24px mdi-drama-masks mr-1" /> {{ $t('message.addFakeData') }}
                </div>
             </div>
             <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -15,70 +15,36 @@
                <form class="form-horizontal">
                   <fieldset :disabled="isInserting">
                      <div
-                        v-for="(field, key) in fields"
+                        v-for="field in fields"
                         :key="field.name"
                         class="form-group"
                      >
-                        <div class="col-4 col-sm-12">
+                        <div class="col-3 col-sm-12">
                            <label class="form-label" :title="field.name">{{ field.name }}</label>
                         </div>
-                        <div class="input-group col-8 col-sm-12">
-                           <ForeignKeySelect
-                              v-if="foreignKeys.includes(field.name)"
-                              ref="formInput"
-                              class="form-select"
+                        <div class="column columns col-sm-12">
+                           <FakerSelect
+                              :type="field.type"
+                              class="column columns pr-0"
+                              :is-checked="!fieldsToExclude.includes(field.name)"
+                              :foreign-keys="foreignKeys"
+                              :key-usage="keyUsage"
+                              :field="field"
+                              :field-length="fieldLength(field)"
+                              :field-obj="localRow[field.name]"
                               :value.sync="localRow[field.name]"
-                              :key-usage="getKeyUsage(field.name)"
-                              :disabled="fieldsToExclude.includes(field.name)"
-                           />
-                           <input
-                              v-else-if="inputProps(field).mask"
-                              ref="formInput"
-                              v-model="localRow[field.name]"
-                              v-mask="inputProps(field).mask"
-                              class="form-input"
-                              :type="inputProps(field).type"
-                              :disabled="fieldsToExclude.includes(field.name)"
-                              :tabindex="key+1"
                            >
-                           <input
-                              v-else-if="inputProps(field).type === 'file'"
-                              ref="formInput"
-                              class="form-input"
-                              type="file"
-                              :disabled="fieldsToExclude.includes(field.name)"
-                              :tabindex="key+1"
-                              @change="filesChange($event,field.name)"
-                           >
-                           <input
-                              v-else-if="inputProps(field).type === 'number'"
-                              ref="formInput"
-                              v-model="localRow[field.name]"
-                              class="form-input"
-                              step="any"
-                              :type="inputProps(field).type"
-                              :disabled="fieldsToExclude.includes(field.name)"
-                              :tabindex="key+1"
-                           >
-                           <input
-                              v-else
-                              ref="formInput"
-                              v-model="localRow[field.name]"
-                              class="form-input"
-                              :type="inputProps(field).type"
-                              :disabled="fieldsToExclude.includes(field.name)"
-                              :tabindex="key+1"
-                           >
-                           <span class="input-group-addon" :class="`type-${field.type.toLowerCase()}`">
-                              {{ field.type }} {{ fieldLength(field) | wrapNumber }}
-                           </span>
-                           <label class="form-checkbox ml-3" :title="$t('word.insert')">
-                              <input
-                                 type="checkbox"
-                                 :checked="!field.autoIncrement"
-                                 @change.prevent="toggleFields($event, field)"
-                              ><i class="form-icon" />
-                           </label>
+                              <span class="input-group-addon text-small" :class="`type-${field.type.toLowerCase()}`">
+                                 {{ field.type }} {{ fieldLength(field) | wrapNumber }}
+                              </span>
+                              <label class="form-checkbox ml-3" :title="$t('word.insert')">
+                                 <input
+                                    type="checkbox"
+                                    :checked="!field.autoIncrement"
+                                    @change.prevent="toggleFields($event, field)"
+                                 ><i class="form-icon" />
+                              </label>
+                           </FakerSelect>
                         </div>
                      </div>
                   </fieldset>
@@ -86,7 +52,7 @@
             </div>
          </div>
          <div class="modal-footer text-light">
-            <div class="input-group col-3 tooltip tooltip-right" :data-tooltip="$t('message.numberOfInserts')">
+            <div class="input-group col-2 tooltip tooltip-right" :data-tooltip="$t('message.numberOfInserts')">
                <input
                   v-model="nInserts"
                   type="number"
@@ -98,7 +64,7 @@
                   <i class="mdi mdi-24px mdi-repeat" />
                </span>
             </div>
-            <div>
+            <div class="column col-auto">
                <button
                   class="btn btn-primary mr-2"
                   :class="{'loading': isInserting}"
@@ -117,16 +83,16 @@
 
 <script>
 import moment from 'moment';
-import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
+import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB } from 'common/fieldTypes';
 import { mask } from 'vue-the-mask';
 import { mapGetters, mapActions } from 'vuex';
 import Tables from '@/ipc-api/Tables';
-import ForeignKeySelect from '@/components/ForeignKeySelect';
+import FakerSelect from '@/components/FakerSelect';
 
 export default {
-   name: 'ModalNewTableRow',
+   name: 'ModalFakerRows',
    components: {
-      ForeignKeySelect
+      FakerSelect
    },
    directives: {
       mask
@@ -201,19 +167,13 @@ export default {
             }
          }
 
-         rowObj[field.name] = fieldDefault;
+         rowObj[field.name] = { value: fieldDefault };
 
          if (field.autoIncrement)// Disable by default auto increment fields
             this.fieldsToExclude = [...this.fieldsToExclude, field.name];
       }
 
       this.localRow = { ...rowObj };
-
-      // Auto focus
-      setTimeout(() => {
-         const firstSelectableInput = this.$refs.formInput.find(input => !input.disabled);
-         firstSelectableInput.focus();
-      }, 20);
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);
@@ -225,9 +185,11 @@ export default {
       async insertRows () {
          this.isInserting = true;
          const rowToInsert = this.localRow;
+
          Object.keys(rowToInsert).forEach(key => {
             if (this.fieldsToExclude.includes(key))
                delete rowToInsert[key];
+
             if (typeof rowToInsert[key] === 'undefined')
                delete rowToInsert[key];
          });
@@ -238,7 +200,7 @@ export default {
          });
 
          try {
-            const { status, response } = await Tables.insertTableRows({
+            const { status, response } = await Tables.insertTableFakeRows({
                uid: this.selectedWorkspace,
                schema: this.workspace.breadcrumbs.schema,
                table: this.workspace.breadcrumbs.table,
@@ -268,44 +230,6 @@ export default {
          else if (TEXT.includes(field.type)) return field.charLength;
          return field.length;
       },
-      inputProps (field) {
-         if ([...TEXT, ...LONG_TEXT].includes(field.type))
-            return { type: 'text', mask: false };
-
-         if ([...NUMBER, ...FLOAT].includes(field.type))
-            return { type: 'number', mask: false };
-
-         if (TIME.includes(field.type)) {
-            let timeMask = '##:##:##';
-            const precision = this.fieldLength(field);
-
-            for (let i = 0; i < precision; i++)
-               timeMask += i === 0 ? '.#' : '#';
-
-            return { type: 'text', mask: timeMask };
-         }
-
-         if (DATE.includes(field.type))
-            return { type: 'text', mask: '####-##-##' };
-
-         if (DATETIME.includes(field.type)) {
-            let datetimeMask = '####-##-## ##:##:##';
-            const precision = this.fieldLength(field);
-
-            for (let i = 0; i < precision; i++)
-               datetimeMask += i === 0 ? '.#' : '#';
-
-            return { type: 'text', mask: datetimeMask };
-         }
-
-         if (BLOB.includes(field.type))
-            return { type: 'file', mask: false };
-
-         if (BIT.includes(field.type))
-            return { type: 'text', mask: false };
-
-         return { type: 'text', mask: false };
-      },
       toggleFields (event, field) {
          if (event.target.checked)
             this.fieldsToExclude = this.fieldsToExclude.filter(f => f !== field.name);
@@ -332,7 +256,7 @@ export default {
 
 <style scoped>
   .modal-container {
-    max-width: 500px;
+    max-width: 700px;
   }
 
   .form-label {

@@ -30,6 +30,10 @@ export default class {
       return ipcRenderer.invoke('insert-table-rows', params);
    }
 
+   static insertTableFakeRows (params) {
+      return ipcRenderer.invoke('insert-table-fake-rows', params);
+   }
+
    static getForeignList (params) {
       return ipcRenderer.invoke('get-foreign-list', params);
    }

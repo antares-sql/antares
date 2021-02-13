@@ -1,6 +1,8 @@
 import { ipcMain } from 'electron';
+import faker from 'faker';
+import moment from 'moment';
 import { sqlEscaper } from 'common/libs/sqlEscaper';
-import { TEXT, LONG_TEXT, NUMBER, FLOAT, BLOB, BIT } from 'common/fieldTypes';
+import { TEXT, LONG_TEXT, NUMBER, FLOAT, BLOB, BIT, DATE, DATETIME } from 'common/fieldTypes';
 import fs from 'fs';
 
 export default (connections) => {
@@ -190,6 +192,65 @@ export default (connections) => {
          }
 
          const rows = new Array(+params.repeat).fill(insertObj);
+
+         await connections[params.uid]
+            .schema(params.schema)
+            .into(params.table)
+            .insert(rows)
+            .run();
+
+         return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
+   ipcMain.handle('insert-table-fake-rows', async (event, params) => {
+      try {
+         const rows = [];
+
+         for (let i = 0; i < +params.repeat; i++) {
+            const insertObj = {};
+
+            for (const key in params.row) {
+               const type = params.fields[key];
+               let escapedParam;
+
+               if (!('group' in params.row[key]) || params.row[key].group === 'manual') { // Manual value
+                  if (params.row[key].value === null)
+                     escapedParam = 'NULL';
+                  else if ([...NUMBER, ...FLOAT].includes(type))
+                     escapedParam = params.row[key].value;
+                  else if ([...TEXT, ...LONG_TEXT].includes(type))
+                     escapedParam = `"${sqlEscaper(params.row[key].value)}"`;
+                  else if (BLOB.includes(type)) {
+                     if (params.row[key].value) {
+                        const fileBlob = fs.readFileSync(params.row[key].value);
+                        escapedParam = `0x${fileBlob.toString('hex')}`;
+                     }
+                     else
+                        escapedParam = '""';
+                  }
+                  else
+                     escapedParam = `"${sqlEscaper(params.row[key].value)}"`;
+
+                  insertObj[key] = escapedParam;
+               }
+               else { // Faker value
+                  let fakeValue = faker[params.row[key].group][params.row[key].method]();
+
+                  if ([...TEXT, ...LONG_TEXT].includes(type))
+                     fakeValue = `"${sqlEscaper(fakeValue)}"`;
+                  else if ([...DATE, ...DATETIME].includes(type))
+                     fakeValue = `"${moment(fakeValue).format('YYYY-MM-DD HH:mm:ss.SSSSSS')}"`;
+
+                  insertObj[key] = fakeValue;
+               }
+            }
+
+            rows.push(insertObj);
+         }
 
          await connections[params.uid]
             .schema(params.schema)
