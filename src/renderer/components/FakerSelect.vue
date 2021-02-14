@@ -197,7 +197,8 @@ export default {
          this.$emit('update:value', {
             group: this.selectedGroup,
             method: this.selectedMethod,
-            value: this.selectedValue
+            value: this.selectedValue,
+            length: this.fieldLength
          });
       }
    }

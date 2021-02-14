@@ -240,8 +240,11 @@ export default (connections) => {
                else { // Faker value
                   let fakeValue = faker[params.row[key].group][params.row[key].method]();
 
-                  if ([...TEXT, ...LONG_TEXT].includes(type))
+                  if ([...TEXT, ...LONG_TEXT].includes(type)) {
+                     if (params.row[key].length)
+                        fakeValue = fakeValue.substr(0, params.row[key].length);
                      fakeValue = `"${sqlEscaper(fakeValue)}"`;
+                  }
                   else if ([...DATE, ...DATETIME].includes(type))
                      fakeValue = `"${moment(fakeValue).format('YYYY-MM-DD HH:mm:ss.SSSSSS')}"`;
 
