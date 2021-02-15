@@ -57,6 +57,17 @@ This is a roadmap with major features will come in near future.
 - Import/export and migration.
 - Light theme.
 
+## Troubleshooting
+
+### **Linux**
+
+With KDE may need necessary installation of the additional `gnome-keyring` package.  
+Depending on your distribution, you will need to run the following command:
+
+- Debian/Ubuntu: `sudo apt-get install gnome-keyring`
+- Red Hat-based: `sudo yum install gnome-keyring`
+- Arch Linux: `sudo pacman -S gnome-keyring`
+
 ## Currently supported
 
 ### Databases
