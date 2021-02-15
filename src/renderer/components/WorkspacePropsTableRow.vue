@@ -400,7 +400,7 @@ export default {
             this.defaultValue.type = 'custom';
             this.defaultValue.custom = this.localRow.default.replace(/(^')|('$)/g, '');
          }
-         else if (!isNaN(this.localRow.default)) {
+         else if (!isNaN(this.localRow.default.replace(/[:.-\s]/g, ''))) {
             this.defaultValue.type = 'custom';
             this.defaultValue.custom = this.localRow.default;
          }
