@@ -5,7 +5,7 @@
          <div class="modal-header pl-2">
             <div class="modal-title h6">
                <div class="d-flex">
-                  <i class="mdi mdi-24px mdi-drama-masks mr-1" /> {{ $t('message.addFakeData') }}
+                  <i class="mdi mdi-24px mdi-playlist-plus mr-1" /> {{ $t('message.tableFiller') }}
                </div>
             </div>
             <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -34,7 +34,7 @@
                               :field-obj="localRow[field.name]"
                               :value.sync="localRow[field.name]"
                            >
-                              <span class="input-group-addon text-small" :class="`type-${field.type.toLowerCase()}`">
+                              <span class="input-group-addon field-type" :class="`type-${field.type.toLowerCase()}`">
                                  {{ field.type }} {{ fieldLength(field) | wrapNumber }}
                               </span>
                               <label class="form-checkbox ml-3" :title="$t('word.insert')">
@@ -256,7 +256,7 @@ export default {
 
 <style scoped>
   .modal-container {
-    max-width: 700px;
+    max-width: 800px;
   }
 
   .form-label {
@@ -274,5 +274,9 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+
+  .field-type {
+    font-size: 0.6rem;
   }
 </style>

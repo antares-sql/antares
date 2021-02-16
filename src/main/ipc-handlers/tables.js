@@ -218,7 +218,7 @@ export default (connections) => {
                let escapedParam;
 
                if (!('group' in params.row[key]) || params.row[key].group === 'manual') { // Manual value
-                  if (params.row[key].value === null)
+                  if (params.row[key].value === null || params.row[key].value === undefined)
                      escapedParam = 'NULL';
                   else if ([...NUMBER, ...FLOAT].includes(type))
                      escapedParam = params.row[key].value;
@@ -238,9 +238,15 @@ export default (connections) => {
                   insertObj[key] = escapedParam;
                }
                else { // Faker value
-                  let fakeValue = faker[params.row[key].group][params.row[key].method]();
+                  const parsedParams = {};
+                  Object.keys(params.row[key].params).forEach(param => {
+                     if (!isNaN(params.row[key].params[param]))
+                        parsedParams[param] = +params.row[key].params[param];
+                  });
 
-                  if ([...TEXT, ...LONG_TEXT].includes(type)) {
+                  let fakeValue = faker[params.row[key].group][params.row[key].method](parsedParams);
+
+                  if (typeof fakeValue === 'string') {
                      if (params.row[key].length)
                         fakeValue = fakeValue.substr(0, params.row[key].length);
                      fakeValue = `"${sqlEscaper(fakeValue)}"`;

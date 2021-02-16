@@ -134,8 +134,8 @@ export default class {
          { name: 'phoneNumberFormat', group: 'phone', types: ['string'] },
          { name: 'phoneFormats', group: 'phone', types: ['string'] },
 
-         { name: 'number', group: 'random', types: ['string', 'number'] },
-         { name: 'float', group: 'random', types: ['string', 'float'] },
+         { name: 'number', group: 'random', types: ['string', 'number'], params: ['min', 'max'] },
+         { name: 'float', group: 'random', types: ['string', 'float'], params: ['min', 'max'] },
          { name: 'arrayElement', group: 'random', types: ['string'] },
          { name: 'arrayElements', group: 'random', types: ['string'] },
          { name: 'objectElement', group: 'random', types: ['string'] },

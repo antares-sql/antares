@@ -74,6 +74,17 @@
          :type="inputProps().type"
          :disabled="!isChecked"
       >
+      <template v-if="methodData && 'params' in methodData" class="columns">
+         <input
+            v-for="(option, key) in methodData.params"
+            :key="key"
+            v-model="methodParams[option]"
+            class="form-input column"
+            :type="inputProps().type"
+            :disabled="!isChecked"
+            :placeholder="option"
+         >
+      </template>
       <slot />
    </fieldset>
 </template>
@@ -107,7 +118,8 @@ export default {
          selectedGroup: 'manual',
          selectedMethod: '',
          selectedValue: '',
-         debounceTimeout: null
+         debounceTimeout: null,
+         methodParams: {}
       };
    },
    computed: {
@@ -127,6 +139,9 @@ export default {
       },
       fakerMethods () {
          return FakerMethods.getMethods({ type: this.localType, group: this.selectedGroup });
+      },
+      methodData () {
+         return this.fakerMethods.find(method => method.name === this.selectedMethod);
       }
    },
    watch: {
@@ -197,6 +212,7 @@ export default {
          this.$emit('update:value', {
             group: this.selectedGroup,
             method: this.selectedMethod,
+            params: this.methodParams,
             value: this.selectedValue,
             length: this.fieldLength
          });

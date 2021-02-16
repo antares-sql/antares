@@ -182,8 +182,8 @@ module.exports = {
       deleteScheduler: 'Delete scheduler',
       preserveOnCompletion: 'Preserve on completion',
       enableSsl: 'Enable SSL',
-      addFakeData: 'Add fake data',
-      manualValue: 'Manual value'
+      manualValue: 'Manual value',
+      tableFiller: 'Table Filler'
    },
    faker: {
       address: 'Address',

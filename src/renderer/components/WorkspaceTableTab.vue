@@ -33,14 +33,13 @@
                   </div>
                </div>
 
-               <button class="btn btn-dark btn-sm" @click="showAddModal">
-                  <span>{{ $t('word.add') }}</span>
+               <button
+                  v-if="isTable"
+                  class="btn btn-dark btn-sm"
+                  @click="showFakerModal"
+               >
+                  <span>{{ $t('message.tableFiller') }}</span>
                   <i class="mdi mdi-24px mdi-playlist-plus ml-1" />
-               </button>
-
-               <button class="btn btn-dark btn-sm" @click="showFakerModal">
-                  <span>{{ $t('word.faker') }}</span>
-                  <i class="mdi mdi-24px mdi-drama-masks ml-1" />
                </button>
 
                <div class="dropdown export-dropdown pr-2">
@@ -150,6 +149,9 @@ export default {
       },
       isSelected () {
          return this.workspace.selected_tab === 'data';
+      },
+      isTable () {
+         return !!this.workspace.breadcrumbs.table;
       },
       fields () {
          return this.results.length ? this.results[0].fields : [];
