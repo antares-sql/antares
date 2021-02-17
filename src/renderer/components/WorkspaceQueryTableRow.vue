@@ -16,7 +16,7 @@
                @dblclick="editON($event, col, cKey)"
             >{{ col | typeFormat(getFieldType(cKey), getFieldPrecision(cKey)) | cutText }}</span>
             <ForeignKeySelect
-               v-else-if="foreignKeys.includes(cKey)"
+               v-else-if="isForeignKey(cKey)"
                class="editable-field"
                :value.sync="editingContent"
                :key-usage="getKeyUsage(cKey)"
@@ -260,7 +260,19 @@ export default {
          return this.keyUsage.map(key => key.field);
       },
       isEditable () {
-         return this.fields ? !!(this.fields[0].schema && this.fields[0].table) : false;
+         if (this.fields) {
+            const nElements = this.fields.reduce((acc, curr) => {
+               acc.add(curr.table);
+               acc.add(curr.schema);
+               return acc;
+            }, new Set([]));
+
+            if (nElements.size > 2) return false;
+
+            return !!(this.fields[0].schema && this.fields[0].table);
+         }
+
+         return false;
       }
    },
    watch: {
@@ -271,6 +283,12 @@ export default {
       }
    },
    methods: {
+      isForeignKey (key) {
+         if (key.includes('.'))
+            key = key.split('.').pop();
+
+         return this.foreignKeys.includes(key);
+      },
       getFieldType (cKey) {
          let type = 'unknown';
          const field = this.getFieldObj(cKey);
@@ -423,6 +441,8 @@ export default {
          this.$emit('select-row', event, row);
       },
       getKeyUsage (keyName) {
+         if (keyName.includes('.'))
+            return this.keyUsage.find(key => key.field === keyName.split('.').pop());
          return this.keyUsage.find(key => key.field === keyName);
       }
    }

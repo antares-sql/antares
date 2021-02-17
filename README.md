@@ -33,6 +33,7 @@ An application created with minimalism and semplicity in mind, with features in 
 - Database management (add/edit/delete).
 - Full tables management, including indexes and foreign keys.
 - Views, triggers, stored routines, functions and schedulers management (add/edit/delete).
+- Fake table data filler.
 - Run queries on multiple tabs.
 - Query suggestions and auto complete.
 - Native dark theme.
@@ -53,7 +54,6 @@ This is a roadmap with major features will come in near future.
 - More context menu shortcuts.
 - More keyboard shortcuts.
 - Query logs console.
-- Fake data filler.
 - Import/export and migration.
 - Light theme.
 
@@ -98,7 +98,7 @@ Depending on your distribution, you will need to run the following command:
 **Italian Translation** (46%) / [Giuseppe Gigliotti](https://github.com/ReverbOD) [[#20](https://github.com/Fabio286/antares/pull/20)]  
 **Arabic Translation** (45%) / [Mohd-PH](https://github.com/Mohd-PH) [[#29](https://github.com/Fabio286/antares/pull/29)]  
 **Spanish Translation** (46%) / [hongkfui](https://github.com/hongkfui) [[#32](https://github.com/Fabio286/antares/pull/32)]  
-**French Translation** (100%) / [MrAnyx](https://github.com/MrAnyx) [[#32](https://github.com/Fabio286/antares/pull/44)]
+**French Translation** (100%) / [MrAnyx](https://github.com/MrAnyx) [[#44](https://github.com/Fabio286/antares/pull/44)]
 
 ## Reviews
 
