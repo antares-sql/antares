@@ -239,12 +239,20 @@ export default (connections) => {
                }
                else { // Faker value
                   const parsedParams = {};
-                  Object.keys(params.row[key].params).forEach(param => {
-                     if (!isNaN(params.row[key].params[param]))
-                        parsedParams[param] = +params.row[key].params[param];
-                  });
+                  let fakeValue;
 
-                  let fakeValue = faker[params.row[key].group][params.row[key].method](parsedParams);
+                  if (params.locale)
+                     faker.locale = params.locale;
+
+                  if (Object.keys(params.row[key].params).length) {
+                     Object.keys(params.row[key].params).forEach(param => {
+                        if (!isNaN(params.row[key].params[param]))
+                           parsedParams[param] = +params.row[key].params[param];
+                     });
+                     fakeValue = faker[params.row[key].group][params.row[key].method](parsedParams);
+                  }
+                  else
+                     fakeValue = faker[params.row[key].group][params.row[key].method]();
 
                   if (typeof fakeValue === 'string') {
                      if (params.row[key].length)

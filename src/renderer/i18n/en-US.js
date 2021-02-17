@@ -183,7 +183,8 @@ module.exports = {
       preserveOnCompletion: 'Preserve on completion',
       enableSsl: 'Enable SSL',
       manualValue: 'Manual value',
-      tableFiller: 'Table Filler'
+      tableFiller: 'Table Filler',
+      fakeDataLanguage: 'Fake data language'
    },
    faker: {
       address: 'Address',

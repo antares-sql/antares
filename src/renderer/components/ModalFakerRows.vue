@@ -51,18 +51,119 @@
                </form>
             </div>
          </div>
-         <div class="modal-footer text-light">
-            <div class="input-group col-2 tooltip tooltip-right" :data-tooltip="$t('message.numberOfInserts')">
-               <input
-                  v-model="nInserts"
-                  type="number"
-                  class="form-input"
-                  min="1"
-                  :disabled="isInserting"
+         <div class="modal-footer text-light columns">
+            <div class="column d-flex" :class="hasFakes ? 'col-4' : 'col-2'">
+               <div class="input-group tooltip tooltip-right" :data-tooltip="$t('message.numberOfInserts')">
+                  <input
+                     v-model="nInserts"
+                     type="number"
+                     class="form-input"
+                     min="1"
+                     :disabled="isInserting"
+                  >
+                  <span class="input-group-addon">
+                     <i class="mdi mdi-24px mdi-repeat" />
+                  </span>
+               </div>
+               <div
+                  v-if="hasFakes"
+                  class="tooltip tooltip-right ml-2"
+                  :data-tooltip="$t('message.fakeDataLanguage')"
                >
-               <span class="input-group-addon">
-                  <i class="mdi mdi-24px mdi-repeat" />
-               </span>
+                  <select v-model="fakerLocale" class="form-select">
+                     <option value="ar">
+                        Arabic
+                     </option><option value="az">
+                        Azerbaijani
+                     </option><option value="zh_CN">
+                        Chinese
+                     </option><option value="zh_TW">
+                        Chinese (Taiwan)
+                     </option><option value="cz">
+                        Czech
+                     </option><option value="nl">
+                        Dutch
+                     </option><option value="nl_BE">
+                        Dutch (Belgium)
+                     </option><option value="en">
+                        English
+                     </option><option value="en_AU_ocker">
+                        English (Australia Ocker)
+                     </option><option value="en_AU">
+                        English (Australia)
+                     </option><option value="en_BORK">
+                        English (Bork)
+                     </option><option value="en_CA">
+                        English (Canada)
+                     </option><option value="en_GB">
+                        English (Great Britain)
+                     </option><option value="en_IND">
+                        English (India)
+                     </option><option value="en_IE">
+                        English (Ireland)
+                     </option><option value="en_ZA">
+                        English (South Africa)
+                     </option><option value="en_US">
+                        English (United States)
+                     </option><option value="fa">
+                        Farsi
+                     </option><option value="fi">
+                        Finnish
+                     </option><option value="fr">
+                        French
+                     </option><option value="fr_CA">
+                        French (Canada)
+                     </option><option value="fr_CH">
+                        French (Switzerland)
+                     </option><option value="ge">
+                        Georgian
+                     </option><option value="de">
+                        German
+                     </option><option value="de_AT">
+                        German (Austria)
+                     </option><option value="de_CH">
+                        German (Switzerland)
+                     </option><option value="hr">
+                        Hrvatski
+                     </option><option value="id_ID">
+                        Indonesia
+                     </option><option value="it">
+                        Italian
+                     </option><option value="ja">
+                        Japanese
+                     </option><option value="ko">
+                        Korean
+                     </option><option value="nep">
+                        Nepalese
+                     </option><option value="nb_NO">
+                        Norwegian
+                     </option><option value="pl">
+                        Polish
+                     </option><option value="pt_BR">
+                        Portuguese (Brazil)
+                     </option><option value="pt_PT">
+                        Portuguese (Portugal)
+                     </option><option value="ro">
+                        Romanian
+                     </option><option value="ru">
+                        Russian
+                     </option><option value="sk">
+                        Slovakian
+                     </option><option value="es">
+                        Spanish
+                     </option><option value="es_MX">
+                        Spanish (Mexico)
+                     </option><option value="sv">
+                        Swedish
+                     </option><option value="tr">
+                        Turkish
+                     </option><option value="uk">
+                        Ukrainian
+                     </option><option value="vi">
+                        Vietnamese
+                     </option>
+                  </select>
+               </div>
             </div>
             <div class="column col-auto">
                <button
@@ -113,7 +214,8 @@ export default {
          localRow: {},
          fieldsToExclude: [],
          nInserts: 1,
-         isInserting: false
+         isInserting: false,
+         fakerLocale: 'en'
       };
    },
    computed: {
@@ -127,6 +229,9 @@ export default {
       },
       foreignKeys () {
          return this.keyUsage.map(key => key.field);
+      },
+      hasFakes () {
+         return Object.keys(this.localRow).some(field => 'group' in this.localRow[field] && this.localRow[field].group !== 'manual');
       }
    },
    watch: {
@@ -206,7 +311,8 @@ export default {
                table: this.workspace.breadcrumbs.table,
                row: rowToInsert,
                repeat: this.nInserts,
-               fields: fieldTypes
+               fields: fieldTypes,
+               locale: this.fakerLocale
             });
 
             if (status === 'success') {

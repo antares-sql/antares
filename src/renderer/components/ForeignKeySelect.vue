@@ -50,6 +50,7 @@ export default {
          selectedWorkspace: 'workspaces/getSelected'
       }),
       isValidDefault () {
+         if (!this.foreignList.length) return true;
          return this.foreignList.some(foreign => foreign.foreignColumn.toString() === this.value.toString());
       }
    },
