@@ -97,7 +97,8 @@ Depending on your distribution, you will need to run the following command:
 
 **Italian Translation** (46%) / [Giuseppe Gigliotti](https://github.com/ReverbOD) [[#20](https://github.com/Fabio286/antares/pull/20)]  
 **Arabic Translation** (45%) / [Mohd-PH](https://github.com/Mohd-PH) [[#29](https://github.com/Fabio286/antares/pull/29)]  
-**Spanish Translation** (46%) / [hongkfui](https://github.com/hongkfui) [[#32](https://github.com/Fabio286/antares/pull/32)]
+**Spanish Translation** (46%) / [hongkfui](https://github.com/hongkfui) [[#32](https://github.com/Fabio286/antares/pull/32)]  
+**French Translation** (100%) / [MrAnyx](https://github.com/MrAnyx) [[#32](https://github.com/Fabio286/antares/pull/44)]
 
 ## Reviews
 

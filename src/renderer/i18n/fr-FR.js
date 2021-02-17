@@ -348,19 +348,5 @@ module.exports = {
       model: 'Modèle',
       fuel: 'Carburant',
       vin: 'Vin'
-   },
-   // Date and Time
-   short: {
-      year: 'numérique',
-      month: 'court',
-      day: 'numérique'
-   },
-   long: {
-      year: 'numérique',
-      month: 'court',
-      day: 'numérique',
-      weekday: 'court',
-      hour: 'numérique',
-      minute: 'numérique'
    }
 };
