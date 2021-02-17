@@ -1,5 +1,5 @@
 <template>
-   <fieldset class="input-group mb-0" :disabled="!fakerGroups.length">
+   <fieldset class="input-group mb-0">
       <select
          v-model="selectedGroup"
          class="form-select"
@@ -50,13 +50,13 @@
          :type="inputProps().type"
          :disabled="!isChecked"
       >
-      <input
+      <BaseUploadInput
          v-else-if="inputProps().type === 'file'"
-         ref="formInput"
-         class="form-input"
-         type="file"
-         :disabled="!isChecked"
-      >
+         :value="selectedValue"
+         :message="$t('word.browse')"
+         @clear="clearValue"
+         @change="filesChange($event)"
+      />
       <input
          v-else-if="inputProps().type === 'number'"
          ref="formInput"
@@ -92,13 +92,15 @@
 <script>
 import { mask } from 'vue-the-mask';
 import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
+import BaseUploadInput from '@/components/BaseUploadInput';
 import ForeignKeySelect from '@/components/ForeignKeySelect';
 import FakerMethods from 'common/FakerMethods';
 
 export default {
    name: 'FakerSelect',
    components: {
-      ForeignKeySelect
+      ForeignKeySelect,
+      BaseUploadInput
    },
    directives: {
       mask
@@ -207,6 +209,15 @@ export default {
       },
       getKeyUsage (keyName) {
          return this.keyUsage.find(key => key.field === keyName);
+      },
+      filesChange (event) {
+         const { files } = event.target;
+         if (!files.length) return;
+
+         this.selectedValue = files[0].path;
+      },
+      clearValue () {
+         this.selectedValue = '';
       },
       onChange () {
          this.$emit('update:value', {

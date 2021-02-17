@@ -72,6 +72,7 @@ export default {
   background-color: $bg-color-gray;
   transition: background 0.2s, border 0.2s, box-shadow 0.2s, color 0.2s;
   position: relative;
+  flex: 1 1 auto;
 
   > span {
     padding: 0.25rem 0.4rem;
