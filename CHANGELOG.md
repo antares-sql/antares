@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.17](https://github.com/Fabio286/antares/compare/v0.0.16...v0.0.17) (2021-02-17)
+
+
+### Features
+
+* Added french language ([18a93ef](https://github.com/Fabio286/antares/commit/18a93ef1aae530e69c9062bbeb08a3beec206eda))
+* fake table data generator ([a176174](https://github.com/Fabio286/antares/commit/a176174b8d7dc232920f4cd7c5e3f8e4c58d51a0))
+* min and max option for random floats and numbers ([6c62052](https://github.com/Fabio286/antares/commit/6c62052b4764731c774fef90784342447b36deb7))
+* support to fake data locales ([970de49](https://github.com/Fabio286/antares/commit/970de4962b3bffec271bfa6d4747e6fb9d408ba6))
+
+
+### Bug Fixes
+
+* **UI:** file uploader in table filler ([b5a8283](https://github.com/Fabio286/antares/commit/b5a828309f067636eae2120032f07e01233706e2))
+* **UI:** no foreign key select editing query results ([5b21d17](https://github.com/Fabio286/antares/commit/5b21d17f3a8f2482c3aafe85f26c34cd3c0a1fcf))
+* cut faker text based on field length ([288ff4c](https://github.com/Fabio286/antares/commit/288ff4c1a1c77f4b8b86b24649d805836366fdd3))
+* wrong date or time detection in field default ([9d5ebef](https://github.com/Fabio286/antares/commit/9d5ebefdced999af595f3d8dc2fac2b18fa8258b))
+* **UI:** better text on ssl file selectors ([9a19085](https://github.com/Fabio286/antares/commit/9a190854fe3c73ed4e7f89545ff259e15ee9f947))
+* **UI:** wrong length for char fields on table header ([0f69d1d](https://github.com/Fabio286/antares/commit/0f69d1dbb7958e45059b6b738c845abea1ad3225))
+
+
+### Improvements
+
+* **core:** bulk inserts support ([b0576ac](https://github.com/Fabio286/antares/commit/b0576acdf65d41c1c8e0b0bca6cf6522dcb372be))
+
 ### [0.0.16](https://github.com/Fabio286/antares/compare/v0.0.15...v0.0.16) (2021-02-06)
 
 
