@@ -136,6 +136,8 @@ export default {
             this.localType = 'datetime';
          else if (TIME.includes(this.type))
             this.localType = 'time';
+         else
+            this.localType = 'none';
 
          return FakerMethods.getGroupsByType(this.localType);
       },

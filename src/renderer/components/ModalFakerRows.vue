@@ -184,7 +184,7 @@
 
 <script>
 import moment from 'moment';
-import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB } from 'common/fieldTypes';
+import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
 import { mask } from 'vue-the-mask';
 import { mapGetters, mapActions } from 'vuex';
 import Tables from '@/ipc-api/Tables';
@@ -261,6 +261,9 @@ export default {
 
             if ([...TIME, ...DATE].includes(field.type))
                fieldDefault = field.default;
+
+            if (BIT.includes(field.type))
+               fieldDefault = field.default.replaceAll('\'', '').replaceAll('b', '');
 
             if (DATETIME.includes(field.type)) {
                if (field.default && field.default.toLowerCase().includes('current_timestamp')) {

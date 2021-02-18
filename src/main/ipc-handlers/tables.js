@@ -232,6 +232,8 @@ export default (connections) => {
                      else
                         escapedParam = '""';
                   }
+                  else if (BIT.includes(type))
+                     escapedParam = `b'${sqlEscaper(params.row[key].value)}'`;
                   else
                      escapedParam = `"${sqlEscaper(params.row[key].value)}"`;
 
