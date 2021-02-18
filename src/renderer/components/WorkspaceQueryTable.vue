@@ -41,7 +41,7 @@
                         />
                         <span>{{ field.alias || field.name }}</span>
                         <i
-                           v-if="currentSort === field.name || currentSort === `${field.table}.${field.name}`"
+                           v-if="idSortable && currentSort === field.name || currentSort === `${field.table}.${field.name}`"
                            class="mdi sort-icon"
                            :class="currentSortDir === 'asc' ? 'mdi-sort-ascending':'mdi-sort-descending'"
                         />
@@ -123,6 +123,9 @@ export default {
       },
       primaryField () {
          return this.fields.filter(field => ['pri', 'uni'].includes(field.key))[0] || false;
+      },
+      idSortable () {
+         return this.fields.every(field => field.name);
       },
       isHardSort () {
          return this.mode === 'table' && this.localResults.length === 1000;
@@ -328,6 +331,8 @@ export default {
          this.isContext = true;
       },
       sort (field) {
+         if (!this.idSortable) return;
+
          if (this.mode === 'query')
             field = `${this.getTable(this.resultsetIndex)}.${field}`;
 
