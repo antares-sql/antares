@@ -142,13 +142,14 @@ export default {
    },
    computed: {
       ...mapGetters({
-         getWorkspace: 'workspaces/getWorkspace'
+         getWorkspace: 'workspaces/getWorkspace',
+         selectedWorkspace: 'workspaces/getSelected'
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
       isSelected () {
-         return this.workspace.selected_tab === 'data';
+         return this.workspace.selected_tab === 'data' && this.workspace.uid === this.selectedWorkspace;
       },
       isTable () {
          return !!this.workspace.breadcrumbs.table;

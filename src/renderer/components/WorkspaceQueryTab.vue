@@ -17,7 +17,7 @@
                   class="btn btn-primary btn-sm"
                   :class="{'loading':isQuering}"
                   :disabled="!query"
-                  title="F9"
+                  title="F5"
                   @click="runQuery(query)"
                >
                   <span>{{ $t('word.run') }}</span>
@@ -89,10 +89,14 @@ export default {
    },
    computed: {
       ...mapGetters({
-         getWorkspace: 'workspaces/getWorkspace'
+         getWorkspace: 'workspaces/getWorkspace',
+         selectedWorkspace: 'workspaces/getSelected'
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
+      },
+      isWorkspaceSelected () {
+         return this.workspace.uid === this.selectedWorkspace;
       }
    },
    created () {
@@ -169,9 +173,9 @@ export default {
             this.$refs.queryEditor.editor.resize();
       },
       onKey (e) {
-         if (this.isSelected) {
+         if (this.isSelected && this.isWorkspaceSelected) {
             e.stopPropagation();
-            if (e.key === 'F9')
+            if (e.key === 'F5')
                this.runQuery(this.query);
          }
       }
