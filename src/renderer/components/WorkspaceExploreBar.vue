@@ -117,7 +117,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import _ from 'lodash';// TODO: remove
 
 import Tables from '@/ipc-api/Tables';
 import Views from '@/ipc-api/Views';
@@ -172,6 +171,7 @@ export default {
          isNewSchedulerModal: false,
 
          localWidth: null,
+         debounceInterval: null,
          isDatabaseContext: false,
          isTableContext: false,
          isMiscContext: false,
@@ -199,9 +199,13 @@ export default {
       }
    },
    watch: {
-      localWidth: _.debounce(function (val) {
-         this.changeExplorebarSize(val);
-      }, 500),
+      localWidth (val) {
+         clearTimeout(this.debounceInterval);
+
+         this.debounceInterval = setTimeout(() => {
+            this.changeExplorebarSize(val);
+         }, 500);
+      },
       isSelected (val) {
          if (val) this.localWidth = this.explorebarSize;
       }
