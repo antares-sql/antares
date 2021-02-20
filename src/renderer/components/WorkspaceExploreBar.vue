@@ -27,6 +27,17 @@
                />
             </span>
          </div>
+         <div class="workspace-explorebar-search">
+            <div v-if="workspace.connected" class="has-icon-right">
+               <input
+                  v-model="searchTerm"
+                  class="form-input input-sm"
+                  type="text"
+                  :placeholder="$t('message.searchForElements')"
+               >
+               <i class="form-icon mdi mdi-magnify mdi-18px" />
+            </div>
+         </div>
          <WorkspaceConnectPanel
             v-if="!workspace.connected"
             class="workspace-explorebar-body"
@@ -171,7 +182,8 @@ export default {
          isNewSchedulerModal: false,
 
          localWidth: null,
-         debounceInterval: null,
+         explorebarWidthInterval: null,
+         searchTermInterval: null,
          isDatabaseContext: false,
          isTableContext: false,
          isMiscContext: false,
@@ -182,7 +194,8 @@ export default {
 
          selectedDatabase: '',
          selectedTable: null,
-         selectedMisc: null
+         selectedMisc: null,
+         searchTerm: ''
       };
    },
    computed: {
@@ -200,14 +213,21 @@ export default {
    },
    watch: {
       localWidth (val) {
-         clearTimeout(this.debounceInterval);
+         clearTimeout(this.explorebarWidthInterval);
 
-         this.debounceInterval = setTimeout(() => {
+         this.explorebarWidthInterval = setTimeout(() => {
             this.changeExplorebarSize(val);
          }, 500);
       },
       isSelected (val) {
          if (val) this.localWidth = this.explorebarSize;
+      },
+      searchTerm () {
+         clearTimeout(this.searchTermInterval);
+
+         this.searchTermInterval = setTimeout(() => {
+            this.setSearchTerm(this.searchTerm);
+         }, 200);
       }
    },
    created () {
@@ -229,6 +249,7 @@ export default {
          refreshStructure: 'workspaces/refreshStructure',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
          selectTab: 'workspaces/selectTab',
+         setSearchTerm: 'workspaces/setSearchTerm',
          addNotification: 'notifications/addNotification',
          changeExplorebarSize: 'settings/changeExplorebarSize'
       }),
@@ -481,9 +502,40 @@ export default {
       }
     }
 
+    .workspace-explorebar-search {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.6rem;
+      height: 28px;
+
+      .has-icon-right {
+        width: 100%;
+        padding: 0.1rem;
+
+        .form-icon {
+          opacity: 0.5;
+          transition: opacity 0.2s;
+        }
+
+        .form-input {
+          height: 1.2rem;
+          padding-left: 0.2rem;
+
+          &:focus + .form-icon {
+            opacity: 0.9;
+          }
+
+          &::placeholder {
+            opacity: 0.6;
+          }
+        }
+      }
+    }
+
     .workspace-explorebar-body {
       width: 100%;
-      height: calc((100vh - 30px) - #{$excluding-size});
+      height: calc((100vh - 58px) - #{$excluding-size});
       overflow: overlay;
       padding: 0 0.1rem;
     }

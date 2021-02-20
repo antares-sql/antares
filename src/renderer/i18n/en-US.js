@@ -184,7 +184,8 @@ module.exports = {
       enableSsl: 'Enable SSL',
       manualValue: 'Manual value',
       tableFiller: 'Table Filler',
-      fakeDataLanguage: 'Fake data language'
+      fakeDataLanguage: 'Fake data language',
+      searchForElements: 'Search for elements'
    },
    faker: {
       address: 'Address',

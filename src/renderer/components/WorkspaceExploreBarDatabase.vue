@@ -15,7 +15,7 @@
          <div class="database-tables">
             <ul class="menu menu-nav pt-0">
                <li
-                  v-for="table of database.tables"
+                  v-for="table of filteredTables"
                   :key="table.name"
                   class="menu-item"
                   :class="{'text-bold': breadcrumbs.schema === database.name && [breadcrumbs.table, breadcrumbs.view].includes(table.name)}"
@@ -24,7 +24,7 @@
                >
                   <a class="table-name">
                      <i class="table-icon mdi mdi-18px mr-1" :class="table.type === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
-                     <span>{{ table.name }}</span>
+                     <span v-html="highlightWord(table.name)" />
                   </a>
                   <div
                      v-if="table.type === 'table'"
@@ -37,7 +37,7 @@
             </ul>
          </div>
 
-         <div v-if="database.triggers.length" class="database-misc">
+         <div v-if="filteredTriggers.length" class="database-misc">
             <details class="accordion">
                <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.trigger}">
                   <i class="misc-icon mdi mdi-18px mdi-folder-cog mr-1" />
@@ -47,7 +47,7 @@
                   <div>
                      <ul class="menu menu-nav pt-0">
                         <li
-                           v-for="trigger of database.triggers"
+                           v-for="trigger of filteredTriggers"
                            :key="trigger.name"
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.trigger === trigger.name}"
@@ -56,7 +56,7 @@
                         >
                            <a class="table-name">
                               <i class="table-icon mdi mdi-table-cog mdi-18px mr-1" />
-                              <span>{{ trigger.name }}</span>
+                              <span v-html="highlightWord(trigger.name)" />
                            </a>
                         </li>
                      </ul>
@@ -65,7 +65,7 @@
             </details>
          </div>
 
-         <div v-if="database.procedures.length" class="database-misc">
+         <div v-if="filteredProcedures.length" class="database-misc">
             <details class="accordion">
                <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.procedure}">
                   <i class="misc-icon mdi mdi-18px mdi-folder-sync mr-1" />
@@ -75,7 +75,7 @@
                   <div>
                      <ul class="menu menu-nav pt-0">
                         <li
-                           v-for="procedure of database.procedures"
+                           v-for="procedure of filteredProcedures"
                            :key="procedure.name"
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.procedure === procedure.name}"
@@ -84,7 +84,7 @@
                         >
                            <a class="table-name">
                               <i class="table-icon mdi mdi-sync-circle mdi-18px mr-1" />
-                              <span>{{ procedure.name }}</span>
+                              <span v-html="highlightWord(procedure.name)" />
                            </a>
                         </li>
                      </ul>
@@ -93,7 +93,7 @@
             </details>
          </div>
 
-         <div v-if="database.functions.length" class="database-misc">
+         <div v-if="filteredFunctions.length" class="database-misc">
             <details class="accordion">
                <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.function}">
                   <i class="misc-icon mdi mdi-18px mdi-folder-move mr-1" />
@@ -103,7 +103,7 @@
                   <div>
                      <ul class="menu menu-nav pt-0">
                         <li
-                           v-for="func of database.functions"
+                           v-for="func of filteredFunctions"
                            :key="func.name"
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.function === func.name}"
@@ -112,7 +112,7 @@
                         >
                            <a class="table-name">
                               <i class="table-icon mdi mdi-arrow-right-bold-box mdi-18px mr-1" />
-                              <span>{{ func.name }}</span>
+                              <span v-html="highlightWord(func.name)" />
                            </a>
                         </li>
                      </ul>
@@ -121,7 +121,7 @@
             </details>
          </div>
 
-         <div v-if="database.schedulers.length" class="database-misc">
+         <div v-if="filteredSchedulers.length" class="database-misc">
             <details class="accordion">
                <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.scheduler}">
                   <i class="misc-icon mdi mdi-18px mdi-folder-clock mr-1" />
@@ -131,7 +131,7 @@
                   <div>
                      <ul class="menu menu-nav pt-0">
                         <li
-                           v-for="scheduler of database.schedulers"
+                           v-for="scheduler of filteredSchedulers"
                            :key="scheduler.name"
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.scheduler === scheduler.name}"
@@ -140,7 +140,7 @@
                         >
                            <a class="table-name">
                               <i class="table-icon mdi mdi-calendar-clock mdi-18px mr-1" />
-                              <span>{{ scheduler.name }}</span>
+                              <span v-html="highlightWord(scheduler.name)" />
                            </a>
                         </li>
                      </ul>
@@ -170,8 +170,27 @@ export default {
    computed: {
       ...mapGetters({
          getLoadedSchemas: 'workspaces/getLoadedSchemas',
-         getWorkspace: 'workspaces/getWorkspace'
+         getWorkspace: 'workspaces/getWorkspace',
+         getSearchTerm: 'workspaces/getSearchTerm'
       }),
+      searchTerm () {
+         return this.getSearchTerm(this.connection.uid);
+      },
+      filteredTables () {
+         return this.database.tables.filter(table => table.name.search(this.searchTerm) >= 0);
+      },
+      filteredTriggers () {
+         return this.database.triggers.filter(trigger => trigger.name.search(this.searchTerm) >= 0);
+      },
+      filteredProcedures () {
+         return this.database.procedures.filter(procedure => procedure.name.search(this.searchTerm) >= 0);
+      },
+      filteredFunctions () {
+         return this.database.functions.filter(func => func.name.search(this.searchTerm) >= 0);
+      },
+      filteredSchedulers () {
+         return this.database.schedulers.filter(scheduler => scheduler.name.search(this.searchTerm) >= 0);
+      },
       breadcrumbs () {
          return this.getWorkspace(this.connection.uid).breadcrumbs;
       },
@@ -222,6 +241,14 @@ export default {
       setBreadcrumbs (payload) {
          if (this.breadcrumbs.schema === payload.schema && this.breadcrumbs.table === payload.table) return;
          this.changeBreadcrumbs(payload);
+      },
+      highlightWord (string) {
+         if (this.searchTerm) {
+            const regexp = new RegExp(`(${this.searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            return string.replace(regexp, '<span class="text-primary">$1</span>');
+         }
+         else
+            return string;
       }
    }
 };

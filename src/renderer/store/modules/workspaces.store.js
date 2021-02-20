@@ -43,6 +43,9 @@ export default {
       getLoadedSchemas: state => uid => {
          return state.workspaces.find(workspace => workspace.uid === uid).loaded_schemas;
       },
+      getSearchTerm: state => uid => {
+         return state.workspaces.find(workspace => workspace.uid === uid).search_term;
+      },
       isUnsavedDiscardModal: state => {
          return state.is_unsaved_discard_modal;
       }
@@ -138,6 +141,14 @@ export default {
             ? {
                ...workspace,
                breadcrumbs
+            }
+            : workspace);
+      },
+      SET_SEARCH_TERM (state, { uid, term }) {
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
+            ? {
+               ...workspace,
+               search_term: term
             }
             : workspace);
       },
@@ -368,6 +379,7 @@ export default {
             uid,
             connected: false,
             selected_tab: 0,
+            search_term: '',
             tabs: [],
             structure: {},
             variables: [],
@@ -414,6 +426,9 @@ export default {
 
          if (payload.schema)
             commit('ADD_LOADED_SCHEMA', { uid: getters.getSelected, schema: payload.schema });
+      },
+      setSearchTerm ({ commit, getters }, term) {
+         commit('SET_SEARCH_TERM', { uid: getters.getSelected, term });
       },
       newTab ({ commit }, uid) {
          const tab = uidGen('T');
