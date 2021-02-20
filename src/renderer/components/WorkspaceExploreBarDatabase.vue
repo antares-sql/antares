@@ -256,6 +256,13 @@ export default {
 
 <style lang="scss">
 .workspace-explorebar-database {
+   .database-name{
+      position: sticky;
+      top: 0;
+      background: $bg-color-gray;
+      z-index: 2;
+   }
+
   .database-name,
   .misc-name,
   a.table-name {
@@ -299,7 +306,7 @@ export default {
   .misc-name {
     &:hover {
       color: $body-font-color;
-      background: rgba($color: #fff, $alpha: 0.05);
+      background: $bg-color-light;
       border-radius: 2px;
     }
   }

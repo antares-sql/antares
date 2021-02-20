@@ -36,6 +36,7 @@
                <button
                   v-if="isTable"
                   class="btn btn-dark btn-sm"
+                  :disabled="isQuering"
                   @click="showFakerModal"
                >
                   <span>{{ $t('message.tableFiller') }}</span>
@@ -243,6 +244,7 @@ export default {
          this.isAddModal = false;
       },
       showFakerModal () {
+         if (this.isQuering) return;
          this.isFakerModal = true;
       },
       hideFakerModal () {
