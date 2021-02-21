@@ -93,7 +93,8 @@ module.exports = {
       ciphers: 'Ciphers',
       upload: 'Upload',
       browse: 'Browse',
-      faker: 'Faker'
+      faker: 'Faker',
+      content: 'Content'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',

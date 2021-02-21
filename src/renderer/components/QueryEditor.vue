@@ -1,7 +1,7 @@
 <template>
    <div class="editor-wrapper">
       <div
-         ref="editor"
+         :id="`editor-${id}`"
          class="editor"
          :style="{height: `${height}px`}"
       />
@@ -29,7 +29,8 @@ export default {
       return {
          editor: null,
          fields: [],
-         baseCompleter: []
+         baseCompleter: [],
+         id: null
       };
    },
    computed: {
@@ -165,8 +166,11 @@ export default {
          }
       }
    },
+   created () {
+      this.id = this._uid;
+   },
    mounted () {
-      this.editor = ace.edit(this.$refs.editor, {
+      this.editor = ace.edit(`editor-${this.id}`, {
          mode: `ace/mode/${this.mode}`,
          theme: `ace/theme/${this.editorTheme}`,
          value: this.value,

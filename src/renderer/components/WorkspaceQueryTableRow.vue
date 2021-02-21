@@ -61,14 +61,48 @@
          <div :slot="'body'">
             <div class="mb-2">
                <div>
-                  <textarea
-                     v-model="editingContent"
-                     class="form-input textarea-editor"
+                  <TextEditor
+                     :value.sync="editingContent"
+                     editor-class="textarea-editor"
+                     :mode="editorMode"
                   />
                </div>
-               <div class="editor-field-info">
+               <div class="editor-field-info p-vcentered">
                   <div><b>{{ $t('word.size') }}</b>: {{ editingContent ? editingContent.length : 0 }}</div>
-                  <div><b>{{ $t('word.type') }}</b>: {{ editingType.toUpperCase() }}</div>
+                  <div class="d-flex">
+                     <div class="d-flex p-vcentered mr-4">
+                        <label for="editorMode" class="form-label mr-2">
+                           <b>{{ $t('word.content') }}</b>:
+                        </label>
+                        <select
+                           id="editorMode"
+                           v-model="editorMode"
+                           class="form-select select-sm"
+                        >
+                           <option value="text">
+                              TEXT
+                           </option>
+                           <option value="html">
+                              HTML
+                           </option>
+                           <option value="xml">
+                              XML
+                           </option>
+                           <option value="json">
+                              JSON
+                           </option>
+                           <option value="svg">
+                              SVG
+                           </option>
+                           <option value="yaml">
+                              YAML
+                           </option>
+                        </select>
+                     </div>
+                     <div class="p-vcentered">
+                        <b>{{ $t('word.type') }}</b>: {{ editingType.toUpperCase() }}
+                     </div>
+                  </div>
                </div>
             </div>
          </div>
@@ -138,12 +172,14 @@ import hexToBinary from 'common/libs/hexToBinary';
 import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
 import { mask } from 'vue-the-mask';
 import ConfirmModal from '@/components/BaseConfirmModal';
+import TextEditor from '@/components/BaseTextEditor';
 import ForeignKeySelect from '@/components/ForeignKeySelect';
 
 export default {
    name: 'WorkspaceQueryTableRow',
    components: {
       ConfirmModal,
+      TextEditor,
       ForeignKeySelect
    },
    directives: {
@@ -206,6 +242,7 @@ export default {
          editingContent: null,
          editingType: null,
          editingField: null,
+         editorMode: 'text',
          contentInfo: {
             ext: '',
             mime: '',
@@ -473,7 +510,7 @@ export default {
 }
 
 .editor-field-info {
-  margin-top: 0.6rem;
+  margin-top: 0.4rem;
   display: flex;
   justify-content: space-between;
   white-space: normal;
