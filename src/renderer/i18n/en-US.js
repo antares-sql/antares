@@ -94,7 +94,10 @@ module.exports = {
       upload: 'Upload',
       browse: 'Browse',
       faker: 'Faker',
-      content: 'Content'
+      content: 'Content',
+      cut: 'Cut',
+      copy: 'Copy',
+      paste: 'Paste'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -186,7 +189,8 @@ module.exports = {
       manualValue: 'Manual value',
       tableFiller: 'Table Filler',
       fakeDataLanguage: 'Fake data language',
-      searchForElements: 'Search for elements'
+      searchForElements: 'Search for elements',
+      selectAll: 'Select all'
    },
    faker: {
       address: 'Address',

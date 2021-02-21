@@ -324,6 +324,8 @@ export default {
             this.selectedRows = [row];
       },
       contextMenu (event, cell) {
+         if (event.target.localName === 'input') return;
+
          this.selectedCell = cell;
          if (!this.selectedRows.includes(cell.id))
             this.selectedRows = [cell.id];

@@ -24,7 +24,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, remote } from 'electron';
 
 export default {
    name: 'App',
@@ -54,6 +54,45 @@ export default {
    },
    mounted () {
       ipcRenderer.send('check-for-updates');
+
+      const Menu = remote.Menu;
+
+      const InputMenu = Menu.buildFromTemplate([
+         {
+            label: this.$t('word.cut'),
+            role: 'cut'
+         },
+         {
+            label: this.$t('word.copy'),
+            role: 'copy'
+         },
+         {
+            label: this.$t('word.paste'),
+            role: 'paste'
+         },
+         {
+            type: 'separator'
+         },
+         {
+            label: this.$t('message.selectAll'),
+            role: 'selectall'
+         }
+      ]);
+
+      document.body.addEventListener('contextmenu', (e) => {
+         e.preventDefault();
+         e.stopPropagation();
+
+         let node = e.target;
+
+         while (node) {
+            if (node.nodeName.match(/^(input|textarea)$/i) || node.isContentEditable) {
+               InputMenu.popup(remote.getCurrentWindow());
+               break;
+            }
+            node = node.parentNode;
+         }
+      });
    },
    methods: {
       ...mapActions({

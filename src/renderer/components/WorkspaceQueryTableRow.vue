@@ -68,39 +68,43 @@
                   />
                </div>
                <div class="editor-field-info p-vcentered">
-                  <div><b>{{ $t('word.size') }}</b>: {{ editingContent ? editingContent.length : 0 }}</div>
+                  <div class="d-flex p-vcentered">
+                     <label for="editorMode" class="form-label mr-2">
+                        <b>{{ $t('word.content') }}</b>:
+                     </label>
+                     <select
+                        id="editorMode"
+                        v-model="editorMode"
+                        class="form-select select-sm"
+                     >
+                        <option value="text">
+                           TEXT
+                        </option>
+                        <option value="html">
+                           HTML
+                        </option>
+                        <option value="xml">
+                           XML
+                        </option>
+                        <option value="json">
+                           JSON
+                        </option>
+                        <option value="svg">
+                           SVG
+                        </option>
+                        <option value="yaml">
+                           YAML
+                        </option>
+                     </select>
+                  </div>
                   <div class="d-flex">
-                     <div class="d-flex p-vcentered mr-4">
-                        <label for="editorMode" class="form-label mr-2">
-                           <b>{{ $t('word.content') }}</b>:
-                        </label>
-                        <select
-                           id="editorMode"
-                           v-model="editorMode"
-                           class="form-select select-sm"
-                        >
-                           <option value="text">
-                              TEXT
-                           </option>
-                           <option value="html">
-                              HTML
-                           </option>
-                           <option value="xml">
-                              XML
-                           </option>
-                           <option value="json">
-                              JSON
-                           </option>
-                           <option value="svg">
-                              SVG
-                           </option>
-                           <option value="yaml">
-                              YAML
-                           </option>
-                        </select>
-                     </div>
                      <div class="p-vcentered">
-                        <b>{{ $t('word.type') }}</b>: {{ editingType.toUpperCase() }}
+                        <div class="mr-4">
+                           <b>{{ $t('word.size') }}</b>: {{ editingContent ? editingContent.length : 0 }}
+                        </div>
+                        <div>
+                           <b>{{ $t('word.type') }}</b>: {{ editingType.toUpperCase() }}
+                        </div>
                      </div>
                   </div>
                </div>
