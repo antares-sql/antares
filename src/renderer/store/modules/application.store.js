@@ -11,12 +11,14 @@ export default {
       selected_setting_tab: 'general',
       selected_conection: {},
       update_status: 'noupdate', // noupdate, available, checking, nocheck, downloading, downloaded
-      download_progress: 0
+      download_progress: 0,
+      base_completer: [] // Needed to reset ace editor, due global-only ace completer
    },
    getters: {
       isLoading: state => state.is_loading,
       appName: state => state.app_name,
       appVersion: state => state.app_version,
+      getBaseCompleter: state => state.base_completer,
       getSelectedConnection: state => state.selected_conection,
       isNewModal: state => state.is_new_modal,
       isSettingModal: state => state.is_setting_modal,
@@ -27,6 +29,9 @@ export default {
    mutations: {
       SET_LOADING_STATUS (state, payload) {
          state.is_loading = payload;
+      },
+      SET_BASE_COMPLETER (state, payload) {
+         state.base_completer = payload;
       },
       SHOW_NEW_CONNECTION_MODAL (state) {
          state.is_new_modal = true;
@@ -51,6 +56,9 @@ export default {
    actions: {
       setLoadingStatus ({ commit }, payload) {
          commit('SET_LOADING_STATUS', payload);
+      },
+      setBaseCompleter ({ commit }, payload) {
+         commit('SET_BASE_COMPLETER', payload);
       },
       // Modals
       showNewConnModal ({ commit }) {

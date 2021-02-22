@@ -12,7 +12,7 @@
 import * as ace from 'ace-builds';
 import 'ace-builds/webpack-resolver';
 import '../libs/ext-language_tools';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import Tables from '@/ipc-api/Tables';
 
 export default {
@@ -20,6 +20,7 @@ export default {
    props: {
       value: String,
       workspace: Object,
+      isSelected: Boolean,
       schema: { type: String, default: '' },
       autoFocus: { type: Boolean, default: false },
       readOnly: { type: Boolean, default: false },
@@ -29,15 +30,17 @@ export default {
       return {
          editor: null,
          fields: [],
-         baseCompleter: [],
-         id: null
+         customCompleter: [],
+         id: null,
+         lastSchema: null
       };
    },
    computed: {
       ...mapGetters({
          editorTheme: 'settings/getEditorTheme',
          autoComplete: 'settings/getAutoComplete',
-         lineWrap: 'settings/getLineWrap'
+         lineWrap: 'settings/getLineWrap',
+         baseCompleter: 'application/getBaseCompleter'
       }),
       tables () {
          return this.workspace
@@ -164,10 +167,21 @@ export default {
                wrap: this.lineWrap
             });
          }
+      },
+      isSelected () {
+         if (this.isSelected)
+            this.lastSchema = this.schema;
+      },
+      lastSchema () {
+         if (this.editor) {
+            this.editor.completers = this.baseCompleter.map(el => Object.assign({}, el));
+            this.setCustomCompleter();
+         }
       }
    },
    created () {
       this.id = this._uid;
+      this.lastSchema = this.schema;
    },
    mounted () {
       this.editor = ace.edit(`editor-${this.id}`, {
@@ -186,26 +200,10 @@ export default {
          enableLiveAutocompletion: this.autoComplete
       });
 
-      this.editor.completers.push({
-         getCompletions: (editor, session, pos, prefix, callback) => {
-            const completions = [];
-            [
-               ...this.tables,
-               ...this.triggers,
-               ...this.procedures,
-               ...this.functions,
-               ...this.schedulers
-            ].forEach(el => {
-               completions.push({
-                  value: el.name,
-                  meta: el.type
-               });
-            });
-            callback(null, completions);
-         }
-      });
+      if (!this.baseCompleter.length)
+         this.setBaseCompleters(this.editor.completers.map(el => Object.assign({}, el)));
 
-      this.baseCompleter = this.editor.completers;
+      this.setCustomCompleter();
 
       this.editor.commands.on('afterExec', e => {
          if (['insertstring', 'backspace', 'del'].includes(e.command.name)) {
@@ -228,13 +226,13 @@ export default {
                      }).catch(console.log);
                   }
                   else
-                     this.editor.completers = this.baseCompleter;
+                     this.editor.completers = this.customCompleter;
                }
                else
-                  this.editor.completers = this.baseCompleter;
+                  this.editor.completers = this.customCompleter;
             }
             else
-               this.editor.completers = this.baseCompleter;
+               this.editor.completers = this.customCompleter;
          }
       });
 
@@ -253,6 +251,33 @@ export default {
       setTimeout(() => {
          this.editor.resize();
       }, 20);
+   },
+   methods: {
+      ...mapActions({
+         setBaseCompleters: 'application/setBaseCompleter'
+      }),
+      setCustomCompleter () {
+         this.editor.completers.push({
+            getCompletions: (editor, session, pos, prefix, callback) => {
+               const completions = [];
+               [
+                  ...this.tables,
+                  ...this.triggers,
+                  ...this.procedures,
+                  ...this.functions,
+                  ...this.schedulers
+               ].forEach(el => {
+                  completions.push({
+                     value: el.name,
+                     meta: el.type
+                  });
+               });
+               callback(null, completions);
+            }
+         });
+
+         this.customCompleter = this.editor.completers;
+      }
    }
 };
 </script>

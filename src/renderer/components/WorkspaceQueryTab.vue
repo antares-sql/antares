@@ -2,12 +2,13 @@
    <div v-show="isSelected" class="workspace-query-tab column col-12 columns col-gapless">
       <div class="workspace-query-runner column col-12">
          <QueryEditor
-            v-if="isSelected"
+            v-show="isSelected"
             ref="queryEditor"
             :auto-focus="true"
             :value.sync="query"
             :workspace="workspace"
             :schema="schema"
+            :is-selected="isSelected"
             :height="editorHeight"
          />
          <div ref="resizer" class="query-area-resizer" />
