@@ -164,13 +164,20 @@ export default {
       },
       selectedTab () {
          if (
-            this.workspace.breadcrumbs.table === null &&
-            this.workspace.breadcrumbs.view === null &&
-            this.workspace.breadcrumbs.trigger === null &&
-            this.workspace.breadcrumbs.procedure === null &&
-            this.workspace.breadcrumbs.function === null &&
-            this.workspace.breadcrumbs.scheduler === null &&
-            ['data', 'prop'].includes(this.workspace.selected_tab)
+            (
+               this.workspace.breadcrumbs.table === null &&
+               this.workspace.breadcrumbs.view === null &&
+               this.workspace.breadcrumbs.trigger === null &&
+               this.workspace.breadcrumbs.procedure === null &&
+               this.workspace.breadcrumbs.function === null &&
+               this.workspace.breadcrumbs.scheduler === null &&
+               ['data', 'prop'].includes(this.workspace.selected_tab)
+            ) ||
+            (
+               this.workspace.breadcrumbs.table === null &&
+               this.workspace.breadcrumbs.view === null &&
+               this.workspace.selected_tab === 'data'
+            )
          )
             return this.queryTabs[0].uid;
 
