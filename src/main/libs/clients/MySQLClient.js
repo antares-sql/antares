@@ -551,18 +551,18 @@ export class MySQLClient extends AntaresCore {
          }
 
          const parameters = row['Create Procedure']
-            .match(/(?<=\().*?(?=\))/s)[0]
+            .match(/(\([^()]*(?:(?:\([^()]*\))[^()]*)*\)\s*)/s)[0]
             .replaceAll('\r', '')
             .replaceAll('\t', '')
+            .slice(1, -1)
             .split(',')
             .map(el => {
                const param = el.split(' ');
                const type = param[2] ? param[2].replace(')', '').split('(') : ['', null];
-
                return {
                   name: param[1] ? param[1].replaceAll('`', '') : '',
                   type: type[0].replaceAll('\n', ''),
-                  length: +type[1],
+                  length: +type[1].replace(/\D/g, ''),
                   context: param[0] ? param[0].replace('\n', '') : ''
                };
             }).filter(el => el.name);
@@ -671,9 +671,10 @@ export class MySQLClient extends AntaresCore {
          }
 
          const parameters = row['Create Function']
-            .match(/(?<=\().*?(?=\))/s)[0]
+            .match(/(\([^()]*(?:(?:\([^()]*\))[^()]*)*\)\s*)/s)[0]
             .replaceAll('\r', '')
             .replaceAll('\t', '')
+            .slice(1, -1)
             .split(',')
             .map(el => {
                const param = el.split(' ');
@@ -682,7 +683,7 @@ export class MySQLClient extends AntaresCore {
                return {
                   name: param[0] ? param[0].replaceAll('`', '') : '',
                   type: type[0],
-                  length: +type[1]
+                  length: +type[1].replace(/\D/g, '')
                };
             }).filter(el => el.name);
 
