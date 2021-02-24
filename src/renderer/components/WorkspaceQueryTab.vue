@@ -48,7 +48,7 @@
             v-show="!isQuering"
             ref="queryTable"
             :results="results"
-            :tab-uid="tabUid"
+            :tab-uid="tab.uid"
             :conn-uid="connection.uid"
             mode="query"
             @update-field="updateField"
@@ -74,7 +74,7 @@ export default {
    mixins: [tableTabs],
    props: {
       connection: Object,
-      tabUid: String,
+      tab: Object,
       isSelected: Boolean
    },
    data () {
@@ -101,6 +101,8 @@ export default {
       }
    },
    created () {
+      this.query = this.tab.content;
+
       window.addEventListener('keydown', this.onKey);
    },
    mounted () {
@@ -112,6 +114,9 @@ export default {
          window.addEventListener('mousemove', this.resize);
          window.addEventListener('mouseup', this.stopResize);
       });
+
+      if (this.tab.autorun)
+         this.runQuery(this.query);
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);

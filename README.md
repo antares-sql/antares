@@ -74,8 +74,8 @@ Depending on your distribution, you will need to run the following command:
 
 - [x] MySQL/MariaDB
 - [ ] PostgreSQL
-- [ ] MSSQL
 - [ ] SQLite
+- [ ] MSSQL
 - [ ] OracleDB
 - [ ] More...
 

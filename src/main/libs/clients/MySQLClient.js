@@ -561,7 +561,7 @@ export class MySQLClient extends AntaresCore {
 
                return {
                   name: param[1] ? param[1].replaceAll('`', '') : '',
-                  type: type[0],
+                  type: type[0].replaceAll('\n', ''),
                   length: +type[1],
                   context: param[0] ? param[0].replace('\n', '') : ''
                };

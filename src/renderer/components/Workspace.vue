@@ -109,7 +109,7 @@
          <WorkspaceQueryTab
             v-for="tab of queryTabs"
             :key="tab.uid"
-            :tab-uid="tab.uid"
+            :tab="tab"
             :is-selected="selectedTab === tab.uid"
             :connection="connection"
          />
@@ -221,7 +221,7 @@ export default {
          removeTab: 'workspaces/removeTab'
       }),
       addTab () {
-         this.newTab(this.connection.uid);
+         this.newTab({ uid: this.connection.uid });
 
          if (!this.hasWheelEvent) {
             this.$refs.tabWrap.addEventListener('wheel', e => {

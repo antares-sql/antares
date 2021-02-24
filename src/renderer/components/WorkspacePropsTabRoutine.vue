@@ -27,7 +27,7 @@
                <button
                   class="btn btn-dark btn-sm disabled"
                   :disabled="isChanged"
-                  @click="false"
+                  @click="runRoutine"
                >
                   <span>{{ $t('word.run') }}</span>
                   <i class="mdi mdi-24px mdi-play ml-1" />
@@ -75,6 +75,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import { uidGen } from 'common/libs/uidGen';
 import QueryEditor from '@/components/QueryEditor';
 import BaseLoader from '@/components/BaseLoader';
 import WorkspacePropsRoutineOptionsModal from '@/components/WorkspacePropsRoutineOptionsModal';
@@ -165,7 +166,8 @@ export default {
          addNotification: 'notifications/addNotification',
          refreshStructure: 'workspaces/refreshStructure',
          setUnsavedChanges: 'workspaces/setUnsavedChanges',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         newTab: 'workspaces/newTab'
       }),
       async getRoutineData () {
          if (!this.routine) return;
@@ -182,6 +184,12 @@ export default {
             const { status, response } = await Routines.getRoutineInformations(params);
             if (status === 'success') {
                this.originalRoutine = response;
+
+               this.originalRoutine.parameters = [...this.originalRoutine.parameters.map(param => {
+                  param._id = uidGen();
+                  return param;
+               })];
+
                this.localRoutine = JSON.parse(JSON.stringify(this.originalRoutine));
                this.sqlProxy = this.localRoutine.sql;
             }
@@ -248,6 +256,23 @@ export default {
       },
       parametersUpdate (parameters) {
          this.localRoutine = { ...this.localRoutine, parameters };
+      },
+      runRoutine () { // TODO: create ask for params modal
+         let sql;
+         switch (this.connection.client) { // TODO: move in a better place
+            case 'maria':
+            case 'mysql':
+            case 'pg':
+               sql = `CALL \`${this.originalRoutine.name}\` ()`;
+               break;
+            case 'mssql':
+               sql = `EXEC ${this.originalRoutine.name}`;
+               break;
+            default:
+               sql = `CALL \`${this.originalRoutine.name}\` ()`;
+         }
+
+         this.newTab({ uid: this.connection.uid, content: sql, autorun: !this.originalRoutine.parameters.length });
       },
       showOptionsModal () {
          this.isOptionsModal = true;

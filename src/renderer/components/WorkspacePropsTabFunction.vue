@@ -75,6 +75,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import { uidGen } from 'common/libs/uidGen';
 import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
 import WorkspacePropsFunctionOptionsModal from '@/components/WorkspacePropsFunctionOptionsModal';
@@ -183,6 +184,12 @@ export default {
             const { status, response } = await Functions.getFunctionInformations(params);
             if (status === 'success') {
                this.originalFunction = response;
+
+               this.originalFunction.parameters = [...this.originalFunction.parameters.map(param => {
+                  param._id = uidGen();
+                  return param;
+               })];
+
                this.localFunction = JSON.parse(JSON.stringify(this.originalFunction));
                this.sqlProxy = this.localFunction.sql;
             }

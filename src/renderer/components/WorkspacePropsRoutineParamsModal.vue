@@ -2,7 +2,7 @@
    <ConfirmModal
       :confirm-text="$t('word.confirm')"
       size="medium"
-      @confirm="confirmIndexesChange"
+      @confirm="confirmParametersChange"
       @hide="$emit('hide')"
    >
       <template :slot="'header'">
@@ -34,10 +34,10 @@
                   <div ref="parametersPanel" class="panel-body p-0 pr-1">
                      <div
                         v-for="param in parametersProxy"
-                        :key="param.name"
+                        :key="param._id"
                         class="tile tile-centered c-hand mb-1 p-1"
-                        :class="{'selected-param': selectedParam === param.name}"
-                        @click="selectParameter($event, param.name)"
+                        :class="{'selected-param': selectedParam === param._id}"
+                        @click="selectParameter($event, param._id)"
                      >
                         <div class="tile-icon">
                            <div>
@@ -54,7 +54,7 @@
                            <button
                               class="btn btn-link remove-field p-0 mr-2"
                               :title="$t('word.delete')"
-                              @click.prevent="removeParameter(param.name)"
+                              @click.prevent="removeParameter(param._id)"
                            >
                               <i class="mdi mdi-close" />
                            </button>
@@ -170,6 +170,7 @@
 </template>
 
 <script>
+import { uidGen } from 'common/libs/uidGen';
 import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
@@ -193,7 +194,7 @@ export default {
    },
    computed: {
       selectedParamObj () {
-         return this.parametersProxy.find(param => param.name === this.selectedParam);
+         return this.parametersProxy.find(param => param._id === this.selectedParam);
       },
       isChanged () {
          return JSON.stringify(this.localParameters) !== JSON.stringify(this.parametersProxy);
@@ -213,12 +214,12 @@ export default {
       window.removeEventListener('resize', this.getModalInnerHeight);
    },
    methods: {
-      confirmIndexesChange () {
+      confirmParametersChange () {
          this.$emit('parameters-update', this.parametersProxy);
       },
-      selectParameter (event, name) {
-         if (this.selectedParam !== name && !event.target.classList.contains('remove-field'))
-            this.selectedParam = name;
+      selectParameter (event, uid) {
+         if (this.selectedParam !== uid && !event.target.classList.contains('remove-field'))
+            this.selectedParam = uid;
       },
       getModalInnerHeight () {
          const modalBody = document.querySelector('.modal-body');
@@ -227,6 +228,7 @@ export default {
       },
       addParameter () {
          this.parametersProxy = [...this.parametersProxy, {
+            _id: uidGen(),
             name: `Param${this.i++}`,
             type: 'INT',
             context: 'IN',
@@ -240,8 +242,8 @@ export default {
             this.$refs.parametersPanel.scrollTop = this.$refs.parametersPanel.scrollHeight + 60;
          }, 20);
       },
-      removeParameter (name) {
-         this.parametersProxy = this.parametersProxy.filter(param => param.name !== name);
+      removeParameter (uid) {
+         this.parametersProxy = this.parametersProxy.filter(param => param._id !== uid);
 
          if (this.selectedParam === name && this.parametersProxy.length)
             this.resetSelectedID();
@@ -254,7 +256,7 @@ export default {
             this.resetSelectedID();
       },
       resetSelectedID () {
-         this.selectedParam = this.parametersProxy.length ? this.parametersProxy[0].name : '';
+         this.selectedParam = this.parametersProxy.length ? this.parametersProxy[0]._id : '';
       }
    }
 };
