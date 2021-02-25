@@ -25,9 +25,9 @@
                <div class="divider-vert py-3" />
 
                <button
-                  class="btn btn-dark btn-sm disabled"
+                  class="btn btn-dark btn-sm"
                   :disabled="isChanged"
-                  @click="false"
+                  @click="runFunctionCheck"
                >
                   <span>{{ $t('word.run') }}</span>
                   <i class="mdi mdi-24px mdi-play ml-1" />
@@ -70,6 +70,12 @@
          @hide="hideParamsModal"
          @parameters-update="parametersUpdate"
       />
+      <ModalAskParameters
+         v-if="isAskingParameters"
+         :local-routine="localFunction"
+         @confirm="runFunction"
+         @close="hideAskParamsModal"
+      />
    </div>
 </template>
 
@@ -80,6 +86,7 @@ import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
 import WorkspacePropsFunctionOptionsModal from '@/components/WorkspacePropsFunctionOptionsModal';
 import WorkspacePropsFunctionParamsModal from '@/components/WorkspacePropsFunctionParamsModal';
+import ModalAskParameters from '@/components/ModalAskParameters';
 import Functions from '@/ipc-api/Functions';
 
 export default {
@@ -88,7 +95,8 @@ export default {
       BaseLoader,
       QueryEditor,
       WorkspacePropsFunctionOptionsModal,
-      WorkspacePropsFunctionParamsModal
+      WorkspacePropsFunctionParamsModal,
+      ModalAskParameters
    },
    props: {
       connection: Object,
@@ -101,6 +109,7 @@ export default {
          isSaving: false,
          isOptionsModal: false,
          isParamsModal: false,
+         isAskingParameters: false,
          originalFunction: null,
          localFunction: { sql: '' },
          lastFunction: null,
@@ -166,7 +175,8 @@ export default {
          addNotification: 'notifications/addNotification',
          refreshStructure: 'workspaces/refreshStructure',
          setUnsavedChanges: 'workspaces/setUnsavedChanges',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         newTab: 'workspaces/newTab'
       }),
       async getFunctionData () {
          if (!this.function) return;
@@ -257,6 +267,31 @@ export default {
       parametersUpdate (parameters) {
          this.localFunction = { ...this.localFunction, parameters };
       },
+      runFunctionCheck () {
+         if (this.localFunction.parameters.length)
+            this.showAskParamsModal();
+         else
+            this.runFunction();
+      },
+      runFunction (params) {
+         if (!params) params = [];
+
+         let sql;
+         switch (this.connection.client) { // TODO: move in a better place
+            case 'maria':
+            case 'mysql':
+            case 'pg':
+               sql = `SELECT \`${this.originalFunction.name}\` (${params.join(',')})`;
+               break;
+            case 'mssql':
+               sql = `SELECT ${this.originalFunction.name} ${params.join(',')}`;
+               break;
+            default:
+               sql = `SELECT \`${this.originalFunction.name}\` (${params.join(',')})`;
+         }
+
+         this.newTab({ uid: this.connection.uid, content: sql, autorun: true });
+      },
       showOptionsModal () {
          this.isOptionsModal = true;
       },
@@ -268,6 +303,12 @@ export default {
       },
       hideParamsModal () {
          this.isParamsModal = false;
+      },
+      showAskParamsModal () {
+         this.isAskingParameters = true;
+      },
+      hideAskParamsModal () {
+         this.isAskingParameters = false;
       }
    }
 };

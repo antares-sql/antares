@@ -25,9 +25,9 @@
                <div class="divider-vert py-3" />
 
                <button
-                  class="btn btn-dark btn-sm disabled"
+                  class="btn btn-dark btn-sm"
                   :disabled="isChanged"
-                  @click="runRoutine"
+                  @click="runRoutineCheck"
                >
                   <span>{{ $t('word.run') }}</span>
                   <i class="mdi mdi-24px mdi-play ml-1" />
@@ -70,6 +70,12 @@
          @hide="hideParamsModal"
          @parameters-update="parametersUpdate"
       />
+      <ModalAskParameters
+         v-if="isAskingParameters"
+         :local-routine="localRoutine"
+         @confirm="runRoutine"
+         @close="hideAskParamsModal"
+      />
    </div>
 </template>
 
@@ -80,6 +86,7 @@ import QueryEditor from '@/components/QueryEditor';
 import BaseLoader from '@/components/BaseLoader';
 import WorkspacePropsRoutineOptionsModal from '@/components/WorkspacePropsRoutineOptionsModal';
 import WorkspacePropsRoutineParamsModal from '@/components/WorkspacePropsRoutineParamsModal';
+import ModalAskParameters from '@/components/ModalAskParameters';
 import Routines from '@/ipc-api/Routines';
 
 export default {
@@ -88,7 +95,8 @@ export default {
       QueryEditor,
       BaseLoader,
       WorkspacePropsRoutineOptionsModal,
-      WorkspacePropsRoutineParamsModal
+      WorkspacePropsRoutineParamsModal,
+      ModalAskParameters
    },
    props: {
       connection: Object,
@@ -101,6 +109,7 @@ export default {
          isSaving: false,
          isOptionsModal: false,
          isParamsModal: false,
+         isAskingParameters: false,
          originalRoutine: null,
          localRoutine: { sql: '' },
          lastRoutine: null,
@@ -257,22 +266,30 @@ export default {
       parametersUpdate (parameters) {
          this.localRoutine = { ...this.localRoutine, parameters };
       },
-      runRoutine () { // TODO: create ask for params modal
+      runRoutineCheck () {
+         if (this.localRoutine.parameters.length)
+            this.showAskParamsModal();
+         else
+            this.runRoutine();
+      },
+      runRoutine (params) {
+         if (!params) params = [];
+
          let sql;
          switch (this.connection.client) { // TODO: move in a better place
             case 'maria':
             case 'mysql':
             case 'pg':
-               sql = `CALL \`${this.originalRoutine.name}\` ()`;
+               sql = `CALL \`${this.originalRoutine.name}\` (${params.join(',')})`;
                break;
             case 'mssql':
-               sql = `EXEC ${this.originalRoutine.name}`;
+               sql = `EXEC ${this.originalRoutine.name} ${params.join(',')}`;
                break;
             default:
-               sql = `CALL \`${this.originalRoutine.name}\` ()`;
+               sql = `CALL \`${this.originalRoutine.name}\` (${params.join(',')})`;
          }
 
-         this.newTab({ uid: this.connection.uid, content: sql, autorun: !this.originalRoutine.parameters.length });
+         this.newTab({ uid: this.connection.uid, content: sql, autorun: true });
       },
       showOptionsModal () {
          this.isOptionsModal = true;
@@ -285,6 +302,12 @@ export default {
       },
       hideParamsModal () {
          this.isParamsModal = false;
+      },
+      showAskParamsModal () {
+         this.isAskingParameters = true;
+      },
+      hideAskParamsModal () {
+         this.isAskingParameters = false;
       }
    }
 };
