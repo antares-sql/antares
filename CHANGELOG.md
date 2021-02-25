@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.18](https://github.com/Fabio286/antares/compare/v0.0.17...v0.0.18) (2021-02-25)
+
+
+### Features
+
+* **UI:** context menu for input and textarea tags ([b54fefb](https://github.com/Fabio286/antares/commit/b54fefbf255c91f3cdd0c52b917b239ea40dae16))
+* **UI:** html, xml, json, svg and yaml editor modes in long text fields edit ([9a1bf32](https://github.com/Fabio286/antares/commit/9a1bf3212850d3783ac6382f8a980eb25c4f4226))
+* **UI:** run procedures/functions from sidebar context menu ([219da0a](https://github.com/Fabio286/antares/commit/219da0aba46839295807a01056199d42584e0af9))
+* **UI:** run routines/functions from settings tab ([7e81671](https://github.com/Fabio286/antares/commit/7e8167154ffd64e46d78a50cd13cf90cee61370c))
+* **UI:** search filter in explore bar ([2f58007](https://github.com/Fabio286/antares/commit/2f58007af4f32207fe4be9fc15bb43916e8e0abc))
+* **UI:** sticky schema names in explore bar ([110b0b4](https://github.com/Fabio286/antares/commit/110b0b414cef25395ae28493032c2048307e4783))
+
+
+### Bug Fixes
+
+* **MySQL:** issue obtaining routine/function parameters ([3aa2159](https://github.com/Fabio286/antares/commit/3aa2159a1ae3b6785646fc7ac1e866cb0277d087))
+* issue managing function/routine parameters ([76d92cd](https://github.com/Fabio286/antares/commit/76d92cd106b0409e8752c43d7d587d09dd3e1e32))
+* **UI:** data tab opened when non-table element is selected ([dbab06f](https://github.com/Fabio286/antares/commit/dbab06fcb80ccdae85215ceae9ba24af3e7ff263))
+* **UI:** elements from previous selected schemas in query suggestions ([c8545a2](https://github.com/Fabio286/antares/commit/c8545a250bc696c339e418a69a2942d5bac10cbf))
+* disabled sort for fields without a name property ([3b37b74](https://github.com/Fabio286/antares/commit/3b37b7432e969e6315ebd6ed74905ec3980a049c))
+* prevents F5 shortcut to run in non-selected workspaces ([7c4ca99](https://github.com/Fabio286/antares/commit/7c4ca999ce64af8077d29e419f430d5beaaead93))
+* support of bit fields in table filler ([94c4952](https://github.com/Fabio286/antares/commit/94c49523197284510361ebbb6984816a3bb1b243))
+
 ### [0.0.17](https://github.com/Fabio286/antares/compare/v0.0.16...v0.0.17) (2021-02-17)
 
 
