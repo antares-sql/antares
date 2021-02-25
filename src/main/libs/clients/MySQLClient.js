@@ -562,7 +562,7 @@ export class MySQLClient extends AntaresCore {
                return {
                   name: param[1] ? param[1].replaceAll('`', '') : '',
                   type: type[0].replaceAll('\n', ''),
-                  length: +type[1].replace(/\D/g, ''),
+                  length: +type[1] ? +type[1].replace(/\D/g, '') : '',
                   context: param[0] ? param[0].replace('\n', '') : ''
                };
             }).filter(el => el.name);
@@ -578,7 +578,7 @@ export class MySQLClient extends AntaresCore {
          return {
             definer: row['Create Procedure'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
             sql: row['Create Procedure'].match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
-            parameters,
+            parameters: parameters || [],
             name: row.Procedure,
             comment: row['Create Procedure'].match(/(?<=COMMENT ').*?(?=')/gs) ? row['Create Procedure'].match(/(?<=COMMENT ').*?(?=')/gs)[0] : '',
             security: row['Create Procedure'].includes('SQL SECURITY INVOKER') ? 'INVOKER' : 'DEFINER',
@@ -628,10 +628,12 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async createRoutine (routine) {
-      const parameters = routine.parameters.reduce((acc, curr) => {
-         acc.push(`${curr.context} \`${curr.name}\` ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
-         return acc;
-      }, []).join(',');
+      const parameters = 'parameters' in routine
+         ? routine.parameters.reduce((acc, curr) => {
+            acc.push(`${curr.context} \`${curr.name}\` ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
+            return acc;
+         }, []).join(',')
+         : '';
 
       const sql = `CREATE ${routine.definer ? `DEFINER=${routine.definer} ` : ''}PROCEDURE \`${routine.name}\`(${parameters})
          LANGUAGE SQL
@@ -683,7 +685,7 @@ export class MySQLClient extends AntaresCore {
                return {
                   name: param[0] ? param[0].replaceAll('`', '') : '',
                   type: type[0],
-                  length: +type[1].replace(/\D/g, '')
+                  length: +type[1] ? +type[1].replace(/\D/g, '') : ''
                };
             }).filter(el => el.name);
 
@@ -700,7 +702,7 @@ export class MySQLClient extends AntaresCore {
          return {
             definer: row['Create Function'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
             sql: row['Create Function'].match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
-            parameters,
+            parameters: parameters || [],
             name: row.Function,
             comment: row['Create Function'].match(/(?<=COMMENT ').*?(?=')/gs) ? row['Create Function'].match(/(?<=COMMENT ').*?(?=')/gs)[0] : '',
             security: row['Create Function'].includes('SQL SECURITY INVOKER') ? 'INVOKER' : 'DEFINER',

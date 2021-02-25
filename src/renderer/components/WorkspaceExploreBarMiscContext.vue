@@ -5,8 +5,8 @@
    >
       <div
          v-if="['procedure', 'function'].includes(selectedMisc.type)"
-         class="context-element disabled"
-         @click="showRunModal"
+         class="context-element"
+         @click="runElementCheck"
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-play text-light pr-1" /> {{ $t('word.run') }}</span>
       </div>
@@ -29,6 +29,12 @@
             </div>
          </div>
       </ConfirmModal>
+      <ModalAskParameters
+         v-if="isAskingParameters"
+         :local-routine="localElement"
+         @confirm="runElement"
+         @close="hideAskParamsModal"
+      />
    </BaseContextMenu>
 </template>
 
@@ -36,6 +42,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
+import ModalAskParameters from '@/components/ModalAskParameters';
 import Triggers from '@/ipc-api/Triggers';
 import Routines from '@/ipc-api/Routines';
 import Functions from '@/ipc-api/Functions';
@@ -45,7 +52,8 @@ export default {
    name: 'WorkspaceExploreBarMiscContext',
    components: {
       BaseContextMenu,
-      ConfirmModal
+      ConfirmModal,
+      ModalAskParameters
    },
    props: {
       contextEvent: MouseEvent,
@@ -54,7 +62,9 @@ export default {
    data () {
       return {
          isDeleteModal: false,
-         isRunModal: false
+         isRunModal: false,
+         isAskingParameters: false,
+         localElement: {}
       };
    },
    computed: {
@@ -83,7 +93,8 @@ export default {
    methods: {
       ...mapActions({
          addNotification: 'notifications/addNotification',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         newTab: 'workspaces/newTab'
       }),
       showCreateTableModal () {
          this.$emit('show-create-table-modal');
@@ -94,11 +105,12 @@ export default {
       hideDeleteModal () {
          this.isDeleteModal = false;
       },
-      showRunModal () {
-         this.isRunModal = true;
+      showAskParamsModal () {
+         this.isAskingParameters = true;
       },
-      hideRunModal () {
-         this.isRunModal = false;
+      hideAskParamsModal () {
+         this.isAskingParameters = false;
+         this.closeContext();
       },
       closeContext () {
          this.$emit('close-context');
@@ -148,6 +160,105 @@ export default {
          catch (err) {
             this.addNotification({ status: 'error', message: err.stack });
          }
+      },
+      runElementCheck () {
+         if (this.selectedMisc.type === 'procedure')
+            this.runRoutineCheck();
+         else if (this.selectedMisc.type === 'function')
+            this.runFunctionCheck();
+      },
+      runElement (params) {
+         if (this.selectedMisc.type === 'procedure')
+            this.runRoutine(params);
+         else if (this.selectedMisc.type === 'function')
+            this.runFunction(params);
+      },
+      async runRoutineCheck () {
+         const params = {
+            uid: this.selectedWorkspace,
+            schema: this.workspace.breadcrumbs.schema,
+            routine: this.workspace.breadcrumbs.procedure
+         };
+
+         try {
+            const { status, response } = await Routines.getRoutineInformations(params);
+            if (status === 'success')
+               this.localElement = response;
+
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         if (this.localElement.parameters.length)
+            this.showAskParamsModal();
+         else
+            this.runRoutine();
+      },
+      runRoutine (params) {
+         if (!params) params = [];
+
+         let sql;
+         switch (this.workspace.client) { // TODO: move in a better place
+            case 'maria':
+            case 'mysql':
+            case 'pg':
+               sql = `CALL \`${this.localElement.name}\` (${params.join(',')})`;
+               break;
+            case 'mssql':
+               sql = `EXEC ${this.localElement.name} ${params.join(',')}`;
+               break;
+            default:
+               sql = `CALL \`${this.localElement.name}\` (${params.join(',')})`;
+         }
+
+         this.newTab({ uid: this.workspace.uid, content: sql, autorun: true });
+         this.closeContext();
+      },
+      async runFunctionCheck () {
+         const params = {
+            uid: this.selectedWorkspace,
+            schema: this.workspace.breadcrumbs.schema,
+            func: this.workspace.breadcrumbs.function
+         };
+
+         try {
+            const { status, response } = await Functions.getFunctionInformations(params);
+            if (status === 'success')
+               this.localElement = response;
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         if (this.localElement.parameters.length)
+            this.showAskParamsModal();
+         else
+            this.runFunction();
+      },
+      runFunction (params) {
+         if (!params) params = [];
+
+         let sql;
+         switch (this.workspace.client) { // TODO: move in a better place
+            case 'maria':
+            case 'mysql':
+            case 'pg':
+               sql = `SELECT \`${this.localElement.name}\` (${params.join(',')})`;
+               break;
+            case 'mssql':
+               sql = `SELECT ${this.localElement.name} ${params.join(',')}`;
+               break;
+            default:
+               sql = `SELECT \`${this.localElement.name}\` (${params.join(',')})`;
+         }
+
+         this.newTab({ uid: this.workspace.uid, content: sql, autorun: true });
+         this.closeContext();
       }
    }
 };
