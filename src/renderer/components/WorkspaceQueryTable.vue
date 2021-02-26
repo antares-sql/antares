@@ -64,7 +64,7 @@
                   v-for="row in items"
                   :key="row._id"
                   :row="row"
-                  :fields="fields"
+                  :fields="fieldsObj"
                   :key-usage="keyUsage"
                   class="tr"
                   :class="{'selected': selectedRows.includes(row._id)}"
@@ -153,6 +153,37 @@ export default {
       },
       keyUsage () {
          return this.resultsWithRows.length ? this.resultsWithRows[this.resultsetIndex].keys : [];
+      },
+      fieldsObj () {
+         if (this.sortedResults.length) {
+            const fieldsObj = {};
+            for (const key in this.sortedResults[0]) {
+               if (key === '_id') continue;
+
+               const fieldObj = this.fields.find(field => {
+                  let fieldNames = [
+                     field.name,
+                     field.alias,
+                     `${field.table}.${field.name}`,
+                     `${field.table}.${field.alias}`,
+                     `${field.tableAlias}.${field.name}`,
+                     `${field.tableAlias}.${field.alias}`
+                  ];
+
+                  if (field.table)
+                     fieldNames = [...fieldNames, `${field.table.toLowerCase()}.${field.name}`, `${field.table.toLowerCase()}.${field.alias}`];
+
+                  if (field.tableAlias)
+                     fieldNames = [...fieldNames, `${field.tableAlias.toLowerCase()}.${field.name}`, `${field.tableAlias.toLowerCase()}.${field.alias}`];
+
+                  return fieldNames.includes(key);
+               });
+
+               fieldsObj[key] = fieldObj;
+            }
+            return fieldsObj;
+         }
+         return {};
       }
    },
    watch: {

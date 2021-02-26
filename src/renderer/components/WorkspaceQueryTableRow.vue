@@ -12,9 +12,9 @@
             <span
                v-if="!isInlineEditor[cKey]"
                class="cell-content px-2"
-               :class="`${isNull(col)} type-${getFieldType(cKey)}`"
+               :class="`${isNull(col)} type-${fields[cKey].type.toLowerCase()}`"
                @dblclick="editON($event, col, cKey)"
-            >{{ col | typeFormat(getFieldType(cKey), getFieldPrecision(cKey)) | cutText }}</span>
+            >{{ col | typeFormat(fields[cKey].type.toLowerCase(), fields[cKey].length) | cutText }}</span>
             <ForeignKeySelect
                v-else-if="isForeignKey(cKey)"
                class="editable-field"
@@ -230,10 +230,7 @@ export default {
    },
    props: {
       row: Object,
-      fields: {
-         type: Array,
-         default: () => []
-      },
+      fields: Object,
       keyUsage: Array
    },
    data () {
@@ -265,7 +262,7 @@ export default {
 
          if (TIME.includes(this.editingType)) {
             let timeMask = '##:##:##';
-            const precision = this.getFieldPrecision(this.editingField);
+            const precision = this.fields[this.editingField].length;
 
             for (let i = 0; i < precision; i++)
                timeMask += i === 0 ? '.#' : '#';
@@ -278,7 +275,7 @@ export default {
 
          if (DATETIME.includes(this.editingType)) {
             let datetimeMask = '####-##-## ##:##:##';
-            const precision = this.getFieldPrecision(this.editingField);
+            const precision = this.fields[this.editingField].length;
 
             for (let i = 0; i < precision; i++)
                datetimeMask += i === 0 ? '.#' : '#';
@@ -302,7 +299,7 @@ export default {
       },
       isEditable () {
          if (this.fields) {
-            const nElements = this.fields.reduce((acc, curr) => {
+            const nElements = Object.keys(this.fields).reduce((acc, curr) => {
                acc.add(curr.table);
                acc.add(curr.schema);
                return acc;
@@ -310,7 +307,7 @@ export default {
 
             if (nElements.size > 2) return false;
 
-            return !!(this.fields[0].schema && this.fields[0].table);
+            return !!(this.fields[Object.keys(this.fields)[0]].schema && this.fields[Object.keys(this.fields)[0]].table);
          }
 
          return false;
@@ -318,7 +315,7 @@ export default {
    },
    watch: {
       fields () {
-         this.fields.forEach(field => {
+         Object.keys(this.fields).forEach(field => {
             this.isInlineEditor[field.name] = false;
          });
       }
@@ -330,42 +327,6 @@ export default {
 
          return this.foreignKeys.includes(key);
       },
-      getFieldType (cKey) {
-         let type = 'unknown';
-         const field = this.getFieldObj(cKey);
-         if (field)
-            type = field.type;
-
-         return type.toLowerCase();
-      },
-      getFieldPrecision (cKey) {
-         let length = 0;
-         const field = this.getFieldObj(cKey);
-         if (field)
-            length = field.datePrecision;
-
-         return length;
-      },
-      getFieldObj (cKey) {
-         return this.fields.filter(field => {
-            let fieldNames = [
-               field.name,
-               field.alias,
-               `${field.table}.${field.name}`,
-               `${field.table}.${field.alias}`,
-               `${field.tableAlias}.${field.name}`,
-               `${field.tableAlias}.${field.alias}`
-            ];
-
-            if (field.table)
-               fieldNames = [...fieldNames, `${field.table.toLowerCase()}.${field.name}`, `${field.table.toLowerCase()}.${field.alias}`];
-
-            if (field.tableAlias)
-               fieldNames = [...fieldNames, `${field.tableAlias.toLowerCase()}.${field.name}`, `${field.tableAlias.toLowerCase()}.${field.alias}`];
-
-            return fieldNames.includes(cKey);
-         })[0];
-      },
       isNull (value) {
          return value === null ? ' is-null' : '';
       },
@@ -375,7 +336,7 @@ export default {
       editON (event, content, field) {
          if (!this.isEditable) return;
 
-         const type = this.getFieldType(field).toUpperCase(); ;
+         const type = this.fields[field].type.toUpperCase(); ;
          this.originalContent = content;
          this.editingType = type;
          this.editingField = field;
@@ -408,7 +369,7 @@ export default {
          }
 
          // Inline editable fields
-         this.editingContent = this.$options.filters.typeFormat(this.originalContent, type, this.getFieldPrecision(field));
+         this.editingContent = this.$options.filters.typeFormat(this.originalContent, type, this.fields[field].length);
          this.$nextTick(() => { // Focus on input
             event.target.blur();
 
@@ -437,7 +398,7 @@ export default {
          }
 
          this.$emit('update-field', {
-            field: this.getFieldObj(this.editingField).name,
+            field: this.fields[this.editingField].name,
             type: this.editingType,
             content
          });
