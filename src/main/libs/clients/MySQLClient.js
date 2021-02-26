@@ -1206,10 +1206,13 @@ export class MySQLClient extends AntaresCore {
 
       for (const query of queries) {
          if (!query) continue;
+         const timeStart = new Date();
+         let timeStop;
          let keysArr = [];
 
-         const { rows, report, fields, keys } = await new Promise((resolve, reject) => {
+         const { rows, report, fields, keys, duration } = await new Promise((resolve, reject) => {
             this._connection.query({ sql: query, nestTables }, async (err, response, fields) => {
+               timeStop = new Date();
                const queryResult = response;
 
                if (err)
@@ -1277,6 +1280,7 @@ export class MySQLClient extends AntaresCore {
                   }
 
                   resolve({
+                     duration: timeStop - timeStart,
                      rows: Array.isArray(queryResult) ? queryResult.some(el => Array.isArray(el)) ? [] : queryResult : false,
                      report: !Array.isArray(queryResult) ? queryResult : false,
                      fields: remappedFields,
@@ -1286,7 +1290,7 @@ export class MySQLClient extends AntaresCore {
             });
          });
 
-         resultsArr.push({ rows, report, fields, keys });
+         resultsArr.push({ rows, report, fields, keys, duration });
       }
 
       return resultsArr.length === 1 ? resultsArr[0] : resultsArr;

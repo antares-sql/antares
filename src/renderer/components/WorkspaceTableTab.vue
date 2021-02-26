@@ -64,6 +64,13 @@
                </div>
             </div>
             <div class="workspace-query-info">
+               <div
+                  v-if="results.length"
+                  class="d-flex"
+                  :title="$t('message.queryDuration')"
+               >
+                  <i class="mdi mdi-timer-sand mdi-rotate-180 pr-1" /> <b>{{ results[0].duration / 1000 }}s</b>
+               </div>
                <div v-if="results.length && results[0].rows">
                   {{ $t('word.results') }}: <b>{{ results[0].rows.length.toLocaleString() }}</b>
                </div>

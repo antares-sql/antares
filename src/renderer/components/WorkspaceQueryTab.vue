@@ -26,6 +26,13 @@
                </button>
             </div>
             <div class="workspace-query-info">
+               <div
+                  v-if="results.length"
+                  class="d-flex"
+                  :title="$t('message.queryDuration')"
+               >
+                  <i class="mdi mdi-timer-sand mdi-rotate-180 pr-1" /> <b>{{ durationsCount / 1000 }}s</b>
+               </div>
                <div v-if="resultsCount">
                   {{ $t('word.results') }}: <b>{{ resultsCount.toLocaleString() }}</b>
                </div>
@@ -84,6 +91,7 @@ export default {
          isQuering: false,
          results: [],
          resultsCount: 0,
+         durationsCount: 0,
          affectedCount: 0,
          editorHeight: 200
       };
@@ -143,6 +151,7 @@ export default {
             if (status === 'success') {
                this.results = Array.isArray(response) ? response : [response];
                this.resultsCount += this.results.reduce((acc, curr) => acc + (curr.rows ? curr.rows.length : 0), 0);
+               this.durationsCount += this.results.reduce((acc, curr) => acc + curr.duration, 0);
                this.affectedCount += this.results.reduce((acc, curr) => acc + (curr.report ? curr.report.affectedRows : 0), 0);
             }
             else
@@ -161,6 +170,7 @@ export default {
       clearTabData () {
          this.results = [];
          this.resultsCount = 0;
+         this.durationsCount = 0;
          this.affectedCount = 0;
       },
       resize (e) {

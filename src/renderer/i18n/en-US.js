@@ -190,7 +190,8 @@ module.exports = {
       tableFiller: 'Table Filler',
       fakeDataLanguage: 'Fake data language',
       searchForElements: 'Search for elements',
-      selectAll: 'Select all'
+      selectAll: 'Select all',
+      queryDuration: 'Query duration'
    },
    faker: {
       address: 'Address',
