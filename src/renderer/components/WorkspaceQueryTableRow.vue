@@ -336,6 +336,8 @@ export default {
       editON (event, content, field) {
          if (!this.isEditable) return;
 
+         window.addEventListener('keydown', this.onKey);
+
          const type = this.fields[field].type.toUpperCase(); ;
          this.originalContent = content;
          this.editingType = type;
@@ -380,6 +382,8 @@ export default {
          this.isInlineEditor = { ...this.isInlineEditor, ...obj };
       },
       editOFF () {
+         if (!this.editingField) return;
+
          this.isInlineEditor[this.editingField] = false;
          let content;
          if (!BLOB.includes(this.editingType)) {
@@ -405,6 +409,7 @@ export default {
 
          this.editingType = null;
          this.editingField = null;
+         window.removeEventListener('keydown', this.onKey);
       },
       hideEditorModal () {
          this.isTextareaEditor = false;
@@ -446,6 +451,14 @@ export default {
          if (keyName.includes('.'))
             return this.keyUsage.find(key => key.field === keyName.split('.').pop());
          return this.keyUsage.find(key => key.field === keyName);
+      },
+      onKey (e) {
+         e.stopPropagation();
+         if (e.key === 'Escape') {
+            this.isInlineEditor[this.editingField] = false;
+            this.editingField = null;
+            window.removeEventListener('keydown', this.onKey);
+         }
       }
    }
 };
