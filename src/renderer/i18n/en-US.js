@@ -191,7 +191,8 @@ module.exports = {
       fakeDataLanguage: 'Fake data language',
       searchForElements: 'Search for elements',
       selectAll: 'Select all',
-      queryDuration: 'Query duration'
+      queryDuration: 'Query duration',
+      includeBetaUpdates: 'Include beta updates'
    },
    faker: {
       address: 'Address',

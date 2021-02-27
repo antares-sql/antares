@@ -7,16 +7,18 @@ export default {
    namespaced: true,
    strict: true,
    state: {
-      locale: persistentStore.get('locale') || 'en-US',
-      explorebar_size: persistentStore.get('explorebar_size') || null,
-      notifications_timeout: persistentStore.get('notifications_timeout') || 5,
-      auto_complete: persistentStore.get('auto_complete') || true,
-      line_wrap: persistentStore.get('line_wrap') || true,
-      application_theme: persistentStore.get('application_theme') || 'dark',
-      editor_theme: persistentStore.get('editor_theme') || 'twilight'
+      locale: persistentStore.get('locale', 'en-US'),
+      allow_prerelease: persistentStore.get('allow_prerelease', true),
+      explorebar_size: persistentStore.get('explorebar_size', null),
+      notifications_timeout: persistentStore.get('notifications_timeout', 5),
+      auto_complete: persistentStore.get('auto_complete', true),
+      line_wrap: persistentStore.get('line_wrap', true),
+      application_theme: persistentStore.get('application_theme', 'dark'),
+      editor_theme: persistentStore.get('editor_theme', 'twilight')
    },
    getters: {
       getLocale: state => state.locale,
+      getAllowPrerelease: state => state.allow_prerelease,
       getExplorebarSize: state => state.explorebar_size,
       getNotificationsTimeout: state => state.notifications_timeout,
       getAutoComplete: state => state.auto_complete,
@@ -29,6 +31,10 @@ export default {
          state.locale = locale;
          i18n.locale = locale;
          persistentStore.set('locale', state.locale);
+      },
+      SET_ALLOW_PRERELEASE (state, allow) {
+         state.allow_prerelease = allow;
+         persistentStore.set('allow_prerelease', state.allow_prerelease);
       },
       SET_NOTIFICATIONS_TIMEOUT (state, timeout) {
          state.notifications_timeout = timeout;
@@ -53,6 +59,9 @@ export default {
    actions: {
       changeLocale ({ commit }, locale) {
          commit('SET_LOCALE', locale);
+      },
+      changeAllowPrerelease ({ commit }, allow) {
+         commit('SET_ALLOW_PRERELEASE', allow);
       },
       updateNotificationsTimeout ({ commit }, timeout) {
          commit('SET_NOTIFICATIONS_TIMEOUT', timeout);

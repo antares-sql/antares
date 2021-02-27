@@ -1,8 +1,10 @@
 import { ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
+import Store from 'electron-store';
+const persistentStore = new Store({ name: 'settings' });
 
 let mainWindow;
-autoUpdater.allowPrerelease = true;
+autoUpdater.allowPrerelease = persistentStore.get('allow_prerelease', true);
 
 export default () => {
    ipcMain.on('check-for-updates', event => {

@@ -36,11 +36,17 @@
             {{ $t('message.restartToInstall') }}
          </button>
       </div>
+      <div class="form-group mt-4">
+         <label class="form-switch d-inline-block disabled" @click.prevent="toggleAllowPrerelease">
+            <input type="checkbox" :checked="allowPrerelease">
+            <i class="form-icon" /> {{ $t('message.includeBetaUpdates') }}
+         </label>
+      </div>
    </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { ipcRenderer } from 'electron';
 
 export default {
@@ -48,7 +54,8 @@ export default {
    computed: {
       ...mapGetters({
          updateStatus: 'application/getUpdateStatus',
-         downloadPercentage: 'application/getDownloadProgress'
+         downloadPercentage: 'application/getDownloadProgress',
+         allowPrerelease: 'settings/getAllowPrerelease'
       }),
       updateMessage () {
          switch (this.updateStatus) {
@@ -70,11 +77,17 @@ export default {
       }
    },
    methods: {
+      ...mapActions({
+         changeAllowPrerelease: 'settings/changeAllowPrerelease'
+      }),
       checkForUpdates () {
          ipcRenderer.send('check-for-updates');
       },
       restartToUpdate () {
          ipcRenderer.send('restart-to-update');
+      },
+      toggleAllowPrerelease () {
+         this.changeAllowPrerelease(!this.allowPrerelease);
       }
    }
 };

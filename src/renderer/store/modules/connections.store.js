@@ -12,7 +12,7 @@ export default {
    namespaced: true,
    strict: true,
    state: {
-      connections: persistentStore.get('connections') || []
+      connections: persistentStore.get('connections', [])
    },
    getters: {
       getConnections: state => state.connections,
