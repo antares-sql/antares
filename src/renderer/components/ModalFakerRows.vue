@@ -185,7 +185,6 @@
 <script>
 import moment from 'moment';
 import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
-import { mask } from 'vue-the-mask';
 import { mapGetters, mapActions } from 'vuex';
 import Tables from '@/ipc-api/Tables';
 import FakerSelect from '@/components/FakerSelect';
@@ -194,9 +193,6 @@ export default {
    name: 'ModalFakerRows',
    components: {
       FakerSelect
-   },
-   directives: {
-      mask
    },
    filters: {
       wrapNumber (num) {

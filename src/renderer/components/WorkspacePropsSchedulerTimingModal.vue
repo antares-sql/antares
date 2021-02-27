@@ -138,7 +138,7 @@
 
 <script>
 import ConfirmModal from '@/components/BaseConfirmModal';
-import { mask } from 'vue-the-mask';
+import { VueMaskDirective } from 'v-mask';
 import moment from 'moment';
 
 export default {
@@ -147,7 +147,7 @@ export default {
       ConfirmModal
    },
    directives: {
-      mask
+      mask: VueMaskDirective
    },
    props: {
       localOptions: Object,

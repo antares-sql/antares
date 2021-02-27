@@ -174,7 +174,7 @@ import { formatBytes } from 'common/libs/formatBytes';
 import { bufferToBase64 } from 'common/libs/bufferToBase64';
 import hexToBinary from 'common/libs/hexToBinary';
 import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
-import { mask } from 'vue-the-mask';
+import { VueMaskDirective } from 'v-mask';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import TextEditor from '@/components/BaseTextEditor';
 import ForeignKeySelect from '@/components/ForeignKeySelect';
@@ -187,7 +187,7 @@ export default {
       ForeignKeySelect
    },
    directives: {
-      mask
+      mask: VueMaskDirective
    },
    filters: {
       formatBytes,
