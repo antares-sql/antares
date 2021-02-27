@@ -49,6 +49,9 @@ export class MySQLClient extends AntaresCore {
       if (['DATE', 'TIME', 'YEAR', 'DATETIME'].includes(name))
          length = field.decimals;
 
+      if (name === 'TIMESTAMP')
+         length = 0;
+
       if (name === 'CHAR' && field.charsetNr === 63)// if binary
          name = 'BINARY';
 
