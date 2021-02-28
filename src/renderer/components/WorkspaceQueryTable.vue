@@ -9,6 +9,7 @@
          :context-event="contextEvent"
          :selected-rows="selectedRows"
          @delete-selected="deleteSelected"
+         @set-null="setNull"
          @close-context="isContext = false"
       />
       <ul v-if="resultsWithRows.length > 1" class="tab tab-block result-tabs">
@@ -314,6 +315,21 @@ export default {
             rows
          };
          this.$emit('delete-selected', params);
+      },
+      setNull () {
+         const row = this.localResults.find(row => this.selectedRows.includes(row._id));
+         delete row._id;
+
+         const params = {
+            primary: this.primaryField.name,
+            schema: this.getSchema(this.resultsetIndex),
+            table: this.getTable(this.resultsetIndex),
+            id: this.getPrimaryValue(row),
+            row,
+            field: this.selectedCell.field,
+            content: null
+         };
+         this.$emit('update-field', params);
       },
       applyUpdate (params) {
          const { primary, id, field, table, content } = params;

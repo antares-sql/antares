@@ -6,7 +6,7 @@
          :key="cKey"
          class="td p-0"
          tabindex="0"
-         @contextmenu.prevent="$emit('contextmenu', $event, {id: row._id, field: cKey})"
+         @contextmenu.prevent="openContext($event, { id: row._id, field: cKey })"
       >
          <template v-if="cKey !== '_id'">
             <span
@@ -300,8 +300,8 @@ export default {
       isEditable () {
          if (this.fields) {
             const nElements = Object.keys(this.fields).reduce((acc, curr) => {
-               acc.add(curr.table);
-               acc.add(curr.schema);
+               acc.add(this.fields[curr].table);
+               acc.add(this.fields[curr].schema);
                return acc;
             }, new Set([]));
 
@@ -441,9 +441,6 @@ export default {
          };
          this.willBeDeleted = true;
       },
-      contextMenu (event, cell) {
-         this.$emit('update-field', event, cell);
-      },
       selectRow (event, row) {
          this.$emit('select-row', event, row);
       },
@@ -451,6 +448,12 @@ export default {
          if (keyName.includes('.'))
             return this.keyUsage.find(key => key.field === keyName.split('.').pop());
          return this.keyUsage.find(key => key.field === keyName);
+      },
+      openContext (event, payload) {
+         if (this.isEditable) {
+            payload.field = this.fields[payload.field].name;// Ensures field name only
+            this.$emit('contextmenu', event, payload);
+         }
       },
       onKey (e) {
          e.stopPropagation();

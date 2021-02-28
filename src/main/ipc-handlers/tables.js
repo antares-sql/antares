@@ -81,6 +81,8 @@ export default (connections) => {
             escapedParam = `b'${sqlEscaper(params.content)}'`;
             reload = true;
          }
+         else if (params.content === null)
+            escapedParam = 'NULL';
          else
             escapedParam = `"${sqlEscaper(params.content)}"`;
 

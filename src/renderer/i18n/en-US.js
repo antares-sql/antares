@@ -192,7 +192,8 @@ module.exports = {
       searchForElements: 'Search for elements',
       selectAll: 'Select all',
       queryDuration: 'Query duration',
-      includeBetaUpdates: 'Include beta updates'
+      includeBetaUpdates: 'Include beta updates',
+      setNull: 'Set NULL'
    },
    faker: {
       address: 'Address',
