@@ -1,5 +1,5 @@
 'use strict';
-import mysql from 'mysql';
+import mysql from 'mysql2';
 import { AntaresCore } from '../AntaresCore';
 import dataTypes from 'common/data-types/mysql';
 
@@ -43,8 +43,8 @@ export class MySQLClient extends AntaresCore {
    }
 
    _getType (field) {
-      let name = this.types[field.type];
-      let length = field.length;
+      let name = this.types[field.columnType];
+      let length = field.columnLength;
 
       if (['DATE', 'TIME', 'YEAR', 'DATETIME'].includes(name))
          length = field.decimals;
@@ -52,11 +52,12 @@ export class MySQLClient extends AntaresCore {
       if (name === 'TIMESTAMP')
          length = 0;
 
-      if (name === 'CHAR' && field.charsetNr === 63)// if binary
-         name = 'BINARY';
-
-      if (name === 'VARCHAR' && field.charsetNr === 63)// if binary
-         name = 'VARBINARY';
+      if (field.charsetNr === 63) { // if binary
+         if (name === 'CHAR')
+            name = 'BINARY';
+         else if (name === 'VARCHAR')
+            name = 'VARBINARY';
+      }
 
       if (name === 'BLOB') {
          switch (length) {
@@ -1232,10 +1233,9 @@ export class MySQLClient extends AntaresCore {
                            name: field.orgName,
                            alias: field.name,
                            orgName: field.orgName,
-                           schema: field.db,
+                           schema: field.schema,
                            table: field.table,
                            tableAlias: field.table,
-                           zerofill: field.zerofill,
                            orgTable: field.orgTable,
                            type: type.name,
                            length: type.length

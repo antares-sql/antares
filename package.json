@@ -60,7 +60,7 @@
     "keytar": "^7.3.0",
     "moment": "^2.29.1",
     "mssql": "^6.2.3",
-    "mysql": "^2.18.1",
+    "mysql2": "^2.2.5",
     "pg": "^8.5.1",
     "source-map-support": "^0.5.16",
     "spectre.css": "^0.5.9",
