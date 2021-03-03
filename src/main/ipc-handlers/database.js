@@ -105,6 +105,17 @@ export default connections => {
       }
    });
 
+   ipcMain.handle('get-processes', async (event, uid) => {
+      try {
+         const result = await connections[uid].getProcesses();
+
+         return { status: 'success', response: result };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
    ipcMain.handle('use-schema', async (event, { uid, schema }) => {
       if (!schema) return;
 

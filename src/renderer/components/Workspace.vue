@@ -7,10 +7,34 @@
             ref="tabWrap"
             class="tab tab-block column col-12"
          >
-            <li class="tab-item d-none">
-               <a class="tab-link workspace-tools-link">
+            <li class="tab-item dropdown tools-dropdown">
+               <a
+                  class="tab-link workspace-tools-link dropdown-toggle"
+                  tabindex="0"
+                  :title="$t('word.tools')"
+               >
                   <i class="mdi mdi-24px mdi-tools" />
                </a>
+               <ul class="menu text-left text-uppercase">
+                  <li class="menu-item">
+                     <a class="c-hand p-vcentered" @click="showProcessesModal">
+                        <i class="mdi mdi-memory mr-1 tool-icon" />
+                        <span>{{ $t('message.processesList') }}</span>
+                     </a>
+                  </li>
+                  <li class="menu-item" title="Coming...">
+                     <a class="c-hand p-vcentered disabled">
+                        <i class="mdi mdi-shape mr-1 tool-icon" />
+                        <span>{{ $t('word.variables') }}</span>
+                     </a>
+                  </li>
+                  <li class="menu-item" title="Coming...">
+                     <a class="c-hand p-vcentered disabled">
+                        <i class="mdi mdi-account-group mr-1 tool-icon" />
+                        <span>{{ $t('message.manageUsers') }}</span>
+                     </a>
+                  </li>
+               </ul>
             </li>
             <li
                v-if="schemaChild"
@@ -19,7 +43,7 @@
                @click="selectTab({uid: workspace.uid, tab: 'prop'})"
             >
                <a class="tab-link">
-                  <i class="mdi mdi-18px mdi-tune mr-1" />
+                  <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
                   <span :title="schemaChild">{{ $t('word.settings').toUpperCase() }}: {{ schemaChild }}</span>
                </a>
             </li>
@@ -114,6 +138,11 @@
             :connection="connection"
          />
       </div>
+      <ModalProcessesList
+         v-if="isProcessesModal"
+         :connection="connection"
+         @close="hideProcessesModal"
+      />
    </div>
 </template>
 
@@ -129,6 +158,7 @@ import WorkspacePropsTabTrigger from '@/components/WorkspacePropsTabTrigger';
 import WorkspacePropsTabRoutine from '@/components/WorkspacePropsTabRoutine';
 import WorkspacePropsTabFunction from '@/components/WorkspacePropsTabFunction';
 import WorkspacePropsTabScheduler from '@/components/WorkspacePropsTabScheduler';
+import ModalProcessesList from '@/components/ModalProcessesList';
 
 export default {
    name: 'Workspace',
@@ -141,14 +171,16 @@ export default {
       WorkspacePropsTabTrigger,
       WorkspacePropsTabRoutine,
       WorkspacePropsTabFunction,
-      WorkspacePropsTabScheduler
+      WorkspacePropsTabScheduler,
+      ModalProcessesList
    },
    props: {
       connection: Object
    },
    data () {
       return {
-         hasWheelEvent: false
+         hasWheelEvent: false,
+         isProcessesModal: false
       };
    },
    computed: {
@@ -234,6 +266,12 @@ export default {
       closeTab (tUid) {
          if (this.queryTabs.length === 1) return;
          this.removeTab({ uid: this.connection.uid, tab: tUid });
+      },
+      showProcessesModal () {
+         this.isProcessesModal = true;
+      },
+      hideProcessesModal () {
+         this.isProcessesModal = false;
       }
    }
 };
@@ -296,6 +334,48 @@ export default {
 
         &.active a {
           opacity: 1;
+        }
+
+        &.tools-dropdown {
+          .tab-link:focus {
+            color: $primary-color;
+            opacity: 1;
+            outline: 0;
+            box-shadow: none;
+          }
+
+          .menu {
+            min-width: 100%;
+
+            .menu-item a {
+              border-radius: 0.1rem;
+              color: inherit;
+              display: block;
+              margin: 0 -0.4rem;
+              padding: 0.2rem 0.4rem;
+              text-decoration: none;
+              white-space: nowrap;
+              border: 0;
+
+              &:hover {
+                color: $primary-color;
+                background: $bg-color-gray;
+              }
+
+              .tool-icon {
+                line-height: 1;
+                display: inline-block;
+                font-size: 20px;
+              }
+            }
+          }
+
+          z-index: 9;
+          position: absolute;
+        }
+
+        &.tools-dropdown + .tab-item {
+          margin-left: 56px;
         }
 
         .workspace-tools-link {

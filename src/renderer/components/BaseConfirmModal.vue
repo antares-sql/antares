@@ -24,7 +24,7 @@
                <slot name="body" />
             </div>
          </div>
-         <div class="modal-footer pt-0">
+         <div class="modal-footer">
             <button
                class="btn btn-primary mr-2"
                @click.stop="confirmModal"

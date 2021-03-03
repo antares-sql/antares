@@ -956,6 +956,25 @@ export class MySQLClient extends AntaresCore {
       }, {});
    }
 
+   async getProcesses () {
+      const sql = 'SELECT `ID`, `USER`, `HOST`, `DB`, `COMMAND`, `TIME`, `STATE`, LEFT(`INFO`, 51200) AS `INFO` FROM `information_schema`.`PROCESSLIST`';
+
+      const { rows } = await this.raw(sql);
+
+      return rows.map(row => {
+         return {
+            id: row.ID,
+            user: row.USER,
+            host: row.HOST,
+            db: row.DB,
+            command: row.COMMAND,
+            time: row.TIME,
+            state: row.STATE,
+            info: row.INFO
+         };
+      });
+   }
+
    /**
     * CREATE TABLE
     *

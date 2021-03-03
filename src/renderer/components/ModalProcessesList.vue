@@ -1,0 +1,307 @@
+<template>
+   <div class="modal active">
+      <a class="modal-overlay" @click.stop="closeModal" />
+      <div class="modal-container p-0">
+         <div class="modal-header pl-2">
+            <div class="modal-title h6">
+               <div class="d-flex">
+                  <i class="mdi mdi-24px mdi-memory mr-1" /> {{ $t('message.processesList') }}: {{ connectionName }}
+               </div>
+            </div>
+            <a class="btn btn-clear c-hand" @click.stop="closeModal" />
+         </div>
+         <div class="processes-toolbar py-2 px-4">
+            <div class="dropdown">
+               <div class="btn-group">
+                  <button
+                     class="btn btn-dark btn-sm mr-0 pr-1 d-flex"
+                     :class="{'loading':isQuering}"
+                     title="F5"
+                     @click="getProcessesList"
+                  >
+                     <span>{{ $t('word.refresh') }}</span>
+                     <i v-if="!+autorefreshTimer" class="mdi mdi-24px mdi-refresh ml-1" />
+                     <i v-else class="mdi mdi-24px mdi-history mdi-flip-h ml-1" />
+                  </button>
+                  <div class="btn btn-dark btn-sm dropdown-toggle pl-0 pr-0" tabindex="0">
+                     <i class="mdi mdi-24px mdi-menu-down" />
+                  </div>
+                  <div class="menu px-3">
+                     <span>{{ $t('word.autoRefresh') }}: <b>{{ +autorefreshTimer ? `${autorefreshTimer}s` : 'OFF' }}</b></span>
+                     <input
+                        v-model="autorefreshTimer"
+                        class="slider no-border"
+                        type="range"
+                        min="0"
+                        max="30"
+                        step="1"
+                        @change="setRefreshInterval"
+                     >
+                  </div>
+               </div>
+            </div>
+            <div class="workspace-query-info">
+               <div v-if="sortedResults.length">
+                  {{ $t('word.results') }}: <b>{{ sortedResults.length.toLocaleString() }}</b>
+               </div>
+            </div>
+         </div>
+         <div ref="tableWrapper" class="modal-body py-0">
+            <div class="vscroll workspace-query-results" :style="{'height': resultsSize+'px'}">
+               <div ref="table" class="table table-hover">
+                  <div class="thead">
+                     <div class="tr">
+                        <div
+                           v-for="(field, index) in fields"
+                           :key="index"
+                           class="th c-hand"
+                        >
+                           <div ref="columnResize" class="column-resizable">
+                              <div class="table-column-title" @click="sort(field)">
+                                 <span>{{ field.toUpperCase() }}</span>
+                                 <i
+                                    v-if="currentSort === field"
+                                    class="mdi sort-icon"
+                                    :class="currentSortDir === 'asc' ? 'mdi-sort-ascending':'mdi-sort-descending'"
+                                 />
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <BaseVirtualScroll
+                     ref="resultTable"
+                     :items="sortedResults"
+                     :item-height="22"
+                     class="tbody"
+                     :visible-height="resultsSize"
+                     :scroll-element="scrollElement"
+                  >
+                     <template slot-scope="{ items }">
+                        <ProcessesListRow
+                           v-for="row in items"
+                           :key="row._id"
+                           class="process-row"
+                           :row="row"
+                           @contextmenu="contextMenu"
+                           @show-info="showInfoModal"
+                        />
+                     </template>
+                  </BaseVirtualScroll>
+               </div>
+            </div>
+         </div>
+         <div class="modal-footer text-light">
+            <button class="btn btn-link" @click.stop="closeModal">
+               {{ $t('word.close') }}
+            </button>
+         </div>
+      </div>
+   </div>
+</template>
+
+<script>
+import { mapGetters, mapActions } from 'vuex';
+import Database from '@/ipc-api/Database';
+import BaseVirtualScroll from '@/components/BaseVirtualScroll';
+import ProcessesListRow from '@/components/ProcessesListRow';
+
+export default {
+   name: 'ModalProcessesList',
+   components: {
+      BaseVirtualScroll,
+      ProcessesListRow
+   },
+   props: {
+      connection: Object
+   },
+   data () {
+      return {
+         resultsSize: 1000,
+         isQuering: false,
+         autorefreshTimer: 0,
+         refreshInterval: null,
+         results: [],
+         fields: [],
+         currentSort: '',
+         currentSortDir: 'asc',
+         scrollElement: null
+      };
+   },
+   computed: {
+      ...mapGetters({
+         getConnectionName: 'connections/getConnectionName'
+      }),
+      connectionName () {
+         return this.getConnectionName(this.connection.uid);
+      },
+      sortedResults () {
+         if (this.currentSort) {
+            return [...this.results].sort((a, b) => {
+               let modifier = 1;
+               const valA = typeof a[this.currentSort] === 'string' ? a[this.currentSort].toLowerCase() : a[this.currentSort];
+               const valB = typeof b[this.currentSort] === 'string' ? b[this.currentSort].toLowerCase() : b[this.currentSort];
+               if (this.currentSortDir === 'desc') modifier = -1;
+               if (valA < valB) return -1 * modifier;
+               if (valA > valB) return 1 * modifier;
+               return 0;
+            });
+         }
+         else
+            return this.results;
+      }
+   },
+   created () {
+      window.addEventListener('keydown', this.onKey, { capture: true });
+   },
+   updated () {
+      if (this.$refs.table)
+         this.refreshScroller();
+
+      if (this.$refs.tableWrapper)
+         this.scrollElement = this.$refs.tableWrapper;
+   },
+   mounted () {
+      this.getProcessesList();
+      window.addEventListener('resize', this.resizeResults);
+   },
+   beforeDestroy () {
+      window.removeEventListener('keydown', this.onKey, { capture: true });
+      window.removeEventListener('resize', this.resizeResults);
+      clearInterval(this.refreshInterval);
+   },
+   methods: {
+      ...mapActions({
+         addNotification: 'notifications/addNotification'
+      }),
+      async getProcessesList () {
+         this.isQuering = true;
+
+         // if table changes clear cached values
+         if (this.lastTable !== this.table)
+            this.results = [];
+
+         try { // Table data
+            const { status, response } = await Database.getProcesses(this.connection.uid);
+
+            if (status === 'success') {
+               this.results = response;
+               this.fields = response.length ? Object.keys(response[0]) : [];
+            }
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         this.isQuering = false;
+      },
+      setRefreshInterval () {
+         this.clearRefresh();
+
+         if (+this.autorefreshTimer) {
+            this.refreshInterval = setInterval(() => {
+               if (!this.isQuering)
+                  this.getProcessesList();
+            }, this.autorefreshTimer * 1000);
+         }
+      },
+      clearRefresh () {
+         if (this.refreshInterval)
+            clearInterval(this.refreshInterval);
+      },
+      resizeResults () {
+         if (this.$refs.resultTable) {
+            const el = this.$refs.tableWrapper;
+
+            if (el) {
+               const size = el.offsetHeight;
+               this.resultsSize = size;
+            }
+            this.$refs.resultTable.updateWindow();
+         }
+      },
+      refreshScroller () {
+         this.resizeResults();
+      },
+      sort (field) {
+         if (field === this.currentSort) {
+            if (this.currentSortDir === 'asc')
+               this.currentSortDir = 'desc';
+            else
+               this.resetSort();
+         }
+         else {
+            this.currentSortDir = 'asc';
+            this.currentSort = field;
+         }
+      },
+      resetSort () {
+         this.currentSort = '';
+         this.currentSortDir = 'asc';
+      },
+      showInfoModal () {
+         this.autorefreshTimer = 0;
+         this.clearRefresh();
+      },
+      contextMenu () {},
+      closeModal () {
+         this.$emit('close');
+      },
+      onKey (e) {
+         e.stopPropagation();
+         if (e.key === 'Escape')
+            this.closeModal();
+         if (e.key === 'F5')
+            this.getProcessesList();
+      }
+   }
+};
+</script>
+
+<style lang="scss" scoped>
+.vscroll {
+  height: 1000px;
+  overflow: auto;
+  overflow-anchor: none;
+}
+
+.column-resizable {
+  &:hover,
+  &:active {
+    resize: horizontal;
+    overflow: hidden;
+  }
+}
+
+.table-column-title {
+  display: flex;
+  align-items: center;
+}
+
+.sort-icon {
+  font-size: 0.7rem;
+  line-height: 1;
+  margin-left: 0.2rem;
+}
+
+.result-tabs {
+  background: transparent !important;
+  margin: 0;
+}
+
+.modal {
+  align-items: flex-start;
+
+  .modal-container {
+    max-width: 75vw;
+    margin-top: 10vh;
+  }
+}
+
+.processes-toolbar {
+  display: flex;
+  justify-content: space-between;
+}
+</style>

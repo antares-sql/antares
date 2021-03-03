@@ -96,6 +96,10 @@ body {
   }
 }
 
+.process-row .td:last-child {
+  width: 100%;
+}
+
 // Scrollbars
 ::-webkit-scrollbar {
   width: 10px;

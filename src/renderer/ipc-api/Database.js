@@ -38,6 +38,10 @@ export default class {
       return ipcRenderer.invoke('get-version', uid);
    }
 
+   static getProcesses (uid) {
+      return ipcRenderer.invoke('get-processes', uid);
+   }
+
    static useSchema (params) {
       return ipcRenderer.invoke('use-schema', params);
    }
