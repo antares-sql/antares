@@ -41,14 +41,16 @@ export default {
          localScrollElement: null
       };
    },
+   watch: {
+      scrollElement () {
+         this.setScrollElement();
+      }
+   },
    mounted () {
-      this._checkScrollPosition = this.checkScrollPosition.bind(this);
-      this.localScrollElement = this.scrollElement ? this.scrollElement : this.$el;
-      this.updateWindow();
-      this.localScrollElement.addEventListener('scroll', this._checkScrollPosition);
+      this.setScrollElement();
    },
    beforeDestroy () {
-      this.localScrollElement.removeEventListener('scroll', this._checkScrollPosition);
+      this.localScrollElement.removeEventListener('scroll', this.checkScrollPosition);
    },
    methods: {
       checkScrollPosition (e) {
@@ -58,7 +60,7 @@ export default {
             this.updateWindow(e);
          }, 200);
       },
-      updateWindow (e) {
+      updateWindow () {
          const visibleItemsCount = Math.ceil(this.visibleHeight / this.itemHeight);
          const totalScrollHeight = this.items.length * this.itemHeight;
          const offset = 50;
@@ -74,6 +76,14 @@ export default {
 
          this.topHeight = firstCutIndex * this.itemHeight;
          this.bottomHeight = totalScrollHeight - this.visibleItems.length * this.itemHeight - this.topHeight;
+      },
+      setScrollElement () {
+         if (this.localScrollElement)
+            this.localScrollElement.removeEventListener('scroll', this.checkScrollPosition);
+
+         this.localScrollElement = this.scrollElement ? this.scrollElement : this.$el;
+         this.updateWindow();
+         this.localScrollElement.addEventListener('scroll', this.checkScrollPosition);
       }
    }
 };

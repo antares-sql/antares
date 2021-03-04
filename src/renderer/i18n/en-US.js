@@ -99,7 +99,8 @@ module.exports = {
       copy: 'Copy',
       paste: 'Paste',
       tools: 'Tools',
-      variables: 'Variables'
+      variables: 'Variables',
+      processes: 'Processes'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -197,6 +198,7 @@ module.exports = {
       includeBetaUpdates: 'Include beta updates',
       setNull: 'Set NULL',
       processesList: 'Processes list',
+      processInfo: 'Process info',
       manageUsers: 'Manage users'
    },
    faker: {

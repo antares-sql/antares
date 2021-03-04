@@ -24,7 +24,7 @@
                <slot name="body" />
             </div>
          </div>
-         <div class="modal-footer">
+         <div v-if="!hideFooter" class="modal-footer">
             <button
                class="btn btn-primary mr-2"
                @click.stop="confirmModal"
@@ -50,6 +50,10 @@ export default {
          type: String,
          validator: prop => ['small', 'medium', '400', 'large'].includes(prop),
          default: 'small'
+      },
+      hideFooter: {
+         type: Boolean,
+         default: false
       },
       confirmText: String,
       cancelText: String

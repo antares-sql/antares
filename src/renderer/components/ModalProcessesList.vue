@@ -1,7 +1,7 @@
 <template>
    <div class="modal active">
       <a class="modal-overlay" @click.stop="closeModal" />
-      <div class="modal-container p-0">
+      <div class="modal-container p-0 pb-4">
          <div class="modal-header pl-2">
             <div class="modal-title h6">
                <div class="d-flex">
@@ -34,7 +34,7 @@
                         type="range"
                         min="0"
                         max="30"
-                        step="1"
+                        step="0.5"
                         @change="setRefreshInterval"
                      >
                   </div>
@@ -42,12 +42,16 @@
             </div>
             <div class="workspace-query-info">
                <div v-if="sortedResults.length">
-                  {{ $t('word.results') }}: <b>{{ sortedResults.length.toLocaleString() }}</b>
+                  {{ $t('word.processes') }}: <b>{{ sortedResults.length.toLocaleString() }}</b>
                </div>
             </div>
          </div>
-         <div ref="tableWrapper" class="modal-body py-0">
-            <div class="vscroll workspace-query-results" :style="{'height': resultsSize+'px'}">
+         <div class="modal-body py-0 workspace-query-results">
+            <div
+               ref="tableWrapper"
+               class="vscroll"
+               :style="{'height': resultsSize+'px'}"
+            >
                <div ref="table" class="table table-hover">
                   <div class="thead">
                      <div class="tr">
@@ -84,17 +88,12 @@
                            class="process-row"
                            :row="row"
                            @contextmenu="contextMenu"
-                           @show-info="showInfoModal"
+                           @stop-refresh="stopRefresh"
                         />
                      </template>
                   </BaseVirtualScroll>
                </div>
             </div>
-         </div>
-         <div class="modal-footer text-light">
-            <button class="btn btn-link" @click.stop="closeModal">
-               {{ $t('word.close') }}
-            </button>
          </div>
       </div>
    </div>
@@ -213,7 +212,7 @@ export default {
       },
       resizeResults () {
          if (this.$refs.resultTable) {
-            const el = this.$refs.tableWrapper;
+            const el = this.$refs.tableWrapper.parentElement;
 
             if (el) {
                const size = el.offsetHeight;
@@ -241,7 +240,7 @@ export default {
          this.currentSort = '';
          this.currentSortDir = 'asc';
       },
-      showInfoModal () {
+      stopRefresh () {
          this.autorefreshTimer = 0;
          this.clearRefresh();
       },

@@ -18,23 +18,26 @@
          </template>
       </div>
       <ConfirmModal
-         v-if="isTextareaEditor"
+         v-if="isInfoModal"
          :confirm-text="$t('word.update')"
+         :cancel-text="$t('word.close')"
          size="medium"
-         @hide="hideEditorModal"
+         :hide-footer="true"
+         @hide="hideInfoModal"
       >
          <template :slot="'header'">
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-playlist-edit mr-1" /> {{ $t('word.edit') }} "{{ editingField }}"
+               <i class="mdi mdi-24px mdi-information-outline mr-1" /> {{ $t('message.processInfo') }}
             </div>
          </template>
          <div :slot="'body'">
-            <div class="mb-2">
+            <div>
                <div>
                   <TextEditor
-                     :value.sync="editingContent"
+                     :value="row.info"
                      editor-class="textarea-editor"
                      :mode="editorMode"
+                     :read-only="true"
                   />
                </div>
             </div>
@@ -56,7 +59,7 @@ export default {
    filters: {
       cutText (val) {
          if (typeof val !== 'string') return val;
-         return val.length > 128 ? `${val.substring(0, 128)}[...]` : val;
+         return val.length > 250 ? `${val.substring(0, 250)}[...]` : val;
       }
    },
    props: {
@@ -65,7 +68,7 @@ export default {
    data () {
       return {
          isInlineEditor: {},
-         isTextareaEditor: false,
+         isInfoModal: false,
          editorMode: 'sql'
       };
    },
@@ -90,9 +93,13 @@ export default {
             this.$emit('contextmenu', event, payload);
          }
       },
+      hideInfoModal () {
+         this.isInfoModal = false;
+      },
       dblClick (col) {
          if (col !== 'info') return;
-         this.$emit('show-info', col);
+         this.$emit('stop-refresh');
+         this.isInfoModal = true;
       },
       onKey (e) {
          e.stopPropagation();
