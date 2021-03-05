@@ -33,7 +33,7 @@
                         class="slider no-border"
                         type="range"
                         min="0"
-                        max="30"
+                        max="15"
                         step="0.5"
                         @change="setRefreshInterval"
                      >
@@ -296,6 +296,10 @@ export default {
   .modal-container {
     max-width: 75vw;
     margin-top: 10vh;
+
+    .modal-body {
+      height: 80vh;
+    }
   }
 }
 

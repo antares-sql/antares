@@ -34,7 +34,7 @@
             <div>
                <div>
                   <TextEditor
-                     :value="row.info"
+                     :value="row.info || ''"
                      editor-class="textarea-editor"
                      :mode="editorMode"
                      :read-only="true"
