@@ -57,6 +57,7 @@
             :results="results"
             :tab-uid="tab.uid"
             :conn-uid="connection.uid"
+            :is-selected="isSelected"
             mode="query"
             @update-field="updateField"
             @delete-selected="deleteSelected"

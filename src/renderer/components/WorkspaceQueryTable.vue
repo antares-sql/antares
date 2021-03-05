@@ -97,7 +97,8 @@ export default {
    props: {
       results: Array,
       connUid: String,
-      mode: String
+      mode: String,
+      isSelected: Boolean
    },
    data () {
       return {
@@ -273,7 +274,7 @@ export default {
             : [];
       },
       resizeResults () {
-         if (this.$refs.resultTable) {
+         if (this.$refs.resultTable && this.isSelected) {
             const el = this.$refs.tableWrapper;
 
             if (el) {

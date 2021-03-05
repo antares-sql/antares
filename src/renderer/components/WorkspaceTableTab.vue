@@ -90,6 +90,7 @@
             :results="results"
             :tab-uid="tabUid"
             :conn-uid="connection.uid"
+            :is-selected="isSelected"
             mode="table"
             @update-field="updateField"
             @delete-selected="deleteSelected"
