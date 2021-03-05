@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.19](https://github.com/Fabio286/antares/compare/v0.0.18...v0.0.19) (2021-03-05)
+
+
+### Features
+
+* **UI:** modal that shows process query ([07f60c3](https://github.com/Fabio286/antares/commit/07f60c39173e9db452909d74573c3aecf4b6466b))
+* processes list tool ([049143d](https://github.com/Fabio286/antares/commit/049143d143d8187bfcb6377f2bf374c471c28046))
+* **MySQL:** support to new mysql8 authentication, closes [#45](https://github.com/Fabio286/antares/issues/45) ([db44306](https://github.com/Fabio286/antares/commit/db4430609e22816f4a3a8ecdbf61e9b51cde2579))
+* context menu shortcut to set NULL a table cell ([71b4310](https://github.com/Fabio286/antares/commit/71b43101172c27d810d533c936534bcf089dbca2))
+* **UI:** esc key to cancel cell edit ([45351fa](https://github.com/Fabio286/antares/commit/45351faeaea6ad4af8280da6c0ec1b4ded0f86fe))
+* setting to enable beta updates (future use) ([b1ea32b](https://github.com/Fabio286/antares/commit/b1ea32b68024593481120e2ef67642e127554888))
+* **UI:** query duration calc ([777b73f](https://github.com/Fabio286/antares/commit/777b73fa6f9d6f7806e0d3d07589dfaee0c40786))
+
+
+### Bug Fixes
+
+* **MySQL:** wrong TIMESTAMP fields length ([201fad9](https://github.com/Fabio286/antares/commit/201fad9265e01e19ae4c8dc16bff84ee9dc9c894))
+* **UI:** modal processes list does not regain size on window resize ([5d7efa7](https://github.com/Fabio286/antares/commit/5d7efa75b76f59b85654603b4df8035a36af0576))
+* **UI:** wrong height in scrolling tables in some cases ([4862d51](https://github.com/Fabio286/antares/commit/4862d51fba863e055ca6735586b0abe4894037eb))
+
+
+### Improvements
+
+* **UI:** big performance improvement in tables rendering ([39ca197](https://github.com/Fabio286/antares/commit/39ca1974bcea84c9047779893ed3f458300474e3))
+* **UI:** improvements of date time inputs ([b4ead69](https://github.com/Fabio286/antares/commit/b4ead6992c8ddc172380a97e7aa125e0dd078f1e))
+
 ### [0.0.18](https://github.com/Fabio286/antares/compare/v0.0.17...v0.0.18) (2021-02-25)
 
 
