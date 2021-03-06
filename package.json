@@ -11,6 +11,7 @@
     "build": "cross-env NODE_ENV=production npm run compile && electron-builder",
     "release": "standard-version",
     "release:pre": "npm run release -- --prerelease alpha",
+    "release:snap": "npm run build -- --linux snap && snapcraft upload --release=edge ./dist/Antares-${npm_package_version}-linux_amd64.snap",
     "test": "npm run lint",
     "lint": "eslint . --ext .js,.vue && stylelint \"./src/**/*.{css,scss,sass,vue}\"",
     "lint:fix": "eslint . --ext .js,.vue --fix && stylelint \"./src/**/*.{css,scss,sass,vue}\" --fix"
@@ -36,6 +37,7 @@
     "linux": {
       "target": [
         "deb",
+        "snap",
         "AppImage"
       ],
       "category": "Development"
@@ -43,6 +45,19 @@
     "appImage": {
       "license": "./LICENSE",
       "category": "Development"
+    },
+    "snap": {
+      "publish": [
+        "github",
+        "snapStore"
+      ],
+      "environment": {
+        "ELECTRON_SNAP": "true"
+      },
+      "stagePackages": ["fcitx-frontend-gtk3", "libsecret-1-0", "libasound2", "libgconf2-4", "libnotify4", "libnspr4", "libnss3", "libpcre3", "libpulse0", "libxss1", "libxtst6"]
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-portable.exe"
     }
   },
   "electronWebpack": {
