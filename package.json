@@ -20,6 +20,9 @@
   "build": {
     "appId": "com.fabio286.antares",
     "artifactName": "${productName}-${version}-${os}_${arch}.${ext}",
+    "win": {
+      "target": ["nsis", "portable"]
+    },
     "dmg": {
       "contents": [
         {
@@ -37,7 +40,6 @@
     "linux": {
       "target": [
         "deb",
-        "snap",
         "AppImage"
       ],
       "category": "Development"
