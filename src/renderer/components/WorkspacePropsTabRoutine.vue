@@ -47,7 +47,8 @@
          <BaseLoader v-if="isLoading" />
          <label class="form-label ml-2">{{ $t('message.routineBody') }}</label>
          <QueryEditor
-            v-if="isSelected"
+            v-show="isSelected"
+            :key="`${routine}-${_uid}`"
             ref="queryEditor"
             :value.sync="localRoutine.sql"
             :workspace="workspace"

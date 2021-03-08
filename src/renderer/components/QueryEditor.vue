@@ -241,6 +241,24 @@ export default {
          this.$emit('update:value', content);
       });
 
+      this.editor.on('guttermousedown', e => {
+         const target = e.domEvent.target;
+         if (target.className.indexOf('ace_gutter-cell') === -1)
+            return;
+         if (!this.editor.isFocused())
+            return;
+         if (e.clientX > 25 + target.getBoundingClientRect().left)
+            return;
+
+         const row = e.getDocumentPosition().row;
+         const breakpoints = e.editor.session.getBreakpoints(row, 0);
+         if (typeof breakpoints[row] === typeof undefined)
+            e.editor.session.setBreakpoint(row);
+         else
+            e.editor.session.clearBreakpoint(row);
+         e.stop();
+      });
+
       if (this.autoFocus) {
          setTimeout(() => {
             this.editor.focus();
@@ -307,5 +325,22 @@ export default {
 
 .ace_dark.ace_editor.ace_autocomplete .ace_completion-highlight {
   color: #e0d00c;
+}
+
+.ace_gutter-cell.ace_breakpoint {
+  &::before {
+    content: '\F0403';
+    position: absolute;
+    left: 3px;
+    top: 2px;
+    color: $primary-color;
+    display: inline-block;
+    font: normal normal normal 24px/1 "Material Design Icons", sans-serif;
+    font-size: inherit;
+    text-rendering: auto;
+    line-height: inherit;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 </style>
