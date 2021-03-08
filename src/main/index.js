@@ -96,11 +96,16 @@ else {
 
    // create main BrowserWindow when electron is ready
    app.on('ready', async () => {
-      let key = await keytar.getPassword('antares', 'user');
+      try {
+         let key = await keytar.getPassword('antares', 'user');
 
-      if (!key) {
-         key = crypto.randomBytes(16).toString('hex');
-         keytar.setPassword('antares', 'user', key);
+         if (!key) {
+            key = crypto.randomBytes(16).toString('hex');
+            keytar.setPassword('antares', 'user', key);
+         }
+      }
+      catch (err) {
+         console.log(err);
       }
 
       mainWindow = createMainWindow();

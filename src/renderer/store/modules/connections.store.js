@@ -1,7 +1,13 @@
 'use strict';
 import Store from 'electron-store';
+import crypto from 'crypto';
 import Application from '../../ipc-api/Application';
-const key = Application.getKey();
+const key = Application.getKey() || localStorage.getItem('key');
+
+if (!key)
+   localStorage.setItem('key', crypto.randomBytes(16).toString('hex'));
+else
+   localStorage.setItem('key', key);
 
 const persistentStore = new Store({
    name: 'connections',

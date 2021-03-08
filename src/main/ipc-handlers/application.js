@@ -7,7 +7,14 @@ export default () => {
    });
 
    ipcMain.on('get-key', async event => {
-      const key = await keytar.getPassword('antares', 'user');
+      let key = false;
+
+      try {
+         key = await keytar.getPassword('antares', 'user');
+      }
+      catch (err) {
+         console.log(err);
+      }
       event.returnValue = key;
    });
 };
