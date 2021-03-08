@@ -1,0 +1,96 @@
+name: antares
+adopt-info: antares
+summary: Open source SQL client made to be simple and complete.
+description: |
+  Antares is an SQL client that aims to become an useful and complete tool, especially for developers.
+  The target is to support as many databases as possible, and all major operating systems, including the ARM versions.
+  At the moment this application is an alpha and supports only MySQL and x86 architecture.
+  Most of its current features might be enough for MySQL management, so give it a chance and send us your feedback, we would really appreciate it.
+base: core18
+
+grade: stable
+confinement: strict
+
+architectures:
+  - build-on: amd64
+compression: lzo
+
+parts:
+  antares:
+    plugin: dump
+    source: .
+    override-build: |
+      snapcraftctl build
+      ARCHITECTURE=$(dpkg --print-architecture)
+      if [ "${ARCHITECTURE}" = "amd64" ]; then
+        FILTER="amd64.deb"
+      else
+        echo "ERROR! Antares only produces debs for amd64. Failing the build here."
+        exit 1
+      fi
+      # Get the latest releases json
+      echo "Get GitHub releases..."
+      wget --quiet https://api.github.com/repos/fabio286/antares/releases/latest -O releases.json
+      # Get the version from the tag_name and the download URL.
+      VERSION=$(jq . releases.json | grep tag_name | cut -d'"' -f4 | sed s'/release-//')
+      DEB_URL=$(cat releases.json | jq -r ".assets[] | select(.name | test(\"${FILTER}\")) | .browser_download_url")
+      DEB=$(basename "${DEB_URL}")
+      echo "Downloading ${DEB_URL}..."
+      wget --quiet "${DEB_URL}" -O "${SNAPCRAFT_PART_INSTALL}/${DEB}"
+      echo "Unpacking ${DEB}..."
+      dpkg -x "${SNAPCRAFT_PART_INSTALL}/${DEB}" ${SNAPCRAFT_PART_INSTALL}
+      rm -f releases.json 2>/dev/null
+      rm -f "${SNAPCRAFT_PART_INSTALL}/${DEB}" 2>/dev/null
+      echo $VERSION > $SNAPCRAFT_STAGE/version
+      # Correct path to icon.
+      sed -i 's|Icon=antares|Icon=/usr/share/icons/hicolor/256x256/apps/antares\.png|g' ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/antares.desktop
+      # Delete usr/bin/antares, it's a broken symlink pointing outside the snap.
+      rm -f ${SNAPCRAFT_PART_INSTALL}/usr/bin/antares
+      chmod -s ${SNAPCRAFT_PART_INSTALL}/opt/Antares/chrome-sandbox
+      snapcraftctl set-version "$(echo $VERSION)"
+    build-packages:
+      - dpkg
+      - jq
+      - sed
+      - wget
+    stage-packages:
+      - fcitx-frontend-gtk3
+      - libappindicator3-1
+      - libasound2
+      - libgconf-2-4
+      - libgtk-3-0
+      - libnotify4
+      - libnspr4
+      - libnss3
+      - libpcre3
+      - libpulse0
+      - libxss1
+      - libsecret-1-0
+      - libxtst6
+      - libxkbfile1
+  cleanup:
+    after: [antares]
+    plugin: nil
+    build-snaps: [ gnome-3-28-1804 ]
+    override-prime: |
+        set -eux
+        cd /snap/gnome-3-28-1804/current
+        find . -type f,l -exec rm -f $SNAPCRAFT_PRIME/{} \;
+
+apps:
+  antares:
+    command: opt/Antares/antares --no-sandbox
+    desktop: usr/share/applications/antares.desktop
+    extensions: [gnome-3-28]
+    environment:
+      # Fallback to XWayland if running in a Wayland session.
+      DISABLE_WAYLAND: 1
+    plugs:
+      - browser-support
+      - cups-control
+      - home
+      - network
+      - opengl
+      - pulseaudio
+      - removable-media
+      - unity7

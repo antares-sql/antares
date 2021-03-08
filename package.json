@@ -48,16 +48,6 @@
       "license": "./LICENSE",
       "category": "Development"
     },
-    "snap": {
-      "publish": [
-        "github",
-        "snapStore"
-      ],
-      "environment": {
-        "ELECTRON_SNAP": "true"
-      },
-      "stagePackages": ["fcitx-frontend-gtk3", "libsecret-1-0", "libasound2", "libgconf2-4", "libnotify4", "libnspr4", "libnss3", "libpcre3", "libpulse0", "libxss1", "libxtst6"]
-    },
     "portable": {
       "artifactName": "${productName}-${version}-portable.exe"
     }
