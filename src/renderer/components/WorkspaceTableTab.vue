@@ -83,7 +83,8 @@
             </div>
          </div>
       </div>
-      <div class="workspace-query-results column col-12">
+      <div class="workspace-query-results p-relative column col-12">
+         <BaseLoader v-if="isQuering" />
          <WorkspaceQueryTable
             v-if="results"
             ref="queryTable"
@@ -118,6 +119,7 @@
 
 <script>
 import Tables from '@/ipc-api/Tables';
+import BaseLoader from '@/components/BaseLoader';
 import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
 import ModalNewTableRow from '@/components/ModalNewTableRow';
 import ModalFakerRows from '@/components/ModalFakerRows';
@@ -127,6 +129,7 @@ import tableTabs from '@/mixins/tableTabs';
 export default {
    name: 'WorkspaceTableTab',
    components: {
+      BaseLoader,
       WorkspaceQueryTable,
       ModalNewTableRow,
       ModalFakerRows

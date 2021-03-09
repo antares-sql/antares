@@ -49,7 +49,8 @@
             </div>
          </div>
       </div>
-      <div class="workspace-query-results column col-12">
+      <div class="workspace-query-results p-relative column col-12">
+         <BaseLoader v-if="isQuering" />
          <WorkspaceQueryTable
             v-if="results"
             v-show="!isQuering"
@@ -69,6 +70,7 @@
 <script>
 import Database from '@/ipc-api/Database';
 import QueryEditor from '@/components/QueryEditor';
+import BaseLoader from '@/components/BaseLoader';
 import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
 import { mapGetters, mapActions } from 'vuex';
 import tableTabs from '@/mixins/tableTabs';
@@ -76,6 +78,7 @@ import tableTabs from '@/mixins/tableTabs';
 export default {
    name: 'WorkspaceQueryTab',
    components: {
+      BaseLoader,
       QueryEditor,
       WorkspaceQueryTable
    },
@@ -242,6 +245,10 @@ export default {
         }
       }
     }
+  }
+
+  .workspace-query-results {
+    min-height: 200px;
   }
 }
 
