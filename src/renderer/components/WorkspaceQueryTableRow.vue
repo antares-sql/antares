@@ -243,6 +243,7 @@ export default {
          editingContent: null,
          editingType: null,
          editingField: null,
+         editingLength: null,
          editorMode: 'text',
          contentInfo: {
             ext: '',
@@ -339,23 +340,24 @@ export default {
          window.addEventListener('keydown', this.onKey);
 
          const type = this.fields[field].type.toUpperCase(); ;
-         this.originalContent = content;
+         this.originalContent = this.$options.filters.typeFormat(content, type, this.fields[field].length);
          this.editingType = type;
          this.editingField = field;
+         this.editingLength = this.fields[field].length;
 
          if (LONG_TEXT.includes(type)) {
             this.isTextareaEditor = true;
-            this.editingContent = this.$options.filters.typeFormat(this.originalContent, type);
+            this.editingContent = this.$options.filters.typeFormat(content, type);
             return;
          }
 
          if (BLOB.includes(type)) {
             this.isBlobEditor = true;
-            this.editingContent = this.originalContent || '';
+            this.editingContent = content || '';
             this.fileToUpload = null;
             this.willBeDeleted = false;
 
-            if (this.originalContent !== null) {
+            if (content !== null) {
                const buff = Buffer.from(this.editingContent);
                if (buff.length) {
                   const hex = buff.toString('hex').substring(0, 8).toUpperCase();
@@ -371,7 +373,7 @@ export default {
          }
 
          // Inline editable fields
-         this.editingContent = this.$options.filters.typeFormat(this.originalContent, type, this.fields[field].length);
+         this.editingContent = this.originalContent;
          this.$nextTick(() => { // Focus on input
             event.target.blur();
 
@@ -387,7 +389,7 @@ export default {
          this.isInlineEditor[this.editingField] = false;
          let content;
          if (!BLOB.includes(this.editingType)) {
-            if (this.editingContent === this.$options.filters.typeFormat(this.originalContent, this.editingType)) return;// If not changed
+            if (this.editingContent === this.$options.filters.typeFormat(this.originalContent, this.editingType, this.editingLength)) return;// If not changed
             content = this.editingContent;
          }
          else { // Handle file upload
