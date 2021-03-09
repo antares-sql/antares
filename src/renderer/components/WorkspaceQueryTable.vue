@@ -289,14 +289,15 @@ export default {
          this.resizeResults();
       },
       updateField (payload, row) {
-         delete row._id;
+         const localRow = Object.assign({}, row);
+         delete localRow._id;
 
          const params = {
             primary: this.primaryField.name,
             schema: this.getSchema(this.resultsetIndex),
             table: this.getTable(this.resultsetIndex),
-            id: this.getPrimaryValue(row),
-            row,
+            id: this.getPrimaryValue(localRow),
+            localRow,
             ...payload
          };
          this.$emit('update-field', params);
