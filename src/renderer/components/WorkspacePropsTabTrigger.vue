@@ -99,7 +99,7 @@
          <BaseLoader v-if="isLoading" />
          <label class="form-label ml-2">{{ $t('message.triggerStatement') }}</label>
          <QueryEditor
-            v-if="isSelected"
+            v-show="isSelected"
             ref="queryEditor"
             :value.sync="localTrigger.sql"
             :workspace="workspace"

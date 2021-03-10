@@ -245,8 +245,6 @@ export default {
          const target = e.domEvent.target;
          if (target.className.indexOf('ace_gutter-cell') === -1)
             return;
-         if (!this.editor.isFocused())
-            return;
          if (e.clientX > 25 + target.getBoundingClientRect().left)
             return;
 

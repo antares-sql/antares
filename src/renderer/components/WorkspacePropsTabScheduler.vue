@@ -118,7 +118,7 @@
          <BaseLoader v-if="isLoading" />
          <label class="form-label ml-2">{{ $t('message.schedulerBody') }}</label>
          <QueryEditor
-            v-if="isSelected"
+            v-show="isSelected"
             ref="queryEditor"
             :value.sync="localScheduler.sql"
             :workspace="workspace"
