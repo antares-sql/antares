@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.20](https://github.com/Fabio286/antares/compare/v0.0.19...v0.0.20) (2021-03-13)
+
+
+### Features
+
+* **UI:** loader layers on query and data tabs ([b232a3b](https://github.com/Fabio286/antares/commit/b232a3bb5ff7e38c83aa33e8b96ec7202bc4881e))
+* **UI:** row markers in sql editors ([ddfb713](https://github.com/Fabio286/antares/commit/ddfb7131248a47fa2055ccfb72e223986a17f986))
+
+
+### Bug Fixes
+
+* **UI:** avoid unnecessary updates when cell content not change ([e9a26c1](https://github.com/Fabio286/antares/commit/e9a26c1bc0641b7087d8143cc948405850d7552f))
+* **UI:** row mark not applied on first click ([25d72e3](https://github.com/Fabio286/antares/commit/25d72e39529884c09cf1286ff64ba00c8a5c7b24))
+* **UI:** table rows lose internal id after an update ([76c5c0c](https://github.com/Fabio286/antares/commit/76c5c0c680521b4a20de1f12bab25314ac084d5c))
+
 ### [0.0.19](https://github.com/Fabio286/antares/compare/v0.0.18...v0.0.19) (2021-03-05)
 
 

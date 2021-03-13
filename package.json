@@ -1,7 +1,7 @@
 {
   "name": "antares",
   "productName": "Antares",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "A cross-platform easy to use SQL client.",
   "license": "MIT",
   "repository": "https://github.com/Fabio286/antares.git",
@@ -21,7 +21,10 @@
     "appId": "com.fabio286.antares",
     "artifactName": "${productName}-${version}-${os}_${arch}.${ext}",
     "win": {
-      "target": ["nsis", "portable"]
+      "target": [
+        "nsis",
+        "portable"
+      ]
     },
     "dmg": {
       "contents": [
