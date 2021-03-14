@@ -1,7 +1,7 @@
 export const TEXT = ['CHAR', 'VARCHAR'];
 export const LONG_TEXT = ['TEXT', 'MEDIUMTEXT', 'LONGTEXT'];
 
-export const NUMBER = ['INT', 'TINYINT', 'SMALLINT', 'MEDIUMINT', 'BIGINT', 'DECIMAL', 'BOOL'];
+export const NUMBER = ['INT', 'TINYINT', 'SMALLINT', 'MEDIUMINT', 'BIGINT', 'DECIMAL', 'NEWDECIMAL', 'BOOL'];
 export const FLOAT = ['FLOAT', 'DOUBLE'];
 
 export const DATE = ['DATE'];
