@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="800" src="https://raw.githubusercontent.com/Fabio286/antares/master/docs/screen-alpha.png">
+    <img width="800" src="https://raw.githubusercontent.com/Fabio286/antares/master/docs/gh-logo.png">
 </p>
 
 # Antares SQL Client
@@ -85,7 +85,7 @@ Depending on your distribution, you will need to run the following command:
 
 - [x] Windows
 - [x] Linux
-- [x] MacOS (i need feedbacks)
+- [x] MacOS (not tested due lack of hardware)
 
 #### • ARM
 
