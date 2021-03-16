@@ -30,7 +30,7 @@
                            class="form-input"
                            type="text"
                         >
-                        <span class="input-group-addon field-type" :class="`type-${parameter.type.toLowerCase()}`">
+                        <span class="input-group-addon field-type" :class="typeClass(parameter.type)">
                            {{ parameter.type }} {{ parameter.length | wrapNumber }}
                         </span>
                      </div>
@@ -75,6 +75,11 @@ export default {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
+      typeClass (type) {
+         if (type)
+            return `type-${type.toLowerCase().replaceAll(' ', '_').replaceAll('"', '')}`;
+         return '';
+      },
       runRoutine () {
          const valArr = Object.keys(this.values).reduce((acc, curr) => {
             const value = isNaN(this.values[curr]) ? `"${this.values[curr]}"` : this.values[curr];

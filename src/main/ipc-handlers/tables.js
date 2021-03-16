@@ -176,19 +176,19 @@ export default (connections) => {
             if (params.row[key] === null)
                escapedParam = 'NULL';
             else if ([...NUMBER, ...FLOAT].includes(type))
-               escapedParam = params.row[key];
+               escapedParam = +params.row[key];
             else if ([...TEXT, ...LONG_TEXT].includes(type))
-               escapedParam = `"${sqlEscaper(params.row[key])}"`;
+               escapedParam = `'${sqlEscaper(params.row[key])}'`;
             else if (BLOB.includes(type)) {
                if (params.row[key]) {
                   const fileBlob = fs.readFileSync(params.row[key]);
                   escapedParam = `0x${fileBlob.toString('hex')}`;
                }
                else
-                  escapedParam = '""';
+                  escapedParam = '\'\'';
             }
             else
-               escapedParam = `"${sqlEscaper(params.row[key])}"`;
+               escapedParam = `'${sqlEscaper(params.row[key])}'`;
 
             insertObj[key] = escapedParam;
          }
@@ -225,19 +225,19 @@ export default (connections) => {
                   else if ([...NUMBER, ...FLOAT].includes(type))
                      escapedParam = params.row[key].value;
                   else if ([...TEXT, ...LONG_TEXT].includes(type))
-                     escapedParam = `"${sqlEscaper(params.row[key].value)}"`;
+                     escapedParam = `'${sqlEscaper(params.row[key].value)}'`;
                   else if (BLOB.includes(type)) {
                      if (params.row[key].value) {
                         const fileBlob = fs.readFileSync(params.row[key].value);
                         escapedParam = `0x${fileBlob.toString('hex')}`;
                      }
                      else
-                        escapedParam = '""';
+                        escapedParam = '\'\'';
                   }
                   else if (BIT.includes(type))
                      escapedParam = `b'${sqlEscaper(params.row[key].value)}'`;
                   else
-                     escapedParam = `"${sqlEscaper(params.row[key].value)}"`;
+                     escapedParam = `'${sqlEscaper(params.row[key].value)}'`;
 
                   insertObj[key] = escapedParam;
                }
@@ -261,10 +261,10 @@ export default (connections) => {
                   if (typeof fakeValue === 'string') {
                      if (params.row[key].length)
                         fakeValue = fakeValue.substr(0, params.row[key].length);
-                     fakeValue = `"${sqlEscaper(fakeValue)}"`;
+                     fakeValue = `'${sqlEscaper(fakeValue)}'`;
                   }
                   else if ([...DATE, ...DATETIME].includes(type))
-                     fakeValue = `"${moment(fakeValue).format('YYYY-MM-DD HH:mm:ss.SSSSSS')}"`;
+                     fakeValue = `'${moment(fakeValue).format('YYYY-MM-DD HH:mm:ss.SSSSSS')}'`;
 
                   insertObj[key] = fakeValue;
                }

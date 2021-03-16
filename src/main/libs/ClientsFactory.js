@@ -1,5 +1,6 @@
 'use strict';
 import { MySQLClient } from './clients/MySQLClient';
+import { PostgreSQLClient } from './clients/PostgreSQLClient';
 
 export class ClientsFactory {
    /**
@@ -20,8 +21,10 @@ export class ClientsFactory {
          case 'mysql':
          case 'maria':
             return new MySQLClient(args);
+         case 'pg':
+            return new PostgreSQLClient(args);
          default:
-            return new Error(`Unknown database client: ${args.client}`);
+            throw new Error(`Unknown database client: ${args.client}`);
       }
    }
 }

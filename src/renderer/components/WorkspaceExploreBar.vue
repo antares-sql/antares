@@ -11,7 +11,7 @@
             <span v-if="workspace.connected" class="workspace-explorebar-tools">
                <i
                   class="mdi mdi-18px mdi-database-plus c-hand mr-2"
-                  :title="$t('message.createNewDatabase')"
+                  :title="$t('message.createNewSchema')"
                   @click="showNewDBModal"
                />
                <i

@@ -4,8 +4,7 @@ import { ipcMain } from 'electron';
 export default connections => {
    ipcMain.handle('create-database', async (event, params) => {
       try {
-         const query = `CREATE DATABASE \`${params.name}\` COLLATE ${params.collation}`;
-         await connections[params.uid].raw(query);
+         await connections[params.uid].createDatabase(params);
 
          return { status: 'success' };
       }
@@ -16,8 +15,7 @@ export default connections => {
 
    ipcMain.handle('update-database', async (event, params) => {
       try {
-         const query = `ALTER DATABASE \`${params.name}\` COLLATE ${params.collation}`;
-         await connections[params.uid].raw(query);
+         await connections[params.uid].alterDatabase(params);
 
          return { status: 'success' };
       }
@@ -28,8 +26,7 @@ export default connections => {
 
    ipcMain.handle('delete-database', async (event, params) => {
       try {
-         const query = `DROP DATABASE \`${params.database}\``;
-         await connections[params.uid].raw(query);
+         await connections[params.uid].dropDatabase(params);
 
          return { status: 'success' };
       }
@@ -38,10 +35,9 @@ export default connections => {
       }
    });
 
-   ipcMain.handle('get-database-collation', async (event, params) => { // TODO: move to mysql class
+   ipcMain.handle('get-database-collation', async (event, params) => {
       try {
-         const query = `SELECT \`DEFAULT_COLLATION_NAME\` FROM \`information_schema\`.\`SCHEMATA\` WHERE \`SCHEMA_NAME\`='${params.database}'`;
-         const collation = await connections[params.uid].raw(query);
+         const collation = await connections[params.uid].getDatabaseCollation(params);
 
          return { status: 'success', response: collation.rows.length ? collation.rows[0].DEFAULT_COLLATION_NAME : '' };
       }

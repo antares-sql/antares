@@ -5,7 +5,7 @@
          <div class="modal-header pl-2">
             <div class="modal-title h6">
                <div class="d-flex">
-                  <i class="mdi mdi-24px mdi-database-plus mr-1" /> {{ $t('message.createNewDatabase') }}
+                  <i class="mdi mdi-24px mdi-database-plus mr-1" /> {{ $t('message.createNewSchema') }}
                </div>
             </div>
             <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -24,11 +24,11 @@
                            class="form-input"
                            type="text"
                            required
-                           :placeholder="$t('message.databaseName')"
+                           :placeholder="$t('message.schemaName')"
                         >
                      </div>
                   </div>
-                  <div class="form-group">
+                  <div v-if="customizations.collations" class="form-group">
                      <div class="col-3">
                         <label class="form-label">{{ $t('word.collation') }}</label>
                      </div>
@@ -49,7 +49,11 @@
             </div>
          </div>
          <div class="modal-footer text-light">
-            <button class="btn btn-primary mr-2" @click.stop="createDatabase">
+            <button
+               class="btn btn-primary mr-2"
+               :class="{'loading': isLoading}"
+               @click.stop="createDatabase"
+            >
                {{ $t('word.add') }}
             </button>
             <button class="btn btn-link" @click.stop="closeModal">
@@ -68,6 +72,7 @@ export default {
    name: 'ModalNewDatabase',
    data () {
       return {
+         isLoading: false,
          database: {
             name: '',
             collation: ''
@@ -83,8 +88,11 @@ export default {
       collations () {
          return this.getWorkspace(this.selectedWorkspace).collations;
       },
+      customizations () {
+         return this.getWorkspace(this.selectedWorkspace).customizations;
+      },
       defaultCollation () {
-         return this.getDatabaseVariable(this.selectedWorkspace, 'collation_server').value || '';
+         return this.getDatabaseVariable(this.selectedWorkspace, 'collation_server') ? this.getDatabaseVariable(this.selectedWorkspace, 'collation_server').value : '';
       }
    },
    created () {
@@ -102,6 +110,7 @@ export default {
          addNotification: 'notifications/addNotification'
       }),
       async createDatabase () {
+         this.isLoading = true;
          try {
             const { status, response } = await Database.createDatabase({
                uid: this.selectedWorkspace,
@@ -118,6 +127,7 @@ export default {
          catch (err) {
             this.addNotification({ status: 'error', message: err.stack });
          }
+         this.isLoading = false;
       },
       closeModal () {
          this.$emit('close');

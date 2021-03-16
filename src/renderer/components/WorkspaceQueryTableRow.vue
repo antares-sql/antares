@@ -12,7 +12,7 @@
             <span
                v-if="!isInlineEditor[cKey]"
                class="cell-content px-2"
-               :class="`${isNull(col)} type-${fields[cKey].type.toLowerCase()}`"
+               :class="`${isNull(col)} ${typeClass(fields[cKey].type)}`"
                @dblclick="editON($event, col, cKey)"
             >{{ col | typeFormat(fields[cKey].type.toLowerCase(), fields[cKey].length) | cutText }}</span>
             <ForeignKeySelect
@@ -330,6 +330,11 @@ export default {
       },
       isNull (value) {
          return value === null ? ' is-null' : '';
+      },
+      typeClass (type) {
+         if (type)
+            return `type-${type.toLowerCase().replaceAll(' ', '_').replaceAll('"', '')}`;
+         return '';
       },
       bufferToBase64 (val) {
          return bufferToBase64(val);

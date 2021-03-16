@@ -7,27 +7,55 @@
          <span class="d-flex"><i class="mdi mdi-18px mdi-plus text-light pr-1" /> {{ $t('word.add') }}</span>
          <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
          <div class="context-submenu">
-            <div class="context-element" @click="showCreateTableModal">
+            <div
+               v-if="workspace.customizations.tableAdd"
+               class="context-element"
+               @click="showCreateTableModal"
+            >
                <span class="d-flex"><i class="mdi mdi-18px mdi-table text-light pr-1" /> {{ $t('word.table') }}</span>
             </div>
-            <div class="context-element" @click="showCreateViewModal">
+            <div
+               v-if="workspace.customizations.viewAdd"
+               class="context-element"
+               @click="showCreateViewModal"
+            >
                <span class="d-flex"><i class="mdi mdi-18px mdi-table-eye text-light pr-1" /> {{ $t('word.view') }}</span>
             </div>
-            <div class="context-element" @click="showCreateTriggerModal">
+            <div
+               v-if="workspace.customizations.triggerAdd"
+               class="context-element"
+               @click="showCreateTriggerModal"
+            >
                <span class="d-flex"><i class="mdi mdi-18px mdi-table-cog text-light pr-1" /> {{ $tc('word.trigger', 1) }}</span>
             </div>
-            <div class="context-element" @click="showCreateRoutineModal">
+            <div
+               v-if="workspace.customizations.routineAdd"
+               class="context-element"
+               @click="showCreateRoutineModal"
+            >
                <span class="d-flex"><i class="mdi mdi-18px mdi-sync-circle pr-1" /> {{ $tc('word.storedRoutine', 1) }}</span>
             </div>
-            <div class="context-element" @click="showCreateFunctionModal">
+            <div
+               v-if="workspace.customizations.functionAdd"
+               class="context-element"
+               @click="showCreateFunctionModal"
+            >
                <span class="d-flex"><i class="mdi mdi-18px mdi-arrow-right-bold-box pr-1" /> {{ $tc('word.function', 1) }}</span>
             </div>
-            <div class="context-element" @click="showCreateSchedulerModal">
+            <div
+               v-if="workspace.customizations.schedulerAdd"
+               class="context-element"
+               @click="showCreateSchedulerModal"
+            >
                <span class="d-flex"><i class="mdi mdi-18px mdi-calendar-clock text-light pr-1" /> {{ $tc('word.scheduler', 1) }}</span>
             </div>
          </div>
       </div>
-      <div class="context-element" @click="showEditModal">
+      <div
+         v-if="workspace.customizations.schemaEdit"
+         class="context-element"
+         @click="showEditModal"
+      >
          <span class="d-flex"><i class="mdi mdi-18px mdi-database-edit text-light pr-1" /> {{ $t('word.edit') }}</span>
       </div>
       <div class="context-element" @click="showDeleteModal">
@@ -36,12 +64,12 @@
 
       <ConfirmModal
          v-if="isDeleteModal"
-         @confirm="deleteDatabase"
+         @confirm="deleteSchema"
          @hide="hideDeleteModal"
       >
          <template slot="header">
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-database-remove mr-1" /> {{ $t('message.deleteDatabase') }}
+               <i class="mdi mdi-24px mdi-database-remove mr-1" /> {{ $t('message.deleteSchema') }}
             </div>
          </template>
          <div slot="body">
@@ -130,7 +158,7 @@ export default {
       closeContext () {
          this.$emit('close-context');
       },
-      async deleteDatabase () {
+      async deleteSchema () {
          try {
             const { status, response } = await Database.deleteDatabase({
                uid: this.selectedWorkspace,

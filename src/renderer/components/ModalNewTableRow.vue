@@ -69,7 +69,7 @@
                               :disabled="fieldsToExclude.includes(field.name)"
                               :tabindex="key+1"
                            >
-                           <span class="input-group-addon" :class="`type-${field.type.toLowerCase()}`">
+                           <span class="input-group-addon" :class="typeCLass(field.type)">
                               {{ field.type }} {{ fieldLength(field) | wrapNumber }}
                            </span>
                            <label class="form-checkbox ml-3" :title="$t('word.insert')">
@@ -222,6 +222,11 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification'
       }),
+      typeClass (type) {
+         if (type)
+            return `type-${type.toLowerCase().replaceAll(' ', '_').replaceAll('"', '')}`;
+         return '';
+      },
       async insertRows () {
          this.isInserting = true;
          const rowToInsert = this.localRow;

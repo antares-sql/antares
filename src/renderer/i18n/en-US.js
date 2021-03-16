@@ -199,7 +199,11 @@ module.exports = {
       setNull: 'Set NULL',
       processesList: 'Processes list',
       processInfo: 'Process info',
-      manageUsers: 'Manage users'
+      manageUsers: 'Manage users',
+      createNewSchema: 'Create new schema',
+      schemaName: 'Schema name',
+      editSchema: 'Edit schema',
+      deleteSchema: 'Delete schema'
    },
    faker: {
       address: 'Address',

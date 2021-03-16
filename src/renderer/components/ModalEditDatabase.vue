@@ -5,7 +5,7 @@
          <div class="modal-header pl-2">
             <div class="modal-title h6">
                <div class="d-flex">
-                  <i class="mdi mdi-24px mdi-database-edit mr-1" /> {{ $t('message.editDatabase') }}
+                  <i class="mdi mdi-24px mdi-database-edit mr-1" /> {{ $t('message.editSchema') }}
                </div>
             </div>
             <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -23,7 +23,7 @@
                            class="form-input"
                            type="text"
                            required
-                           :placeholder="$t('message.databaseName')"
+                           :placeholder="$t('message.schemaName')"
                            readonly
                         >
                      </div>

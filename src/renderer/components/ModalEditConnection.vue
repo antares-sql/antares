@@ -59,11 +59,11 @@
                                     <option value="maria">
                                        MariaDB
                                     </option>
+                                    <option value="pg">
+                                       PostgreSQL
+                                    </option>
                                     <!-- <option value="mssql">
                                  Microsoft SQL
-                              </option>
-                              <option value="pg">
-                                 PostgreSQL
                               </option>
                               <option value="oracledb">
                                  Oracle DB

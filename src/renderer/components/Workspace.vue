@@ -37,7 +37,7 @@
                </ul>
             </li>
             <li
-               v-if="schemaChild"
+               v-if="schemaChild && isSettingSupported"
                class="tab-item"
                :class="{'active': selectedTab === 'prop'}"
                @click="selectTab({uid: workspace.uid, tab: 'prop'})"
@@ -193,6 +193,15 @@ export default {
       },
       isSelected () {
          return this.selectedWorkspace === this.connection.uid;
+      },
+      isSettingSupported () {
+         if (this.workspace.breadcrumbs.table && this.workspace.customizations.tableSettings) return true;
+         if (this.workspace.breadcrumbs.view && this.workspace.customizations.viewSettings) return true;
+         if (this.workspace.breadcrumbs.trigger && this.workspace.customizations.triggerSettings) return true;
+         if (this.workspace.breadcrumbs.procedure && this.workspace.customizations.routineSettings) return true;
+         if (this.workspace.breadcrumbs.function && this.workspace.customizations.functionSettings) return true;
+         if (this.workspace.breadcrumbs.scheduler && this.workspace.customizations.schedulerSettings) return true;
+         return false;
       },
       selectedTab () {
          if (

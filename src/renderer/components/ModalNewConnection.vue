@@ -63,11 +63,11 @@
                                     <option value="maria">
                                        MariaDB
                                     </option>
+                                    <option value="pg">
+                                       PostgreSQL
+                                    </option>
                                  <!-- <option value="mssql">
                                     Microsoft SQL
-                                 </option>
-                                 <option value="pg">
-                                    PostgreSQL
                                  </option>
                                  <option value="oracledb">
                                     Oracle DB
@@ -315,6 +315,7 @@ export default {
                this.connection.port = '1433';
                break;
             case 'pg':
+               this.connection.user = 'postgres';
                this.connection.port = '5432';
                break;
             case 'oracledb':

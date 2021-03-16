@@ -59,13 +59,13 @@ export default connections => {
          };
       }
 
-      const connection = ClientsFactory.getConnection({
-         client: conn.client,
-         params,
-         poolSize: 1
-      });
-
       try {
+         const connection = ClientsFactory.getConnection({
+            client: conn.client,
+            params,
+            poolSize: 1
+         });
+
          await connection.connect();
 
          const structure = await connection.getStructure(new Set());

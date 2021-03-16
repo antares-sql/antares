@@ -48,7 +48,7 @@
          <span
             v-if="!isInlineEditor.type"
             class="cell-content text-left"
-            :class="`type-${lowerCase(localRow.type)}`"
+            :class="typeClass(localRow.type)"
             @click="editON($event, localRow.type.toUpperCase(), 'type')"
          >
             {{ localRow.type }}
@@ -378,10 +378,10 @@ export default {
                return 'UNKNOWN ' + key;
          }
       },
-      lowerCase (val) {
-         if (val)
-            return val.toLowerCase();
-         return val;
+      typeClass (type) {
+         if (type)
+            return `type-${type.toLowerCase().replaceAll(' ', '_').replaceAll('"', '')}`;
+         return '';
       },
       initLocalRow () {
          Object.keys(this.localRow).forEach(key => {

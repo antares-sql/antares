@@ -41,7 +41,7 @@
                      >
                         <div class="tile-icon">
                            <div>
-                              <i class="mdi mdi-hexagon mdi-24px" :class="`type-${param.type.toLowerCase()}`" />
+                              <i class="mdi mdi-hexagon mdi-24px" :class="typeClass(param.type)" />
                            </div>
                         </div>
                         <div class="tile-content">
@@ -183,6 +183,11 @@ export default {
       window.removeEventListener('resize', this.getModalInnerHeight);
    },
    methods: {
+      typeClass (type) {
+         if (type)
+            return `type-${type.toLowerCase().replaceAll(' ', '_').replaceAll('"', '')}`;
+         return '';
+      },
       confirmParametersChange () {
          this.$emit('parameters-update', this.parametersProxy);
       },

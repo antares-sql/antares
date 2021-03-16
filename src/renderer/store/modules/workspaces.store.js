@@ -55,7 +55,7 @@ export default {
          state.selected_workspace = uid;
       },
       ADD_CONNECTED (state, payload) {
-         const { uid, client, dataTypes, indexTypes, structure, version } = payload;
+         const { uid, client, dataTypes, indexTypes, customizations, structure, version } = payload;
 
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
             ? {
@@ -63,6 +63,7 @@ export default {
                client,
                dataTypes,
                indexTypes,
+               customizations,
                structure,
                connected: true,
                version
@@ -253,12 +254,19 @@ export default {
             else {
                let dataTypes = [];
                let indexTypes = [];
+               let customizations = {};
 
                switch (connection.client) {
                   case 'mysql':
                   case 'maria':
                      dataTypes = require('common/data-types/mysql');
                      indexTypes = require('common/index-types/mysql');
+                     customizations = require('common/customizations/mysql');
+                     break;
+                  case 'pg':
+                     dataTypes = require('common/data-types/postgresql');
+                     indexTypes = require('common/index-types/postgresql');
+                     customizations = require('common/customizations/postgresql');
                      break;
                }
 
@@ -285,6 +293,7 @@ export default {
                   client: connection.client,
                   dataTypes,
                   indexTypes,
+                  customizations,
                   structure: response,
                   version
                });
