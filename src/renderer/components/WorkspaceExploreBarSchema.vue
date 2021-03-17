@@ -37,7 +37,7 @@
             </ul>
          </div>
 
-         <div v-if="filteredTriggers.length" class="database-misc">
+         <div v-if="filteredTriggers.length && customizations.triggers" class="database-misc">
             <details class="accordion">
                <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.trigger}">
                   <i class="misc-icon mdi mdi-18px mdi-folder-cog mr-1" />
@@ -65,7 +65,7 @@
             </details>
          </div>
 
-         <div v-if="filteredProcedures.length" class="database-misc">
+         <div v-if="filteredProcedures.length && customizations.routines" class="database-misc">
             <details class="accordion">
                <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.procedure}">
                   <i class="misc-icon mdi mdi-18px mdi-folder-sync mr-1" />
@@ -93,7 +93,7 @@
             </details>
          </div>
 
-         <div v-if="filteredFunctions.length" class="database-misc">
+         <div v-if="filteredFunctions.length && customizations.functions" class="database-misc">
             <details class="accordion">
                <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.function}">
                   <i class="misc-icon mdi mdi-18px mdi-folder-move mr-1" />
@@ -121,7 +121,7 @@
             </details>
          </div>
 
-         <div v-if="filteredSchedulers.length" class="database-misc">
+         <div v-if="filteredSchedulers.length && customizations.schedulers" class="database-misc">
             <details class="accordion">
                <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.scheduler}">
                   <i class="misc-icon mdi mdi-18px mdi-folder-clock mr-1" />
@@ -193,6 +193,9 @@ export default {
       },
       breadcrumbs () {
          return this.getWorkspace(this.connection.uid).breadcrumbs;
+      },
+      customizations () {
+         return this.getWorkspace(this.connection.uid).customizations;
       },
       loadedSchemas () {
          return this.getLoadedSchemas(this.connection.uid);

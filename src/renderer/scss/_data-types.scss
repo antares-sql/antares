@@ -55,6 +55,7 @@
     "time_with_time_zone": $date-color,
     "year": $date-color,
     "timestamp": $date-color,
+    "timestamp_without_time_zone": $date-color,
     "timestamp_with_time_zone": $date-color,
     "bit": $bit-color,
     "bit_varying": $bit-color,
@@ -72,6 +73,8 @@
     "interval": $array-color,
     "array": $array-color,
     "anyarray": $array-color,
+    "tsvector": $array-color,
+    "tsquery": $array-color,
     "pg_node_tree": $array-color,
     "unknown": $unknown-color,
   )

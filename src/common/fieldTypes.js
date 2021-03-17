@@ -7,9 +7,17 @@ export const TEXT = [
 export const LONG_TEXT = [
    'TEXT',
    'MEDIUMTEXT',
-   'LONGTEXT',
+   'LONGTEXT'
+];
+
+export const ARRAY = [
    'ARRAY',
    'ANYARRAY'
+];
+
+export const TEXT_SEARCH = [
+   'TSVECTOR',
+   'TSQUERY'
 ];
 
 export const NUMBER = [
@@ -49,6 +57,7 @@ export const TIME = [
 export const DATETIME = [
    'DATETIME',
    'TIMESTAMP',
+   'TIMESTAMP WITHOUT TIME ZONE',
    'TIMESTAMP WITH TIME ZONE'
 ];
 

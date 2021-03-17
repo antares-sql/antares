@@ -173,7 +173,7 @@ import { mimeFromHex } from 'common/libs/mimeFromHex';
 import { formatBytes } from 'common/libs/formatBytes';
 import { bufferToBase64 } from 'common/libs/bufferToBase64';
 import hexToBinary from 'common/libs/hexToBinary';
-import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
+import { TEXT, LONG_TEXT, ARRAY, TEXT_SEARCH, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
 import { VueMaskDirective } from 'v-mask';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import TextEditor from '@/components/BaseTextEditor';
@@ -223,6 +223,12 @@ export default {
             if (typeof val === 'number') val = [val];
             const hex = Buffer.from(val).toString('hex');
             return hexToBinary(hex);
+         }
+
+         if (ARRAY.includes(type)) {
+            if (Array.isArray(val))
+               return JSON.stringify(val).replaceAll('[', '{').replaceAll(']', '}');
+            return val;
          }
 
          return val;
@@ -350,7 +356,7 @@ export default {
          this.editingField = field;
          this.editingLength = this.fields[field].length;
 
-         if (LONG_TEXT.includes(type)) {
+         if ([...LONG_TEXT, ...ARRAY, ...TEXT_SEARCH].includes(type)) {
             this.isTextareaEditor = true;
             this.editingContent = this.$options.filters.typeFormat(content, type);
             return;

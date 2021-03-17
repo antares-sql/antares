@@ -2,7 +2,7 @@ import { ipcMain } from 'electron';
 import faker from 'faker';
 import moment from 'moment';
 import { sqlEscaper } from 'common/libs/sqlEscaper';
-import { TEXT, LONG_TEXT, NUMBER, FLOAT, BLOB, BIT, DATE, DATETIME } from 'common/fieldTypes';
+import { TEXT, LONG_TEXT, ARRAY, TEXT_SEARCH, NUMBER, FLOAT, BLOB, BIT, DATE, DATETIME } from 'common/fieldTypes';
 import fs from 'fs';
 
 export default (connections) => {
@@ -68,6 +68,10 @@ export default (connections) => {
             escapedParam = params.content;
          else if ([...TEXT, ...LONG_TEXT].includes(params.type))
             escapedParam = `"${sqlEscaper(params.content)}"`;
+         else if (ARRAY.includes(params.type))
+            escapedParam = `'${params.content}'`;
+         else if (TEXT_SEARCH.includes(params.type))
+            escapedParam = `'${params.content.replaceAll('\'', '\'\'')}'`;
          else if (BLOB.includes(params.type)) {
             if (params.content) {
                const fileBlob = fs.readFileSync(params.content);

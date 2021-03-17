@@ -100,7 +100,8 @@ module.exports = {
       paste: 'Paste',
       tools: 'Tools',
       variables: 'Variables',
-      processes: 'Processes'
+      processes: 'Processes',
+      database: 'Database'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
