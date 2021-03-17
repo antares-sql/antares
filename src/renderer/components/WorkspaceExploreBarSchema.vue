@@ -4,7 +4,7 @@
          class="accordion-header database-name"
          :class="{'text-bold': breadcrumbs.schema === database.name}"
          @click="selectSchema(database.name)"
-         @contextmenu.prevent="showDatabaseContext($event, database.name)"
+         @contextmenu.prevent="showSchemaContext($event, database.name)"
       >
          <div v-if="isLoading" class="icon loading" />
          <i v-else class="icon mdi mdi-18px mdi-chevron-right" />
@@ -222,9 +222,9 @@ export default {
 
          this.changeBreadcrumbs({ schema, table: null });
       },
-      showDatabaseContext (event, database) {
-         this.changeBreadcrumbs({ schema: database, table: null });
-         this.$emit('show-database-context', { event, database });
+      showSchemaContext (event, schema) {
+         this.selectSchema(schema);
+         this.$emit('show-schema-context', { event, schema });
       },
       showTableContext (event, table) {
          this.setBreadcrumbs({ schema: this.database.name, [table.type]: table.name });

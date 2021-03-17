@@ -49,7 +49,7 @@
                :key="db.name"
                :database="db"
                :connection="connection"
-               @show-database-context="openDatabaseContext"
+               @show-schema-context="openSchemaContext"
                @show-table-context="openTableContext"
                @show-misc-context="openMiscContext"
             />
@@ -299,8 +299,8 @@ export default {
          else
             this.addNotification({ status: 'error', message: response });
       },
-      openDatabaseContext (payload) {
-         this.selectedDatabase = payload.database;
+      openSchemaContext (payload) {
+         this.selectedDatabase = payload.schema;
          this.databaseContextEvent = payload.event;
          this.isDatabaseContext = true;
       },
