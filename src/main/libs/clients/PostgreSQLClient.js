@@ -375,7 +375,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @returns {Array.<Object>} parameters
     * @memberof MySQLClient
     */
-   async createDatabase (params) {
+   async createSchema (params) {
       return await this.raw(`CREATE SCHEMA "${params.name}"`);
    }
 
@@ -385,7 +385,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @returns {Array.<Object>} parameters
     * @memberof MySQLClient
     */
-   async alterDatabase (params) {
+   async alterSchema (params) {
       return await this.raw(`ALTER SCHEMA "${params.name}"`);
    }
 
@@ -395,7 +395,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @returns {Array.<Object>} parameters
     * @memberof MySQLClient
     */
-   async dropDatabase (params) {
+   async dropSchema (params) {
       return await this.raw(`DROP SCHEMA "${params.database}"`);
    }
 

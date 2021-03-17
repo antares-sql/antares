@@ -410,7 +410,7 @@ export class MySQLClient extends AntaresCore {
     * @returns {Array.<Object>} parameters
     * @memberof MySQLClient
     */
-   async createDatabase (params) {
+   async createSchema (params) {
       return await this.raw(`CREATE DATABASE \`${params.name}\` COLLATE ${params.collation}`);
    }
 
@@ -420,7 +420,7 @@ export class MySQLClient extends AntaresCore {
     * @returns {Array.<Object>} parameters
     * @memberof MySQLClient
     */
-   async alterDatabase (params) {
+   async alterSchema (params) {
       return await this.raw(`ALTER DATABASE \`${params.name}\` COLLATE ${params.collation}`);
    }
 
@@ -430,7 +430,7 @@ export class MySQLClient extends AntaresCore {
     * @returns {Array.<Object>} parameters
     * @memberof MySQLClient
     */
-   async dropDatabase (params) {
+   async dropSchema (params) {
       return await this.raw(`DROP DATABASE \`${params.database}\``);
    }
 

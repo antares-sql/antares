@@ -157,7 +157,7 @@ import { mapActions, mapGetters } from 'vuex';
 import { formatBytes } from 'common/libs/formatBytes';
 
 export default {
-   name: 'WorkspaceExploreBarDatabase',
+   name: 'WorkspaceExploreBarSchema',
    props: {
       database: Object,
       connection: Object

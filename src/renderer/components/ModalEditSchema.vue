@@ -5,7 +5,7 @@
          <div class="modal-header pl-2">
             <div class="modal-title h6">
                <div class="d-flex">
-                  <i class="mdi mdi-24px mdi-database-plus mr-1" /> {{ $t('message.createNewSchema') }}
+                  <i class="mdi mdi-24px mdi-database-edit mr-1" /> {{ $t('message.editSchema') }}
                </div>
             </div>
             <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -19,21 +19,25 @@
                      </div>
                      <div class="col-9">
                         <input
-                           ref="firstInput"
                            v-model="database.name"
                            class="form-input"
                            type="text"
                            required
                            :placeholder="$t('message.schemaName')"
+                           readonly
                         >
                      </div>
                   </div>
-                  <div v-if="customizations.collations" class="form-group">
+                  <div class="form-group">
                      <div class="col-3">
                         <label class="form-label">{{ $t('word.collation') }}</label>
                      </div>
                      <div class="col-9">
-                        <select v-model="database.collation" class="form-select">
+                        <select
+                           ref="firstInput"
+                           v-model="database.collation"
+                           class="form-select"
+                        >
                            <option
                               v-for="collation in collations"
                               :key="collation.id"
@@ -49,12 +53,8 @@
             </div>
          </div>
          <div class="modal-footer text-light">
-            <button
-               class="btn btn-primary mr-2"
-               :class="{'loading': isLoading}"
-               @click.stop="createDatabase"
-            >
-               {{ $t('word.add') }}
+            <button class="btn btn-primary mr-2" @click.stop="updateSchema">
+               {{ $t('word.update') }}
             </button>
             <button class="btn btn-link" @click.stop="closeModal">
                {{ $t('word.close') }}
@@ -66,15 +66,18 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import Database from '@/ipc-api/Database';
+import Schema from '@/ipc-api/Schema';
 
 export default {
-   name: 'ModalNewDatabase',
+   name: 'ModalEditSchema',
+   props: {
+      selectedDatabase: String
+   },
    data () {
       return {
-         isLoading: false,
          database: {
             name: '',
+            prevName: '',
             collation: ''
          }
       };
@@ -88,16 +91,34 @@ export default {
       collations () {
          return this.getWorkspace(this.selectedWorkspace).collations;
       },
-      customizations () {
-         return this.getWorkspace(this.selectedWorkspace).customizations;
-      },
       defaultCollation () {
-         return this.getDatabaseVariable(this.selectedWorkspace, 'collation_server') ? this.getDatabaseVariable(this.selectedWorkspace, 'collation_server').value : '';
+         return this.getDatabaseVariable(this.selectedWorkspace, 'collation_server').value || '';
       }
    },
-   created () {
-      this.database = { ...this.database, collation: this.defaultCollation };
+   async created () {
+      let actualCollation;
+      try {
+         const { status, response } = await Schema.getDatabaseCollation({ uid: this.selectedWorkspace, database: this.selectedDatabase });
+
+         if (status === 'success')
+            actualCollation = response;
+
+         else
+            this.addNotification({ status: 'error', message: response });
+      }
+      catch (err) {
+         this.addNotification({ status: 'error', message: err.stack });
+      }
+
+      this.database = {
+         name: this.selectedDatabase,
+         prevName: this.selectedDatabase,
+         collation: actualCollation || this.defaultCollation,
+         prevCollation: actualCollation || this.defaultCollation
+      };
+
       window.addEventListener('keydown', this.onKey);
+
       setTimeout(() => {
          this.$refs.firstInput.focus();
       }, 20);
@@ -109,25 +130,25 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification'
       }),
-      async createDatabase () {
-         this.isLoading = true;
-         try {
-            const { status, response } = await Database.createDatabase({
-               uid: this.selectedWorkspace,
-               ...this.database
-            });
+      async updateSchema () {
+         if (this.database.collation !== this.database.prevCollation) {
+            try {
+               const { status, response } = await Schema.updateSchema({
+                  uid: this.selectedWorkspace,
+                  ...this.database
+               });
 
-            if (status === 'success') {
-               this.closeModal();
-               this.$emit('reload');
+               if (status === 'success')
+                  this.closeModal();
+               else
+                  this.addNotification({ status: 'error', message: response });
             }
-            else
-               this.addNotification({ status: 'error', message: response });
+            catch (err) {
+               this.addNotification({ status: 'error', message: err.stack });
+            }
          }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-         this.isLoading = false;
+         else
+            this.closeModal();
       },
       closeModal () {
          this.$emit('close');

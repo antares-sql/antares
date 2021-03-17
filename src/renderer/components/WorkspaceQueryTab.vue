@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import Database from '@/ipc-api/Database';
+import Schema from '@/ipc-api/Schema';
 import QueryEditor from '@/components/QueryEditor';
 import BaseLoader from '@/components/BaseLoader';
 import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
@@ -150,7 +150,7 @@ export default {
                query
             };
 
-            const { status, response } = await Database.rawQuery(params);
+            const { status, response } = await Schema.rawQuery(params);
 
             if (status === 'success') {
                this.results = Array.isArray(response) ? response : [response];

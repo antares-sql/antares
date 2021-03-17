@@ -2,9 +2,9 @@
 import { ipcMain } from 'electron';
 
 export default connections => {
-   ipcMain.handle('create-database', async (event, params) => {
+   ipcMain.handle('create-schema', async (event, params) => {
       try {
-         await connections[params.uid].createDatabase(params);
+         await connections[params.uid].createSchema(params);
 
          return { status: 'success' };
       }
@@ -13,9 +13,9 @@ export default connections => {
       }
    });
 
-   ipcMain.handle('update-database', async (event, params) => {
+   ipcMain.handle('update-schema', async (event, params) => {
       try {
-         await connections[params.uid].alterDatabase(params);
+         await connections[params.uid].alterSchema(params);
 
          return { status: 'success' };
       }
@@ -24,9 +24,9 @@ export default connections => {
       }
    });
 
-   ipcMain.handle('delete-database', async (event, params) => {
+   ipcMain.handle('delete-schema', async (event, params) => {
       try {
-         await connections[params.uid].dropDatabase(params);
+         await connections[params.uid].dropSchema(params);
 
          return { status: 'success' };
       }
@@ -35,7 +35,7 @@ export default connections => {
       }
    });
 
-   ipcMain.handle('get-database-collation', async (event, params) => {
+   ipcMain.handle('get-schema-collation', async (event, params) => {
       try {
          const collation = await connections[params.uid].getDatabaseCollation(params);
 

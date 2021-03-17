@@ -101,7 +101,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import Database from '@/ipc-api/Database';
+import Schema from '@/ipc-api/Schema';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
 import ProcessesListRow from '@/components/ProcessesListRow';
 
@@ -181,7 +181,7 @@ export default {
             this.results = [];
 
          try { // Table data
-            const { status, response } = await Database.getProcesses(this.connection.uid);
+            const { status, response } = await Schema.getProcesses(this.connection.uid);
 
             if (status === 'success') {
                this.results = response;

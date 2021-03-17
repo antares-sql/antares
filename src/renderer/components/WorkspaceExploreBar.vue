@@ -44,7 +44,7 @@
             :connection="connection"
          />
          <div v-else class="workspace-explorebar-body">
-            <WorkspaceExploreBarDatabase
+            <WorkspaceExploreBarSchema
                v-for="db of workspace.structure"
                :key="db.name"
                :database="db"
@@ -55,7 +55,7 @@
             />
          </div>
       </div>
-      <ModalNewDatabase
+      <ModalNewSchema
          v-if="isNewDBModal"
          @close="hideNewDBModal"
          @reload="refresh"
@@ -137,11 +137,11 @@ import Functions from '@/ipc-api/Functions';
 import Schedulers from '@/ipc-api/Schedulers';
 
 import WorkspaceConnectPanel from '@/components/WorkspaceConnectPanel';
-import WorkspaceExploreBarDatabase from '@/components/WorkspaceExploreBarDatabase';
-import DatabaseContext from '@/components/WorkspaceExploreBarDatabaseContext';
+import WorkspaceExploreBarSchema from '@/components/WorkspaceExploreBarSchema';
+import DatabaseContext from '@/components/WorkspaceExploreBarSchemaContext';
 import TableContext from '@/components/WorkspaceExploreBarTableContext';
 import MiscContext from '@/components/WorkspaceExploreBarMiscContext';
-import ModalNewDatabase from '@/components/ModalNewDatabase';
+import ModalNewSchema from '@/components/ModalNewSchema';
 import ModalNewTable from '@/components/ModalNewTable';
 import ModalNewView from '@/components/ModalNewView';
 import ModalNewTrigger from '@/components/ModalNewTrigger';
@@ -153,11 +153,11 @@ export default {
    name: 'WorkspaceExploreBar',
    components: {
       WorkspaceConnectPanel,
-      WorkspaceExploreBarDatabase,
+      WorkspaceExploreBarSchema,
       DatabaseContext,
       TableContext,
       MiscContext,
-      ModalNewDatabase,
+      ModalNewSchema,
       ModalNewTable,
       ModalNewView,
       ModalNewTrigger,

@@ -78,7 +78,7 @@
             </div>
          </div>
       </ConfirmModal>
-      <ModalEditDatabase
+      <ModalEditSchema
          v-if="isEditModal"
          :selected-database="selectedDatabase"
          @close="hideEditModal"
@@ -90,15 +90,15 @@
 import { mapGetters, mapActions } from 'vuex';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
-import ModalEditDatabase from '@/components/ModalEditDatabase';
-import Database from '@/ipc-api/Database';
+import ModalEditSchema from '@/components/ModalEditSchema';
+import Schema from '@/ipc-api/Schema';
 
 export default {
-   name: 'WorkspaceExploreBarDatabaseContext',
+   name: 'WorkspaceExploreBarSchemaContext',
    components: {
       BaseContextMenu,
       ConfirmModal,
-      ModalEditDatabase
+      ModalEditSchema
    },
    props: {
       contextEvent: MouseEvent,
@@ -160,7 +160,7 @@ export default {
       },
       async deleteSchema () {
          try {
-            const { status, response } = await Database.deleteDatabase({
+            const { status, response } = await Schema.deleteSchema({
                uid: this.selectedWorkspace,
                database: this.selectedDatabase
             });

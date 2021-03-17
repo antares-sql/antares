@@ -2,20 +2,20 @@
 import { ipcRenderer } from 'electron';
 
 export default class {
-   static createDatabase (params) {
-      return ipcRenderer.invoke('create-database', params);
+   static createSchema (params) {
+      return ipcRenderer.invoke('create-schema', params);
    }
 
-   static updateDatabase (params) {
-      return ipcRenderer.invoke('update-database', params);
+   static updateSchema (params) {
+      return ipcRenderer.invoke('update-schema', params);
    }
 
    static getDatabaseCollation (params) {
-      return ipcRenderer.invoke('get-database-collation', params);
+      return ipcRenderer.invoke('get-schema-collation', params);
    }
 
-   static deleteDatabase (params) {
-      return ipcRenderer.invoke('delete-database', params);
+   static deleteSchema (params) {
+      return ipcRenderer.invoke('delete-schema', params);
    }
 
    static getStructure (params) {

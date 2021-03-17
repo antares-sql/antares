@@ -1,6 +1,6 @@
 'use strict';
 import Connection from '@/ipc-api/Connection';
-import Database from '@/ipc-api/Database';
+import Schema from '@/ipc-api/Schema';
 import Users from '@/ipc-api/Users';
 import { uidGen } from 'common/libs/uidGen';
 const tabIndex = [];
@@ -270,7 +270,7 @@ export default {
                      break;
                }
 
-               const { status, response: version } = await Database.getVersion(connection.uid);
+               const { status, response: version } = await Schema.getVersion(connection.uid);
 
                if (status === 'error')
                   dispatch('notifications/addNotification', { status, message: version }, { root: true });
@@ -309,7 +309,7 @@ export default {
       },
       async refreshStructure ({ dispatch, commit, getters }, uid) {
          try {
-            const { status, response } = await Database.getStructure({ uid, schemas: getters.getLoadedSchemas(uid) });
+            const { status, response } = await Schema.getStructure({ uid, schemas: getters.getLoadedSchemas(uid) });
 
             if (status === 'error')
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
@@ -322,7 +322,7 @@ export default {
       },
       async refreshSchema ({ dispatch, commit }, { uid, schema }) {
          try {
-            const { status, response } = await Database.getStructure({ uid, schemas: new Set([schema]) });
+            const { status, response } = await Schema.getStructure({ uid, schemas: new Set([schema]) });
             if (status === 'error')
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
             else
@@ -334,7 +334,7 @@ export default {
       },
       async refreshCollations ({ dispatch, commit }, uid) {
          try {
-            const { status, response } = await Database.getCollations(uid);
+            const { status, response } = await Schema.getCollations(uid);
             if (status === 'error')
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
             else
@@ -346,7 +346,7 @@ export default {
       },
       async refreshVariables ({ dispatch, commit }, uid) {
          try {
-            const { status, response } = await Database.getVariables(uid);
+            const { status, response } = await Schema.getVariables(uid);
             if (status === 'error')
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
             else
@@ -358,7 +358,7 @@ export default {
       },
       async refreshEngines ({ dispatch, commit }, uid) {
          try {
-            const { status, response } = await Database.getEngines(uid);
+            const { status, response } = await Schema.getEngines(uid);
             if (status === 'error')
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
             else
@@ -430,7 +430,7 @@ export default {
          if (lastBreadcrumbs.schema === payload.schema && hasLastChildren && !hasChildren) return;
 
          if (lastBreadcrumbs.schema !== payload.schema)
-            Database.useSchema({ uid: getters.getSelected, schema: payload.schema });
+            Schema.useSchema({ uid: getters.getSelected, schema: payload.schema });
 
          commit('CHANGE_BREADCRUMBS', { uid: getters.getSelected, breadcrumbs: { ...breadcrumbsObj, ...payload } });
          lastBreadcrumbs = { ...breadcrumbsObj, ...payload };
