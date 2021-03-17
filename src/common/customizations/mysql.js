@@ -2,6 +2,10 @@ const defaults = require('./defaults');
 
 module.exports = {
    ...defaults,
+   // Defaults
+   defaultPort: 3306,
+   defaultUser: 'root',
+   defaultDatabase: null,
    // Core
    collations: true,
    engines: true,

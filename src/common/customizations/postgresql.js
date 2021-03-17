@@ -2,17 +2,20 @@ const defaults = require('./defaults');
 
 module.exports = {
    ...defaults,
+   // Defaults
+   defaultPort: 5432,
+   defaultUser: 'postgres',
+   defaultDatabase: 'postgres',
    // Core
-   collations: false,
-   engines: false,
+   database: true,
    // Tools
    processesList: true,
    // Structure
    tables: true,
-   views: true,
-   triggers: true,
-   routines: true,
-   functions: true,
+   views: false,
+   triggers: false,
+   routines: false,
+   functions: false,
    schedulers: false,
    // Settings
    databaseEdit: false,

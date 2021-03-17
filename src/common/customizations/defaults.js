@@ -1,5 +1,10 @@
 module.exports = {
+   // Defaults
+   defaultPort: null,
+   defaultUser: null,
+   defaultDatabase: null,
    // Core
+   database: false,
    collations: false,
    engines: false,
    // Tools
@@ -7,7 +12,7 @@ module.exports = {
    usersManagement: false,
    variables: false,
    // Structure
-   databases: true,
+   schemas: false,
    tables: false,
    views: false,
    triggers: false,

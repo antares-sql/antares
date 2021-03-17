@@ -63,11 +63,11 @@
                                        PostgreSQL
                                     </option>
                                     <!-- <option value="mssql">
-                                 Microsoft SQL
-                              </option>
-                              <option value="oracledb">
-                                 Oracle DB
-                              </option> -->
+                                       Microsoft SQL
+                                    </option>
+                                    <option value="oracledb">
+                                       Oracle DB
+                                    </option> -->
                                  </select>
                               </div>
                            </div>
@@ -94,6 +94,18 @@
                                     type="number"
                                     min="1"
                                     max="65535"
+                                 >
+                              </div>
+                           </div>
+                           <div v-if="customizations.database" class="form-group">
+                              <div class="col-4 col-sm-12">
+                                 <label class="form-label">{{ $t('word.database') }}</label>
+                              </div>
+                              <div class="col-8 col-sm-12">
+                                 <input
+                                    v-model="localConnection.database"
+                                    class="form-input"
+                                    type="text"
                                  >
                               </div>
                            </div>
@@ -247,6 +259,7 @@
 
 <script>
 import { mapActions } from 'vuex';
+import customizations from 'common/customizations';
 import Connection from '@/ipc-api/Connection';
 import ModalAskCredentials from '@/components/ModalAskCredentials';
 import BaseToast from '@/components/BaseToast';
@@ -273,6 +286,11 @@ export default {
          localConnection: null,
          selectedTab: 'general'
       };
+   },
+   computed: {
+      customizations () {
+         return customizations[this.connection.client];
+      }
    },
    created () {
       this.localConnection = Object.assign({}, this.connection);

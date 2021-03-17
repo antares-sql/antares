@@ -75,7 +75,8 @@ export class PostgreSQLClient extends AntaresCore {
    async connect () {
       if (!this._poolSize) {
          const client = new Client(this._params);
-         this._connection = client.connect();
+         await client.connect();
+         this._connection = client;
       }
       else {
          const pool = new Pool({ ...this._params, max: this._poolSize });

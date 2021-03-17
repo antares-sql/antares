@@ -11,6 +11,9 @@ export default connections => {
          password: conn.password
       };
 
+      if (conn.database)
+         params.database = conn.database;
+
       if (conn.ssl) {
          params.ssl = {
             key: conn.key ? fs.readFileSync(conn.key) : null,
@@ -49,6 +52,9 @@ export default connections => {
          user: conn.user,
          password: conn.password
       };
+
+      if (conn.database)
+         params.database = conn.database;
 
       if (conn.ssl) {
          params.ssl = {

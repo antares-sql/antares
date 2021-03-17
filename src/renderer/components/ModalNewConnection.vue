@@ -101,6 +101,18 @@
                                  >
                               </div>
                            </div>
+                           <div v-if="customizations.database" class="form-group">
+                              <div class="col-4 col-sm-12">
+                                 <label class="form-label">{{ $t('word.database') }}</label>
+                              </div>
+                              <div class="col-8 col-sm-12">
+                                 <input
+                                    v-model="connection.database"
+                                    class="form-input"
+                                    type="text"
+                                 >
+                              </div>
+                           </div>
                            <div class="form-group">
                               <div class="col-4 col-sm-12">
                                  <label class="form-label">{{ $t('word.user') }}</label>
@@ -251,6 +263,7 @@
 
 <script>
 import { mapActions } from 'vuex';
+import customizations from 'common/customizations';
 import Connection from '@/ipc-api/Connection';
 import { uidGen } from 'common/libs/uidGen';
 import ModalAskCredentials from '@/components/ModalAskCredentials';
@@ -270,8 +283,9 @@ export default {
             name: '',
             client: 'mysql',
             host: '127.0.0.1',
-            port: '3306',
-            user: 'root',
+            database: null,
+            port: null,
+            user: null,
             password: '',
             ask: false,
             uid: uidGen('C'),
@@ -291,7 +305,13 @@ export default {
          selectedTab: 'general'
       };
    },
+   computed: {
+      customizations () {
+         return customizations[this.connection.client];
+      }
+   },
    created () {
+      this.setDefaults();
       window.addEventListener('keydown', this.onKey);
 
       setTimeout(() => {
@@ -307,21 +327,9 @@ export default {
          addConnection: 'connections/addConnection'
       }),
       setDefaults () {
-         switch (this.connection.client) {
-            case 'mysql':
-               this.connection.port = '3306';
-               break;
-            case 'mssql':
-               this.connection.port = '1433';
-               break;
-            case 'pg':
-               this.connection.user = 'postgres';
-               this.connection.port = '5432';
-               break;
-            case 'oracledb':
-               this.connection.port = '1521';
-               break;
-         }
+         this.connection.user = this.customizations.defaultUser;
+         this.connection.port = this.customizations.defaultPort;
+         this.connection.database = this.customizations.defaultDatabase;
       },
       async startTest () {
          this.isTesting = true;
