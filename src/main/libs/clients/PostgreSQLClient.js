@@ -1,8 +1,18 @@
 'use strict';
-import { Pool, Client, types } from 'pg';
+import pg, { Pool, Client, types } from 'pg';
 import { Parser } from 'node-sql-parser';
 import { AntaresCore } from '../AntaresCore';
 import dataTypes from 'common/data-types/postgresql';
+
+function pgToString (value) {
+   return value.toString();
+}
+
+pg.types.setTypeParser(1082, pgToString); // date
+pg.types.setTypeParser(1083, pgToString); // time
+pg.types.setTypeParser(1114, pgToString); // timestamp
+pg.types.setTypeParser(1184, pgToString); // timestamptz
+pg.types.setTypeParser(1266, pgToString); // timetz
 
 export class PostgreSQLClient extends AntaresCore {
    constructor (args) {
@@ -1247,8 +1257,7 @@ export class PostgreSQLClient extends AntaresCore {
                            table: ast && ast.from ? ast.from[0].table : null,
                            tableAlias: ast && ast.from ? ast.from[0].as : null,
                            orgTable: ast && ast.from ? ast.from[0].table : null,
-                           type: this.types[field.dataTypeID],
-                           length: null// type.length
+                           type: this.types[field.dataTypeID]
                         };
                      }).filter(Boolean)
                      : [];
@@ -1276,7 +1285,11 @@ export class PostgreSQLClient extends AntaresCore {
                                  const detailedField = columns.find(f => f.name === field.name);
                                  const fieldIndex = indexes.find(i => i.column === field.name);
                                  if (field.table === paramObj.table && field.schema === paramObj.schema) {
-                                    if (detailedField) field = { ...field, ...detailedField };
+                                    if (detailedField) {
+                                       const length = detailedField.numPrecision || detailedField.charLength || detailedField.datePrecision || null;
+                                       field = { ...field, ...detailedField, length };
+                                    }
+
                                     if (fieldIndex) {
                                        const key = fieldIndex.type === 'PRIMARY' ? 'pri' : fieldIndex.type === 'UNIQUE' ? 'uni' : 'mul';
                                        field = { ...field, key };

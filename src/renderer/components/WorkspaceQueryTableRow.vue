@@ -213,6 +213,9 @@ export default {
             return moment(val).isValid() ? moment(val).format('YYYY-MM-DD') : val;
 
          if (DATETIME.includes(type)) {
+            if (typeof val === 'string')
+               return val;
+
             let datePrecision = '';
             for (let i = 0; i < precision; i++)
                datePrecision += i === 0 ? '.S' : 'S';
