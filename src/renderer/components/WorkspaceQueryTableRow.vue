@@ -34,6 +34,15 @@
                   class="editable-field px-2"
                   @blur="editOFF"
                >
+               <select
+                  v-else-if="inputProps.type === 'boolean'"
+                  v-model="editingContent"
+                  class="form-select small-select editable-field"
+                  @blur="editOFF"
+               >
+                  <option>true</option>
+                  <option>false</option>
+               </select>
                <input
                   v-else
                   ref="editField"
@@ -173,7 +182,7 @@ import { mimeFromHex } from 'common/libs/mimeFromHex';
 import { formatBytes } from 'common/libs/formatBytes';
 import { bufferToBase64 } from 'common/libs/bufferToBase64';
 import hexToBinary from 'common/libs/hexToBinary';
-import { TEXT, LONG_TEXT, ARRAY, TEXT_SEARCH, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
+import { TEXT, LONG_TEXT, ARRAY, TEXT_SEARCH, NUMBER, FLOAT, BOOLEAN, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
 import { VueMaskDirective } from 'v-mask';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import TextEditor from '@/components/BaseTextEditor';
@@ -293,8 +302,8 @@ export default {
          if (BLOB.includes(this.editingType))
             return { type: 'file', mask: false };
 
-         if (BIT.includes(this.editingType))
-            return { type: 'text', mask: false };
+         if (BOOLEAN.includes(this.editingType))
+            return { type: 'boolean', mask: false };
 
          return { type: 'text', mask: false };
       },
