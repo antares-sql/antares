@@ -16,19 +16,27 @@
                   <i class="mdi mdi-24px mdi-tools" />
                </a>
                <ul class="menu text-left text-uppercase">
-                  <li class="menu-item">
+                  <li v-if="workspace.customizations.processesList" class="menu-item">
                      <a class="c-hand p-vcentered" @click="showProcessesModal">
                         <i class="mdi mdi-memory mr-1 tool-icon" />
                         <span>{{ $t('message.processesList') }}</span>
                      </a>
                   </li>
-                  <li class="menu-item" title="Coming...">
+                  <li
+                     v-if="workspace.customizations.variables"
+                     class="menu-item"
+                     title="Coming..."
+                  >
                      <a class="c-hand p-vcentered disabled">
                         <i class="mdi mdi-shape mr-1 tool-icon" />
                         <span>{{ $t('word.variables') }}</span>
                      </a>
                   </li>
-                  <li class="menu-item" title="Coming...">
+                  <li
+                     v-if="workspace.customizations.usersManagement"
+                     class="menu-item"
+                     title="Coming..."
+                  >
                      <a class="c-hand p-vcentered disabled">
                         <i class="mdi mdi-account-group mr-1 tool-icon" />
                         <span>{{ $t('message.manageUsers') }}</span>

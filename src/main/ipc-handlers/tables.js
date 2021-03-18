@@ -59,7 +59,7 @@ export default (connections) => {
    });
 
    ipcMain.handle('update-table-cell', async (event, params) => {
-      try {
+      try { // TODO: move to client classes
          let escapedParam;
          let reload = false;
          const id = typeof params.id === 'number' ? params.id : `"${params.id}"`;
@@ -74,12 +74,32 @@ export default (connections) => {
             escapedParam = `'${params.content.replaceAll('\'', '\'\'')}'`;
          else if (BLOB.includes(params.type)) {
             if (params.content) {
-               const fileBlob = fs.readFileSync(params.content);
-               escapedParam = `0x${fileBlob.toString('hex')}`;
+               let fileBlob;
+
+               switch (connections[params.uid]._client) {
+                  case 'mysql':
+                  case 'maria':
+                     fileBlob = fs.readFileSync(params.content);
+                     escapedParam = `0x${fileBlob.toString('hex')}`;
+                     break;
+                  case 'pg':
+                     fileBlob = fs.readFileSync(params.content);
+                     escapedParam = `decode('${fileBlob.toString('hex')}', 'hex')`;
+                     break;
+               }
                reload = true;
             }
-            else
-               escapedParam = '""';
+            else {
+               switch (connections[params.uid]._client) {
+                  case 'mysql':
+                  case 'maria':
+                     escapedParam = '""';
+                     break;
+                  case 'pg':
+                     escapedParam = 'decode(\'\', \'hex\')';
+                     break;
+               }
+            }
          }
          else if ([...BIT].includes(params.type)) {
             escapedParam = `b'${sqlEscaper(params.content)}'`;
@@ -171,7 +191,7 @@ export default (connections) => {
    });
 
    ipcMain.handle('insert-table-rows', async (event, params) => {
-      try {
+      try { // TODO: move to client classes
          const insertObj = {};
          for (const key in params.row) {
             const type = params.fields[key];
@@ -184,15 +204,33 @@ export default (connections) => {
             else if ([...TEXT, ...LONG_TEXT].includes(type))
                escapedParam = `'${sqlEscaper(params.row[key])}'`;
             else if (BLOB.includes(type)) {
-               if (params.row[key]) {
-                  const fileBlob = fs.readFileSync(params.row[key]);
-                  escapedParam = `0x${fileBlob.toString('hex')}`;
+               if (params.row[key].value) {
+                  let fileBlob;
+
+                  switch (connections[params.uid]._client) {
+                     case 'mysql':
+                     case 'maria':
+                        fileBlob = fs.readFileSync(params.row[key].value);
+                        escapedParam = `0x${fileBlob.toString('hex')}`;
+                        break;
+                     case 'pg':
+                        fileBlob = fs.readFileSync(params.row[key].value);
+                        escapedParam = `decode('${fileBlob.toString('hex')}', 'hex')`;
+                        break;
+                  }
                }
-               else
-                  escapedParam = '\'\'';
+               else {
+                  switch (connections[params.uid]._client) {
+                     case 'mysql':
+                     case 'maria':
+                        escapedParam = '""';
+                        break;
+                     case 'pg':
+                        escapedParam = 'decode(\'\', \'hex\')';
+                        break;
+                  }
+               }
             }
-            else
-               escapedParam = `'${sqlEscaper(params.row[key])}'`;
 
             insertObj[key] = escapedParam;
          }
@@ -213,7 +251,7 @@ export default (connections) => {
    });
 
    ipcMain.handle('insert-table-fake-rows', async (event, params) => {
-      try {
+      try { // TODO: move to client classes
          const rows = [];
 
          for (let i = 0; i < +params.repeat; i++) {
@@ -232,11 +270,31 @@ export default (connections) => {
                      escapedParam = `'${sqlEscaper(params.row[key].value)}'`;
                   else if (BLOB.includes(type)) {
                      if (params.row[key].value) {
-                        const fileBlob = fs.readFileSync(params.row[key].value);
-                        escapedParam = `0x${fileBlob.toString('hex')}`;
+                        let fileBlob;
+
+                        switch (connections[params.uid]._client) {
+                           case 'mysql':
+                           case 'maria':
+                              fileBlob = fs.readFileSync(params.row[key].value);
+                              escapedParam = `0x${fileBlob.toString('hex')}`;
+                              break;
+                           case 'pg':
+                              fileBlob = fs.readFileSync(params.row[key].value);
+                              escapedParam = `decode('${fileBlob.toString('hex')}', 'hex')`;
+                              break;
+                        }
                      }
-                     else
-                        escapedParam = '\'\'';
+                     else {
+                        switch (connections[params.uid]._client) {
+                           case 'mysql':
+                           case 'maria':
+                              escapedParam = '""';
+                              break;
+                           case 'pg':
+                              escapedParam = 'decode(\'\', \'hex\')';
+                              break;
+                        }
+                     }
                   }
                   else if (BIT.includes(type))
                      escapedParam = `b'${sqlEscaper(params.row[key].value)}'`;
