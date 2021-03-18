@@ -66,8 +66,17 @@ export default (connections) => {
 
          if ([...NUMBER, ...FLOAT].includes(params.type))
             escapedParam = params.content;
-         else if ([...TEXT, ...LONG_TEXT].includes(params.type))
-            escapedParam = `"${sqlEscaper(params.content)}"`;
+         else if ([...TEXT, ...LONG_TEXT].includes(params.type)) {
+            switch (connections[params.uid]._client) {
+               case 'mysql':
+               case 'maria':
+                  escapedParam = `"${sqlEscaper(params.content)}"`;
+                  break;
+               case 'pg':
+                  escapedParam = `'${params.content.replaceAll('\'', '\'\'')}'`;
+                  break;
+            }
+         }
          else if (ARRAY.includes(params.type))
             escapedParam = `'${params.content}'`;
          else if (TEXT_SEARCH.includes(params.type))
@@ -93,7 +102,7 @@ export default (connections) => {
                switch (connections[params.uid]._client) {
                   case 'mysql':
                   case 'maria':
-                     escapedParam = '""';
+                     escapedParam = '\'\'';
                      break;
                   case 'pg':
                      escapedParam = 'decode(\'\', \'hex\')';
@@ -108,7 +117,7 @@ export default (connections) => {
          else if (params.content === null)
             escapedParam = 'NULL';
          else
-            escapedParam = `"${sqlEscaper(params.content)}"`;
+            escapedParam = `'${sqlEscaper(params.content)}'`;
 
          if (params.primary) {
             await connections[params.uid]
@@ -201,8 +210,17 @@ export default (connections) => {
                escapedParam = 'NULL';
             else if ([...NUMBER, ...FLOAT].includes(type))
                escapedParam = +params.row[key];
-            else if ([...TEXT, ...LONG_TEXT].includes(type))
-               escapedParam = `'${sqlEscaper(params.row[key])}'`;
+            else if ([...TEXT, ...LONG_TEXT].includes(type)) {
+               switch (connections[params.uid]._client) {
+                  case 'mysql':
+                  case 'maria':
+                     escapedParam = `"${sqlEscaper(params.row[key].value)}"`;
+                     break;
+                  case 'pg':
+                     escapedParam = `'${params.row[key].value.replaceAll('\'', '\'\'')}'`;
+                     break;
+               }
+            }
             else if (BLOB.includes(type)) {
                if (params.row[key].value) {
                   let fileBlob;
@@ -266,8 +284,17 @@ export default (connections) => {
                      escapedParam = 'NULL';
                   else if ([...NUMBER, ...FLOAT].includes(type))
                      escapedParam = params.row[key].value;
-                  else if ([...TEXT, ...LONG_TEXT].includes(type))
-                     escapedParam = `'${sqlEscaper(params.row[key].value)}'`;
+                  else if ([...TEXT, ...LONG_TEXT].includes(type)) {
+                     switch (connections[params.uid]._client) {
+                        case 'mysql':
+                        case 'maria':
+                           escapedParam = `"${sqlEscaper(params.row[key].value)}"`;
+                           break;
+                        case 'pg':
+                           escapedParam = `'${params.row[key].value.replaceAll('\'', '\'\'')}'`;
+                           break;
+                     }
+                  }
                   else if (BLOB.includes(type)) {
                      if (params.row[key].value) {
                         let fileBlob;
