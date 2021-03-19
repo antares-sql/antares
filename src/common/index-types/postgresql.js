@@ -1,5 +1,5 @@
 module.exports = [
    'PRIMARY',
-   'INDEX',
+   'KEY',
    'UNIQUE'
 ];

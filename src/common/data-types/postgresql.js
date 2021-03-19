@@ -118,7 +118,7 @@ module.exports = [
       group: 'time',
       types: [
          {
-            name: 'TIMESTAMP',
+            name: 'TIMESTAMP WITHOUT TIME ZONE',
             length: false,
             unsigned: false
          },

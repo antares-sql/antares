@@ -1,6 +1,6 @@
 'use strict';
 import pg, { Pool, Client, types } from 'pg';
-import { Parser } from 'node-sql-parser';
+import { parse } from 'pgsql-ast-parser';
 import { AntaresCore } from '../AntaresCore';
 import dataTypes from 'common/data-types/postgresql';
 
@@ -323,6 +323,27 @@ export class PostgreSQLClient extends AntaresCore {
    }
 
    /**
+    *
+    * @param {Number} id
+    * @returns {Array}
+    */
+   async getTableByIDs (ids) {
+      const { rows } = await this.raw(`
+         SELECT relid AS tableid, relname, schemaname FROM pg_statio_all_tables WHERE relid IN (${ids}) 
+         UNION
+         SELECT pg_class.oid AS tableid,relname, nspname AS schemaname FROM pg_class JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace WHERE pg_class.oid IN (${ids})
+      `);
+
+      return rows.reduce((acc, curr) => {
+         acc[curr.tableid] = {
+            table: curr.relname,
+            schema: curr.schemaname
+         };
+         return acc;
+      }, {});
+   }
+
+   /**
     * @param {Object} params
     * @param {String} params.schema
     * @param {String} params.table
@@ -330,34 +351,28 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async getKeyUsage ({ schema, table }) {
-      const { rows } = await this
-         .select('*')
-         .schema('information_schema')
-         .from('key_column_usage')
-         .where({ TABLE_SCHEMA: `= '${schema}'`, TABLE_NAME: `= '${table}'` })
-         .run();
-
-      const { rows: extras } = await this
-         .select('*')
-         .schema('information_schema')
-         .from('referential_constraints')
-         .where({ constraint_schema: `= '${schema}'`, constraint_name: `= '${table}'` })
-         .run();
+      const { rows } = await this.raw(`
+         SELECT * 
+         FROM information_schema.key_column_usage
+         JOIN information_schema.referential_constraints ON 
+            referential_constraints.constraint_name = key_column_usage.constraint_name
+         WHERE table_schema = '${schema}'
+         AND table_name = '${table}'
+      `);
 
       return rows.map(field => {
-         const extra = extras.find(x => x.CONSTRAINT_NAME === field.CONSTRAINT_NAME);
          return {
-            schema: field.TABLE_SCHEMA,
-            table: field.TABLE_NAME,
-            field: field.COLUMN_NAME,
-            position: field.ORDINAL_POSITION,
-            constraintPosition: field.POSITION_IN_UNIQUE_CONSTRAINT,
-            constraintName: field.CONSTRAINT_NAME,
+            schema: field.table_schema,
+            table: field.table_name,
+            field: field.column_name,
+            position: field.ordinal_position,
+            constraintPosition: field.position_inUnique_constraint,
+            constraintName: field.constraint_name,
             refSchema: field.REFERENCED_TABLE_SCHEMA,
             refTable: field.REFERENCED_TABLE_NAME,
             refField: field.REFERENCED_COLUMN_NAME,
-            onUpdate: extra ? extra.UPDATE_RULE : '',
-            onDelete: extra ? extra.DELETE_RULE : ''
+            onUpdate: field.update_rule,
+            onDelete: field.delete_rule
          };
       });
    }
@@ -1228,22 +1243,38 @@ export class PostgreSQLClient extends AntaresCore {
          let keysArr = [];
 
          const { rows, report, fields, keys, duration } = await new Promise((resolve, reject) => {
-            this._connection.query({ text: query }, async (err, res) => {
+            this._connection.query({
+               rowMode: args.nest ? 'array' : null,
+               text: query
+            }, async (err, res) => {
                timeStop = new Date();
 
                if (err)
                   reject(err);
                else {
-                  const { rows, fields } = res;
-                  const queryResult = rows;
-                  const parser = new Parser();
                   let ast;
-                  try {
-                     ast = parser.astify(query);
-                  }
-                  catch (err) {
 
+                  try {
+                     [ast] = parse(query);
                   }
+                  catch (err) {}
+
+                  const { rows, fields } = res;
+                  let queryResult;
+                  if (args.nest) {
+                     const tablesID = [...new Set(fields.map(field => field.tableID))].toString();
+                     const tablesInfo = await this.getTableByIDs(tablesID);
+
+                     queryResult = rows.map(row => {
+                        return row.reduce((acc, curr, i) => {
+                           const table = tablesInfo[fields[i].tableID].table;
+                           acc[`${table}.${fields[i].name}`] = curr;
+                           return acc;
+                        }, {});
+                     });
+                  }
+                  else
+                     queryResult = rows;
 
                   let remappedFields = fields
                      ? fields.map(field => {
@@ -1251,26 +1282,24 @@ export class PostgreSQLClient extends AntaresCore {
                            return false;
 
                         return {
+                           ...field,
                            name: field.name,
                            alias: field.name,
-                           schema: ast && ast.from ? ast.from[0].db : this._schema,
-                           table: ast && ast.from ? ast.from[0].table : null,
+                           schema: ast && ast.from && 'schema' in ast.from[0] ? ast.from[0].schema : this._schema,
+                           table: ast && ast.from ? ast.from[0].name : null,
                            tableAlias: ast && ast.from ? ast.from[0].as : null,
-                           orgTable: ast && ast.from ? ast.from[0].table : null,
-                           type: this.types[field.dataTypeID]
+                           orgTable: ast && ast.from ? ast.from[0].name : null,
+                           type: this.types[field.dataTypeID] || field.format
                         };
                      }).filter(Boolean)
                      : [];
 
                   if (args.details) {
-                     let cachedTable;
-
                      if (remappedFields.length) {
                         paramsArr = remappedFields.map(field => {
-                           if (field.table) cachedTable = field.table;// Needed for some queries on information_schema
                            return {
-                              table: field.table || cachedTable,
-                              schema: field.schema || 'INFORMATION_SCHEMA'
+                              table: field.table,
+                              schema: field.schema
                            };
                         }).filter((val, i, arr) => arr.findIndex(el => el.schema === val.schema && el.table === val.table) === i);
 
