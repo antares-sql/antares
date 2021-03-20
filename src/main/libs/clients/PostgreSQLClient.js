@@ -1267,8 +1267,8 @@ export class PostgreSQLClient extends AntaresCore {
 
                      queryResult = rows.map(row => {
                         return row.reduce((acc, curr, i) => {
-                           const table = tablesInfo[fields[i].tableID].table;
-                           acc[`${table}.${fields[i].name}`] = curr;
+                           const table = tablesInfo[fields[i].tableID] ? tablesInfo[fields[i].tableID].table : '';
+                           acc[`${table ? `${table}.` : ''}${fields[i].name}`] = curr;
                            return acc;
                         }, {});
                      });

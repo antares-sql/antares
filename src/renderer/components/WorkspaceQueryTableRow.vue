@@ -412,7 +412,13 @@ export default {
          this.isInlineEditor[this.editingField] = false;
          let content;
          if (!BLOB.includes(this.editingType)) {
+            if ([...DATETIME, ...TIME].includes(this.editingType)) {
+               if (this.editingContent.substring(this.editingContent.length - 1) === '.')
+                  this.editingContent = this.editingContent.slice(0, -1);
+            }
+
             if (this.editingContent === this.$options.filters.typeFormat(this.originalContent, this.editingType, this.editingLength)) return;// If not changed
+
             content = this.editingContent;
          }
          else { // Handle file upload

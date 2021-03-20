@@ -19,7 +19,7 @@ module.exports = {
    schedulers: false,
    // Settings
    databaseEdit: false,
-   tableSettings: true,
+   tableSettings: false,
    viewSettings: false,
    triggerSettings: false,
    routineSettings: false,
