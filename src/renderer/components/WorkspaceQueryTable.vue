@@ -122,7 +122,12 @@ export default {
          return this.getWorkspace(this.connUid).breadcrumbs.schema;
       },
       primaryField () {
-         return this.fields.filter(field => ['pri', 'uni'].includes(field.key))[0] || false;
+         const primaryFields = this.fields.filter(field => ['pri', 'uni'].includes(field.key));
+
+         if (primaryFields.length > 1 || !primaryFields.length)
+            return false;
+
+         return primaryFields[0];
       },
       isSortable () {
          return this.fields.every(field => field.name);
@@ -289,15 +294,17 @@ export default {
          this.resizeResults();
       },
       updateField (payload, row) {
-         const localRow = Object.assign({}, row);
-         delete localRow._id;
+         const orgRow = this.localResults.find(lr => lr._id === row._id);
+         delete row._id;
+         delete orgRow._id;
 
          const params = {
             primary: this.primaryField.name,
             schema: this.getSchema(this.resultsetIndex),
             table: this.getTable(this.resultsetIndex),
-            id: this.getPrimaryValue(localRow),
-            localRow,
+            id: this.getPrimaryValue(orgRow),
+            row,
+            orgRow,
             ...payload
          };
          this.$emit('update-field', params);
@@ -326,6 +333,7 @@ export default {
             table: this.getTable(this.resultsetIndex),
             id: this.getPrimaryValue(row),
             row,
+            orgRow: row,
             field: this.selectedCell.field,
             content: null
          };

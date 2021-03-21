@@ -119,30 +119,31 @@ export default (connections) => {
          else
             escapedParam = `'${sqlEscaper(params.content)}'`;
 
-         if (params.primary) {
+         if (params.primary) { // TODO: handle multiple primary
             await connections[params.uid]
                .update({ [params.field]: `= ${escapedParam}` })
                .schema(params.schema)
                .from(params.table)
                .where({ [params.primary]: `= ${id}` })
+               .limit(1)
                .run();
          }
          else {
-            const { row } = params;
+            const { orgRow } = params;
             reload = true;
 
-            for (const key in row) {
-               if (typeof row[key] === 'string')
-                  row[key] = `'${row[key]}'`;
+            for (const key in orgRow) {
+               if (typeof orgRow[key] === 'string')
+                  orgRow[key] = `'${orgRow[key]}'`;
 
-               row[key] = `= ${row[key]}`;
+               orgRow[key] = `= ${orgRow[key]}`;
             }
 
             await connections[params.uid]
                .schema(params.schema)
                .update({ [params.field]: `= ${escapedParam}` })
                .from(params.table)
-               .where(row)
+               .where(orgRow)
                .limit(1)
                .run();
          }

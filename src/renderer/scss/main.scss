@@ -1,4 +1,4 @@
-@import "~spectre.css/src/_variables.scss";
+@import "~spectre.css/src/variables";
 @import "variables";
 @import "transitions";
 @import "data-types";
@@ -6,8 +6,8 @@
 @import "fake-tables";
 @import "mdi-additions";
 @import "db-icons";
-@import "~spectre.css/src/spectre.scss";
-@import "~spectre.css/src/spectre-exp.scss";
+@import "~spectre.css/src/spectre";
+@import "~spectre.css/src/spectre-exp";
 
 body {
   user-select: none;

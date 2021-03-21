@@ -328,6 +328,8 @@ export class PostgreSQLClient extends AntaresCore {
     * @returns {Array}
     */
    async getTableByIDs (ids) {
+      if (!ids) return;
+
       const { rows } = await this.raw(`
          SELECT relid AS tableid, relname, schemaname FROM pg_statio_all_tables WHERE relid IN (${ids}) 
          UNION
@@ -1206,7 +1208,7 @@ export class PostgreSQLClient extends AntaresCore {
       const orderByRaw = orderByArray.length ? `ORDER BY ${orderByArray.join(', ')} ` : '';
 
       // LIMIT
-      const limitRaw = this._query.limit.length ? `LIMIT ${this._query.limit.join(', ')} ` : '';
+      const limitRaw = selectArray.length && this._query.limit.length ? `LIMIT ${this._query.limit.join(', ')} ` : '';
 
       return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}${insertRaw}`;
    }
