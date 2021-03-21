@@ -352,12 +352,27 @@ export class PostgreSQLClient extends AntaresCore {
     */
    async getKeyUsage ({ schema, table }) {
       const { rows } = await this.raw(`
-         SELECT * 
-         FROM information_schema.key_column_usage
-         JOIN information_schema.referential_constraints ON 
-            referential_constraints.constraint_name = key_column_usage.constraint_name
-         WHERE table_schema = '${schema}'
-         AND table_name = '${table}'
+         SELECT 
+            tc.table_schema, 
+            tc.constraint_name, 
+            tc.table_name, 
+            kcu.column_name, 
+            ccu.table_schema AS foreign_table_schema,
+            ccu.table_name AS foreign_table_name,
+            ccu.column_name AS foreign_column_name,
+            rc.update_rule,
+            rc.delete_rule
+         FROM information_schema.table_constraints AS tc 
+         JOIN information_schema.key_column_usage AS kcu
+            ON tc.constraint_name = kcu.constraint_name
+            AND tc.table_schema = kcu.table_schema
+         JOIN information_schema.constraint_column_usage AS ccu
+            ON ccu.constraint_name = tc.constraint_name
+            AND ccu.table_schema = tc.table_schema
+         JOIN information_schema.referential_constraints AS rc 
+            ON rc.constraint_name = kcu.constraint_name
+         WHERE tc.constraint_type = 'FOREIGN KEY' AND tc.table_schema = '${schema}'
+         AND tc.table_name = '${table}'
       `);
 
       return rows.map(field => {
@@ -366,11 +381,11 @@ export class PostgreSQLClient extends AntaresCore {
             table: field.table_name,
             field: field.column_name,
             position: field.ordinal_position,
-            constraintPosition: field.position_inUnique_constraint,
+            constraintPosition: field.position_in_unique_constraint,
             constraintName: field.constraint_name,
-            refSchema: field.REFERENCED_TABLE_SCHEMA,
-            refTable: field.REFERENCED_TABLE_NAME,
-            refField: field.REFERENCED_COLUMN_NAME,
+            refSchema: field.foreign_table_schema,
+            refTable: field.foreign_table_name,
+            refField: field.foreign_column_name,
             onUpdate: field.update_rule,
             onDelete: field.delete_rule
          };
@@ -946,23 +961,6 @@ export class PostgreSQLClient extends AntaresCore {
          arch: infos[1],
          os: infos[2]
       };
-      // return rows.reduce((acc, curr) => {
-      //    switch (curr.Variable_name) {
-      //       case 'version':
-      //          acc.number = curr.Value.split('-')[0];
-      //          break;
-      //       case 'version_comment':
-      //          acc.name = curr.Value.replace('(GPL)', '');
-      //          break;
-      //       case 'version_compile_machine':
-      //          acc.arch = curr.Value;
-      //          break;
-      //       case 'version_compile_os':
-      //          acc.os = curr.Value;
-      //          break;
-      //    }
-      //    return acc;
-      // }, {});
    }
 
    async getProcesses () {
@@ -1261,9 +1259,11 @@ export class PostgreSQLClient extends AntaresCore {
 
                   const { rows, fields } = res;
                   let queryResult;
+                  let tablesInfo;
+
                   if (args.nest) {
                      const tablesID = [...new Set(fields.map(field => field.tableID))].toString();
-                     const tablesInfo = await this.getTableByIDs(tablesID);
+                     tablesInfo = await this.getTableByIDs(tablesID);
 
                      queryResult = rows.map(row => {
                         return row.reduce((acc, curr, i) => {
@@ -1281,12 +1281,21 @@ export class PostgreSQLClient extends AntaresCore {
                         if (!field || Array.isArray(field))
                            return false;
 
+                        let schema = ast && ast.from && 'schema' in ast.from[0] ? ast.from[0].schema : this._schema;
+                        let table = ast && ast.from ? ast.from[0].name : null;
+
+                        if (args.nest) {
+                           schema = tablesInfo[field.tableID] ? tablesInfo[field.tableID].schema : this._schema;
+                           table = tablesInfo[field.tableID] ? tablesInfo[field.tableID].table : null;
+                        }
+
                         return {
                            ...field,
                            name: field.name,
                            alias: field.name,
-                           schema: ast && ast.from && 'schema' in ast.from[0] ? ast.from[0].schema : this._schema,
-                           table: ast && ast.from ? ast.from[0].name : null,
+                           schema,
+                           table,
+                           // TODO: pick ast.from index if multiple
                            tableAlias: ast && ast.from ? ast.from[0].as : null,
                            orgTable: ast && ast.from ? ast.from[0].name : null,
                            type: this.types[field.dataTypeID] || field.format

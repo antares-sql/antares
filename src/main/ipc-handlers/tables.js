@@ -378,13 +378,13 @@ export default (connections) => {
    ipcMain.handle('get-foreign-list', async (event, { uid, schema, table, column, description }) => {
       try {
          const query = connections[uid]
-            .select(`${column} AS foreignColumn`)
+            .select(`${column} AS foreign_column`)
             .schema(schema)
             .from(table)
-            .orderBy('foreignColumn ASC');
+            .orderBy('foreign_column ASC');
 
          if (description)
-            query.select(`LEFT(${description}, 20) AS foreignDescription`);
+            query.select(`LEFT(${description}, 20) AS foreign_description`);
 
          const results = await query.run();
 

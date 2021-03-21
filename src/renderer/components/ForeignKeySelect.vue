@@ -11,11 +11,11 @@
       </option>
       <option
          v-for="row in foreignList"
-         :key="row.foreignColumn"
-         :value="row.foreignColumn"
-         :selected="row.foreignColumn === value"
+         :key="row.foreign_column"
+         :value="row.foreign_column"
+         :selected="row.foreign_column === value"
       >
-         {{ row.foreignColumn }} {{ 'foreignDescription' in row ? ` - ${row.foreignDescription}` : '' | cutText }}
+         {{ row.foreign_column }} {{ 'foreign_description' in row ? ` - ${row.foreign_description}` : '' | cutText }}
       </option>
    </select>
 </template>
@@ -51,11 +51,11 @@ export default {
       }),
       isValidDefault () {
          if (!this.foreignList.length) return true;
-         return this.foreignList.some(foreign => foreign.foreignColumn.toString() === this.value.toString());
+         return this.foreignList.some(foreign => foreign.foreign_column.toString() === this.value.toString());
       }
    },
    async created () {
-      let firstTextField;
+      let foreignDesc;
       const params = {
          uid: this.selectedWorkspace,
          schema: this.keyUsage.refSchema,
@@ -64,8 +64,10 @@ export default {
 
       try { // Field data
          const { status, response } = await Tables.getTableColumns(params);
-         if (status === 'success')
-            firstTextField = response.find(field => [...TEXT, ...LONG_TEXT].includes(field.type)).name || false;
+         if (status === 'success') {
+            const textField = response.find(field => [...TEXT, ...LONG_TEXT].includes(field.type));
+            foreignDesc = textField ? textField.name : false;
+         }
          else
             this.addNotification({ status: 'error', message: response });
       }
@@ -77,7 +79,7 @@ export default {
          const { status, response } = await Tables.getForeignList({
             ...params,
             column: this.keyUsage.refField,
-            description: firstTextField
+            description: foreignDesc
          });
 
          if (status === 'success')
