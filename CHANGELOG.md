@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.1.0](https://github.com/Fabio286/antares/compare/v0.0.20...v0.1.0) (2021-03-21)
+
+
+### Features
+
+* **PostgreSQL:** database in connection parameters ([9645702](https://github.com/Fabio286/antares/commit/964570247ff5b7b8317419730eec5bed4f0f0580))
+* **PostgreSQL:** edit array and text search fields ([fc65114](https://github.com/Fabio286/antares/commit/fc651149b95399c52d2d63e946731e9c1b0303a9))
+* **PostgreSQL:** insert and edit blob fields ([1f80a64](https://github.com/Fabio286/antares/commit/1f80a64fe1400baacca26f1a762c5aeb4ef6350d))
+* **PostgreSQL:** partial postgre implementation ([d892fa6](https://github.com/Fabio286/antares/commit/d892fa6fb3e86fbb96887d8eb67319ae855260a1))
+* **PostgreSQL:** support to microseconds ([d465e18](https://github.com/Fabio286/antares/commit/d465e18dba8ea3aa00726e33f9b1f70ca4c0683c))
+* **UI:** support to boolean fields ([ffb1712](https://github.com/Fabio286/antares/commit/ffb1712a593d1421793011e48a17369b884ea3c0))
+
+
+### Bug Fixes
+
+* update or delete rows with more than one primary key ([22a8c25](https://github.com/Fabio286/antares/commit/22a8c25717a4d4b285855426098a3a2846ce7448))
+* **MySQL:** handle NEWDECIMAL data type ([a1c6be3](https://github.com/Fabio286/antares/commit/a1c6be372b570cf13e89ef7ecf9b7a7c033a9293))
+* **PostgreSQL:** issue getting foreign keys informations ([db47b40](https://github.com/Fabio286/antares/commit/db47b4040a5282a6ac0711b1926c4c2ac867999e))
+* remove last char from datetime and time if is a dot ([e89911b](https://github.com/Fabio286/antares/commit/e89911b1851c19813d4acf2c79adfbc2ac7c1112))
+* **PostgreSQL:** single quote escape ([9f6a183](https://github.com/Fabio286/antares/commit/9f6a183d9b293dfe9ad9f3759f2375f05f37db8e))
+* **PostgreSQL:** various issues in query results ([fccfe92](https://github.com/Fabio286/antares/commit/fccfe92453325cd54c0331cc5670af0a56822c5b))
+* schema content not loaded if selected with right click ([8a6c59f](https://github.com/Fabio286/antares/commit/8a6c59f7ce7d051315b04cea38a96e4739b5b9d3))
+
 ### [0.0.20](https://github.com/Fabio286/antares/compare/v0.0.19...v0.0.20) (2021-03-13)
 
 
