@@ -9,11 +9,11 @@
 Antares is an SQL client based on [Electron.js](https://github.com/electron/electron) and [Vue.js](https://github.com/vuejs/vue) that aims to become a useful tool, especially for developers.  
 My target is to support as many databases as possible, and all major operating systems, including the ARM versions.  
 
-**At the moment this application is an alpha, it lacks many features** and supports only MySQL.  
-Most of its current features might be enough for basic MySQL use, so give it a chance and send me your feedback, I would really appreciate it.  
-I'm actively working on it (yes, i'm a lone dev), hoping to provide cool features and fixes as soon as possible.
+**At the moment this application is in development state, many features will come in future updates**, and supports only MySQL/MariaDB and PostgreSQL (partially).  
+Many of its current features are enough to have a pleasant user experience with MySQL/MariaDB, and basic functionalites with PostgreSQL, so give it a chance and send me your feedback, I would really appreciate it.  
+I'm actively working on it, hoping to provide cool features and fixes as soon as possible.
 
-🔗 If you are curious to try this early state of Antares you can download and install the [latest release](https://github.com/Fabio286/antares/releases).  
+🔗 If you are curious to try Antares you can download and install the [latest release](https://github.com/Fabio286/antares/releases).  
 👁 To stay tuned for new releases watch this repo on **Release only** channel.  
 🌟 Don't forget to **leave a star** if you appreciate this project.
 
@@ -73,7 +73,7 @@ Depending on your distribution, you will need to run the following command:
 ### Databases
 
 - [x] MySQL/MariaDB
-- [ ] PostgreSQL
+- [x] PostgreSQL (partially, work in progress)
 - [ ] SQLite
 - [ ] MSSQL
 - [ ] OracleDB
