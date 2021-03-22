@@ -268,8 +268,10 @@ export default {
          this.$emit('foreigns-update', this.foreignProxy);
       },
       selectForeign (event, id) {
-         if (this.selectedForeignID !== id && !event.target.classList.contains('remove-field'))
+         if (this.selectedForeignID !== id && !event.target.classList.contains('remove-field')) {
             this.selectedForeignID = id;
+            this.getRefFields();
+         }
       },
       getModalInnerHeight () {
          const modalBody = document.querySelector('.modal-body');
