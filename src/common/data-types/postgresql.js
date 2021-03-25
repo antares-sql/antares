@@ -4,22 +4,22 @@ module.exports = [
       types: [
          {
             name: 'SMALLINT',
-            length: true,
+            length: false,
             unsigned: true
          },
          {
             name: 'INTEGER',
-            length: true,
+            length: false,
             unsigned: true
          },
          {
             name: 'BIGINT',
-            length: true,
+            length: false,
             unsigned: true
          },
          {
             name: 'DECIMAL',
-            length: true,
+            length: false,
             unsigned: true
          },
          {
@@ -29,17 +29,17 @@ module.exports = [
          },
          {
             name: 'SMALLSERIAL',
-            length: true,
+            length: false,
             unsigned: true
          },
          {
             name: 'SERIAL',
-            length: true,
+            length: false,
             unsigned: true
          },
          {
             name: 'BIGSERIAL',
-            length: true,
+            length: false,
             unsigned: true
          }
       ]
@@ -49,12 +49,12 @@ module.exports = [
       types: [
          {
             name: 'REAL',
-            length: true,
+            length: false,
             unsigned: true
          },
          {
             name: 'DOUBLE PRECISION',
-            length: true,
+            length: false,
             unsigned: true
          }
       ]
@@ -64,7 +64,7 @@ module.exports = [
       types: [
          {
             name: 'money',
-            length: true,
+            length: false,
             unsigned: true
          }
       ]
@@ -78,13 +78,8 @@ module.exports = [
             unsigned: false
          },
          {
-            name: 'CHAR',
-            length: false,
-            unsigned: false
-         },
-         {
             name: 'CHARACTER',
-            length: false,
+            length: true,
             unsigned: false
          },
          {
@@ -109,7 +104,7 @@ module.exports = [
       types: [
          {
             name: 'BYTEA',
-            length: true,
+            length: false,
             unsigned: false
          }
       ]
@@ -129,17 +124,17 @@ module.exports = [
          },
          {
             name: 'DATE',
-            length: true,
+            length: false,
             unsigned: false
          },
          {
-            name: 'TIME',
-            length: true,
+            name: 'TIME WITHOUT TIME ZONE',
+            length: false,
             unsigned: false
          },
          {
             name: 'TIME WITH TIME ZONE',
-            length: true,
+            length: false,
             unsigned: false
          },
          {
@@ -229,12 +224,12 @@ module.exports = [
       types: [
          {
             name: 'BIT',
-            length: false,
+            length: true,
             unsigned: false
          },
          {
             name: 'BIT VARYING',
-            length: false,
+            length: true,
             unsigned: false
          }
       ]

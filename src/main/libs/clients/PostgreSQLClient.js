@@ -1,5 +1,5 @@
 'use strict';
-import pg, { Pool, Client, types } from 'pg';
+import { Pool, Client, types } from 'pg';
 import { parse } from 'pgsql-ast-parser';
 import { AntaresCore } from '../AntaresCore';
 import dataTypes from 'common/data-types/postgresql';
@@ -8,11 +8,11 @@ function pgToString (value) {
    return value.toString();
 }
 
-pg.types.setTypeParser(1082, pgToString); // date
-pg.types.setTypeParser(1083, pgToString); // time
-pg.types.setTypeParser(1114, pgToString); // timestamp
-pg.types.setTypeParser(1184, pgToString); // timestamptz
-pg.types.setTypeParser(1266, pgToString); // timetz
+types.setTypeParser(1082, pgToString); // date
+types.setTypeParser(1083, pgToString); // time
+types.setTypeParser(1114, pgToString); // timestamp
+types.setTypeParser(1184, pgToString); // timestamptz
+types.setTypeParser(1266, pgToString); // timetz
 
 export class PostgreSQLClient extends AntaresCore {
    constructor (args) {
@@ -282,7 +282,7 @@ export class PostgreSQLClient extends AntaresCore {
             default: field.column_default,
             charset: field.character_set_name,
             collation: field.collation_name,
-            autoIncrement: null,
+            autoIncrement: false,
             onUpdate: null,
             comment: ''
          };
@@ -317,7 +317,10 @@ export class PostgreSQLClient extends AntaresCore {
             name: row.constraint_name,
             column: row.column_name,
             indexType: null,
-            type: row.constraint_type
+            type: row.constraint_type,
+            cardinality: null,
+            comment: '',
+            indexComment: ''
          };
       });
    }
@@ -359,6 +362,8 @@ export class PostgreSQLClient extends AntaresCore {
             tc.constraint_name, 
             tc.table_name, 
             kcu.column_name, 
+            kcu.position_in_unique_constraint, 
+            kcu.ordinal_position, 
             ccu.table_schema AS foreign_table_schema,
             ccu.table_name AS foreign_table_name,
             ccu.column_name AS foreign_column_name,
@@ -1020,8 +1025,10 @@ export class PostgreSQLClient extends AntaresCore {
          options
       } = params;
 
-      let sql = `ALTER TABLE \`${table}\` `;
+      let sql = '';
       const alterColumns = [];
+      const renameColumns = [];
+      const createSequences = [];
 
       // OPTIONS
       if ('comment' in options) alterColumns.push(`COMMENT='${options.comment}'`);
@@ -1034,7 +1041,7 @@ export class PostgreSQLClient extends AntaresCore {
          const typeInfo = this._getTypeInfo(addition.type);
          const length = typeInfo.length ? addition.numLength || addition.charLength || addition.datePrecision : false;
 
-         alterColumns.push(`ADD COLUMN \`${addition.name}\` 
+         alterColumns.push(`ADD COLUMN ${addition.name} 
             ${addition.type.toUpperCase()}${length ? `(${length})` : ''} 
             ${addition.unsigned ? 'UNSIGNED' : ''} 
             ${addition.zerofill ? 'ZEROFILL' : ''}
@@ -1043,8 +1050,7 @@ export class PostgreSQLClient extends AntaresCore {
             ${addition.default ? `DEFAULT ${addition.default}` : ''}
             ${addition.comment ? `COMMENT '${addition.comment}'` : ''}
             ${addition.collation ? `COLLATE ${addition.collation}` : ''}
-            ${addition.onUpdate ? `ON UPDATE ${addition.onUpdate}` : ''}
-            ${addition.after ? `AFTER \`${addition.after}\`` : 'FIRST'}`);
+            ${addition.onUpdate ? `ON UPDATE ${addition.onUpdate}` : ''}`);
       });
 
       // ADD INDEX
@@ -1071,18 +1077,33 @@ export class PostgreSQLClient extends AntaresCore {
       changes.forEach(change => {
          const typeInfo = this._getTypeInfo(change.type);
          const length = typeInfo.length ? change.numLength || change.charLength || change.datePrecision : false;
+         let localType;
 
-         alterColumns.push(`CHANGE COLUMN \`${change.orgName}\` \`${change.name}\` 
-            ${change.type.toUpperCase()}${length ? `(${length})` : ''} 
-            ${change.unsigned ? 'UNSIGNED' : ''} 
-            ${change.zerofill ? 'ZEROFILL' : ''}
-            ${change.nullable ? 'NULL' : 'NOT NULL'}
-            ${change.autoIncrement ? 'AUTO_INCREMENT' : ''}
-            ${change.default ? `DEFAULT ${change.default}` : ''}
-            ${change.comment ? `COMMENT '${change.comment}'` : ''}
-            ${change.collation ? `COLLATE ${change.collation}` : ''}
-            ${change.onUpdate ? `ON UPDATE ${change.onUpdate}` : ''}
-            ${change.after ? `AFTER \`${change.after}\`` : 'FIRST'}`);
+         switch (change.type) {
+            case 'SERIAL':
+               localType = 'integer';
+               break;
+            case 'SMALLSERIAL':
+               localType = 'smallint';
+               break;
+            case 'BIGSERIAL':
+               localType = 'bigint';
+               break;
+            default:
+               localType = change.type.toLowerCase();
+         }
+
+         alterColumns.push(`ALTER COLUMN "${change.orgName}" TYPE ${localType}${length ? `(${length})` : ''} USING "${change.orgName}"::${localType}`);
+         alterColumns.push(`ALTER COLUMN "${change.orgName}" ${change.nullable ? 'DROP NOT NULL' : 'SET NOT NULL'}`);
+         alterColumns.push(`ALTER COLUMN "${change.orgName}" ${change.default ? `SET DEFAULT ${change.default}` : 'DROP DEFAULT'}`);
+         if (['SERIAL', 'SMALLSERIAL', 'BIGSERIAL'].includes(change.type)) {
+            const sequenceName = `${table}_${change.name}_seq`.replace(' ', '_');
+            createSequences.push(`CREATE SEQUENCE IF NOT EXISTS ${sequenceName} OWNED BY "${table}"."${change.orgName}"`);
+            alterColumns.push(`ALTER COLUMN "${change.orgName}" SET DEFAULT nextval('${sequenceName}')`);
+         }
+
+         if (change.orgName !== change.name)
+            renameColumns.push(`ALTER TABLE "${table}" RENAME COLUMN "${change.orgName}" TO "${change.name}"`);
       });
 
       // CHANGE INDEX
@@ -1113,7 +1134,7 @@ export class PostgreSQLClient extends AntaresCore {
 
       // DROP FIELDS
       deletions.forEach(deletion => {
-         alterColumns.push(`DROP COLUMN \`${deletion.name}\``);
+         alterColumns.push(`DROP COLUMN ${deletion.name}`);
       });
 
       // DROP INDEX
@@ -1129,10 +1150,12 @@ export class PostgreSQLClient extends AntaresCore {
          alterColumns.push(`DROP FOREIGN KEY \`${deletion.constraintName}\``);
       });
 
-      sql += alterColumns.join(', ');
+      if (alterColumns.length) sql += `ALTER TABLE "${table}" ${alterColumns.join(', ')}; `;
 
       // RENAME
-      if (options.name) sql += `; RENAME TABLE \`${table}\` TO \`${options.name}\``;
+      if (renameColumns.length) sql += `${renameColumns.join(';')}; `;
+      if (createSequences.length) sql = `${createSequences.join(';')}; ${sql}`;
+      if (options.name) sql += `ALTER TABLE "${table}" RENAME TO "${options.name}"; `;
 
       return await this.raw(sql);
    }

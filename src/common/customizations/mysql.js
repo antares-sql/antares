@@ -36,5 +36,11 @@ module.exports = {
    indexes: true,
    foreigns: true,
    sortableFields: true,
-   zerofill: true
+   unsigned: true,
+   nullable: true,
+   zerofill: true,
+   autoIncrement: true,
+   comment: true,
+   collation: true,
+   onUpdate: true
 };

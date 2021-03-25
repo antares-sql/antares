@@ -26,7 +26,7 @@
                   >
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="workspace.customizations.comment" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.comment') }}
                </label>
@@ -38,7 +38,7 @@
                   >
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="workspace.customizations.autoIncrement" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.autoIncrement') }}
                </label>
@@ -50,7 +50,7 @@
                   >
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="workspace.customizations.collations" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.collation') }}
                </label>
@@ -66,7 +66,7 @@
                   </select>
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="workspace.customizations.engines" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.engine') }}
                </label>

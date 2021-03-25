@@ -1,8 +1,8 @@
 <template>
    <div class="tr" @contextmenu.prevent="$emit('contextmenu', $event, localRow._id)">
       <div class="td" tabindex="0">
-         <div class="row-draggable">
-            <i class="mdi mdi-drag-horizontal row-draggable-icon" />
+         <div :class="customizations.sortableFields ? 'row-draggable' : 'text-center'">
+            <i v-if="customizations.sortableFields" class="mdi mdi-drag-horizontal row-draggable-icon" />
             {{ localRow.order }}
          </div>
       </div>
@@ -96,7 +96,11 @@
             >
          </template>
       </div>
-      <div class="td" tabindex="0">
+      <div
+         v-if="customizations.unsigned"
+         class="td"
+         tabindex="0"
+      >
          <label class="form-checkbox">
             <input
                v-model="localRow.unsigned"
@@ -106,7 +110,11 @@
             <i class="form-icon" />
          </label>
       </div>
-      <div class="td" tabindex="0">
+      <div
+         v-if="customizations.nullable"
+         class="td"
+         tabindex="0"
+      >
          <label class="form-checkbox">
             <input
                v-model="localRow.nullable"
@@ -116,7 +124,11 @@
             <i class="form-icon" />
          </label>
       </div>
-      <div class="td" tabindex="0">
+      <div
+         v-if="customizations.zerofill"
+         class="td"
+         tabindex="0"
+      >
          <label class="form-checkbox">
             <input
                v-model="localRow.zerofill"
@@ -131,7 +143,11 @@
             {{ fieldDefault }}
          </span>
       </div>
-      <div class="td type-varchar" tabindex="0">
+      <div
+         v-if="customizations.comment"
+         class="td type-varchar"
+         tabindex="0"
+      >
          <span
             v-if="!isInlineEditor.comment"
             class="cell-content"
@@ -149,7 +165,11 @@
             @blur="editOFF"
          >
       </div>
-      <div class="td" tabindex="0">
+      <div
+         v-if="customizations.collation"
+         class="td"
+         tabindex="0"
+      >
          <template v-if="fieldType.collation">
             <span
                v-if="!isInlineEditor.collation"
@@ -220,7 +240,7 @@
                      </div>
                   </div>
                </div>
-               <div class="mb-2">
+               <div v-if="customizations.nullable" class="mb-2">
                   <label class="form-radio form-inline">
                      <input
                         v-model="defaultValue.type"
@@ -230,7 +250,7 @@
                      ><i class="form-icon" /> NULL
                   </label>
                </div>
-               <div class="mb-2">
+               <div v-if="customizations.autoIncrement" class="mb-2">
                   <label class="form-radio form-inline">
                      <input
                         v-model="defaultValue.type"
@@ -261,7 +281,7 @@
                      </div>
                   </div>
                </div>
-               <div>
+               <div v-if="customizations.onUpdate">
                   <div class="form-group">
                      <label class="form-label col-4">
                         {{ $t('message.onUpdate') }}
@@ -294,7 +314,8 @@ export default {
       row: Object,
       dataTypes: Array,
       indexes: Array,
-      foreigns: Array
+      foreigns: Array,
+      customizations: Object
    },
    data () {
       return {

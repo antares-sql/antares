@@ -4,7 +4,7 @@ module.exports = [
       types: [
          {
             name: 'TINYINT',
-            length: true,
+            length: 4,
             collation: false,
             unsigned: true,
             zerofill: true

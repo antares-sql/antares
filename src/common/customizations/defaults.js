@@ -37,5 +37,12 @@ module.exports = {
    indexes: false,
    foreigns: false,
    sortableFields: false,
-   zerofill: false
+   unsigned: false,
+   nullable: false,
+   zerofill: false,
+   autoIncrement: false,
+   comment: false,
+   collation: false,
+   arrays: false,
+   onUpdate: false
 };

@@ -21,7 +21,7 @@ I'm actively working on it, hoping to provide cool features and fixes as soon as
 
 Why am I developing an SQL client when there are a lot of them on the market?  
 The main goal is to develop a totally free, full featured, cross platform and open source alternative, empowered by JavaScript's ecosystem.  
-An application created with minimalism and semplicity in mind, with features in the right places, not hundreds of tiny buttons or submenu.
+A modern application created with minimalism and semplicity in mind, with features in the right places, not hundreds of tiny buttons, tabs or submenu.  
 
 ## How to contribute
 

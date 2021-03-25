@@ -49,21 +49,21 @@
                      </div>
                   </div>
                </div>
-               <div class="th">
+               <div v-if="customizations.unsigned" class="th">
                   <div class="column-resizable">
                      <div class="table-column-title">
                         {{ $t('word.unsigned') }}
                      </div>
                   </div>
                </div>
-               <div class="th">
+               <div v-if="customizations.nullable" class="th">
                   <div class="column-resizable">
                      <div class="table-column-title">
                         {{ $t('message.allowNull') }}
                      </div>
                   </div>
                </div>
-               <div class="th">
+               <div v-if="customizations.zerofill" class="th">
                   <div class="column-resizable">
                      <div class="table-column-title">
                         {{ $t('message.zeroFill') }}
@@ -77,14 +77,14 @@
                      </div>
                   </div>
                </div>
-               <div class="th">
+               <div v-if="customizations.comment" class="th">
                   <div class="column-resizable">
                      <div class="table-column-title">
                         {{ $t('word.comment') }}
                      </div>
                   </div>
                </div>
-               <div class="th">
+               <div v-if="customizations.collation" class="th">
                   <div class="column-resizable min-100">
                      <div class="table-column-title">
                         {{ $t('word.collation') }}
@@ -106,6 +106,7 @@
                :indexes="getIndexes(row.name)"
                :foreigns="getForeigns(row.name)"
                :data-types="dataTypes"
+               :customizations="customizations"
                @contextmenu="contextMenu"
             />
          </draggable>
@@ -153,6 +154,9 @@ export default {
       }),
       workspaceSchema () {
          return this.getWorkspace(this.connUid).breadcrumbs.schema;
+      },
+      customizations () {
+         return this.getWorkspace(this.connUid).customizations;
       },
       dataTypes () {
          return this.getWorkspace(this.connUid).dataTypes;
