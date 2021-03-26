@@ -9,9 +9,9 @@
     "dev": "cross-env NODE_ENV=development electron-webpack dev",
     "compile": "electron-webpack",
     "build": "cross-env NODE_ENV=production npm run compile && electron-builder",
+    "build:appx": "npm run build -- --win appx",
     "release": "standard-version",
     "release:pre": "npm run release -- --prerelease alpha",
-    "release:snap": "npm run build -- --linux snap && snapcraft upload --release=edge ./dist/Antares-${npm_package_version}-linux_amd64.snap",
     "test": "npm run lint",
     "lint": "eslint . --ext .js,.vue && stylelint \"./src/**/*.{css,scss,sass,vue}\"",
     "lint:fix": "eslint . --ext .js,.vue --fix && stylelint \"./src/**/*.{css,scss,sass,vue}\" --fix"
@@ -53,6 +53,12 @@
     },
     "portable": {
       "artifactName": "${productName}-${version}-portable.exe"
+    },
+    "appx":{
+      "displayName": "Antares SQL Client",
+      "identityName": "62514FabioDiStasio.AntaresSQLClient",
+      "publisher": "CN=1A2729ED-865C-41D2-9038-39AE2A63AA52",
+      "applicationId": "FabioDiStasio.AntaresSQLClient"
     }
   },
   "electronWebpack": {
