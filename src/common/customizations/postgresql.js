@@ -18,6 +18,7 @@ module.exports = {
    functions: false,
    schedulers: false,
    // Settings
+   tableAdd: true,
    databaseEdit: false,
    tableSettings: true,
    viewSettings: false,

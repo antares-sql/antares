@@ -997,13 +997,10 @@ export class PostgreSQLClient extends AntaresCore {
     */
    async createTable (params) {
       const {
-         name,
-         collation,
-         comment,
-         engine
+         name
       } = params;
 
-      const sql = `CREATE TABLE \`${name}\` (\`${name}_ID\` INT NULL) COMMENT='${comment}', COLLATE='${collation}', ENGINE=${engine}`;
+      const sql = `CREATE TABLE ${name} (${name}_id INTEGER NULL)`;
 
       return await this.raw(sql);
    }

@@ -25,7 +25,7 @@
                   >
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="workspace.customizations.comment" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.comment') }}
                </label>
@@ -37,7 +37,7 @@
                   >
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="workspace.customizations.collations" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.collation') }}
                </label>
@@ -53,7 +53,7 @@
                   </select>
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="workspace.customizations.engines" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.engine') }}
                </label>
@@ -103,10 +103,14 @@ export default {
          getDatabaseVariable: 'workspaces/getDatabaseVariable'
       }),
       defaultCollation () {
-         return this.getDatabaseVariable(this.selectedWorkspace, 'collation_server').value || '';
+         if (this.workspace.customizations.collations)
+            return this.getDatabaseVariable(this.selectedWorkspace, 'collation_server').value || '';
+         return '';
       },
       defaultEngine () {
-         return this.workspace.engines.find(engine => engine.isDefault).name;
+         if (this.workspace.customizations.engines)
+            return this.workspace.engines.find(engine => engine.isDefault).name;
+         return '';
       }
    },
    mounted () {
