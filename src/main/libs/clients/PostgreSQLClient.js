@@ -301,7 +301,7 @@ export class PostgreSQLClient extends AntaresCore {
          SELECT pg_index.indexrelid, pg_class.oid
          FROM pg_index, pg_class
          WHERE pg_class.relname = '${table}' AND pg_class.oid = pg_index.indrelid), ndx_cols AS (
-         SELECT pg_class.relname, UNNEST(i.indkey) AS col_ndx, CASE i.indisprimary WHEN TRUE THEN 'PRIMARY' ELSE CASE i.indisunique WHEN TRUE THEN 'UNIQUE' ELSE 'KEY' END END AS CONSTRAINT_TYPE, pg_class.oid
+         SELECT pg_class.relname, UNNEST(i.indkey) AS col_ndx, CASE i.indisprimary WHEN TRUE THEN 'PRIMARY' ELSE CASE i.indisunique WHEN TRUE THEN 'UNIQUE' ELSE 'INDEX' END END AS CONSTRAINT_TYPE, pg_class.oid
          FROM pg_class
          JOIN pg_index i ON (pg_class.oid = i.indexrelid)
          JOIN ndx_list ON (pg_class.oid = ndx_list.indexrelid)
@@ -1052,17 +1052,13 @@ export class PostgreSQLClient extends AntaresCore {
 
       // ADD INDEX
       indexChanges.additions.forEach(addition => {
-         const fields = addition.fields.map(field => `\`${field}\``).join(',');
-         let type = addition.type;
+         const fields = addition.fields.map(field => `${field}`).join(',');
+         const type = addition.type;
 
          if (type === 'PRIMARY')
             alterColumns.push(`ADD PRIMARY KEY (${fields})`);
-         else {
-            if (type === 'UNIQUE')
-               type = 'UNIQUE INDEX';
-
-            alterColumns.push(`ADD ${type} \`${addition.name}\` (${fields})`);
-         }
+         else if (type === 'UNIQUE')
+            alterColumns.push(`ADD CONSTRAINT ${addition.name} UNIQUE (${fields})`);
       });
 
       // ADD FOREIGN KEYS
@@ -1108,19 +1104,15 @@ export class PostgreSQLClient extends AntaresCore {
          if (change.oldType === 'PRIMARY')
             alterColumns.push('DROP PRIMARY KEY');
          else
-            alterColumns.push(`DROP INDEX \`${change.oldName}\``);
+            alterColumns.push(`DROP CONSTRAINT ${change.oldName}`);
 
-         const fields = change.fields.map(field => `\`${field}\``).join(',');
-         let type = change.type;
+         const fields = change.fields.map(field => `${field}`).join(',');
+         const type = change.type;
 
          if (type === 'PRIMARY')
             alterColumns.push(`ADD PRIMARY KEY (${fields})`);
-         else {
-            if (type === 'UNIQUE')
-               type = 'UNIQUE INDEX';
-
-            alterColumns.push(`ADD ${type} \`${change.name}\` (${fields})`);
-         }
+         else if (type === 'UNIQUE')
+            alterColumns.push(`ADD CONSTRAINT ${change.name} UNIQUE (${fields})`);
       });
 
       // CHANGE FOREIGN KEYS
@@ -1139,12 +1131,12 @@ export class PostgreSQLClient extends AntaresCore {
          if (deletion.type === 'PRIMARY')
             alterColumns.push('DROP PRIMARY KEY');
          else
-            alterColumns.push(`DROP INDEX \`${deletion.name}\``);
+            alterColumns.push(`DROP CONSTRAINT ${deletion.name}`);
       });
 
       // DROP FOREIGN KEYS
       foreignChanges.deletions.forEach(deletion => {
-         alterColumns.push(`DROP FOREIGN KEY \`${deletion.constraintName}\``);
+         alterColumns.push(`DROP FOREIGN KEY ${deletion.constraintName}`);
       });
 
       if (alterColumns.length) sql += `ALTER TABLE "${table}" ${alterColumns.join(', ')}; `;
