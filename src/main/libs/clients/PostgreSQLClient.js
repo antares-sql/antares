@@ -1000,7 +1000,7 @@ export class PostgreSQLClient extends AntaresCore {
          name
       } = params;
 
-      const sql = `CREATE TABLE ${name} (${name}_id INTEGER NULL)`;
+      const sql = `CREATE TABLE ${name} (${name}_id INTEGER NULL); ALTER TABLE ${name} DROP COLUMN ${name}_id`;
 
       return await this.raw(sql);
    }
@@ -1026,6 +1026,7 @@ export class PostgreSQLClient extends AntaresCore {
       const alterColumns = [];
       const renameColumns = [];
       const createSequences = [];
+      const manageIndexes = [];
 
       // OPTIONS
       if ('comment' in options) alterColumns.push(`COMMENT='${options.comment}'`);
@@ -1059,6 +1060,8 @@ export class PostgreSQLClient extends AntaresCore {
             alterColumns.push(`ADD PRIMARY KEY (${fields})`);
          else if (type === 'UNIQUE')
             alterColumns.push(`ADD CONSTRAINT ${addition.name} UNIQUE (${fields})`);
+         else
+            manageIndexes.push(`CREATE INDEX ${addition.name} ON ${table}(${fields})`);
       });
 
       // ADD FOREIGN KEYS
@@ -1103,8 +1106,10 @@ export class PostgreSQLClient extends AntaresCore {
       indexChanges.changes.forEach(change => {
          if (change.oldType === 'PRIMARY')
             alterColumns.push('DROP PRIMARY KEY');
-         else
+         else if (change.oldType === 'UNIQUE')
             alterColumns.push(`DROP CONSTRAINT ${change.oldName}`);
+         else
+            manageIndexes.push(`DROP INDEX ${change.oldName}`);
 
          const fields = change.fields.map(field => `${field}`).join(',');
          const type = change.type;
@@ -1113,6 +1118,8 @@ export class PostgreSQLClient extends AntaresCore {
             alterColumns.push(`ADD PRIMARY KEY (${fields})`);
          else if (type === 'UNIQUE')
             alterColumns.push(`ADD CONSTRAINT ${change.name} UNIQUE (${fields})`);
+         else
+            manageIndexes.push(`CREATE INDEX ${change.name} ON ${table}(${fields})`);
       });
 
       // CHANGE FOREIGN KEYS
@@ -1128,10 +1135,10 @@ export class PostgreSQLClient extends AntaresCore {
 
       // DROP INDEX
       indexChanges.deletions.forEach(deletion => {
-         if (deletion.type === 'PRIMARY')
-            alterColumns.push('DROP PRIMARY KEY');
-         else
+         if (['PRIMARY', 'UNIQUE'].includes(deletion.type))
             alterColumns.push(`DROP CONSTRAINT ${deletion.name}`);
+         else
+            manageIndexes.push(`DROP INDEX ${deletion.name}`);
       });
 
       // DROP FOREIGN KEYS
@@ -1144,6 +1151,7 @@ export class PostgreSQLClient extends AntaresCore {
       // RENAME
       if (renameColumns.length) sql += `${renameColumns.join(';')}; `;
       if (createSequences.length) sql = `${createSequences.join(';')}; ${sql}`;
+      if (manageIndexes.length) sql = `${manageIndexes.join(';')}; ${sql}`;
       if (options.name) sql += `ALTER TABLE "${table}" RENAME TO "${options.name}"; `;
 
       return await this.raw(sql);
