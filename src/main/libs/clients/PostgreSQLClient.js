@@ -1066,7 +1066,7 @@ export class PostgreSQLClient extends AntaresCore {
 
       // ADD FOREIGN KEYS
       foreignChanges.additions.forEach(addition => {
-         alterColumns.push(`ADD CONSTRAINT \`${addition.constraintName}\` FOREIGN KEY (\`${addition.field}\`) REFERENCES \`${addition.refTable}\` (\`${addition.refField}\`) ON UPDATE ${addition.onUpdate} ON DELETE ${addition.onDelete}`);
+         alterColumns.push(`ADD CONSTRAINT ${addition.constraintName} FOREIGN KEY (${addition.field}) REFERENCES ${addition.refTable} (${addition.refField}) ON UPDATE ${addition.onUpdate} ON DELETE ${addition.onDelete}`);
       });
 
       // CHANGE FIELDS
@@ -1124,8 +1124,8 @@ export class PostgreSQLClient extends AntaresCore {
 
       // CHANGE FOREIGN KEYS
       foreignChanges.changes.forEach(change => {
-         alterColumns.push(`DROP FOREIGN KEY \`${change.oldName}\``);
-         alterColumns.push(`ADD CONSTRAINT \`${change.constraintName}\` FOREIGN KEY (\`${change.field}\`) REFERENCES \`${change.refTable}\` (\`${change.refField}\`) ON UPDATE ${change.onUpdate} ON DELETE ${change.onDelete}`);
+         alterColumns.push(`DROP CONSTRAINT ${change.oldName}`);
+         alterColumns.push(`ADD CONSTRAINT ${change.constraintName} FOREIGN KEY (${change.field}) REFERENCES ${change.refTable} (${change.refField}) ON UPDATE ${change.onUpdate} ON DELETE ${change.onDelete}`);
       });
 
       // DROP FIELDS
@@ -1143,7 +1143,7 @@ export class PostgreSQLClient extends AntaresCore {
 
       // DROP FOREIGN KEYS
       foreignChanges.deletions.forEach(deletion => {
-         alterColumns.push(`DROP FOREIGN KEY ${deletion.constraintName}`);
+         alterColumns.push(`DROP CONSTRAINT ${deletion.constraintName}`);
       });
 
       if (alterColumns.length) sql += `ALTER TABLE "${table}" ${alterColumns.join(', ')}; `;
