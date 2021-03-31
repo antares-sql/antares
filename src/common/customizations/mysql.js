@@ -42,5 +42,9 @@ module.exports = {
    autoIncrement: true,
    comment: true,
    collation: true,
-   onUpdate: true
+   definer: true,
+   onUpdate: true,
+   viewAlgorithm: true,
+   viewSqlSecurity: true,
+   viewUpdateOption: true
 };

@@ -43,6 +43,10 @@ module.exports = {
    autoIncrement: false,
    comment: false,
    collation: false,
+   definer: false,
    arrays: false,
-   onUpdate: false
+   onUpdate: false,
+   viewAlgorithm: false,
+   viewSqlSecurity: false,
+   viewUpdateOption: false
 };

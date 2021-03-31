@@ -37,7 +37,7 @@
                </div>
             </div>
             <div class="column col-auto">
-               <div class="form-group">
+               <div v-if="workspace.customizations.definer" class="form-group">
                   <label class="form-label">{{ $t('word.definer') }}</label>
                   <select
                      v-if="workspace.users.length"
@@ -68,7 +68,7 @@
          </div>
          <div class="columns">
             <div class="column col-auto mr-2">
-               <div class="form-group">
+               <div v-if="workspace.customizations.viewSqlSecurity" class="form-group">
                   <label class="form-label">{{ $t('message.sqlSecurity') }}</label>
                   <label class="form-radio">
                      <input
@@ -91,7 +91,7 @@
                </div>
             </div>
             <div class="column col-auto mr-2">
-               <div class="form-group">
+               <div v-if="workspace.customizations.viewAlgorithm" class="form-group">
                   <label class="form-label">{{ $t('word.algorithm') }}</label>
                   <label class="form-radio">
                      <input
@@ -122,7 +122,7 @@
                   </label>
                </div>
             </div>
-            <div class="column col-auto mr-2">
+            <div v-if="workspace.customizations.viewUpdateOption" class="column col-auto mr-2">
                <div class="form-group">
                   <label class="form-label">{{ $t('message.updateOption') }}</label>
                   <label class="form-radio">

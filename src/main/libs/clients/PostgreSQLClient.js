@@ -454,17 +454,17 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async getViewInformations ({ schema, view }) {
-      const sql = `SHOW CREATE VIEW \`${schema}\`.\`${view}\``;
+      const sql = `SELECT "definition" FROM "pg_views" WHERE "viewname"='${view}' AND "schemaname"='${schema}'`;
       const results = await this.raw(sql);
 
       return results.rows.map(row => {
          return {
-            algorithm: row['Create View'].match(/(?<=CREATE ALGORITHM=).*?(?=\s)/gs)[0],
-            definer: row['Create View'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
-            security: row['Create View'].match(/(?<=SQL SECURITY ).*?(?=\s)/gs)[0],
-            updateOption: row['Create View'].match(/(?<=WITH ).*?(?=\s)/gs) ? row['Create View'].match(/(?<=WITH ).*?(?=\s)/gs)[0] : '',
-            sql: row['Create View'].match(/(?<=AS ).*?$/gs)[0],
-            name: row.View
+            algorithm: '',
+            definer: '',
+            security: '',
+            updateOption: '',
+            sql: row.definition,
+            name: view
          };
       })[0];
    }
@@ -476,7 +476,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async dropView (params) {
-      const sql = `DROP VIEW \`${params.view}\``;
+      const sql = `DROP VIEW ${params.view}`;
       return await this.raw(sql);
    }
 
@@ -488,10 +488,10 @@ export class PostgreSQLClient extends AntaresCore {
     */
    async alterView (params) {
       const { view } = params;
-      let sql = `ALTER ALGORITHM = ${view.algorithm}${view.definer ? ` DEFINER=${view.definer}` : ''} SQL SECURITY ${view.security} VIEW \`${view.oldName}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}`;
+      let sql = `CREATE OR REPLACE VIEW ${view.oldName} AS ${view.sql}`;
 
       if (view.name !== view.oldName)
-         sql += `; RENAME TABLE \`${view.oldName}\` TO \`${view.name}\``;
+         sql += `; ALTER VIEW ${view.oldName} RENAME TO ${view.name}`;
 
       return await this.raw(sql);
    }
@@ -503,7 +503,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async createView (view) {
-      const sql = `CREATE ALGORITHM = ${view.algorithm} ${view.definer ? `DEFINER=${view.definer} ` : ''}SQL SECURITY ${view.security} VIEW \`${view.name}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}`;
+      const sql = `CREATE VIEW ${view.name} AS ${view.sql}`;
       return await this.raw(sql);
    }
 
@@ -823,33 +823,33 @@ export class PostgreSQLClient extends AntaresCore {
     * @returns {Array.<Object>} view informations
     * @memberof PostgreSQLClient
     */
-   async getEventInformations ({ schema, scheduler }) {
-      const sql = `SHOW CREATE EVENT \`${schema}\`.\`${scheduler}\``;
-      const results = await this.raw(sql);
+   // async getEventInformations ({ schema, scheduler }) {
+   //    const sql = `SHOW CREATE EVENT \`${schema}\`.\`${scheduler}\``;
+   //    const results = await this.raw(sql);
 
-      return results.rows.map(row => {
-         const schedule = row['Create Event'];
-         const execution = schedule.includes('EVERY') ? 'EVERY' : 'ONCE';
-         const every = execution === 'EVERY' ? row['Create Event'].match(/(?<=EVERY )(\s*([^\s]+)){0,2}/gs)[0].replaceAll('\'', '').split(' ') : [];
-         const starts = execution === 'EVERY' && schedule.includes('STARTS') ? schedule.match(/(?<=STARTS ').*?(?='\s)/gs)[0] : '';
-         const ends = execution === 'EVERY' && schedule.includes('ENDS') ? schedule.match(/(?<=ENDS ').*?(?='\s)/gs)[0] : '';
-         const at = execution === 'ONCE' && schedule.includes('AT') ? schedule.match(/(?<=AT ').*?(?='\s)/gs)[0] : '';
+   //    return results.rows.map(row => {
+   //       const schedule = row['Create Event'];
+   //       const execution = schedule.includes('EVERY') ? 'EVERY' : 'ONCE';
+   //       const every = execution === 'EVERY' ? row['Create Event'].match(/(?<=EVERY )(\s*([^\s]+)){0,2}/gs)[0].replaceAll('\'', '').split(' ') : [];
+   //       const starts = execution === 'EVERY' && schedule.includes('STARTS') ? schedule.match(/(?<=STARTS ').*?(?='\s)/gs)[0] : '';
+   //       const ends = execution === 'EVERY' && schedule.includes('ENDS') ? schedule.match(/(?<=ENDS ').*?(?='\s)/gs)[0] : '';
+   //       const at = execution === 'ONCE' && schedule.includes('AT') ? schedule.match(/(?<=AT ').*?(?='\s)/gs)[0] : '';
 
-         return {
-            definer: row['Create Event'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
-            sql: row['Create Event'].match(/(?<=DO )(.*)/gs)[0],
-            name: row.Event,
-            comment: row['Create Event'].match(/(?<=COMMENT ').*?(?=')/gs) ? row['Create Event'].match(/(?<=COMMENT ').*?(?=')/gs)[0] : '',
-            state: row['Create Event'].includes('ENABLE') ? 'ENABLE' : row['Create Event'].includes('DISABLE ON SLAVE') ? 'DISABLE ON SLAVE' : 'DISABLE',
-            preserve: row['Create Event'].includes('ON COMPLETION PRESERVE'),
-            execution,
-            every,
-            starts,
-            ends,
-            at
-         };
-      })[0];
-   }
+   //       return {
+   //          definer: row['Create Event'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
+   //          sql: row['Create Event'].match(/(?<=DO )(.*)/gs)[0],
+   //          name: row.Event,
+   //          comment: row['Create Event'].match(/(?<=COMMENT ').*?(?=')/gs) ? row['Create Event'].match(/(?<=COMMENT ').*?(?=')/gs)[0] : '',
+   //          state: row['Create Event'].includes('ENABLE') ? 'ENABLE' : row['Create Event'].includes('DISABLE ON SLAVE') ? 'DISABLE ON SLAVE' : 'DISABLE',
+   //          preserve: row['Create Event'].includes('ON COMPLETION PRESERVE'),
+   //          execution,
+   //          every,
+   //          starts,
+   //          ends,
+   //          at
+   //       };
+   //    })[0];
+   // }
 
    /**
     * DROP EVENT
@@ -857,10 +857,10 @@ export class PostgreSQLClient extends AntaresCore {
     * @returns {Array.<Object>} parameters
     * @memberof PostgreSQLClient
     */
-   async dropEvent (params) {
-      const sql = `DROP EVENT \`${params.scheduler}\``;
-      return await this.raw(sql);
-   }
+   // async dropEvent (params) {
+   //    const sql = `DROP EVENT \`${params.scheduler}\``;
+   //    return await this.raw(sql);
+   // }
 
    /**
     * ALTER EVENT
@@ -868,25 +868,25 @@ export class PostgreSQLClient extends AntaresCore {
     * @returns {Array.<Object>} parameters
     * @memberof PostgreSQLClient
     */
-   async alterEvent (params) {
-      const { scheduler } = params;
+   // async alterEvent (params) {
+   //    const { scheduler } = params;
 
-      if (scheduler.execution === 'EVERY' && scheduler.every[0].includes('-'))
-         scheduler.every[0] = `'${scheduler.every[0]}'`;
+   //    if (scheduler.execution === 'EVERY' && scheduler.every[0].includes('-'))
+   //       scheduler.every[0] = `'${scheduler.every[0]}'`;
 
-      const sql = `ALTER ${scheduler.definer ? ` DEFINER=${scheduler.definer}` : ''} EVENT \`${scheduler.oldName}\` 
-      ON SCHEDULE
-         ${scheduler.execution === 'EVERY'
-      ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
-      : `AT '${scheduler.at}'`}
-      ON COMPLETION${!scheduler.preserve ? ' NOT' : ''} PRESERVE
-      ${scheduler.name !== scheduler.oldName ? `RENAME TO \`${scheduler.name}\`` : ''}
-      ${scheduler.state}
-      COMMENT '${scheduler.comment}'
-      DO ${scheduler.sql}`;
+   //    const sql = `ALTER ${scheduler.definer ? ` DEFINER=${scheduler.definer}` : ''} EVENT \`${scheduler.oldName}\`
+   //    ON SCHEDULE
+   //       ${scheduler.execution === 'EVERY'
+   //    ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
+   //    : `AT '${scheduler.at}'`}
+   //    ON COMPLETION${!scheduler.preserve ? ' NOT' : ''} PRESERVE
+   //    ${scheduler.name !== scheduler.oldName ? `RENAME TO \`${scheduler.name}\`` : ''}
+   //    ${scheduler.state}
+   //    COMMENT '${scheduler.comment}'
+   //    DO ${scheduler.sql}`;
 
-      return await this.raw(sql, { split: false });
-   }
+   //    return await this.raw(sql, { split: false });
+   // }
 
    /**
     * CREATE EVENT
@@ -894,19 +894,19 @@ export class PostgreSQLClient extends AntaresCore {
     * @returns {Array.<Object>} parameters
     * @memberof PostgreSQLClient
     */
-   async createEvent (scheduler) {
-      const sql = `CREATE ${scheduler.definer ? ` DEFINER=${scheduler.definer}` : ''} EVENT \`${scheduler.name}\` 
-      ON SCHEDULE
-         ${scheduler.execution === 'EVERY'
-      ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
-      : `AT '${scheduler.at}'`}
-      ON COMPLETION${!scheduler.preserve ? ' NOT' : ''} PRESERVE
-      ${scheduler.state}
-      COMMENT '${scheduler.comment}'
-      DO ${scheduler.sql}`;
+   // async createEvent (scheduler) {
+   //    const sql = `CREATE ${scheduler.definer ? ` DEFINER=${scheduler.definer}` : ''} EVENT \`${scheduler.name}\`
+   //    ON SCHEDULE
+   //       ${scheduler.execution === 'EVERY'
+   //    ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
+   //    : `AT '${scheduler.at}'`}
+   //    ON COMPLETION${!scheduler.preserve ? ' NOT' : ''} PRESERVE
+   //    ${scheduler.state}
+   //    COMMENT '${scheduler.comment}'
+   //    DO ${scheduler.sql}`;
 
-      return await this.raw(sql, { split: false });
-   }
+   //    return await this.raw(sql, { split: false });
+   // }
 
    /**
     * SELECT * FROM pg_collation
