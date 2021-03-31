@@ -13,7 +13,7 @@ My target is to support as many databases as possible, and all major operating s
 Many of its current features are enough to have a pleasant user experience with MySQL/MariaDB, and basic functionalites with PostgreSQL, so give it a chance and send me your feedback, I would really appreciate it.  
 I'm actively working on it, hoping to provide cool features and fixes as soon as possible.
 
-🔗 If you are curious to try Antares you can download and install the [latest release](https://github.com/Fabio286/antares/releases).  
+🔗 If you are curious to try Antares you can download and install the [latest release](https://github.com/Fabio286/antares/releases/latest).  
 👁 To stay tuned for new releases watch this repo on **Release only** channel.  
 🌟 Don't forget to **leave a star** if you appreciate this project.
 
@@ -22,6 +22,11 @@ I'm actively working on it, hoping to provide cool features and fixes as soon as
 Why am I developing an SQL client when there are a lot of them on the market?  
 The main goal is to develop a totally free, full featured, cross platform and open source alternative, empowered by JavaScript's ecosystem.  
 A modern application created with minimalism and semplicity in mind, with features in the right places, not hundreds of tiny buttons, tabs or submenu.  
+
+## Download
+
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/antares) [![Get it from Microsoft Store](https://raw.githubusercontent.com/Fabio286/antares/gh-pages/src/assets/ms-store.png)](https://www.microsoft.com/it-it/p/antares-sql-client/9nhtb9sq51r1?cid=storebadge&ocid=badge&rtc=1&activetab=pivot:overviewtab)  
+🚀 **[Other Downloads](https://github.com/Fabio286/antares/releases/latest)**
 
 ## How to contribute
 
