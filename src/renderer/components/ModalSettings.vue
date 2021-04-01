@@ -186,8 +186,9 @@
                            </select>
                         </div>
                         <div class="column col-12">
-                           <QueryEditor
+                           <BaseTextEditor
                               :value="exampleQuery"
+                              mode="sql"
                               :workspace="workspace"
                               :read-only="true"
                               :height="270"
@@ -223,14 +224,14 @@
 import { mapActions, mapGetters } from 'vuex';
 import localesNames from '@/i18n/supported-locales';
 import ModalSettingsUpdate from '@/components/ModalSettingsUpdate';
-import QueryEditor from '@/components/QueryEditor';
+import BaseTextEditor from '@/components/BaseTextEditor';
 const { shell } = require('electron');
 
 export default {
    name: 'ModalSettings',
    components: {
       ModalSettingsUpdate,
-      QueryEditor
+      BaseTextEditor
    },
    data () {
       return {
