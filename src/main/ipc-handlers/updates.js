@@ -9,10 +9,13 @@ autoUpdater.allowPrerelease = persistentStore.get('allow_prerelease', true);
 export default () => {
    ipcMain.on('check-for-updates', event => {
       mainWindow = event;
-
-      autoUpdater.checkForUpdatesAndNotify().catch(() => {
-         mainWindow.reply('check-failed');
-      });
+      if (process.windowsStore)
+         mainWindow.reply('no-auto-update');
+      else {
+         autoUpdater.checkForUpdatesAndNotify().catch(() => {
+            mainWindow.reply('check-failed');
+         });
+      }
    });
 
    ipcMain.on('restart-to-update', () => {

@@ -13,6 +13,9 @@ export default store => {
    ipcRenderer.on('check-failed', () => {
       store.commit('application/CHANGE_UPDATE_STATUS', 'nocheck');
    });
+   ipcRenderer.on('no-auto-update', () => {
+      store.commit('application/CHANGE_UPDATE_STATUS', 'disabled');
+   });
    ipcRenderer.on('download-progress', (event, data) => {
       store.commit('application/CHANGE_UPDATE_STATUS', 'downloading');
       store.commit('application/CHANGE_PROGRESS_PERCENTAGE', data.percent);

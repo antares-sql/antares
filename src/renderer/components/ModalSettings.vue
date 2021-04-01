@@ -30,6 +30,7 @@
                         <a class="c-hand">{{ $t('word.themes') }}</a>
                      </li>
                      <li
+                        v-if="updateStatus !== 'disabled'"
                         class="tab-item"
                         :class="{'active': selectedTab === 'update'}"
                         @click="selectTab('update')"

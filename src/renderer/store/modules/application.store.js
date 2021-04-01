@@ -10,7 +10,7 @@ export default {
       is_setting_modal: false,
       selected_setting_tab: 'general',
       selected_conection: {},
-      update_status: 'noupdate', // noupdate, available, checking, nocheck, downloading, downloaded
+      update_status: 'noupdate', // noupdate, available, checking, nocheck, downloading, downloaded, disabled
       download_progress: 0,
       base_completer: [] // Needed to reset ace editor, due global-only ace completer
    },
