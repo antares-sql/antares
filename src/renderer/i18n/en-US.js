@@ -205,7 +205,8 @@ module.exports = {
       createNewSchema: 'Create new schema',
       schemaName: 'Schema name',
       editSchema: 'Edit schema',
-      deleteSchema: 'Delete schema'
+      deleteSchema: 'Delete schema',
+      markdownSupported: 'Markdown supported'
    },
    faker: {
       address: 'Address',

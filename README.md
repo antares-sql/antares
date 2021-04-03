@@ -41,7 +41,8 @@ A modern application created with minimalism and semplicity in mind, with featur
 - Fake table data filler.
 - Run queries on multiple tabs.
 - Query suggestions and auto complete.
-- Native dark theme.
+- Dark and light theme.
+- Scratchpad.
 - Multi language.
 - Secure password storage.
 - Auto updates.
@@ -51,7 +52,7 @@ A modern application created with minimalism and semplicity in mind, with featur
 This is a roadmap with major features will come in near future.
 
 - Support for other databases.
-- Database tools (variables, process list...).
+- Database tools.
 - SSH tunnel support.
 - Users management (add/edit/delete).
 - UI/UX improvements.
@@ -60,7 +61,6 @@ This is a roadmap with major features will come in near future.
 - More keyboard shortcuts.
 - Query logs console.
 - Import/export and migration.
-- Light theme.
 
 ## Troubleshooting
 

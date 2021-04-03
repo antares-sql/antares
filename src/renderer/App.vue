@@ -16,6 +16,7 @@
          <TheFooter />
          <TheNotificationsBoard />
          <ModalNewConnection v-if="isNewConnModal" />
+         <TheScratchpad v-if="isScratchpad" />
          <ModalSettings v-if="isSettingModal" />
          <ModalDiscardChanges v-if="isUnsavedDiscardModal" />
       </div>
@@ -37,6 +38,7 @@ export default {
       Workspace: () => import(/* webpackChunkName: "Workspace" */'@/components/Workspace'),
       ModalNewConnection: () => import(/* webpackChunkName: "ModalNewConnection" */'@/components/ModalNewConnection'),
       ModalSettings: () => import(/* webpackChunkName: "ModalSettings" */'@/components/ModalSettings'),
+      TheScratchpad: () => import(/* webpackChunkName: "TheScratchpad" */'@/components/TheScratchpad'),
       ModalDiscardChanges: () => import(/* webpackChunkName: "ModalDiscardChanges" */'@/components/ModalDiscardChanges')
    },
    data () {
@@ -48,6 +50,7 @@ export default {
          isNewConnModal: 'application/isNewModal',
          isEditModal: 'application/isEditModal',
          isSettingModal: 'application/isSettingModal',
+         isScratchpad: 'application/isScratchpad',
          connections: 'connections/getConnections',
          applicationTheme: 'settings/getApplicationTheme',
          isUnsavedDiscardModal: 'workspaces/isUnsavedDiscardModal'

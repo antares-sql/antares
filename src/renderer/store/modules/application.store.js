@@ -8,6 +8,7 @@ export default {
       is_loading: false,
       is_new_modal: false,
       is_setting_modal: false,
+      is_scratchpad: false,
       selected_setting_tab: 'general',
       selected_conection: {},
       update_status: 'noupdate', // noupdate, available, checking, nocheck, downloading, downloaded, disabled
@@ -22,6 +23,7 @@ export default {
       getSelectedConnection: state => state.selected_conection,
       isNewModal: state => state.is_new_modal,
       isSettingModal: state => state.is_setting_modal,
+      isScratchpad: state => state.is_scratchpad,
       selectedSettingTab: state => state.selected_setting_tab,
       getUpdateStatus: state => state.update_status,
       getDownloadProgress: state => Number(state.download_progress.toFixed(1))
@@ -45,6 +47,12 @@ export default {
       },
       HIDE_SETTING_MODAL (state) {
          state.is_setting_modal = false;
+      },
+      SHOW_SCRATCHPAD (state) {
+         state.is_scratchpad = true;
+      },
+      HIDE_SCRATCHPAD (state) {
+         state.is_scratchpad = false;
       },
       CHANGE_UPDATE_STATUS (state, status) {
          state.update_status = status;
@@ -72,6 +80,12 @@ export default {
       },
       hideSettingModal ({ commit }) {
          commit('HIDE_SETTING_MODAL');
+      },
+      showScratchpad ({ commit }) {
+         commit('SHOW_SCRATCHPAD');
+      },
+      hideScratchpad ({ commit }) {
+         commit('HIDE_SCRATCHPAD');
       }
    }
 };

@@ -36,7 +36,7 @@
 
       <div class="settingbar-bottom-elements">
          <ul class="settingbar-elements">
-            <li class="settingbar-element btn btn-link ex-tooltip">
+            <li class="settingbar-element btn btn-link ex-tooltip" @click="showScratchpad">
                <i class="settingbar-element-icon mdi mdi-24px mdi-notebook-edit-outline text-light" />
                <span class="ex-tooltip-content">{{ $t('word.scratchpad') }}</span>
             </li>
@@ -94,6 +94,7 @@ export default {
          updateConnections: 'connections/updateConnections',
          showNewConnModal: 'application/showNewConnModal',
          showSettingModal: 'application/showSettingModal',
+         showScratchpad: 'application/showScratchpad',
          selectWorkspace: 'workspaces/selectWorkspace'
       }),
       contextMenu (event, connection) {

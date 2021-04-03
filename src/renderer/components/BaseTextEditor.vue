@@ -22,6 +22,7 @@ export default {
       editorClass: { type: String, default: '' },
       autoFocus: { type: Boolean, default: false },
       readOnly: { type: Boolean, default: false },
+      showLineNumbers: { type: Boolean, default: true },
       height: { type: Number, default: 200 }
    },
    data () {
@@ -71,7 +72,9 @@ export default {
          value: this.value,
          fontSize: '14px',
          printMargin: false,
-         readOnly: this.readOnly
+         readOnly: this.readOnly,
+         showLineNumbers: this.showLineNumbers,
+         showGutter: this.showLineNumbers
       });
 
       this.editor.setOptions({

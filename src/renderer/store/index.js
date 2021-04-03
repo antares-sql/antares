@@ -5,6 +5,7 @@ import Vuex from 'vuex';
 
 import application from './modules/application.store';
 import settings from './modules/settings.store';
+import scratchpad from './modules/scratchpad.store';
 import connections from './modules/connections.store';
 import workspaces from './modules/workspaces.store';
 import notifications from './modules/notifications.store';
@@ -18,6 +19,7 @@ export default new Vuex.Store({
    modules: {
       application,
       settings,
+      scratchpad,
       connections,
       workspaces,
       notifications
