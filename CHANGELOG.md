@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.1](https://github.com/Fabio286/antares/compare/v0.1.0...v0.1.1) (2021-04-03)
+
+
+### Features
+
+* scratchpad to save persistent notes ([e349dd5](https://github.com/Fabio286/antares/commit/e349dd5eaba608591257f2799b830805e4936c27))
+* **PostgreSQL:** foreign keys management ([fe4c8e1](https://github.com/Fabio286/antares/commit/fe4c8e12b39dd3cdfc233f07e3fe2ff0676252b0))
+* **PostgreSQL:** indexes management ([9ca03f4](https://github.com/Fabio286/antares/commit/9ca03f462560b634970a19d3d97b878d60509acc))
+* **PostgreSQL:** table fields edit ([e3f259c](https://github.com/Fabio286/antares/commit/e3f259c6e8327d71bd7dd0a9c33d957dc6ca1fb8))
+* **PostgreSQL:** tables addition ([feef5e3](https://github.com/Fabio286/antares/commit/feef5e30eec915cbb219223cc428bd4e98d2e9c5))
+* **PostgreSQL:** unique keys management ([614e0d3](https://github.com/Fabio286/antares/commit/614e0d32758c13b59139d349d4682a5bafc3ca88))
+* **PostgreSQL:** views management ([99f7511](https://github.com/Fabio286/antares/commit/99f7511c4d5fab4030b30d5134cd03248167faea))
+* **UI:** light theme ([2806976](https://github.com/Fabio286/antares/commit/280697698ea5fae6d54326970c823878888c196c))
+
+
+### Bug Fixes
+
+* **UI:** editor theme preview not properly loaded in some cases ([c981244](https://github.com/Fabio286/antares/commit/c981244d7aa93ca18ca2de44bf8df06f253b9d20))
+* fields of ref. table not automatically loaded in foreign keys modal ([e7401cc](https://github.com/Fabio286/antares/commit/e7401cc96e76e00100a88eea9f40541fd8027adb))
+* hide update tab for Windows Store distributions ([dcb135d](https://github.com/Fabio286/antares/commit/dcb135dd015b8f8c6cfb44021211bb8cf3089192))
+
 ## [0.1.0](https://github.com/Fabio286/antares/compare/v0.0.20...v0.1.0) (2021-03-21)
 
 
