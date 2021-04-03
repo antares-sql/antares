@@ -71,7 +71,6 @@ export default {
 <style lang="scss">
 .context {
   display: flex;
-  color: $body-font-color;
   font-size: 16px;
   z-index: 400;
   justify-content: center;
@@ -87,7 +86,6 @@ export default {
   .context-container {
     min-width: 100px;
     z-index: 10;
-    box-shadow: 0 0 2px 0 #000;
     padding: 0;
     background: #1d1d1d;
     border-radius: 0.1rem;
@@ -111,14 +109,10 @@ export default {
         position: absolute;
         left: 100%;
         top: 0;
-        background: #1d1d1d;
-        box-shadow: 0 0 2px 0 #000;
         min-width: 100px;
       }
 
       &:hover {
-        background: $primary-color;
-
         .context-submenu {
           display: block;
           visibility: visible;

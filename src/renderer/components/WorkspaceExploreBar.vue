@@ -460,8 +460,6 @@ export default {
     justify-content: flex-start;
     align-items: center;
     text-align: left;
-    background: $bg-color-gray;
-    box-shadow: 0 0 1px 0 #000;
     z-index: 8;
     flex: initial;
     position: relative;

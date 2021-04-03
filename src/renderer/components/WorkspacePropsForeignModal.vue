@@ -2,6 +2,7 @@
    <ConfirmModal
       :confirm-text="$t('word.confirm')"
       size="medium"
+      class="options-modal"
       @confirm="confirmForeignsChange"
       @hide="$emit('hide')"
    >
@@ -36,7 +37,7 @@
                         v-for="foreign in foreignProxy"
                         :key="foreign._id"
                         class="tile tile-centered c-hand mb-1 p-1"
-                        :class="{'selected-foreign': selectedForeignID === foreign._id}"
+                        :class="{'selected-element': selectedForeignID === foreign._id}"
                         @click="selectForeign($event, foreign._id)"
                      >
                         <div class="tile-icon">
@@ -371,21 +372,14 @@ export default {
   }
 
   &:hover {
-    background: $bg-color-light;
-
     .tile-action {
       opacity: 1;
     }
   }
 
-  &.selected-foreign {
-    background: $bg-color-light;
+  &.selected-element {
     opacity: 1;
   }
-}
-
-.editor-col {
-  border-left: 2px solid $bg-color-light;
 }
 
 .fields-list {

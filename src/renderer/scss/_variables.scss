@@ -1,9 +1,12 @@
 /* Colors */
-$body-bg: #1d1d1d;
-$body-font-color: #fff;
-$bg-color: #1d1d1d;
-$bg-color-light: #3f3f3f;
+$body-bg: #fdfdfd;
+$body-bg-dark: #1d1d1d;
+$body-font-color-dark: #fff;
+$bg-color-dark: #1d1d1d;
+$bg-color-light-dark: #3f3f3f;
 $bg-color-gray: #272727;
+$bg-color-light-gray: #f1f1f1;
+$light-color: #fdfdfd;
 $primary-color: #e36929;
 $success-color: #32b643;
 $error-color: #de3b28;
@@ -14,8 +17,8 @@ $number-color: cornflowerblue;
 $date-color: coral;
 $bit-color: lightskyblue;
 $blob-color: darkorchid;
-$array-color: greenyellow;
-$enum-color: gold;
+$array-color: yellowgreen;
+$enum-color: goldenrod;
 $unknown-color: gray;
 
 /* Sizes */

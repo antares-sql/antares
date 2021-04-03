@@ -289,10 +289,6 @@ export default {
 .export-dropdown {
   .menu {
     min-width: 100%;
-
-    .menu-item a:hover {
-      background: $bg-color-gray;
-    }
   }
 }
 </style>

@@ -312,19 +312,6 @@ export default {
   width: 17px;
 }
 
-.ace_dark.ace_editor.ace_autocomplete .ace_marker-layer .ace_active-line {
-  background-color: #c9561a99;
-}
-
-.ace_dark.ace_editor.ace_autocomplete .ace_marker-layer .ace_line-hover {
-  background-color: #c9571a33;
-  border: none;
-}
-
-.ace_dark.ace_editor.ace_autocomplete .ace_completion-highlight {
-  color: #e0d00c;
-}
-
 .ace_gutter-cell.ace_breakpoint {
   &::before {
     content: '\F0403';

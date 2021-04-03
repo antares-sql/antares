@@ -2,6 +2,7 @@
    <ConfirmModal
       :confirm-text="$t('word.confirm')"
       size="medium"
+      class="options-modal"
       @confirm="confirmParametersChange"
       @hide="$emit('hide')"
    >
@@ -36,7 +37,7 @@
                         v-for="param in parametersProxy"
                         :key="param._id"
                         class="tile tile-centered c-hand mb-1 p-1"
-                        :class="{'selected-param': selectedParam === param._id}"
+                        :class="{'selected-element': selectedParam === param._id}"
                         @click="selectParameter($event, param._id)"
                      >
                         <div class="tile-icon">
@@ -280,21 +281,14 @@ export default {
   }
 
   &:hover {
-    background: $bg-color-light;
-
     .tile-action {
       opacity: 1;
     }
   }
 
-  &.selected-param {
-    background: $bg-color-light;
+  &.selected-element {
     opacity: 1;
   }
-}
-
-.editor-col {
-  border-left: 2px solid $bg-color-light;
 }
 
 .fields-list {

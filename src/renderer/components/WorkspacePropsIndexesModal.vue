@@ -2,6 +2,7 @@
    <ConfirmModal
       :confirm-text="$t('word.confirm')"
       size="medium"
+      class="options-modal"
       @confirm="confirmIndexesChange"
       @hide="$emit('hide')"
    >
@@ -36,7 +37,7 @@
                         v-for="index in indexesProxy"
                         :key="index._id"
                         class="tile tile-centered c-hand mb-1 p-1"
-                        :class="{'selected-index': selectedIndexID === index._id}"
+                        :class="{'selected-element': selectedIndexID === index._id}"
                         @click="selectIndex($event, index._id)"
                      >
                         <div class="tile-icon">
@@ -256,21 +257,14 @@ export default {
   }
 
   &:hover {
-    background: $bg-color-light;
-
     .tile-action {
       opacity: 1;
     }
   }
 
-  &.selected-index {
-    background: $bg-color-light;
+  &.selected-element {
     opacity: 1;
   }
-}
-
-.editor-col {
-  border-left: 2px solid $bg-color-light;
 }
 
 .fields-list {

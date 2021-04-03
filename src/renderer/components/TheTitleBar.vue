@@ -102,12 +102,10 @@ export default {
     display: flex;
     position: relative;
     justify-content: space-between;
-    background: $bg-color-light;
     align-items: center;
     height: $titlebar-height;
     -webkit-app-region: drag;
     user-select: none;
-    box-shadow: 0 0 1px 0 #000;
     z-index: 9999;
 
     .titlebar-resizer {
@@ -149,11 +147,6 @@ export default {
 
         &:hover {
           opacity: 1;
-          background: rgba($color: #fff, $alpha: 0.2);
-        }
-
-        &.close-button:hover {
-          background: red;
         }
       }
     }

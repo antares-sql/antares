@@ -63,13 +63,11 @@ export default {
 
 <style lang="scss" scoped>
 .file-uploader {
-  border: 0.05rem solid $bg-color-light;
   border-radius: 0.1rem;
   height: 1.8rem;
   line-height: 1.2rem;
   display: flex;
   cursor: pointer;
-  background-color: $bg-color-gray;
   transition: background 0.2s, border 0.2s, box-shadow 0.2s, color 0.2s;
   position: relative;
   flex: 1 1 auto;
@@ -80,8 +78,6 @@ export default {
 
   .file-uploader-message {
     display: flex;
-    border-right: 0.05rem solid $bg-color-light;
-    background-color: $bg-color;
   }
 
   .file-uploader-input {
@@ -105,7 +101,6 @@ export default {
 :disabled {
   .file-uploader {
     cursor: not-allowed;
-    background-color: #151515;
     opacity: 0.5;
   }
 }

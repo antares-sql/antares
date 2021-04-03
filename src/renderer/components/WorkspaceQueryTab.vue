@@ -232,7 +232,6 @@ export default {
         .btn {
           display: flex;
           align-self: center;
-          color: $body-font-color;
           margin-right: 0.4rem;
         }
       }

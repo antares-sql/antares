@@ -64,13 +64,11 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: $primary-color;
     padding: 0 0.2rem;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    box-shadow: 0 0 1px 0 #000;
 
     .footer-elements {
       list-style: none;
@@ -88,10 +86,6 @@ export default {
         &.footer-link {
           cursor: pointer;
           transition: background 0.2s;
-
-          &:hover {
-            background: rgba($color: #fff, $alpha: 0.1);
-          }
         }
       }
     }

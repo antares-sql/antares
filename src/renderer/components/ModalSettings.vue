@@ -140,20 +140,29 @@
                         <div class="column col-12 h6 text-uppercase mb-2">
                            {{ $t('message.applicationTheme') }}
                         </div>
-                        <div class="column col-6 c-hand theme-block" :class="{'selected': applicationTheme === 'dark'}">
+                        <div
+                           class="column col-6 c-hand theme-block"
+                           :class="{'selected': applicationTheme === 'dark'}"
+                           @click="changeApplicationTheme('dark')"
+                        >
                            <img :src="require('@/images/dark.png').default" class="img-responsive img-fit-cover s-rounded">
-                           <div class="theme-name">
+                           <div class="theme-name text-light">
                               <i class="mdi mdi-moon-waning-crescent mdi-48px" />
                               <div class="h6 mt-4">
                                  {{ $t('word.dark') }}
                               </div>
                            </div>
                         </div>
-                        <div class="column col-6 theme-block disabled" :class="{'selected': applicationTheme === 'light'}">
-                           <div class="theme-name">
+                        <div
+                           class="column col-6 c-hand theme-block"
+                           :class="{'selected': applicationTheme === 'light'}"
+                           @click="changeApplicationTheme('light')"
+                        >
+                           <img :src="require('@/images/light.png').default" class="img-responsive img-fit-cover s-rounded">
+                           <div class="theme-name text-dark">
                               <i class="mdi mdi-white-balance-sunny mdi-48px" />
                               <div class="h6 mt-4">
-                                 {{ $t('word.light') }} (Coming)
+                                 {{ $t('word.light') }}
                               </div>
                            </div>
                         </div>
@@ -352,6 +361,7 @@ ORDER BY
          changeLocale: 'settings/changeLocale',
          changeAutoComplete: 'settings/changeAutoComplete',
          changeLineWrap: 'settings/changeLineWrap',
+         changeApplicationTheme: 'settings/changeApplicationTheme',
          changeEditorTheme: 'settings/changeEditorTheme',
          updateNotificationsTimeout: 'settings/updateNotificationsTimeout'
       }),
@@ -415,7 +425,6 @@ ORDER BY
           top: 0;
           height: 100%;
           width: 100%;
-          text-shadow: 0 0 8px #000;
         }
       }
     }

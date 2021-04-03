@@ -1,6 +1,6 @@
 <template>
    <div class="columns">
-      <div class="column col-12 empty text-light">
+      <div class="column col-12 empty">
          <div class="empty-icon">
             <i class="mdi mdi-48px mdi-power-plug-off" />
          </div>

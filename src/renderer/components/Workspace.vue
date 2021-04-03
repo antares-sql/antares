@@ -304,7 +304,6 @@ export default {
     height: calc(100vh - #{$excluding-size});
 
     .tab-block {
-      background: $bg-color-light;
       margin-top: 0;
       flex-direction: row;
       align-items: flex-start;
@@ -324,7 +323,6 @@ export default {
 
         > a {
           padding: 0.2rem 0.8rem;
-          color: $body-font-color;
           cursor: pointer;
           display: flex;
           align-items: center;
@@ -355,7 +353,6 @@ export default {
 
         &.tools-dropdown {
           .tab-link:focus {
-            color: $primary-color;
             opacity: 1;
             outline: 0;
             box-shadow: none;
@@ -373,11 +370,6 @@ export default {
               text-decoration: none;
               white-space: nowrap;
               border: 0;
-
-              &:hover {
-                color: $primary-color;
-                background: $bg-color-gray;
-              }
 
               .tool-icon {
                 line-height: 1;
@@ -414,11 +406,9 @@ export default {
       .th {
         position: sticky;
         top: 0;
-        background: $bg-color;
         border: 1px solid;
         border-left: none;
         border-bottom-width: 2px;
-        border-color: $bg-color-light;
         padding: 0;
         font-weight: 700;
         font-size: 0.7rem;
@@ -433,7 +423,6 @@ export default {
       .td {
         border-right: 1px solid;
         border-bottom: 1px solid;
-        border-color: $bg-color-light;
         padding: 0 0.4rem;
         text-overflow: ellipsis;
         max-width: 200px;
@@ -443,8 +432,6 @@ export default {
         position: relative;
 
         &:focus {
-          box-shadow: inset 0 0 0 1px $body-font-color;
-          background: rgba($color: #000, $alpha: 0.3);
           outline: none;
         }
       }

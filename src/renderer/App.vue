@@ -1,5 +1,5 @@
 <template>
-   <div id="wrapper">
+   <div id="wrapper" :class="`theme-${applicationTheme}`">
       <TheTitleBar />
       <div id="window-content">
          <TheSettingBar />
@@ -49,6 +49,7 @@ export default {
          isEditModal: 'application/isEditModal',
          isSettingModal: 'application/isSettingModal',
          connections: 'connections/getConnections',
+         applicationTheme: 'settings/getApplicationTheme',
          isUnsavedDiscardModal: 'workspaces/isUnsavedDiscardModal'
       })
    },

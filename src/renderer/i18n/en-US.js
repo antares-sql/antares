@@ -101,7 +101,8 @@ module.exports = {
       tools: 'Tools',
       variables: 'Variables',
       processes: 'Processes',
-      database: 'Database'
+      database: 'Database',
+      scratchpad: 'Scratchpad'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',

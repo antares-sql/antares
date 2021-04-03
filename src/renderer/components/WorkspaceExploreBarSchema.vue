@@ -171,7 +171,8 @@ export default {
       ...mapGetters({
          getLoadedSchemas: 'workspaces/getLoadedSchemas',
          getWorkspace: 'workspaces/getWorkspace',
-         getSearchTerm: 'workspaces/getSearchTerm'
+         getSearchTerm: 'workspaces/getSearchTerm',
+         applicationTheme: 'settings/getApplicationTheme'
       }),
       searchTerm () {
          return this.getSearchTerm(this.connection.uid);
@@ -239,7 +240,10 @@ export default {
       },
       piePercentage (val) {
          const perc = val / this.maxSize * 100;
-         return { background: `conic-gradient(lime ${perc}%, white 0)` };
+         if (this.applicationTheme === 'dark')
+            return { background: `conic-gradient(lime ${perc}%, white 0)` };
+         else
+            return { background: `conic-gradient(teal ${perc}%, silver 0)` };
       },
       setBreadcrumbs (payload) {
          if (this.breadcrumbs.schema === payload.schema && this.breadcrumbs.table === payload.table) return;
@@ -262,7 +266,6 @@ export default {
   .database-name {
     position: sticky;
     top: 0;
-    background: $bg-color-gray;
     z-index: 2;
   }
 
@@ -308,16 +311,7 @@ export default {
   .database-name,
   .misc-name {
     &:hover {
-      color: $body-font-color;
-      background: $bg-color-light;
       border-radius: 2px;
-    }
-  }
-
-  a.table-name {
-    &:hover {
-      color: inherit;
-      background: inherit;
     }
   }
 
@@ -326,8 +320,6 @@ export default {
     position: relative;
 
     &:hover {
-      color: $body-font-color;
-      background: rgba($color: #fff, $alpha: 0.05);
       border-radius: 2px;
     }
   }

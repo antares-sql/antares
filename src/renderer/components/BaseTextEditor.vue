@@ -102,8 +102,6 @@ export default {
 
 <style lang="scss" scoped>
 .editor-wrapper {
-  border-bottom: 1px solid #444;
-
   .editor {
     width: 100%;
   }
@@ -112,18 +110,5 @@ export default {
 .ace_.mdi {
   display: inline-block;
   width: 17px;
-}
-
-.ace_dark.ace_editor.ace_autocomplete .ace_marker-layer .ace_active-line {
-  background-color: #c9561a99;
-}
-
-.ace_dark.ace_editor.ace_autocomplete .ace_marker-layer .ace_line-hover {
-  background-color: #c9571a33;
-  border: none;
-}
-
-.ace_dark.ace_editor.ace_autocomplete .ace_completion-highlight {
-  color: #e0d00c;
 }
 </style>

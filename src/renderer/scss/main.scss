@@ -6,6 +6,8 @@
 @import "fake-tables";
 @import "mdi-additions";
 @import "db-icons";
+@import "themes/dark-theme";
+@import "themes/light-theme";
 @import "~spectre.css/src/spectre";
 @import "~spectre.css/src/spectre-exp";
 
@@ -18,27 +20,6 @@ body {
 @include margin-variant(4, $unit-4);
 @include padding-variant(3, $unit-3);
 @include padding-variant(4, $unit-4);
-
-.btn {
-  &.btn-gray {
-    color: #fff;
-    background: $bg-color-gray;
-
-    &:hover {
-      background: $bg-color;
-    }
-  }
-
-  &.btn-dark {
-    color: #fff;
-    background: $bg-color-light;
-    border-color: $bg-color-light;
-
-    &:hover {
-      background: $bg-color-gray;
-    }
-  }
-}
 
 .p-vcentered {
   display: flex !important;
@@ -53,15 +34,6 @@ body {
   outline: none !important;
   border: none !important;
   box-shadow: none !important;
-}
-
-.bg-checkered {
-  background-image:
-    linear-gradient(to right, rgba(192, 192, 192, 0.75), rgba(192, 192, 192, 0.75)),
-    linear-gradient(to right, black 50%, white 50%),
-    linear-gradient(to bottom, black 50%, white 50%);
-  background-blend-mode: normal, difference, normal;
-  background-size: 2em 2em;
 }
 
 .workspace-tabs {
@@ -80,13 +52,14 @@ body {
         .btn {
           display: flex;
           align-self: center;
-          color: $body-font-color;
           margin-right: 0.4rem;
         }
       }
 
       .workspace-query-info {
         display: flex;
+        overflow: hidden;
+        white-space: nowrap;
 
         > div + div {
           padding-left: 0.6rem;
@@ -106,18 +79,6 @@ body {
   height: 10px;
 }
 
-::-webkit-scrollbar-track {
-  background: $bg-color-light;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba($color: #fff, $alpha: 0.5);
-
-  &:hover {
-    background: rgba($color: #fff, $alpha: 1);
-  }
-}
-
 // Animations
 @keyframes rotation {
   from {
@@ -135,32 +96,21 @@ body {
 
 /* Override */
 .modal {
-  .modal-overlay,
-  &.active .modal-overlay {
-    background: rgba(255, 255, 255, 0.15);
-  }
-
   .modal-container,
   .modal-sm .modal-container {
-    box-shadow: 0 0 1px 0 #000;
     padding: 0;
-    background: $bg-color;
 
     .modal-header {
       padding: 0.4rem 0.8rem;
       text-transform: uppercase;
-      background: $bg-color-gray;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: #fff;
     }
   }
 }
 
 .tab {
-  border-color: #272727;
-
   .tab-item {
     .btn-clear {
       margin-top: -0.1rem;
@@ -192,34 +142,11 @@ body {
   }
 }
 
-.form-select,
-.form-input,
-.form-select:not([multiple]):not([size]),
-.form-checkbox .form-icon,
-.form-radio .form-icon {
-  border-color: $bg-color-light;
-  background-color: $bg-color-gray;
-}
-
-.form-input.is-error,
-.form-select.is-error {
-  background-color: $bg-color-gray;
-}
-
-.form-input:not(:placeholder-shown):invalid:focus {
-  background: $bg-color-gray;
-}
-
-.form-select:not([multiple]):not([size]):focus {
-  border-color: $primary-color;
-}
-
 .form-input[type="file"] {
   overflow: hidden;
 }
 
 .input-group .input-group-addon {
-  border-color: #3f3f3f;
   z-index: 1;
 }
 
@@ -242,8 +169,4 @@ body {
   > span {
     visibility: hidden;
   }
-}
-
-.empty {
-  color: $body-font-color;
 }

@@ -52,8 +52,13 @@ export default {
          state.explorebar_size = size;
          persistentStore.set('explorebar_size', state.explorebar_size);
       },
+      SET_APPLICATION_THEME (state, theme) {
+         state.application_theme = theme;
+         persistentStore.set('application_theme', state.application_theme);
+      },
       SET_EDITOR_THEME (state, theme) {
          state.editor_theme = theme;
+         persistentStore.set('editor_theme', state.editor_theme);
       }
    },
    actions: {
@@ -74,6 +79,9 @@ export default {
       },
       changeLineWrap ({ commit }, val) {
          commit('SET_LINE_WRAP', val);
+      },
+      changeApplicationTheme ({ commit }, theme) {
+         commit('SET_APPLICATION_THEME', theme);
       },
       changeEditorTheme ({ commit }, theme) {
          commit('SET_EDITOR_THEME', theme);

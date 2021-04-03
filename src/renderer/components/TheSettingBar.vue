@@ -36,6 +36,10 @@
 
       <div class="settingbar-bottom-elements">
          <ul class="settingbar-elements">
+            <li class="settingbar-element btn btn-link ex-tooltip">
+               <i class="settingbar-element-icon mdi mdi-24px mdi-notebook-edit-outline text-light" />
+               <span class="ex-tooltip-content">{{ $t('word.scratchpad') }}</span>
+            </li>
             <li class="settingbar-element btn btn-link ex-tooltip" @click="showSettingModal('general')">
                <i class="settingbar-element-icon mdi mdi-24px mdi-cog text-light" :class="{' badge badge-update': hasUpdates}" />
                <span class="ex-tooltip-content">{{ $t('word.settings') }}</span>
@@ -117,9 +121,7 @@ export default {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    background: $bg-color-light;
     padding: 0;
-    box-shadow: 0 0 1px 0 #000;
     z-index: 9;
 
     .settingbar-top-elements {
@@ -134,7 +136,6 @@ export default {
 
     .settingbar-bottom-elements {
       padding-top: 0.5rem;
-      background: $bg-color-light;
       z-index: 1;
     }
 
@@ -162,7 +163,6 @@ export default {
         }
 
         &.selected {
-          border-left-color: $body-font-color;
           opacity: 1;
         }
 
@@ -171,12 +171,10 @@ export default {
             bottom: -10px;
             right: 0;
             position: absolute;
-            background: $success-color;
           }
 
           &.badge-update::after {
             bottom: initial;
-            background: $primary-color;
           }
         }
       }
