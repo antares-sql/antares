@@ -8,7 +8,8 @@ export default connections => {
          host: conn.host,
          port: +conn.port,
          user: conn.user,
-         password: conn.password
+         password: conn.password,
+         application_name: 'Antares SQL'
       };
 
       if (conn.database)
@@ -50,7 +51,8 @@ export default connections => {
          host: conn.host,
          port: +conn.port,
          user: conn.user,
-         password: conn.password
+         password: conn.password,
+         application_name: 'Antares SQL'
       };
 
       if (conn.database)

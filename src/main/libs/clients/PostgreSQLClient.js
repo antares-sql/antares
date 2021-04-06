@@ -109,7 +109,7 @@ export class PostgreSQLClient extends AntaresCore {
     */
    use (schema) {
       this._schema = schema;
-      return this.raw(`SET search_path TO '${schema}', '$user'`);
+      return this.raw(`SET search_path TO ${schema}`);
    }
 
    /**
@@ -297,6 +297,9 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async getTableIndexes ({ schema, table }) {
+      if (schema !== 'public')
+         this.use(schema);
+
       const { rows } = await this.raw(`WITH ndx_list AS (
          SELECT pg_index.indexrelid, pg_class.oid
          FROM pg_index, pg_class
@@ -476,7 +479,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async dropView (params) {
-      const sql = `DROP VIEW ${params.view}`;
+      const sql = `DROP VIEW ${this._schema}.${params.view}`;
       return await this.raw(sql);
    }
 
@@ -488,10 +491,10 @@ export class PostgreSQLClient extends AntaresCore {
     */
    async alterView (params) {
       const { view } = params;
-      let sql = `CREATE OR REPLACE VIEW ${view.oldName} AS ${view.sql}`;
+      let sql = `CREATE OR REPLACE VIEW ${this._schema}.${view.oldName} AS ${view.sql}`;
 
       if (view.name !== view.oldName)
-         sql += `; ALTER VIEW ${view.oldName} RENAME TO ${view.name}`;
+         sql += `; ALTER VIEW ${this._schema}.${view.oldName} RENAME TO ${view.name}`;
 
       return await this.raw(sql);
    }
@@ -503,7 +506,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async createView (view) {
-      const sql = `CREATE VIEW ${view.name} AS ${view.sql}`;
+      const sql = `CREATE VIEW ${this._schema}.${view.name} AS ${view.sql}`;
       return await this.raw(sql);
    }
 
@@ -1000,7 +1003,7 @@ export class PostgreSQLClient extends AntaresCore {
          name
       } = params;
 
-      const sql = `CREATE TABLE ${name} (${name}_id INTEGER NULL); ALTER TABLE ${name} DROP COLUMN ${name}_id`;
+      const sql = `CREATE TABLE ${this._schema}.${name} (${name}_id INTEGER NULL); ALTER TABLE ${this._schema}.${name} DROP COLUMN ${name}_id`;
 
       return await this.raw(sql);
    }
@@ -1099,7 +1102,7 @@ export class PostgreSQLClient extends AntaresCore {
          }
 
          if (change.orgName !== change.name)
-            renameColumns.push(`ALTER TABLE "${table}" RENAME COLUMN "${change.orgName}" TO "${change.name}"`);
+            renameColumns.push(`ALTER TABLE "${this._schema}"."${table}" RENAME COLUMN "${change.orgName}" TO "${change.name}"`);
       });
 
       // CHANGE INDEX
@@ -1146,13 +1149,13 @@ export class PostgreSQLClient extends AntaresCore {
          alterColumns.push(`DROP CONSTRAINT ${deletion.constraintName}`);
       });
 
-      if (alterColumns.length) sql += `ALTER TABLE "${table}" ${alterColumns.join(', ')}; `;
+      if (alterColumns.length) sql += `ALTER TABLE "${this._schema}"."${table}" ${alterColumns.join(', ')}; `;
 
       // RENAME
       if (renameColumns.length) sql += `${renameColumns.join(';')}; `;
       if (createSequences.length) sql = `${createSequences.join(';')}; ${sql}`;
       if (manageIndexes.length) sql = `${manageIndexes.join(';')}; ${sql}`;
-      if (options.name) sql += `ALTER TABLE "${table}" RENAME TO "${options.name}"; `;
+      if (options.name) sql += `ALTER TABLE "${this._schema}"."${table}" RENAME TO "${options.name}"; `;
 
       return await this.raw(sql);
    }
@@ -1164,7 +1167,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async truncateTable (params) {
-      const sql = `TRUNCATE TABLE ${params.table}`;
+      const sql = `TRUNCATE TABLE ${this._schema}.${params.table}`;
       return await this.raw(sql);
    }
 
@@ -1175,7 +1178,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async dropTable (params) {
-      const sql = `DROP TABLE ${params.table}`;
+      const sql = `DROP TABLE ${this._schema}.${params.table}`;
       return await this.raw(sql);
    }
 
@@ -1249,6 +1252,10 @@ export class PostgreSQLClient extends AntaresCore {
          split: true,
          ...args
       };
+
+      if (args.nest && this._schema !== 'public')
+         this.use(this._schema);
+
       const resultsArr = [];
       let paramsArr = [];
       const queries = args.split ? sql.split(';') : [sql];
