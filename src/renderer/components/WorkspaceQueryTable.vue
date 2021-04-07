@@ -86,6 +86,7 @@ import BaseVirtualScroll from '@/components/BaseVirtualScroll';
 import WorkspaceQueryTableRow from '@/components/WorkspaceQueryTableRow';
 import TableContext from '@/components/WorkspaceQueryTableContext';
 import { mapActions, mapGetters } from 'vuex';
+import moment from 'moment';
 
 export default {
    name: 'WorkspaceQueryTable',
@@ -297,6 +298,17 @@ export default {
          const orgRow = this.localResults.find(lr => lr._id === row._id);
          delete row._id;
          delete orgRow._id;
+
+         Object.keys(orgRow).forEach(key => { // remap the row
+            if (orgRow[key] instanceof Date && moment(orgRow[key]).isValid()) { // if datetime
+               let datePrecision = '';
+               const precision = this.fields.find(field => field.name === key).datePrecision;
+               for (let i = 0; i < precision; i++)
+                  datePrecision += i === 0 ? '.S' : 'S';
+
+               orgRow[key] = moment(orgRow[key]).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`);
+            }
+         });
 
          const params = {
             primary: this.primaryField.name,
