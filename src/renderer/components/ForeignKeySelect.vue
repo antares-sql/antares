@@ -51,7 +51,7 @@ export default {
       }),
       isValidDefault () {
          if (!this.foreignList.length) return true;
-         return this.foreignList.some(foreign => foreign.foreign_column.toString() === this.value.toString());
+         return this.value === null || this.foreignList.some(foreign => foreign.foreign_column.toString() === this.value.toString());
       }
    },
    async created () {
