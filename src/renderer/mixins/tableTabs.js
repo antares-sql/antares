@@ -42,6 +42,7 @@ export default {
 
          try {
             const { status, response } = await Tables.deleteTableRows(params);
+            this.isQuering = false;
 
             if (status === 'success')
                this.reloadTable();
@@ -50,9 +51,8 @@ export default {
          }
          catch (err) {
             this.addNotification({ status: 'error', message: err.stack });
+            this.isQuering = false;
          }
-
-         this.isQuering = false;
       }
    }
 };

@@ -157,9 +157,13 @@ export default (connections) => {
 
    ipcMain.handle('delete-table-rows', async (event, params) => {
       if (params.primary) {
-         const idString = params.rows.map(row => typeof row[params.primary] === 'string'
-            ? `"${row[params.primary]}"`
-            : row[params.primary]).join(',');
+         const idString = params.rows.map(row => {
+            const fieldName = Object.keys(row)[0].includes('.') ? `${params.table}.${params.primary}` : params.primary;
+
+            return typeof row[fieldName] === 'string'
+               ? `"${row[fieldName]}"`
+               : row[fieldName];
+         }).join(',');
 
          try {
             const result = await connections[params.uid]
