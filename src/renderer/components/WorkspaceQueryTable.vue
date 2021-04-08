@@ -123,12 +123,13 @@ export default {
          return this.getWorkspace(this.connUid).breadcrumbs.schema;
       },
       primaryField () {
-         const primaryFields = this.fields.filter(field => ['pri', 'uni'].includes(field.key));
+         const primaryFields = this.fields.filter(field => field.key === 'pri');
+         const uniqueFields = this.fields.filter(field => field.key === 'uni');
 
-         if (primaryFields.length > 1 || !primaryFields.length)
+         if ((primaryFields.length > 1 || !primaryFields.length) && (uniqueFields.length > 1 || !uniqueFields.length))
             return false;
 
-         return primaryFields[0];
+         return primaryFields[0] || uniqueFields[0];
       },
       isSortable () {
          return this.fields.every(field => field.name);
