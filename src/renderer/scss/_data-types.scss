@@ -30,6 +30,7 @@
     "macaddr": $string-color,
     "macaddr8": $string-color,
     "uuid": $string-color,
+    "regproc": $string-color,
     "int": $number-color,
     "tinyint": $number-color,
     "smallint": $number-color,
@@ -76,6 +77,7 @@
     "tsvector": $array-color,
     "tsquery": $array-color,
     "pg_node_tree": $array-color,
+    "aclitem": $array-color,
     "unknown": $unknown-color,
   )
 );

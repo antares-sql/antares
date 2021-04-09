@@ -23,60 +23,28 @@ export class PostgreSQLClient extends AntaresCore {
       this.types = {};
       for (const key in types.builtins)
          this.types[types.builtins[key]] = key;
-   }
 
-   _getType (field) {
-      let name = this.types[field.columnType];
-      let length = field.columnLength;
-
-      if (['DATE', 'TIME', 'YEAR', 'DATETIME'].includes(name))
-         length = field.decimals;
-
-      if (name === 'TIMESTAMP')
-         length = 0;
-
-      if (field.charsetNr === 63) { // if binary
-         if (name === 'CHAR')
-            name = 'BINARY';
-         else if (name === 'VARCHAR')
-            name = 'VARBINARY';
-      }
-
-      if (name === 'BLOB') {
-         switch (length) {
-            case 765:
-               name = 'TYNITEXT';
-               break;
-            case 196605:
-               name = 'TEXT';
-               break;
-            case 50331645:
-               name = 'MEDIUMTEXT';
-               break;
-            case 4294967295:
-               name = field.charsetNr === 63 ? 'LONGBLOB' : 'LONGTEXT';
-               break;
-            case 255:
-               name = 'TINYBLOB';
-               break;
-            case 65535:
-               name = 'BLOB';
-               break;
-            case 16777215:
-               name = 'MEDIUMBLOB';
-               break;
-            default:
-               name = field.charsetNr === 63 ? 'BLOB' : 'TEXT';
-         }
-      }
-
-      return { name, length };
+      this._arrayTypes = {
+         _int2: 'SMALLINT',
+         _int4: 'INTEGER',
+         _int8: 'BIGINT',
+         _float4: 'REAL',
+         _float8: 'DOUBLE PRECISION',
+         _char: '"CHAR"',
+         _varchar: 'CHARACTER VARYING'
+      };
    }
 
    _getTypeInfo (type) {
       return dataTypes
          .reduce((acc, group) => [...acc, ...group.types], [])
          .filter(_type => _type.name === type.toUpperCase())[0];
+   }
+
+   _getArrayType (type) {
+      if (Object.keys(this._arrayTypes).includes(type))
+         return this._arrayTypes[type];
+      return type.replace('_', '');
    }
 
    /**
@@ -189,16 +157,11 @@ export class PostgreSQLClient extends AntaresCore {
             });
 
             // PROCEDURES
-            const remappedProcedures = procedures.filter(procedure => procedure.Db === db.database).map(procedure => {
+            const remappedProcedures = procedures.filter(procedure => procedure.routine_schema === db.database).map(procedure => {
                return {
-                  name: procedure.Name,
-                  type: procedure.Type,
-                  definer: procedure.Definer,
-                  created: procedure.Created,
-                  updated: procedure.Modified,
-                  comment: procedure.Comment,
-                  charset: procedure.character_set_client,
-                  security: procedure.Security_type
+                  name: procedure.routine_name,
+                  type: procedure.routine_type,
+                  security: procedure.security_type
                };
             });
 
@@ -256,7 +219,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @returns {Object} table scructure
     * @memberof PostgreSQLClient
     */
-   async getTableColumns ({ schema, table }) {
+   async getTableColumns ({ schema, table }, arrayRemap = true) {
       const { rows } = await this
          .select('*')
          .schema('information_schema')
@@ -266,10 +229,17 @@ export class PostgreSQLClient extends AntaresCore {
          .run();
 
       return rows.map(field => {
+         let type = field.data_type;
+         const isArray = type === 'ARRAY';
+
+         if (isArray && arrayRemap)
+            type = this._getArrayType(field.udt_name);
+
          return {
             name: field.column_name,
             key: null,
-            type: field.data_type.toUpperCase(),
+            type: type.toUpperCase(),
+            isArray,
             schema: field.table_schema,
             table: field.table_name,
             numPrecision: field.numeric_precision,
@@ -583,16 +553,16 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async getRoutineInformations ({ schema, routine }) {
-      const sql = `SHOW CREATE PROCEDURE \`${schema}\`.\`${routine}\``;
+      const sql = `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${routine}'));`;
       const results = await this.raw(sql);
 
       return results.rows.map(row => {
-         if (!row['Create Procedure']) {
+         if (!row.pg_get_functiondef) {
             return {
                definer: null,
                sql: '',
                parameters: [],
-               name: row.Procedure,
+               name: routine,
                comment: '',
                security: 'DEFINER',
                deterministic: false,
@@ -600,7 +570,7 @@ export class PostgreSQLClient extends AntaresCore {
             };
          }
 
-         const parameters = row['Create Procedure']
+         const parameters = row.pg_get_functiondef
             .match(/(\([^()]*(?:(?:\([^()]*\))[^()]*)*\)\s*)/s)[0]
             .replaceAll('\r', '')
             .replaceAll('\t', '')
@@ -618,22 +588,23 @@ export class PostgreSQLClient extends AntaresCore {
             }).filter(el => el.name);
 
          let dataAccess = 'CONTAINS SQL';
-         if (row['Create Procedure'].includes('NO SQL'))
+         if (row.pg_get_functiondef.includes('NO SQL'))
             dataAccess = 'NO SQL';
-         if (row['Create Procedure'].includes('READS SQL DATA'))
+         if (row.pg_get_functiondef.includes('READS SQL DATA'))
             dataAccess = 'READS SQL DATA';
-         if (row['Create Procedure'].includes('MODIFIES SQL DATA'))
+         if (row.pg_get_functiondef.includes('MODIFIES SQL DATA'))
             dataAccess = 'MODIFIES SQL DATA';
 
          return {
-            definer: row['Create Procedure'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
-            sql: row['Create Procedure'].match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
+            definer: '',
+            sql: row.pg_get_functiondef.match(/(\$(.*)\$)(.*)(\$(.*)\$)/gs)[0],
             parameters: parameters || [],
-            name: row.Procedure,
-            comment: row['Create Procedure'].match(/(?<=COMMENT ').*?(?=')/gs) ? row['Create Procedure'].match(/(?<=COMMENT ').*?(?=')/gs)[0] : '',
-            security: row['Create Procedure'].includes('SQL SECURITY INVOKER') ? 'INVOKER' : 'DEFINER',
-            deterministic: row['Create Procedure'].includes('DETERMINISTIC'),
-            dataAccess
+            name: routine,
+            comment: '',
+            security: row.pg_get_functiondef.includes('SECURITY INVOKER') ? 'INVOKER' : 'DEFINER',
+            deterministic: null,
+            dataAccess,
+            language: row.pg_get_functiondef.match(/(?<=LANGUAGE )(.*)(?<=[\S+\n\r\s])/gm)[0]
          };
       })[0];
    }
@@ -645,7 +616,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async dropRoutine (params) {
-      const sql = `DROP PROCEDURE \`${params.routine}\``;
+      const sql = `DROP PROCEDURE ${this._schema}.${params.routine}`;
       return await this.raw(sql);
    }
 
@@ -680,18 +651,15 @@ export class PostgreSQLClient extends AntaresCore {
    async createRoutine (routine) {
       const parameters = 'parameters' in routine
          ? routine.parameters.reduce((acc, curr) => {
-            acc.push(`${curr.context} \`${curr.name}\` ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
+            acc.push(`${curr.context} ${curr.name} ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
             return acc;
          }, []).join(',')
          : '';
 
-      const sql = `CREATE ${routine.definer ? `DEFINER=${routine.definer} ` : ''}PROCEDURE \`${routine.name}\`(${parameters})
+      const sql = `CREATE PROCEDURE ${this._schema}.${routine.name}(${parameters})
          LANGUAGE SQL
-         ${routine.deterministic ? 'DETERMINISTIC' : 'NOT DETERMINISTIC'}
-         ${routine.dataAccess}
-         SQL SECURITY ${routine.security}
-         COMMENT '${routine.comment}'
-         ${routine.sql}`;
+         SECURITY ${routine.security}
+         AS ${routine.sql}`;
 
       return await this.raw(sql, { split: false });
    }
@@ -1043,7 +1011,7 @@ export class PostgreSQLClient extends AntaresCore {
          const length = typeInfo.length ? addition.numLength || addition.charLength || addition.datePrecision : false;
 
          alterColumns.push(`ADD COLUMN ${addition.name} 
-            ${addition.type.toUpperCase()}${length ? `(${length})` : ''} 
+            ${addition.type.toUpperCase()}${length ? `(${length})` : ''}${addition.isArray ? '[]' : ''}
             ${addition.unsigned ? 'UNSIGNED' : ''} 
             ${addition.zerofill ? 'ZEROFILL' : ''}
             ${addition.nullable ? 'NULL' : 'NOT NULL'}
@@ -1092,7 +1060,7 @@ export class PostgreSQLClient extends AntaresCore {
                localType = change.type.toLowerCase();
          }
 
-         alterColumns.push(`ALTER COLUMN "${change.orgName}" TYPE ${localType}${length ? `(${length})` : ''} USING "${change.orgName}"::${localType}`);
+         alterColumns.push(`ALTER COLUMN "${change.orgName}" TYPE ${localType}${length ? `(${length})` : ''}${change.isArray ? '[]' : ''} USING "${change.orgName}"::${localType}`);
          alterColumns.push(`ALTER COLUMN "${change.orgName}" ${change.nullable ? 'DROP NOT NULL' : 'SET NOT NULL'}`);
          alterColumns.push(`ALTER COLUMN "${change.orgName}" ${change.default ? `SET DEFAULT ${change.default}` : 'DROP DEFAULT'}`);
          if (['SERIAL', 'SMALLSERIAL', 'BIGSERIAL'].includes(change.type)) {
@@ -1345,7 +1313,7 @@ export class PostgreSQLClient extends AntaresCore {
                            if (!paramObj.table || !paramObj.schema) continue;
 
                            try { // Column details
-                              const columns = await this.getTableColumns(paramObj);
+                              const columns = await this.getTableColumns(paramObj, false);
                               const indexes = await this.getTableIndexes(paramObj);
 
                               remappedFields = remappedFields.map(field => {

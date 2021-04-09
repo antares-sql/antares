@@ -76,6 +76,16 @@
             </optgroup>
          </select>
       </div>
+      <div
+         v-if="customizations.tableArray"
+         class="td"
+         tabindex="0"
+      >
+         <label class="form-checkbox">
+            <input v-model="localRow.isArray" type="checkbox">
+            <i class="form-icon" />
+         </label>
+      </div>
       <div class="td type-int" tabindex="0">
          <template v-if="fieldType.length">
             <span

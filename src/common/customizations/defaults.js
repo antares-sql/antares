@@ -44,9 +44,12 @@ module.exports = {
    comment: false,
    collation: false,
    definer: false,
-   arrays: false,
    onUpdate: false,
+   tableArray: false,
    viewAlgorithm: false,
    viewSqlSecurity: false,
-   viewUpdateOption: false
+   viewUpdateOption: false,
+   procedureDeterministic: false,
+   procedureDataAccess: false,
+   procedureSql: false
 };

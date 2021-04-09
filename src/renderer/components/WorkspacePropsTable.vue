@@ -42,6 +42,13 @@
                      </div>
                   </div>
                </div>
+               <div v-if="customizations.tableArray" class="th">
+                  <div class="column-resizable">
+                     <div class="table-column-title">
+                        {{ $t('word.array') }}
+                     </div>
+                  </div>
+               </div>
                <div class="th">
                   <div class="column-resizable">
                      <div class="table-column-title">

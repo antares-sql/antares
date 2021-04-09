@@ -7,6 +7,8 @@ export class MySQLClient extends AntaresCore {
    constructor (args) {
       super(args);
 
+      this._schema = null;
+
       this.types = {
          0: 'DECIMAL',
          1: 'TINYINT',
@@ -120,6 +122,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    use (schema) {
+      this._schema = schema;
       return this.raw(`USE \`${schema}\``);
    }
 
@@ -1049,7 +1052,7 @@ export class MySQLClient extends AntaresCore {
          options
       } = params;
 
-      let sql = `ALTER TABLE \`${table}\` `;
+      let sql = `ALTER TABLE \`${this._schema}\`.\`${table}\` `;
       const alterColumns = [];
 
       // OPTIONS

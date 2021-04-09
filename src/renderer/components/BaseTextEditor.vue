@@ -69,7 +69,7 @@ export default {
       this.editor = ace.edit(`editor-${this.id}`, {
          mode: `ace/mode/${this.mode}`,
          theme: `ace/theme/${this.editorTheme}`,
-         value: this.value,
+         value: this.value || '',
          fontSize: '14px',
          printMargin: false,
          readOnly: this.readOnly,
