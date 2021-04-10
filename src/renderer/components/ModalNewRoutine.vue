@@ -25,7 +25,7 @@
                   >
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="customizations.definer" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.definer') }}
                </label>
@@ -53,7 +53,7 @@
                   </select>
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="customizations.comment" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.comment') }}
                </label>
@@ -76,7 +76,7 @@
                   </select>
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="customizations.comment" class="form-group">
                <label class="form-label col-4">
                   {{ $t('message.dataAccess') }}
                </label>
@@ -89,7 +89,7 @@
                   </select>
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="customizations.procedureDeterministic" class="form-group">
                <div class="col-4" />
                <div class="column">
                   <label class="form-checkbox form-inline">
@@ -117,7 +117,7 @@ export default {
       return {
          localRoutine: {
             definer: '',
-            sql: 'BEGIN\r\n\r\nEND',
+            sql: '',
             parameters: [],
             name: '',
             comment: '',
@@ -131,9 +131,14 @@ export default {
    computed: {
       schema () {
          return this.workspace.breadcrumbs.schema;
+      },
+      customizations () {
+         return this.workspace.customizations;
       }
    },
    mounted () {
+      if (this.customizations.procedureSql)
+         this.localRoutine.sql = this.customizations.procedureSql;
       setTimeout(() => {
          this.$refs.firstInput.focus();
       }, 20);

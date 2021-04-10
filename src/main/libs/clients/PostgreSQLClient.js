@@ -556,7 +556,7 @@ export class PostgreSQLClient extends AntaresCore {
       const sql = `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${routine}'));`;
       const results = await this.raw(sql);
 
-      return results.rows.map(row => {
+      return results.rows.map(async row => {
          if (!row.pg_get_functiondef) {
             return {
                definer: null,
@@ -570,30 +570,37 @@ export class PostgreSQLClient extends AntaresCore {
             };
          }
 
-         const parameters = row.pg_get_functiondef
-            .match(/(\([^()]*(?:(?:\([^()]*\))[^()]*)*\)\s*)/s)[0]
-            .replaceAll('\r', '')
-            .replaceAll('\t', '')
-            .slice(1, -1)
-            .split(',')
-            .map(el => {
-               const param = el.split(' ');
-               const type = param[2] ? param[2].replace(')', '').split('(') : ['', null];
-               return {
-                  name: param[1] ? param[1].replaceAll('`', '') : '',
-                  type: type[0].replaceAll('\n', ''),
-                  length: +type[1] ? +type[1].replace(/\D/g, '') : '',
-                  context: param[0] ? param[0].replace('\n', '') : ''
-               };
-            }).filter(el => el.name);
+         const sql = `SELECT proc.specific_schema AS procedure_schema,
+               proc.specific_name,
+               proc.routine_name AS procedure_name,
+               proc.external_language,
+               args.parameter_name,
+               args.parameter_mode,
+               args.data_type
+            FROM information_schema.routines proc
+            LEFT JOIN information_schema.parameters args
+               ON proc.specific_schema = args.specific_schema
+               AND proc.specific_name = args.specific_name
+            WHERE proc.routine_schema not in ('pg_catalog', 'information_schema')
+               AND proc.routine_type = 'PROCEDURE'
+               AND proc.routine_name = '${routine}'
+               AND proc.specific_schema = '${schema}'
+            ORDER BY procedure_schema,
+               specific_name,
+               procedure_name,
+               args.ordinal_position
+           `;
 
-         let dataAccess = 'CONTAINS SQL';
-         if (row.pg_get_functiondef.includes('NO SQL'))
-            dataAccess = 'NO SQL';
-         if (row.pg_get_functiondef.includes('READS SQL DATA'))
-            dataAccess = 'READS SQL DATA';
-         if (row.pg_get_functiondef.includes('MODIFIES SQL DATA'))
-            dataAccess = 'MODIFIES SQL DATA';
+         const results = await this.raw(sql);
+
+         const parameters = results.rows.map(row => {
+            return {
+               name: row.parameter_name,
+               type: row.data_type.toUpperCase(),
+               length: '',
+               context: row.parameter_mode
+            };
+         });
 
          return {
             definer: '',
@@ -601,9 +608,9 @@ export class PostgreSQLClient extends AntaresCore {
             parameters: parameters || [],
             name: routine,
             comment: '',
-            security: row.pg_get_functiondef.includes('SECURITY INVOKER') ? 'INVOKER' : 'DEFINER',
+            security: row.pg_get_functiondef.includes('SECURITY DEFINER') ? 'DEFINER' : 'INVOKER',
             deterministic: null,
-            dataAccess,
+            dataAccess: null,
             language: row.pg_get_functiondef.match(/(?<=LANGUAGE )(.*)(?<=[\S+\n\r\s])/gm)[0]
          };
       })[0];
@@ -655,6 +662,9 @@ export class PostgreSQLClient extends AntaresCore {
             return acc;
          }, []).join(',')
          : '';
+
+      if (this._schema !== 'public')
+         this.use(this._schema);
 
       const sql = `CREATE PROCEDURE ${this._schema}.${routine.name}(${parameters})
          LANGUAGE SQL

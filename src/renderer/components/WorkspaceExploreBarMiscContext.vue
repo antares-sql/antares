@@ -32,6 +32,7 @@
       <ModalAskParameters
          v-if="isAskingParameters"
          :local-routine="localElement"
+         :client="workspace.client"
          @confirm="runElement"
          @close="hideAskParamsModal"
       />
@@ -205,13 +206,13 @@ export default {
             case 'maria':
             case 'mysql':
             case 'pg':
-               sql = `CALL \`${this.localElement.name}\` (${params.join(',')})`;
+               sql = `CALL ${this.localElement.name}(${params.join(',')})`;
                break;
             case 'mssql':
                sql = `EXEC ${this.localElement.name} ${params.join(',')}`;
                break;
             default:
-               sql = `CALL \`${this.localElement.name}\` (${params.join(',')})`;
+               sql = `CALL \`${this.localElement.name}\`(${params.join(',')})`;
          }
 
          this.newTab({ uid: this.workspace.uid, content: sql, autorun: true });

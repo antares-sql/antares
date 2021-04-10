@@ -51,5 +51,6 @@ module.exports = {
    viewUpdateOption: false,
    procedureDeterministic: false,
    procedureDataAccess: false,
-   procedureSql: false
+   procedureSql: false,
+   parametersLength: false
 };

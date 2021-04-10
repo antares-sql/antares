@@ -46,5 +46,9 @@ module.exports = {
    onUpdate: true,
    viewAlgorithm: true,
    viewSqlSecurity: true,
-   viewUpdateOption: true
+   viewUpdateOption: true,
+   procedureDeterministic: true,
+   procedureDataAccess: true,
+   procedureSql: 'BEGIN\r\n\r\nEND',
+   parametersLength: true
 };

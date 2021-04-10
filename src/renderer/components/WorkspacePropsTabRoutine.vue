@@ -74,6 +74,7 @@
       <ModalAskParameters
          v-if="isAskingParameters"
          :local-routine="localRoutine"
+         :client="workspace.client"
          @confirm="runRoutine"
          @close="hideAskParamsModal"
       />
@@ -281,13 +282,13 @@ export default {
             case 'maria':
             case 'mysql':
             case 'pg':
-               sql = `CALL \`${this.originalRoutine.name}\` (${params.join(',')})`;
+               sql = `CALL ${this.originalRoutine.name}(${params.join(',')})`;
                break;
             case 'mssql':
                sql = `EXEC ${this.originalRoutine.name} ${params.join(',')}`;
                break;
             default:
-               sql = `CALL \`${this.originalRoutine.name}\` (${params.join(',')})`;
+               sql = `CALL \`${this.originalRoutine.name}\`(${params.join(',')})`;
          }
 
          this.newTab({ uid: this.connection.uid, content: sql, autorun: true });

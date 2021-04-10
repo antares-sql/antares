@@ -106,7 +106,7 @@
                         </select>
                      </div>
                   </div>
-                  <div class="form-group">
+                  <div v-if="customizations.parametersLength" class="form-group">
                      <label class="form-label col-3">
                         {{ $t('word.length') }}
                      </label>
@@ -199,6 +199,9 @@ export default {
       },
       isChanged () {
          return JSON.stringify(this.localParameters) !== JSON.stringify(this.parametersProxy);
+      },
+      customizations () {
+         return this.workspace.customizations;
       }
    },
    mounted () {
@@ -235,10 +238,10 @@ export default {
       addParameter () {
          this.parametersProxy = [...this.parametersProxy, {
             _id: uidGen(),
-            name: `Param${this.i++}`,
-            type: 'INT',
+            name: `param${this.i++}`,
+            type: this.workspace.dataTypes[0].types[0].name,
             context: 'IN',
-            length: 10
+            length: ''
          }];
 
          if (this.parametersProxy.length === 1)

@@ -26,7 +26,7 @@
                   >
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="customizations.definer" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.definer') }}
                </label>
@@ -54,7 +54,7 @@
                   </select>
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="customizations.comment" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.comment') }}
                </label>
@@ -77,7 +77,7 @@
                   </select>
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="customizations.procedureDataAccess" class="form-group">
                <label class="form-label col-4">
                   {{ $t('message.dataAccess') }}
                </label>
@@ -90,7 +90,7 @@
                   </select>
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="customizations.procedureDeterministic" class="form-group">
                <div class="col-4" />
                <div class="column">
                   <label class="form-checkbox form-inline">
@@ -124,6 +124,9 @@ export default {
    computed: {
       isTableNameValid () {
          return this.optionsProxy.name !== '';
+      },
+      customizations () {
+         return this.workspace.customizations;
       }
    },
    created () {

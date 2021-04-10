@@ -43,6 +43,7 @@
 </template>
 
 <script>
+import { NUMBER, FLOAT } from 'common/fieldTypes';
 import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
@@ -57,7 +58,8 @@ export default {
       }
    },
    props: {
-      localRoutine: Object
+      localRoutine: Object,
+      client: String
    },
    data () {
       return {
@@ -82,7 +84,22 @@ export default {
       },
       runRoutine () {
          const valArr = Object.keys(this.values).reduce((acc, curr) => {
-            const value = isNaN(this.values[curr]) ? `"${this.values[curr]}"` : this.values[curr];
+            let qc;
+            switch (this.client) {
+               case 'maria':
+               case 'mysql':
+                  qc = '"';
+                  break;
+               case 'pg':
+                  qc = '\'';
+                  break;
+               default:
+                  qc = '"';
+            }
+
+            const param = this.localRoutine.parameters.find(param => param.name === curr);
+
+            const value = [...NUMBER, ...FLOAT].includes(param.type) ? this.values[curr] : `${qc}${this.values[curr]}${qc}`;
             acc.push(value);
             return acc;
          }, []);

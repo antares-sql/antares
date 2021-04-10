@@ -73,6 +73,7 @@
       <ModalAskParameters
          v-if="isAskingParameters"
          :local-routine="localFunction"
+         :client="workspace.client"
          @confirm="runFunction"
          @close="hideAskParamsModal"
       />
