@@ -54,7 +54,7 @@
                      </li>
                   </ul>
                </div>
-               <div v-if="selectedTab === 'general'" class="panel-body py-4">
+               <div v-show="selectedTab === 'general'" class="panel-body py-4">
                   <div class="container">
                      <form class="form-horizontal columns">
                         <div class="column col-12 h6 text-uppercase mb-1">
@@ -142,7 +142,7 @@
                   </div>
                </div>
 
-               <div v-if="selectedTab === 'themes'" class="panel-body py-4">
+               <div v-show="selectedTab === 'themes'" class="panel-body py-4">
                   <div class="container">
                      <div class="columns">
                         <div class="column col-12 h6 text-uppercase mb-2">
@@ -215,14 +215,14 @@
                   </div>
                </div>
 
-               <div v-if="selectedTab === 'update'" class="panel-body py-4">
+               <div v-show="selectedTab === 'update'" class="panel-body py-4">
                   <ModalSettingsUpdate />
                </div>
-               <div v-if="selectedTab === 'changelog'" class="panel-body py-4">
+               <div v-show="selectedTab === 'changelog'" class="panel-body py-4">
                   <ModalSettingsChangelog />
                </div>
 
-               <div v-if="selectedTab === 'about'" class="panel-body py-4">
+               <div v-show="selectedTab === 'about'" class="panel-body py-4">
                   <div class="text-center">
                      <img :src="require('@/images/logo.svg').default" width="128">
                      <h4>{{ appName }}</h4>
