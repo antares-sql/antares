@@ -22,7 +22,7 @@ module.exports = {
    viewAdd: true,
    triggerAdd: false,
    routineAdd: true,
-   functionAdd: true,
+   functionAdd: false,
    databaseEdit: false,
    tableSettings: true,
    viewSettings: true,

@@ -54,11 +54,18 @@ export const TIME = [
    'TIME',
    'TIME WITH TIME ZONE'
 ];
+
 export const DATETIME = [
    'DATETIME',
    'TIMESTAMP',
    'TIMESTAMP WITHOUT TIME ZONE',
    'TIMESTAMP WITH TIME ZONE'
+];
+
+// Used to check datetime fields only
+export const HAS_TIMEZONE = [
+   'TIMESTAMP WITH TIME ZONE',
+   'TIME WITH TIME ZONE'
 ];
 
 export const BLOB = [
