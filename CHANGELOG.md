@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/Fabio286/antares/compare/v0.1.1...v0.1.2) (2021-04-11)
+
+
+### Features
+
+* in-app last release changelog ([1e938ad](https://github.com/Fabio286/antares/commit/1e938adc5d8eb5ad16ab16342375eecd88f68d20))
+* **PostgreSQL:** edit timezone in cell editor ([8735a0c](https://github.com/Fabio286/antares/commit/8735a0c5f9e5b6b3bcaadf37ce158aa7beae2c48))
+* **PostgreSQL:** procedures management ([3dde1c1](https://github.com/Fabio286/antares/commit/3dde1c109e23342d94362626ef7350dc123ea859))
+* **PostgreSQL:** support of arrays in table settings ([d0b3e1b](https://github.com/Fabio286/antares/commit/d0b3e1b1b8be9d2c038d70e16d4478671315de8f))
+
+
+### Bug Fixes
+
+* cell edit doesn't properly use primary or unique index to update if both present, closes [#51](https://github.com/Fabio286/antares/issues/51) ([55932fe](https://github.com/Fabio286/antares/commit/55932fe11583bd5ff48f82b8408965adba4f5071))
+* deletion of rows from query results ([c20bff7](https://github.com/Fabio286/antares/commit/c20bff7bcbe340ac99ebcacaba3359edd61c068a))
+* no foreign key select when cell value is NULL, closes [#50](https://github.com/Fabio286/antares/issues/50) ([9f5ec02](https://github.com/Fabio286/antares/commit/9f5ec0276c92904975fdaea34b4c845c92bfe8d4))
+* wrong datetime conversion when updating a row without an unique key ([d374372](https://github.com/Fabio286/antares/commit/d374372e208318d7e50b258a8041145bdf7992c5))
+* **PostgreSQL:** issue with selected schema different than public ([49a4e1c](https://github.com/Fabio286/antares/commit/49a4e1cb7b24642641265d5830d3fee370cceeb4))
+* **UI:** white readonly inputs with dark theme ([bb5f446](https://github.com/Fabio286/antares/commit/bb5f44681f87aacf2cd2f60a6d958c5732289790))
+
+
+### Improvements
+
+* **UI:** improved setting modal rendering ([be816e8](https://github.com/Fabio286/antares/commit/be816e85888b4f3d26cbb9caac0adbc4dde0ea94))
+
 ### [0.1.1](https://github.com/Fabio286/antares/compare/v0.1.0...v0.1.1) (2021-04-03)
 
 
