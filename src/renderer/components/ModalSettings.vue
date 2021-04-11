@@ -38,6 +38,14 @@
                         <a class="c-hand" :class="{'badge badge-update': hasUpdates}">{{ $t('word.update') }}</a>
                      </li>
                      <li
+                        v-if="updateStatus !== 'disabled'"
+                        class="tab-item"
+                        :class="{'active': selectedTab === 'changelog'}"
+                        @click="selectTab('changelog')"
+                     >
+                        <a class="c-hand">{{ $t('word.changelog') }}</a>
+                     </li>
+                     <li
                         class="tab-item"
                         :class="{'active': selectedTab === 'about'}"
                         @click="selectTab('about')"
@@ -210,6 +218,9 @@
                <div v-if="selectedTab === 'update'" class="panel-body py-4">
                   <ModalSettingsUpdate />
                </div>
+               <div v-if="selectedTab === 'changelog'" class="panel-body py-4">
+                  <ModalSettingsChangelog />
+               </div>
 
                <div v-if="selectedTab === 'about'" class="panel-body py-4">
                   <div class="text-center">
@@ -233,6 +244,7 @@
 import { mapActions, mapGetters } from 'vuex';
 import localesNames from '@/i18n/supported-locales';
 import ModalSettingsUpdate from '@/components/ModalSettingsUpdate';
+import ModalSettingsChangelog from '@/components/ModalSettingsChangelog';
 import BaseTextEditor from '@/components/BaseTextEditor';
 const { shell } = require('electron');
 
@@ -240,6 +252,7 @@ export default {
    name: 'ModalSettings',
    components: {
       ModalSettingsUpdate,
+      ModalSettingsChangelog,
       BaseTextEditor
    },
    data () {
@@ -394,53 +407,58 @@ ORDER BY
 
 <style lang="scss">
 #settings {
-  .modal-body {
-    overflow: hidden;
+  .modal-container {
+    position: absolute;
+    top: 17.5vh;
 
-    .panel-body {
-      height: calc(70vh - 70px);
-      overflow: auto;
+    .modal-body {
+      overflow: hidden;
 
-      .theme-block {
-        position: relative;
-        text-align: center;
+      .panel-body {
+        min-height: calc(25vh - 70px);
+        overflow: auto;
 
-        &.selected {
-          img {
-            box-shadow: 0 0 0 3px $primary-color;
+        .theme-block {
+          position: relative;
+          text-align: center;
+
+          &.selected {
+            img {
+              box-shadow: 0 0 0 3px $primary-color;
+            }
+          }
+
+          &.disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+          }
+
+          .theme-name {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            top: 0;
+            height: 100%;
+            width: 100%;
           }
         }
-
-        &.disabled {
-          cursor: not-allowed;
-          opacity: 0.5;
-        }
-
-        .theme-name {
-          position: absolute;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-direction: column;
-          top: 0;
-          height: 100%;
-          width: 100%;
-        }
       }
-    }
 
-    .badge::after {
-      background: #32b643;
-    }
+      .badge::after {
+        background: #32b643;
+      }
 
-    .badge-update::after {
-      bottom: initial;
-      background: $primary-color;
-    }
+      .badge-update::after {
+        bottom: initial;
+        background: $primary-color;
+      }
 
-    .form-label {
-      display: flex;
-      align-items: center;
+      .form-label {
+        display: flex;
+        align-items: center;
+      }
     }
   }
 }

@@ -74,6 +74,7 @@
     "electron-updater": "^4.3.5",
     "faker": "^5.3.1",
     "keytar": "^7.3.0",
+    "marked": "^2.0.2",
     "moment": "^2.29.1",
     "mssql": "^6.2.3",
     "mysql2": "^2.2.5",

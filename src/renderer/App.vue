@@ -58,6 +58,7 @@ export default {
    },
    mounted () {
       ipcRenderer.send('check-for-updates');
+      this.checkVersionUpdate();
 
       const Menu = remote.Menu;
 
@@ -100,7 +101,8 @@ export default {
    },
    methods: {
       ...mapActions({
-         showNewConnModal: 'application/showNewConnModal'
+         showNewConnModal: 'application/showNewConnModal',
+         checkVersionUpdate: 'application/checkVersionUpdate'
       })
    }
 };

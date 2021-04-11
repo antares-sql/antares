@@ -1,10 +1,14 @@
 'use strict';
+import Store from 'electron-store';
+const persistentStore = new Store({ name: 'settings' });
+
 export default {
    namespaced: true,
    strict: true,
    state: {
       app_name: 'Antares - SQL Client',
       app_version: process.env.PACKAGE_VERSION || 0,
+      cached_version: persistentStore.get('cached_version', 0),
       is_loading: false,
       is_new_modal: false,
       is_setting_modal: false,
@@ -19,6 +23,7 @@ export default {
       isLoading: state => state.is_loading,
       appName: state => state.app_name,
       appVersion: state => state.app_version,
+      cachedVersion: state => state.cached_version,
       getBaseCompleter: state => state.base_completer,
       getSelectedConnection: state => state.selected_conection,
       isNewModal: state => state.is_new_modal,
@@ -54,6 +59,10 @@ export default {
       HIDE_SCRATCHPAD (state) {
          state.is_scratchpad = false;
       },
+      CHANGE_CACHED_VERSION (state) {
+         state.cached_version = state.app_version;
+         persistentStore.set('cached_version', state.cached_version);
+      },
       CHANGE_UPDATE_STATUS (state, status) {
          state.update_status = status;
       },
@@ -62,6 +71,12 @@ export default {
       }
    },
    actions: {
+      checkVersionUpdate ({ getters, commit, dispatch }) {
+         if (getters.appVersion !== getters.cachedVersion) {
+            dispatch('showSettingModal', 'changelog');
+            commit('CHANGE_CACHED_VERSION');
+         }
+      },
       setLoadingStatus ({ commit }, payload) {
          commit('SET_LOADING_STATUS', payload);
       },
