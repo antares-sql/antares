@@ -50,5 +50,9 @@ module.exports = {
    procedureDeterministic: true,
    procedureDataAccess: true,
    procedureSql: 'BEGIN\r\n\r\nEND',
+   procedureContext: true,
+   functionDeterministic: true,
+   functionDataAccess: true,
+   functionSql: 'BEGIN\r\n\r\nEND',
    parametersLength: true
 };

@@ -75,8 +75,8 @@
                   <div>
                      <ul class="menu menu-nav pt-0">
                         <li
-                           v-for="procedure of filteredProcedures"
-                           :key="procedure.name"
+                           v-for="(procedure, i) of filteredProcedures"
+                           :key="`${procedure.name}-${i}`"
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.procedure === procedure.name}"
                            @click="setBreadcrumbs({schema: database.name, procedure: procedure.name})"
@@ -103,8 +103,8 @@
                   <div>
                      <ul class="menu menu-nav pt-0">
                         <li
-                           v-for="func of filteredFunctions"
-                           :key="func.name"
+                           v-for="(func, i) of filteredFunctions"
+                           :key="`${func.name}-${i}`"
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.function === func.name}"
                            @click="setBreadcrumbs({schema: database.name, function: func.name})"

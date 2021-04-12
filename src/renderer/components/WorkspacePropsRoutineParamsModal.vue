@@ -119,7 +119,7 @@
                         >
                      </div>
                   </div>
-                  <div class="form-group">
+                  <div v-if="customizations.procedureContext" class="form-group">
                      <label class="form-label col-3">
                         {{ $t('word.context') }}
                      </label>

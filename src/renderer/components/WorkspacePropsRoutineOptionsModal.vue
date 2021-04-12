@@ -26,6 +26,18 @@
                   >
                </div>
             </div>
+            <div v-if="customizations.languages" class="form-group">
+               <label class="form-label col-4">
+                  {{ $t('word.language') }}
+               </label>
+               <div class="column">
+                  <select v-model="optionsProxy.language" class="form-select">
+                     <option v-for="language in customizations.languages" :key="language">
+                        {{ language }}
+                     </option>
+                  </select>
+               </div>
+            </div>
             <div v-if="customizations.definer" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.definer') }}

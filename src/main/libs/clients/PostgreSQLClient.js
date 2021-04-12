@@ -166,18 +166,23 @@ export class PostgreSQLClient extends AntaresCore {
             });
 
             // FUNCTIONS
-            const remappedFunctions = functions.filter(func => func.Db === db.database).map(func => {
+            const remappedFunctions = functions.filter(func => func.routine_schema === db.database && func.data_type !== 'trigger').map(func => {
                return {
                   name: func.routine_name,
                   type: func.routine_type,
-                  definer: null, // func.Definer,
-                  created: null, // func.Created,
-                  updated: null, // func.Modified,
-                  comment: null, // func.Comment,
-                  charset: null, // func.character_set_client,
                   security: func.security_type
                };
             });
+
+            // TRIGGER FUNCTIONS
+            const remappedTriggerFunctions = functions.filter(func => func.routine_schema === db.database && func.data_type === 'trigger').map(func => {
+               return {
+                  name: func.routine_name,
+                  type: func.routine_type,
+                  security: func.security_type
+               };
+            });
+
             // TRIGGERS
             const remappedTriggers = triggersArr.filter(trigger => trigger.Db === db.database).map(trigger => {
                return {
@@ -196,6 +201,7 @@ export class PostgreSQLClient extends AntaresCore {
                functions: remappedFunctions,
                procedures: remappedProcedures,
                triggers: remappedTriggers,
+               triggerFunctions: remappedTriggerFunctions,
                schedulers: []
             };
          }
@@ -667,7 +673,7 @@ export class PostgreSQLClient extends AntaresCore {
          this.use(this._schema);
 
       const sql = `CREATE PROCEDURE ${this._schema}.${routine.name}(${parameters})
-         LANGUAGE SQL
+         LANGUAGE ${routine.language}
          SECURITY ${routine.security}
          AS ${routine.sql}`;
 
@@ -681,63 +687,66 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async getFunctionInformations ({ schema, func }) {
-      const sql = `SHOW CREATE FUNCTION \`${schema}\`.\`${func}\``;
+      const sql = `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${func}'));`;
       const results = await this.raw(sql);
 
-      return results.rows.map(row => {
-         if (!row['Create Function']) {
+      return results.rows.map(async row => {
+         if (!row.pg_get_functiondef) {
             return {
                definer: null,
                sql: '',
                parameters: [],
-               name: row.Procedure,
+               name: func,
                comment: '',
                security: 'DEFINER',
                deterministic: false,
-               dataAccess: 'CONTAINS SQL',
-               returns: 'INT',
-               returnsLength: null
+               dataAccess: 'CONTAINS SQL'
             };
          }
 
-         const parameters = row['Create Function']
-            .match(/(\([^()]*(?:(?:\([^()]*\))[^()]*)*\)\s*)/s)[0]
-            .replaceAll('\r', '')
-            .replaceAll('\t', '')
-            .slice(1, -1)
-            .split(',')
-            .map(el => {
-               const param = el.split(' ');
-               const type = param[1] ? param[1].replace(')', '').split('(') : ['', null];
+         const sql = `SELECT proc.specific_schema AS procedure_schema,
+                  proc.specific_name,
+                  proc.routine_name AS procedure_name,
+                  proc.external_language,
+                  args.parameter_name,
+                  args.parameter_mode,
+                  args.data_type
+               FROM information_schema.routines proc
+               LEFT JOIN information_schema.parameters args
+                  ON proc.specific_schema = args.specific_schema
+                  AND proc.specific_name = args.specific_name
+               WHERE proc.routine_schema not in ('pg_catalog', 'information_schema')
+                  AND proc.routine_type = 'FUNCTION'
+                  AND proc.routine_name = '${func}'
+                  AND proc.specific_schema = '${schema}'
+               ORDER BY procedure_schema,
+                  specific_name,
+                  procedure_name,
+                  args.ordinal_position
+              `;
 
-               return {
-                  name: param[0] ? param[0].replaceAll('`', '') : '',
-                  type: type[0],
-                  length: +type[1] ? +type[1].replace(/\D/g, '') : ''
-               };
-            }).filter(el => el.name);
+         const results = await this.raw(sql);
 
-         let dataAccess = 'CONTAINS SQL';
-         if (row['Create Function'].includes('NO SQL'))
-            dataAccess = 'NO SQL';
-         if (row['Create Function'].includes('READS SQL DATA'))
-            dataAccess = 'READS SQL DATA';
-         if (row['Create Function'].includes('MODIFIES SQL DATA'))
-            dataAccess = 'MODIFIES SQL DATA';
-
-         const output = row['Create Function'].match(/(?<=RETURNS ).*?(?=\s)/gs).length ? row['Create Function'].match(/(?<=RETURNS ).*?(?=\s)/gs)[0].replace(')', '').split('(') : ['', null];
+         const parameters = results.rows.map(row => {
+            return {
+               name: row.parameter_name,
+               type: row.data_type.toUpperCase(),
+               length: '',
+               context: row.parameter_mode
+            };
+         });
 
          return {
-            definer: row['Create Function'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
-            sql: row['Create Function'].match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
+            definer: '',
+            sql: row.pg_get_functiondef.match(/(\$(.*)\$)(.*)(\$(.*)\$)/gs)[0],
             parameters: parameters || [],
-            name: row.Function,
-            comment: row['Create Function'].match(/(?<=COMMENT ').*?(?=')/gs) ? row['Create Function'].match(/(?<=COMMENT ').*?(?=')/gs)[0] : '',
-            security: row['Create Function'].includes('SQL SECURITY INVOKER') ? 'INVOKER' : 'DEFINER',
-            deterministic: row['Create Function'].includes('DETERMINISTIC'),
-            dataAccess,
-            returns: output[0].toUpperCase(),
-            returnsLength: +output[1]
+            name: func,
+            comment: '',
+            security: row.pg_get_functiondef.includes('SECURITY DEFINER') ? 'DEFINER' : 'INVOKER',
+            deterministic: null,
+            dataAccess: null,
+            language: row.pg_get_functiondef.match(/(?<=LANGUAGE )(.*)(?<=[\S+\n\r\s])/gm)[0],
+            returns: row.pg_get_functiondef.match(/(?<=RETURNS SETOF )(.*)(?<=[\S+\n\r\s])/gm)[0].toUpperCase()
          };
       })[0];
    }
@@ -788,7 +797,7 @@ export class PostgreSQLClient extends AntaresCore {
       }, []).join(',');
 
       const sql = `CREATE ${func.definer ? `DEFINER=${func.definer} ` : ''}FUNCTION \`${func.name}\`(${parameters}) RETURNS ${func.returns}${func.returnsLength ? `(${func.returnsLength})` : ''}
-         LANGUAGE SQL
+         LANGUAGE ${func.language}
          ${func.deterministic ? 'DETERMINISTIC' : 'NOT DETERMINISTIC'}
          ${func.dataAccess}
          SQL SECURITY ${func.security}

@@ -38,7 +38,6 @@
                         <a class="c-hand" :class="{'badge badge-update': hasUpdates}">{{ $t('word.update') }}</a>
                      </li>
                      <li
-                        v-if="updateStatus !== 'disabled'"
                         class="tab-item"
                         :class="{'active': selectedTab === 'changelog'}"
                         @click="selectTab('changelog')"
@@ -416,6 +415,7 @@ ORDER BY
 
       .panel-body {
         min-height: calc(25vh - 70px);
+        max-height: 65vh;
         overflow: auto;
 
         .theme-block {

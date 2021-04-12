@@ -52,5 +52,13 @@ module.exports = {
    procedureDeterministic: false,
    procedureDataAccess: false,
    procedureSql: false,
-   parametersLength: false
+   procedureContext: false,
+   procedureLanguage: false,
+   functionDeterministic: false,
+   functionDataAccess: false,
+   functionSql: false,
+   functionContext: false,
+   functionLanguage: false,
+   parametersLength: false,
+   languages: false
 };
