@@ -15,7 +15,7 @@
          <div class="content">
             <form class="form-horizontal">
                <div
-                  v-for="(parameter, i) in localRoutine.parameters"
+                  v-for="(parameter, i) in inParameters"
                   :key="parameter._id"
                   class="form-group"
                >
@@ -65,6 +65,11 @@ export default {
       return {
          values: {}
       };
+   },
+   computed: {
+      inParameters () {
+         return this.localRoutine.parameters.filter(param => param.context === 'IN');
+      }
    },
    created () {
       window.addEventListener('keydown', this.onKey);

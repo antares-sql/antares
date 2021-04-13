@@ -248,8 +248,10 @@ export default {
          switch (this.workspace.client) { // TODO: move in a better place
             case 'maria':
             case 'mysql':
-            case 'pg':
                sql = `SELECT \`${this.localElement.name}\` (${params.join(',')})`;
+               break;
+            case 'pg':
+               sql = `SELECT ${this.localElement.name}(${params.join(',')})`;
                break;
             case 'mssql':
                sql = `SELECT ${this.localElement.name} ${params.join(',')}`;

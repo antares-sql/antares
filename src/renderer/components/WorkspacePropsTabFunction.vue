@@ -281,8 +281,10 @@ export default {
          switch (this.connection.client) { // TODO: move in a better place
             case 'maria':
             case 'mysql':
-            case 'pg':
                sql = `SELECT \`${this.originalFunction.name}\` (${params.join(',')})`;
+               break;
+            case 'pg':
+               sql = `SELECT ${this.originalFunction.name}(${params.join(',')})`;
                break;
             case 'mssql':
                sql = `SELECT ${this.originalFunction.name} ${params.join(',')}`;

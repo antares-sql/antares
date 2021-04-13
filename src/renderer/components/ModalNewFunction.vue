@@ -7,7 +7,7 @@
    >
       <template :slot="'header'">
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-plus mr-1" /> {{ $t('message.createNewRoutine') }}
+            <i class="mdi mdi-24px mdi-plus mr-1" /> {{ $t('message.createNewFunction') }}
          </div>
       </template>
       <div :slot="'body'">
@@ -25,7 +25,19 @@
                   >
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="customizations.languages" class="form-group">
+               <label class="form-label col-4">
+                  {{ $t('word.language') }}
+               </label>
+               <div class="column">
+                  <select v-model="localFunction.language" class="form-select">
+                     <option v-for="language in customizations.languages" :key="language">
+                        {{ language }}
+                     </option>
+                  </select>
+               </div>
+            </div>
+            <div v-if="customizations.definer" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.definer') }}
                </label>
@@ -53,42 +65,7 @@
                   </select>
                </div>
             </div>
-            <div class="form-group">
-               <label class="form-label col-4">
-                  {{ $t('word.returns') }}
-               </label>
-               <div class="column">
-                  <div class="input-group">
-                     <select
-                        v-model="localFunction.returns"
-                        class="form-select text-uppercase"
-                        style="width: 0;"
-                     >
-                        <optgroup
-                           v-for="group in workspace.dataTypes"
-                           :key="group.group"
-                           :label="group.group"
-                        >
-                           <option
-                              v-for="type in group.types"
-                              :key="type.name"
-                              :selected="localFunction.returns === type.name"
-                              :value="type.name"
-                           >
-                              {{ type.name }}
-                           </option>
-                        </optgroup>
-                     </select>
-                     <input
-                        v-model="localFunction.returnsLength"
-                        class="form-input"
-                        type="number"
-                        min="0"
-                     >
-                  </div>
-               </div>
-            </div>
-            <div class="form-group">
+            <div v-if="customizations.comment" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.comment') }}
                </label>
@@ -111,7 +88,7 @@
                   </select>
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="customizations.functionDataAccess" class="form-group">
                <label class="form-label col-4">
                   {{ $t('message.dataAccess') }}
                </label>
@@ -124,7 +101,7 @@
                   </select>
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="customizations.functionDeterministic" class="form-group">
                <div class="col-4" />
                <div class="column">
                   <label class="form-checkbox form-inline">
@@ -152,11 +129,12 @@ export default {
       return {
          localFunction: {
             definer: '',
-            sql: 'BEGIN\r\n    RETURN NULL;\r\nEND',
+            sql: '',
             parameters: [],
             name: '',
             comment: '',
-            returns: 'INT',
+            language: null,
+            returns: null,
             returnsLength: 10,
             security: 'DEFINER',
             deterministic: false,
@@ -168,9 +146,17 @@ export default {
    computed: {
       schema () {
          return this.workspace.breadcrumbs.schema;
+      },
+      customizations () {
+         return this.workspace.customizations;
       }
    },
    mounted () {
+      if (this.customizations.languages)
+         this.localFunction.language = this.customizations.languages[0];
+
+      if (this.customizations.procedureSql)
+         this.localFunction.sql = this.customizations.procedureSql;
       setTimeout(() => {
          this.$refs.firstInput.focus();
       }, 20);

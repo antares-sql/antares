@@ -727,7 +727,7 @@ export class PostgreSQLClient extends AntaresCore {
 
          const results = await this.raw(sql);
 
-         const parameters = results.rows.map(row => {
+         const parameters = results.rows.filter(row => row.parameter_mode).map(row => {
             return {
                name: row.parameter_name,
                type: row.data_type.toUpperCase(),
@@ -746,7 +746,7 @@ export class PostgreSQLClient extends AntaresCore {
             deterministic: null,
             dataAccess: null,
             language: row.pg_get_functiondef.match(/(?<=LANGUAGE )(.*)(?<=[\S+\n\r\s])/gm)[0],
-            returns: row.pg_get_functiondef.match(/(?<=RETURNS SETOF )(.*)(?<=[\S+\n\r\s])/gm)[0].toUpperCase()
+            returns: row.pg_get_functiondef.match(/(?<=RETURNS )(.*)(?<=[\S+\n\r\s])/gm)[0].replace('SETOF ', '').toUpperCase()
          };
       })[0];
    }
@@ -758,7 +758,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async dropFunction (params) {
-      const sql = `DROP FUNCTION \`${params.func}\``;
+      const sql = `DROP FUNCTION ${this._schema}.${params.func}`;
       return await this.raw(sql);
    }
 
@@ -791,18 +791,23 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async createFunction (func) {
-      const parameters = func.parameters.reduce((acc, curr) => {
-         acc.push(`\`${curr.name}\` ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
-         return acc;
-      }, []).join(',');
+      const parameters = 'parameters' in func
+         ? func.parameters.reduce((acc, curr) => {
+            acc.push(`${curr.context} ${curr.name} ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
+            return acc;
+         }, []).join(',')
+         : '';
 
-      const sql = `CREATE ${func.definer ? `DEFINER=${func.definer} ` : ''}FUNCTION \`${func.name}\`(${parameters}) RETURNS ${func.returns}${func.returnsLength ? `(${func.returnsLength})` : ''}
+      if (this._schema !== 'public')
+         this.use(this._schema);
+
+      const body = func.returns ? func.sql : '$BODY$\n$BODY$';
+
+      const sql = `CREATE FUNCTION ${this._schema}.${func.name}(${parameters})
+         RETURNS ${func.returns || 'void'}
          LANGUAGE ${func.language}
-         ${func.deterministic ? 'DETERMINISTIC' : 'NOT DETERMINISTIC'}
-         ${func.dataAccess}
-         SQL SECURITY ${func.security}
-         COMMENT '${func.comment}'
-         ${func.sql}`;
+         SECURITY ${func.security}
+         AS ${body}`;
 
       return await this.raw(sql, { split: false });
    }

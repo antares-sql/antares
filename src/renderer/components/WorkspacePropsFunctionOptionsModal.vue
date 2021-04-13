@@ -26,7 +26,19 @@
                   >
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="customizations.languages" class="form-group">
+               <label class="form-label col-4">
+                  {{ $t('word.language') }}
+               </label>
+               <div class="column">
+                  <select v-model="optionsProxy.language" class="form-select">
+                     <option v-for="language in customizations.languages" :key="language">
+                        {{ language }}
+                     </option>
+                  </select>
+               </div>
+            </div>
+            <div v-if="customizations.definer" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.definer') }}
                </label>
@@ -81,6 +93,7 @@
                         </optgroup>
                      </select>
                      <input
+                        v-if="customizations.parametersLength"
                         v-model="optionsProxy.returnsLength"
                         class="form-input"
                         type="number"
@@ -89,7 +102,7 @@
                   </div>
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="customizations.comment" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.comment') }}
                </label>
@@ -112,7 +125,7 @@
                   </select>
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="customizations.functionDataAccess" class="form-group">
                <label class="form-label col-4">
                   {{ $t('message.dataAccess') }}
                </label>
@@ -125,7 +138,7 @@
                   </select>
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="customizations.functionDeterministic" class="form-group">
                <div class="col-4" />
                <div class="column">
                   <label class="form-checkbox form-inline">
@@ -159,6 +172,9 @@ export default {
    computed: {
       isTableNameValid () {
          return this.optionsProxy.name !== '';
+      },
+      customizations () {
+         return this.workspace.customizations;
       }
    },
    created () {
