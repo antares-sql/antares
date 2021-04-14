@@ -581,7 +581,7 @@ export class MySQLClient extends AntaresCore {
       const sql = `SHOW CREATE PROCEDURE \`${schema}\`.\`${routine}\``;
       const results = await this.raw(sql);
 
-      return results.rows.map(row => {
+      return results.rows.map(async row => {
          if (!row['Create Procedure']) {
             return {
                definer: null,
@@ -595,22 +595,23 @@ export class MySQLClient extends AntaresCore {
             };
          }
 
-         const parameters = row['Create Procedure']
-            .match(/(\([^()]*(?:(?:\([^()]*\))[^()]*)*\)\s*)/s)[0]
-            .replaceAll('\r', '')
-            .replaceAll('\t', '')
-            .slice(1, -1)
-            .split(',')
-            .map(el => {
-               const param = el.split(' ');
-               const type = param[2] ? param[2].replace(')', '').split('(') : ['', null];
-               return {
-                  name: param[1] ? param[1].replaceAll('`', '') : '',
-                  type: type[0].replaceAll('\n', ''),
-                  length: +type[1] ? +type[1].replace(/\D/g, '') : '',
-                  context: param[0] ? param[0].replace('\n', '') : ''
-               };
-            }).filter(el => el.name);
+         const sql = `SELECT * 
+               FROM information_schema.parameters 
+               WHERE SPECIFIC_NAME = '${routine}'
+               AND SPECIFIC_SCHEMA = '${schema}'
+               ORDER BY ORDINAL_POSITION
+            `;
+
+         const results = await this.raw(sql);
+
+         const parameters = results.rows.map(row => {
+            return {
+               name: row.PARAMETER_NAME,
+               type: row.DATA_TYPE.toUpperCase(),
+               length: row.NUMERIC_PRECISION || row.DATETIME_PRECISION || row.CHARACTER_MAXIMUM_LENGTH || '',
+               context: row.PARAMETER_MODE
+            };
+         });
 
          let dataAccess = 'CONTAINS SQL';
          if (row['Create Procedure'].includes('NO SQL'))
@@ -701,7 +702,7 @@ export class MySQLClient extends AntaresCore {
       const sql = `SHOW CREATE FUNCTION \`${schema}\`.\`${func}\``;
       const results = await this.raw(sql);
 
-      return results.rows.map(row => {
+      return results.rows.map(async row => {
          if (!row['Create Function']) {
             return {
                definer: null,
@@ -717,22 +718,23 @@ export class MySQLClient extends AntaresCore {
             };
          }
 
-         const parameters = row['Create Function']
-            .match(/(\([^()]*(?:(?:\([^()]*\))[^()]*)*\)\s*)/s)[0]
-            .replaceAll('\r', '')
-            .replaceAll('\t', '')
-            .slice(1, -1)
-            .split(',')
-            .map(el => {
-               const param = el.split(' ');
-               const type = param[1] ? param[1].replace(')', '').split('(') : ['', null];
+         const sql = `SELECT * 
+            FROM information_schema.parameters 
+            WHERE SPECIFIC_NAME = '${func}'
+            AND SPECIFIC_SCHEMA = '${schema}'
+            ORDER BY ORDINAL_POSITION
+         `;
 
-               return {
-                  name: param[0] ? param[0].replaceAll('`', '') : '',
-                  type: type[0],
-                  length: +type[1] ? +type[1].replace(/\D/g, '') : ''
-               };
-            }).filter(el => el.name);
+         const results = await this.raw(sql);
+
+         const parameters = results.rows.filter(row => row.PARAMETER_MODE).map(row => {
+            return {
+               name: row.PARAMETER_NAME,
+               type: row.DATA_TYPE.toUpperCase(),
+               length: row.NUMERIC_PRECISION || row.DATETIME_PRECISION || row.CHARACTER_MAXIMUM_LENGTH || '',
+               context: row.PARAMETER_MODE
+            };
+         });
 
          let dataAccess = 'CONTAINS SQL';
          if (row['Create Function'].includes('NO SQL'))
@@ -804,13 +806,15 @@ export class MySQLClient extends AntaresCore {
          return acc;
       }, []).join(',');
 
-      const sql = `CREATE ${func.definer ? `DEFINER=${func.definer} ` : ''}FUNCTION \`${func.name}\`(${parameters}) RETURNS ${func.returns}${func.returnsLength ? `(${func.returnsLength})` : ''}
+      const body = func.returns ? func.sql : 'BEGIN\n  RETURN 0;\nEND';
+
+      const sql = `CREATE ${func.definer ? `DEFINER=${func.definer} ` : ''}FUNCTION \`${func.name}\`(${parameters}) RETURNS ${func.returns || 'SMALLINT'}${func.returnsLength ? `(${func.returnsLength})` : ''}
          LANGUAGE SQL
          ${func.deterministic ? 'DETERMINISTIC' : 'NOT DETERMINISTIC'}
          ${func.dataAccess}
          SQL SECURITY ${func.security}
          COMMENT '${func.comment}'
-         ${func.sql}`;
+         ${body}`;
 
       return await this.raw(sql, { split: false });
    }

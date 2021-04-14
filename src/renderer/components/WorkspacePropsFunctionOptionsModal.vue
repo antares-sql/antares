@@ -77,6 +77,9 @@
                         class="form-select text-uppercase"
                         style="width: 0;"
                      >
+                        <option v-if="localOptions.returns === 'VOID'">
+                           VOID
+                        </option>
                         <optgroup
                            v-for="group in workspace.dataTypes"
                            :key="group.group"

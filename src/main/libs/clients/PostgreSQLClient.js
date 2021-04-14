@@ -577,25 +577,25 @@ export class PostgreSQLClient extends AntaresCore {
          }
 
          const sql = `SELECT proc.specific_schema AS procedure_schema,
-               proc.specific_name,
-               proc.routine_name AS procedure_name,
-               proc.external_language,
-               args.parameter_name,
-               args.parameter_mode,
-               args.data_type
-            FROM information_schema.routines proc
-            LEFT JOIN information_schema.parameters args
-               ON proc.specific_schema = args.specific_schema
-               AND proc.specific_name = args.specific_name
-            WHERE proc.routine_schema not in ('pg_catalog', 'information_schema')
-               AND proc.routine_type = 'PROCEDURE'
-               AND proc.routine_name = '${routine}'
-               AND proc.specific_schema = '${schema}'
-            ORDER BY procedure_schema,
-               specific_name,
-               procedure_name,
-               args.ordinal_position
-           `;
+            proc.specific_name,
+            proc.routine_name AS procedure_name,
+            proc.external_language,
+            args.parameter_name,
+            args.parameter_mode,
+            args.data_type
+         FROM information_schema.routines proc
+         LEFT JOIN information_schema.parameters args
+            ON proc.specific_schema = args.specific_schema
+            AND proc.specific_name = args.specific_name
+         WHERE proc.routine_schema not in ('pg_catalog', 'information_schema')
+            AND proc.routine_type = 'PROCEDURE'
+            AND proc.routine_name = '${routine}'
+            AND proc.specific_schema = '${schema}'
+         ORDER BY procedure_schema,
+            specific_name,
+            procedure_name,
+            args.ordinal_position
+         `;
 
          const results = await this.raw(sql);
 
@@ -705,25 +705,25 @@ export class PostgreSQLClient extends AntaresCore {
          }
 
          const sql = `SELECT proc.specific_schema AS procedure_schema,
-                  proc.specific_name,
-                  proc.routine_name AS procedure_name,
-                  proc.external_language,
-                  args.parameter_name,
-                  args.parameter_mode,
-                  args.data_type
-               FROM information_schema.routines proc
-               LEFT JOIN information_schema.parameters args
-                  ON proc.specific_schema = args.specific_schema
-                  AND proc.specific_name = args.specific_name
-               WHERE proc.routine_schema not in ('pg_catalog', 'information_schema')
-                  AND proc.routine_type = 'FUNCTION'
-                  AND proc.routine_name = '${func}'
-                  AND proc.specific_schema = '${schema}'
-               ORDER BY procedure_schema,
-                  specific_name,
-                  procedure_name,
-                  args.ordinal_position
-              `;
+            proc.specific_name,
+            proc.routine_name AS procedure_name,
+            proc.external_language,
+            args.parameter_name,
+            args.parameter_mode,
+            args.data_type
+         FROM information_schema.routines proc
+         LEFT JOIN information_schema.parameters args
+            ON proc.specific_schema = args.specific_schema
+            AND proc.specific_name = args.specific_name
+         WHERE proc.routine_schema not in ('pg_catalog', 'information_schema')
+            AND proc.routine_type = 'FUNCTION'
+            AND proc.routine_name = '${func}'
+            AND proc.specific_schema = '${schema}'
+         ORDER BY procedure_schema,
+            specific_name,
+            procedure_name,
+            args.ordinal_position
+         `;
 
          const results = await this.raw(sql);
 

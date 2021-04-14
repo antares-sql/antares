@@ -47,7 +47,7 @@
          <BaseLoader v-if="isLoading" />
          <label class="form-label ml-2">{{ $t('message.functionBody') }}</label>
          <QueryEditor
-            v-if="isSelected"
+            v-show="isSelected"
             ref="queryEditor"
             :value.sync="localFunction.sql"
             :workspace="workspace"

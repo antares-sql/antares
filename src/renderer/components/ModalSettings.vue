@@ -227,7 +227,7 @@
                      <h4>{{ appName }}</h4>
                      <p>
                         {{ $t('word.version') }} {{ appVersion }}<br>
-                        <a class="c-hand" @click="openOutside('https://github.com/Fabio286/antares')">GitHub</a> | <a class="c-hand" @click="openOutside('https://github.com/Fabio286/antares/blob/master/CHANGELOG.md')">CHANGELOG</a><br>
+                        <a class="c-hand" @click="openOutside('https://github.com/Fabio286/antares')">GitHub</a> | <a class="c-hand" @click="openOutside('https://antares-sql.app/')">Website</a><br>
                         <small>{{ $t('word.author') }} <a class="c-hand" @click="openOutside('https://github.com/Fabio286')">Fabio Di Stasio</a></small><br>
                         <small>{{ $t('message.madeWithJS') }}</small>
                      </p>
