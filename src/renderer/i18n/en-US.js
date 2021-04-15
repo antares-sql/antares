@@ -208,7 +208,8 @@ module.exports = {
       schemaName: 'Schema name',
       editSchema: 'Edit schema',
       deleteSchema: 'Delete schema',
-      markdownSupported: 'Markdown supported'
+      markdownSupported: 'Markdown supported',
+      plantATree: 'Plant a Tree'
    },
    faker: {
       address: 'Address',
