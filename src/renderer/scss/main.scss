@@ -99,6 +99,7 @@ body {
   .modal-container,
   .modal-sm .modal-container {
     padding: 0;
+    border-radius: 3px;
 
     .modal-header {
       padding: 0.4rem 0.8rem;
@@ -106,6 +107,7 @@ body {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-radius: 3px 3px 0 0;
     }
   }
 }

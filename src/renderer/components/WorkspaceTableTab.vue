@@ -74,7 +74,7 @@
                <div v-if="results.length && results[0].rows">
                   {{ $t('word.results') }}: <b>{{ results[0].rows.length.toLocaleString() }}</b>
                </div>
-               <div v-if="results.length && results[0].rows && tableInfo && results[0].rows.length < tableInfo.rows">
+               <div v-if="hasApproximately">
                   {{ $t('word.total') }}: <b>{{ tableInfo.rows.toLocaleString() }}</b> <small>({{ $t('word.approximately') }})</small>
                </div>
                <div v-if="workspace.breadcrumbs.database">
@@ -179,6 +179,13 @@ export default {
          catch (err) {
             return { rows: 0 };
          }
+      },
+      hasApproximately () {
+         return this.results.length &&
+            this.results[0].rows &&
+            this.tableInfo &&
+            this.results[0].rows.length === 1000 &&
+            this.results[0].rows.length < this.tableInfo.rows;
       }
    },
    watch: {
