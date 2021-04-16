@@ -104,8 +104,18 @@ export class MySQLClient extends AntaresCore {
    async connect () {
       if (!this._poolSize)
          this._connection = mysql.createConnection(this._params);
-      else
-         this._connection = mysql.createPool({ ...this._params, connectionLimit: this._poolSize });
+      else {
+         this._connection = mysql.createPool({
+            ...this._params,
+            connectionLimit: this._poolSize,
+            typeCast: (field, next) => {
+               if (field.type === 'DATETIME')
+                  return field.string();
+               else
+                  return next();
+            }
+         });
+      }
    }
 
    /**
