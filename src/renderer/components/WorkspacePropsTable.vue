@@ -115,6 +115,7 @@
                :data-types="dataTypes"
                :customizations="customizations"
                @contextmenu="contextMenu"
+               @rename-field="$emit('rename-field', $event)"
             />
          </draggable>
       </div>

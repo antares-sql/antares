@@ -1017,6 +1017,9 @@ export class PostgreSQLClient extends AntaresCore {
          options
       } = params;
 
+      if (this._schema !== 'public')
+         this.use(this._schema);
+
       let sql = '';
       const alterColumns = [];
       const renameColumns = [];
@@ -1056,7 +1059,7 @@ export class PostgreSQLClient extends AntaresCore {
          else if (type === 'UNIQUE')
             alterColumns.push(`ADD CONSTRAINT ${addition.name} UNIQUE (${fields})`);
          else
-            manageIndexes.push(`CREATE INDEX ${addition.name} ON ${table}(${fields})`);
+            manageIndexes.push(`CREATE INDEX ${addition.name} ON ${this._schema}.${table}(${fields})`);
       });
 
       // ADD FOREIGN KEYS
@@ -1084,13 +1087,13 @@ export class PostgreSQLClient extends AntaresCore {
                localType = change.type.toLowerCase();
          }
 
-         alterColumns.push(`ALTER COLUMN "${change.orgName}" TYPE ${localType}${length ? `(${length})` : ''}${change.isArray ? '[]' : ''} USING "${change.orgName}"::${localType}`);
-         alterColumns.push(`ALTER COLUMN "${change.orgName}" ${change.nullable ? 'DROP NOT NULL' : 'SET NOT NULL'}`);
-         alterColumns.push(`ALTER COLUMN "${change.orgName}" ${change.default ? `SET DEFAULT ${change.default}` : 'DROP DEFAULT'}`);
+         alterColumns.push(`ALTER COLUMN "${change.name}" TYPE ${localType}${length ? `(${length})` : ''}${change.isArray ? '[]' : ''} USING "${change.name}"::${localType}`);
+         alterColumns.push(`ALTER COLUMN "${change.name}" ${change.nullable ? 'DROP NOT NULL' : 'SET NOT NULL'}`);
+         alterColumns.push(`ALTER COLUMN "${change.name}" ${change.default ? `SET DEFAULT ${change.default}` : 'DROP DEFAULT'}`);
          if (['SERIAL', 'SMALLSERIAL', 'BIGSERIAL'].includes(change.type)) {
             const sequenceName = `${table}_${change.name}_seq`.replace(' ', '_');
-            createSequences.push(`CREATE SEQUENCE IF NOT EXISTS ${sequenceName} OWNED BY "${table}"."${change.orgName}"`);
-            alterColumns.push(`ALTER COLUMN "${change.orgName}" SET DEFAULT nextval('${sequenceName}')`);
+            createSequences.push(`CREATE SEQUENCE IF NOT EXISTS ${sequenceName} OWNED BY "${table}"."${change.name}"`);
+            alterColumns.push(`ALTER COLUMN "${change.name}" SET DEFAULT nextval('${sequenceName}')`);
          }
 
          if (change.orgName !== change.name)
@@ -1099,9 +1102,7 @@ export class PostgreSQLClient extends AntaresCore {
 
       // CHANGE INDEX
       indexChanges.changes.forEach(change => {
-         if (change.oldType === 'PRIMARY')
-            alterColumns.push('DROP PRIMARY KEY');
-         else if (change.oldType === 'UNIQUE')
+         if (['PRIMARY', 'UNIQUE'].includes(change.oldType))
             alterColumns.push(`DROP CONSTRAINT ${change.oldName}`);
          else
             manageIndexes.push(`DROP INDEX ${change.oldName}`);
@@ -1114,7 +1115,7 @@ export class PostgreSQLClient extends AntaresCore {
          else if (type === 'UNIQUE')
             alterColumns.push(`ADD CONSTRAINT ${change.name} UNIQUE (${fields})`);
          else
-            manageIndexes.push(`CREATE INDEX ${change.name} ON ${table}(${fields})`);
+            manageIndexes.push(`CREATE INDEX ${change.name} ON ${this._schema}.${table}(${fields})`);
       });
 
       // CHANGE FOREIGN KEYS
@@ -1142,12 +1143,12 @@ export class PostgreSQLClient extends AntaresCore {
       });
 
       if (alterColumns.length) sql += `ALTER TABLE "${this._schema}"."${table}" ${alterColumns.join(', ')}; `;
-
-      // RENAME
-      if (renameColumns.length) sql += `${renameColumns.join(';')}; `;
       if (createSequences.length) sql = `${createSequences.join(';')}; ${sql}`;
       if (manageIndexes.length) sql = `${manageIndexes.join(';')}; ${sql}`;
       if (options.name) sql += `ALTER TABLE "${this._schema}"."${table}" RENAME TO "${options.name}"; `;
+
+      // RENAME
+      if (renameColumns.length) sql = `${renameColumns.join(';')}; ${sql}`;
 
       return await this.raw(sql);
    }

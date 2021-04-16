@@ -440,9 +440,6 @@ export default {
             this.defaultValue.expression = this.localRow.default;
          }
       },
-      updateRow () {
-         this.$emit('input', this.localRow);
-      },
       editON (event, content, field) {
          if (field === 'length') {
             if (['integer', 'float', 'binary', 'spatial'].includes(this.fieldType.group)) this.editingField = 'numLength';
@@ -469,6 +466,9 @@ export default {
          }
       },
       editOFF () {
+         if (this.editingField === 'name')
+            this.$emit('rename-field', { old: this.localRow[this.editingField], new: this.editingContent });
+
          this.localRow[this.editingField] = this.editingContent;
 
          if (this.editingField === 'type' && this.editingContent !== this.originalContent) {
@@ -491,8 +491,7 @@ export default {
             if (!this.fieldType.zerofill)
                this.localRow.zerofill = false;
          }
-
-         if (this.editingField === 'default') {
+         else if (this.editingField === 'default') {
             switch (this.defaultValue.type) {
                case 'autoincrement':
                   this.localRow.autoIncrement = true;

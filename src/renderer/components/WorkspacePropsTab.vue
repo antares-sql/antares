@@ -68,6 +68,7 @@
             @remove-field="removeField"
             @add-new-index="addNewIndex"
             @add-to-index="addToIndex"
+            @rename-field="renameField"
          />
       </div>
       <WorkspacePropsOptionsModal
@@ -456,6 +457,20 @@ export default {
             const scrollable = this.$refs.indexTable.$refs.tableWrapper;
             scrollable.scrollTop = scrollable.scrollHeight + 30;
          }, 20);
+      },
+      renameField (payload) {
+         this.localIndexes = this.localIndexes.map(index => {
+            const fi = index.fields.findIndex(field => field === payload.old);
+            if (fi !== -1)
+               index.fields[fi] = payload.new;
+            return index;
+         });
+
+         this.localKeyUsage = this.localKeyUsage.map(key => {
+            if (key.field === payload.old)
+               key.field = payload.new;
+            return key;
+         });
       },
       removeField (uid) {
          this.localFields = this.localFields.filter(field => field._id !== uid);
