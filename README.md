@@ -4,7 +4,7 @@
 
 # Antares SQL Client
 
-![GitHub package.json version](https://img.shields.io/github/package-json/v/fabio286/antares) [![Build Status](https://travis-ci.com/Fabio286/antares.svg?branch=master)](https://travis-ci.com/Fabio286/antares) ![GitHub All Releases](https://img.shields.io/github/downloads/fabio286/antares/total) ![GitHub](https://img.shields.io/github/license/fabio286/antares) [![antares](https://snapcraft.io/antares/badge.svg)](https://snapcraft.io/antares) [![antares](https://snapcraft.io/antares/trending.svg?name=0)](https://snapcraft.io/antares)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/fabio286/antares) ![GitHub All Releases](https://img.shields.io/github/downloads/fabio286/antares/total) ![GitHub](https://img.shields.io/github/license/fabio286/antares) [![antares](https://snapcraft.io/antares/badge.svg)](https://snapcraft.io/antares) [![antares](https://snapcraft.io/antares/trending.svg?name=0)](https://snapcraft.io/antares)
 
 Antares is an SQL client based on [Electron.js](https://github.com/electron/electron) and [Vue.js](https://github.com/vuejs/vue) that aims to become a useful tool, especially for developers.  
 My target is to support as many databases as possible, and all major operating systems, including the ARM versions.  
