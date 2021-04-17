@@ -126,9 +126,13 @@ export default {
                return 'sql';
          }
       },
+      cursorPosition () {
+         return this.editor.session.doc.positionToIndex(this.editor.getCursorPosition());
+      },
       lastWord () {
-         const words = this.value.split(' ');
-         return words[words.length - 1];
+         const charsBefore = this.value.slice(0, this.cursorPosition);
+         const words = charsBefore.replaceAll('\n', ' ').split(' ').filter(Boolean);
+         return words.pop();
       },
       isLastWordATable () {
          return /\w+\.\w*/gm.test(this.lastWord);
@@ -209,7 +213,7 @@ export default {
          if (['insertstring', 'backspace', 'del'].includes(e.command.name)) {
             if (this.isLastWordATable || e.args === '.') {
                if (e.args !== ' ') {
-                  const table = this.tables.find(t => t.name === this.lastWord.split('.').pop());
+                  const table = this.tables.find(t => t.name === this.lastWord.split('.').pop().trim());
 
                   if (table) {
                      const params = {
