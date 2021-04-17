@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.3](https://github.com/Fabio286/antares/compare/v0.1.2...v0.1.3) (2021-04-17)
+
+
+### Features
+
+* **PostgreSQL:** functions management ([cd31413](https://github.com/Fabio286/antares/commit/cd3141325681ea572c06b8998dd7bd334ceb3236))
+* **PostgreSQL:** procedure language select ([b33199e](https://github.com/Fabio286/antares/commit/b33199ea59c60b467601f333857494aa40adf4e8))
+
+
+### Bug Fixes
+
+* **MySQL:** invalid JavaScript datetime values not shown ([dcccb54](https://github.com/Fabio286/antares/commit/dcccb544f9ec24ad693c9e81fb4bcfbdbb7cc4e1))
+* approximate row count shown for results less than 1000 ([a6b75ad](https://github.com/Fabio286/antares/commit/a6b75ad0dc0d884332464c277e8542b2698630b9))
+* field apparently loses index or foreign key on rename in table editor ([7d2ace9](https://github.com/Fabio286/antares/commit/7d2ace94562f8da307b15b83c89d919727d800c8))
+
+
+### Improvements
+
+* **MySQL:** improved the way to get routine and functions parameters ([90fd9db](https://github.com/Fabio286/antares/commit/90fd9db917c40262f2bc2501ab86f5feba3d8db4))
+* **UI:** improved table fields suggestion in query editor ([c22187c](https://github.com/Fabio286/antares/commit/c22187c3053aef368a351cc35e2f1d407ecde209))
+
 ### [0.1.2](https://github.com/Fabio286/antares/compare/v0.1.1...v0.1.2) (2021-04-11)
 
 
