@@ -4,7 +4,7 @@
 
 # Antares SQL Client
 
-![GitHub package.json version](https://img.shields.io/github/package-json/v/fabio286/antares) ![GitHub All Releases](https://img.shields.io/github/downloads/fabio286/antares/total) ![GitHub](https://img.shields.io/github/license/fabio286/antares) [![antares](https://snapcraft.io/antares/badge.svg)](https://snapcraft.io/antares) [![antares](https://snapcraft.io/antares/trending.svg?name=0)](https://snapcraft.io/antares)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/fabio286/antares) ![GitHub All Releases](https://img.shields.io/github/downloads/fabio286/antares/total) ![GitHub](https://img.shields.io/github/license/fabio286/antares) [![antares](https://snapcraft.io/antares/badge.svg)](https://snapcraft.io/antares) [![antares](https://snapcraft.io/antares/trending.svg?name=0)](https://snapcraft.io/antares) [![Plant a Tree](https://raw.githubusercontent.com/Fabio286/treedom-badge/master/svg/plant-a-tree.svg)](https://www.treedom.net/en/user/fabio-di-stasio/event/antares-for-the-planet)
 
 Antares is an SQL client based on [Electron.js](https://github.com/electron/electron) and [Vue.js](https://github.com/vuejs/vue) that aims to become a useful tool, especially for developers.  
 My target is to support as many databases as possible, and all major operating systems, including the ARM versions.  
