@@ -1,4 +1,3 @@
-import keytar from 'keytar';
 import { app, ipcMain } from 'electron';
 
 export default () => {
@@ -7,14 +6,7 @@ export default () => {
    });
 
    ipcMain.on('get-key', async event => {
-      let key = false;
-
-      try {
-         key = await keytar.getPassword('antares', 'user');
-      }
-      catch (err) {
-         console.log(err);
-      }
+      const key = false;
       event.returnValue = key;
    });
 };

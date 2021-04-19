@@ -30,6 +30,10 @@ body {
   cursor: help;
 }
 
+.no-outline {
+  outline: none !important;
+}
+
 .no-border {
   outline: none !important;
   border: none !important;

@@ -77,7 +77,8 @@ export class PostgreSQLClient extends AntaresCore {
     */
    use (schema) {
       this._schema = schema;
-      return this.raw(`SET search_path TO ${schema}`);
+      if (schema)
+         return this.raw(`SET search_path TO ${schema}`);
    }
 
    /**
@@ -274,7 +275,7 @@ export class PostgreSQLClient extends AntaresCore {
     */
    async getTableIndexes ({ schema, table }) {
       if (schema !== 'public')
-         this.use(schema);
+         await this.use(schema);
 
       const { rows } = await this.raw(`WITH ndx_list AS (
          SELECT pg_index.indexrelid, pg_class.oid
@@ -670,7 +671,7 @@ export class PostgreSQLClient extends AntaresCore {
          : '';
 
       if (this._schema !== 'public')
-         this.use(this._schema);
+         await this.use(this._schema);
 
       const sql = `CREATE PROCEDURE ${this._schema}.${routine.name}(${parameters})
          LANGUAGE ${routine.language}
@@ -799,7 +800,7 @@ export class PostgreSQLClient extends AntaresCore {
          : '';
 
       if (this._schema !== 'public')
-         this.use(this._schema);
+         await this.use(this._schema);
 
       const body = func.returns ? func.sql : '$BODY$\n$BODY$';
 
@@ -1018,7 +1019,7 @@ export class PostgreSQLClient extends AntaresCore {
       } = params;
 
       if (this._schema !== 'public')
-         this.use(this._schema);
+         await this.use(this._schema);
 
       let sql = '';
       const alterColumns = [];
@@ -1247,7 +1248,7 @@ export class PostgreSQLClient extends AntaresCore {
       };
 
       if (args.nest && this._schema !== 'public')
-         this.use(this._schema);
+         await this.use(this._schema);
 
       const resultsArr = [];
       let paramsArr = [];

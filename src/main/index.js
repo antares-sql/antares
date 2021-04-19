@@ -2,9 +2,7 @@
 
 import { app, BrowserWindow, nativeImage } from 'electron';
 import * as path from 'path';
-import crypto from 'crypto';
 import { format as formatUrl } from 'url';
-import keytar from 'keytar';
 import Store from 'electron-store';
 
 import ipcHandlers from './ipc-handlers';
@@ -96,18 +94,6 @@ else {
 
    // create main BrowserWindow when electron is ready
    app.on('ready', async () => {
-      try {
-         let key = await keytar.getPassword('antares', 'user');
-
-         if (!key) {
-            key = crypto.randomBytes(16).toString('hex');
-            keytar.setPassword('antares', 'user', key);
-         }
-      }
-      catch (err) {
-         console.log(err);
-      }
-
       mainWindow = createMainWindow();
    });
 }

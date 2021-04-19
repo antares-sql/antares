@@ -1,5 +1,12 @@
 <template>
-   <div v-show="isSelected" class="workspace-query-tab column col-12 columns col-gapless">
+   <div
+      v-show="isSelected"
+      class="workspace-query-tab column col-12 columns col-gapless no-outline"
+      tabindex="0"
+      @keydown.116="runQuery(query)"
+      @keydown.ctrl.87="clear"
+      @keydown.ctrl.119="beautify"
+   >
       <div class="workspace-query-runner column col-12">
          <QueryEditor
             v-show="isSelected"
@@ -23,6 +30,24 @@
                >
                   <span>{{ $t('word.run') }}</span>
                   <i class="mdi mdi-24px mdi-play" />
+               </button>
+               <button
+                  class="btn btn-dark btn-sm"
+                  :disabled="!query"
+                  title="CTRL+F8"
+                  @click="beautify()"
+               >
+                  <span>{{ $t('word.format') }}</span>
+                  <i class="mdi mdi-24px mdi-brush pl-1" />
+               </button>
+               <button
+                  class="btn btn-link btn-sm"
+                  :disabled="!query"
+                  title="CTRL+W"
+                  @click="clear()"
+               >
+                  <span>{{ $t('word.clear') }}</span>
+                  <i class="mdi mdi-24px mdi-delete-sweep pl-1" />
                </button>
             </div>
             <div class="workspace-query-info">
@@ -68,6 +93,7 @@
 </template>
 
 <script>
+import { format } from 'sql-formatter';
 import Schema from '@/ipc-api/Schema';
 import QueryEditor from '@/components/QueryEditor';
 import BaseLoader from '@/components/BaseLoader';
@@ -192,12 +218,33 @@ export default {
          if (this.$refs.queryEditor)
             this.$refs.queryEditor.editor.resize();
       },
-      onKey (e) {
-         if (this.isSelected && this.isWorkspaceSelected) {
-            e.stopPropagation();
-            if (e.key === 'F5')
-               this.runQuery(this.query);
+      beautify () {
+         if (this.$refs.queryEditor) {
+            let language = 'sql';
+
+            switch (this.workspace.client) {
+               case 'mysql':
+                  language = 'mysql';
+                  break;
+               case 'maria':
+                  language = 'mariadb';
+                  break;
+               case 'pg':
+                  language = 'postgresql';
+                  break;
+            }
+
+            const formattedQuery = format(this.query, {
+               language,
+               uppercase: true
+            });
+            this.$refs.queryEditor.editor.session.setValue(formattedQuery);
          }
+      },
+      clear () {
+         if (this.$refs.queryEditor)
+            this.$refs.queryEditor.editor.session.setValue('');
+         this.clearTabData();
       }
    }
 };
