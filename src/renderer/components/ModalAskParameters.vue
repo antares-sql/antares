@@ -26,7 +26,7 @@
                      <div class="input-group">
                         <input
                            :ref="i === 0 ? 'firstInput' : ''"
-                           v-model="values[parameter.name]"
+                           v-model="values[`${i}-${parameter.name}`]"
                            class="form-input"
                            type="text"
                         >
@@ -88,7 +88,7 @@ export default {
          return '';
       },
       runRoutine () {
-         const valArr = Object.keys(this.values).reduce((acc, curr) => {
+         const valArr = Object.keys(this.values).reduce((acc, curr, i) => {
             let qc;
             switch (this.client) {
                case 'maria':
@@ -102,7 +102,7 @@ export default {
                   qc = '"';
             }
 
-            const param = this.localRoutine.parameters.find(param => param.name === curr);
+            const param = this.localRoutine.parameters.find(param => `${i}-${param.name}` === curr);
 
             const value = [...NUMBER, ...FLOAT].includes(param.type) ? this.values[curr] : `${qc}${this.values[curr]}${qc}`;
             acc.push(value);

@@ -185,15 +185,10 @@ export default {
       isInDataTypes () {
          let typeNames = [];
          for (const group of this.workspace.dataTypes) {
-            const groupTypeNames = group.types.reduce((acc, curr) => {
+            typeNames = group.types.reduce((acc, curr) => {
                acc.push(curr.name);
                return acc;
             }, []);
-
-            typeNames = [
-               ...groupTypeNames,
-               ...typeNames
-            ];
          }
          return typeNames.includes(this.localOptions.returns);
       }
