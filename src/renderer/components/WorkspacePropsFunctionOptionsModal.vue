@@ -80,6 +80,9 @@
                         <option v-if="localOptions.returns === 'VOID'">
                            VOID
                         </option>
+                        <option v-if="!isInDataTypes">
+                           {{ localOptions.returns }}
+                        </option>
                         <optgroup
                            v-for="group in workspace.dataTypes"
                            :key="group.group"
@@ -178,6 +181,21 @@ export default {
       },
       customizations () {
          return this.workspace.customizations;
+      },
+      isInDataTypes () {
+         let typeNames = [];
+         for (const group of this.workspace.dataTypes) {
+            const groupTypeNames = group.types.reduce((acc, curr) => {
+               acc.push(curr.name);
+               return acc;
+            }, []);
+
+            typeNames = [
+               ...groupTypeNames,
+               ...typeNames
+            ];
+         }
+         return typeNames.includes(this.localOptions.returns);
       }
    },
    created () {

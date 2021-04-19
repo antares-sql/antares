@@ -60,6 +60,9 @@
             class="form-select editable-field small-select text-uppercase"
             @blur="editOFF"
          >
+            <option v-if="!isInDataTypes">
+               {{ row.type }}
+            </option>
             <optgroup
                v-for="group in dataTypes"
                :key="group.group"
@@ -68,7 +71,7 @@
                <option
                   v-for="type in group.types"
                   :key="type.name"
-                  :selected="localRow.type.toUpperCase() === type.name"
+                  :selected="localRow.type === type.name"
                   :value="type.name"
                >
                   {{ type.name }}
@@ -374,6 +377,21 @@ export default {
       },
       isNullable () {
          return !this.indexes.some(index => ['PRIMARY'].includes(index.type));
+      },
+      isInDataTypes () {
+         let typeNames = [];
+         for (const group of this.dataTypes) {
+            const groupTypeNames = group.types.reduce((acc, curr) => {
+               acc.push(curr.name);
+               return acc;
+            }, []);
+
+            typeNames = [
+               ...groupTypeNames,
+               ...typeNames
+            ];
+         }
+         return typeNames.includes(this.row.type);
       }
    },
    watch: {
