@@ -103,7 +103,7 @@
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-vue": "^7.9.0",
     "node-sass": "^5.0.0",
-    "sass-loader": "^10.1.1",
+    "sass-loader": "^11.0.1",
     "standard-version": "^9.2.0",
     "stylelint": "^13.9.0",
     "stylelint-config-standard": "^21.0.0",
