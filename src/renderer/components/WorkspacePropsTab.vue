@@ -7,6 +7,7 @@
                   class="btn btn-primary btn-sm"
                   :disabled="!isChanged"
                   :class="{'loading':isSaving}"
+                  title="CTRL+S"
                   @click="saveChanges"
                >
                   <span>{{ $t('word.save') }}</span>
@@ -150,6 +151,7 @@ export default {
    computed: {
       ...mapGetters({
          getWorkspace: 'workspaces/getWorkspace',
+         selectedWorkspace: 'workspaces/getSelected',
          getDatabaseVariable: 'workspaces/getDatabaseVariable'
       }),
       workspace () {
@@ -163,7 +165,7 @@ export default {
          return this.getDatabaseVariable(this.connection.uid, 'default_storage_engine').value || '';
       },
       isSelected () {
-         return this.workspace.selected_tab === 'prop';
+         return this.workspace.selected_tab === 'prop' && this.selectedWorkspace === this.workspace.uid && this.table;
       },
       schema () {
          return this.workspace.breadcrumbs.schema;
@@ -199,6 +201,12 @@ export default {
          if (this.isSelected && this.lastTable === this.table && this.table !== null)
             this.setUnsavedChanges(val);
       }
+   },
+   created () {
+      window.addEventListener('keydown', this.onKey);
+   },
+   beforeDestroy () {
+      window.removeEventListener('keydown', this.onKey);
    },
    methods: {
       ...mapActions({
@@ -519,6 +527,15 @@ export default {
       },
       foreignsUpdate (foreigns) {
          this.localKeyUsage = foreigns;
+      },
+      onKey (e) {
+         if (this.isSelected) {
+            e.stopPropagation();
+            if (e.ctrlKey && e.keyCode === 83) { // CTRL + S
+               if (this.isChanged)
+                  this.saveChanges();
+            }
+         }
       }
    }
 };
