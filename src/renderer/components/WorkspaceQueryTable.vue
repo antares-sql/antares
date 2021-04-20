@@ -1,16 +1,18 @@
 <template>
    <div
       ref="tableWrapper"
-      class="vscroll"
+      class="vscroll no-outline"
+      tabindex="0"
       :style="{'height': resultsSize+'px'}"
+      @keyup.46="showDeleteConfirmModal"
    >
       <TableContext
          v-if="isContext"
          :context-event="contextEvent"
          :selected-rows="selectedRows"
-         @delete-selected="deleteSelected"
+         @show-delete-modal="showDeleteConfirmModal"
          @set-null="setNull"
-         @close-context="isContext = false"
+         @close-context="closeContext"
       />
       <ul v-if="resultsWithRows.length > 1" class="tab tab-block result-tabs">
          <li
@@ -75,6 +77,23 @@
             </template>
          </BaseVirtualScroll>
       </div>
+
+      <ConfirmModal
+         v-if="isDeleteConfirmModal"
+         @confirm="deleteSelected"
+         @hide="hideDeleteConfirmModal"
+      >
+         <template :slot="'header'">
+            <div class="d-flex">
+               <i class="mdi mdi-24px mdi-delete mr-1" /> {{ $tc('message.deleteRows', selectedRows.length) }}
+            </div>
+         </template>
+         <div :slot="'body'">
+            <div class="mb-2">
+               {{ $tc('message.confirmToDeleteRows', selectedRows.length) }}
+            </div>
+         </div>
+      </ConfirmModal>
    </div>
 </template>
 
@@ -85,6 +104,7 @@ import { TEXT, LONG_TEXT, BLOB } from 'common/fieldTypes';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
 import WorkspaceQueryTableRow from '@/components/WorkspaceQueryTableRow';
 import TableContext from '@/components/WorkspaceQueryTableContext';
+import ConfirmModal from '@/components/BaseConfirmModal';
 import { mapActions, mapGetters } from 'vuex';
 import moment from 'moment';
 
@@ -93,7 +113,8 @@ export default {
    components: {
       BaseVirtualScroll,
       WorkspaceQueryTableRow,
-      TableContext
+      TableContext,
+      ConfirmModal
    },
    props: {
       results: Array,
@@ -106,6 +127,7 @@ export default {
          resultsSize: 1000,
          localResults: [],
          isContext: false,
+         isDeleteConfirmModal: false,
          contextEvent: null,
          selectedCell: null,
          selectedRows: [],
@@ -322,7 +344,17 @@ export default {
          };
          this.$emit('update-field', params);
       },
+      closeContext () {
+         this.isContext = false;
+      },
+      showDeleteConfirmModal () {
+         this.isDeleteConfirmModal = true;
+      },
+      hideDeleteConfirmModal () {
+         this.isDeleteConfirmModal = false;
+      },
       deleteSelected () {
+         this.closeContext();
          const rows = this.localResults.filter(row => this.selectedRows.includes(row._id)).map(row => {
             delete row._id;
             return row;
