@@ -19,7 +19,7 @@
                   @contextmenu.prevent="contextMenu($event, connection)"
                   @mouseover.self="tooltipPosition"
                >
-                  <i class="settingbar-element-icon dbi" :class="`dbi-${connection.client} ${connected.includes(connection.uid) ? 'badge' : ''}`" />
+                  <i class="settingbar-element-icon dbi" :class="`dbi-${connection.client} ${getStatusBadge(connection.uid)}`" />
                   <span class="ex-tooltip-content">{{ getConnectionName(connection.uid) }}</span>
                </li>
             </draggable>
@@ -73,7 +73,7 @@ export default {
       ...mapGetters({
          getConnections: 'connections/getConnections',
          getConnectionName: 'connections/getConnectionName',
-         connected: 'workspaces/getConnected',
+         getWorkspace: 'workspaces/getWorkspace',
          selectedWorkspace: 'workspaces/getSelected',
          updateStatus: 'application/getUpdateStatus'
       }),
@@ -109,6 +109,20 @@ export default {
          const el = e.target;
          const fromTop = window.pageYOffset + el.getBoundingClientRect().top - (el.offsetHeight / 4);
          el.querySelector('.ex-tooltip-content').style.top = `${fromTop}px`;
+      },
+      getStatusBadge (uid) {
+         const status = this.getWorkspace(uid).connection_status;
+
+         switch (status) {
+            case 'connected':
+               return 'badge badge-connected';
+            case 'connecting':
+               return 'badge badge-connecting';
+            case 'failed':
+               return 'badge badge-failed';
+            default:
+               return '';
+         }
       }
    }
 };

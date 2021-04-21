@@ -136,6 +136,20 @@ body {
       box-shadow: none;
     }
   }
+
+  &.badge-connected::after {
+    background: $success-color;
+  }
+
+  &.badge-connecting::after {
+    animation-name: connecting;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+  }
+
+  &.badge-failed::after {
+    background: $error-color;
+  }
 }
 
 .form-select {

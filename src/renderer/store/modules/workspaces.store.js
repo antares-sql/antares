@@ -37,7 +37,7 @@ export default {
       },
       getConnected: state => {
          return state.workspaces
-            .filter(workspace => workspace.connected)
+            .filter(workspace => workspace.connection_status === 'connected')
             .map(workspace => workspace.uid);
       },
       getLoadedSchemas: state => uid => {
@@ -54,7 +54,7 @@ export default {
       SELECT_WORKSPACE (state, uid) {
          state.selected_workspace = uid;
       },
-      ADD_CONNECTED (state, payload) {
+      SET_CONNECTED (state, payload) {
          const { uid, client, dataTypes, indexTypes, customizations, structure, version } = payload;
 
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
@@ -65,19 +65,41 @@ export default {
                indexTypes,
                customizations,
                structure,
-               connected: true,
+               connection_status: 'connected',
                version
             }
             : workspace);
       },
-      REMOVE_CONNECTED (state, uid) {
+      SET_CONNECTING (state, uid) {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
             ? {
                ...workspace,
                structure: {},
                breadcrumbs: {},
                loaded_schemas: new Set(),
-               connected: false
+               connection_status: 'connecting'
+            }
+            : workspace);
+      },
+      SET_FAILED (state, uid) {
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
+            ? {
+               ...workspace,
+               structure: {},
+               breadcrumbs: {},
+               loaded_schemas: new Set(),
+               connection_status: 'failed'
+            }
+            : workspace);
+      },
+      SET_DISCONNECTED (state, uid) {
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
+            ? {
+               ...workspace,
+               structure: {},
+               breadcrumbs: {},
+               loaded_schemas: new Set(),
+               connection_status: 'disconnected'
             }
             : workspace);
       },
@@ -247,10 +269,14 @@ export default {
          commit('SELECT_WORKSPACE', uid);
       },
       async connectWorkspace ({ dispatch, commit }, connection) {
+         commit('SET_CONNECTING', connection.uid);
+
          try {
             const { status, response } = await Connection.connect(connection);
-            if (status === 'error')
+            if (status === 'error') {
                dispatch('notifications/addNotification', { status, message: response }, { root: true });
+               commit('SET_FAILED', connection.uid);
+            }
             else {
                let dataTypes = [];
                let indexTypes = [];
@@ -288,7 +314,7 @@ export default {
                   dispatch('connections/editConnection', connProxy, { root: true });
                }
 
-               commit('ADD_CONNECTED', {
+               commit('SET_CONNECTED', {
                   uid: connection.uid,
                   client: connection.client,
                   dataTypes,
@@ -382,13 +408,13 @@ export default {
       },
       removeConnected ({ commit }, uid) {
          Connection.disconnect(uid);
-         commit('REMOVE_CONNECTED', uid);
+         commit('SET_DISCONNECTED', uid);
          commit('SELECT_TAB', { uid, tab: 0 });
       },
       addWorkspace ({ commit, dispatch, getters }, uid) {
          const workspace = {
             uid,
-            connected: false,
+            connection_status: 'disconnected',
             selected_tab: 0,
             search_term: '',
             tabs: [],

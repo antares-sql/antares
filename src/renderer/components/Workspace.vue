@@ -1,7 +1,7 @@
 <template>
    <div v-show="isSelected" class="workspace column columns col-gapless">
       <WorkspaceExploreBar :connection="connection" :is-selected="isSelected" />
-      <div v-if="workspace.connected" class="workspace-tabs column columns col-gapless">
+      <div v-if="workspace.connection_status === 'connected'" class="workspace-tabs column columns col-gapless">
          <ul
             id="tabWrap"
             ref="tabWrap"

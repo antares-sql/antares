@@ -8,7 +8,7 @@
       >
          <div class="workspace-explorebar-header">
             <span class="workspace-explorebar-title">{{ connectionName }}</span>
-            <span v-if="workspace.connected" class="workspace-explorebar-tools">
+            <span v-if="workspace.connection_status === 'connected'" class="workspace-explorebar-tools">
                <i
                   class="mdi mdi-18px mdi-database-plus c-hand mr-2"
                   :title="$t('message.createNewSchema')"
@@ -28,7 +28,7 @@
             </span>
          </div>
          <div class="workspace-explorebar-search">
-            <div v-if="workspace.connected" class="has-icon-right">
+            <div v-if="workspace.connection_status === 'connected'" class="has-icon-right">
                <input
                   v-model="searchTerm"
                   class="form-input input-sm"
@@ -39,7 +39,7 @@
             </div>
          </div>
          <WorkspaceConnectPanel
-            v-if="!workspace.connected"
+            v-if="workspace.connection_status !== 'connected'"
             class="workspace-explorebar-body"
             :connection="connection"
          />

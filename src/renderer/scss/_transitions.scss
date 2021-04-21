@@ -39,3 +39,17 @@
     transform: scale(1);
   }
 }
+
+@keyframes connecting {
+  0% {
+    background-color: transparent;
+  }
+
+  50% {
+    background-color: $warning-color;
+  }
+
+  100% {
+    background-color: transparent;
+  }
+}
