@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import marked from 'marked';
 import BaseLoader from '@/components/BaseLoader';
 
@@ -31,13 +32,16 @@ export default {
          isError: false
       };
    },
+   computed: {
+      ...mapGetters({ appVersion: 'application/appVersion' })
+   },
    created () {
       this.getChangelog();
    },
    methods: {
       async getChangelog () {
          try {
-            const apiRes = await fetch('https://api.github.com/repos/Fabio286/antares/releases/latest', {
+            const apiRes = await fetch(`https://api.github.com/repos/Fabio286/antares/releases/tags/v${this.appVersion}`, {
                method: 'GET'
             });
 
