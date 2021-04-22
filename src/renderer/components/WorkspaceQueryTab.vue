@@ -31,9 +31,28 @@
                   <span>{{ $t('word.run') }}</span>
                   <i class="mdi mdi-24px mdi-play" />
                </button>
+               <div class="dropdown export-dropdown pr-2">
+                  <button
+                     :disabled="!results.length || isQuering"
+                     class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
+                     tabindex="0"
+                  >
+                     <span>{{ $t('word.export') }}</span>
+                     <i class="mdi mdi-24px mdi-file-export ml-1" />
+                     <i class="mdi mdi-24px mdi-menu-down" />
+                  </button>
+                  <ul class="menu text-left">
+                     <li class="menu-item">
+                        <a class="c-hand" @click="downloadTable('json')">JSON</a>
+                     </li>
+                     <li class="menu-item">
+                        <a class="c-hand" @click="downloadTable('csv')">CSV</a>
+                     </li>
+                  </ul>
+               </div>
                <button
                   class="btn btn-dark btn-sm"
-                  :disabled="!query"
+                  :disabled="!query || isQuering"
                   title="CTRL+F8"
                   @click="beautify()"
                >
@@ -42,7 +61,7 @@
                </button>
                <button
                   class="btn btn-link btn-sm"
-                  :disabled="!query"
+                  :disabled="!query || isQuering"
                   title="CTRL+W"
                   @click="clear()"
                >
@@ -245,6 +264,9 @@ export default {
          if (this.$refs.queryEditor)
             this.$refs.queryEditor.editor.session.setValue('');
          this.clearTabData();
+      },
+      downloadTable (format) {
+         this.$refs.queryTable.downloadTable(format, `${this.tab.type}-${this.tab.index}`);
       }
    }
 };
@@ -298,4 +320,9 @@ export default {
   }
 }
 
+.export-dropdown {
+  .menu {
+    min-width: 100%;
+  }
+}
 </style>
