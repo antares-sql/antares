@@ -187,12 +187,14 @@ export class PostgreSQLClient extends AntaresCore {
             // TRIGGERS
             const remappedTriggers = triggersArr.filter(trigger => trigger.Db === db.database).map(trigger => {
                return {
-                  name: trigger.trigger_name,
+                  name: `${trigger.table_name}.${trigger.trigger_name}`,
+                  orgName: trigger.trigger_name,
                   timing: trigger.activation,
-                  definer: trigger.definition, // ???
+                  definer: '',
+                  definition: trigger.definition,
                   event: trigger.event,
-                  table: trigger.table_trigger,
-                  sqlMode: trigger.sql_mode
+                  table: trigger.table_name,
+                  sqlMode: ''
                };
             });
 
@@ -516,7 +518,8 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async dropTrigger (params) {
-      const sql = `DROP TRIGGER \`${params.trigger}\``;
+      const triggerParts = params.trigger.split('.');
+      const sql = `DROP TRIGGER ${triggerParts[1]} ON ${triggerParts[0]}`;
       return await this.raw(sql);
    }
 

@@ -16,6 +16,7 @@ module.exports = {
    tables: false,
    views: false,
    triggers: false,
+   triggerFunctions: false,
    routines: false,
    functions: false,
    schedulers: false,
@@ -23,6 +24,7 @@ module.exports = {
    tableAdd: false,
    viewAdd: false,
    triggerAdd: false,
+   triggerFunctionAdd: false,
    routineAdd: false,
    functionAdd: false,
    schedulerAdd: false,
@@ -31,6 +33,7 @@ module.exports = {
    tableSettings: false,
    viewSettings: false,
    triggerSettings: false,
+   triggerFunctionSettings: false,
    routineSettings: false,
    functionSettings: false,
    schedulerSettings: false,
@@ -59,6 +62,8 @@ module.exports = {
    functionSql: false,
    functionContext: false,
    functionLanguage: false,
+   triggerMiltipleEvents: false,
+   triggerUpdateColumns: false,
    parametersLength: false,
    languages: false
 };
