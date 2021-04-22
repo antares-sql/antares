@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.4](https://github.com/Fabio286/antares/compare/v0.1.3...v0.1.4) (2021-04-22)
+
+
+### Features
+
+* query results export ([1d363f7](https://github.com/Fabio286/antares/commit/1d363f755e025d0fc6fec61cbd47ff87a8f25728))
+* **UI:** canc press to delete selected rows ([20cba6e](https://github.com/Fabio286/antares/commit/20cba6ee9bc1daa902b04d6e2ddcb31d04fbf805))
+* **UI:** ctrl+s shortcut to save changes ([16e17b3](https://github.com/Fabio286/antares/commit/16e17b39b6c8b561cc018d02afee2276190ce304))
+* **UI:** format and clear queries ([9ffd443](https://github.com/Fabio286/antares/commit/9ffd443a66303f88fc4529896f6d1d7917454f7a))
+
+
+### Bug Fixes
+
+* launch from shortcut of procedures or functions with parameters without name dont works ([f82dbd2](https://github.com/Fabio286/antares/commit/f82dbd24dcef7b4d8d127a604e256b3f79a6c617))
+* wrong changelog in some cases ([a41cf1a](https://github.com/Fabio286/antares/commit/a41cf1ab5662f5f5fdedff4a9e1c626c23071377))
+* **UI:** data type not listed in selection if not present in global types ([6eb2977](https://github.com/Fabio286/antares/commit/6eb2977568987b9440b62ae7dbd7183338bfcc9b))
+
+
+### Improvements
+
+* **UI:** improved connection status indicator ([5ceddb8](https://github.com/Fabio286/antares/commit/5ceddb8e00f3bc1984b8e47de270dc39b367903f))
+
 ### [0.1.3](https://github.com/Fabio286/antares/compare/v0.1.2...v0.1.3) (2021-04-17)
 
 
