@@ -30,6 +30,12 @@
   animation: jump-down-in 0.2s reverse;
 }
 
+.pulse {
+  animation-name: pulse;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+}
+
 @keyframes jump-down-in {
   0% {
     transform: scale(0);
@@ -40,16 +46,16 @@
   }
 }
 
-@keyframes connecting {
+@keyframes pulse {
   0% {
-    background-color: transparent;
+    opacity: 0;
   }
 
   50% {
-    background-color: $warning-color;
+    opacity: 1;
   }
 
   100% {
-    background-color: transparent;
+    opacity: 0;
   }
 }

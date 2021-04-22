@@ -142,7 +142,8 @@ body {
   }
 
   &.badge-connecting::after {
-    animation-name: connecting;
+    background: $warning-color;
+    animation-name: pulse;
     animation-duration: 2s;
     animation-iteration-count: infinite;
   }

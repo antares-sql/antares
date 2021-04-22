@@ -111,17 +111,19 @@ export default {
          el.querySelector('.ex-tooltip-content').style.top = `${fromTop}px`;
       },
       getStatusBadge (uid) {
-         const status = this.getWorkspace(uid).connection_status;
+         if (this.getWorkspace(uid)) {
+            const status = this.getWorkspace(uid).connection_status;
 
-         switch (status) {
-            case 'connected':
-               return 'badge badge-connected';
-            case 'connecting':
-               return 'badge badge-connecting';
-            case 'failed':
-               return 'badge badge-failed';
-            default:
-               return '';
+            switch (status) {
+               case 'connected':
+                  return 'badge badge-connected';
+               case 'connecting':
+                  return 'badge badge-connecting';
+               case 'failed':
+                  return 'badge badge-failed';
+               default:
+                  return '';
+            }
          }
       }
    }
