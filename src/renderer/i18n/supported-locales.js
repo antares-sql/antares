@@ -3,5 +3,6 @@ export default {
    'it-IT': 'Italiano',
    'ar-SA': 'العربية',
    'es-ES': 'Español',
-   'fr-FR': 'Français'
+   'fr-FR': 'Français',
+   'pt-BR': 'Português (Brasil)'
 };
