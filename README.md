@@ -45,7 +45,6 @@ A modern application created with minimalism and semplicity in mind, with featur
 - Scratchpad.
 - Multi language.
 - Secure password storage.
-- Auto updates.
 
 ## Coming soon
 
@@ -61,17 +60,6 @@ This is a roadmap with major features will come in near future.
 - More keyboard shortcuts.
 - Query logs console.
 - Import/export and migration.
-
-## Troubleshooting
-
-### **Linux**
-
-With KDE may need necessary installation of the additional `gnome-keyring` package.  
-Depending on your distribution, you will need to run the following command:
-
-- Debian/Ubuntu: `sudo apt-get install gnome-keyring`
-- Red Hat-based: `sudo yum install gnome-keyring`
-- Arch Linux: `sudo pacman -S gnome-keyring`
 
 ## Currently supported
 
@@ -100,10 +88,11 @@ Depending on your distribution, you will need to run the following command:
 
 ## Translations
 
-**Italian Translation** (46%) / [Giuseppe Gigliotti](https://github.com/ReverbOD) [[#20](https://github.com/Fabio286/antares/pull/20)]  
-**Arabic Translation** (45%) / [Mohd-PH](https://github.com/Mohd-PH) [[#29](https://github.com/Fabio286/antares/pull/29)]  
-**Spanish Translation** (46%) / [hongkfui](https://github.com/hongkfui) [[#32](https://github.com/Fabio286/antares/pull/32)]  
-**French Translation** (100%) / [MrAnyx](https://github.com/MrAnyx) [[#44](https://github.com/Fabio286/antares/pull/44)]
+**Italian Translation** / [Giuseppe Gigliotti](https://github.com/ReverbOD) [[#20](https://github.com/Fabio286/antares/pull/20)]  
+**Arabic Translation** / [Mohd-PH](https://github.com/Mohd-PH) [[#29](https://github.com/Fabio286/antares/pull/29)]  
+**Spanish Translation** / [hongkfui](https://github.com/hongkfui) [[#32](https://github.com/Fabio286/antares/pull/32)]  
+**French Translation** / [MrAnyx](https://github.com/MrAnyx) [[#44](https://github.com/Fabio286/antares/pull/44)]  
+**Portugues (Brasil)** / [Daniel Eduardo](https://github.com/daeleduardo) [[#54](https://github.com/Fabio286/antares/pull/54)]
 
 ## Reviews
 
