@@ -29,6 +29,7 @@ async function createMainWindow () {
       icon: nativeImage.createFromDataURL(icon.default),
       webPreferences: {
          nodeIntegration: true,
+         contextIsolation: false,
          'web-security': false,
          enableRemoteModule: true,
          spellcheck: false
@@ -37,26 +38,25 @@ async function createMainWindow () {
       backgroundColor: '#1d1d1d'
    });
 
-   if (isDevelopment) {
-      await window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`);
+   try {
+      if (isDevelopment) {
+         await window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`);
 
-      const { default: installExtension, VUEJS_DEVTOOLS } = require('electron-devtools-installer');
-      window.webContents.openDevTools();
+         const { default: installExtension, VUEJS_DEVTOOLS } = require('electron-devtools-installer');
 
-      installExtension(VUEJS_DEVTOOLS)
-         .then(name => {
-            console.log(name, 'installed');
-         })
-         .catch(err => {
-            console.log(err);
-         });
+         const toolName = await installExtension(VUEJS_DEVTOOLS);
+         console.log(toolName, 'installed');
+      }
+      else {
+         await window.loadURL(formatUrl({
+            pathname: path.join(__dirname, 'index.html'),
+            protocol: 'file',
+            slashes: true
+         }));
+      }
    }
-   else {
-      await window.loadURL(formatUrl({
-         pathname: path.join(__dirname, 'index.html'),
-         protocol: 'file',
-         slashes: true
-      }));
+   catch (err) {
+      console.log(err);
    }
 
    window.on('closed', () => {
@@ -76,6 +76,8 @@ async function createMainWindow () {
 if (!gotTheLock)
    app.quit();
 else {
+   require('@electron/remote/main').initialize();
+
    // Initialize ipcHandlers
    ipcHandlers();
 
@@ -86,14 +88,17 @@ else {
          app.quit();
    });
 
-   app.on('activate', () => {
+   app.on('activate', async () => {
       // on macOS it is common to re-create a window even after all windows have been closed
-      if (mainWindow === null)
-         mainWindow = createMainWindow();
+      if (mainWindow === null) {
+         mainWindow = await createMainWindow();
+         mainWindow.webContents.openDevTools();
+      }
    });
 
    // create main BrowserWindow when electron is ready
    app.on('ready', async () => {
-      mainWindow = createMainWindow();
+      mainWindow = await createMainWindow();
+      mainWindow.webContents.openDevTools();
    });
 }

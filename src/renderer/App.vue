@@ -25,7 +25,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { ipcRenderer, remote } from 'electron';
+import { ipcRenderer } from 'electron';
+import { Menu, getCurrentWindow } from '@electron/remote';
 
 export default {
    name: 'App',
@@ -60,8 +61,6 @@ export default {
       ipcRenderer.send('check-for-updates');
       this.checkVersionUpdate();
 
-      const Menu = remote.Menu;
-
       const InputMenu = Menu.buildFromTemplate([
          {
             label: this.$t('word.cut'),
@@ -92,7 +91,7 @@ export default {
 
          while (node) {
             if (node.nodeName.match(/^(input|textarea)$/i) || node.isContentEditable) {
-               InputMenu.popup(remote.getCurrentWindow());
+               InputMenu.popup(getCurrentWindow());
                break;
             }
             node = node.parentNode;
