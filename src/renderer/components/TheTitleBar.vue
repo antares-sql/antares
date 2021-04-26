@@ -37,15 +37,16 @@
 </template>
 
 <script>
-import { remote, ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron';
+import { getCurrentWindow } from '@electron/remote';
 import { mapGetters } from 'vuex';
 
 export default {
    name: 'TheTitleBar',
    data () {
       return {
-         w: remote.getCurrentWindow(),
-         isMaximized: remote.getCurrentWindow().isMaximized(),
+         w: getCurrentWindow(),
+         isMaximized: getCurrentWindow().isMaximized(),
          isDevelopment: process.env.NODE_ENV === 'development'
       };
    },
