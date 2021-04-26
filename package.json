@@ -70,7 +70,7 @@
     "@mdi/font": "^5.9.55",
     "ace-builds": "^1.4.12",
     "electron-log": "^4.3.0",
-    "electron-store": "^7.0.0",
+    "electron-store": "^8.0.0",
     "electron-updater": "^4.3.5",
     "faker": "^5.3.1",
     "marked": "^2.0.2",
