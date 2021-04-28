@@ -9,22 +9,25 @@
         "plugin:vue/recommended"
     ],
     "parserOptions": {
-        "parser": "babel-eslint",
+        "parser": "@babel/eslint-parser",
         "ecmaVersion": 9,
-        "sourceType": "module"
+        "sourceType": "module",
+        "requireConfigFile": false
     },
     "rules": {
         "indent": [
             "error",
             3,
-            { "SwitchCase": 1 }
+            {
+                "SwitchCase": 1
+            }
         ],
         "linebreak-style": [
             "error",
             "unix"
         ],
         "brace-style": [
-            "error", 
+            "error",
             "stroustrup"
         ],
         "quotes": [
@@ -36,7 +39,7 @@
             "always"
         ],
         "curly": [
-            "error", 
+            "error",
             "multi-or-nest"
         ],
         "no-console": "off",
@@ -44,18 +47,25 @@
         "vue/no-side-effects-in-computed-properties": "off",
         "vue/require-default-prop": "off",
         "vue/no-v-html": "off",
-        "vue/html-indent": ["error", 3, {
-            "attribute": 1,
-            "baseIndent": 1,
-            "closeBracket": 0,
-            "ignores": []
-        }],
-        "vue/max-attributes-per-line": ["error", {
-            "singleline": 2,
-            "multiline": {
-                "max": 1,
-                "allowFirstLine": false
+        "vue/html-indent": [
+            "error",
+            3,
+            {
+                "attribute": 1,
+                "baseIndent": 1,
+                "closeBracket": 0,
+                "ignores": []
             }
-        }]
+        ],
+        "vue/max-attributes-per-line": [
+            "error",
+            {
+                "singleline": 2,
+                "multiline": {
+                    "max": 1,
+                    "allowFirstLine": false
+                }
+            }
+        ]
     }
 }
