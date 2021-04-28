@@ -1255,7 +1255,7 @@ export class PostgreSQLClient extends AntaresCore {
 
       const resultsArr = [];
       let paramsArr = [];
-      const queries = args.split ? sql.split(';') : [sql];
+      const queries = args.split ? sql.split(/(?!\B'[^']*);(?![^']*'\B)/gm) : [sql];
 
       if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
 
