@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.5](https://github.com/Fabio286/antares/compare/v0.1.4...v0.1.5) (2021-04-30)
+
+
+### Bug Fixes
+
+* **MySQL:** multiple queries non properly split in some cases ([5208ec1](https://github.com/Fabio286/antares/commit/5208ec171b44da0e6bfa93f15bfedd03ef2aa868))
+* % character not properly escaped, closes [#60](https://github.com/Fabio286/antares/issues/60) ([ecfb732](https://github.com/Fabio286/antares/commit/ecfb732c265a5485e131e75f3d20ff07d9409753))
+* semicolon inside strings breaks queries, closes [#59](https://github.com/Fabio286/antares/issues/59) ([1b09909](https://github.com/Fabio286/antares/commit/1b0990912627a3a4a4e8d62b4593f8a7aa3a7fe5))
+
+
+### Improvements
+
+* **UI:** new application icon ([5822b3d](https://github.com/Fabio286/antares/commit/5822b3df432e0a2b305d0ff37a20dc466c3a3992))
+
 ### [0.1.4](https://github.com/Fabio286/antares/compare/v0.1.3...v0.1.4) (2021-04-22)
 
 
