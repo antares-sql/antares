@@ -133,7 +133,7 @@ export default {
 
       .titlebar-logo {
         height: $titlebar-height;
-        padding: 0 0.4rem;
+        padding: 0.3rem 0.4rem;
       }
 
       .titlebar-element {

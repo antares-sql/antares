@@ -92,13 +92,15 @@ else {
       // on macOS it is common to re-create a window even after all windows have been closed
       if (mainWindow === null) {
          mainWindow = await createMainWindow();
-         mainWindow.webContents.openDevTools();
+         if (isDevelopment)
+            mainWindow.webContents.openDevTools();
       }
    });
 
    // create main BrowserWindow when electron is ready
    app.on('ready', async () => {
       mainWindow = await createMainWindow();
-      mainWindow.webContents.openDevTools();
+      if (isDevelopment)
+         mainWindow.webContents.openDevTools();
    });
 }
