@@ -79,7 +79,7 @@
     "mysql2": "^2.2.5",
     "node-sql-parser": "^3.1.0",
     "pg": "^8.5.1",
-    "pgsql-ast-parser": "^7.0.2",
+    "pgsql-ast-parser": "^8.1.0",
     "source-map-support": "^0.5.16",
     "spectre.css": "^0.5.9",
     "sql-formatter": "^4.0.2",
