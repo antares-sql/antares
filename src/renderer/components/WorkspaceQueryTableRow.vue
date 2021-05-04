@@ -43,6 +43,16 @@
                   <option>true</option>
                   <option>false</option>
                </select>
+               <select
+                  v-else-if="enumArray"
+                  v-model="editingContent"
+                  class="form-select small-select editable-field"
+                  @blur="editOFF"
+               >
+                  <option v-for="value in enumArray" :key="value">
+                     {{ value }}
+                  </option>
+               </select>
                <input
                   v-else
                   ref="editField"
@@ -335,6 +345,11 @@ export default {
             return !!(this.fields[Object.keys(this.fields)[0]].schema && this.fields[Object.keys(this.fields)[0]].table);
          }
 
+         return false;
+      },
+      enumArray () {
+         if (this.fields[this.editingField].enumValues)
+            return this.fields[this.editingField].enumValues.replaceAll('\'', '').split(',');
          return false;
       }
    },

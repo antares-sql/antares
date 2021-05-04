@@ -99,6 +99,15 @@
                {{ localLength }}
             </span>
             <input
+               v-else-if="localRow.enumValues"
+               ref="editField"
+               v-model="editingContent"
+               type="text"
+               autofocus
+               class="editable-field px-2"
+               @blur="editOFF"
+            >
+            <input
                v-else
                ref="editField"
                v-model="editingContent"
@@ -352,7 +361,7 @@ export default {
          getWorkspace: 'workspaces/getWorkspace'
       }),
       localLength () {
-         return this.localRow.numLength || this.localRow.charLength || this.localRow.datePrecision || this.localRow.numPrecision || 0;
+         return this.localRow.enumValues || this.localRow.numLength || this.localRow.charLength || this.localRow.datePrecision || this.localRow.numPrecision || 0;
       },
       fieldType () {
          const fieldType = this.dataTypes.reduce((acc, group) => [...acc, ...group.types], []).filter(type =>
@@ -458,14 +467,21 @@ export default {
       editON (event, content, field) {
          if (field === 'length') {
             if (['integer', 'float', 'binary', 'spatial'].includes(this.fieldType.group)) this.editingField = 'numLength';
-            if (['string', 'other'].includes(this.fieldType.group)) this.editingField = 'charLength';
-            if (['time'].includes(this.fieldType.group)) this.editingField = 'datePrecision';
+            else if (['string', 'unknown'].includes(this.fieldType.group)) this.editingField = 'charLength';
+            else if (['other'].includes(this.fieldType.group)) this.editingField = 'enumValues';
+            else if (['time'].includes(this.fieldType.group)) this.editingField = 'datePrecision';
          }
          else
             this.editingField = field;
 
-         this.editingContent = content;
-         this.originalContent = content;
+         if (this.localRow.enumValues && field === 'length') {
+            this.editingContent = this.localRow.enumValues;
+            this.originalContent = this.localRow.enumValues;
+         }
+         else {
+            this.editingContent = content;
+            this.originalContent = content;
+         }
 
          const obj = { [field]: true };
          this.isInlineEditor = { ...this.isInlineEditor, ...obj };

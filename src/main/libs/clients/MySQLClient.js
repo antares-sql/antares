@@ -310,6 +310,9 @@ export class MySQLClient extends AntaresCore {
       return rows.map(field => {
          let numLength = field.COLUMN_TYPE.match(/int\(([^)]+)\)/);
          numLength = numLength ? +numLength.pop() : null;
+         const enumValues = /(enum|set)/.test(field.COLUMN_TYPE)
+            ? field.COLUMN_TYPE.match(/\(([^)]+)\)/)[0].slice(1, -1)
+            : null;
 
          return {
             name: field.COLUMN_NAME,
@@ -319,6 +322,7 @@ export class MySQLClient extends AntaresCore {
             table: field.TABLE_NAME,
             numPrecision: field.NUMERIC_PRECISION,
             numLength,
+            enumValues,
             datePrecision: field.DATETIME_PRECISION,
             charLength: field.CHARACTER_MAXIMUM_LENGTH,
             nullable: field.IS_NULLABLE.includes('YES'),
@@ -1116,7 +1120,7 @@ export class MySQLClient extends AntaresCore {
       // CHANGE FIELDS
       changes.forEach(change => {
          const typeInfo = this._getTypeInfo(change.type);
-         const length = typeInfo.length ? change.numLength || change.charLength || change.datePrecision : false;
+         const length = typeInfo.length ? change.enumValues || change.numLength || change.charLength || change.datePrecision : false;
 
          alterColumns.push(`CHANGE COLUMN \`${change.orgName}\` \`${change.name}\` 
             ${change.type.toUpperCase()}${length ? `(${length})` : ''} 
@@ -1190,7 +1194,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async truncateTable (params) {
-      const sql = `TRUNCATE TABLE \`${params.table}\``;
+      const sql = `TRUNCATE TABLE \`${this._schema}\`.\`${params.table}\``;
       return await this.raw(sql);
    }
 
@@ -1201,7 +1205,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async dropTable (params) {
-      const sql = `DROP TABLE \`${params.table}\``;
+      const sql = `DROP TABLE \`${this._schema}\`.\`${params.table}\``;
       return await this.raw(sql);
    }
 

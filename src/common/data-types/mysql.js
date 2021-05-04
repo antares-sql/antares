@@ -278,13 +278,6 @@ module.exports = [
       group: 'other',
       types: [
          {
-            name: 'UNKNOWN',
-            length: false,
-            collation: false,
-            unsigned: false,
-            zerofill: false
-         },
-         {
             name: 'ENUM',
             length: true,
             collation: false,
@@ -294,6 +287,18 @@ module.exports = [
          {
             name: 'SET',
             length: true,
+            collation: false,
+            unsigned: false,
+            zerofill: false
+         }
+      ]
+   },
+   {
+      group: 'unknown',
+      types: [
+         {
+            name: 'UNKNOWN',
+            length: false,
             collation: false,
             unsigned: false,
             zerofill: false
