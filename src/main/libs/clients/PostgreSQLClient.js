@@ -1047,7 +1047,7 @@ export class PostgreSQLClient extends AntaresCore {
             ${addition.zerofill ? 'ZEROFILL' : ''}
             ${addition.nullable ? 'NULL' : 'NOT NULL'}
             ${addition.autoIncrement ? 'AUTO_INCREMENT' : ''}
-            ${addition.default ? `DEFAULT ${addition.default}` : ''}
+            ${addition.default ? `DEFAULT ${typeof addition.default === 'string' ? `'${addition.default}'` : addition.default}` : ''}
             ${addition.comment ? `COMMENT '${addition.comment}'` : ''}
             ${addition.collation ? `COLLATE ${addition.collation}` : ''}
             ${addition.onUpdate ? `ON UPDATE ${addition.onUpdate}` : ''}`);
@@ -1093,7 +1093,7 @@ export class PostgreSQLClient extends AntaresCore {
 
          alterColumns.push(`ALTER COLUMN "${change.name}" TYPE ${localType}${length ? `(${length})` : ''}${change.isArray ? '[]' : ''} USING "${change.name}"::${localType}`);
          alterColumns.push(`ALTER COLUMN "${change.name}" ${change.nullable ? 'DROP NOT NULL' : 'SET NOT NULL'}`);
-         alterColumns.push(`ALTER COLUMN "${change.name}" ${change.default ? `SET DEFAULT ${change.default}` : 'DROP DEFAULT'}`);
+         alterColumns.push(`ALTER COLUMN "${change.name}" ${change.default ? `SET DEFAULT ${typeof change.default === 'string' ? `'${change.default}'` : change.default}` : 'DROP DEFAULT'}`);
          if (['SERIAL', 'SMALLSERIAL', 'BIGSERIAL'].includes(change.type)) {
             const sequenceName = `${table}_${change.name}_seq`.replace(' ', '_');
             createSequences.push(`CREATE SEQUENCE IF NOT EXISTS ${sequenceName} OWNED BY "${table}"."${change.name}"`);

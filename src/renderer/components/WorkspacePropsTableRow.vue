@@ -453,7 +453,7 @@ export default {
             this.defaultValue.type = 'null';
          else if (this.localRow.default.match(/^'.*'$/g)) {
             this.defaultValue.type = 'custom';
-            this.defaultValue.custom = this.localRow.default.replace(/(^')|('$)/g, '');
+            this.defaultValue.custom = this.localRow.default.replaceAll(/(^')|('$)/g, '');
          }
          else if (!isNaN(this.localRow.default.replace(/[:.-\s]/g, ''))) {
             this.defaultValue.type = 'custom';
@@ -537,7 +537,7 @@ export default {
                   break;
                case 'custom':
                   this.localRow.autoIncrement = false;
-                  this.localRow.default = `'${this.defaultValue.custom}'`;
+                  this.localRow.default = this.defaultValue.custom;
                   break;
                case 'expression':
                   this.localRow.autoIncrement = false;
