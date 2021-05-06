@@ -695,7 +695,7 @@ export class MySQLClient extends AntaresCore {
          }, []).join(',')
          : '';
 
-      const sql = `CREATE ${routine.definer ? `DEFINER=${routine.definer} ` : ''}PROCEDURE \`${routine.name}\`(${parameters})
+      const sql = `CREATE ${routine.definer ? `DEFINER=${routine.definer} ` : ''}PROCEDURE \`${this._schema}\`.\`${routine.name}\`(${parameters})
          LANGUAGE SQL
          ${routine.deterministic ? 'DETERMINISTIC' : 'NOT DETERMINISTIC'}
          ${routine.dataAccess}
@@ -1090,7 +1090,7 @@ export class MySQLClient extends AntaresCore {
             ${addition.zerofill ? 'ZEROFILL' : ''}
             ${addition.nullable ? 'NULL' : 'NOT NULL'}
             ${addition.autoIncrement ? 'AUTO_INCREMENT' : ''}
-            ${addition.default ? `DEFAULT ${typeof addition.default === 'string' ? `'${addition.default}'` : addition.default}` : ''}
+            ${addition.default ? `DEFAULT ${addition.default}` : ''}
             ${addition.comment ? `COMMENT '${addition.comment}'` : ''}
             ${addition.collation ? `COLLATE ${addition.collation}` : ''}
             ${addition.onUpdate ? `ON UPDATE ${addition.onUpdate}` : ''}
@@ -1128,7 +1128,7 @@ export class MySQLClient extends AntaresCore {
             ${change.zerofill ? 'ZEROFILL' : ''}
             ${change.nullable ? 'NULL' : 'NOT NULL'}
             ${change.autoIncrement ? 'AUTO_INCREMENT' : ''}
-            ${change.default ? `DEFAULT ${typeof change.default === 'string' ? `'${change.default}'` : change.default}` : ''}
+            ${change.default ? `DEFAULT ${change.default}` : ''}
             ${change.comment ? `COMMENT '${change.comment}'` : ''}
             ${change.collation ? `COLLATE ${change.collation}` : ''}
             ${change.onUpdate ? `ON UPDATE ${change.onUpdate}` : ''}

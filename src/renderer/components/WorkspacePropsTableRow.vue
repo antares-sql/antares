@@ -444,25 +444,11 @@ export default {
          });
 
          this.defaultValue.onUpdate = this.localRow.onUpdate;
-
-         if (this.localRow.autoIncrement)
-            this.defaultValue.type = 'autoincrement';
-         else if (this.localRow.default === null)
-            this.defaultValue.type = 'noval';
-         else if (this.localRow.default === 'NULL')
-            this.defaultValue.type = 'null';
-         else if (this.localRow.default.match(/^'.*'$/g)) {
-            this.defaultValue.type = 'custom';
-            this.defaultValue.custom = this.localRow.default.replaceAll(/(^')|('$)/g, '');
-         }
-         else if (!isNaN(this.localRow.default.replace(/[:.-\s]/g, ''))) {
-            this.defaultValue.type = 'custom';
+         this.defaultValue.type = this.localRow.defaultType;
+         if (this.defaultValue.type === 'custom')
             this.defaultValue.custom = this.localRow.default;
-         }
-         else {
-            this.defaultValue.type = 'expression';
+         if (this.defaultValue.type === 'expression')
             this.defaultValue.expression = this.localRow.default;
-         }
       },
       editON (event, content, field) {
          if (field === 'length') {

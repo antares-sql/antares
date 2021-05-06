@@ -233,6 +233,20 @@ export default {
             const { status, response } = await Tables.getTableColumns(params);
             if (status === 'success') {
                this.originalFields = response.map(field => {
+                  if (field.autoIncrement)
+                     field.defaultType = 'autoincrement';
+                  else if (field.default === null)
+                     field.defaultType = 'noval';
+                  else if (field.default === 'NULL')
+                     field.defaultType = 'null';
+                  else if (field.default.match(/^\s*(\w+)\s*\((.*)\)$/))
+                     field.defaultType = 'expression';
+                  else {
+                     field.defaultType = 'custom';
+                     if (isNaN(field.default) && !field.default.includes('\''))
+                        field.default = `'${field.default}'`;
+                  }
+
                   return { ...field, _id: uidGen() };
                });
                this.localFields = JSON.parse(JSON.stringify(this.originalFields));
