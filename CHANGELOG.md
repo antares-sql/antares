@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.6](https://github.com/Fabio286/antares/compare/v0.1.5...v0.1.6) (2021-05-08)
+
+
+### Features
+
+* **MySQL:** ENUM and SET fields support, closes [#61](https://github.com/Fabio286/antares/issues/61) ([bebba64](https://github.com/Fabio286/antares/commit/bebba64d06532990405763284e27cb768dc050f7))
+
+
+### Bug Fixes
+
+* better detection and handling of field default type ([3baf6fa](https://github.com/Fabio286/antares/commit/3baf6fa1736a405c95fb02d17c11514861ca9e04))
+* no quotes around strings in field default custom value ([29e2d92](https://github.com/Fabio286/antares/commit/29e2d92b5bf66ff9e80bb1fee1274967c4418601))
+* **UI:** data type figure twice on type select ([9dfe7cc](https://github.com/Fabio286/antares/commit/9dfe7cca2234ce6de512bb4c21205c2217e7f765))
+* support to mDNS/zeroconf in snap build, closes [#58](https://github.com/Fabio286/antares/issues/58) ([35ef070](https://github.com/Fabio286/antares/commit/35ef070725f5779923bf3ad428b44accddf22dbe))
+
+
+### Improvements
+
+* italian translation updated ([5dc0b0b](https://github.com/Fabio286/antares/commit/5dc0b0bea40f9d5a5944af2f1c5dc6ff3e60c396))
+
 ### [0.1.5](https://github.com/Fabio286/antares/compare/v0.1.4...v0.1.5) (2021-04-30)
 
 
