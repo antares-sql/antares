@@ -14,7 +14,8 @@
     "release:pre": "npm run release -- --prerelease alpha",
     "test": "npm run lint",
     "lint": "eslint . --ext .js,.vue && stylelint \"./src/**/*.{css,scss,sass,vue}\"",
-    "lint:fix": "eslint . --ext .js,.vue --fix && stylelint \"./src/**/*.{css,scss,sass,vue}\" --fix"
+    "lint:fix": "eslint . --ext .js,.vue --fix && stylelint \"./src/**/*.{css,scss,sass,vue}\" --fix",
+    "postinstall": "electron-builder install-app-deps"
   },
   "author": "Fabio Di Stasio <fabio286@gmail.com>",
   "build": {
@@ -72,7 +73,7 @@
     "ace-builds": "^1.4.12",
     "electron-log": "^4.3.5",
     "electron-store": "^8.0.0",
-    "electron-updater": "^4.3.5",
+    "electron-updater": "^4.3.9",
     "faker": "^5.3.1",
     "marked": "^2.0.2",
     "moment": "^2.29.1",
@@ -91,7 +92,7 @@
     "@babel/eslint-parser": "^7.13.14",
     "cross-env": "^7.0.2",
     "electron": "^12.0.7",
-    "electron-builder": "^22.9.1",
+    "electron-builder": "22.9.1",
     "electron-devtools-installer": "^3.2.0",
     "electron-webpack": "^2.8.2",
     "electron-webpack-vue": "^2.4.0",
@@ -102,7 +103,7 @@
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-vue": "^7.9.0",
     "node-sass": "^5.0.0",
-    "sass-loader": "^10.1.1",
+    "sass-loader": "^10.2.0",
     "standard-version": "^9.3.0",
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
