@@ -408,15 +408,15 @@ export default {
                this.selectedRows.push(row);
             else {
                const lastID = this.selectedRows.slice(-1)[0];
-               const lastIndex = this.localResults.findIndex(el => el._id === lastID);
-               const clickedIndex = this.localResults.findIndex(el => el._id === row);
+               const lastIndex = this.sortedResults.findIndex(el => el._id === lastID);
+               const clickedIndex = this.sortedResults.findIndex(el => el._id === row);
                if (lastIndex > clickedIndex) {
                   for (let i = clickedIndex; i < lastIndex; i++)
-                     this.selectedRows.push(this.localResults[i]._id);
+                     this.selectedRows.push(this.sortedResults[i]._id);
                }
                else if (lastIndex < clickedIndex) {
                   for (let i = clickedIndex; i > lastIndex; i--)
-                     this.selectedRows.push(this.localResults[i]._id);
+                     this.selectedRows.push(this.sortedResults[i]._id);
                }
             }
          }
@@ -434,6 +434,8 @@ export default {
       },
       sort (field) {
          if (!this.isSortable) return;
+
+         this.selectedRows = [];
 
          if (this.mode === 'query')
             field = `${this.getTable(this.resultsetIndex)}.${field}`;
