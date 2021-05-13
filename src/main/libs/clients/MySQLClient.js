@@ -329,7 +329,7 @@ export class MySQLClient extends AntaresCore {
             unsigned: field.COLUMN_TYPE.includes('unsigned'),
             zerofill: field.COLUMN_TYPE.includes('zerofill'),
             order: field.ORDINAL_POSITION,
-            default: field.COLUMN_DEFAULT,
+            default: field.COLUMN_DEFAULT, // TODO: get from show create table
             charset: field.CHARACTER_SET_NAME,
             collation: field.COLLATION_NAME,
             autoIncrement: field.EXTRA.includes('auto_increment'),

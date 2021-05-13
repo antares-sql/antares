@@ -492,11 +492,13 @@ export default {
             this.localRow.numLength = null;
             this.localRow.charLength = null;
             this.localRow.datePrecision = null;
+            this.localRow.enumValues = '';
 
             if (this.fieldType.length) {
                if (['integer', 'float', 'binary', 'spatial'].includes(this.fieldType.group)) this.localRow.numLength = 11;
-               if (['string', 'other'].includes(this.fieldType.group)) this.localRow.charLength = 15;
+               if (['string'].includes(this.fieldType.group)) this.localRow.charLength = 15;
                if (['time'].includes(this.fieldType.group)) this.localRow.datePrecision = 0;
+               if (['other'].includes(this.fieldType.group)) this.localRow.enumValues = '\'valA\',\'valB\'';
             }
 
             if (!this.fieldType.collation)
