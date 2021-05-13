@@ -66,6 +66,21 @@
          :type="inputProps().type"
          :disabled="!isChecked"
       >
+      <select
+         v-else-if="enumArray"
+         v-model="selectedValue"
+         class="form-select"
+         :disabled="!isChecked"
+         @change="onChange"
+      >
+         <option
+            v-for="val in enumArray"
+            :key="val"
+            :value="val"
+         >
+            {{ val }}
+         </option>
+      </select>
       <input
          v-else
          ref="formInput"
@@ -121,7 +136,8 @@ export default {
          selectedMethod: '',
          selectedValue: '',
          debounceTimeout: null,
-         methodParams: {}
+         methodParams: {},
+         enumArray: null
       };
    },
    computed: {
@@ -150,8 +166,14 @@ export default {
    },
    watch: {
       fieldObj () {
-         if (this.fieldObj)
-            this.selectedValue = this.fieldObj.value;
+         if (this.fieldObj) {
+            if (Array.isArray(this.fieldObj.value)) {
+               this.enumArray = this.fieldObj.value;
+               this.selectedValue = this.fieldObj.value[0];
+            }
+            else
+               this.selectedValue = this.fieldObj.value;
+         }
       },
       selectedGroup () {
          if (this.fakerMethods.length)

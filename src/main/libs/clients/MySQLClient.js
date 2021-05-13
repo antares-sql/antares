@@ -1341,7 +1341,7 @@ export class MySQLClient extends AntaresCore {
                               remappedFields = remappedFields.map(field => {
                                  const detailedField = response.find(f => f.name === field.name);
                                  if (detailedField && field.orgTable === paramObj.table && field.schema === paramObj.schema)
-                                    field = { ...detailedField, ...field };
+                                    field = { ...field, ...detailedField };
                                  return field;
                               });
                            }

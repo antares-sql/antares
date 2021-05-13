@@ -269,6 +269,9 @@ export default {
                   fieldDefault = moment().format(`YYYY-MM-DD HH:mm:ss${datePrecision}`);
                }
             }
+
+            if (field.enumValues)
+               fieldDefault = field.enumValues.replaceAll('\'', '').split(',');
          }
 
          rowObj[field.name] = { value: fieldDefault };
