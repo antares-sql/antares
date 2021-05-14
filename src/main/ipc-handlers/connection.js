@@ -71,7 +71,7 @@ export default connections => {
          const connection = ClientsFactory.getConnection({
             client: conn.client,
             params,
-            poolSize: 1
+            poolSize: 5
          });
 
          await connection.connect();
