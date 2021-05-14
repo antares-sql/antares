@@ -27,19 +27,14 @@
         "portable"
       ]
     },
-    "dmg": {
-      "contents": [
-        {
-          "x": 130,
-          "y": 220
-        },
-        {
-          "x": 410,
-          "y": 220,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ]
+    "mac": {
+      "target": {
+        "target": "default",
+        "arch": [
+          "x64",
+          "arm64"
+        ]
+      }
     },
     "linux": {
       "target": [
@@ -70,6 +65,20 @@
       "identityName": "62514FabioDiStasio.AntaresSQLClient",
       "publisher": "CN=1A2729ED-865C-41D2-9038-39AE2A63AA52",
       "applicationId": "FabioDiStasio.AntaresSQLClient"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
     }
   },
   "electronWebpack": {
@@ -102,7 +111,7 @@
     "@babel/eslint-parser": "^7.13.14",
     "cross-env": "^7.0.2",
     "electron": "^12.0.7",
-    "electron-builder": "22.9.1",
+    "electron-builder": "22.10.5",
     "electron-devtools-installer": "^3.2.0",
     "electron-webpack": "^2.8.2",
     "electron-webpack-vue": "^2.4.0",
