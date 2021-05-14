@@ -817,97 +817,6 @@ export class PostgreSQLClient extends AntaresCore {
    }
 
    /**
-    * SHOW CREATE EVENT
-    *
-    * @returns {Array.<Object>} view informations
-    * @memberof PostgreSQLClient
-    */
-   // async getEventInformations ({ schema, scheduler }) {
-   //    const sql = `SHOW CREATE EVENT \`${schema}\`.\`${scheduler}\``;
-   //    const results = await this.raw(sql);
-
-   //    return results.rows.map(row => {
-   //       const schedule = row['Create Event'];
-   //       const execution = schedule.includes('EVERY') ? 'EVERY' : 'ONCE';
-   //       const every = execution === 'EVERY' ? row['Create Event'].match(/(?<=EVERY )(\s*([^\s]+)){0,2}/gs)[0].replaceAll('\'', '').split(' ') : [];
-   //       const starts = execution === 'EVERY' && schedule.includes('STARTS') ? schedule.match(/(?<=STARTS ').*?(?='\s)/gs)[0] : '';
-   //       const ends = execution === 'EVERY' && schedule.includes('ENDS') ? schedule.match(/(?<=ENDS ').*?(?='\s)/gs)[0] : '';
-   //       const at = execution === 'ONCE' && schedule.includes('AT') ? schedule.match(/(?<=AT ').*?(?='\s)/gs)[0] : '';
-
-   //       return {
-   //          definer: row['Create Event'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
-   //          sql: row['Create Event'].match(/(?<=DO )(.*)/gs)[0],
-   //          name: row.Event,
-   //          comment: row['Create Event'].match(/(?<=COMMENT ').*?(?=')/gs) ? row['Create Event'].match(/(?<=COMMENT ').*?(?=')/gs)[0] : '',
-   //          state: row['Create Event'].includes('ENABLE') ? 'ENABLE' : row['Create Event'].includes('DISABLE ON SLAVE') ? 'DISABLE ON SLAVE' : 'DISABLE',
-   //          preserve: row['Create Event'].includes('ON COMPLETION PRESERVE'),
-   //          execution,
-   //          every,
-   //          starts,
-   //          ends,
-   //          at
-   //       };
-   //    })[0];
-   // }
-
-   /**
-    * DROP EVENT
-    *
-    * @returns {Array.<Object>} parameters
-    * @memberof PostgreSQLClient
-    */
-   // async dropEvent (params) {
-   //    const sql = `DROP EVENT \`${params.scheduler}\``;
-   //    return await this.raw(sql);
-   // }
-
-   /**
-    * ALTER EVENT
-    *
-    * @returns {Array.<Object>} parameters
-    * @memberof PostgreSQLClient
-    */
-   // async alterEvent (params) {
-   //    const { scheduler } = params;
-
-   //    if (scheduler.execution === 'EVERY' && scheduler.every[0].includes('-'))
-   //       scheduler.every[0] = `'${scheduler.every[0]}'`;
-
-   //    const sql = `ALTER ${scheduler.definer ? ` DEFINER=${scheduler.definer}` : ''} EVENT \`${scheduler.oldName}\`
-   //    ON SCHEDULE
-   //       ${scheduler.execution === 'EVERY'
-   //    ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
-   //    : `AT '${scheduler.at}'`}
-   //    ON COMPLETION${!scheduler.preserve ? ' NOT' : ''} PRESERVE
-   //    ${scheduler.name !== scheduler.oldName ? `RENAME TO \`${scheduler.name}\`` : ''}
-   //    ${scheduler.state}
-   //    COMMENT '${scheduler.comment}'
-   //    DO ${scheduler.sql}`;
-
-   //    return await this.raw(sql, { split: false });
-   // }
-
-   /**
-    * CREATE EVENT
-    *
-    * @returns {Array.<Object>} parameters
-    * @memberof PostgreSQLClient
-    */
-   // async createEvent (scheduler) {
-   //    const sql = `CREATE ${scheduler.definer ? ` DEFINER=${scheduler.definer}` : ''} EVENT \`${scheduler.name}\`
-   //    ON SCHEDULE
-   //       ${scheduler.execution === 'EVERY'
-   //    ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
-   //    : `AT '${scheduler.at}'`}
-   //    ON COMPLETION${!scheduler.preserve ? ' NOT' : ''} PRESERVE
-   //    ${scheduler.state}
-   //    COMMENT '${scheduler.comment}'
-   //    DO ${scheduler.sql}`;
-
-   //    return await this.raw(sql, { split: false });
-   // }
-
-   /**
     * SELECT * FROM pg_collation
     *
     * @returns {Array.<Object>} collations list
@@ -1250,8 +1159,8 @@ export class PostgreSQLClient extends AntaresCore {
          ...args
       };
 
-      if (args.nest && this._schema !== 'public')
-         await this.use(this._schema);
+      if (args.schema && args.schema !== 'public')
+         await this.use(args.schema);
 
       const resultsArr = [];
       let paramsArr = [];
