@@ -1,5 +1,5 @@
 'use strict';
-import mysql from 'mysql2';
+import mysql from 'mysql2/promise';
 import { AntaresCore } from '../AntaresCore';
 import dataTypes from 'common/data-types/mysql';
 
@@ -102,8 +102,10 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async connect () {
+      delete this._params.application_name;
+
       if (!this._poolSize)
-         this._connection = mysql.createConnection(this._params);
+         this._connection = await mysql.createConnection(this._params);
       else {
          this._connection = mysql.createPool({
             ...this._params,
@@ -1273,6 +1275,8 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async raw (sql, args) {
+      if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
+
       args = {
          nest: false,
          details: false,
@@ -1280,15 +1284,15 @@ export class MySQLClient extends AntaresCore {
          ...args
       };
 
-      if (args.schema && args.schema !== 'public')
-         await this.use(args.schema);
-
       const nestTables = args.nest ? '.' : false;
       const resultsArr = [];
       let paramsArr = [];
       const queries = args.split ? sql.split(/((?:[^;'"]*(?:"(?:\\.|[^"])*"|'(?:\\.|[^'])*')[^;'"]*)+)|;/gm) : [sql];
+      const isPool = typeof this._connection.getConnection === 'function';
+      const connection = isPool ? await this._connection.getConnection() : this._connection;
 
-      if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
+      if (args.schema)
+         await connection.query(`USE \`${args.schema}\``);
 
       for (const query of queries) {
          if (!query) continue;
@@ -1297,86 +1301,84 @@ export class MySQLClient extends AntaresCore {
          let keysArr = [];
 
          const { rows, report, fields, keys, duration } = await new Promise((resolve, reject) => {
-            this._connection.query({ sql: query, nestTables }, async (err, response, fields) => {
+            connection.query({ sql: query, nestTables }).then(async ([response, fields]) => {
                timeStop = new Date();
                const queryResult = response;
 
-               if (err)
-                  reject(err);
-               else {
-                  let remappedFields = fields
-                     ? fields.map(field => {
-                        if (!field || Array.isArray(field))
-                           return false;
+               let remappedFields = fields
+                  ? fields.map(field => {
+                     if (!field || Array.isArray(field))
+                        return false;
 
-                        const type = this._getType(field);
+                     const type = this._getType(field);
 
+                     return {
+                        name: field.orgName,
+                        alias: field.name,
+                        orgName: field.orgName,
+                        schema: field.schema,
+                        table: field.table,
+                        tableAlias: field.table,
+                        orgTable: field.orgTable,
+                        type: type.name,
+                        length: type.length
+                     };
+                  }).filter(Boolean)
+                  : [];
+
+               if (args.details) {
+                  let cachedTable;
+
+                  if (remappedFields.length) {
+                     paramsArr = remappedFields.map(field => {
+                        if (field.orgTable) cachedTable = field.orgTable;// Needed for some queries on information_schema
                         return {
-                           name: field.orgName,
-                           alias: field.name,
-                           orgName: field.orgName,
-                           schema: field.schema,
-                           table: field.table,
-                           tableAlias: field.table,
-                           orgTable: field.orgTable,
-                           type: type.name,
-                           length: type.length
+                           table: field.orgTable || cachedTable,
+                           schema: field.schema || 'INFORMATION_SCHEMA'
                         };
-                     }).filter(Boolean)
-                     : [];
+                     }).filter((val, i, arr) => arr.findIndex(el => el.schema === val.schema && el.table === val.table) === i);
 
-                  if (args.details) {
-                     let cachedTable;
+                     for (const paramObj of paramsArr) {
+                        if (!paramObj.table || !paramObj.schema) continue;
 
-                     if (remappedFields.length) {
-                        paramsArr = remappedFields.map(field => {
-                           if (field.orgTable) cachedTable = field.orgTable;// Needed for some queries on information_schema
-                           return {
-                              table: field.orgTable || cachedTable,
-                              schema: field.schema || 'INFORMATION_SCHEMA'
-                           };
-                        }).filter((val, i, arr) => arr.findIndex(el => el.schema === val.schema && el.table === val.table) === i);
+                        try { // Column details
+                           const response = await this.getTableColumns(paramObj);
+                           remappedFields = remappedFields.map(field => {
+                              const detailedField = response.find(f => f.name === field.name);
+                              if (detailedField && field.orgTable === paramObj.table && field.schema === paramObj.schema)
+                                 field = { ...field, ...detailedField };
+                              return field;
+                           });
+                        }
+                        catch (err) {
+                           reject(err);
+                        }
 
-                        for (const paramObj of paramsArr) {
-                           if (!paramObj.table || !paramObj.schema) continue;
-
-                           try { // Column details
-                              const response = await this.getTableColumns(paramObj);
-                              remappedFields = remappedFields.map(field => {
-                                 const detailedField = response.find(f => f.name === field.name);
-                                 if (detailedField && field.orgTable === paramObj.table && field.schema === paramObj.schema)
-                                    field = { ...field, ...detailedField };
-                                 return field;
-                              });
-                           }
-                           catch (err) {
-                              reject(err);
-                           }
-
-                           try { // Key usage (foreign keys)
-                              const response = await this.getKeyUsage(paramObj);
-                              keysArr = keysArr ? [...keysArr, ...response] : response;
-                           }
-                           catch (err) {
-                              reject(err);
-                           }
+                        try { // Key usage (foreign keys)
+                           const response = await this.getKeyUsage(paramObj);
+                           keysArr = keysArr ? [...keysArr, ...response] : response;
+                        }
+                        catch (err) {
+                           reject(err);
                         }
                      }
                   }
-
-                  resolve({
-                     duration: timeStop - timeStart,
-                     rows: Array.isArray(queryResult) ? queryResult.some(el => Array.isArray(el)) ? [] : queryResult : false,
-                     report: !Array.isArray(queryResult) ? queryResult : false,
-                     fields: remappedFields,
-                     keys: keysArr
-                  });
                }
-            });
+
+               resolve({
+                  duration: timeStop - timeStart,
+                  rows: Array.isArray(queryResult) ? queryResult.some(el => Array.isArray(el)) ? [] : queryResult : false,
+                  report: !Array.isArray(queryResult) ? queryResult : false,
+                  fields: remappedFields,
+                  keys: keysArr
+               });
+            }).catch(reject);
          });
 
          resultsArr.push({ rows, report, fields, keys, duration });
       }
+
+      if (isPool) connection.release();
 
       return resultsArr.length === 1 ? resultsArr[0] : resultsArr;
    }

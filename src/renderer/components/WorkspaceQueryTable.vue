@@ -368,7 +368,6 @@ export default {
       },
       setNull () {
          const row = this.localResults.find(row => this.selectedRows.includes(row._id));
-         delete row._id;
 
          const params = {
             primary: this.primaryField.name,

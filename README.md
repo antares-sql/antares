@@ -83,8 +83,8 @@ This is a roadmap with major features will come in near future.
 #### • ARM
 
 - [ ] Windows
-- [ ] Linux
-- [ ] MacOS
+- [x] Linux
+- [x] MacOS
 
 ## Translations
 
