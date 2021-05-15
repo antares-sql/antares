@@ -319,8 +319,6 @@ export default {
       },
       updateField (payload, row) {
          const orgRow = this.localResults.find(lr => lr._id === row._id);
-         delete row._id;
-         delete orgRow._id;
 
          Object.keys(orgRow).forEach(key => { // remap the row
             if (orgRow[key] instanceof Date && moment(orgRow[key]).isValid()) { // if datetime
