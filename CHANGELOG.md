@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.7](https://github.com/Fabio286/antares/compare/v0.1.6...v0.1.7) (2021-05-16)
+
+
+### Bug Fixes
+
+* row loses internal id after cell update ([854472c](https://github.com/Fabio286/antares/commit/854472c7a3d8442b1eede12f978cad5aa684094e))
+* **MySQL:** connection loses schema in some conditions ([6b0b8b1](https://github.com/Fabio286/antares/commit/6b0b8b19d7176ef8647d6f401a33315f8732fdf3))
+* issue with ENUM and SET fields on table filler modal ([475397c](https://github.com/Fabio286/antares/commit/475397ca34c5b7d8925e2d97d32216d5b80d8211))
+* issue with ENUM and SET length when creating a new field ([7a62131](https://github.com/Fabio286/antares/commit/7a62131cc707aa1c98bb12513de76229472b7c38))
+* multiple row select on sorted tables not work properly ([c7663be](https://github.com/Fabio286/antares/commit/c7663be338ccb5ff31e241e824593531ad95bd32))
+
+
+### Improvements
+
+* **core:** increased connection pool size to improve performance ([ae103e5](https://github.com/Fabio286/antares/commit/ae103e5477ad190c541d0f29e277c41de6947063))
+* **MySQL:** improved connections pool handling ([434711a](https://github.com/Fabio286/antares/commit/434711a360bd7539d2ec3adec92e7ccc96fa828e))
+
 ### [0.1.6](https://github.com/Fabio286/antares/compare/v0.1.5...v0.1.6) (2021-05-08)
 
 
