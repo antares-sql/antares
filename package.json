@@ -8,8 +8,9 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development electron-webpack dev",
     "compile": "electron-webpack",
-    "build": "cross-env NODE_ENV=production npm run compile && electron-builder",
-    "build:appx": "npm run build -- --win appx",
+    "build": "cross-env NODE_ENV=production npm run compile",
+    "build:local": "npm run build && electron-builder",
+    "build:appx": "npm run build:local -- --win appx",
     "release": "standard-version",
     "release:pre": "npm run release -- --prerelease alpha",
     "test": "npm run lint",
@@ -46,7 +47,8 @@
           "target": "AppImage",
           "arch": [
             "x64",
-            "armv7l"
+            "armv7l",
+            "arm64"
           ]
         }
       ],
