@@ -23,8 +23,6 @@ export default class {
    }
 
    static deleteTableRows (params) {
-      delete params.row._id;
-      delete params.orgRow._id;
       return ipcRenderer.invoke('delete-table-rows', params);
    }
 
