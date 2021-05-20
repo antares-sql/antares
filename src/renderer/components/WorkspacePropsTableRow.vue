@@ -96,7 +96,12 @@
                class="cell-content"
                @dblclick="editON($event, localLength, 'length')"
             >
-               {{ localLength }}
+               <span v-if="localRow.enumValues">
+                  {{ localRow.enumValues }}
+               </span>
+               <span v-else>
+                  {{ localLength }}
+               </span>
             </span>
             <input
                v-else-if="localRow.enumValues"
@@ -361,7 +366,7 @@ export default {
          getWorkspace: 'workspaces/getWorkspace'
       }),
       localLength () {
-         return this.localRow.enumValues || this.localRow.numLength || this.localRow.charLength || this.localRow.datePrecision || this.localRow.numPrecision || 0;
+         return this.localRow.numLength || this.localRow.charLength || this.localRow.datePrecision || this.localRow.numPrecision || 0;
       },
       fieldType () {
          const fieldType = this.dataTypes.reduce((acc, group) => [...acc, ...group.types], []).filter(type =>

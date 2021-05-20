@@ -309,6 +309,25 @@ export class MySQLClient extends AntaresCore {
          .orderBy({ ORDINAL_POSITION: 'ASC' })
          .run();
 
+      // const { rows } = await this.raw(`SHOW CREATE TABLE ${schema}.${table}`);
+
+      // const fields = rows.map(row => {
+      //    let n = 0;
+      //    return row['Create Table']
+      //       .split('')
+      //       .reduce((acc, curr) => {
+      //          if (curr === ')') n--;
+      //          if (n !== 0) acc += curr;
+      //          if (curr === '(') n++;
+      //          return acc;
+      //       }, '')
+      //       .replaceAll('\n', '')
+      //       .split(',')
+      //       .map(f => {
+      //          return f.trim();// TODO: here map the field
+      //       });
+      // });
+
       return rows.map(field => {
          let numLength = field.COLUMN_TYPE.match(/int\(([^)]+)\)/);
          numLength = numLength ? +numLength.pop() : null;
@@ -1084,7 +1103,7 @@ export class MySQLClient extends AntaresCore {
       // ADD FIELDS
       additions.forEach(addition => {
          const typeInfo = this._getTypeInfo(addition.type);
-         const length = typeInfo.length ? addition.numLength || addition.charLength || addition.datePrecision : false;
+         const length = typeInfo.length ? addition.enumValues || addition.numLength || addition.charLength || addition.datePrecision : false;
 
          alterColumns.push(`ADD COLUMN \`${addition.name}\` 
             ${addition.type.toUpperCase()}${length ? `(${length})` : ''} 
