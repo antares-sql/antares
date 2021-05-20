@@ -19,6 +19,7 @@ export default class {
    }
 
    static updateTableCell (params) {
+      delete params.row._id;
       return ipcRenderer.invoke('update-table-cell', params);
    }
 
