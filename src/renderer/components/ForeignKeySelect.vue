@@ -51,7 +51,8 @@ export default {
       }),
       isValidDefault () {
          if (!this.foreignList.length) return true;
-         return this.value === null || this.foreignList.some(foreign => foreign.foreign_column.toString() === this.value.toString());
+         if (this.value === null) return false;
+         return this.foreignList.some(foreign => foreign.foreign_column.toString() === this.value.toString());
       }
    },
    async created () {
@@ -65,7 +66,7 @@ export default {
       try { // Field data
          const { status, response } = await Tables.getTableColumns(params);
          if (status === 'success') {
-            const textField = response.find(field => [...TEXT, ...LONG_TEXT].includes(field.type));
+            const textField = response.find(field => [...TEXT, ...LONG_TEXT].includes(field.type) && field.name !== this.keyUsage.refField);
             foreignDesc = textField ? textField.name : false;
          }
          else

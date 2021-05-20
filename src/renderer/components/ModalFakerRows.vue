@@ -253,7 +253,7 @@ export default {
                fieldDefault = +field.default;
 
             if ([...TEXT, ...LONG_TEXT].includes(field.type))
-               fieldDefault = field.default ? field.default.substring(1, field.default.length - 1) : '';
+               fieldDefault = field.default;
 
             if ([...TIME, ...DATE].includes(field.type))
                fieldDefault = field.default;
