@@ -309,24 +309,43 @@ export class MySQLClient extends AntaresCore {
          .orderBy({ ORDINAL_POSITION: 'ASC' })
          .run();
 
-      // const { rows } = await this.raw(`SHOW CREATE TABLE ${schema}.${table}`);
+      const { rows: fields } = await this.raw(`SHOW CREATE TABLE ${schema}.${table}`);
 
-      // const fields = rows.map(row => {
-      //    let n = 0;
-      //    return row['Create Table']
-      //       .split('')
-      //       .reduce((acc, curr) => {
-      //          if (curr === ')') n--;
-      //          if (n !== 0) acc += curr;
-      //          if (curr === '(') n++;
-      //          return acc;
-      //       }, '')
-      //       .replaceAll('\n', '')
-      //       .split(',')
-      //       .map(f => {
-      //          return f.trim();// TODO: here map the field
-      //       });
-      // });
+      const remappedFields = fields.map(row => {
+         let n = 0;
+         return row['Create Table']
+            .split('')
+            .reduce((acc, curr) => {
+               if (curr === ')') n--;
+               if (n !== 0) acc += curr;
+               if (curr === '(') n++;
+               return acc;
+            }, '')
+            .replaceAll('\n', '')
+            .split(',')
+            .map(f => {
+               const fieldArr = f.trim().split(' ');
+               const nameAndType = fieldArr.slice(0, 2);
+
+               if (!nameAndType[0].includes('`')) return false;
+
+               const details = fieldArr.slice(2).join(' ');
+               const defaultValue = details.includes('DEFAULT') ? details.match(/(?<=DEFAULT ).*?$/gs)[0] : null;
+               const typeAndLength = nameAndType[1].replace(')', '').split('(');
+
+               return {
+                  name: nameAndType[0].replaceAll('`', ''),
+                  type: typeAndLength[0].toUpperCase(),
+                  length: typeAndLength[1] ? typeAndLength[1] : null,
+                  default: defaultValue
+               };
+            })
+            .filter(Boolean)
+            .reduce((acc, curr) => {
+               acc[curr.name] = curr;
+               return acc;
+            }, {});
+      })[0];
 
       return rows.map(field => {
          let numLength = field.COLUMN_TYPE.match(/int\(([^)]+)\)/);
@@ -338,7 +357,7 @@ export class MySQLClient extends AntaresCore {
          return {
             name: field.COLUMN_NAME,
             key: field.COLUMN_KEY.toLowerCase(),
-            type: field.DATA_TYPE.toUpperCase(),
+            type: remappedFields[field.COLUMN_NAME].type,
             schema: field.TABLE_SCHEMA,
             table: field.TABLE_NAME,
             numPrecision: field.NUMERIC_PRECISION,
@@ -350,7 +369,7 @@ export class MySQLClient extends AntaresCore {
             unsigned: field.COLUMN_TYPE.includes('unsigned'),
             zerofill: field.COLUMN_TYPE.includes('zerofill'),
             order: field.ORDINAL_POSITION,
-            default: field.COLUMN_DEFAULT, // TODO: get from show create table
+            default: remappedFields[field.COLUMN_NAME].default,
             charset: field.CHARACTER_SET_NAME,
             collation: field.COLLATION_NAME,
             autoIncrement: field.EXTRA.includes('auto_increment'),

@@ -250,10 +250,15 @@ export default {
          if (field.default === 'NULL') fieldDefault = null;
          else {
             if ([...NUMBER, ...FLOAT].includes(field.type))
-               fieldDefault = +field.default;
+               fieldDefault = Number.isNaN(+field.default) ? null : +field.default;
 
-            if ([...TEXT, ...LONG_TEXT].includes(field.type))
-               fieldDefault = field.default;
+            if ([...TEXT, ...LONG_TEXT].includes(field.type)) {
+               fieldDefault = field.default
+                  ? field.default.includes('\'')
+                     ? field.default.split('\'')[1]
+                     : field.default
+                  : '';
+            }
 
             if ([...TIME, ...DATE].includes(field.type))
                fieldDefault = field.default;

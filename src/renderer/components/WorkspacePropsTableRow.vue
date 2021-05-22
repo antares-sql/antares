@@ -450,8 +450,13 @@ export default {
 
          this.defaultValue.onUpdate = this.localRow.onUpdate;
          this.defaultValue.type = this.localRow.defaultType;
-         if (this.defaultValue.type === 'custom')
-            this.defaultValue.custom = this.localRow.default;
+         if (this.defaultValue.type === 'custom') {
+            this.defaultValue.custom = this.localRow.default
+               ? this.localRow.default.includes('\'')
+                  ? this.localRow.default.split('\'')[1]
+                  : this.localRow.default
+               : '';
+         }
          if (this.defaultValue.type === 'expression')
             this.defaultValue.expression = this.localRow.default;
       },
@@ -530,7 +535,7 @@ export default {
                   break;
                case 'custom':
                   this.localRow.autoIncrement = false;
-                  this.localRow.default = this.defaultValue.custom;
+                  this.localRow.default = Number.isNaN(+this.defaultValue.custom) ? `'${this.defaultValue.custom}'` : this.defaultValue.custom;
                   break;
                case 'expression':
                   this.localRow.autoIncrement = false;

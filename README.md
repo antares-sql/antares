@@ -84,7 +84,7 @@ This is a roadmap with major features will come in near future.
 
 - [ ] Windows
 - [x] Linux
-- [x] MacOS
+- [ ] MacOS
 
 ## Translations
 
