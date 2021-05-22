@@ -94,7 +94,7 @@
     "electron-log": "^4.3.5",
     "electron-store": "^8.0.0",
     "electron-updater": "^4.3.9",
-    "faker": "^5.3.1",
+    "faker": "^5.5.3",
     "marked": "^2.0.2",
     "moment": "^2.29.1",
     "mysql2": "^2.2.5",
@@ -106,12 +106,12 @@
     "v-mask": "^2.2.4",
     "vue-i18n": "^8.24.4",
     "vuedraggable": "^2.24.3",
-    "vuex": "^3.6.0"
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.13.14",
+    "@babel/eslint-parser": "^7.14.3",
     "cross-env": "^7.0.2",
-    "electron": "^12.0.7",
+    "electron": "^12.0.9",
     "electron-builder": "22.10.5",
     "electron-devtools-installer": "^3.2.0",
     "electron-webpack": "^2.8.2",
