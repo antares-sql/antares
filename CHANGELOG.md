@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.8](https://github.com/Fabio286/antares/compare/v0.1.7...v0.1.8) (2021-05-22)
+
+
+### Bug Fixes
+
+* internal id not removed before row update ([0f10c9e](https://github.com/Fabio286/antares/commit/0f10c9e824b679cfebd8a31085236da3d38a7953))
+* unable to add new ENUM fields ([1e37f2a](https://github.com/Fabio286/antares/commit/1e37f2a96f660a36f2739fea57ca298059e9c31a))
+* unable to delete table rows ([0d61371](https://github.com/Fabio286/antares/commit/0d6137195da9e0e9afe68f6d3ebcd50e913a888e))
+
+
+### Improvements
+
+* improved the way how field default value are handled ([7a766f0](https://github.com/Fabio286/antares/commit/7a766f04e668868e8844aac1d7d445bc2da21558))
+
 ### [0.1.7](https://github.com/Fabio286/antares/compare/v0.1.6...v0.1.7) (2021-05-16)
 
 
