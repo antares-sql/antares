@@ -324,21 +324,25 @@ export class MySQLClient extends AntaresCore {
             .replaceAll('\n', '')
             .split(',')
             .map(f => {
-               const fieldArr = f.trim().split(' ');
-               const nameAndType = fieldArr.slice(0, 2);
+               try {
+                  const fieldArr = f.trim().split(' ');
+                  const nameAndType = fieldArr.slice(0, 2);
+                  if (nameAndType[0].charAt(0) !== '`') return false;
 
-               if (!nameAndType[0].includes('`')) return false;
+                  const details = fieldArr.slice(2).join(' ');
+                  const defaultValue = details.includes('DEFAULT') ? details.match(/(?<=DEFAULT ).*?$/gs)[0] : null;
+                  const typeAndLength = nameAndType[1].replace(')', '').split('(');
 
-               const details = fieldArr.slice(2).join(' ');
-               const defaultValue = details.includes('DEFAULT') ? details.match(/(?<=DEFAULT ).*?$/gs)[0] : null;
-               const typeAndLength = nameAndType[1].replace(')', '').split('(');
-
-               return {
-                  name: nameAndType[0].replaceAll('`', ''),
-                  type: typeAndLength[0].toUpperCase(),
-                  length: typeAndLength[1] ? typeAndLength[1] : null,
-                  default: defaultValue
-               };
+                  return {
+                     name: nameAndType[0].replaceAll('`', ''),
+                     type: typeAndLength[0].toUpperCase(),
+                     length: typeAndLength[1] ? typeAndLength[1] : null,
+                     default: defaultValue
+                  };
+               }
+               catch (err) {
+                  return false;
+               }
             })
             .filter(Boolean)
             .reduce((acc, curr) => {
