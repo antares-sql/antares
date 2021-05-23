@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.9](https://github.com/Fabio286/antares/compare/v0.1.8...v0.1.9) (2021-05-23)
+
+
+### Bug Fixes
+
+* **MySQL:** can't access tables having UNIQUE KEY, closes [#69](https://github.com/Fabio286/antares/issues/69) ([f1636f1](https://github.com/Fabio286/antares/commit/f1636f1528b5765423535f84027fdc853c58ce80))
+
 ### [0.1.8](https://github.com/Fabio286/antares/compare/v0.1.7...v0.1.8) (2021-05-22)
 
 
