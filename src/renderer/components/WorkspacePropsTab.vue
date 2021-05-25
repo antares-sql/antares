@@ -239,11 +239,11 @@ export default {
                      field.defaultType = 'noval';
                   else if (field.default === 'NULL')
                      field.defaultType = 'null';
-                  else if (field.default.match(/^\s*(\w+)\s*\((.*)\)$/))
+                  else if (isNaN(+field.default) && field.default.charAt(0) !== '\'')
                      field.defaultType = 'expression';
                   else {
                      field.defaultType = 'custom';
-                     if (isNaN(field.default) && !field.default.includes('\''))
+                     if (isNaN(+field.default) && !field.default.includes('\''))
                         field.default = `'${field.default}'`;
                   }
 
