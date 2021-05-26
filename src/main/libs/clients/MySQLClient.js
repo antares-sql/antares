@@ -305,11 +305,11 @@ export class MySQLClient extends AntaresCore {
          .select('*')
          .schema('information_schema')
          .from('COLUMNS')
-         .where({ TABLE_SCHEMA: `= '${schema}'`, TABLE_NAME: `= '${table}'` })
+         .where({ TABLE_SCHEMA: `= '${this._schema}'`, TABLE_NAME: `= '${table}'` })
          .orderBy({ ORDINAL_POSITION: 'ASC' })
          .run();
 
-      const { rows: fields } = await this.raw(`SHOW CREATE TABLE ${schema}.${table}`);
+      const { rows: fields } = await this.raw(`SHOW CREATE TABLE ${this._schema}.${table}`);
 
       const remappedFields = fields.map(row => {
          let n = 0;
@@ -330,7 +330,10 @@ export class MySQLClient extends AntaresCore {
                   if (nameAndType[0].charAt(0) !== '`') return false;
 
                   const details = fieldArr.slice(2).join(' ');
-                  const defaultValue = details.includes('DEFAULT') ? details.match(/(?<=DEFAULT ).*?$/gs)[0] : null;
+                  let defaultValue = null;
+                  if (details.includes('DEFAULT'))
+                     defaultValue = details.match(/(?<=DEFAULT ).*?$/gs)[0].split(' COMMENT')[0];
+
                   const typeAndLength = nameAndType[1].replace(')', '').split('(');
 
                   return {
