@@ -25,7 +25,7 @@ A modern application created with minimalism and semplicity in mind, with featur
 
 ## Download
 
-[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/antares) [![Get it from Microsoft Store](https://raw.githubusercontent.com/Fabio286/antares/gh-pages/src/assets/ms-store.png)](https://www.microsoft.com/p/antares-sql-client/9nhtb9sq51r1?cid=storebadge&ocid=badge&rtc=1&activetab=pivot:overviewtab)  
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/antares) [![Get it from AUR](https://raw.githubusercontent.com/Fabio286/antares/3e00c4bae6e036300c752c1a40c5a038fea9c169/docs/aur-badge.svg)](https://aur.archlinux.org/packages/antares-sql/) [![Get it from Microsoft Store](https://raw.githubusercontent.com/Fabio286/antares/gh-pages/src/assets/ms-store.png)](https://www.microsoft.com/p/antares-sql-client/9nhtb9sq51r1?cid=storebadge&ocid=badge&rtc=1&activetab=pivot:overviewtab)  
 🚀 **[Other Downloads](https://github.com/Fabio286/antares/releases/latest)**
 
 ## How to contribute
