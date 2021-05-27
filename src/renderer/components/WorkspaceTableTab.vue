@@ -32,6 +32,27 @@
                      </div>
                   </div>
                </div>
+               <div class="btn-group">
+                  <button
+                     class="btn btn-dark btn-sm mr-0"
+                     :disabled="isQuering || page === 1"
+                     @click="pageChange('prev')"
+                  >
+                     <i class="mdi mdi-24px mdi-skip-previous" />
+                  </button>
+                  <div class="btn btn-dark btn-sm mr-0 text-bold c-auto px-2">
+                     {{ page }}
+                  </div>
+                  <button
+                     class="btn btn-dark btn-sm mr-0"
+                     :disabled="isQuering || (results.length && results[0].rows.length < limit)"
+                     @click="pageChange('next')"
+                  >
+                     <i class="mdi mdi-24px mdi-skip-next" />
+                  </button>
+               </div>
+
+               <div class="divider-vert py-3" />
 
                <button
                   v-if="isTable"
@@ -74,7 +95,7 @@
                <div v-if="results.length && results[0].rows">
                   {{ $t('word.results') }}: <b>{{ results[0].rows.length.toLocaleString() }}</b>
                </div>
-               <div v-if="hasApproximately">
+               <div v-if="hasApproximately || page > 1">
                   {{ $t('word.total') }}: <b>{{ tableInfo.rows.toLocaleString() }}</b> <small>({{ $t('word.approximately') }})</small>
                </div>
                <div v-if="workspace.breadcrumbs.database">
@@ -149,13 +170,15 @@ export default {
          isFakerModal: false,
          autorefreshTimer: 0,
          refreshInterval: null,
-         sortParams: {}
+         sortParams: {},
+         page: 1
       };
    },
    computed: {
       ...mapGetters({
          getWorkspace: 'workspaces/getWorkspace',
-         selectedWorkspace: 'workspaces/getSelected'
+         selectedWorkspace: 'workspaces/getSelected',
+         limit: 'settings/getDataTabLimit'
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
@@ -184,7 +207,7 @@ export default {
          return this.results.length &&
             this.results[0].rows &&
             this.tableInfo &&
-            this.results[0].rows.length === 1000 &&
+            this.results[0].rows.length === this.limit &&
             this.results[0].rows.length < this.tableInfo.rows;
       }
    },
@@ -196,6 +219,9 @@ export default {
             this.lastTable = this.table;
             this.$refs.queryTable.resetSort();
          }
+      },
+      page () {
+         this.getTableData();
       },
       isSelected (val) {
          if (val && this.lastTable !== this.table) {
@@ -228,6 +254,8 @@ export default {
             uid: this.connection.uid,
             schema: this.schema,
             table: this.workspace.breadcrumbs.table || this.workspace.breadcrumbs.view,
+            limit: this.limit,
+            page: this.page,
             sortParams
          };
 
@@ -254,6 +282,12 @@ export default {
       hardSort (sortParams) {
          this.sortParams = sortParams;
          this.getTableData(sortParams);
+      },
+      pageChange (direction) {
+         if (direction === 'next')
+            this.page++;
+         else if (this.page > 1)
+            this.page--;
       },
       showAddModal () {
          this.isAddModal = true;

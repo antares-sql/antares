@@ -26,6 +26,7 @@ export class AntaresCore {
          groupBy: [],
          orderBy: [],
          limit: [],
+         offset: [],
          join: [],
          update: [],
          insert: [],
@@ -106,6 +107,11 @@ export class AntaresCore {
 
    limit (...args) {
       this._query.limit = args;
+      return this;
+   }
+
+   offset (...args) {
+      this._query.offset = args;
       return this;
    }
 

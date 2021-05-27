@@ -16,13 +16,15 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('get-table-data', async (event, { uid, schema, table, sortParams }) => {
+   ipcMain.handle('get-table-data', async (event, { uid, schema, table, limit, page, sortParams }) => {
       try {
+         const offset = (page - 1) * limit;
          const query = connections[uid]
             .select('*')
             .schema(schema)
             .from(table)
-            .limit(1000);
+            .limit(limit)
+            .offset(offset);
 
          if (sortParams && sortParams.field && sortParams.dir)
             query.orderBy({ [sortParams.field]: sortParams.dir.toUpperCase() });

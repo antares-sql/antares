@@ -305,11 +305,11 @@ export class MySQLClient extends AntaresCore {
          .select('*')
          .schema('information_schema')
          .from('COLUMNS')
-         .where({ TABLE_SCHEMA: `= '${this._schema}'`, TABLE_NAME: `= '${table}'` })
+         .where({ TABLE_SCHEMA: `= '${this._schema || schema}'`, TABLE_NAME: `= '${table}'` })
          .orderBy({ ORDINAL_POSITION: 'ASC' })
          .run();
 
-      const { rows: fields } = await this.raw(`SHOW CREATE TABLE ${this._schema}.${table}`);
+      const { rows: fields } = await this.raw(`SHOW CREATE TABLE \`${this._schema || schema}\`.\`${table}\``);
 
       const remappedFields = fields.map(row => {
          let n = 0;
@@ -1307,7 +1307,10 @@ export class MySQLClient extends AntaresCore {
       // LIMIT
       const limitRaw = this._query.limit.length ? `LIMIT ${this._query.limit.join(', ')} ` : '';
 
-      return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}${insertRaw}`;
+      // OFFSET
+      const offsetRaw = this._query.limit.length ? `OFFSET ${this._query.offset.join(', ')} ` : '';
+
+      return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}${offsetRaw}${insertRaw}`;
    }
 
    /**
@@ -1396,6 +1399,7 @@ export class MySQLClient extends AntaresCore {
                            });
                         }
                         catch (err) {
+                           if (isPool) connection.release();
                            reject(err);
                         }
 
@@ -1404,6 +1408,7 @@ export class MySQLClient extends AntaresCore {
                            keysArr = keysArr ? [...keysArr, ...response] : response;
                         }
                         catch (err) {
+                           if (isPool) connection.release();
                            reject(err);
                         }
                      }
