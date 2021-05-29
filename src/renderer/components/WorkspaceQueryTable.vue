@@ -139,7 +139,8 @@ export default {
    },
    computed: {
       ...mapGetters({
-         getWorkspace: 'workspaces/getWorkspace'
+         getWorkspace: 'workspaces/getWorkspace',
+         pageSize: 'settings/getDataTabLimit'
       }),
       workspaceSchema () {
          return this.getWorkspace(this.connUid).breadcrumbs.schema;
@@ -157,7 +158,7 @@ export default {
          return this.fields.every(field => field.name);
       },
       isHardSort () {
-         return this.mode === 'table' && this.localResults.length === 1000;
+         return this.mode === 'table' && this.localResults.length === this.pageSize;
       },
       sortedResults () {
          if (this.currentSort && !this.isHardSort) {

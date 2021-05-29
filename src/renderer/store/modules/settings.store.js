@@ -19,10 +19,10 @@ export default {
    },
    getters: {
       getLocale: state => state.locale,
+      getDataTabLimit: state => state.data_tab_limit,
       getAllowPrerelease: state => state.allow_prerelease,
       getExplorebarSize: state => state.explorebar_size,
       getNotificationsTimeout: state => state.notifications_timeout,
-      getDataTabLimit: state => state.data_tab_limit,
       getAutoComplete: state => state.auto_complete,
       getLineWrap: state => state.line_wrap,
       getApplicationTheme: state => state.application_theme,
@@ -33,6 +33,10 @@ export default {
          state.locale = locale;
          i18n.locale = locale;
          persistentStore.set('locale', state.locale);
+      },
+      SET_DATA_TAB_LIMIT (state, limit) {
+         state.data_tab_limit = limit;
+         persistentStore.set('data_tab_limit', state.data_tab_limit);
       },
       SET_ALLOW_PRERELEASE (state, allow) {
          state.allow_prerelease = allow;
@@ -66,6 +70,9 @@ export default {
    actions: {
       changeLocale ({ commit }, locale) {
          commit('SET_LOCALE', locale);
+      },
+      changePageSize ({ commit }, limit) {
+         commit('SET_DATA_TAB_LIMIT', limit);
       },
       changeAllowPrerelease ({ commit }, allow) {
          commit('SET_ALLOW_PRERELEASE', allow);

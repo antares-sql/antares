@@ -86,6 +86,27 @@
                            <div class="form-group">
                               <div class="col-6 col-sm-12">
                                  <label class="form-label">
+                                    {{ $t('message.dataTabPageSize') }}
+                                 </label>
+                              </div>
+                              <div class="col-6 col-sm-12">
+                                 <select
+                                    v-model="localPageSize"
+                                    class="form-select"
+                                    @change="changePageSize(+localPageSize)"
+                                 >
+                                    <option
+                                       v-for="size in pageSizes"
+                                       :key="size"
+                                    >
+                                       {{ size }}
+                                    </option>
+                                 </select>
+                              </div>
+                           </div>
+                           <div class="form-group">
+                              <div class="col-6 col-sm-12">
+                                 <label class="form-label">
                                     {{ $t('message.notificationsTimeout') }}
                                  </label>
                               </div>
@@ -257,9 +278,11 @@ export default {
    data () {
       return {
          localLocale: null,
+         localPageSize: null,
          localTimeout: null,
          localEditorTheme: null,
          selectedTab: 'general',
+         pageSizes: [40, 100, 250, 500, 1000],
          editorThemes: [
             {
                group: this.$t('word.light'),
@@ -317,6 +340,7 @@ export default {
          appVersion: 'application/appVersion',
          selectedSettingTab: 'application/selectedSettingTab',
          selectedLocale: 'settings/getLocale',
+         pageSize: 'settings/getDataTabLimit',
          selectedAutoComplete: 'settings/getAutoComplete',
          selectedLineWrap: 'settings/getLineWrap',
          notificationsTimeout: 'settings/getNotificationsTimeout',
@@ -359,6 +383,7 @@ ORDER BY
    },
    created () {
       this.localLocale = this.selectedLocale;
+      this.localPageSize = this.pageSize;
       this.localTimeout = this.notificationsTimeout;
       this.localEditorTheme = this.editorTheme;
       this.selectedTab = this.selectedSettingTab;
@@ -371,6 +396,7 @@ ORDER BY
       ...mapActions({
          closeModal: 'application/hideSettingModal',
          changeLocale: 'settings/changeLocale',
+         changePageSize: 'settings/changePageSize',
          changeAutoComplete: 'settings/changeAutoComplete',
          changeLineWrap: 'settings/changeLineWrap',
          changeApplicationTheme: 'settings/changeApplicationTheme',
