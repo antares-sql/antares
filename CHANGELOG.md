@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.10](https://github.com/Fabio286/antares/compare/v0.1.9...v0.1.10) (2021-05-29)
+
+
+### Features
+
+* key shortcuts to change DATA tab page ([f61d7ee](https://github.com/Fabio286/antares/commit/f61d7eeaf42406eb88b3285ac4606794f56e88d3))
+* option to set DATA tab page size ([e71c756](https://github.com/Fabio286/antares/commit/e71c7568c09bf8ad184753d3d0f14046f1e386d0))
+* prev/next buttons to browse the results pages of data tab ([79f033e](https://github.com/Fabio286/antares/commit/79f033e5245e0e744c35540d25a30b1eadc4d603))
+
+
+### Bug Fixes
+
+* **MySQL:** wrong schema in view data tab select, closes [#71](https://github.com/Fabio286/antares/issues/71) ([310cfaa](https://github.com/Fabio286/antares/commit/310cfaa3c2324b1159a46be566b6af2555dc9732))
+* wrong detection of field default expressions in some cases ([04bdd08](https://github.com/Fabio286/antares/commit/04bdd085a56240273133586d23196e52341d5f27))
+
 ### [0.1.9](https://github.com/Fabio286/antares/compare/v0.1.8...v0.1.9) (2021-05-23)
 
 
