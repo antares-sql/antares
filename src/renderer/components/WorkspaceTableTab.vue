@@ -36,6 +36,7 @@
                   <button
                      class="btn btn-dark btn-sm mr-0"
                      :disabled="isQuering || page === 1"
+                     title="CTRL+ᐊ"
                      @click="pageChange('prev')"
                   >
                      <i class="mdi mdi-24px mdi-skip-previous" />
@@ -46,6 +47,7 @@
                   <button
                      class="btn btn-dark btn-sm mr-0"
                      :disabled="isQuering || (results.length && results[0].rows.length < limit)"
+                     title="CTRL+ᐅ"
                      @click="pageChange('next')"
                   >
                      <i class="mdi mdi-24px mdi-skip-next" />
@@ -284,9 +286,11 @@ export default {
          this.getTableData(sortParams);
       },
       pageChange (direction) {
-         if (direction === 'next')
+         if (this.isQuering) return;
+
+         if (direction === 'next' && (this.results.length && this.results[0].rows.length === this.limit))
             this.page++;
-         else if (this.page > 1)
+         else if (direction === 'prev' && this.page > 1)
             this.page--;
       },
       showAddModal () {
@@ -307,6 +311,13 @@ export default {
             e.stopPropagation();
             if (e.key === 'F5')
                this.reloadTable();
+
+            if (e.ctrlKey) {
+               if (e.key === 'ArrowRight')
+                  this.pageChange('next');
+               if (e.key === 'ArrowLeft')
+                  this.pageChange('prev');
+            }
          }
       },
       setRefreshInterval () {
