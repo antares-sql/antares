@@ -14,7 +14,7 @@ Many of its current features are enough to have a pleasant user experience with 
 I'm actively working on it, hoping to provide cool features and fixes as soon as possible.
 
 🔗 If you are curious to try Antares you can download and install the [latest release](https://github.com/Fabio286/antares/releases/latest).  
-👁 To stay tuned for new releases watch this repo on **Release only** channel.  
+👁 To stay tuned for new releases [follow Antares SQL](https://twitter.com/AntaresSQL) on Twitter.  
 🌟 Don't forget to **leave a star** if you appreciate this project.
 
 ## Philosophy
