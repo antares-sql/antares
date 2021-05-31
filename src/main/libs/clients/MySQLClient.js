@@ -1308,7 +1308,7 @@ export class MySQLClient extends AntaresCore {
       const limitRaw = this._query.limit.length ? `LIMIT ${this._query.limit.join(', ')} ` : '';
 
       // OFFSET
-      const offsetRaw = this._query.limit.length ? `OFFSET ${this._query.offset.join(', ')} ` : '';
+      const offsetRaw = this._query.offset.length ? `OFFSET ${this._query.offset.join(', ')} ` : '';
 
       return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}${offsetRaw}${insertRaw}`;
    }

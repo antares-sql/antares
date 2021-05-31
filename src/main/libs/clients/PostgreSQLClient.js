@@ -1140,7 +1140,7 @@ export class PostgreSQLClient extends AntaresCore {
       const limitRaw = selectArray.length && this._query.limit.length ? `LIMIT ${this._query.limit.join(', ')} ` : '';
 
       // OFFSET
-      const offsetRaw = selectArray.length && this._query.limit.length ? `OFFSET ${this._query.offset.join(', ')} ` : '';
+      const offsetRaw = selectArray.length && this._query.offset.length ? `OFFSET ${this._query.offset.join(', ')} ` : '';
 
       return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}${offsetRaw}${insertRaw}`;
    }
