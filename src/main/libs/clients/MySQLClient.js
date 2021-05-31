@@ -1117,7 +1117,7 @@ export class MySQLClient extends AntaresCore {
          options
       } = params;
 
-      let sql = `ALTER TABLE \`${this._schema}\`.\`${table}\` `;
+      let sql = `ALTER TABLE \`${this._schema || params.options.schema}\`.\`${table}\` `;
       const alterColumns = [];
 
       // OPTIONS
