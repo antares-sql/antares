@@ -120,15 +120,15 @@
     "eslint-plugin-import": "^2.23.3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
-    "eslint-plugin-vue": "^7.9.0",
+    "eslint-plugin-vue": "^7.10.0",
     "sass": "^1.34.0",
     "sass-loader": "^10.2.0",
     "standard-version": "^9.3.0",
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
     "stylelint-scss": "^3.19.0",
-    "vue": "^2.6.12",
-    "vue-template-compiler": "^2.6.12",
+    "vue": "^2.6.13",
+    "vue-template-compiler": "^2.6.13",
     "webpack": "^4.46.0"
   }
 }
