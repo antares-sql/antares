@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.11](https://github.com/Fabio286/antares/compare/v0.1.10...v0.1.11) (2021-06-02)
+
+
+### Bug Fixes
+
+* **UI:** prevent canc key to trigger delete modal when editing a row ([5e9c88a](https://github.com/Fabio286/antares/commit/5e9c88a7fd656dd69b92ba4384ca81f4e8cdd422))
+* table row loses internal id after cell update ([6622756](https://github.com/Fabio286/antares/commit/66227569f4c032298e20d44c253d30109ffde0b2))
+* **MySQL:** missing schema altering tables in some conditions ([faa799c](https://github.com/Fabio286/antares/commit/faa799c8ea2329e7ca1b54c9414a060bc8a2a840))
+* empty offset in cell update queries ([acc1eeb](https://github.com/Fabio286/antares/commit/acc1eeb0948db35f2c9a4d85d70fb654b41b15e5))
+
 ### [0.1.10](https://github.com/Fabio286/antares/compare/v0.1.9...v0.1.10) (2021-05-29)
 
 
