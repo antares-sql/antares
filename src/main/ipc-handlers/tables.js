@@ -61,6 +61,8 @@ export default (connections) => {
    });
 
    ipcMain.handle('update-table-cell', async (event, params) => {
+      delete params.row._id;
+
       try { // TODO: move to client classes
          let escapedParam;
          let reload = false;
