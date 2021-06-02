@@ -346,7 +346,9 @@ export default {
       closeContext () {
          this.isContext = false;
       },
-      showDeleteConfirmModal () {
+      showDeleteConfirmModal (e) {
+         if (e && e.path && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.path[0].tagName))
+            return;
          this.isDeleteConfirmModal = true;
       },
       hideDeleteConfirmModal () {
