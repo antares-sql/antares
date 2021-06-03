@@ -222,6 +222,7 @@ export default {
    watch: {
       table () {
          if (this.isSelected) {
+            this.page = 1;
             this.sortParams = {};
             this.getTableData();
             this.lastTable = this.table;
