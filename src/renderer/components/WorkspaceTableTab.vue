@@ -95,10 +95,10 @@
                   <i class="mdi mdi-timer-sand mdi-rotate-180 pr-1" /> <b>{{ results[0].duration / 1000 }}s</b>
                </div>
                <div v-if="results.length && results[0].rows">
-                  {{ $t('word.results') }}: <b>{{ results[0].rows.length.toLocaleString() }}</b>
+                  {{ $t('word.results') }}: <b>{{ results[0].rows.length | localeString }}</b>
                </div>
-               <div v-if="hasApproximately || page > 1">
-                  {{ $t('word.total') }}: <b>{{ tableInfo.rows.toLocaleString() }}</b> <small>({{ $t('word.approximately') }})</small>
+               <div v-if="hasApproximately || (page > 1 && tableInfo.rows)">
+                  {{ $t('word.total') }}: <b>{{ tableInfo.rows | localeString }}</b> <small>({{ $t('word.approximately') }})</small>
                </div>
                <div v-if="workspace.breadcrumbs.database">
                   {{ $t('word.schema') }}: <b>{{ workspace.breadcrumbs.database }}</b>
@@ -156,6 +156,12 @@ export default {
       WorkspaceQueryTable,
       ModalNewTableRow,
       ModalFakerRows
+   },
+   filters: {
+      localeString (val) {
+         if (val)
+            return val.toLocaleString();
+      }
    },
    mixins: [tableTabs],
    props: {
