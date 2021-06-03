@@ -312,6 +312,8 @@ export class MySQLClient extends AntaresCore {
       const { rows: fields } = await this.raw(`SHOW CREATE TABLE \`${this._schema || schema}\`.\`${table}\``);
 
       const remappedFields = fields.map(row => {
+         if (!row['Create Table']) return false;
+
          let n = 0;
          return row['Create Table']
             .split('')
@@ -364,7 +366,7 @@ export class MySQLClient extends AntaresCore {
          return {
             name: field.COLUMN_NAME,
             key: field.COLUMN_KEY.toLowerCase(),
-            type: remappedFields[field.COLUMN_NAME].type,
+            type: remappedFields ? remappedFields[field.COLUMN_NAME].type : field.DATA_TYPE,
             schema: field.TABLE_SCHEMA,
             table: field.TABLE_NAME,
             numPrecision: field.NUMERIC_PRECISION,
@@ -376,7 +378,7 @@ export class MySQLClient extends AntaresCore {
             unsigned: field.COLUMN_TYPE.includes('unsigned'),
             zerofill: field.COLUMN_TYPE.includes('zerofill'),
             order: field.ORDINAL_POSITION,
-            default: remappedFields[field.COLUMN_NAME].default,
+            default: remappedFields ? remappedFields[field.COLUMN_NAME].default : field.COLUMN_DEFAULT,
             charset: field.CHARACTER_SET_NAME,
             collation: field.COLLATION_NAME,
             autoIncrement: field.EXTRA.includes('auto_increment'),
