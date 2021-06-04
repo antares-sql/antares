@@ -4,5 +4,6 @@ export default {
    'ar-SA': 'العربية',
    'es-ES': 'Español',
    'fr-FR': 'Français',
-   'pt-BR': 'Português (Brasil)'
+   'pt-BR': 'Português (Brasil)',
+   'de-DE': 'Deutsch (Deutschland)'
 };
