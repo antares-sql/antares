@@ -31,6 +31,7 @@ A modern application created with minimalism and semplicity in mind, with featur
 ## How to contribute
 
 - [Translate Antares](https://github.com/Fabio286/antares/wiki/Translate-Antares)
+- [Contributors Guide](https://github.com/Fabio286/antares/wiki/Contributors-Guide)
 
 ## Current main features
 
