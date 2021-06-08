@@ -584,8 +584,8 @@ export class MySQLClient extends AntaresCore {
             sql: row['SQL Original Statement'].match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
             name: row.Trigger,
             table: row['SQL Original Statement'].match(/(?<=ON `).*?(?=`)/gs)[0],
-            event1: row['SQL Original Statement'].match(/(BEFORE|AFTER)/gs)[0],
-            event2: row['SQL Original Statement'].match(/(INSERT|UPDATE|DELETE)/gs)[0]
+            activation: row['SQL Original Statement'].match(/(BEFORE|AFTER)/gs)[0],
+            event: row['SQL Original Statement'].match(/(INSERT|UPDATE|DELETE)/gs)[0]
          };
       })[0];
    }
@@ -630,7 +630,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async createTrigger (trigger) {
-      const sql = `CREATE ${trigger.definer ? `DEFINER=${trigger.definer} ` : ''}TRIGGER \`${this._schema}\`.\`${trigger.name}\` ${trigger.event1} ${trigger.event2} ON \`${trigger.table}\` FOR EACH ROW ${trigger.sql}`;
+      const sql = `CREATE ${trigger.definer ? `DEFINER=${trigger.definer} ` : ''}TRIGGER \`${this._schema}\`.\`${trigger.name}\` ${trigger.activation} ${trigger.event} ON \`${trigger.table}\` FOR EACH ROW ${trigger.sql}`;
       return await this.raw(sql, { split: false });
    }
 

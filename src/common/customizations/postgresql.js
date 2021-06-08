@@ -13,7 +13,7 @@ module.exports = {
    // Structure
    tables: true,
    views: true,
-   triggers: false,
+   triggers: true,
    routines: true,
    functions: true,
    // Settings
@@ -25,7 +25,7 @@ module.exports = {
    databaseEdit: false,
    tableSettings: true,
    viewSettings: true,
-   triggerSettings: false,
+   triggerSettings: true,
    routineSettings: true,
    functionSettings: true,
    indexes: true,
@@ -38,5 +38,8 @@ module.exports = {
    functionSql: '$BODY$\r\n\r\n$BODY$',
    functionContext: true,
    functionLanguage: true,
+   triggerMultipleEvents: true,
+   triggerTableInName: true,
+   triggerOnlyRename: true,
    languages: ['sql', 'plpgsql', 'c', 'internal']
 };

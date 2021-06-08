@@ -63,7 +63,9 @@ module.exports = {
    functionContext: false,
    functionLanguage: false,
    triggerMiltipleEvents: false,
+   triggerTableInName: false,
    triggerUpdateColumns: false,
+   triggerOnlyRename: false,
    parametersLength: false,
    languages: false
 };

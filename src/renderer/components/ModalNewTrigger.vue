@@ -71,11 +71,11 @@
                </label>
                <div class="column">
                   <div class="input-group">
-                     <select v-model="localTrigger.event1" class="form-select">
+                     <select v-model="localTrigger.activation" class="form-select">
                         <option>BEFORE</option>
                         <option>AFTER</option>
                      </select>
-                     <select v-model="localTrigger.event2" class="form-select">
+                     <select v-model="localTrigger.event" class="form-select">
                         <option>INSERT</option>
                         <option>UPDATE</option>
                         <option>DELETE</option>
@@ -106,8 +106,8 @@ export default {
             sql: 'BEGIN\r\n\r\nEND',
             name: '',
             table: '',
-            event1: 'BEFORE',
-            event2: 'INSERT'
+            activation: 'BEFORE',
+            event: 'INSERT'
          },
          isOptionsChanging: false
       };
