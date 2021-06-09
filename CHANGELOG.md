@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.12](https://github.com/Fabio286/antares/compare/v0.1.11...v0.1.12) (2021-06-09)
+
+
+### Features
+
+* **PostgreSQL:** trigger rename and delete ([cce5adb](https://github.com/Fabio286/antares/commit/cce5adbac75170186956211b54f4db5be25aba07))
+
+
+### Bug Fixes
+
+* internal exceptions ([8742fa1](https://github.com/Fabio286/antares/commit/8742fa10f08c92a98325df50be9a7df8e36b0f2c))
+* page offset not reset when selected table changes ([5562e73](https://github.com/Fabio286/antares/commit/5562e73e75c659051a49d61041d1eee9d66ff6e2))
+* **MySQL:** view's data tab doesn't work with some views, closes [#71](https://github.com/Fabio286/antares/issues/71) ([9ca059d](https://github.com/Fabio286/antares/commit/9ca059d979161c0132f64db372b4ed7ecc844b2d))
+* **UI:** unable to browse view's result pages ([8a7cc2a](https://github.com/Fabio286/antares/commit/8a7cc2a14fa289c2f3d9e9eb1a5435ffbbaab006))
+
 ### [0.1.11](https://github.com/Fabio286/antares/compare/v0.1.10...v0.1.11) (2021-06-02)
 
 
