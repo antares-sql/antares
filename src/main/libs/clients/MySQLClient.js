@@ -1325,6 +1325,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async raw (sql, args) {
+      sql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '');
       if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
 
       args = {
@@ -1337,7 +1338,11 @@ export class MySQLClient extends AntaresCore {
       const nestTables = args.nest ? '.' : false;
       const resultsArr = [];
       let paramsArr = [];
-      const queries = args.split ? sql.split(/((?:[^;'"]*(?:"(?:\\.|[^"])*"|'(?:\\.|[^'])*')[^;'"]*)+)|;/gm) : [sql];
+      const queries = args.split
+         ? sql.split(/((?:[^;'"]*(?:"(?:\\.|[^"])*"|'(?:\\.|[^'])*')[^;'"]*)+)|;/gm)
+            .filter(Boolean)
+            .map(q => q.trim())
+         : [sql];
       const isPool = typeof this._connection.getConnection === 'function';
       const connection = isPool ? await this._connection.getConnection() : this._connection;
 

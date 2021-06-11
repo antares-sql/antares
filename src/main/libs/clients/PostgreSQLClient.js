@@ -1174,6 +1174,8 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async raw (sql, args) {
+      sql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '');
+
       args = {
          nest: false,
          details: false,
@@ -1186,7 +1188,11 @@ export class PostgreSQLClient extends AntaresCore {
 
       const resultsArr = [];
       let paramsArr = [];
-      const queries = args.split ? sql.split(/(?!\B'[^']*);(?![^']*'\B)/gm) : [sql];
+      const queries = args.split
+         ? sql.split(/(?!\B'[^']*);(?![^']*'\B)/gm)
+            .filter(Boolean)
+            .map(q => q.trim())
+         : [sql];
 
       if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
 
