@@ -1429,7 +1429,10 @@ export class MySQLClient extends AntaresCore {
                   fields: remappedFields,
                   keys: keysArr
                });
-            }).catch(reject);
+            }).catch((err) => {
+               if (isPool) connection.release();
+               reject(err);
+            });
          });
 
          resultsArr.push({ rows, report, fields, keys, duration });
