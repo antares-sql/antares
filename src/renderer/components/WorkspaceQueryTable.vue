@@ -85,7 +85,8 @@
       >
          <template :slot="'header'">
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-delete mr-1" /> {{ $tc('message.deleteRows', selectedRows.length) }}
+               <i class="mdi mdi-24px mdi-delete mr-1" />
+               <span class="cut-text">{{ $tc('message.deleteRows', selectedRows.length) }}</span>
             </div>
          </template>
          <div :slot="'body'">

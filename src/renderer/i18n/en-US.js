@@ -105,7 +105,8 @@ module.exports = {
       scratchpad: 'Scratchpad',
       array: 'Array',
       changelog: 'Changelog',
-      format: 'Format'
+      format: 'Format',
+      structure: 'Structure'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',

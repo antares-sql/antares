@@ -69,7 +69,8 @@
       >
          <template slot="header">
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-database-remove mr-1" /> {{ $t('message.deleteSchema') }}
+               <i class="mdi mdi-24px mdi-database-remove mr-1" />
+               <span class="cut-text">{{ $t('message.deleteSchema') }}</span>
             </div>
          </template>
          <div slot="body">

@@ -8,7 +8,8 @@
    >
       <template slot="header">
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-play mr-1" /> {{ $t('word.parameters') }}: {{ localRoutine.name }}
+            <i class="mdi mdi-24px mdi-play mr-1" />
+            <span class="cut-text">{{ $t('word.parameters') }}: {{ localRoutine.name }}</span>
          </div>
       </template>
       <div slot="body">
@@ -19,10 +20,10 @@
                   :key="parameter._id"
                   class="form-group"
                >
-                  <div class="col-3">
+                  <div class="col-4">
                      <label class="form-label">{{ parameter.name }}</label>
                   </div>
-                  <div class="col-9">
+                  <div class="col-8">
                      <div class="input-group">
                         <input
                            :ref="i === 0 ? 'firstInput' : ''"

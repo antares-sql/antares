@@ -8,7 +8,8 @@
    >
       <template :slot="'header'">
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-dots-horizontal mr-1" /> {{ $t('word.parameters') }} "{{ func }}"
+            <i class="mdi mdi-24px mdi-dots-horizontal mr-1" />
+            <span class="cut-text">{{ $t('word.parameters') }} "{{ func }}"</span>
          </div>
       </template>
       <div :slot="'body'">

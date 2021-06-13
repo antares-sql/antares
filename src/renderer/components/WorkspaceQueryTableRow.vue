@@ -74,7 +74,7 @@
       >
          <template :slot="'header'">
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-playlist-edit mr-1" /> {{ $t('word.edit') }} "{{ editingField }}"
+               <i class="mdi mdi-24px mdi-playlist-edit mr-1" /> <span class="cut-text">{{ $t('word.edit') }} "{{ editingField }}"</span>
             </div>
          </template>
          <div :slot="'body'">
@@ -138,7 +138,8 @@
       >
          <template :slot="'header'">
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-playlist-edit mr-1" /> {{ $t('word.edit') }} "{{ editingField }}"
+               <i class="mdi mdi-24px mdi-playlist-edit mr-1" />
+               <span class="cut-text">{{ $t('word.edit') }} "{{ editingField }}"</span>
             </div>
          </template>
          <div :slot="'body'">

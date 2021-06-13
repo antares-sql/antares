@@ -40,6 +40,12 @@ body {
   box-shadow: none !important;
 }
 
+.cut-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .workspace-tabs {
   align-content: baseline;
 
@@ -112,6 +118,10 @@ body {
       justify-content: space-between;
       align-items: center;
       border-radius: 3px 3px 0 0;
+
+      .modal-title {
+        overflow: hidden;
+      }
     }
   }
 }
@@ -183,6 +193,10 @@ body {
 
 .accordion-body {
   max-height: 5000rem !important;
+}
+
+.btn-group {
+  flex-wrap: nowrap;
 }
 
 .btn.loading {

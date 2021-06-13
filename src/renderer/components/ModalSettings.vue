@@ -6,7 +6,7 @@
             <div class="modal-title h6">
                <div class="d-flex">
                   <i class="mdi mdi-24px mdi-cog mr-1" />
-                  {{ $t('word.settings') }}
+                  <span class="cut-text">{{ $t('word.settings') }}</span>
                </div>
             </div>
             <a class="btn btn-clear c-hand" @click="closeModal" />

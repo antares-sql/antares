@@ -5,7 +5,8 @@
          <div class="modal-header pl-2">
             <div class="modal-title h6">
                <div class="d-flex">
-                  <i class="mdi mdi-24px mdi-database-plus mr-1" /> {{ $t('message.createNewSchema') }}
+                  <i class="mdi mdi-24px mdi-database-plus mr-1" />
+                  <span class="cut-text">{{ $t('message.createNewSchema') }}</span>
                </div>
             </div>
             <a class="btn btn-clear c-hand" @click.stop="closeModal" />
