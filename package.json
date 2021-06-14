@@ -111,7 +111,7 @@
     "@babel/eslint-parser": "^7.14.4",
     "cross-env": "^7.0.2",
     "electron": "^13.1.1",
-    "electron-builder": "22.10.5",
+    "electron-builder": "22.11.7",
     "electron-devtools-installer": "^3.2.0",
     "electron-webpack": "^2.8.2",
     "electron-webpack-vue": "^2.4.0",
