@@ -40,6 +40,6 @@ module.exports = {
    functionLanguage: true,
    triggerMultipleEvents: true,
    triggerTableInName: true,
-   triggerOnlyRename: true,
+   triggerOnlyRename: false,
    languages: ['sql', 'plpgsql', 'c', 'internal']
 };

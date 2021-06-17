@@ -535,7 +535,7 @@ export class PostgreSQLClient extends AntaresCore {
     */
    async dropTrigger (params) {
       const triggerParts = params.trigger.split('.');
-      const sql = `DROP TRIGGER ${triggerParts[1]} ON ${triggerParts[0]}`;
+      const sql = `DROP TRIGGER "${triggerParts[1]}" ON "${triggerParts[0]}"`;
       return await this.raw(sql);
    }
 
@@ -547,21 +547,18 @@ export class PostgreSQLClient extends AntaresCore {
     */
    async alterTrigger (params) {
       const { trigger } = params;
-      // const tempTrigger = Object.assign({}, trigger);
-      // tempTrigger.name = `Antares_${tempTrigger.name}_tmp`;
+      const tempTrigger = Object.assign({}, trigger);
+      tempTrigger.name = `Antares_${tempTrigger.name}_tmp`;
 
-      // try {
-      //    await this.createTrigger(tempTrigger);
-      //    await this.dropTrigger({ trigger: tempTrigger.name });
-      //    await this.dropTrigger({ trigger: trigger.oldName });
-      //    await this.createTrigger(trigger);
-      // }
-      // catch (err) {
-      //    return Promise.reject(err);
-      // }
-
-      const sql = `ALTER TRIGGER ${trigger.oldName} ON ${trigger.table} RENAME TO ${trigger.name}`;
-      return await this.raw(sql);
+      try {
+         await this.createTrigger(tempTrigger);
+         await this.dropTrigger({ trigger: `${tempTrigger.table}.${tempTrigger.name}` });
+         await this.dropTrigger({ trigger: `${trigger.table}.${trigger.oldName}` });
+         await this.createTrigger(trigger);
+      }
+      catch (err) {
+         return Promise.reject(err);
+      }
    }
 
    /**
@@ -571,7 +568,8 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async createTrigger (trigger) {
-      const sql = `CREATE ${trigger.definer ? `DEFINER=${trigger.definer} ` : ''}TRIGGER \`${trigger.name}\` ${trigger.event} ${trigger.activation} ON \`${trigger.table}\` FOR EACH ROW ${trigger.sql}`;
+      const eventsString = Array.isArray(trigger.event) ? trigger.event.join(' OR ') : trigger.event;
+      const sql = `CREATE TRIGGER "${trigger.name}" ${trigger.activation} ${eventsString} ON "${trigger.table}" FOR EACH ROW ${trigger.sql}`;
       return await this.raw(sql, { split: false });
    }
 
