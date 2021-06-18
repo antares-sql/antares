@@ -2,7 +2,6 @@
 
 import { app, BrowserWindow, nativeImage } from 'electron';
 import * as path from 'path';
-import { format as formatUrl } from 'url';
 import Store from 'electron-store';
 
 import ipcHandlers from './ipc-handlers';
@@ -47,13 +46,8 @@ async function createMainWindow () {
          const toolName = await installExtension(VUEJS_DEVTOOLS);
          console.log(toolName, 'installed');
       }
-      else {
-         await window.loadURL(formatUrl({
-            pathname: path.join(__dirname, 'index.html'),
-            protocol: 'file',
-            slashes: true
-         }));
-      }
+      else
+         await window.loadURL(new URL(`file:///${path.join(__dirname, 'index.html')}`).href);
    }
    catch (err) {
       console.log(err);
