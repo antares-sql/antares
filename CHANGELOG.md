@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.13](https://github.com/Fabio286/antares/compare/v0.1.12...v0.1.13) (2021-06-19)
+
+
+### Features
+
+* **PostgreSQL:** alter trigger support ([5c8ee66](https://github.com/Fabio286/antares/commit/5c8ee66f432585db7bd72103fa814558bf406bcc))
+* **UI:** ability to manually insert page number in DATA tabs, closes [#65](https://github.com/Fabio286/antares/issues/65) ([e2ebb04](https://github.com/Fabio286/antares/commit/e2ebb04a9047d25187889644aa625fe675de808b))
+* **UI:** option to change query editors font size, closes [#77](https://github.com/Fabio286/antares/issues/77) ([e579f37](https://github.com/Fabio286/antares/commit/e579f374381b329422b646b8f7ab5acf298db981))
+
+
+### Bug Fixes
+
+* **MySQL:** pool connections not released after MySQL errors, causing endless load animation ([4133fc4](https://github.com/Fabio286/antares/commit/4133fc452fc2e961eb587590e010f4968675db7e))
+* **UI:** various fixes in displaying content with small window size ([8a20bef](https://github.com/Fabio286/antares/commit/8a20befd0941cb2e6d5e29552606454bd871b092))
+
+
+### Improvements
+
+* remove comments from queries before execution ([690a454](https://github.com/Fabio286/antares/commit/690a4541f96eaf831dea07b777a421729173b654))
+
 ### [0.1.12](https://github.com/Fabio286/antares/compare/v0.1.11...v0.1.12) (2021-06-09)
 
 
