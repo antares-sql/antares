@@ -15,7 +15,8 @@ export default {
       auto_complete: persistentStore.get('auto_complete', true),
       line_wrap: persistentStore.get('line_wrap', true),
       application_theme: persistentStore.get('application_theme', 'dark'),
-      editor_theme: persistentStore.get('editor_theme', 'twilight')
+      editor_theme: persistentStore.get('editor_theme', 'twilight'),
+      editor_font_size: persistentStore.get('editor_font_size', 'medium')
    },
    getters: {
       getLocale: state => state.locale,
@@ -26,7 +27,8 @@ export default {
       getAutoComplete: state => state.auto_complete,
       getLineWrap: state => state.line_wrap,
       getApplicationTheme: state => state.application_theme,
-      getEditorTheme: state => state.editor_theme
+      getEditorTheme: state => state.editor_theme,
+      getEditorFontSize: state => state.editor_font_size
    },
    mutations: {
       SET_LOCALE (state, locale) {
@@ -65,6 +67,10 @@ export default {
       SET_EDITOR_THEME (state, theme) {
          state.editor_theme = theme;
          persistentStore.set('editor_theme', state.editor_theme);
+      },
+      SET_EDITOR_FONT_SIZE (state, size) {
+         state.editor_font_size = size;
+         persistentStore.set('editor_font_size', state.editor_font_size);
       }
    },
    actions: {
@@ -94,6 +100,9 @@ export default {
       },
       changeEditorTheme ({ commit }, theme) {
          commit('SET_EDITOR_THEME', theme);
+      },
+      changeEditorFontSize ({ commit }, size) {
+         commit('SET_EDITOR_FONT_SIZE', size);
       }
    }
 };

@@ -222,6 +222,31 @@
                               </optgroup>
                            </select>
                         </div>
+                        <div class="column col-6 mb-4">
+                           <div class="btn-group btn-group-block">
+                              <button
+                                 class="btn btn-dark cut-text"
+                                 :class="{'active': editorFontSize === 'small'}"
+                                 @click="changeEditorFontSize('small')"
+                              >
+                                 {{ $t('word.small') }}
+                              </button>
+                              <button
+                                 class="btn btn-dark cut-text"
+                                 :class="{'active': editorFontSize === 'medium'}"
+                                 @click="changeEditorFontSize('medium')"
+                              >
+                                 {{ $t('word.medium') }}
+                              </button>
+                              <button
+                                 class="btn btn-dark cut-text"
+                                 :class="{'active': editorFontSize === 'large'}"
+                                 @click="changeEditorFontSize('large')"
+                              >
+                                 {{ $t('word.large') }}
+                              </button>
+                           </div>
+                        </div>
                         <div class="column col-12">
                            <BaseTextEditor
                               :value="exampleQuery"
@@ -346,6 +371,7 @@ export default {
          notificationsTimeout: 'settings/getNotificationsTimeout',
          applicationTheme: 'settings/getApplicationTheme',
          editorTheme: 'settings/getEditorTheme',
+         editorFontSize: 'settings/getEditorFontSize',
          updateStatus: 'application/getUpdateStatus',
          selectedWorkspace: 'workspaces/getSelected',
          getWorkspace: 'workspaces/getWorkspace'
@@ -401,6 +427,7 @@ ORDER BY
          changeLineWrap: 'settings/changeLineWrap',
          changeApplicationTheme: 'settings/changeApplicationTheme',
          changeEditorTheme: 'settings/changeEditorTheme',
+         changeEditorFontSize: 'settings/changeEditorFontSize',
          updateNotificationsTimeout: 'settings/updateNotificationsTimeout'
       }),
       selectTab (tab) {

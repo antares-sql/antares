@@ -38,6 +38,7 @@ export default {
    computed: {
       ...mapGetters({
          editorTheme: 'settings/getEditorTheme',
+         editorFontSize: 'settings/getEditorFontSize',
          autoComplete: 'settings/getAutoComplete',
          lineWrap: 'settings/getLineWrap',
          baseCompleter: 'application/getBaseCompleter'
@@ -157,6 +158,19 @@ export default {
       editorTheme () {
          if (this.editor)
             this.editor.setTheme(`ace/theme/${this.editorTheme}`);
+      },
+      editorFontSize () {
+         const sizes = {
+            small: '12px',
+            medium: '14px',
+            large: '16px'
+         };
+
+         if (this.editor) {
+            this.editor.setOptions({
+               fontSize: sizes[this.editorFontSize]
+            });
+         }
       },
       autoComplete () {
          if (this.editor) {

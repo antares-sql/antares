@@ -106,7 +106,10 @@ module.exports = {
       array: 'Array',
       changelog: 'Changelog',
       format: 'Format',
-      structure: 'Structure'
+      structure: 'Structure',
+      small: 'Small',
+      medium: 'Medium',
+      large: 'Large'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
