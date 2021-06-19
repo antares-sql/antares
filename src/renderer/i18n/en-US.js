@@ -215,7 +215,8 @@ module.exports = {
       deleteSchema: 'Delete schema',
       markdownSupported: 'Markdown supported',
       plantATree: 'Plant a Tree',
-      dataTabPageSize: 'DATA tab page size'
+      dataTabPageSize: 'DATA tab page size',
+      pageNumber: 'Page number'
    },
    faker: {
       address: 'Address',
