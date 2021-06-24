@@ -174,6 +174,7 @@ export default {
         align-content: center;
         justify-content: center;
         flex-direction: column;
+        border-radius: 0;
 
         &:hover {
           opacity: 1;
@@ -211,7 +212,7 @@ export default {
       padding: 0.2rem 0.4rem;
       font-size: 0.7rem;
       background: rgba(48, 55, 66, 0.95);
-      border-radius: 0.1rem;
+      border-radius: $border-radius;
       color: #fff;
       max-width: 320px;
       pointer-events: none;

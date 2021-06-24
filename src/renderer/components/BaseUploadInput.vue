@@ -63,7 +63,7 @@ export default {
 
 <style lang="scss" scoped>
 .file-uploader {
-  border-radius: 0.1rem;
+  border-radius: $border-radius;
   height: 1.8rem;
   line-height: 1.2rem;
   display: flex;

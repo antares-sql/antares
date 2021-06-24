@@ -247,7 +247,7 @@ export default {
 
 <style lang="scss" scoped>
 .tile {
-  border-radius: 2px;
+  border-radius: $border-radius;
   opacity: 0.5;
   transition: background 0.2s;
   transition: opacity 0.2s;

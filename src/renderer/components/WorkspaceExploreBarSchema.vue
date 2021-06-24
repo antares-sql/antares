@@ -311,7 +311,7 @@ export default {
   .database-name,
   .misc-name {
     &:hover {
-      border-radius: 2px;
+      border-radius: $border-radius;
     }
   }
 
@@ -320,7 +320,7 @@ export default {
     position: relative;
 
     &:hover {
-      border-radius: 2px;
+      border-radius: $border-radius;
     }
   }
 

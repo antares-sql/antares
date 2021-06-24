@@ -34,6 +34,10 @@ body {
   outline: none !important;
 }
 
+.no-radius {
+  border-radius: 0 !important;
+}
+
 .no-border {
   outline: none !important;
   border: none !important;
@@ -109,7 +113,7 @@ body {
   .modal-container,
   .modal-sm .modal-container {
     padding: 0;
-    border-radius: 3px;
+    border-radius: $border-radius;
 
     .modal-header {
       padding: 0.4rem 0.8rem;
@@ -117,7 +121,7 @@ body {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-radius: 3px 3px 0 0;
+      border-radius: $border-radius $border-radius 0 0;
 
       .modal-title {
         overflow: hidden;

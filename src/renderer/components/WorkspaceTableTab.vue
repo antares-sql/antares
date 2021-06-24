@@ -42,8 +42,8 @@
                      <i class="mdi mdi-24px mdi-skip-previous" />
                   </button>
                   <div class="dropdown" :class="{'active': isPageMenu}">
-                     <div class="btn-group" @click="openPageMenu">
-                        <div class="btn btn-dark btn-sm mr-0 dropdown-toggle text-bold px-3">
+                     <div @click="openPageMenu">
+                        <div class="btn btn-dark btn-sm mr-0 no-radius dropdown-toggle text-bold px-3">
                            {{ page }}
                         </div>
                         <div class="menu px-3">

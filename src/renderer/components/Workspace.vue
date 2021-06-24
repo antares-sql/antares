@@ -362,7 +362,7 @@ export default {
             min-width: 100%;
 
             .menu-item a {
-              border-radius: 0.1rem;
+              border-radius: $border-radius;
               color: inherit;
               display: block;
               margin: 0 -0.4rem;
