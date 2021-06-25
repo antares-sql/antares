@@ -4,7 +4,7 @@
       class="toast mt-2"
       :class="toastStatus.className"
    >
-      <span class="p-vcentered text-left" v-html="`${toastStatus.iconTag} ${message}`" />
+      <span class="p-vcentered text-left"><i class="mdi mdi-24px mr-1" :class="toastStatus.iconName" /> {{ message }}</span>
       <button class="btn btn-clear" @click="hideToast" />
    </div>
 </template>
@@ -30,27 +30,27 @@ export default {
    computed: {
       toastStatus () {
          let className = '';
-         let iconTag = '';
+         let iconName = '';
          switch (this.status) {
             case 'success':
                className = 'toast-success';
-               iconTag = '<i class="mdi mdi-24px mdi-check mr-1"></i>';
+               iconName = 'mdi-check';
                break;
             case 'error':
                className = 'toast-error';
-               iconTag = '<i class="mdi mdi-24px mdi-alert-rhombus mr-1"></i>';
+               iconName = 'mdi-alert-rhombus';
                break;
             case 'warning':
                className = 'toast-warning';
-               iconTag = '<i class="mdi mdi-24px mdi-alert mr-1"></i>';
+               iconName = 'mdi-alert';
                break;
             case 'primary':
                className = 'toast-primary';
-               iconTag = '<i class="mdi mdi-24px mdi-information-outline mr-1"></i>';
+               iconName = 'mdi-information-outline';
                break;
          }
 
-         return { className, iconTag };
+         return { className, iconName };
       }
    },
    watch: {
