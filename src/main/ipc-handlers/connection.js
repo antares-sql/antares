@@ -29,9 +29,8 @@ export default connections => {
          params
       });
 
-      await connection.connect();
-
       try {
+         await connection.connect();
          await connection.select('1+1').run();
          connection.destroy();
 
