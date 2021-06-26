@@ -344,6 +344,7 @@ export default {
          else {
             try {
                const res = await Connection.makeTest(this.connection);
+               console.log(res.response);
                if (res.status === 'error')
                   this.toast = { status: 'error', message: res.response.message };
                else

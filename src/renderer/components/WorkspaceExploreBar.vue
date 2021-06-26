@@ -209,6 +209,9 @@ export default {
       },
       connectionName () {
          return this.getConnectionName(this.connection.uid);
+      },
+      customizations () {
+         return this.workspace.customizations;
       }
    },
    watch: {
@@ -363,7 +366,8 @@ export default {
 
          if (status === 'success') {
             await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedDatabase, trigger: payload.name });
+            const triggerName = this.customizations.triggerTableInName ? `${payload.table}.${payload.name}` : payload.name;
+            this.changeBreadcrumbs({ schema: this.selectedDatabase, trigger: triggerName });
             this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
          }
          else

@@ -25,7 +25,7 @@
                   >
                </div>
             </div>
-            <div class="form-group">
+            <div v-if="customizations.definer" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.definer') }}
                </label>
@@ -75,26 +75,52 @@
                         <option>BEFORE</option>
                         <option>AFTER</option>
                      </select>
-                     <select v-model="localTrigger.event" class="form-select">
-                        <option>INSERT</option>
-                        <option>UPDATE</option>
-                        <option>DELETE</option>
+                     <select
+                        v-if="!customizations.triggerMultipleEvents"
+                        v-model="localTrigger.event"
+                        class="form-select"
+                     >
+                        <option v-for="event in Object.keys(localEvents)" :key="event">
+                           {{ event }}
+                        </option>
                      </select>
+                     <div v-if="customizations.triggerMultipleEvents" class="px-4">
+                        <label
+                           v-for="event in Object.keys(localEvents)"
+                           :key="event"
+                           class="form-checkbox form-inline"
+                           @change.prevent="changeEvents(event)"
+                        >
+                           <input :checked="localEvents[event]" type="checkbox"><i class="form-icon" /> {{ event }}
+                        </label>
+                     </div>
                   </div>
                </div>
             </div>
          </form>
+         <div v-if="customizations.triggerStatementInCreation" class="workspace-query-results column col-12 mt-2">
+            <label class="form-label ml-2">{{ $t('message.triggerStatement') }}</label>
+            <QueryEditor
+               ref="queryEditor"
+               :value.sync="localTrigger.sql"
+               :workspace="workspace"
+               :schema="schema"
+               :height="editorHeight"
+            />
+         </div>
       </div>
    </ConfirmModal>
 </template>
 
 <script>
 import ConfirmModal from '@/components/BaseConfirmModal';
+import QueryEditor from '@/components/QueryEditor';
 
 export default {
    name: 'ModalNewTrigger',
    components: {
-      ConfirmModal
+      ConfirmModal,
+      QueryEditor
    },
    props: {
       workspace: Object
@@ -103,13 +129,15 @@ export default {
       return {
          localTrigger: {
             definer: '',
-            sql: 'BEGIN\r\n\r\nEND',
+            sql: '',
             name: '',
             table: '',
             activation: 'BEFORE',
             event: 'INSERT'
          },
-         isOptionsChanging: false
+         isOptionsChanging: false,
+         localEvents: { INSERT: false, UPDATE: false, DELETE: false },
+         editorHeight: 150
       };
    },
    computed: {
@@ -122,11 +150,16 @@ export default {
             .map(schema => schema.tables);
 
          return schemaTables.length ? schemaTables[0].filter(table => table.type === 'table') : [];
+      },
+      customizations () {
+         return this.workspace.customizations;
       }
    },
-   mounted () {
+   created () {
       this.localTrigger.table = this.schemaTables.length ? this.schemaTables[0].name : '';
-
+      this.localTrigger.sql = this.customizations.triggerSql;
+   },
+   mounted () {
       setTimeout(() => {
          this.$refs.firstInput.focus();
       }, 20);
@@ -134,6 +167,16 @@ export default {
    methods: {
       confirmNewTrigger () {
          this.$emit('open-create-trigger-editor', this.localTrigger);
+      },
+      changeEvents (event) {
+         if (this.customizations.triggerMultipleEvents) {
+            this.localEvents[event] = !this.localEvents[event];
+            this.localTrigger.event = [];
+            for (const key in this.localEvents) {
+               if (this.localEvents[key])
+                  this.localTrigger.event.push(key);
+            }
+         }
       }
    }
 };

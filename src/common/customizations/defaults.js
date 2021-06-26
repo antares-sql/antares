@@ -62,6 +62,8 @@ module.exports = {
    functionSql: false,
    functionContext: false,
    functionLanguage: false,
+   triggerSql: false,
+   triggerStatementInCreation: false,
    triggerMultipleEvents: false,
    triggerTableInName: false,
    triggerUpdateColumns: false,
