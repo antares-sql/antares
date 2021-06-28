@@ -31,6 +31,27 @@
                   <span>{{ $t('word.run') }}</span>
                   <i class="mdi mdi-24px mdi-play" />
                </button>
+               <button
+                  class="btn btn-dark btn-sm"
+                  :disabled="!query || isQuering"
+                  title="CTRL+F8"
+                  @click="beautify()"
+               >
+                  <span>{{ $t('word.format') }}</span>
+                  <i class="mdi mdi-24px mdi-brush pl-1" />
+               </button>
+               <button
+                  class="btn btn-link btn-sm"
+                  :disabled="!query || isQuering"
+                  title="CTRL+W"
+                  @click="clear()"
+               >
+                  <span>{{ $t('word.clear') }}</span>
+                  <i class="mdi mdi-24px mdi-delete-sweep pl-1" />
+               </button>
+
+               <div class="divider-vert py-3" />
+
                <div class="dropdown export-dropdown pr-2">
                   <button
                      :disabled="!results.length || isQuering"
@@ -50,24 +71,6 @@
                      </li>
                   </ul>
                </div>
-               <button
-                  class="btn btn-dark btn-sm"
-                  :disabled="!query || isQuering"
-                  title="CTRL+F8"
-                  @click="beautify()"
-               >
-                  <span>{{ $t('word.format') }}</span>
-                  <i class="mdi mdi-24px mdi-brush pl-1" />
-               </button>
-               <button
-                  class="btn btn-link btn-sm"
-                  :disabled="!query || isQuering"
-                  title="CTRL+W"
-                  @click="clear()"
-               >
-                  <span>{{ $t('word.clear') }}</span>
-                  <i class="mdi mdi-24px mdi-delete-sweep pl-1" />
-               </button>
             </div>
             <div class="workspace-query-info">
                <div

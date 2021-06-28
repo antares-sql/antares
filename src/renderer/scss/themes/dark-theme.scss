@@ -363,26 +363,6 @@
       margin: 0;
 
       .settingbar-element {
-        height: $settingbar-width;
-        width: 100%;
-        margin: 0;
-        border-left: 3px solid transparent;
-        opacity: 0.5;
-        transition: opacity 0.2s;
-        display: flex;
-        align-content: center;
-        justify-content: center;
-        flex-direction: column;
-
-        &:hover {
-          opacity: 1;
-        }
-
-        &.selected {
-          border-left-color: $body-font-color-dark;
-          opacity: 1;
-        }
-
         .settingbar-element-icon {
           &.badge::after {
             bottom: -10px;

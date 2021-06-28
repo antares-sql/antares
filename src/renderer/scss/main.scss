@@ -132,6 +132,30 @@ body {
 
 .tab {
   .tab-item {
+    position: relative;
+    display: flex;
+    justify-content: center;
+
+    &.active {
+      .tab-link {
+        border-color: transparent;
+      }
+
+      &::after {
+        width: 100%;
+      }
+    }
+
+    &::after {
+      content: "";
+      height: 2px;
+      width: 0;
+      transition: width 0.2s;
+      background-color: $primary-color;
+      position: absolute;
+      bottom: 0;
+    }
+
     .btn-clear {
       margin-top: -0.1rem;
       font-size: 0.6rem;

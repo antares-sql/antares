@@ -16,40 +16,40 @@
                <div class="panel-nav">
                   <ul class="tab tab-block">
                      <li
-                        class="tab-item"
+                        class="tab-item c-hand"
                         :class="{'active': selectedTab === 'general'}"
                         @click="selectTab('general')"
                      >
-                        <a class="c-hand">{{ $t('word.general') }}</a>
+                        <a class="tab-link">{{ $t('word.general') }}</a>
                      </li>
                      <li
-                        class="tab-item"
+                        class="tab-item c-hand"
                         :class="{'active': selectedTab === 'themes'}"
                         @click="selectTab('themes')"
                      >
-                        <a class="c-hand">{{ $t('word.themes') }}</a>
+                        <a class="tab-link">{{ $t('word.themes') }}</a>
                      </li>
                      <li
                         v-if="updateStatus !== 'disabled'"
-                        class="tab-item"
+                        class="tab-item c-hand"
                         :class="{'active': selectedTab === 'update'}"
                         @click="selectTab('update')"
                      >
-                        <a class="c-hand" :class="{'badge badge-update': hasUpdates}">{{ $t('word.update') }}</a>
+                        <a class="tab-link" :class="{'badge badge-update': hasUpdates}">{{ $t('word.update') }}</a>
                      </li>
                      <li
-                        class="tab-item"
+                        class="tab-item c-hand"
                         :class="{'active': selectedTab === 'changelog'}"
                         @click="selectTab('changelog')"
                      >
-                        <a class="c-hand">{{ $t('word.changelog') }}</a>
+                        <a class="tab-link">{{ $t('word.changelog') }}</a>
                      </li>
                      <li
-                        class="tab-item"
+                        class="tab-item c-hand"
                         :class="{'active': selectedTab === 'about'}"
                         @click="selectTab('about')"
                      >
-                        <a class="c-hand">{{ $t('word.about') }}</a>
+                        <a class="tab-link">{{ $t('word.about') }}</a>
                      </li>
                   </ul>
                </div>

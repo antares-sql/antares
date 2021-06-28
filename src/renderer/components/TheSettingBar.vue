@@ -182,6 +182,21 @@ export default {
 
         &.selected {
           opacity: 1;
+
+          &::before {
+            height: $settingbar-width;
+          }
+        }
+
+        &::before {
+          content: '';
+          height: 0;
+          width: 3px;
+          transition: height 0.2s;
+          background-color: $primary-color;
+          position: absolute;
+          left: 0;
+          border-radius: $border-radius;
         }
 
         .settingbar-element-icon {
