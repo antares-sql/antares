@@ -88,7 +88,8 @@ export default {
     z-index: 10;
     padding: 0;
     background: #1d1d1d;
-    border-radius: 0.1rem;
+    border-radius: $border-radius;
+    border: 1px solid $bg-color-light-dark;
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -97,12 +98,16 @@ export default {
     .context-element {
       display: flex;
       align-items: center;
-      padding: 0.1rem 0.3rem;
+      margin: 0.2rem;
+      padding: 0.1rem;
+      border-radius: $border-radius;
       cursor: pointer;
       justify-content: space-between;
       position: relative;
 
       .context-submenu {
+        border-radius: $border-radius;
+        border: 1px solid $bg-color-light-dark;
         opacity: 0;
         visibility: hidden;
         transition: opacity 0.2s;

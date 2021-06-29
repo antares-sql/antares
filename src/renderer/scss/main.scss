@@ -136,6 +136,10 @@ body {
     display: flex;
     justify-content: center;
 
+    .tab-link {
+      min-width: 0;
+    }
+
     &.active {
       .tab-link {
         border-color: transparent;
