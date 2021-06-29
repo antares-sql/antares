@@ -138,6 +138,7 @@ body {
 
     .tab-link {
       min-width: 0;
+      transition: color 0.2s;
     }
 
     &.active {
@@ -235,5 +236,25 @@ body {
   > .mdi,
   > span {
     visibility: hidden;
+  }
+}
+
+.table-dropdown {
+  .menu {
+    min-width: 100%;
+    padding: 0;
+
+    .menu-item {
+      padding: 0;
+
+      > a {
+        margin: 0.2rem;
+        padding: 0.1rem 0.3rem;
+
+        &:hover {
+          color: inherit;
+        }
+      }
+    }
   }
 }

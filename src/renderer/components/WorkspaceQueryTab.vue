@@ -52,7 +52,7 @@
 
                <div class="divider-vert py-3" />
 
-               <div class="dropdown export-dropdown pr-2">
+               <div class="dropdown table-dropdown pr-2">
                   <button
                      :disabled="!results.length || isQuering"
                      class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
@@ -320,12 +320,6 @@ export default {
 
   .workspace-query-results {
     min-height: 200px;
-  }
-}
-
-.export-dropdown {
-  .menu {
-    min-width: 100%;
   }
 }
 </style>

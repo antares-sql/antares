@@ -81,7 +81,7 @@
                   <i class="mdi mdi-24px mdi-playlist-plus ml-1" />
                </button>
 
-               <div class="dropdown export-dropdown pr-2">
+               <div class="dropdown table-dropdown pr-2">
                   <button
                      :disabled="isQuering"
                      class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
@@ -383,10 +383,3 @@ export default {
    }
 };
 </script>
-<style lang="scss" scoped>
-.export-dropdown {
-  .menu {
-    min-width: 100%;
-  }
-}
-</style>

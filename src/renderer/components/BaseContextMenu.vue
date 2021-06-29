@@ -99,7 +99,7 @@ export default {
       display: flex;
       align-items: center;
       margin: 0.2rem;
-      padding: 0.1rem;
+      padding: 0.1rem 0.3rem;
       border-radius: $border-radius;
       cursor: pointer;
       justify-content: space-between;
@@ -113,7 +113,7 @@ export default {
         transition: opacity 0.2s;
         position: absolute;
         left: 100%;
-        top: 0;
+        top: -0.2rem;
         min-width: 100px;
       }
 
