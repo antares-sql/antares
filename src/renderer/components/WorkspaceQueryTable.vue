@@ -465,7 +465,7 @@ export default {
       downloadTable (format, filename) {
          if (!this.sortedResults) return;
 
-         const rows = [...this.sortedResults].map(row => {
+         const rows = JSON.parse(JSON.stringify(this.sortedResults)).map(row => {
             delete row._id;
             return row;
          });
