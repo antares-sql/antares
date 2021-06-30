@@ -109,7 +109,9 @@ module.exports = {
       structure: 'Structure',
       small: 'Small',
       medium: 'Medium',
-      large: 'Large'
+      large: 'Large',
+      row: 'Row | Rows',
+      cell: 'Cell | Cells'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',

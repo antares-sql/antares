@@ -12,6 +12,8 @@
          :selected-rows="selectedRows"
          @show-delete-modal="showDeleteConfirmModal"
          @set-null="setNull"
+         @copy-cell="copyCell"
+         @copy-row="copyRow"
          @close-context="closeContext"
       />
       <ul v-if="resultsWithRows.length > 1" class="tab tab-block result-tabs">
@@ -384,6 +386,22 @@ export default {
             content: null
          };
          this.$emit('update-field', params);
+      },
+      copyCell () {
+         const row = this.localResults.find(row => this.selectedRows.includes(row._id));
+         const cellName = Object.keys(row).find(prop => [
+            this.selectedCell.field,
+            `${this.fields[0].table}.${this.selectedCell.field}`,
+            `${this.fields[0].tableAlias}.${this.selectedCell.field}`
+         ].includes(prop));
+         const valueToCopy = row[cellName];
+         navigator.clipboard.writeText(valueToCopy);
+      },
+      copyRow () {
+         const row = this.localResults.find(row => this.selectedRows.includes(row._id));
+         const rowToCopy = JSON.parse(JSON.stringify(row));
+         delete rowToCopy._id;
+         navigator.clipboard.writeText(JSON.stringify(rowToCopy));
       },
       applyUpdate (params) {
          const { primary, id, field, table, content } = params;
