@@ -289,6 +289,11 @@ export default {
       width: 100%;
       cursor: ns-resize;
       z-index: 99;
+      transition: background 0.2s;
+
+      &:hover {
+        background: rgba($primary-color, 50%);
+      }
     }
 
     .workspace-query-runner-footer {

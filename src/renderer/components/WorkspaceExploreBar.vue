@@ -455,6 +455,11 @@ export default {
     height: calc(100vh - #{$excluding-size});
     cursor: ew-resize;
     z-index: 99;
+    transition: background 0.2s;
+
+    &:hover {
+      background: rgba($primary-color, 50%);
+    }
   }
 
   .workspace-explorebar {
