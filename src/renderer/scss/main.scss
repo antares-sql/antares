@@ -258,3 +258,17 @@ body {
     }
   }
 }
+
+// Ace Editor
+.ace_editor {
+  &.ace_autocomplete {
+    border-radius: $border-radius;
+
+    .ace_marker-layer {
+      .ace_active-line,
+      .ace_line-hover {
+        border-radius: $border-radius;
+      }
+    }
+  }
+}
