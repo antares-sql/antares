@@ -284,7 +284,7 @@ export default {
 
     .query-area-resizer {
       position: absolute;
-      height: 5px;
+      height: 4px;
       bottom: 40px;
       width: 100%;
       cursor: ns-resize;

@@ -333,8 +333,15 @@ export class MySQLClient extends AntaresCore {
 
                   const details = fieldArr.slice(2).join(' ');
                   let defaultValue = null;
-                  if (details.includes('DEFAULT'))
+                  if (details.includes('DEFAULT')) {
                      defaultValue = details.match(/(?<=DEFAULT ).*?$/gs)[0].split(' COMMENT')[0];
+                     const defaultValueArr = defaultValue.split('');
+                     if (defaultValueArr[0] === '\'') {
+                        defaultValueArr.shift();
+                        defaultValueArr.pop();
+                        defaultValue = defaultValueArr.join('');
+                     }
+                  }
 
                   const typeAndLength = nameAndType[1].replace(')', '').split('(');
 

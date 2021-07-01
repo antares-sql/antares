@@ -252,32 +252,31 @@ export default {
          else {
             if ([...NUMBER, ...FLOAT].includes(field.type))
                fieldDefault = Number.isNaN(+field.default) ? null : +field.default;
-
-            if ([...TEXT, ...LONG_TEXT].includes(field.type)) {
+            else if ([...TEXT, ...LONG_TEXT].includes(field.type)) {
                fieldDefault = field.default
                   ? field.default.includes('\'')
                      ? field.default.split('\'')[1]
                      : field.default
                   : '';
             }
-
-            if ([...TIME, ...DATE].includes(field.type))
+            else if ([...TIME, ...DATE].includes(field.type))
                fieldDefault = field.default;
-
-            if (BIT.includes(field.type))
+            else if (BIT.includes(field.type))
                fieldDefault = field.default.replaceAll('\'', '').replaceAll('b', '');
-
-            if (DATETIME.includes(field.type)) {
-               if (field.default && field.default.toLowerCase().includes('current_timestamp')) {
+            else if (DATETIME.includes(field.type)) {
+               if (field.default && ['current_timestamp', 'now()'].includes(field.default.toLowerCase())) {
                   let datePrecision = '';
                   for (let i = 0; i < field.datePrecision; i++)
                      datePrecision += i === 0 ? '.S' : 'S';
                   fieldDefault = moment().format(`YYYY-MM-DD HH:mm:ss${datePrecision}`);
                }
+               else
+                  fieldDefault = field.default;
             }
-
-            if (field.enumValues)
+            else if (field.enumValues)
                fieldDefault = field.enumValues.replaceAll('\'', '').split(',');
+            else
+               fieldDefault = field.default;
          }
 
          rowObj[field.name] = { value: fieldDefault };

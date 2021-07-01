@@ -48,6 +48,7 @@
                      v-model="optionsProxy.autoIncrement"
                      class="form-input"
                      type="number"
+                     :disabled="optionsProxy.autoIncrement === null"
                   >
                </div>
             </div>
