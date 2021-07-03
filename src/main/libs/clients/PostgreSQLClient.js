@@ -624,7 +624,7 @@ export class PostgreSQLClient extends AntaresCore {
          const parameters = results.rows.map(row => {
             return {
                name: row.parameter_name,
-               type: row.data_type.toUpperCase(),
+               type: row.data_type ? row.data_type.toUpperCase() : '',
                length: '',
                context: row.parameter_mode
             };

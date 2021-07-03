@@ -35,7 +35,7 @@ module.exports = {
    foreigns: true,
    nullable: true,
    tableArray: true,
-   procedureSql: '$BODY$\r\n\r\n$BODY$',
+   procedureSql: '$procedure$\r\n\r\n$procedure$',
    procedureContext: true,
    procedureLanguage: true,
    functionSql: '$function$\r\n\r\n$function$',
