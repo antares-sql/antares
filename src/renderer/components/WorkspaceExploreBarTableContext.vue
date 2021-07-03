@@ -6,6 +6,13 @@
       <div
          v-if="selectedTable.type === 'table'"
          class="context-element"
+         @click="duplicateTable"
+      >
+         <span class="d-flex"><i class="mdi mdi-18px mdi-table-multiple text-light pr-1" /> {{ $t('message.duplicateTable') }}</span>
+      </div>
+      <div
+         v-if="selectedTable.type === 'table'"
+         class="context-element"
          @click="showEmptyModal"
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-table-off text-light pr-1" /> {{ $t('message.emptyTable') }}</span>
@@ -104,6 +111,24 @@ export default {
       },
       closeContext () {
          this.$emit('close-context');
+      },
+      async duplicateTable () {
+         try {
+            const { status, response } = await Tables.duplicateTable({
+               uid: this.selectedWorkspace,
+               table: this.selectedTable.name
+            });
+
+            if (status === 'success') {
+               this.closeContext();
+               this.$emit('reload');
+            }
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
       },
       async emptyTable () {
          try {

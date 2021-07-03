@@ -187,8 +187,15 @@ export default {
          }
       },
       isSelected () {
-         if (this.isSelected)
+         if (this.isSelected) {
             this.lastSchema = this.schema;
+            this.editor.resize();
+         }
+      },
+      height () {
+         setTimeout(() => {
+            this.editor.resize();
+         }, 20);
       },
       lastSchema () {
          if (this.editor) {

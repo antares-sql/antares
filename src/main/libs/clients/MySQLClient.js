@@ -1244,6 +1244,17 @@ export class MySQLClient extends AntaresCore {
    }
 
    /**
+    * DUPLICATE TABLE
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async duplicateTable (params) {
+      const sql = `CREATE TABLE \`${this._schema}\`.\`${params.table}_copy\` LIKE \`${this._schema}\`.\`${params.table}\``;
+      return await this.raw(sql);
+   }
+
+   /**
     * TRUNCATE TABLE
     *
     * @returns {Array.<Object>} parameters

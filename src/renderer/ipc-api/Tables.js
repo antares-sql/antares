@@ -46,6 +46,10 @@ export default class {
       return ipcRenderer.invoke('alter-table', params);
    }
 
+   static duplicateTable (params) {
+      return ipcRenderer.invoke('duplicate-table', params);
+   }
+
    static truncateTable (params) {
       return ipcRenderer.invoke('truncate-table', params);
    }

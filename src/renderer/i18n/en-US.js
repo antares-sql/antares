@@ -219,7 +219,8 @@ module.exports = {
       markdownSupported: 'Markdown supported',
       plantATree: 'Plant a Tree',
       dataTabPageSize: 'DATA tab page size',
-      pageNumber: 'Page number'
+      pageNumber: 'Page number',
+      duplicateTable: 'Duplicate table'
    },
    faker: {
       address: 'Address',

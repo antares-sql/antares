@@ -1127,6 +1127,17 @@ export class PostgreSQLClient extends AntaresCore {
    }
 
    /**
+    * DUPLICATE TABLE
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof PostgreSQLClient
+    */
+   async duplicateTable (params) {
+      const sql = `CREATE TABLE ${this._schema}.${params.table}_copy (LIKE ${this._schema}.${params.table} INCLUDING ALL)`;
+      return await this.raw(sql);
+   }
+
+   /**
     * TRUNCATE TABLE
     *
     * @returns {Array.<Object>} parameters
