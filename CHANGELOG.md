@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0](https://github.com/Fabio286/antares/compare/v0.1.13...v0.2.0) (2021-07-03)
+
+
+### Features
+
+* contextual option to duplicate tables ([08d5b1b](https://github.com/Fabio286/antares/commit/08d5b1b3299adc5c53419f50892aee3b58e6fe72))
+* **PostgreSQL:** trigger functions support ([75bbd5f](https://github.com/Fabio286/antares/commit/75bbd5f66e38a971482acff9dde636cf89858c8e))
+* **PostgreSQL:** triggers creation ([7df0cf8](https://github.com/Fabio286/antares/commit/7df0cf83895ba784e30efa7814433cf329175364))
+* **UI:** active tab animation ([978a7c5](https://github.com/Fabio286/antares/commit/978a7c5f5b314f2ba4067c86471755fdcc341b3f))
+* **UI:** context option to copy cell or row value ([d868c77](https://github.com/Fabio286/antares/commit/d868c772b9e7c70e173d1f80ad8de51aa40991ef))
+* **UI:** resizer border mouse hover animation ([a69bdeb](https://github.com/Fabio286/antares/commit/a69bdeb20db7d67613dace554ae37a0c5e112ec2))
+
+
+### Bug Fixes
+
+* **PostgreSQL:** error opening setting tab for some stored routines ([d96907c](https://github.com/Fabio286/antares/commit/d96907ca2de344114e3edae52843f6258468934b))
+* **UI:** contextual sub-menu alignment when close to the lower edge of the window ([61a42d5](https://github.com/Fabio286/antares/commit/61a42d51f55ec3010c4ee67bad2f699ff14c9f7c))
+* fields default not correctly set in table filler ([faa07a0](https://github.com/Fabio286/antares/commit/faa07a077c899af5c71124e0c20869876e57fd9a))
+* rows loses internal id after export ([2d278aa](https://github.com/Fabio286/antares/commit/2d278aa14e0e5080725196538b7265ec00a7aebb))
+* **UI:** editor blinking on first connection with a dark theme ([0110756](https://github.com/Fabio286/antares/commit/0110756204b79388535a74017b303e1ba41e8fd8))
+* unhandled exception in connection test ([a975df3](https://github.com/Fabio286/antares/commit/a975df38dd471ab0ac8645a1021470a4600e6598))
+* vulnerability in server error toast messages ([3aef7e9](https://github.com/Fabio286/antares/commit/3aef7e953ea82a9105d470cc62c68aacfc97f9d9))
+
+
+### Improvements
+
+* improved contextual menu appearance ([f74bca7](https://github.com/Fabio286/antares/commit/f74bca7bb4fc6802143446a44663fbf12319bf29))
+* **UI:** increased application border-radius ([a0a025e](https://github.com/Fabio286/antares/commit/a0a025e4502141e95394ca9717b1ec65df2728c1))
+
 ### [0.1.13](https://github.com/Fabio286/antares/compare/v0.1.12...v0.1.13) (2021-06-19)
 
 
