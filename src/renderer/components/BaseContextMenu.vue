@@ -1,5 +1,5 @@
 <template>
-   <div class="context">
+   <div class="context" :class="{'bottom': isBottom}">
       <a
          class="context-overlay"
          @click="close"
@@ -23,18 +23,21 @@ export default {
    },
    data () {
       return {
-         contextSize: null
+         contextSize: null,
+         isBottom: false
       };
    },
    computed: {
       position () {
          const { clientY, clientX } = this.contextEvent;
-         let topCord = `${clientY + 5}px`;
+         let topCord = `${clientY + 2}px`;
          let leftCord = `${clientX + 5}px`;
 
          if (this.contextSize) {
-            if (clientY + this.contextSize.height + 5 >= window.innerHeight)
-               topCord = `${clientY - this.contextSize.height}px`;
+            if (clientY + (this.contextSize.height < 200 ? 200 : this.contextSize.height) + 5 >= window.innerHeight) {
+               topCord = `${clientY + 3 - this.contextSize.height}px`;
+               this.isBottom = true;
+            }
 
             if (clientX + this.contextSize.width + 5 >= window.innerWidth)
                leftCord = `${clientX - this.contextSize.width}px`;
@@ -83,6 +86,14 @@ export default {
   left: 0;
   bottom: 0;
 
+  &:not(.bottom) .context-submenu {
+    top: -0.2rem;
+  }
+
+  &.bottom .context-submenu {
+    bottom: -0.2rem;
+  }
+
   .context-container {
     min-width: 100px;
     z-index: 10;
@@ -114,8 +125,8 @@ export default {
         transition: opacity 0.2s;
         position: absolute;
         left: 100%;
-        top: -0.2rem;
         min-width: 100px;
+        background: #1d1d1d;
       }
 
       &:hover {
