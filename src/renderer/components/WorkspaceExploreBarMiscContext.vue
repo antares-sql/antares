@@ -84,6 +84,7 @@ export default {
             case 'procedure':
                return this.$t('message.deleteRoutine');
             case 'function':
+            case 'triggerFunction':
                return this.$t('message.deleteFunction');
             case 'scheduler':
                return this.$t('message.deleteScheduler');
@@ -135,6 +136,7 @@ export default {
                   });
                   break;
                case 'function':
+               case 'triggerFunction':
                   res = await Functions.dropFunction({
                      uid: this.selectedWorkspace,
                      func: this.selectedMisc.name

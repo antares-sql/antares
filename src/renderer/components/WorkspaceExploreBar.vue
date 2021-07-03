@@ -90,6 +90,12 @@
          @close="hideCreateFunctionModal"
          @open-create-function-editor="openCreateFunctionEditor"
       />
+      <ModalNewTriggerFunction
+         v-if="isNewTriggerFunctionModal"
+         :workspace="workspace"
+         @close="hideCreateTriggerFunctionModal"
+         @open-create-function-editor="openCreateTriggerFunctionEditor"
+      />
       <ModalNewScheduler
          v-if="isNewSchedulerModal"
          :workspace="workspace"
@@ -106,6 +112,7 @@
          @show-create-trigger-modal="showCreateTriggerModal"
          @show-create-routine-modal="showCreateRoutineModal"
          @show-create-function-modal="showCreateFunctionModal"
+         @show-create-trigger-function-modal="showCreateTriggerFunctionModal"
          @show-create-scheduler-modal="showCreateSchedulerModal"
          @reload="refresh"
       />
@@ -147,6 +154,7 @@ import ModalNewView from '@/components/ModalNewView';
 import ModalNewTrigger from '@/components/ModalNewTrigger';
 import ModalNewRoutine from '@/components/ModalNewRoutine';
 import ModalNewFunction from '@/components/ModalNewFunction';
+import ModalNewTriggerFunction from '@/components/ModalNewTriggerFunction';
 import ModalNewScheduler from '@/components/ModalNewScheduler';
 
 export default {
@@ -163,6 +171,7 @@ export default {
       ModalNewTrigger,
       ModalNewRoutine,
       ModalNewFunction,
+      ModalNewTriggerFunction,
       ModalNewScheduler
    },
    props: {
@@ -179,6 +188,7 @@ export default {
          isNewTriggerModal: false,
          isNewRoutineModal: false,
          isNewFunctionModal: false,
+         isNewTriggerFunctionModal: false,
          isNewSchedulerModal: false,
 
          localWidth: null,
@@ -403,6 +413,13 @@ export default {
       hideCreateFunctionModal () {
          this.isNewFunctionModal = false;
       },
+      showCreateTriggerFunctionModal () {
+         this.closeDatabaseContext();
+         this.isNewTriggerFunctionModal = true;
+      },
+      hideCreateTriggerFunctionModal () {
+         this.isNewTriggerFunctionModal = false;
+      },
       showCreateSchedulerModal () {
          this.closeDatabaseContext();
          this.isNewSchedulerModal = true;
@@ -421,6 +438,22 @@ export default {
          if (status === 'success') {
             await this.refresh();
             this.changeBreadcrumbs({ schema: this.selectedDatabase, function: payload.name });
+            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+         }
+         else
+            this.addNotification({ status: 'error', message: response });
+      },
+      async openCreateTriggerFunctionEditor (payload) {
+         const params = {
+            uid: this.connection.uid,
+            ...payload
+         };
+
+         const { status, response } = await Functions.createTriggerFunction(params);
+
+         if (status === 'success') {
+            await this.refresh();
+            this.changeBreadcrumbs({ schema: this.selectedDatabase, triggerFunction: payload.name });
             this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
          }
          else

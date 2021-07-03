@@ -31,7 +31,7 @@
                </label>
                <div class="column">
                   <select v-model="localFunction.language" class="form-select">
-                     <option v-for="language in customizations.languages" :key="language">
+                     <option v-for="language in customizations.triggerFunctionlanguages" :key="language">
                         {{ language }}
                      </option>
                   </select>
@@ -77,38 +77,6 @@
                   >
                </div>
             </div>
-            <div class="form-group">
-               <label class="form-label col-4">
-                  {{ $t('message.sqlSecurity') }}
-               </label>
-               <div class="column">
-                  <select v-model="localFunction.security" class="form-select">
-                     <option>DEFINER</option>
-                     <option>INVOKER</option>
-                  </select>
-               </div>
-            </div>
-            <div v-if="customizations.functionDataAccess" class="form-group">
-               <label class="form-label col-4">
-                  {{ $t('message.dataAccess') }}
-               </label>
-               <div class="column">
-                  <select v-model="localFunction.dataAccess" class="form-select">
-                     <option>CONTAINS SQL</option>
-                     <option>NO SQL</option>
-                     <option>READS SQL DATA</option>
-                     <option>MODIFIES SQL DATA</option>
-                  </select>
-               </div>
-            </div>
-            <div v-if="customizations.functionDeterministic" class="form-group">
-               <div class="col-4" />
-               <div class="column">
-                  <label class="form-checkbox form-inline">
-                     <input v-model="localFunction.deterministic" type="checkbox"><i class="form-icon" /> {{ $t('word.deterministic') }}
-                  </label>
-               </div>
-            </div>
          </form>
       </div>
    </ConfirmModal>
@@ -118,7 +86,7 @@
 import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
-   name: 'ModalNewFunction',
+   name: 'ModalNewTriggerFunction',
    components: {
       ConfirmModal
    },
@@ -130,15 +98,9 @@ export default {
          localFunction: {
             definer: '',
             sql: '',
-            parameters: [],
             name: '',
             comment: '',
-            language: null,
-            returns: null,
-            returnsLength: 10,
-            security: 'DEFINER',
-            deterministic: false,
-            dataAccess: 'CONTAINS SQL'
+            language: null
          },
          isOptionsChanging: false
       };
@@ -152,11 +114,11 @@ export default {
       }
    },
    mounted () {
-      if (this.customizations.languages)
-         this.localFunction.language = this.customizations.languages[0];
+      if (this.customizations.triggerFunctionlanguages)
+         this.localFunction.language = this.customizations.triggerFunctionlanguages[0];
 
-      if (this.customizations.functionSql)
-         this.localFunction.sql = this.customizations.functionSql;
+      if (this.customizations.triggerFunctionSql)
+         this.localFunction.sql = this.customizations.triggerFunctionSql;
       setTimeout(() => {
          this.$refs.firstInput.focus();
       }, 20);

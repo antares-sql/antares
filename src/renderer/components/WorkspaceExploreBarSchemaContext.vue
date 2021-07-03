@@ -43,6 +43,13 @@
                <span class="d-flex"><i class="mdi mdi-18px mdi-arrow-right-bold-box pr-1" /> {{ $tc('word.function', 1) }}</span>
             </div>
             <div
+               v-if="workspace.customizations.triggerFunctionAdd"
+               class="context-element"
+               @click="showCreateTriggerFunctionModal"
+            >
+               <span class="d-flex"><i class="mdi mdi-18px mdi-cog-clockwise pr-1" /> {{ $tc('word.triggerFunction', 1) }}</span>
+            </div>
+            <div
                v-if="workspace.customizations.schedulerAdd"
                class="context-element"
                @click="showCreateSchedulerModal"
@@ -139,6 +146,9 @@ export default {
       },
       showCreateFunctionModal () {
          this.$emit('show-create-function-modal');
+      },
+      showCreateTriggerFunctionModal () {
+         this.$emit('show-create-trigger-function-modal');
       },
       showCreateSchedulerModal () {
          this.$emit('show-create-scheduler-modal');

@@ -104,6 +104,7 @@ export default {
       cursor: pointer;
       justify-content: space-between;
       position: relative;
+      white-space: nowrap;
 
       .context-submenu {
         border-radius: $border-radius;

@@ -215,6 +215,7 @@ export class PostgreSQLClient extends AntaresCore {
                functions: [],
                procedures: [],
                triggers: [],
+               triggerFunctions: [],
                schedulers: []
             };
          }
@@ -822,12 +823,54 @@ export class PostgreSQLClient extends AntaresCore {
       if (this._schema !== 'public')
          await this.use(this._schema);
 
-      const body = func.returns ? func.sql : '$BODY$\n$BODY$';
+      const body = func.returns ? func.sql : '$function$\n$function$';
 
       const sql = `CREATE FUNCTION ${this._schema}.${func.name}(${parameters})
          RETURNS ${func.returns || 'void'}
          LANGUAGE ${func.language}
          SECURITY ${func.security}
+         AS ${body}`;
+
+      return await this.raw(sql, { split: false });
+   }
+
+   /**
+    * ALTER TRIGGER FUNCTION
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof PostgreSQLClient
+    */
+   async alterTriggerFunction (params) {
+      const { func } = params;
+
+      if (this._schema !== 'public')
+         await this.use(this._schema);
+
+      const body = func.returns ? func.sql : '$function$\n$function$';
+
+      const sql = `CREATE OR REPLACE FUNCTION ${this._schema}.${func.name}()
+         RETURNS TRIGGER
+         LANGUAGE ${func.language}
+         AS ${body}`;
+
+      return await this.raw(sql, { split: false });
+   }
+
+   /**
+    * CREATE TRIGGER FUNCTION
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof PostgreSQLClient
+    */
+   async createTriggerFunction (func) {
+      if (this._schema !== 'public')
+         await this.use(this._schema);
+
+      const body = func.returns ? func.sql : '$function$\r\nBEGIN\r\n\r\nEND\r\n$function$';
+
+      const sql = `CREATE FUNCTION ${this._schema}.${func.name}()
+         RETURNS TRIGGER
+         LANGUAGE ${func.language}
          AS ${body}`;
 
       return await this.raw(sql, { split: false });

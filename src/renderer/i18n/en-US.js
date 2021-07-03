@@ -111,7 +111,8 @@ module.exports = {
       medium: 'Medium',
       large: 'Large',
       row: 'Row | Rows',
-      cell: 'Cell | Cells'
+      cell: 'Cell | Cells',
+      triggerFunction: 'Trigger function | Trigger functions'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
