@@ -31,12 +31,12 @@ export default connections => {
             password: conn.sshPass,
             port: conn.sshPort ? conn.sshPort : 22,
             identity: conn.sshKey
-         }
+         };
       }
 
       try {
          const connection = await ClientsFactory.getConnection({
-            client: conn.client, 
+            client: conn.client,
             params
          });
          await connection.connect();
@@ -83,7 +83,7 @@ export default connections => {
             password: conn.sshPass,
             port: conn.sshPort ? conn.sshPort : 22,
             identity: conn.sshKey
-         }
+         };
       }
 
       try {

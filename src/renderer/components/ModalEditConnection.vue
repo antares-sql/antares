@@ -260,7 +260,7 @@
                               </div>
                               <div class="col-8 col-sm-12">
                                  <input
-                                    v-model="connection.sshHost"
+                                    v-model="localConnection.sshHost"
                                     class="form-input"
                                     type="text"
                                  >
@@ -272,7 +272,7 @@
                               </div>
                               <div class="col-8 col-sm-12">
                                  <input
-                                    v-model="connection.sshUser"
+                                    v-model="localConnection.sshUser"
                                     class="form-input"
                                     type="text"
                                  >
@@ -284,7 +284,7 @@
                               </div>
                               <div class="col-8 col-sm-12">
                                  <input
-                                    v-model="connection.sshPass"
+                                    v-model="localConnection.sshPass"
                                     class="form-input"
                                     type="password"
                                  >
@@ -296,9 +296,11 @@
                               </div>
                               <div class="col-8 col-sm-12">
                                  <input
-                                    v-model="connection.sshPort"
+                                    v-model="localConnection.sshPort"
                                     class="form-input"
-                                    type="text"
+                                    type="number"
+                                    min="1"
+                                    max="65535"
                                  >
                               </div>
                            </div>
@@ -308,14 +310,13 @@
                               </div>
                               <div class="col-8 col-sm-12">
                                  <BaseUploadInput
-                                    :value="connection.sshKey"
+                                    :value="localConnection.sshKey"
                                     :message="$t('word.browse')"
                                     @clear="pathClear('sshKey')"
                                     @change="pathSelection($event, 'sshKey')"
                                  />
                               </div>
                            </div>
-
                         </fieldset>
                      </form>
                   </div>

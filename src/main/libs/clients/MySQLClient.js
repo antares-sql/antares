@@ -109,30 +109,25 @@ export class MySQLClient extends AntaresCore {
          host: this._params.host,
          port: this._params.port,
          user: this._params.user,
-         password: this._params.password,
+         password: this._params.password
       };
 
-      if (this._params.database?.length) {
-         dbConfig.database = this._params.database;
-      }
+      if (this._params.database?.length) dbConfig.database = this._params.database;
 
-      if (this._params.ssl) {
-         dbConfig.ssl = {...this._params.ssl};
-      }
+      if (this._params.ssl) dbConfig.ssl = { ...this._params.ssl };
 
       if (this._params.ssh) {
          this._ssh = new SSH2Promise({ ...this._params.ssh });
 
          this._tunnel = await this._ssh.addTunnel({
             remoteAddr: this._params.host,
-            remotePort: this._params.port,
+            remotePort: this._params.port
          });
          dbConfig.port = this._tunnel.localPort;
       }
-      
-      if (!this._poolSize) {
-         this._connection = await mysql.createConnection(dbConfig);
-      } else {
+
+      if (!this._poolSize) this._connection = await mysql.createConnection(dbConfig);
+      else {
          this._connection = mysql.createPool({
             ...dbConfig,
             connectionLimit: this._poolSize,
@@ -151,9 +146,7 @@ export class MySQLClient extends AntaresCore {
     */
    destroy () {
       this._connection.end();
-      if (this._ssh) {
-         this._ssh.close();
-      }
+      if (this._ssh) this._ssh.close();
    }
 
    /**

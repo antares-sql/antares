@@ -303,7 +303,9 @@
                                  <input
                                     v-model="connection.sshPort"
                                     class="form-input"
-                                    type="text"
+                                    type="number"
+                                    min="1"
+                                    max="65535"
                                  >
                               </div>
                            </div>
