@@ -3,6 +3,7 @@ import { Pool, Client, types } from 'pg';
 import { parse } from 'pgsql-ast-parser';
 import { AntaresCore } from '../AntaresCore';
 import dataTypes from 'common/data-types/postgresql';
+import * as SSH2Promise from 'ssh2-promise';
 
 function pgToString (value) {
    return value.toString();
@@ -51,13 +52,42 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async connect () {
+      const dbConfig = {
+         host: this._params.host,
+         port: this._params.port,
+         user: this._params.user,
+         password: this._params.password,
+         ssl: null,
+      };
+
+      if (this._params.database?.length) {
+         dbConfig.database = this._params.database;
+      }
+
+      if (this._params.ssl) {
+         dbConfig.ssl = {...this._params.ssl};
+      }
+      
+      if (this._params.ssh) {
+         const { host, username, password, port } = this._params.ssh;
+         this._ssh = new SSH2Promise({
+            host, username, password, port
+         });
+
+         this._tunnel = await this._ssh.addTunnel({
+            remoteAddr: this._params.host,
+            remotePort: this._params.port,
+         });
+         dbConfig.port = this._tunnel.localPort;
+      }
+      
       if (!this._poolSize) {
-         const client = new Client(this._params);
+         const client = new Client(dbConfig);
          await client.connect();
          this._connection = client;
       }
       else {
-         const pool = new Pool({ ...this._params, max: this._poolSize });
+         const pool = new Pool({ ...dbConfig, max: this._poolSize });
          this._connection = pool;
       }
    }
@@ -67,6 +97,9 @@ export class PostgreSQLClient extends AntaresCore {
     */
    destroy () {
       this._connection.end();
+      if (this._ssh) {
+         this._ssh.close();
+      }
    }
 
    /**
