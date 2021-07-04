@@ -115,18 +115,23 @@ export class MySQLClient extends AntaresCore {
       if (this._params.database?.length) {
          dbConfig.database = this._params.database;
       }
+
+      if (this._params.ssl) {
+         dbConfig.ssl = {...this._params.ssl};
+      }
+
       if (this._params.ssh) {
-         const { host, username, password, port } = this._params.ssh;
-         const ssh = new SSH2Promise({
-            host, username, password, port
+         console.log(this._params.ssh);
+         const { host, username, password, port, identity } = this._params.ssh;
+         this._ssh = new SSH2Promise({
+            host, username, password, port, identity
          });
 
-         const tunnel = await ssh.addTunnel({
+         this._tunnel = await this._ssh.addTunnel({
             remoteAddr: this._params.host,
             remotePort: this._params.port,
-         });      
-         
-         dbConfig.port = tunnel.localPort;
+         });
+         dbConfig.port = this._tunnel.localPort;
       }
       
       if (!this._poolSize) {
