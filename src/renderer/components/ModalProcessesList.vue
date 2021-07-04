@@ -5,7 +5,8 @@
          <div class="modal-header pl-2">
             <div class="modal-title h6">
                <div class="d-flex">
-                  <i class="mdi mdi-24px mdi-memory mr-1" /> {{ $t('message.processesList') }}: {{ connectionName }}
+                  <i class="mdi mdi-24px mdi-memory mr-1" />
+                  <span class="cut-text">{{ $t('message.processesList') }}: {{ connectionName }}</span>
                </div>
             </div>
             <a class="btn btn-clear c-hand" @click.stop="closeModal" />

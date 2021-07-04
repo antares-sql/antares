@@ -1,5 +1,5 @@
 <template>
-   <div class="context">
+   <div class="context" :class="{'bottom': isBottom}">
       <a
          class="context-overlay"
          @click="close"
@@ -23,18 +23,21 @@ export default {
    },
    data () {
       return {
-         contextSize: null
+         contextSize: null,
+         isBottom: false
       };
    },
    computed: {
       position () {
          const { clientY, clientX } = this.contextEvent;
-         let topCord = `${clientY + 5}px`;
+         let topCord = `${clientY + 2}px`;
          let leftCord = `${clientX + 5}px`;
 
          if (this.contextSize) {
-            if (clientY + this.contextSize.height + 5 >= window.innerHeight)
-               topCord = `${clientY - this.contextSize.height}px`;
+            if (clientY + (this.contextSize.height < 200 ? 200 : this.contextSize.height) + 5 >= window.innerHeight) {
+               topCord = `${clientY + 3 - this.contextSize.height}px`;
+               this.isBottom = true;
+            }
 
             if (clientX + this.contextSize.width + 5 >= window.innerWidth)
                leftCord = `${clientX - this.contextSize.width}px`;
@@ -83,12 +86,21 @@ export default {
   left: 0;
   bottom: 0;
 
+  &:not(.bottom) .context-submenu {
+    top: -0.2rem;
+  }
+
+  &.bottom .context-submenu {
+    bottom: -0.2rem;
+  }
+
   .context-container {
     min-width: 100px;
     z-index: 10;
     padding: 0;
     background: #1d1d1d;
-    border-radius: 0.1rem;
+    border-radius: $border-radius;
+    border: 1px solid $bg-color-light-dark;
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -97,19 +109,24 @@ export default {
     .context-element {
       display: flex;
       align-items: center;
+      margin: 0.2rem;
       padding: 0.1rem 0.3rem;
+      border-radius: $border-radius;
       cursor: pointer;
       justify-content: space-between;
       position: relative;
+      white-space: nowrap;
 
       .context-submenu {
+        border-radius: $border-radius;
+        border: 1px solid $bg-color-light-dark;
         opacity: 0;
         visibility: hidden;
         transition: opacity 0.2s;
         position: absolute;
         left: 100%;
-        top: 0;
         min-width: 100px;
+        background: #1d1d1d;
       }
 
       &:hover {

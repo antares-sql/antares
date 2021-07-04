@@ -20,7 +20,8 @@
       >
          <template slot="header">
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-delete mr-1" /> {{ deleteMessage }}
+               <i class="mdi mdi-24px mdi-delete mr-1" />
+               <span class="cut-text">{{ deleteMessage }}</span>
             </div>
          </template>
          <div slot="body">
@@ -83,6 +84,7 @@ export default {
             case 'procedure':
                return this.$t('message.deleteRoutine');
             case 'function':
+            case 'triggerFunction':
                return this.$t('message.deleteFunction');
             case 'scheduler':
                return this.$t('message.deleteScheduler');
@@ -134,6 +136,7 @@ export default {
                   });
                   break;
                case 'function':
+               case 'triggerFunction':
                   res = await Functions.dropFunction({
                      uid: this.selectedWorkspace,
                      func: this.selectedMisc.name

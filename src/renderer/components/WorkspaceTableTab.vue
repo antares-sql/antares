@@ -41,8 +41,23 @@
                   >
                      <i class="mdi mdi-24px mdi-skip-previous" />
                   </button>
-                  <div class="btn btn-dark btn-sm mr-0 text-bold c-auto px-2">
-                     {{ page }}
+                  <div class="dropdown" :class="{'active': isPageMenu}">
+                     <div @click="openPageMenu">
+                        <div class="btn btn-dark btn-sm mr-0 no-radius dropdown-toggle text-bold px-3">
+                           {{ page }}
+                        </div>
+                        <div class="menu px-3">
+                           <span>{{ $t('message.pageNumber') }}</span>
+                           <input
+                              ref="pageSelect"
+                              v-model="pageProxy"
+                              type="number"
+                              min="1"
+                              class="form-input"
+                              @blur="setPageNumber"
+                           >
+                        </div>
+                     </div>
                   </div>
                   <button
                      class="btn btn-dark btn-sm mr-0"
@@ -66,7 +81,7 @@
                   <i class="mdi mdi-24px mdi-playlist-plus ml-1" />
                </button>
 
-               <div class="dropdown export-dropdown pr-2">
+               <div class="dropdown table-dropdown pr-2">
                   <button
                      :disabled="isQuering"
                      class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
@@ -172,6 +187,7 @@ export default {
       return {
          tabUid: 'data',
          isQuering: false,
+         isPageMenu: false,
          results: [],
          lastTable: null,
          isAddModal: false,
@@ -179,7 +195,8 @@ export default {
          autorefreshTimer: 0,
          refreshInterval: null,
          sortParams: {},
-         page: 1
+         page: 1,
+         pageProxy: 1
       };
    },
    computed: {
@@ -229,8 +246,11 @@ export default {
             this.$refs.queryTable.resetSort();
          }
       },
-      page () {
-         this.getTableData();
+      page (val, oldVal) {
+         if (val && val > 0 && val !== oldVal) {
+            this.pageProxy = this.page;
+            this.getTableData();
+         }
       },
       isSelected (val) {
          if (val && this.lastTable !== this.table) {
@@ -292,11 +312,30 @@ export default {
          this.sortParams = sortParams;
          this.getTableData(sortParams);
       },
+      openPageMenu () {
+         if (this.isQuering) return;
+
+         this.isPageMenu = true;
+         if (this.isPageMenu)
+            setTimeout(() => this.$refs.pageSelect.focus(), 20);
+      },
+      setPageNumber () {
+         this.isPageMenu = false;
+
+         if (this.pageProxy > 0)
+            this.page = this.pageProxy;
+         else
+            this.pageProxy = this.page;
+      },
       pageChange (direction) {
          if (this.isQuering) return;
 
-         if (direction === 'next' && (this.results.length && this.results[0].rows.length === this.limit))
-            this.page++;
+         if (direction === 'next' && (this.results.length && this.results[0].rows.length === this.limit)) {
+            if (!this.page)
+               this.page = 2;
+            else
+               this.page++;
+         }
          else if (direction === 'prev' && this.page > 1)
             this.page--;
       },
@@ -344,10 +383,3 @@ export default {
    }
 };
 </script>
-<style lang="scss" scoped>
-.export-dropdown {
-  .menu {
-    min-width: 100%;
-  }
-}
-</style>

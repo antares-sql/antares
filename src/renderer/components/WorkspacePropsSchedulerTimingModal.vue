@@ -7,7 +7,8 @@
    >
       <template :slot="'header'">
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-timer mr-1" /> {{ $t('word.timing') }} "{{ localOptions.name }}"
+            <i class="mdi mdi-24px mdi-timer mr-1" />
+            <span class="cut-text">{{ $t('word.timing') }} "{{ localOptions.name }}"</span>
          </div>
       </template>
       <div :slot="'body'">

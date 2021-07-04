@@ -3,6 +3,30 @@
       :context-event="contextEvent"
       @close-context="closeContext"
    >
+      <div v-if="selectedRows.length === 1" class="context-element">
+         <span class="d-flex"><i class="mdi mdi-18px mdi-content-copy text-light pr-1" /> {{ $t('word.copy') }}</span>
+         <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
+         <div class="context-submenu">
+            <div
+               v-if="selectedRows.length === 1"
+               class="context-element"
+               @click="copyCell"
+            >
+               <span class="d-flex">
+                  <i class="mdi mdi-18px mdi-numeric-0 mdi-rotate-90 text-light pr-1" /> {{ $tc('word.cell', 1) }}
+               </span>
+            </div>
+            <div
+               v-if="selectedRows.length === 1"
+               class="context-element"
+               @click="copyRow"
+            >
+               <span class="d-flex">
+                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ $tc('word.row', 1) }}
+               </span>
+            </div>
+         </div>
+      </div>
       <div
          v-if="selectedRows.length === 1"
          class="context-element"
@@ -43,6 +67,14 @@ export default {
       },
       setNull () {
          this.$emit('set-null');
+         this.closeContext();
+      },
+      copyCell () {
+         this.$emit('copy-cell');
+         this.closeContext();
+      },
+      copyRow () {
+         this.$emit('copy-row');
          this.closeContext();
       }
    }

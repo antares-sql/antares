@@ -2,6 +2,70 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0](https://github.com/Fabio286/antares/compare/v0.1.13...v0.2.0) (2021-07-03)
+
+
+### Features
+
+* contextual option to duplicate tables ([08d5b1b](https://github.com/Fabio286/antares/commit/08d5b1b3299adc5c53419f50892aee3b58e6fe72))
+* **PostgreSQL:** trigger functions support ([75bbd5f](https://github.com/Fabio286/antares/commit/75bbd5f66e38a971482acff9dde636cf89858c8e))
+* **PostgreSQL:** triggers creation ([7df0cf8](https://github.com/Fabio286/antares/commit/7df0cf83895ba784e30efa7814433cf329175364))
+* **UI:** active tab animation ([978a7c5](https://github.com/Fabio286/antares/commit/978a7c5f5b314f2ba4067c86471755fdcc341b3f))
+* **UI:** context option to copy cell or row value ([d868c77](https://github.com/Fabio286/antares/commit/d868c772b9e7c70e173d1f80ad8de51aa40991ef))
+* **UI:** resizer border mouse hover animation ([a69bdeb](https://github.com/Fabio286/antares/commit/a69bdeb20db7d67613dace554ae37a0c5e112ec2))
+
+
+### Bug Fixes
+
+* **PostgreSQL:** error opening setting tab for some stored routines ([d96907c](https://github.com/Fabio286/antares/commit/d96907ca2de344114e3edae52843f6258468934b))
+* **UI:** contextual sub-menu alignment when close to the lower edge of the window ([61a42d5](https://github.com/Fabio286/antares/commit/61a42d51f55ec3010c4ee67bad2f699ff14c9f7c))
+* fields default not correctly set in table filler ([faa07a0](https://github.com/Fabio286/antares/commit/faa07a077c899af5c71124e0c20869876e57fd9a))
+* rows loses internal id after export ([2d278aa](https://github.com/Fabio286/antares/commit/2d278aa14e0e5080725196538b7265ec00a7aebb))
+* **UI:** editor blinking on first connection with a dark theme ([0110756](https://github.com/Fabio286/antares/commit/0110756204b79388535a74017b303e1ba41e8fd8))
+* unhandled exception in connection test ([a975df3](https://github.com/Fabio286/antares/commit/a975df38dd471ab0ac8645a1021470a4600e6598))
+* vulnerability in server error toast messages ([3aef7e9](https://github.com/Fabio286/antares/commit/3aef7e953ea82a9105d470cc62c68aacfc97f9d9))
+
+
+### Improvements
+
+* improved contextual menu appearance ([f74bca7](https://github.com/Fabio286/antares/commit/f74bca7bb4fc6802143446a44663fbf12319bf29))
+* **UI:** increased application border-radius ([a0a025e](https://github.com/Fabio286/antares/commit/a0a025e4502141e95394ca9717b1ec65df2728c1))
+
+### [0.1.13](https://github.com/Fabio286/antares/compare/v0.1.12...v0.1.13) (2021-06-19)
+
+
+### Features
+
+* **PostgreSQL:** alter trigger support ([5c8ee66](https://github.com/Fabio286/antares/commit/5c8ee66f432585db7bd72103fa814558bf406bcc))
+* **UI:** ability to manually insert page number in DATA tabs, closes [#65](https://github.com/Fabio286/antares/issues/65) ([e2ebb04](https://github.com/Fabio286/antares/commit/e2ebb04a9047d25187889644aa625fe675de808b))
+* **UI:** option to change query editors font size, closes [#77](https://github.com/Fabio286/antares/issues/77) ([e579f37](https://github.com/Fabio286/antares/commit/e579f374381b329422b646b8f7ab5acf298db981))
+
+
+### Bug Fixes
+
+* **MySQL:** pool connections not released after MySQL errors, causing endless load animation ([4133fc4](https://github.com/Fabio286/antares/commit/4133fc452fc2e961eb587590e010f4968675db7e))
+* **UI:** various fixes in displaying content with small window size ([8a20bef](https://github.com/Fabio286/antares/commit/8a20befd0941cb2e6d5e29552606454bd871b092))
+
+
+### Improvements
+
+* remove comments from queries before execution ([690a454](https://github.com/Fabio286/antares/commit/690a4541f96eaf831dea07b777a421729173b654))
+
+### [0.1.12](https://github.com/Fabio286/antares/compare/v0.1.11...v0.1.12) (2021-06-09)
+
+
+### Features
+
+* **PostgreSQL:** trigger rename and delete ([cce5adb](https://github.com/Fabio286/antares/commit/cce5adbac75170186956211b54f4db5be25aba07))
+
+
+### Bug Fixes
+
+* internal exceptions ([8742fa1](https://github.com/Fabio286/antares/commit/8742fa10f08c92a98325df50be9a7df8e36b0f2c))
+* page offset not reset when selected table changes ([5562e73](https://github.com/Fabio286/antares/commit/5562e73e75c659051a49d61041d1eee9d66ff6e2))
+* **MySQL:** view's data tab doesn't work with some views, closes [#71](https://github.com/Fabio286/antares/issues/71) ([9ca059d](https://github.com/Fabio286/antares/commit/9ca059d979161c0132f64db372b4ed7ecc844b2d))
+* **UI:** unable to browse view's result pages ([8a7cc2a](https://github.com/Fabio286/antares/commit/8a7cc2a14fa289c2f3d9e9eb1a5435ffbbaab006))
+
 ### [0.1.11](https://github.com/Fabio286/antares/compare/v0.1.10...v0.1.11) (2021-06-02)
 
 

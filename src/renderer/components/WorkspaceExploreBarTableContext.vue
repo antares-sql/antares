@@ -6,6 +6,13 @@
       <div
          v-if="selectedTable.type === 'table'"
          class="context-element"
+         @click="duplicateTable"
+      >
+         <span class="d-flex"><i class="mdi mdi-18px mdi-table-multiple text-light pr-1" /> {{ $t('message.duplicateTable') }}</span>
+      </div>
+      <div
+         v-if="selectedTable.type === 'table'"
+         class="context-element"
          @click="showEmptyModal"
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-table-off text-light pr-1" /> {{ $t('message.emptyTable') }}</span>
@@ -21,7 +28,7 @@
       >
          <template slot="header">
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-table-off mr-1" /> {{ $t('message.emptyTable') }}
+               <i class="mdi mdi-24px mdi-table-off mr-1" /> <span class="cut-text">{{ $t('message.emptyTable') }}</span>
             </div>
          </template>
          <div slot="body">
@@ -37,7 +44,8 @@
       >
          <template slot="header">
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-table-remove mr-1" /> {{ selectedTable.type === 'table' ? $t('message.deleteTable') : $t('message.deleteView') }}
+               <i class="mdi mdi-24px mdi-table-remove mr-1" />
+               <span class="cut-text">{{ selectedTable.type === 'table' ? $t('message.deleteTable') : $t('message.deleteView') }}</span>
             </div>
          </template>
          <div slot="body">
@@ -103,6 +111,24 @@ export default {
       },
       closeContext () {
          this.$emit('close-context');
+      },
+      async duplicateTable () {
+         try {
+            const { status, response } = await Tables.duplicateTable({
+               uid: this.selectedWorkspace,
+               table: this.selectedTable.name
+            });
+
+            if (status === 'success') {
+               this.closeContext();
+               this.$emit('reload');
+            }
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
       },
       async emptyTable () {
          try {

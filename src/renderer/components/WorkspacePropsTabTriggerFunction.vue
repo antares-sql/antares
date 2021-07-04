@@ -25,18 +25,6 @@
 
                <div class="divider-vert py-3" />
 
-               <button
-                  class="btn btn-dark btn-sm"
-                  :disabled="isChanged"
-                  @click="runFunctionCheck"
-               >
-                  <span>{{ $t('word.run') }}</span>
-                  <i class="mdi mdi-24px mdi-play ml-1" />
-               </button>
-               <button class="btn btn-dark btn-sm" @click="showParamsModal">
-                  <span>{{ $t('word.parameters') }}</span>
-                  <i class="mdi mdi-24px mdi-dots-horizontal ml-1" />
-               </button>
                <button class="btn btn-dark btn-sm" @click="showOptionsModal">
                   <span>{{ $t('word.options') }}</span>
                   <i class="mdi mdi-24px mdi-cogs ml-1" />
@@ -56,20 +44,12 @@
             :height="editorHeight"
          />
       </div>
-      <WorkspacePropsFunctionOptionsModal
+      <WorkspacePropsTriggerFunctionOptionsModal
          v-if="isOptionsModal"
          :local-options="localFunction"
          :workspace="workspace"
          @hide="hideOptionsModal"
          @options-update="optionsUpdate"
-      />
-      <WorkspacePropsFunctionParamsModal
-         v-if="isParamsModal"
-         :local-parameters="localFunction.parameters"
-         :workspace="workspace"
-         :func="localFunction.name"
-         @hide="hideParamsModal"
-         @parameters-update="parametersUpdate"
       />
       <ModalAskParameters
          v-if="isAskingParameters"
@@ -86,18 +66,16 @@ import { mapGetters, mapActions } from 'vuex';
 import { uidGen } from 'common/libs/uidGen';
 import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
-import WorkspacePropsFunctionOptionsModal from '@/components/WorkspacePropsFunctionOptionsModal';
-import WorkspacePropsFunctionParamsModal from '@/components/WorkspacePropsFunctionParamsModal';
+import WorkspacePropsTriggerFunctionOptionsModal from '@/components/WorkspacePropsTriggerFunctionOptionsModal';
 import ModalAskParameters from '@/components/ModalAskParameters';
 import Functions from '@/ipc-api/Functions';
 
 export default {
-   name: 'WorkspacePropsTabFunction',
+   name: 'WorkspacePropsTabTriggerFunction',
    components: {
       BaseLoader,
       QueryEditor,
-      WorkspacePropsFunctionOptionsModal,
-      WorkspacePropsFunctionParamsModal,
+      WorkspacePropsTriggerFunctionOptionsModal,
       ModalAskParameters
    },
    props: {
@@ -198,7 +176,7 @@ export default {
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            func: this.workspace.breadcrumbs.function
+            func: this.workspace.breadcrumbs.triggerFunction
          };
 
          try {
@@ -237,7 +215,7 @@ export default {
          };
 
          try {
-            const { status, response } = await Functions.alterFunction(params);
+            const { status, response } = await Functions.alterTriggerFunction(params);
 
             if (status === 'success') {
                const oldName = this.originalFunction.name;

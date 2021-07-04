@@ -31,9 +31,29 @@ export default (connections) => {
       }
    });
 
+   ipcMain.handle('alter-trigger-function', async (event, params) => {
+      try {
+         await connections[params.uid].alterTriggerFunction(params);
+         return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
    ipcMain.handle('create-function', async (event, params) => {
       try {
          await connections[params.uid].createFunction(params);
+         return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
+   ipcMain.handle('create-trigger-function', async (event, params) => {
+      try {
+         await connections[params.uid].createTriggerFunction(params);
          return { status: 'success' };
       }
       catch (err) {

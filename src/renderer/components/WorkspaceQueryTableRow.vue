@@ -10,7 +10,7 @@
       >
          <template v-if="cKey !== '_id'">
             <span
-               v-if="!isInlineEditor[cKey]"
+               v-if="!isInlineEditor[cKey] && fields[cKey]"
                class="cell-content px-2"
                :class="`${isNull(col)} ${typeClass(fields[cKey].type)}`"
                @dblclick="editON($event, col, cKey)"
@@ -74,7 +74,7 @@
       >
          <template :slot="'header'">
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-playlist-edit mr-1" /> {{ $t('word.edit') }} "{{ editingField }}"
+               <i class="mdi mdi-24px mdi-playlist-edit mr-1" /> <span class="cut-text">{{ $t('word.edit') }} "{{ editingField }}"</span>
             </div>
          </template>
          <div :slot="'body'">
@@ -138,7 +138,8 @@
       >
          <template :slot="'header'">
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-playlist-edit mr-1" /> {{ $t('word.edit') }} "{{ editingField }}"
+               <i class="mdi mdi-24px mdi-playlist-edit mr-1" />
+               <span class="cut-text">{{ $t('word.edit') }} "{{ editingField }}"</span>
             </div>
          </template>
          <div :slot="'body'">
@@ -348,7 +349,7 @@ export default {
          return false;
       },
       enumArray () {
-         if (this.fields[this.editingField].enumValues)
+         if (this.fields[this.editingField] && this.fields[this.editingField].enumValues)
             return this.fields[this.editingField].enumValues.replaceAll('\'', '').split(',');
          return false;
       }

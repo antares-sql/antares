@@ -93,6 +93,34 @@
             </details>
          </div>
 
+         <div v-if="filteredTriggerFunctions.length && customizations.triggerFunctions" class="database-misc">
+            <details class="accordion">
+               <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.triggerFunction}">
+                  <i class="misc-icon mdi mdi-18px mdi-folder-refresh mr-1" />
+                  {{ $tc('word.triggerFunction', 2) }}
+               </summary>
+               <div class="accordion-body">
+                  <div>
+                     <ul class="menu menu-nav pt-0">
+                        <li
+                           v-for="(func, i) of filteredTriggerFunctions"
+                           :key="`${func.name}-${i}`"
+                           class="menu-item"
+                           :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.triggerFunction === func.name}"
+                           @click="setBreadcrumbs({schema: database.name, triggerFunction: func.name})"
+                           @contextmenu.prevent="showMiscContext($event, {...func, type: 'triggerFunction'})"
+                        >
+                           <a class="table-name">
+                              <i class="table-icon mdi mdi-cog-clockwise mdi-18px mr-1" />
+                              <span v-html="highlightWord(func.name)" />
+                           </a>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+            </details>
+         </div>
+
          <div v-if="filteredFunctions.length && customizations.functions" class="database-misc">
             <details class="accordion">
                <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.function}">
@@ -188,6 +216,11 @@ export default {
       },
       filteredFunctions () {
          return this.database.functions.filter(func => func.name.search(this.searchTerm) >= 0);
+      },
+      filteredTriggerFunctions () {
+         return this.database.triggerFunctions
+            ? this.database.triggerFunctions.filter(func => func.name.search(this.searchTerm) >= 0)
+            : [];
       },
       filteredSchedulers () {
          return this.database.schedulers.filter(scheduler => scheduler.name.search(this.searchTerm) >= 0);
@@ -311,7 +344,7 @@ export default {
   .database-name,
   .misc-name {
     &:hover {
-      border-radius: 2px;
+      border-radius: $border-radius;
     }
   }
 
@@ -320,7 +353,7 @@ export default {
     position: relative;
 
     &:hover {
-      border-radius: 2px;
+      border-radius: $border-radius;
     }
   }
 

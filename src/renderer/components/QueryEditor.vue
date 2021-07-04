@@ -38,6 +38,7 @@ export default {
    computed: {
       ...mapGetters({
          editorTheme: 'settings/getEditorTheme',
+         editorFontSize: 'settings/getEditorFontSize',
          autoComplete: 'settings/getAutoComplete',
          lineWrap: 'settings/getLineWrap',
          baseCompleter: 'application/getBaseCompleter'
@@ -158,6 +159,19 @@ export default {
          if (this.editor)
             this.editor.setTheme(`ace/theme/${this.editorTheme}`);
       },
+      editorFontSize () {
+         const sizes = {
+            small: '12px',
+            medium: '14px',
+            large: '16px'
+         };
+
+         if (this.editor) {
+            this.editor.setOptions({
+               fontSize: sizes[this.editorFontSize]
+            });
+         }
+      },
       autoComplete () {
          if (this.editor) {
             this.editor.setOptions({
@@ -173,8 +187,15 @@ export default {
          }
       },
       isSelected () {
-         if (this.isSelected)
+         if (this.isSelected) {
             this.lastSchema = this.schema;
+            this.editor.resize();
+         }
+      },
+      height () {
+         setTimeout(() => {
+            this.editor.resize();
+         }, 20);
       },
       lastSchema () {
          if (this.editor) {

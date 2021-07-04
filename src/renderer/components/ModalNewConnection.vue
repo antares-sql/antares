@@ -5,7 +5,8 @@
          <div class="modal-header pl-2">
             <div class="modal-title h6">
                <div class="d-flex">
-                  <i class="mdi mdi-24px mdi-server-plus mr-1" /> {{ $t('message.createNewConnection') }}
+                  <i class="mdi mdi-24px mdi-server-plus mr-1" />
+                  <span class="cut-text">{{ $t('message.createNewConnection') }}</span>
                </div>
             </div>
             <a class="btn btn-clear c-hand" @click="closeModal" />
@@ -15,18 +16,18 @@
                <div class="panel-nav">
                   <ul class="tab tab-block">
                      <li
-                        class="tab-item"
+                        class="tab-item c-hand"
                         :class="{'active': selectedTab === 'general'}"
                         @click="selectTab('general')"
                      >
-                        <a class="c-hand">{{ $t('word.general') }}</a>
+                        <a class="tab-link">{{ $t('word.general') }}</a>
                      </li>
                      <li
-                        class="tab-item"
+                        class="tab-item c-hand"
                         :class="{'active': selectedTab === 'ssl'}"
                         @click="selectTab('ssl')"
                      >
-                        <a class="c-hand">{{ $t('word.ssl') }}</a>
+                        <a class="tab-link">{{ $t('word.ssl') }}</a>
                      </li>
                      <li
                         class="tab-item"
@@ -441,6 +442,7 @@ export default {
          else {
             try {
                const res = await Connection.makeTest(this.connection);
+               console.log(res.response);
                if (res.status === 'error')
                   this.toast = { status: 'error', message: res.response.message };
                else

@@ -34,10 +34,20 @@ body {
   outline: none !important;
 }
 
+.no-radius {
+  border-radius: 0 !important;
+}
+
 .no-border {
   outline: none !important;
   border: none !important;
   box-shadow: none !important;
+}
+
+.cut-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .workspace-tabs {
@@ -103,7 +113,7 @@ body {
   .modal-container,
   .modal-sm .modal-container {
     padding: 0;
-    border-radius: 3px;
+    border-radius: $border-radius;
 
     .modal-header {
       padding: 0.4rem 0.8rem;
@@ -111,13 +121,46 @@ body {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-radius: 3px 3px 0 0;
+      border-radius: $border-radius $border-radius 0 0;
+
+      .modal-title {
+        overflow: hidden;
+      }
     }
   }
 }
 
 .tab {
   .tab-item {
+    position: relative;
+    display: flex;
+    justify-content: center;
+
+    .tab-link {
+      min-width: 0;
+      transition: color 0.2s;
+    }
+
+    &.active {
+      .tab-link {
+        border-color: transparent;
+      }
+
+      &::after {
+        width: 100%;
+      }
+    }
+
+    &::after {
+      content: "";
+      height: 2px;
+      width: 0;
+      transition: width 0.2s;
+      background-color: $primary-color;
+      position: absolute;
+      bottom: 0;
+    }
+
     .btn-clear {
       margin-top: -0.1rem;
       font-size: 0.6rem;
@@ -185,9 +228,47 @@ body {
   max-height: 5000rem !important;
 }
 
+.btn-group {
+  flex-wrap: nowrap;
+}
+
 .btn.loading {
   > .mdi,
   > span {
     visibility: hidden;
+  }
+}
+
+.table-dropdown {
+  .menu {
+    min-width: 100%;
+    padding: 0;
+
+    .menu-item {
+      padding: 0;
+
+      > a {
+        margin: 0.2rem;
+        padding: 0.1rem 0.3rem;
+
+        &:hover {
+          color: inherit;
+        }
+      }
+    }
+  }
+}
+
+// Ace Editor
+.ace_editor {
+  &.ace_autocomplete {
+    border-radius: $border-radius;
+
+    .ace_marker-layer {
+      .ace_active-line,
+      .ace_line-hover {
+        border-radius: $border-radius;
+      }
+    }
   }
 }

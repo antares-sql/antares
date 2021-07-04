@@ -14,7 +14,15 @@ export default class {
       return ipcRenderer.invoke('alter-function', params);
    }
 
+   static alterTriggerFunction (params) {
+      return ipcRenderer.invoke('alter-trigger-function', params);
+   }
+
    static createFunction (params) {
       return ipcRenderer.invoke('create-function', params);
+   }
+
+   static createTriggerFunction (params) {
+      return ipcRenderer.invoke('create-trigger-function', params);
    }
 }
