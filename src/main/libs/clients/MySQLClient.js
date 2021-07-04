@@ -142,7 +142,7 @@ export class MySQLClient extends AntaresCore {
                   return next();
             }
          });
-      }   
+      }
    }
 
    /**
@@ -977,8 +977,8 @@ export class MySQLClient extends AntaresCore {
       const sql = `ALTER ${scheduler.definer ? ` DEFINER=${scheduler.definer}` : ''} EVENT \`${this._schema}\`.\`${scheduler.oldName}\` 
       ON SCHEDULE
          ${scheduler.execution === 'EVERY'
-            ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
-            : `AT '${scheduler.at}'`}
+      ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
+      : `AT '${scheduler.at}'`}
       ON COMPLETION${!scheduler.preserve ? ' NOT' : ''} PRESERVE
       ${scheduler.name !== scheduler.oldName ? `RENAME TO \`${this._schema}\`.\`${scheduler.name}\`` : ''}
       ${scheduler.state}
@@ -998,8 +998,8 @@ export class MySQLClient extends AntaresCore {
       const sql = `CREATE ${scheduler.definer ? ` DEFINER=${scheduler.definer}` : ''} EVENT \`${this._schema}\`.\`${scheduler.name}\` 
       ON SCHEDULE
          ${scheduler.execution === 'EVERY'
-            ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
-            : `AT '${scheduler.at}'`}
+      ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
+      : `AT '${scheduler.at}'`}
       ON COMPLETION${!scheduler.preserve ? ' NOT' : ''} PRESERVE
       ${scheduler.state}
       COMMENT '${scheduler.comment}'
