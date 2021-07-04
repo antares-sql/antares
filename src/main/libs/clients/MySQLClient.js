@@ -121,7 +121,6 @@ export class MySQLClient extends AntaresCore {
       }
 
       if (this._params.ssh) {
-         console.log(this._params.ssh);
          const { host, username, password, port, identity } = this._params.ssh;
          this._ssh = new SSH2Promise({
             host, username, password, port, identity
