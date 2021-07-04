@@ -69,10 +69,7 @@ export class PostgreSQLClient extends AntaresCore {
       }
       
       if (this._params.ssh) {
-         const { host, username, password, port } = this._params.ssh;
-         this._ssh = new SSH2Promise({
-            host, username, password, port
-         });
+         this._ssh = new SSH2Promise({ ...this._params.ssh });
 
          this._tunnel = await this._ssh.addTunnel({
             remoteAddr: this._params.host,
