@@ -105,7 +105,8 @@ module.exports = {
       scratchpad: 'Blocco appunti',
       array: 'Array',
       changelog: 'Changelog',
-      format: 'Formatta'
+      format: 'Formatta',
+      sshTunnel: 'SSH tunnel'
    },
    message: {
       appWelcome: 'Benvenuto in Antares SQL Client!',
@@ -210,7 +211,8 @@ module.exports = {
       editSchema: 'Modifica schema',
       deleteSchema: 'Elimina schema',
       markdownSupported: 'Markdown supportato',
-      plantATree: 'Pianta un albero'
+      plantATree: 'Pianta un albero',
+      enableSsh: 'Abilita SSH'
    },
    faker: {
       address: 'Indirizzo',

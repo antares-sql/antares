@@ -2,6 +2,7 @@
 import mysql from 'mysql2/promise';
 import { AntaresCore } from '../AntaresCore';
 import dataTypes from 'common/data-types/mysql';
+import * as SSH2Promise from 'ssh2-promise';
 
 export class MySQLClient extends AntaresCore {
    constructor (args) {
@@ -104,11 +105,35 @@ export class MySQLClient extends AntaresCore {
    async connect () {
       delete this._params.application_name;
 
-      if (!this._poolSize)
-         this._connection = await mysql.createConnection(this._params);
-      else {
+      const dbConfig = {
+         host: this._params.host,
+         port: this._params.port,
+         user: this._params.user,
+         password: this._params.password,
+      };
+
+      if (this._params.database?.length) {
+         dbConfig.database = this._params.database;
+      }
+      if (this._params.ssh) {
+         const { host, username, password, port } = this._params.ssh;
+         const ssh = new SSH2Promise({
+            host, username, password, port
+         });
+
+         const tunnel = await ssh.addTunnel({
+            remoteAddr: this._params.host,
+            remotePort: this._params.port,
+         });      
+         
+         dbConfig.port = tunnel.localPort;
+      }
+      
+      if (!this._poolSize) {
+         this._connection = await mysql.createConnection(dbConfig);
+      } else {
          this._connection = mysql.createPool({
-            ...this._params,
+            ...dbConfig,
             connectionLimit: this._poolSize,
             typeCast: (field, next) => {
                if (field.type === 'DATETIME')
@@ -117,7 +142,7 @@ export class MySQLClient extends AntaresCore {
                   return next();
             }
          });
-      }
+      }   
    }
 
    /**
@@ -125,6 +150,9 @@ export class MySQLClient extends AntaresCore {
     */
    destroy () {
       this._connection.end();
+      if (this._ssh) {
+         this._ssh.close();
+      }
    }
 
    /**
@@ -942,8 +970,8 @@ export class MySQLClient extends AntaresCore {
       const sql = `ALTER ${scheduler.definer ? ` DEFINER=${scheduler.definer}` : ''} EVENT \`${this._schema}\`.\`${scheduler.oldName}\` 
       ON SCHEDULE
          ${scheduler.execution === 'EVERY'
-      ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
-      : `AT '${scheduler.at}'`}
+            ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
+            : `AT '${scheduler.at}'`}
       ON COMPLETION${!scheduler.preserve ? ' NOT' : ''} PRESERVE
       ${scheduler.name !== scheduler.oldName ? `RENAME TO \`${this._schema}\`.\`${scheduler.name}\`` : ''}
       ${scheduler.state}
@@ -963,8 +991,8 @@ export class MySQLClient extends AntaresCore {
       const sql = `CREATE ${scheduler.definer ? ` DEFINER=${scheduler.definer}` : ''} EVENT \`${this._schema}\`.\`${scheduler.name}\` 
       ON SCHEDULE
          ${scheduler.execution === 'EVERY'
-      ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
-      : `AT '${scheduler.at}'`}
+            ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
+            : `AT '${scheduler.at}'`}
       ON COMPLETION${!scheduler.preserve ? ' NOT' : ''} PRESERVE
       ${scheduler.state}
       COMMENT '${scheduler.comment}'

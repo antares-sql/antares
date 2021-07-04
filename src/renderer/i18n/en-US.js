@@ -105,7 +105,8 @@ module.exports = {
       scratchpad: 'Scratchpad',
       array: 'Array',
       changelog: 'Changelog',
-      format: 'Format'
+      format: 'Format',
+      sshTunnel: 'SSH tunnel'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -211,7 +212,8 @@ module.exports = {
       deleteSchema: 'Delete schema',
       markdownSupported: 'Markdown supported',
       plantATree: 'Plant a Tree',
-      dataTabPageSize: 'DATA tab page size'
+      dataTabPageSize: 'DATA tab page size',
+      enableSsh: 'Enable SSH'
    },
    faker: {
       address: 'Address',

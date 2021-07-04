@@ -12,6 +12,10 @@ export class ClientsFactory {
     * @param {String} args.params.host
     * @param {Number} args.params.port
     * @param {String} args.params.password
+    * @param {String} args.params.ssh.host
+    * @param {String} args.params.ssh.username
+    * @param {String} args.params.ssh.password
+    * @param {Number} args.params.ssh.port
     * @param {Number=} args.poolSize
     * @returns Database Connection
     * @memberof ClientsFactory
