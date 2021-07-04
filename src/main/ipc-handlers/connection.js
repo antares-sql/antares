@@ -29,7 +29,8 @@ export default connections => {
             host: conn.sshHost,
             username: conn.sshUser,
             password: conn.sshPass,
-            port: conn.sshPort ? conn.sshPort : 22
+            port: conn.sshPort ? conn.sshPort : 22,
+            identity: conn.sshKey
          }
       }
 
@@ -80,7 +81,8 @@ export default connections => {
             host: conn.sshHost,
             username: conn.sshUser,
             password: conn.sshPass,
-            port: conn.sshPort ? conn.sshPort : 22
+            port: conn.sshPort ? conn.sshPort : 22,
+            identity: conn.sshKey
          }
       }
 
