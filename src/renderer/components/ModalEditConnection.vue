@@ -310,8 +310,8 @@
                                  <BaseUploadInput
                                     :value="connection.sshKey"
                                     :message="$t('word.browse')"
-                                    @clear="pathClear('key')"
-                                    @change="pathSelection($event, 'key')"
+                                    @clear="pathClear('sshKey')"
+                                    @change="pathSelection($event, 'sshKey')"
                                  />
                               </div>
                            </div>
