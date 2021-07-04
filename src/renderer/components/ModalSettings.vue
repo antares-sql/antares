@@ -6,7 +6,7 @@
             <div class="modal-title h6">
                <div class="d-flex">
                   <i class="mdi mdi-24px mdi-cog mr-1" />
-                  {{ $t('word.settings') }}
+                  <span class="cut-text">{{ $t('word.settings') }}</span>
                </div>
             </div>
             <a class="btn btn-clear c-hand" @click="closeModal" />
@@ -16,40 +16,40 @@
                <div class="panel-nav">
                   <ul class="tab tab-block">
                      <li
-                        class="tab-item"
+                        class="tab-item c-hand"
                         :class="{'active': selectedTab === 'general'}"
                         @click="selectTab('general')"
                      >
-                        <a class="c-hand">{{ $t('word.general') }}</a>
+                        <a class="tab-link">{{ $t('word.general') }}</a>
                      </li>
                      <li
-                        class="tab-item"
+                        class="tab-item c-hand"
                         :class="{'active': selectedTab === 'themes'}"
                         @click="selectTab('themes')"
                      >
-                        <a class="c-hand">{{ $t('word.themes') }}</a>
+                        <a class="tab-link">{{ $t('word.themes') }}</a>
                      </li>
                      <li
                         v-if="updateStatus !== 'disabled'"
-                        class="tab-item"
+                        class="tab-item c-hand"
                         :class="{'active': selectedTab === 'update'}"
                         @click="selectTab('update')"
                      >
-                        <a class="c-hand" :class="{'badge badge-update': hasUpdates}">{{ $t('word.update') }}</a>
+                        <a class="tab-link" :class="{'badge badge-update': hasUpdates}">{{ $t('word.update') }}</a>
                      </li>
                      <li
-                        class="tab-item"
+                        class="tab-item c-hand"
                         :class="{'active': selectedTab === 'changelog'}"
                         @click="selectTab('changelog')"
                      >
-                        <a class="c-hand">{{ $t('word.changelog') }}</a>
+                        <a class="tab-link">{{ $t('word.changelog') }}</a>
                      </li>
                      <li
-                        class="tab-item"
+                        class="tab-item c-hand"
                         :class="{'active': selectedTab === 'about'}"
                         @click="selectTab('about')"
                      >
-                        <a class="c-hand">{{ $t('word.about') }}</a>
+                        <a class="tab-link">{{ $t('word.about') }}</a>
                      </li>
                   </ul>
                </div>
@@ -222,6 +222,31 @@
                               </optgroup>
                            </select>
                         </div>
+                        <div class="column col-6 mb-4">
+                           <div class="btn-group btn-group-block">
+                              <button
+                                 class="btn btn-dark cut-text"
+                                 :class="{'active': editorFontSize === 'small'}"
+                                 @click="changeEditorFontSize('small')"
+                              >
+                                 {{ $t('word.small') }}
+                              </button>
+                              <button
+                                 class="btn btn-dark cut-text"
+                                 :class="{'active': editorFontSize === 'medium'}"
+                                 @click="changeEditorFontSize('medium')"
+                              >
+                                 {{ $t('word.medium') }}
+                              </button>
+                              <button
+                                 class="btn btn-dark cut-text"
+                                 :class="{'active': editorFontSize === 'large'}"
+                                 @click="changeEditorFontSize('large')"
+                              >
+                                 {{ $t('word.large') }}
+                              </button>
+                           </div>
+                        </div>
                         <div class="column col-12">
                            <BaseTextEditor
                               :value="exampleQuery"
@@ -346,6 +371,7 @@ export default {
          notificationsTimeout: 'settings/getNotificationsTimeout',
          applicationTheme: 'settings/getApplicationTheme',
          editorTheme: 'settings/getEditorTheme',
+         editorFontSize: 'settings/getEditorFontSize',
          updateStatus: 'application/getUpdateStatus',
          selectedWorkspace: 'workspaces/getSelected',
          getWorkspace: 'workspaces/getWorkspace'
@@ -401,6 +427,7 @@ ORDER BY
          changeLineWrap: 'settings/changeLineWrap',
          changeApplicationTheme: 'settings/changeApplicationTheme',
          changeEditorTheme: 'settings/changeEditorTheme',
+         changeEditorFontSize: 'settings/changeEditorFontSize',
          updateNotificationsTimeout: 'settings/updateNotificationsTimeout'
       }),
       selectTab (tab) {

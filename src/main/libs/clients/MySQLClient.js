@@ -361,8 +361,15 @@ export class MySQLClient extends AntaresCore {
 
                   const details = fieldArr.slice(2).join(' ');
                   let defaultValue = null;
-                  if (details.includes('DEFAULT'))
+                  if (details.includes('DEFAULT')) {
                      defaultValue = details.match(/(?<=DEFAULT ).*?$/gs)[0].split(' COMMENT')[0];
+                     const defaultValueArr = defaultValue.split('');
+                     if (defaultValueArr[0] === '\'') {
+                        defaultValueArr.shift();
+                        defaultValueArr.pop();
+                        defaultValue = defaultValueArr.join('');
+                     }
+                  }
 
                   const typeAndLength = nameAndType[1].replace(')', '').split('(');
 
@@ -612,8 +619,8 @@ export class MySQLClient extends AntaresCore {
             sql: row['SQL Original Statement'].match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
             name: row.Trigger,
             table: row['SQL Original Statement'].match(/(?<=ON `).*?(?=`)/gs)[0],
-            event1: row['SQL Original Statement'].match(/(BEFORE|AFTER)/gs)[0],
-            event2: row['SQL Original Statement'].match(/(INSERT|UPDATE|DELETE)/gs)[0]
+            activation: row['SQL Original Statement'].match(/(BEFORE|AFTER)/gs)[0],
+            event: row['SQL Original Statement'].match(/(INSERT|UPDATE|DELETE)/gs)[0]
          };
       })[0];
    }
@@ -658,7 +665,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async createTrigger (trigger) {
-      const sql = `CREATE ${trigger.definer ? `DEFINER=${trigger.definer} ` : ''}TRIGGER \`${this._schema}\`.\`${trigger.name}\` ${trigger.event1} ${trigger.event2} ON \`${trigger.table}\` FOR EACH ROW ${trigger.sql}`;
+      const sql = `CREATE ${trigger.definer ? `DEFINER=${trigger.definer} ` : ''}TRIGGER \`${this._schema}\`.\`${trigger.name}\` ${trigger.activation} ${trigger.event} ON \`${trigger.table}\` FOR EACH ROW ${trigger.sql}`;
       return await this.raw(sql, { split: false });
    }
 
@@ -1265,6 +1272,17 @@ export class MySQLClient extends AntaresCore {
    }
 
    /**
+    * DUPLICATE TABLE
+    *
+    * @returns {Array.<Object>} parameters
+    * @memberof MySQLClient
+    */
+   async duplicateTable (params) {
+      const sql = `CREATE TABLE \`${this._schema}\`.\`${params.table}_copy\` LIKE \`${this._schema}\`.\`${params.table}\``;
+      return await this.raw(sql);
+   }
+
+   /**
     * TRUNCATE TABLE
     *
     * @returns {Array.<Object>} parameters
@@ -1353,6 +1371,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async raw (sql, args) {
+      sql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '');
       if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
 
       args = {
@@ -1365,7 +1384,11 @@ export class MySQLClient extends AntaresCore {
       const nestTables = args.nest ? '.' : false;
       const resultsArr = [];
       let paramsArr = [];
-      const queries = args.split ? sql.split(/((?:[^;'"]*(?:"(?:\\.|[^"])*"|'(?:\\.|[^'])*')[^;'"]*)+)|;/gm) : [sql];
+      const queries = args.split
+         ? sql.split(/((?:[^;'"]*(?:"(?:\\.|[^"])*"|'(?:\\.|[^'])*')[^;'"]*)+)|;/gm)
+            .filter(Boolean)
+            .map(q => q.trim())
+         : [sql];
       const isPool = typeof this._connection.getConnection === 'function';
       const connection = isPool ? await this._connection.getConnection() : this._connection;
 
@@ -1452,7 +1475,10 @@ export class MySQLClient extends AntaresCore {
                   fields: remappedFields,
                   keys: keysArr
                });
-            }).catch(reject);
+            }).catch((err) => {
+               if (isPool) connection.release();
+               reject(err);
+            });
          });
 
          resultsArr.push({ rows, report, fields, keys, duration });

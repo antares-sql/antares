@@ -127,6 +127,12 @@
             :connection="connection"
             :function="workspace.breadcrumbs.function"
          />
+         <WorkspacePropsTabTriggerFunction
+            v-show="selectedTab === 'prop' && workspace.breadcrumbs.triggerFunction"
+            :is-selected="selectedTab === 'prop'"
+            :connection="connection"
+            :function="workspace.breadcrumbs.triggerFunction"
+         />
          <WorkspacePropsTabScheduler
             v-show="selectedTab === 'prop' && workspace.breadcrumbs.scheduler"
             :is-selected="selectedTab === 'prop'"
@@ -165,6 +171,7 @@ import WorkspacePropsTabView from '@/components/WorkspacePropsTabView';
 import WorkspacePropsTabTrigger from '@/components/WorkspacePropsTabTrigger';
 import WorkspacePropsTabRoutine from '@/components/WorkspacePropsTabRoutine';
 import WorkspacePropsTabFunction from '@/components/WorkspacePropsTabFunction';
+import WorkspacePropsTabTriggerFunction from '@/components/WorkspacePropsTabTriggerFunction';
 import WorkspacePropsTabScheduler from '@/components/WorkspacePropsTabScheduler';
 import ModalProcessesList from '@/components/ModalProcessesList';
 
@@ -179,6 +186,7 @@ export default {
       WorkspacePropsTabTrigger,
       WorkspacePropsTabRoutine,
       WorkspacePropsTabFunction,
+      WorkspacePropsTabTriggerFunction,
       WorkspacePropsTabScheduler,
       ModalProcessesList
    },
@@ -208,6 +216,7 @@ export default {
          if (this.workspace.breadcrumbs.trigger && this.workspace.customizations.triggerSettings) return true;
          if (this.workspace.breadcrumbs.procedure && this.workspace.customizations.routineSettings) return true;
          if (this.workspace.breadcrumbs.function && this.workspace.customizations.functionSettings) return true;
+         if (this.workspace.breadcrumbs.triggerFunction && this.workspace.customizations.functionSettings) return true;
          if (this.workspace.breadcrumbs.scheduler && this.workspace.customizations.schedulerSettings) return true;
          return false;
       },
@@ -219,6 +228,7 @@ export default {
                this.workspace.breadcrumbs.trigger === null &&
                this.workspace.breadcrumbs.procedure === null &&
                this.workspace.breadcrumbs.function === null &&
+               this.workspace.breadcrumbs.triggerFunction === null &&
                this.workspace.breadcrumbs.scheduler === null &&
                ['data', 'prop'].includes(this.workspace.selected_tab)
             ) ||
@@ -362,7 +372,7 @@ export default {
             min-width: 100%;
 
             .menu-item a {
-              border-radius: 0.1rem;
+              border-radius: $border-radius;
               color: inherit;
               display: block;
               margin: 0 -0.4rem;

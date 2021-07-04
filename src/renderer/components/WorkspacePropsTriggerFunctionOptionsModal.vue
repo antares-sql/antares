@@ -13,27 +13,13 @@
       </template>
       <div :slot="'body'">
          <form class="form-horizontal">
-            <div class="form-group">
-               <label class="form-label col-4">
-                  {{ $t('word.name') }}
-               </label>
-               <div class="column">
-                  <input
-                     ref="firstInput"
-                     v-model="optionsProxy.name"
-                     class="form-input"
-                     :class="{'is-error': !isTableNameValid}"
-                     type="text"
-                  >
-               </div>
-            </div>
-            <div v-if="customizations.languages" class="form-group">
+            <div v-if="customizations.triggerFunctionlanguages" class="form-group">
                <label class="form-label col-4">
                   {{ $t('word.language') }}
                </label>
                <div class="column">
                   <select v-model="optionsProxy.language" class="form-select">
-                     <option v-for="language in customizations.languages" :key="language">
+                     <option v-for="language in customizations.triggerFunctionlanguages" :key="language">
                         {{ language }}
                      </option>
                   </select>
@@ -79,38 +65,6 @@
                   >
                </div>
             </div>
-            <div class="form-group">
-               <label class="form-label col-4">
-                  {{ $t('message.sqlSecurity') }}
-               </label>
-               <div class="column">
-                  <select v-model="optionsProxy.security" class="form-select">
-                     <option>DEFINER</option>
-                     <option>INVOKER</option>
-                  </select>
-               </div>
-            </div>
-            <div v-if="customizations.procedureDataAccess" class="form-group">
-               <label class="form-label col-4">
-                  {{ $t('message.dataAccess') }}
-               </label>
-               <div class="column">
-                  <select v-model="optionsProxy.dataAccess" class="form-select">
-                     <option>CONTAINS SQL</option>
-                     <option>NO SQL</option>
-                     <option>READS SQL DATA</option>
-                     <option>MODIFIES SQL DATA</option>
-                  </select>
-               </div>
-            </div>
-            <div v-if="customizations.procedureDeterministic" class="form-group">
-               <div class="col-4" />
-               <div class="column">
-                  <label class="form-checkbox form-inline">
-                     <input v-model="optionsProxy.deterministic" type="checkbox"><i class="form-icon" /> {{ $t('word.deterministic') }}
-                  </label>
-               </div>
-            </div>
          </form>
       </div>
    </ConfirmModal>
@@ -120,7 +74,7 @@
 import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
-   name: 'WorkspacePropsRoutineOptionsModal',
+   name: 'WorkspacePropsTriggerFunctionOptionsModal',
    components: {
       ConfirmModal
    },
@@ -140,6 +94,16 @@ export default {
       },
       customizations () {
          return this.workspace.customizations;
+      },
+      isInDataTypes () {
+         let typeNames = [];
+         for (const group of this.workspace.dataTypes) {
+            typeNames = group.types.reduce((acc, curr) => {
+               acc.push(curr.name);
+               return acc;
+            }, []);
+         }
+         return typeNames.includes(this.localOptions.returns);
       }
    },
    created () {

@@ -232,7 +232,8 @@
       >
          <template :slot="'header'">
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-playlist-edit mr-1" /> {{ $t('word.default') }} "{{ row.name }}"
+               <i class="mdi mdi-24px mdi-playlist-edit mr-1" />
+               <span class="cut-text">{{ $t('word.default') }} "{{ row.name }}"</span>
             </div>
          </template>
          <div :slot="'body'">

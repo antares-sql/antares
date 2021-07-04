@@ -8,7 +8,8 @@
    >
       <template :slot="'header'">
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-dots-horizontal mr-1" /> {{ $t('word.parameters') }} "{{ routine }}"
+            <i class="mdi mdi-24px mdi-dots-horizontal mr-1" />
+            <span class="cut-text">{{ $t('word.parameters') }} "{{ routine }}"</span>
          </div>
       </template>
       <div :slot="'body'">
@@ -273,7 +274,7 @@ export default {
 
 <style lang="scss" scoped>
 .tile {
-  border-radius: 2px;
+  border-radius: $border-radius;
   opacity: 0.5;
   transition: background 0.2s;
   transition: opacity 0.2s;

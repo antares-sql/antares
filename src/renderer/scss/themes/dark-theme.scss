@@ -58,6 +58,10 @@
       &:hover {
         background: $bg-color-gray;
       }
+
+      &.active {
+        background-color: $primary-color;
+      }
     }
   }
 
@@ -211,10 +215,8 @@
   }
 
   .bg-checkered {
-    background-image:
-      linear-gradient(to right, rgba(192, 192, 192, 0.75), rgba(192, 192, 192, 0.75)),
-      linear-gradient(to right, black 50%, white 50%),
-      linear-gradient(to bottom, black 50%, white 50%);
+    background-image: linear-gradient(to right, rgba(192, 192, 192, 0.75), rgba(192, 192, 192, 0.75)),
+      linear-gradient(to right, black 50%, white 50%), linear-gradient(to bottom, black 50%, white 50%);
     background-blend-mode: normal, difference, normal;
     background-size: 2em 2em;
   }
@@ -233,7 +235,7 @@
         }
 
         &:hover {
-          background: $primary-color;
+          background: rgba($light-color, 15%);
         }
       }
     }
@@ -264,7 +266,7 @@
   }
 
   .editor-col {
-    border-left: 2px solid $bg-color-light-dark;
+    border-left: 0.05rem solid rgba($bg-color-light-dark, 60%);
   }
 
   .table {
@@ -361,26 +363,6 @@
       margin: 0;
 
       .settingbar-element {
-        height: $settingbar-width;
-        width: 100%;
-        margin: 0;
-        border-left: 3px solid transparent;
-        opacity: 0.5;
-        transition: opacity 0.2s;
-        display: flex;
-        align-content: center;
-        justify-content: center;
-        flex-direction: column;
-
-        &:hover {
-          opacity: 1;
-        }
-
-        &.selected {
-          border-left-color: $body-font-color-dark;
-          opacity: 1;
-        }
-
         .settingbar-element-icon {
           &.badge::after {
             bottom: -10px;

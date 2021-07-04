@@ -37,7 +37,7 @@
                   >
                </div>
             </div>
-            <div class="column col-auto">
+            <div v-if="customizations.definer" class="column col-auto">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.definer') }}</label>
                   <select
@@ -67,7 +67,7 @@
                </div>
             </div>
          </div>
-         <div class="columns">
+         <fieldset class="columns" :disabled="customizations.triggerOnlyRename">
             <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.table') }}</label>
@@ -82,19 +82,33 @@
                <div class="form-group">
                   <label class="form-label">{{ $t('word.event') }}</label>
                   <div class="input-group">
-                     <select v-model="localTrigger.event1" class="form-select">
+                     <select v-model="localTrigger.activation" class="form-select">
                         <option>BEFORE</option>
                         <option>AFTER</option>
                      </select>
-                     <select v-model="localTrigger.event2" class="form-select">
-                        <option>INSERT</option>
-                        <option>UPDATE</option>
-                        <option>DELETE</option>
+                     <select
+                        v-if="!customizations.triggerMultipleEvents"
+                        v-model="localTrigger.event"
+                        class="form-select"
+                     >
+                        <option v-for="event in Object.keys(localEvents)" :key="event">
+                           {{ event }}
+                        </option>
                      </select>
+                     <div v-if="customizations.triggerMultipleEvents" class="px-4">
+                        <label
+                           v-for="event in Object.keys(localEvents)"
+                           :key="event"
+                           class="form-checkbox form-inline"
+                           @change.prevent="changeEvents(event)"
+                        >
+                           <input :checked="localEvents[event]" type="checkbox"><i class="form-icon" /> {{ event }}
+                        </label>
+                     </div>
                   </div>
                </div>
             </div>
-         </div>
+         </fieldset>
       </div>
       <div class="workspace-query-results column col-12 mt-2 p-relative">
          <BaseLoader v-if="isLoading" />
@@ -136,7 +150,8 @@ export default {
          localTrigger: { sql: '' },
          lastTrigger: null,
          sqlProxy: '',
-         editorHeight: 300
+         editorHeight: 300,
+         localEvents: { INSERT: false, UPDATE: false, DELETE: false }
       };
    },
    computed: {
@@ -146,6 +161,9 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
+      },
+      customizations () {
+         return this.workspace.customizations;
       },
       isSelected () {
          return this.workspace.selected_tab === 'prop' && this.selectedWorkspace === this.workspace.uid && this.trigger;
@@ -209,6 +227,10 @@ export default {
       async getTriggerData () {
          if (!this.trigger) return;
 
+         Object.keys(this.localEvents).forEach(event => {
+            this.localEvents[event] = false;
+         });
+
          this.localTrigger = { sql: '' };
          this.isLoading = true;
 
@@ -224,6 +246,12 @@ export default {
                this.originalTrigger = response;
                this.localTrigger = JSON.parse(JSON.stringify(this.originalTrigger));
                this.sqlProxy = this.localTrigger.sql;
+
+               if (this.customizations.triggerMultipleEvents) {
+                  this.originalTrigger.event.forEach(e => {
+                     this.localEvents[e] = true;
+                  });
+               }
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -234,6 +262,16 @@ export default {
 
          this.resizeQueryEditor();
          this.isLoading = false;
+      },
+      changeEvents (event) {
+         if (this.customizations.triggerMultipleEvents) {
+            this.localEvents[event] = !this.localEvents[event];
+            this.localTrigger.event = [];
+            for (const key in this.localEvents) {
+               if (this.localEvents[key])
+                  this.localTrigger.event.push(key);
+            }
+         }
       },
       async saveChanges () {
          if (this.isSaving) return;
@@ -257,7 +295,8 @@ export default {
 
                if (oldName !== this.localTrigger.name) {
                   this.setUnsavedChanges(false);
-                  this.changeBreadcrumbs({ schema: this.schema, trigger: this.localTrigger.name });
+                  const triggerName = this.customizations.triggerTableInName ? `${this.localTrigger.table}.${this.localTrigger.name}` : this.localTrigger.name;
+                  this.changeBreadcrumbs({ schema: this.schema, trigger: triggerName });
                }
 
                this.getTriggerData();
@@ -274,6 +313,16 @@ export default {
       clearChanges () {
          this.localTrigger = JSON.parse(JSON.stringify(this.originalTrigger));
          this.$refs.queryEditor.editor.session.setValue(this.localTrigger.sql);
+
+         Object.keys(this.localEvents).forEach(event => {
+            this.localEvents[event] = false;
+         });
+
+         if (this.customizations.triggerMultipleEvents) {
+            this.originalTrigger.event.forEach(e => {
+               this.localEvents[e] = true;
+            });
+         }
       },
       resizeQueryEditor () {
          if (this.$refs.queryEditor) {

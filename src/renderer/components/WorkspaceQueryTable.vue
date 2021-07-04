@@ -12,6 +12,8 @@
          :selected-rows="selectedRows"
          @show-delete-modal="showDeleteConfirmModal"
          @set-null="setNull"
+         @copy-cell="copyCell"
+         @copy-row="copyRow"
          @close-context="closeContext"
       />
       <ul v-if="resultsWithRows.length > 1" class="tab tab-block result-tabs">
@@ -85,7 +87,8 @@
       >
          <template :slot="'header'">
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-delete mr-1" /> {{ $tc('message.deleteRows', selectedRows.length) }}
+               <i class="mdi mdi-24px mdi-delete mr-1" />
+               <span class="cut-text">{{ $tc('message.deleteRows', selectedRows.length) }}</span>
             </div>
          </template>
          <div :slot="'body'">
@@ -384,6 +387,22 @@ export default {
          };
          this.$emit('update-field', params);
       },
+      copyCell () {
+         const row = this.localResults.find(row => this.selectedRows.includes(row._id));
+         const cellName = Object.keys(row).find(prop => [
+            this.selectedCell.field,
+            `${this.fields[0].table}.${this.selectedCell.field}`,
+            `${this.fields[0].tableAlias}.${this.selectedCell.field}`
+         ].includes(prop));
+         const valueToCopy = row[cellName];
+         navigator.clipboard.writeText(valueToCopy);
+      },
+      copyRow () {
+         const row = this.localResults.find(row => this.selectedRows.includes(row._id));
+         const rowToCopy = JSON.parse(JSON.stringify(row));
+         delete rowToCopy._id;
+         navigator.clipboard.writeText(JSON.stringify(rowToCopy));
+      },
       applyUpdate (params) {
          const { primary, id, field, table, content } = params;
 
@@ -464,7 +483,7 @@ export default {
       downloadTable (format, filename) {
          if (!this.sortedResults) return;
 
-         const rows = [...this.sortedResults].map(row => {
+         const rows = JSON.parse(JSON.stringify(this.sortedResults)).map(row => {
             delete row._id;
             return row;
          });

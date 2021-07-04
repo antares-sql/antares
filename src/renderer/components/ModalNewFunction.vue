@@ -155,8 +155,8 @@ export default {
       if (this.customizations.languages)
          this.localFunction.language = this.customizations.languages[0];
 
-      if (this.customizations.procedureSql)
-         this.localFunction.sql = this.customizations.procedureSql;
+      if (this.customizations.functionSql)
+         this.localFunction.sql = this.customizations.functionSql;
       setTimeout(() => {
          this.$refs.firstInput.focus();
       }, 20);

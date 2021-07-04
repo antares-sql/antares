@@ -7,7 +7,8 @@
    >
       <template :slot="'header'">
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-cogs mr-1" /> {{ $t('word.options') }} "{{ table }}"
+            <i class="mdi mdi-24px mdi-cogs mr-1" />
+            <span class="cut-text">{{ $t('word.options') }} "{{ table }}"</span>
          </div>
       </template>
       <div :slot="'body'">
@@ -47,6 +48,7 @@
                      v-model="optionsProxy.autoIncrement"
                      class="form-input"
                      type="number"
+                     :disabled="optionsProxy.autoIncrement === null"
                   >
                </div>
             </div>

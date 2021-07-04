@@ -1,8 +1,7 @@
 'use strict';
 
-import { app, BrowserWindow, nativeImage } from 'electron';
+import { app, BrowserWindow, /* session, */ nativeImage } from 'electron';
 import * as path from 'path';
-import { format as formatUrl } from 'url';
 import Store from 'electron-store';
 
 import ipcHandlers from './ipc-handlers';
@@ -39,21 +38,18 @@ async function createMainWindow () {
    });
 
    try {
-      if (isDevelopment) {
+      if (isDevelopment) { //
          await window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`);
 
-         const { default: installExtension, VUEJS_DEVTOOLS } = require('electron-devtools-installer');
+         // const { default: installExtension, VUEJS3_DEVTOOLS } = require('electron-devtools-installer');
 
-         const toolName = await installExtension(VUEJS_DEVTOOLS);
-         console.log(toolName, 'installed');
+         // const oldDevToolsID = session.defaultSession.getAllExtensions().find(ext => ext.name === 'Vue.js devtools').id;
+         // session.defaultSession.removeExtension(oldDevToolsID);
+         // const toolName = await installExtension(VUEJS3_DEVTOOLS);
+         // console.log(toolName, 'installed');
       }
-      else {
-         await window.loadURL(formatUrl({
-            pathname: path.join(__dirname, 'index.html'),
-            protocol: 'file',
-            slashes: true
-         }));
-      }
+      else
+         await window.loadURL(new URL(`file:///${path.join(__dirname, 'index.html')}`).href);
    }
    catch (err) {
       console.log(err);

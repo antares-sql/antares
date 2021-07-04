@@ -140,7 +140,7 @@ export class AntaresCore {
     * @returns {Promise}
     * @memberof AntaresCore
     */
-   async run (args) {
+   run (args) {
       const rawQuery = this.getSQL();
       this._resetQuery();
       return this.raw(rawQuery, args);

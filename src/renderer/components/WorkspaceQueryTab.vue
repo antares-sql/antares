@@ -31,25 +31,6 @@
                   <span>{{ $t('word.run') }}</span>
                   <i class="mdi mdi-24px mdi-play" />
                </button>
-               <div class="dropdown export-dropdown pr-2">
-                  <button
-                     :disabled="!results.length || isQuering"
-                     class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
-                     tabindex="0"
-                  >
-                     <span>{{ $t('word.export') }}</span>
-                     <i class="mdi mdi-24px mdi-file-export ml-1" />
-                     <i class="mdi mdi-24px mdi-menu-down" />
-                  </button>
-                  <ul class="menu text-left">
-                     <li class="menu-item">
-                        <a class="c-hand" @click="downloadTable('json')">JSON</a>
-                     </li>
-                     <li class="menu-item">
-                        <a class="c-hand" @click="downloadTable('csv')">CSV</a>
-                     </li>
-                  </ul>
-               </div>
                <button
                   class="btn btn-dark btn-sm"
                   :disabled="!query || isQuering"
@@ -68,6 +49,28 @@
                   <span>{{ $t('word.clear') }}</span>
                   <i class="mdi mdi-24px mdi-delete-sweep pl-1" />
                </button>
+
+               <div class="divider-vert py-3" />
+
+               <div class="dropdown table-dropdown pr-2">
+                  <button
+                     :disabled="!results.length || isQuering"
+                     class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
+                     tabindex="0"
+                  >
+                     <span>{{ $t('word.export') }}</span>
+                     <i class="mdi mdi-24px mdi-file-export ml-1" />
+                     <i class="mdi mdi-24px mdi-menu-down" />
+                  </button>
+                  <ul class="menu text-left">
+                     <li class="menu-item">
+                        <a class="c-hand" @click="downloadTable('json')">JSON</a>
+                     </li>
+                     <li class="menu-item">
+                        <a class="c-hand" @click="downloadTable('csv')">CSV</a>
+                     </li>
+                  </ul>
+               </div>
             </div>
             <div class="workspace-query-info">
                <div
@@ -281,11 +284,16 @@ export default {
 
     .query-area-resizer {
       position: absolute;
-      height: 5px;
+      height: 4px;
       bottom: 40px;
       width: 100%;
       cursor: ns-resize;
       z-index: 99;
+      transition: background 0.2s;
+
+      &:hover {
+        background: rgba($primary-color, 50%);
+      }
     }
 
     .workspace-query-runner-footer {
@@ -317,12 +325,6 @@ export default {
 
   .workspace-query-results {
     min-height: 200px;
-  }
-}
-
-.export-dropdown {
-  .menu {
-    min-width: 100%;
   }
 }
 </style>

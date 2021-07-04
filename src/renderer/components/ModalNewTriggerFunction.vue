@@ -2,13 +2,12 @@
    <ConfirmModal
       :confirm-text="$t('word.confirm')"
       size="400"
-      @confirm="confirmOptionsChange"
-      @hide="$emit('hide')"
+      @confirm="confirmNewFunction"
+      @hide="$emit('close')"
    >
       <template :slot="'header'">
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-cogs mr-1" />
-            <span class="cut-text">{{ $t('word.options') }} "{{ localOptions.name }}"</span>
+            <i class="mdi mdi-24px mdi-plus mr-1" /> {{ $t('message.createNewFunction') }}
          </div>
       </template>
       <div :slot="'body'">
@@ -20,9 +19,8 @@
                <div class="column">
                   <input
                      ref="firstInput"
-                     v-model="optionsProxy.name"
+                     v-model="localFunction.name"
                      class="form-input"
-                     :class="{'is-error': !isTableNameValid}"
                      type="text"
                   >
                </div>
@@ -32,8 +30,8 @@
                   {{ $t('word.language') }}
                </label>
                <div class="column">
-                  <select v-model="optionsProxy.language" class="form-select">
-                     <option v-for="language in customizations.languages" :key="language">
+                  <select v-model="localFunction.language" class="form-select">
+                     <option v-for="language in customizations.triggerFunctionlanguages" :key="language">
                         {{ language }}
                      </option>
                   </select>
@@ -46,7 +44,7 @@
                <div class="column">
                   <select
                      v-if="workspace.users.length"
-                     v-model="optionsProxy.definer"
+                     v-model="localFunction.definer"
                      class="form-select"
                   >
                      <option value="">
@@ -73,42 +71,10 @@
                </label>
                <div class="column">
                   <input
-                     v-model="optionsProxy.comment"
+                     v-model="localFunction.comment"
                      class="form-input"
                      type="text"
                   >
-               </div>
-            </div>
-            <div class="form-group">
-               <label class="form-label col-4">
-                  {{ $t('message.sqlSecurity') }}
-               </label>
-               <div class="column">
-                  <select v-model="optionsProxy.security" class="form-select">
-                     <option>DEFINER</option>
-                     <option>INVOKER</option>
-                  </select>
-               </div>
-            </div>
-            <div v-if="customizations.procedureDataAccess" class="form-group">
-               <label class="form-label col-4">
-                  {{ $t('message.dataAccess') }}
-               </label>
-               <div class="column">
-                  <select v-model="optionsProxy.dataAccess" class="form-select">
-                     <option>CONTAINS SQL</option>
-                     <option>NO SQL</option>
-                     <option>READS SQL DATA</option>
-                     <option>MODIFIES SQL DATA</option>
-                  </select>
-               </div>
-            </div>
-            <div v-if="customizations.procedureDeterministic" class="form-group">
-               <div class="col-4" />
-               <div class="column">
-                  <label class="form-checkbox form-inline">
-                     <input v-model="optionsProxy.deterministic" type="checkbox"><i class="form-icon" /> {{ $t('word.deterministic') }}
-                  </label>
                </div>
             </div>
          </form>
@@ -120,41 +86,46 @@
 import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
-   name: 'WorkspacePropsRoutineOptionsModal',
+   name: 'ModalNewTriggerFunction',
    components: {
       ConfirmModal
    },
    props: {
-      localOptions: Object,
       workspace: Object
    },
    data () {
       return {
-         optionsProxy: {},
+         localFunction: {
+            definer: '',
+            sql: '',
+            name: '',
+            comment: '',
+            language: null
+         },
          isOptionsChanging: false
       };
    },
    computed: {
-      isTableNameValid () {
-         return this.optionsProxy.name !== '';
+      schema () {
+         return this.workspace.breadcrumbs.schema;
       },
       customizations () {
          return this.workspace.customizations;
       }
    },
-   created () {
-      this.optionsProxy = JSON.parse(JSON.stringify(this.localOptions));
+   mounted () {
+      if (this.customizations.triggerFunctionlanguages)
+         this.localFunction.language = this.customizations.triggerFunctionlanguages[0];
 
+      if (this.customizations.triggerFunctionSql)
+         this.localFunction.sql = this.customizations.triggerFunctionSql;
       setTimeout(() => {
          this.$refs.firstInput.focus();
       }, 20);
    },
    methods: {
-      confirmOptionsChange () {
-         if (!this.isTableNameValid)
-            this.optionsProxy.name = this.localOptions.name;
-
-         this.$emit('options-update', this.optionsProxy);
+      confirmNewFunction () {
+         this.$emit('open-create-function-editor', this.localFunction);
       }
    }
 };

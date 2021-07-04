@@ -8,7 +8,8 @@
    >
       <template :slot="'header'">
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-key-link mr-1" /> {{ $t('word.foreignKeys') }} "{{ table }}"
+            <i class="mdi mdi-24px mdi-key-link mr-1" />
+            <span class="cut-text">{{ $t('word.foreignKeys') }} "{{ table }}"</span>
          </div>
       </template>
       <div :slot="'body'">
@@ -361,7 +362,7 @@ export default {
 
 <style lang="scss" scoped>
 .tile {
-  border-radius: 2px;
+  border-radius: $border-radius;
   opacity: 0.5;
   transition: background 0.2s;
   transition: opacity 0.2s;
