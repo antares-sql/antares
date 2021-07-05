@@ -24,13 +24,23 @@ export default connections => {
          };
       }
 
-      const connection = ClientsFactory.getConnection({
-         client: conn.client,
-         params
-      });
+      if (conn.ssh) {
+         params.ssh = {
+            host: conn.sshHost,
+            username: conn.sshUser,
+            password: conn.sshPass,
+            port: conn.sshPort ? conn.sshPort : 22,
+            identity: conn.sshKey
+         };
+      }
 
       try {
+         const connection = await ClientsFactory.getConnection({
+            client: conn.client,
+            params
+         });
          await connection.connect();
+
          await connection.select('1+1').run();
          connection.destroy();
 
@@ -63,6 +73,16 @@ export default connections => {
             cert: conn.cert ? fs.readFileSync(conn.cert) : null,
             ca: conn.ca ? fs.readFileSync(conn.ca) : null,
             ciphers: conn.ciphers
+         };
+      }
+
+      if (conn.ssh) {
+         params.ssh = {
+            host: conn.sshHost,
+            username: conn.sshUser,
+            password: conn.sshPass,
+            port: conn.sshPort ? conn.sshPort : 22,
+            identity: conn.sshKey
          };
       }
 

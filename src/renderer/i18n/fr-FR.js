@@ -93,7 +93,8 @@ module.exports = {
       ciphers: 'Chiffrement',
       upload: 'Charger',
       browse: 'Parcourir',
-      faker: 'Faker'
+      faker: 'Faker',
+      sshTunnel: 'SSH tunnel'
    },
    message: {
       appWelcome: 'Bienvenu sur le client SQL Antares!',
@@ -183,7 +184,8 @@ module.exports = {
       preserveOnCompletion: 'Préserver à l\'achèvement',
       enableSsl: 'Activer le SSL',
       manualValue: 'Valeur manuelle',
-      tableFiller: 'Remplisseur de table'
+      tableFiller: 'Remplisseur de table',
+      enableSsh: 'Activer le SSH'
    },
    faker: {
       address: 'Adresse',

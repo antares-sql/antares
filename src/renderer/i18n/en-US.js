@@ -106,6 +106,7 @@ module.exports = {
       array: 'Array',
       changelog: 'Changelog',
       format: 'Format',
+      sshTunnel: 'SSH tunnel',
       structure: 'Structure',
       small: 'Small',
       medium: 'Medium',
@@ -219,6 +220,7 @@ module.exports = {
       markdownSupported: 'Markdown supported',
       plantATree: 'Plant a Tree',
       dataTabPageSize: 'DATA tab page size',
+      enableSsh: 'Enable SSH',
       pageNumber: 'Page number',
       duplicateTable: 'Duplicate table'
    },

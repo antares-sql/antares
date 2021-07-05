@@ -2,6 +2,7 @@
 import mysql from 'mysql2/promise';
 import { AntaresCore } from '../AntaresCore';
 import dataTypes from 'common/data-types/mysql';
+import * as SSH2Promise from 'ssh2-promise';
 
 export class MySQLClient extends AntaresCore {
    constructor (args) {
@@ -104,11 +105,32 @@ export class MySQLClient extends AntaresCore {
    async connect () {
       delete this._params.application_name;
 
-      if (!this._poolSize)
-         this._connection = await mysql.createConnection(this._params);
+      const dbConfig = {
+         host: this._params.host,
+         port: this._params.port,
+         user: this._params.user,
+         password: this._params.password,
+         ssl: null
+      };
+
+      if (this._params.database?.length) dbConfig.database = this._params.database;
+
+      if (this._params.ssl) dbConfig.ssl = { ...this._params.ssl };
+
+      if (this._params.ssh) {
+         this._ssh = new SSH2Promise({ ...this._params.ssh });
+
+         this._tunnel = await this._ssh.addTunnel({
+            remoteAddr: this._params.host,
+            remotePort: this._params.port
+         });
+         dbConfig.port = this._tunnel.localPort;
+      }
+
+      if (!this._poolSize) this._connection = await mysql.createConnection(dbConfig);
       else {
          this._connection = mysql.createPool({
-            ...this._params,
+            ...dbConfig,
             connectionLimit: this._poolSize,
             typeCast: (field, next) => {
                if (field.type === 'DATETIME')
@@ -125,6 +147,7 @@ export class MySQLClient extends AntaresCore {
     */
    destroy () {
       this._connection.end();
+      if (this._ssh) this._ssh.close();
    }
 
    /**

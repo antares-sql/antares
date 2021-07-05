@@ -29,6 +29,13 @@
                      >
                         <a class="tab-link">{{ $t('word.ssl') }}</a>
                      </li>
+                     <li
+                        class="tab-item"
+                        :class="{'active': selectedTab === 'ssh'}"
+                        @click="selectTab('ssh')"
+                     >
+                        <a class="c-hand">{{ $t('word.sshTunnel') }}</a>
+                     </li>
                   </ul>
                </div>
                <div v-if="selectedTab === 'general'" class="panel-body py-0">
@@ -213,7 +220,6 @@
                                  />
                               </div>
                            </div>
-
                            <div class="form-group">
                               <div class="col-4 col-sm-12">
                                  <label class="form-label">{{ $t('word.ciphers') }}</label>
@@ -225,6 +231,95 @@
                                     class="form-input"
                                     type="text"
                                  >
+                              </div>
+                           </div>
+                        </fieldset>
+                     </form>
+                  </div>
+                  <BaseToast
+                     class="mb-2"
+                     :message="toast.message"
+                     :status="toast.status"
+                  />
+               </div>
+               <div v-if="selectedTab === 'ssh'" class="panel-body py-0">
+                  <div class="container">
+                     <form class="form-horizontal">
+                        <div class="form-group">
+                           <div class="col-4 col-sm-12">
+                              <label class="form-label">
+                                 {{ $t('message.enableSsh') }}
+                              </label>
+                           </div>
+                           <div class="col-8 col-sm-12">
+                              <label class="form-switch d-inline-block" @click.prevent="toggleSsh">
+                                 <input type="checkbox" :checked="connection.ssh">
+                                 <i class="form-icon" />
+                              </label>
+                           </div>
+                        </div>
+                        <fieldset class="m-0" :disabled="isTesting || !connection.ssh">
+                           <div class="form-group">
+                              <div class="col-4 col-sm-12">
+                                 <label class="form-label">{{ $t('word.hostName') }}/IP</label>
+                              </div>
+                              <div class="col-8 col-sm-12">
+                                 <input
+                                    v-model="connection.sshHost"
+                                    class="form-input"
+                                    type="text"
+                                 >
+                              </div>
+                           </div>
+                           <div class="form-group">
+                              <div class="col-4 col-sm-12">
+                                 <label class="form-label">{{ $t('word.user') }}</label>
+                              </div>
+                              <div class="col-8 col-sm-12">
+                                 <input
+                                    v-model="connection.sshUser"
+                                    class="form-input"
+                                    type="text"
+                                 >
+                              </div>
+                           </div>
+                           <div class="form-group">
+                              <div class="col-4 col-sm-12">
+                                 <label class="form-label">{{ $t('word.password') }}</label>
+                              </div>
+                              <div class="col-8 col-sm-12">
+                                 <input
+                                    v-model="connection.sshPass"
+                                    class="form-input"
+                                    type="password"
+                                 >
+                              </div>
+                           </div>
+                           <div class="form-group">
+                              <div class="col-4 col-sm-12">
+                                 <label class="form-label">{{ $t('word.port') }}</label>
+                              </div>
+                              <div class="col-8 col-sm-12">
+                                 <input
+                                    v-model="connection.sshPort"
+                                    class="form-input"
+                                    type="number"
+                                    min="1"
+                                    max="65535"
+                                 >
+                              </div>
+                           </div>
+                           <div class="form-group">
+                              <div class="col-4 col-sm-12">
+                                 <label class="form-label">{{ $t('word.privateKey') }}</label>
+                              </div>
+                              <div class="col-8 col-sm-12">
+                                 <BaseUploadInput
+                                    :value="connection.sshKey"
+                                    :message="$t('word.browse')"
+                                    @clear="pathClear('sshKey')"
+                                    @change="pathSelection($event, 'sshKey')"
+                                 />
                               </div>
                            </div>
                         </fieldset>
@@ -294,8 +389,13 @@ export default {
             cert: '',
             key: '',
             ca: '',
-            ciphers: ''
-
+            ciphers: '',
+            ssh: false,
+            sshHost: '',
+            sshUser: '',
+            sshPass: '',
+            sshKey: '',
+            sshPort: 22
          },
          toast: {
             status: '',
@@ -392,6 +492,9 @@ export default {
       },
       toggleSsl () {
          this.connection.ssl = !this.connection.ssl;
+      },
+      toggleSsh () {
+         this.connection.ssh = !this.connection.ssh;
       },
       pathSelection (event, name) {
          const { files } = event.target;
