@@ -23,6 +23,7 @@
                   @contextmenu.prevent="showTableContext($event, table)"
                >
                   <a class="table-name">
+                     <!-- <div class="icon loading" /> -->
                      <i class="table-icon mdi mdi-18px mr-1" :class="table.type === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
                      <span v-html="highlightWord(table.name)" />
                   </a>
@@ -251,7 +252,7 @@ export default {
       }),
       formatBytes,
       async selectSchema (schema) {
-         if (!this.loadedSchemas.has(schema)) {
+         if (!this.loadedSchemas.has(schema) && !this.isLoading) {
             this.isLoading = true;
             await this.refreshSchema({ uid: this.connection.uid, schema });
             this.isLoading = false;
