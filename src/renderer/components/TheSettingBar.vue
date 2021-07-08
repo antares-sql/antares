@@ -25,7 +25,8 @@
             </draggable>
             <li
                class="settingbar-element btn btn-link ex-tooltip"
-               @click="showNewConnModal"
+               :class="{'selected': 'NEW' === selectedWorkspace}"
+               @click="selectWorkspace('NEW')"
                @mouseover.self="tooltipPosition"
             >
                <i class="settingbar-element-icon mdi mdi-24px mdi-plus text-light" />
@@ -92,7 +93,6 @@ export default {
    methods: {
       ...mapActions({
          updateConnections: 'connections/updateConnections',
-         showNewConnModal: 'application/showNewConnModal',
          showSettingModal: 'application/showSettingModal',
          showScratchpad: 'application/showScratchpad',
          selectWorkspace: 'workspaces/selectWorkspace'

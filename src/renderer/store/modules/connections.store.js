@@ -23,6 +23,7 @@ export default {
       getConnections: state => state.connections,
       getConnectionName: state => uid => {
          const connection = state.connections.filter(connection => connection.uid === uid)[0];
+         if (!connection) return '';
          return connection.name
             ? connection.name
             : connection.ask

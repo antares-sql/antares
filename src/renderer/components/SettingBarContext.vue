@@ -49,7 +49,8 @@ export default {
    },
    computed: {
       ...mapGetters({
-         getConnectionName: 'connections/getConnectionName'
+         getConnectionName: 'connections/getConnectionName',
+         selectedWorkspace: 'workspaces/getSelected'
       }),
       connectionName () {
          return this.getConnectionName(this.contextConnection.uid);
@@ -57,9 +58,12 @@ export default {
    },
    methods: {
       ...mapActions({
-         deleteConnection: 'connections/deleteConnection'
+         deleteConnection: 'connections/deleteConnection',
+         selectWorkspace: 'workspaces/selectWorkspace'
       }),
       confirmDeleteConnection () {
+         if (this.selectedWorkspace === this.contextConnection.uid)
+            this.selectWorkspace();
          this.deleteConnection(this.contextConnection);
          this.closeContext();
       },

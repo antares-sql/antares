@@ -58,6 +58,7 @@ export default {
       }),
       windowTitle () {
          if (!this.selectedWorkspace) return '';
+         if (this.selectedWorkspace === 'NEW') return this.$t('message.createNewConnection');
 
          const connectionName = this.getConnectionName(this.selectedWorkspace);
          const workspace = this.getWorkspace(this.selectedWorkspace);
