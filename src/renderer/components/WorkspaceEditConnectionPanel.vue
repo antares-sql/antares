@@ -311,7 +311,7 @@
             </button>
             <button
                class="btn btn-primary mr-2"
-               :disabled="isBusy"
+               :disabled="isBusy || !hasChanges"
                @click="saveConnection"
             >
                {{ $t('word.save') }}
@@ -365,15 +365,14 @@ export default {
       },
       isBusy () {
          return this.isConnecting || this.isTesting;
+      },
+      hasChanges () {
+         return JSON.stringify(this.connection) !== JSON.stringify(this.localConnection);
       }
    },
    created () {
       this.localConnection = JSON.parse(JSON.stringify(this.connection));
       window.addEventListener('keydown', this.onKey);
-
-      // setTimeout(() => {
-      //    this.$refs.firstInput.focus();
-      // }, 20);
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);
@@ -469,14 +468,13 @@ export default {
 
 <style lang="scss" scoped>
 .connection-panel {
-  display: flex;
   margin-top: 15vh;
-  justify-content: space-between;
   margin-left: auto;
   margin-right: auto;
 
   .panel {
     width: 450px;
+    border-radius: $border-radius;
 
     .panel-body {
       flex: initial;

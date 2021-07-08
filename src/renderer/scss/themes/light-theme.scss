@@ -205,6 +205,12 @@
     }
   }
 
+  .connection-panel {
+    .panel {
+      background: rgba($bg-color-light-gray, 100%);
+    }
+  }
+
   .context {
     color: $body-font-color-dark;
 

@@ -495,14 +495,13 @@ export default {
 
 <style lang="scss" scoped>
 .connection-panel {
-  display: flex;
   margin-top: 15vh;
-  justify-content: space-between;
   margin-left: auto;
   margin-right: auto;
 
   .panel {
     width: 450px;
+    border-radius: $border-radius;
 
     .panel-body {
       flex: initial;
