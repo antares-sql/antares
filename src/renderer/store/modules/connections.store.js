@@ -10,7 +10,8 @@ else
 
 const persistentStore = new Store({
    name: 'connections',
-   encryptionKey: key
+   encryptionKey: key,
+   clearInvalidConfig: true
 });
 
 export default {
