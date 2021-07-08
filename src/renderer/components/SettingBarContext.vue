@@ -3,18 +3,10 @@
       :context-event="contextEvent"
       @close-context="$emit('close-context')"
    >
-      <div class="context-element" @click="showEditModal(contextConnection)">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-pencil text-light pr-1" /> {{ $t('word.edit') }}</span>
-      </div>
       <div class="context-element" @click="showConfirmModal">
          <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ $t('word.delete') }}</span>
       </div>
 
-      <ModalEditConnection
-         v-if="isEditModal"
-         :connection="contextConnection"
-         @close="hideEditModal"
-      />
       <ConfirmModal
          v-if="isConfirmModal"
          @confirm="confirmDeleteConnection"
@@ -38,13 +30,11 @@
 import { mapActions, mapGetters } from 'vuex';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
-import ModalEditConnection from '@/components/ModalEditConnection';
 
 export default {
    name: 'SettingBarContext',
    components: {
       BaseContextMenu,
-      ModalEditConnection,
       ConfirmModal
    },
    props: {
@@ -71,13 +61,6 @@ export default {
       }),
       confirmDeleteConnection () {
          this.deleteConnection(this.contextConnection);
-         this.closeContext();
-      },
-      showEditModal () {
-         this.isEditModal = true;
-      },
-      hideEditModal () {
-         this.isEditModal = false;
          this.closeContext();
       },
       showConfirmModal () {
