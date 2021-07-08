@@ -23,7 +23,6 @@
                   @contextmenu.prevent="showTableContext($event, table)"
                >
                   <a class="table-name">
-                     <!-- <div class="icon loading" /> -->
                      <i class="table-icon mdi mdi-18px mr-1" :class="table.type === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
                      <span v-html="highlightWord(table.name)" />
                   </a>
