@@ -377,12 +377,13 @@ export default {
          return JSON.stringify(this.connection) !== JSON.stringify(this.localConnection);
       }
    },
+   watch: {
+      connection () {
+         this.localConnection = JSON.parse(JSON.stringify(this.connection));
+      }
+   },
    created () {
       this.localConnection = JSON.parse(JSON.stringify(this.connection));
-      window.addEventListener('keydown', this.onKey);
-   },
-   beforeDestroy () {
-      window.removeEventListener('keydown', this.onKey);
    },
    methods: {
       ...mapActions({

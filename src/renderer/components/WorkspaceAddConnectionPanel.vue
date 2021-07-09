@@ -401,14 +401,10 @@ export default {
    },
    created () {
       this.setDefaults();
-      window.addEventListener('keydown', this.onKey);
 
       setTimeout(() => {
-         this.$refs.firstInput.focus();
+         if (this.$refs.firstInput) this.$refs.firstInput.focus();
       }, 20);
-   },
-   beforeDestroy () {
-      window.removeEventListener('keydown', this.onKey);
    },
    methods: {
       ...mapActions({
