@@ -39,7 +39,11 @@
 
          <div v-if="filteredTriggers.length && customizations.triggers" class="database-misc">
             <details class="accordion">
-               <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.trigger}">
+               <summary
+                  class="accordion-header misc-name"
+                  :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.trigger}"
+                  @contextmenu.prevent="showMiscFolderContext($event, 'trigger')"
+               >
                   <i class="misc-icon mdi mdi-18px mdi-folder-cog mr-1" />
                   {{ $tc('word.trigger', 2) }}
                </summary>
@@ -67,7 +71,11 @@
 
          <div v-if="filteredProcedures.length && customizations.routines" class="database-misc">
             <details class="accordion">
-               <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.procedure}">
+               <summary
+                  class="accordion-header misc-name"
+                  :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.procedure}"
+                  @contextmenu.prevent="showMiscFolderContext($event, 'procedure')"
+               >
                   <i class="misc-icon mdi mdi-18px mdi-folder-sync mr-1" />
                   {{ $tc('word.storedRoutine', 2) }}
                </summary>
@@ -95,7 +103,11 @@
 
          <div v-if="filteredTriggerFunctions.length && customizations.triggerFunctions" class="database-misc">
             <details class="accordion">
-               <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.triggerFunction}">
+               <summary
+                  class="accordion-header misc-name"
+                  :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.triggerFunction}"
+                  @contextmenu.prevent="showMiscFolderContext($event, 'triggerFunction')"
+               >
                   <i class="misc-icon mdi mdi-18px mdi-folder-refresh mr-1" />
                   {{ $tc('word.triggerFunction', 2) }}
                </summary>
@@ -123,7 +135,11 @@
 
          <div v-if="filteredFunctions.length && customizations.functions" class="database-misc">
             <details class="accordion">
-               <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.function}">
+               <summary
+                  class="accordion-header misc-name"
+                  :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.function}"
+                  @contextmenu.prevent="showMiscFolderContext($event, 'function')"
+               >
                   <i class="misc-icon mdi mdi-18px mdi-folder-move mr-1" />
                   {{ $tc('word.function', 2) }}
                </summary>
@@ -151,7 +167,11 @@
 
          <div v-if="filteredSchedulers.length && customizations.schedulers" class="database-misc">
             <details class="accordion">
-               <summary class="accordion-header misc-name" :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.scheduler}">
+               <summary
+                  class="accordion-header misc-name"
+                  :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.scheduler}"
+                  @contextmenu.prevent="showMiscFolderContext($event, 'scheduler')"
+               >
                   <i class="misc-icon mdi mdi-18px mdi-folder-clock mr-1" />
                   {{ $tc('word.scheduler', 2) }}
                </summary>
@@ -270,6 +290,11 @@ export default {
       showMiscContext (event, misc) {
          this.setBreadcrumbs({ schema: this.database.name, [misc.type]: misc.name });
          this.$emit('show-misc-context', { event, misc });
+      },
+      showMiscFolderContext (event, type) {
+         this.selectSchema(this.database.name);
+         this.setBreadcrumbs({ schema: this.database.name, type });
+         this.$emit('show-misc-folder-context', { event, type });
       },
       piePercentage (val) {
          const perc = val / this.maxSize * 100;

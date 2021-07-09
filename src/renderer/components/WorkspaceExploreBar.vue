@@ -47,6 +47,7 @@
                @show-schema-context="openSchemaContext"
                @show-table-context="openTableContext"
                @show-misc-context="openMiscContext"
+               @show-misc-folder-context="openMiscFolderContext"
             />
          </div>
       </div>
@@ -125,6 +126,18 @@
          @close-context="closeMiscContext"
          @reload="refresh"
       />
+      <MiscFolderContext
+         v-if="isMiscFolderContext"
+         :selected-misc="selectedMisc"
+         :context-event="miscContextEvent"
+         @show-create-trigger-modal="showCreateTriggerModal"
+         @show-create-routine-modal="showCreateRoutineModal"
+         @show-create-function-modal="showCreateFunctionModal"
+         @show-create-trigger-function-modal="showCreateTriggerFunctionModal"
+         @show-create-scheduler-modal="showCreateSchedulerModal"
+         @close-context="closeMiscFolderContext"
+         @reload="refresh"
+      />
    </div>
 </template>
 
@@ -142,6 +155,7 @@ import WorkspaceExploreBarSchema from '@/components/WorkspaceExploreBarSchema';
 import DatabaseContext from '@/components/WorkspaceExploreBarSchemaContext';
 import TableContext from '@/components/WorkspaceExploreBarTableContext';
 import MiscContext from '@/components/WorkspaceExploreBarMiscContext';
+import MiscFolderContext from '@/components/WorkspaceExploreBarMiscFolderContext';
 import ModalNewSchema from '@/components/ModalNewSchema';
 import ModalNewTable from '@/components/ModalNewTable';
 import ModalNewView from '@/components/ModalNewView';
@@ -158,6 +172,7 @@ export default {
       DatabaseContext,
       TableContext,
       MiscContext,
+      MiscFolderContext,
       ModalNewSchema,
       ModalNewTable,
       ModalNewView,
@@ -190,6 +205,7 @@ export default {
          isDatabaseContext: false,
          isTableContext: false,
          isMiscContext: false,
+         isMiscFolderContext: false,
 
          databaseContextEvent: null,
          tableContextEvent: null,
@@ -326,11 +342,20 @@ export default {
          this.miscContextEvent = payload.event;
          this.isMiscContext = true;
       },
+      openMiscFolderContext (payload) {
+         this.selectedMisc = payload.type;
+         this.miscContextEvent = payload.event;
+         this.isMiscFolderContext = true;
+      },
       closeMiscContext () {
          this.isMiscContext = false;
       },
+      closeMiscFolderContext () {
+         this.isMiscFolderContext = false;
+      },
       showCreateViewModal () {
          this.closeDatabaseContext();
+         this.closeMiscFolderContext();
          this.isNewViewModal = true;
       },
       hideCreateViewModal () {
@@ -354,6 +379,7 @@ export default {
       },
       showCreateTriggerModal () {
          this.closeDatabaseContext();
+         this.closeMiscFolderContext();
          this.isNewTriggerModal = true;
       },
       hideCreateTriggerModal () {
@@ -378,6 +404,7 @@ export default {
       },
       showCreateRoutineModal () {
          this.closeDatabaseContext();
+         this.closeMiscFolderContext();
          this.isNewRoutineModal = true;
       },
       hideCreateRoutineModal () {
@@ -401,6 +428,7 @@ export default {
       },
       showCreateFunctionModal () {
          this.closeDatabaseContext();
+         this.closeMiscFolderContext();
          this.isNewFunctionModal = true;
       },
       hideCreateFunctionModal () {
@@ -408,6 +436,7 @@ export default {
       },
       showCreateTriggerFunctionModal () {
          this.closeDatabaseContext();
+         this.closeMiscFolderContext();
          this.isNewTriggerFunctionModal = true;
       },
       hideCreateTriggerFunctionModal () {
@@ -415,6 +444,7 @@ export default {
       },
       showCreateSchedulerModal () {
          this.closeDatabaseContext();
+         this.closeMiscFolderContext();
          this.isNewSchedulerModal = true;
       },
       hideCreateSchedulerModal () {
