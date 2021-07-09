@@ -28,8 +28,8 @@
                   title="F5"
                   @click="runQuery(query)"
                >
+                  <i class="mdi mdi-24px mdi-play pr-1" />
                   <span>{{ $t('word.run') }}</span>
-                  <i class="mdi mdi-24px mdi-play" />
                </button>
                <button
                   class="btn btn-dark btn-sm"
@@ -37,8 +37,8 @@
                   title="CTRL+F8"
                   @click="beautify()"
                >
+                  <i class="mdi mdi-24px mdi-brush pr-1" />
                   <span>{{ $t('word.format') }}</span>
-                  <i class="mdi mdi-24px mdi-brush pl-1" />
                </button>
                <button
                   class="btn btn-link btn-sm"
@@ -46,8 +46,8 @@
                   title="CTRL+W"
                   @click="clear()"
                >
+                  <i class="mdi mdi-24px mdi-delete-sweep pr-1" />
                   <span>{{ $t('word.clear') }}</span>
-                  <i class="mdi mdi-24px mdi-delete-sweep pl-1" />
                </button>
 
                <div class="divider-vert py-3" />
@@ -58,8 +58,8 @@
                      class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
                      tabindex="0"
                   >
+                     <i class="mdi mdi-24px mdi-file-export mr-1" />
                      <span>{{ $t('word.export') }}</span>
-                     <i class="mdi mdi-24px mdi-file-export ml-1" />
                      <i class="mdi mdi-24px mdi-menu-down" />
                   </button>
                   <ul class="menu text-left">

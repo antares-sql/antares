@@ -315,28 +315,22 @@
          </div>
          <div class="panel-footer">
             <button
-               class="btn btn-gray mr-2"
+               class="btn btn-gray mr-2 d-flex"
                :class="{'loading': isTesting}"
                :disabled="isBusy"
                @click="startTest"
             >
+               <i class="mdi mdi-24px mdi-lightning-bolt mr-1" />
                {{ $t('message.testConnection') }}
             </button>
             <button
-               class="btn btn-primary mr-2"
+               class="btn btn-primary mr-2 d-flex"
                :disabled="isBusy"
                @click="saveConnection"
             >
+               <i class="mdi mdi-24px mdi-content-save mr-1" />
                {{ $t('word.save') }}
             </button>
-            <!-- <button
-               class="btn btn-success"
-               :class="{'loading': isConnecting}"
-               :disabled="isBusy"
-               @click="startConnection"
-            >
-               {{ $t('word.connect') }}
-            </button> -->
          </div>
       </div>
       <ModalAskCredentials

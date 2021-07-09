@@ -19,8 +19,8 @@
                   <div class="panel-header pt-0 pl-0">
                      <div class="d-flex">
                         <button class="btn btn-dark btn-sm d-flex" @click="addIndex">
+                           <i class="mdi mdi-24px mdi-key-plus mr-1" />
                            <span>{{ $t('word.add') }}</span>
-                           <i class="mdi mdi-24px mdi-key-plus ml-1" />
                         </button>
                         <button
                            class="btn btn-dark btn-sm d-flex ml-2 mr-0"
@@ -28,8 +28,8 @@
                            :disabled="!isChanged"
                            @click.prevent="clearChanges"
                         >
+                           <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
                            <span>{{ $t('word.clear') }}</span>
-                           <i class="mdi mdi-24px mdi-delete-sweep ml-1" />
                         </button>
                      </div>
                   </div>
