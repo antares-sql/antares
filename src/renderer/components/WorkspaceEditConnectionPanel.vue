@@ -18,11 +18,11 @@
                   <a class="tab-link">{{ $t('word.ssl') }}</a>
                </li>
                <li
-                  class="tab-item"
+                  class="tab-item c-hand"
                   :class="{'active': selectedTab === 'ssh'}"
                   @click="selectTab('ssh')"
                >
-                  <a class="c-hand">{{ $t('word.sshTunnel') }}</a>
+                  <a class="tab-link">{{ $t('word.sshTunnel') }}</a>
                </li>
             </ul>
          </div>
@@ -58,12 +58,6 @@
                               <option value="pg">
                                  PostgreSQL
                               </option>
-                              <!-- <option value="mssql">
-                                       Microsoft SQL
-                                    </option>
-                                    <option value="oracledb">
-                                       Oracle DB
-                                    </option> -->
                            </select>
                         </div>
                      </div>
@@ -128,6 +122,19 @@
                               class="form-input"
                               type="password"
                               :disabled="localConnection.ask"
+                           >
+                        </div>
+                     </div>
+                     <div v-if="customizations.connectionSchema" class="form-group columns">
+                        <div class="column col-4 col-sm-12">
+                           <label class="form-label">{{ $t('word.schema') }}</label>
+                        </div>
+                        <div class="column col-8 col-sm-12">
+                           <input
+                              v-model="localConnection.schema"
+                              class="form-input"
+                              type="text"
+                              :placeholder="$t('word.all')"
                            >
                         </div>
                      </div>

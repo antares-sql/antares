@@ -38,12 +38,7 @@
                <i class="form-icon mdi mdi-magnify mdi-18px" />
             </div>
          </div>
-         <WorkspaceConnectPanel
-            v-if="workspace.connection_status !== 'connected'"
-            class="workspace-explorebar-body"
-            :connection="connection"
-         />
-         <div v-else class="workspace-explorebar-body">
+         <div class="workspace-explorebar-body">
             <WorkspaceExploreBarSchema
                v-for="db of workspace.structure"
                :key="db.name"
@@ -143,7 +138,6 @@ import Routines from '@/ipc-api/Routines';
 import Functions from '@/ipc-api/Functions';
 import Schedulers from '@/ipc-api/Schedulers';
 
-import WorkspaceConnectPanel from '@/components/WorkspaceConnectPanel';
 import WorkspaceExploreBarSchema from '@/components/WorkspaceExploreBarSchema';
 import DatabaseContext from '@/components/WorkspaceExploreBarSchemaContext';
 import TableContext from '@/components/WorkspaceExploreBarTableContext';
@@ -160,7 +154,6 @@ import ModalNewScheduler from '@/components/ModalNewScheduler';
 export default {
    name: 'WorkspaceExploreBar',
    components: {
-      WorkspaceConnectPanel,
       WorkspaceExploreBarSchema,
       DatabaseContext,
       TableContext,
