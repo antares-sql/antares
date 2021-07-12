@@ -1,7 +1,7 @@
 <template>
    <div
       v-show="isSelected"
-      class="workspace-query-tab column col-12 columns col-gapless no-outline"
+      class="workspace-query-tab column col-12 columns col-gapless no-outline p-0"
       tabindex="0"
       @keydown.116="runQuery(query)"
       @keydown.ctrl.87="clear"

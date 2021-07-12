@@ -178,13 +178,17 @@ export default {
             }
             : workspace);
       },
-      NEW_TAB (state, { uid, tab, content, autorun }) {
-         tabIndex[uid] = tabIndex[uid] ? ++tabIndex[uid] : 1;
+      NEW_TAB (state, { uid, tab, content, type, autorun, schema, table }) {
+         if (type === 'query')
+            tabIndex[uid] = tabIndex[uid] ? ++tabIndex[uid] : 1;
+
          const newTab = {
             uid: tab,
-            index: tabIndex[uid],
+            index: type === 'query' ? tabIndex[uid] : null,
             selected: false,
-            type: 'query',
+            type,
+            schema,
+            table,
             fields: [],
             keyUsage: [],
             content: content || '',
@@ -432,7 +436,7 @@ export default {
          commit('ADD_WORKSPACE', workspace);
 
          if (getters.getWorkspace(uid).tabs.length < 3)
-            dispatch('newTab', { uid });
+            dispatch('newTab', { uid, type: 'query' });
 
          dispatch('setUnsavedChanges', false);
       },
@@ -470,10 +474,18 @@ export default {
       setSearchTerm ({ commit, getters }, term) {
          commit('SET_SEARCH_TERM', { uid: getters.getSelected, term });
       },
-      newTab ({ commit }, { uid, content, autorun }) {
-         const tab = uidGen('T');
+      newTab ({ state, commit }, { uid, content, type, autorun, schema, table }) {
+         if (type === 'temp-data') {
+            const workspaceTabs = state.workspaces.find(workspace => workspace.uid === uid);
+            const tempTabs = workspaceTabs ? workspaceTabs.tabs.filter(tab => tab.type === 'temp-data') : false;
+            if (tempTabs) {
+               for (const tab of tempTabs)
+                  commit('REMOVE_TAB', { uid, tab: tab.uid });
+            }
+         }
 
-         commit('NEW_TAB', { uid, tab, content, autorun });
+         const tab = uidGen('T');
+         commit('NEW_TAB', { uid, tab, content, type, autorun, schema, table });
          commit('SELECT_TAB', { uid, tab });
       },
       removeTab ({ commit }, payload) {

@@ -48,7 +48,7 @@
                   </li>
                </ul>
             </li>
-            <li
+            <!-- <li
                v-if="schemaChild && isSettingSupported"
                class="tab-item"
                :class="{'active': selectedTab === 'prop'}"
@@ -69,16 +69,16 @@
                   <i class="mdi mdi-18px mr-1" :class="workspace.breadcrumbs.table ? 'mdi-table' : 'mdi-table-eye'" />
                   <span :title="schemaChild">{{ $t('word.data').toUpperCase() }}: {{ schemaChild }}</span>
                </a>
-            </li>
+            </li> -->
             <li
-               v-for="tab of queryTabs"
+               v-for="tab of workspace.tabs"
                :key="tab.uid"
                class="tab-item"
                :class="{'active': selectedTab === tab.uid}"
                @click="selectTab({uid: workspace.uid, tab: tab.uid})"
                @mouseup.middle="closeTab(tab.uid)"
             >
-               <a class="tab-link">
+               <a v-if="tab.type === 'query'" class="tab-link">
                   <i class="mdi mdi-18px mdi-code-tags mr-1" />
                   <span>
                      Query #{{ tab.index }}
@@ -90,18 +90,22 @@
                      />
                   </span>
                </a>
+               <a v-if="tab.type === 'temp-data'" class="tab-link text-italic">
+                  <i class="mdi mdi-18px mr-1" :class="workspace.breadcrumbs.table ? 'mdi-table' : 'mdi-table-eye'" />
+                  <span :title="`${$t('word.data').toUpperCase()}: ${tab.table}`">{{ tab.table }}</span>
+               </a>
             </li>
             <li class="tab-item">
                <a
                   class="tab-add"
                   :title="$t('message.openNewTab')"
-                  @click="addTab"
+                  @click="addQueryTab"
                >
                   <i class="mdi mdi-24px mdi-plus" />
                </a>
             </li>
          </ul>
-         <WorkspacePropsTab
+         <!-- <WorkspacePropsTab
             v-show="selectedTab === 'prop' && workspace.breadcrumbs.table"
             :is-selected="selectedTab === 'prop'"
             :connection="connection"
@@ -142,19 +146,28 @@
             :is-selected="selectedTab === 'prop'"
             :connection="connection"
             :scheduler="workspace.breadcrumbs.scheduler"
-         />
-         <WorkspaceTableTab
-            v-show="selectedTab === 'data'"
-            :connection="connection"
-            :table="workspace.breadcrumbs.table || workspace.breadcrumbs.view"
-         />
-         <WorkspaceQueryTab
-            v-for="tab of queryTabs"
+         /> -->
+         <div
+            v-for="tab of workspace.tabs"
             :key="tab.uid"
-            :tab="tab"
-            :is-selected="selectedTab === tab.uid"
-            :connection="connection"
-         />
+            class="column col-12"
+         >
+            <WorkspaceQueryTab
+               v-if="tab.type==='query'"
+               :key="tab.uid"
+               :tab="tab"
+               :is-selected="selectedTab === tab.uid"
+               :connection="connection"
+            />
+            <WorkspaceTableTab
+               v-else-if="tab.type==='temp-data'"
+               v-show="selectedTab === tab.uid"
+               :is-selected="selectedTab === tab.uid"
+               :connection="connection"
+               :table="tab.table"
+               :schema="tab.schema"
+            />
+         </div>
       </div>
       <WorkspaceEditConnectionPanel v-else :connection="connection" />
       <ModalProcessesList
@@ -172,13 +185,13 @@ import WorkspaceExploreBar from '@/components/WorkspaceExploreBar';
 import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPanel';
 import WorkspaceQueryTab from '@/components/WorkspaceQueryTab';
 import WorkspaceTableTab from '@/components/WorkspaceTableTab';
-import WorkspacePropsTab from '@/components/WorkspacePropsTab';
-import WorkspacePropsTabView from '@/components/WorkspacePropsTabView';
-import WorkspacePropsTabTrigger from '@/components/WorkspacePropsTabTrigger';
-import WorkspacePropsTabRoutine from '@/components/WorkspacePropsTabRoutine';
-import WorkspacePropsTabFunction from '@/components/WorkspacePropsTabFunction';
-import WorkspacePropsTabTriggerFunction from '@/components/WorkspacePropsTabTriggerFunction';
-import WorkspacePropsTabScheduler from '@/components/WorkspacePropsTabScheduler';
+// import WorkspacePropsTab from '@/components/WorkspacePropsTab';
+// import WorkspacePropsTabView from '@/components/WorkspacePropsTabView';
+// import WorkspacePropsTabTrigger from '@/components/WorkspacePropsTabTrigger';
+// import WorkspacePropsTabRoutine from '@/components/WorkspacePropsTabRoutine';
+// import WorkspacePropsTabFunction from '@/components/WorkspacePropsTabFunction';
+// import WorkspacePropsTabTriggerFunction from '@/components/WorkspacePropsTabTriggerFunction';
+// import WorkspacePropsTabScheduler from '@/components/WorkspacePropsTabScheduler';
 import ModalProcessesList from '@/components/ModalProcessesList';
 
 export default {
@@ -188,13 +201,13 @@ export default {
       WorkspaceEditConnectionPanel,
       WorkspaceQueryTab,
       WorkspaceTableTab,
-      WorkspacePropsTab,
-      WorkspacePropsTabView,
-      WorkspacePropsTabTrigger,
-      WorkspacePropsTabRoutine,
-      WorkspacePropsTabFunction,
-      WorkspacePropsTabTriggerFunction,
-      WorkspacePropsTabScheduler,
+      // WorkspacePropsTab,
+      // WorkspacePropsTabView,
+      // WorkspacePropsTabTrigger,
+      // WorkspacePropsTabRoutine,
+      // WorkspacePropsTabFunction,
+      // WorkspacePropsTabTriggerFunction,
+      // WorkspacePropsTabScheduler,
       ModalProcessesList
    },
    props: {
@@ -228,29 +241,31 @@ export default {
          return false;
       },
       selectedTab () {
-         if (
-            (
-               this.workspace.breadcrumbs.table === null &&
-               this.workspace.breadcrumbs.view === null &&
-               this.workspace.breadcrumbs.trigger === null &&
-               this.workspace.breadcrumbs.procedure === null &&
-               this.workspace.breadcrumbs.function === null &&
-               this.workspace.breadcrumbs.triggerFunction === null &&
-               this.workspace.breadcrumbs.scheduler === null &&
-               ['data', 'prop'].includes(this.workspace.selected_tab)
-            ) ||
-            (
-               this.workspace.breadcrumbs.table === null &&
-               this.workspace.breadcrumbs.view === null &&
-               this.workspace.selected_tab === 'data'
-            )
-         )
-            return this.queryTabs[0].uid;
+         // if (
+         //    (
+         //       this.workspace.breadcrumbs.table === null &&
+         //       this.workspace.breadcrumbs.view === null &&
+         //       this.workspace.breadcrumbs.trigger === null &&
+         //       this.workspace.breadcrumbs.procedure === null &&
+         //       this.workspace.breadcrumbs.function === null &&
+         //       this.workspace.breadcrumbs.triggerFunction === null &&
+         //       this.workspace.breadcrumbs.scheduler === null &&
+         //       ['data', 'prop'].includes(this.workspace.selected_tab)
+         //    ) ||
+         //    (
+         //       this.workspace.breadcrumbs.table === null &&
+         //       this.workspace.breadcrumbs.view === null &&
+         //       this.workspace.selected_tab === 'data'
+         //    )
+         // )
+         //    return this.queryTabs[0].uid;
 
-         return this.queryTabs.find(tab => tab.uid === this.workspace.selected_tab) ||
-         ['data', 'prop'].includes(this.workspace.selected_tab)
-            ? this.workspace.selected_tab
-            : this.queryTabs[0].uid;
+         // return this.queryTabs.find(tab => tab.uid === this.workspace.selected_tab) ||
+         // ['data', 'prop'].includes(this.workspace.selected_tab)
+         //    ? this.workspace.selected_tab
+         //    : this.queryTabs[0].uid;
+
+         return this.workspace.selected_tab;
       },
       queryTabs () {
          return this.workspace.tabs.filter(tab => tab.type === 'query');
@@ -286,8 +301,8 @@ export default {
          newTab: 'workspaces/newTab',
          removeTab: 'workspaces/removeTab'
       }),
-      addTab () {
-         this.newTab({ uid: this.connection.uid });
+      addQueryTab () {
+         this.newTab({ uid: this.connection.uid, type: 'query' });
 
          if (!this.hasWheelEvent) {
             this.$refs.tabWrap.addEventListener('wheel', e => {

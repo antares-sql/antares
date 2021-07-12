@@ -281,7 +281,7 @@ export default {
                sql = `SELECT \`${this.originalFunction.name}\` (${params.join(',')})`;
          }
 
-         this.newTab({ uid: this.connection.uid, content: sql, autorun: true });
+         this.newTab({ uid: this.connection.uid, content: sql, type: 'query', autorun: true });
       },
       showOptionsModal () {
          this.isOptionsModal = true;

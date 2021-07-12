@@ -19,7 +19,7 @@
                   :key="table.name"
                   class="menu-item"
                   :class="{'text-bold': breadcrumbs.schema === database.name && [breadcrumbs.table, breadcrumbs.view].includes(table.name)}"
-                  @click="setBreadcrumbs({schema: database.name, [table.type]: table.name})"
+                  @click="selectTable({schema: database.name, table})"
                   @contextmenu.prevent="showTableContext($event, table)"
                >
                   <a class="table-name">
@@ -267,6 +267,7 @@ export default {
    methods: {
       ...mapActions({
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         newTab: 'workspaces/newTab',
          refreshSchema: 'workspaces/refreshSchema'
       }),
       formatBytes,
@@ -278,6 +279,11 @@ export default {
          }
 
          this.changeBreadcrumbs({ schema, table: null });
+      },
+      selectTable ({ schema, table }) {
+         this.setBreadcrumbs({ schema, [table.type]: table.name });
+         // TODO: open only if not present
+         this.newTab({ uid: this.connection.uid, table: table.name, schema: this.database.name, type: 'temp-data' });
       },
       showSchemaContext (event, schema) {
          this.selectSchema(schema);

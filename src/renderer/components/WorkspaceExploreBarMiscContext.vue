@@ -218,7 +218,7 @@ export default {
                sql = `CALL \`${this.localElement.name}\`(${params.join(',')})`;
          }
 
-         this.newTab({ uid: this.workspace.uid, content: sql, autorun: true });
+         this.newTab({ uid: this.workspace.uid, content: sql, type: 'query', autorun: true });
          this.closeContext();
       },
       async runFunctionCheck () {
