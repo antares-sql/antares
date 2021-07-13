@@ -1,5 +1,5 @@
 <template>
-   <div v-show="isSelected" class="workspace-query-tab column col-12 columns col-gapless p-0">
+   <div v-show="isSelected" class="workspace-query-tab column col-12 columns col-gapless no-outline p-0">
       <div class="workspace-query-runner column col-12">
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
@@ -181,7 +181,9 @@ export default {
    mixins: [tableTabs],
    props: {
       connection: Object,
-      table: String
+      isSelected: Boolean,
+      table: String,
+      schema: String
    },
    data () {
       return {
@@ -207,9 +209,6 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
-      },
-      isSelected () {
-         return this.workspace.selected_tab === 'data' && this.workspace.uid === this.selectedWorkspace;
       },
       isTable () {
          return !!this.workspace.breadcrumbs.table;
@@ -282,7 +281,7 @@ export default {
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            table: this.workspace.breadcrumbs.table || this.workspace.breadcrumbs.view,
+            table: this.table,
             limit: this.limit,
             page: this.page,
             sortParams

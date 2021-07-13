@@ -335,11 +335,11 @@ export class MySQLClient extends AntaresCore {
          .select('*')
          .schema('information_schema')
          .from('COLUMNS')
-         .where({ TABLE_SCHEMA: `= '${this._schema || schema}'`, TABLE_NAME: `= '${table}'` })
+         .where({ TABLE_SCHEMA: `= '${schema}'`, TABLE_NAME: `= '${table}'` })
          .orderBy({ ORDINAL_POSITION: 'ASC' })
          .run();
 
-      const { rows: fields } = await this.raw(`SHOW CREATE TABLE \`${this._schema || schema}\`.\`${table}\``);
+      const { rows: fields } = await this.raw(`SHOW CREATE TABLE \`${schema}\`.\`${table}\``);
 
       const remappedFields = fields.map(row => {
          if (!row['Create Table']) return false;

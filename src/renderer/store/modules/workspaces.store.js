@@ -480,7 +480,7 @@ export default {
             const tempTabs = workspaceTabs ? workspaceTabs.tabs.filter(tab => tab.type === 'temp-data') : false;
             if (tempTabs) {
                for (const tab of tempTabs)
-                  commit('REMOVE_TAB', { uid, tab: tab.uid });
+                  commit('REMOVE_TAB', { uid, tab: tab.uid });// TODO: replace instead remove
             }
          }
 

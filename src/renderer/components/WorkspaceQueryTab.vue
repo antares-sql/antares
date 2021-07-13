@@ -156,6 +156,9 @@ export default {
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
+      schema () {
+         return this.workspace.breadcrumbs.schema;
+      },
       isWorkspaceSelected () {
          return this.workspace.uid === this.selectedWorkspace;
       }

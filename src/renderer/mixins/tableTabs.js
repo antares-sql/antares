@@ -1,11 +1,6 @@
 import Tables from '@/ipc-api/Tables';
 
 export default {
-   computed: {
-      schema () {
-         return this.workspace.breadcrumbs.schema;
-      }
-   },
    methods: {
       async updateField (payload) {
          this.isQuering = true;

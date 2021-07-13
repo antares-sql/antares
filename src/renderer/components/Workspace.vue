@@ -147,11 +147,7 @@
             :connection="connection"
             :scheduler="workspace.breadcrumbs.scheduler"
          /> -->
-         <div
-            v-for="tab of workspace.tabs"
-            :key="tab.uid"
-            class="column col-12"
-         >
+         <template v-for="tab of workspace.tabs">
             <WorkspaceQueryTab
                v-if="tab.type==='query'"
                :key="tab.uid"
@@ -161,13 +157,13 @@
             />
             <WorkspaceTableTab
                v-else-if="tab.type==='temp-data'"
-               v-show="selectedTab === tab.uid"
-               :is-selected="selectedTab === tab.uid"
+               :key="tab.uid"
                :connection="connection"
+               :is-selected="selectedTab === tab.uid"
                :table="tab.table"
                :schema="tab.schema"
             />
-         </div>
+         </template>
       </div>
       <WorkspaceEditConnectionPanel v-else :connection="connection" />
       <ModalProcessesList
