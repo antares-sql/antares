@@ -29,7 +29,7 @@ export default (connections) => {
          if (sortParams && sortParams.field && sortParams.dir)
             query.orderBy({ [sortParams.field]: sortParams.dir.toUpperCase() });
 
-         const result = await query.run({ details: true });
+         const result = await query.run({ details: true, schema });
 
          return { status: 'success', response: result };
       }

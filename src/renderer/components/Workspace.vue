@@ -91,10 +91,26 @@
                   </span>
                </a>
 
-               <a v-if="tab.type === 'temp-data'" class="tab-link">
+               <a
+                  v-if="tab.type === 'temp-data'"
+                  class="tab-link"
+                  @dblclick="openAsDataTab(tab)"
+               >
                   <i class="mdi mdi-18px mr-1" :class="workspace.breadcrumbs.table ? 'mdi-table' : 'mdi-table-eye'" />
                   <span :title="`${$t('word.data').toUpperCase()}: ${tab.table}`">
                      <span class=" text-italic">{{ tab.table }}</span>
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a v-if="tab.type === 'data'" class="tab-link">
+                  <i class="mdi mdi-18px mr-1" :class="workspace.breadcrumbs.table ? 'mdi-table' : 'mdi-table-eye'" />
+                  <span :title="`${$t('word.data').toUpperCase()}: ${tab.table}`">
+                     {{ tab.table }}
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
@@ -164,7 +180,7 @@
                :connection="connection"
             />
             <WorkspaceTableTab
-               v-else-if="tab.type==='temp-data'"
+               v-else-if="['temp-data', 'data'].includes(tab.type)"
                :key="tab.uid"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
@@ -307,14 +323,11 @@ export default {
       }),
       addQueryTab () {
          this.newTab({ uid: this.connection.uid, type: 'query' });
-
-         if (!this.hasWheelEvent) {
-            this.$refs.tabWrap.addEventListener('wheel', e => {
-               if (e.deltaY > 0) this.$refs.tabWrap.scrollLeft += 50;
-               else this.$refs.tabWrap.scrollLeft -= 50;
-            });
-            this.hasWheelEvent = true;
-         }
+         this.addWheelEvent();
+      },
+      openAsDataTab (tab) {
+         this.newTab({ uid: this.connection.uid, schema: tab.schema, table: tab.table, type: 'data' });
+         this.addWheelEvent();
       },
       closeTab (tab) {
          if (tab.type === 'query' && this.queryTabs.length === 1) return;
@@ -328,6 +341,15 @@ export default {
       },
       hideProcessesModal () {
          this.isProcessesModal = false;
+      },
+      addWheelEvent () {
+         if (!this.hasWheelEvent) {
+            this.$refs.tabWrap.addEventListener('wheel', e => {
+               if (e.deltaY > 0) this.$refs.tabWrap.scrollLeft += 50;
+               else this.$refs.tabWrap.scrollLeft -= 50;
+            });
+            this.hasWheelEvent = true;
+         }
       }
    }
 };

@@ -493,14 +493,44 @@ export default {
       },
       newTab ({ state, commit }, { uid, content, type, autorun, schema, table }) {
          let tabUid;
+         const workspaceTabs = state.workspaces.find(workspace => workspace.uid === uid);
+
          if (type === 'temp-data') {
-            const workspaceTabs = state.workspaces.find(workspace => workspace.uid === uid);
-            const tempTabs = workspaceTabs ? workspaceTabs.tabs.filter(tab => tab.type === 'temp-data') : false;
-            if (tempTabs && tempTabs.length) { // id temp table already opened
-               for (const tab of tempTabs) {
-                  commit('REPLACE_TAB', { uid, tab: tab.uid, type, schema, table });
-                  tabUid = tab.uid;
+            const existentTab = workspaceTabs
+               ? workspaceTabs.tabs.find(tab =>
+                  tab.schema === schema &&
+                  tab.table === table &&
+                  ['temp-data', 'data'].includes(tab.type))
+               : false;
+
+            if (existentTab) { // if data tab exists
+               tabUid = existentTab.uid;
+            }
+            else {
+               const tempTabs = workspaceTabs ? workspaceTabs.tabs.filter(tab => tab.type === 'temp-data') : false;
+               if (tempTabs && tempTabs.length) { // if temp table already opened
+                  for (const tab of tempTabs) {
+                     commit('REPLACE_TAB', { uid, tab: tab.uid, type, schema, table });
+                     tabUid = tab.uid;
+                  }
                }
+               else {
+                  tabUid = uidGen('T');
+                  commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, table });
+               }
+            }
+         }
+         else if (type === 'data') {
+            const existentTab = workspaceTabs
+               ? workspaceTabs.tabs.find(tab =>
+                  tab.schema === schema &&
+                  tab.table === table &&
+                  ['temp-data', 'data'].includes(tab.type))
+               : false;
+
+            if (existentTab) {
+               commit('REPLACE_TAB', { uid, tab: existentTab.uid, type, schema, table });
+               tabUid = existentTab.uid;
             }
             else {
                tabUid = uidGen('T');
