@@ -314,6 +314,8 @@ export default {
          this.changeBreadcrumbs(payload);
       },
       highlightWord (string) {
+         string = string.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
          if (this.searchTerm) {
             const regexp = new RegExp(`(${this.searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
             return string.replace(regexp, '<span class="text-primary">$1</span>');
