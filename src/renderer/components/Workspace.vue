@@ -76,7 +76,7 @@
                class="tab-item"
                :class="{'active': selectedTab === tab.uid}"
                @click="selectTab({uid: workspace.uid, tab: tab.uid})"
-               @mouseup.middle="closeTab(tab.uid)"
+               @mouseup.middle="closeTab(tab)"
             >
                <a v-if="tab.type === 'query'" class="tab-link">
                   <i class="mdi mdi-18px mdi-code-tags mr-1" />
@@ -86,13 +86,21 @@
                         v-if="queryTabs.length > 1"
                         class="btn btn-clear"
                         :title="$t('word.close')"
-                        @click.stop="closeTab(tab.uid)"
+                        @click.stop="closeTab(tab)"
                      />
                   </span>
                </a>
-               <a v-if="tab.type === 'temp-data'" class="tab-link text-italic">
+
+               <a v-if="tab.type === 'temp-data'" class="tab-link">
                   <i class="mdi mdi-18px mr-1" :class="workspace.breadcrumbs.table ? 'mdi-table' : 'mdi-table-eye'" />
-                  <span :title="`${$t('word.data').toUpperCase()}: ${tab.table}`">{{ tab.table }}</span>
+                  <span :title="`${$t('word.data').toUpperCase()}: ${tab.table}`">
+                     <span class=" text-italic">{{ tab.table }}</span>
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
                </a>
             </li>
             <li class="tab-item">
@@ -308,9 +316,12 @@ export default {
             this.hasWheelEvent = true;
          }
       },
-      closeTab (tUid) {
-         if (this.queryTabs.length === 1) return;
-         this.removeTab({ uid: this.connection.uid, tab: tUid });
+      closeTab (tab) {
+         if (tab.type === 'query' && this.queryTabs.length === 1) return;
+
+         this.removeTab({ uid: this.connection.uid, tab: tab.uid });
+         if (this.selectedTab === tab.uid && this.workspace.tabs.length)
+            this.selectTab({ uid: this.workspace.uid, tab: this.workspace.tabs[0].uid });
       },
       showProcessesModal () {
          this.isProcessesModal = true;

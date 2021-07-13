@@ -185,6 +185,12 @@ export default {
       }
    },
    watch: {
+      schema () {
+         if (this.isSelected) {
+            this.getFieldsData();
+            this.lastTable = this.table;
+         }
+      },
       table () {
          if (this.isSelected) {
             this.getFieldsData();

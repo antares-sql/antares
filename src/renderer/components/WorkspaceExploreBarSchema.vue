@@ -282,7 +282,6 @@ export default {
       },
       selectTable ({ schema, table }) {
          this.setBreadcrumbs({ schema, [table.type]: table.name });
-         // TODO: open only if not already opened
          this.newTab({ uid: this.connection.uid, table: table.name, schema: this.database.name, type: 'temp-data' });
       },
       showSchemaContext (event, schema) {

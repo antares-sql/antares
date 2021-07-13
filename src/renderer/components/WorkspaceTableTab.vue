@@ -236,6 +236,15 @@ export default {
       }
    },
    watch: {
+      schema () {
+         if (this.isSelected) {
+            this.page = 1;
+            this.sortParams = {};
+            this.getTableData();
+            this.lastTable = this.table;
+            this.$refs.queryTable.resetSort();
+         }
+      },
       table () {
          if (this.isSelected) {
             this.page = 1;

@@ -217,6 +217,23 @@ export default {
                return workspace;
          });
       },
+      REPLACE_TAB (state, { uid, tab: tUid, type, schema, table }) {
+         state.workspaces = state.workspaces.map(workspace => {
+            if (workspace.uid === uid) {
+               return {
+                  ...workspace,
+                  tabs: workspace.tabs.map(tab => {
+                     if (tab.uid === tUid)
+                        return { ...tab, type, schema, table };
+
+                     return tab;
+                  })
+               };
+            }
+            else
+               return workspace;
+         });
+      },
       SELECT_TAB (state, { uid, tab }) {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, selected_tab: tab } : workspace);
       },
@@ -475,18 +492,27 @@ export default {
          commit('SET_SEARCH_TERM', { uid: getters.getSelected, term });
       },
       newTab ({ state, commit }, { uid, content, type, autorun, schema, table }) {
+         let tabUid;
          if (type === 'temp-data') {
             const workspaceTabs = state.workspaces.find(workspace => workspace.uid === uid);
             const tempTabs = workspaceTabs ? workspaceTabs.tabs.filter(tab => tab.type === 'temp-data') : false;
-            if (tempTabs) {
-               for (const tab of tempTabs)
-                  commit('REMOVE_TAB', { uid, tab: tab.uid });// TODO: replace instead remove
+            if (tempTabs && tempTabs.length) { // id temp table already opened
+               for (const tab of tempTabs) {
+                  commit('REPLACE_TAB', { uid, tab: tab.uid, type, schema, table });
+                  tabUid = tab.uid;
+               }
+            }
+            else {
+               tabUid = uidGen('T');
+               commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, table });
             }
          }
+         else {
+            tabUid = uidGen('T');
+            commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, table });
+         }
 
-         const tab = uidGen('T');
-         commit('NEW_TAB', { uid, tab, content, type, autorun, schema, table });
-         commit('SELECT_TAB', { uid, tab });
+         commit('SELECT_TAB', { uid, tab: tabUid });
       },
       removeTab ({ commit }, payload) {
          commit('REMOVE_TAB', payload);

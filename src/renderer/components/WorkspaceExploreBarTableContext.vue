@@ -138,9 +138,6 @@ export default {
             });
 
             if (status === 'success') {
-               if (this.selectedTable.name === this.workspace.breadcrumbs.table)
-                  this.changeBreadcrumbs({ table: null });
-
                this.closeContext();
                this.$emit('reload');
             }
