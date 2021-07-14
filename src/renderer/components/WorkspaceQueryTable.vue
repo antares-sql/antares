@@ -71,6 +71,7 @@
                   :row="row"
                   :fields="fieldsObj"
                   :key-usage="keyUsage"
+                  :element-type="elementType"
                   :class="{'selected': selectedRows.includes(row._id)}"
                   @select-row="selectRow($event, row._id)"
                   @update-field="updateField($event, row)"
@@ -123,7 +124,8 @@ export default {
       results: Array,
       connUid: String,
       mode: String,
-      isSelected: Boolean
+      isSelected: Boolean,
+      elementType: { type: String, default: 'table' }
    },
    data () {
       return {

@@ -63,6 +63,12 @@
         background-color: $primary-color;
       }
     }
+
+    &.btn-clear {
+      &:hover {
+        background: rgba($light-color, 20%);
+      }
+    }
   }
 
   .modal {

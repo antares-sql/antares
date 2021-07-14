@@ -472,7 +472,8 @@ export default {
             procedure: null,
             function: null,
             scheduler: null,
-            view: null
+            view: null,
+            query: null
          };
 
          const hasLastChildren = Object.keys(lastBreadcrumbs).filter(b => b !== 'schema').some(b => lastBreadcrumbs[b]);

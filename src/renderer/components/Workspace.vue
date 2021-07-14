@@ -186,6 +186,7 @@
                :is-selected="selectedTab === tab.uid"
                :table="tab.table"
                :schema="tab.schema"
+               :element-type="tab.element"
             />
          </template>
       </div>
@@ -383,15 +384,25 @@ export default {
         flex: initial;
 
         > a {
-          padding: 0.2rem 0.8rem;
+          padding: 0.2rem 0.6rem;
           cursor: pointer;
           display: flex;
           align-items: center;
           opacity: 0.7;
           transition: opacity 0.2s;
 
+          .btn-clear {
+            margin-left: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+          }
+
           &:hover {
             opacity: 1;
+
+            .btn-clear {
+              opacity: 1;
+            }
           }
 
           &.tab-add {
@@ -410,6 +421,10 @@ export default {
 
         &.active a {
           opacity: 1;
+
+          .btn-clear {
+            opacity: 1;
+          }
         }
 
         &.tools-dropdown {

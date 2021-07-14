@@ -163,8 +163,15 @@ export default {
          return this.workspace.uid === this.selectedWorkspace;
       }
    },
+   watch: {
+      isSelected (val) {
+         if (val)
+            this.changeBreadcrumbs({ schema: this.schema, query: `Query #${this.tab.index}` });
+      }
+   },
    created () {
       this.query = this.tab.content;
+      this.changeBreadcrumbs({ schema: this.schema, query: `Query #${this.tab.index}` });
 
       window.addEventListener('keydown', this.onKey);
    },
@@ -186,7 +193,8 @@ export default {
    },
    methods: {
       ...mapActions({
-         addNotification: 'notifications/addNotification'
+         addNotification: 'notifications/addNotification',
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
       async runQuery (query) {
          if (!query || this.isQuering) return;

@@ -131,6 +131,7 @@
             :conn-uid="connection.uid"
             :is-selected="isSelected"
             mode="table"
+            :element-type="elementType"
             @update-field="updateField"
             @delete-selected="deleteSelected"
             @hard-sort="hardSort"
@@ -183,7 +184,8 @@ export default {
       connection: Object,
       isSelected: Boolean,
       table: String,
-      schema: String
+      schema: String,
+      elementType: String
    },
    data () {
       return {
@@ -261,9 +263,11 @@ export default {
          }
       },
       isSelected (val) {
-         if (val && this.lastTable !== this.table) {
-            this.getTableData();
-            this.lastTable = this.table;
+         if (val) {
+            this.changeBreadcrumbs({ schema: this.schema, [this.elementType]: this.table });
+
+            if (this.lastTable !== this.table)
+               this.getTableData();
          }
       }
    },
@@ -277,7 +281,8 @@ export default {
    },
    methods: {
       ...mapActions({
-         addNotification: 'notifications/addNotification'
+         addNotification: 'notifications/addNotification',
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
       async getTableData (sortParams) {
          if (!this.table) return;
@@ -286,6 +291,8 @@ export default {
          // if table changes clear cached values
          if (this.lastTable !== this.table)
             this.results = [];
+
+         this.lastTable = this.table;
 
          const params = {
             uid: this.connection.uid,
