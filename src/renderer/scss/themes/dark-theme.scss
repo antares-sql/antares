@@ -197,19 +197,8 @@
             color: $body-font-color-dark;
           }
 
-          & &.tools-dropdown {
-            .tab-link:focus {
-              color: $primary-color;
-            }
-
-            .menu {
-              .menu-item a {
-                &:hover {
-                  color: $primary-color;
-                  background: $bg-color-gray;
-                }
-              }
-            }
+          &.tools-dropdown {
+            background-color: $bg-color-light-dark;
           }
         }
 

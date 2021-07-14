@@ -191,6 +191,16 @@
       }
     }
 
+    .workspace-tabs {
+      .tab-block {
+        .tab-item {
+          &.tools-dropdown {
+            background-color: $body-bg;
+          }
+        }
+      }
+    }
+
     .workspace-query-results {
       .table {
         .th {

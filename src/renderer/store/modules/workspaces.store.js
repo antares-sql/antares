@@ -238,6 +238,9 @@ export default {
       SELECT_TAB (state, { uid, tab }) {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, selected_tab: tab } : workspace);
       },
+      UPDATE_TABS (state, { uid, tabs }) {
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, tabs } : workspace); ;
+      },
       SET_TAB_FIELDS (state, { cUid, tUid, fields }) {
          state.workspaces = state.workspaces.map(workspace => {
             if (workspace.uid === cUid) {
@@ -551,6 +554,9 @@ export default {
       },
       selectTab ({ commit }, payload) {
          commit('SELECT_TAB', payload);
+      },
+      updateTabs ({ commit }, payload) {
+         commit('UPDATE_TABS', payload);
       },
       setTabFields ({ commit }, payload) {
          commit('SET_TAB_FIELDS', payload);

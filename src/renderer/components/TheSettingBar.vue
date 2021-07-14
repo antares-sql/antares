@@ -8,7 +8,7 @@
             @close-context="isContext = false"
          />
          <ul class="settingbar-elements">
-            <draggable v-model="connections">
+            <Draggable v-model="connections">
                <li
                   v-for="connection in connections"
                   :key="connection.uid"
@@ -22,7 +22,7 @@
                   <i class="settingbar-element-icon dbi" :class="`dbi-${connection.client} ${getStatusBadge(connection.uid)}`" />
                   <span class="ex-tooltip-content">{{ getConnectionName(connection.uid) }}</span>
                </li>
-            </draggable>
+            </Draggable>
             <li
                class="settingbar-element btn btn-link ex-tooltip"
                :class="{'selected': 'NEW' === selectedWorkspace}"
@@ -52,13 +52,13 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import draggable from 'vuedraggable';
+import Draggable from 'vuedraggable';
 import SettingBarContext from '@/components/SettingBarContext';
 
 export default {
    name: 'TheSettingBar',
    components: {
-      draggable,
+      Draggable,
       SettingBarContext
    },
    data () {

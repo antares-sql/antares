@@ -6,12 +6,88 @@
          :is-selected="isSelected"
       />
       <div v-if="workspace.connection_status === 'connected'" class="workspace-tabs column columns col-gapless">
-         <ul
-            id="tabWrap"
+         <Draggable
             ref="tabWrap"
+            v-model="draggableTabs"
+            tag="ul"
+            group="tabs"
             class="tab tab-block column col-12"
+            draggable=".tab-draggable"
+            @mouseover.native="addWheelEvent"
          >
-            <li class="tab-item dropdown tools-dropdown">
+            <!-- <li
+               v-if="schemaChild && isSettingSupported"
+               class="tab-item"
+               :class="{'active': selectedTab === 'prop'}"
+               @click="selectTab({uid: workspace.uid, tab: 'prop'})"
+            >
+               <a class="tab-link">
+                  <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
+                  <span :title="schemaChild">{{ $t('word.settings').toUpperCase() }}: {{ schemaChild }}</span>
+               </a>
+            </li>
+            <li
+               v-if="workspace.breadcrumbs.table || workspace.breadcrumbs.view"
+               class="tab-item"
+               :class="{'active': selectedTab === 'data'}"
+               @click="selectTab({uid: workspace.uid, tab: 'data'})"
+            >
+               <a class="tab-link">
+                  <i class="mdi mdi-18px mr-1" :class="workspace.breadcrumbs.table ? 'mdi-table' : 'mdi-table-eye'" />
+                  <span :title="schemaChild">{{ $t('word.data').toUpperCase() }}: {{ schemaChild }}</span>
+               </a>
+            </li> -->
+            <li
+               v-for="(tab, i) of draggableTabs"
+               :key="i"
+               class="tab-item tab-draggable"
+               draggable="true"
+               :class="{'active': selectedTab === tab.uid}"
+               @click="selectTab({uid: workspace.uid, tab: tab.uid})"
+               @mouseup.middle="closeTab(tab)"
+            >
+               <a v-if="tab.type === 'query'" class="tab-link">
+                  <i class="mdi mdi-18px mdi-code-tags mr-1" />
+                  <span>
+                     Query #{{ tab.index }}
+                     <span
+                        v-if="queryTabs.length > 1"
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a
+                  v-else-if="tab.type === 'temp-data'"
+                  class="tab-link"
+                  @dblclick="openAsDataTab(tab)"
+               >
+                  <i class="mdi mdi-18px mr-1" :class="tab.element === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
+                  <span :title="`${$t('word.data').toUpperCase()}: ${tab.table}`">
+                     <span class=" text-italic">{{ tab.table }}</span>
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a v-else-if="tab.type === 'data'" class="tab-link">
+                  <i class="mdi mdi-18px mr-1" :class="tab.element === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
+                  <span :title="`${$t('word.data').toUpperCase()}: ${tab.table}`">
+                     {{ tab.table }}
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+            </li>
+            <li slot="header" class="tab-item dropdown tools-dropdown">
                <a
                   class="tab-link workspace-tools-link dropdown-toggle"
                   tabindex="0"
@@ -48,78 +124,7 @@
                   </li>
                </ul>
             </li>
-            <!-- <li
-               v-if="schemaChild && isSettingSupported"
-               class="tab-item"
-               :class="{'active': selectedTab === 'prop'}"
-               @click="selectTab({uid: workspace.uid, tab: 'prop'})"
-            >
-               <a class="tab-link">
-                  <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
-                  <span :title="schemaChild">{{ $t('word.settings').toUpperCase() }}: {{ schemaChild }}</span>
-               </a>
-            </li>
-            <li
-               v-if="workspace.breadcrumbs.table || workspace.breadcrumbs.view"
-               class="tab-item"
-               :class="{'active': selectedTab === 'data'}"
-               @click="selectTab({uid: workspace.uid, tab: 'data'})"
-            >
-               <a class="tab-link">
-                  <i class="mdi mdi-18px mr-1" :class="workspace.breadcrumbs.table ? 'mdi-table' : 'mdi-table-eye'" />
-                  <span :title="schemaChild">{{ $t('word.data').toUpperCase() }}: {{ schemaChild }}</span>
-               </a>
-            </li> -->
-            <li
-               v-for="tab of workspace.tabs"
-               :key="tab.uid"
-               class="tab-item"
-               :class="{'active': selectedTab === tab.uid}"
-               @click="selectTab({uid: workspace.uid, tab: tab.uid})"
-               @mouseup.middle="closeTab(tab)"
-            >
-               <a v-if="tab.type === 'query'" class="tab-link">
-                  <i class="mdi mdi-18px mdi-code-tags mr-1" />
-                  <span>
-                     Query #{{ tab.index }}
-                     <span
-                        v-if="queryTabs.length > 1"
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
-
-               <a
-                  v-if="tab.type === 'temp-data'"
-                  class="tab-link"
-                  @dblclick="openAsDataTab(tab)"
-               >
-                  <i class="mdi mdi-18px mr-1" :class="tab.element === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
-                  <span :title="`${$t('word.data').toUpperCase()}: ${tab.table}`">
-                     <span class=" text-italic">{{ tab.table }}</span>
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
-
-               <a v-if="tab.type === 'data'" class="tab-link">
-                  <i class="mdi mdi-18px mr-1" :class="tab.element === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
-                  <span :title="`${$t('word.data').toUpperCase()}: ${tab.table}`">
-                     {{ tab.table }}
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
-            </li>
-            <li class="tab-item">
+            <li slot="footer" class="tab-item">
                <a
                   class="tab-add"
                   :title="$t('message.openNewTab')"
@@ -128,7 +133,7 @@
                   <i class="mdi mdi-24px mdi-plus" />
                </a>
             </li>
-         </ul>
+         </Draggable>
          <!-- <WorkspacePropsTab
             v-show="selectedTab === 'prop' && workspace.breadcrumbs.table"
             :is-selected="selectedTab === 'prop'"
@@ -201,6 +206,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import Draggable from 'vuedraggable';
 import Connection from '@/ipc-api/Connection';
 import WorkspaceExploreBar from '@/components/WorkspaceExploreBar';
 import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPanel';
@@ -218,6 +224,7 @@ import ModalProcessesList from '@/components/ModalProcessesList';
 export default {
    name: 'Workspace',
    components: {
+      Draggable,
       WorkspaceExploreBar,
       WorkspaceEditConnectionPanel,
       WorkspaceQueryTab,
@@ -247,6 +254,14 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
+      },
+      draggableTabs: {
+         get () {
+            return this.workspace.tabs;
+         },
+         set (val) {
+            this.updateTabs({ uid: this.connection.uid, tabs: val });
+         }
       },
       isSelected () {
          return this.selectedWorkspace === this.connection.uid;
@@ -305,14 +320,6 @@ export default {
       if (isInitiated)
          this.connectWorkspace(this.connection);
    },
-   mounted () {
-      if (this.$refs.tabWrap) {
-         this.$refs.tabWrap.addEventListener('wheel', e => {
-            if (e.deltaY > 0) this.$refs.tabWrap.scrollLeft += 50;
-            else this.$refs.tabWrap.scrollLeft -= 50;
-         });
-      }
-   },
    methods: {
       ...mapActions({
          addWorkspace: 'workspaces/addWorkspace',
@@ -320,15 +327,14 @@ export default {
          removeConnected: 'workspaces/removeConnected',
          selectTab: 'workspaces/selectTab',
          newTab: 'workspaces/newTab',
-         removeTab: 'workspaces/removeTab'
+         removeTab: 'workspaces/removeTab',
+         updateTabs: 'workspaces/updateTabs'
       }),
       addQueryTab () {
          this.newTab({ uid: this.connection.uid, type: 'query' });
-         this.addWheelEvent();
       },
       openAsDataTab (tab) {
          this.newTab({ uid: this.connection.uid, schema: tab.schema, table: tab.table, type: 'data', element: tab.element });
-         this.addWheelEvent();
       },
       closeTab (tab) {
          if (tab.type === 'query' && this.queryTabs.length === 1) return;
@@ -345,9 +351,9 @@ export default {
       },
       addWheelEvent () {
          if (!this.hasWheelEvent) {
-            this.$refs.tabWrap.addEventListener('wheel', e => {
-               if (e.deltaY > 0) this.$refs.tabWrap.scrollLeft += 50;
-               else this.$refs.tabWrap.scrollLeft -= 50;
+            this.$refs.tabWrap.$el.addEventListener('wheel', e => {
+               if (e.deltaY > 0) this.$refs.tabWrap.$el.scrollLeft += 50;
+               else this.$refs.tabWrap.$el.scrollLeft -= 50;
             });
             this.hasWheelEvent = true;
          }
@@ -428,6 +434,8 @@ export default {
         }
 
         &.tools-dropdown {
+          height: 34px;
+
           .tab-link:focus {
             opacity: 1;
             outline: 0;
