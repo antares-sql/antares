@@ -282,11 +282,11 @@ export default {
          this.changeBreadcrumbs({ schema, table: null });
       },
       selectTable ({ schema, table }) {
-         this.newTab({ uid: this.connection.uid, table: table.name, schema: this.database.name, type: 'temp-data' });
+         this.newTab({ uid: this.connection.uid, table: table.name, schema: this.database.name, type: 'temp-data', element: table.type });
          this.setBreadcrumbs({ schema, [table.type]: table.name });
       },
       openDataTab ({ schema, table }) {
-         this.newTab({ uid: this.connection.uid, table: table.name, schema: this.database.name, type: 'data' });
+         this.newTab({ uid: this.connection.uid, table: table.name, schema: this.database.name, type: 'data', element: table.type });
          this.setBreadcrumbs({ schema, [table.type]: table.name });
       },
       showSchemaContext (event, schema) {

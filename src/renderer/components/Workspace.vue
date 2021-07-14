@@ -96,7 +96,7 @@
                   class="tab-link"
                   @dblclick="openAsDataTab(tab)"
                >
-                  <i class="mdi mdi-18px mr-1" :class="workspace.breadcrumbs.table ? 'mdi-table' : 'mdi-table-eye'" />
+                  <i class="mdi mdi-18px mr-1" :class="tab.element === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
                   <span :title="`${$t('word.data').toUpperCase()}: ${tab.table}`">
                      <span class=" text-italic">{{ tab.table }}</span>
                      <span
@@ -108,7 +108,7 @@
                </a>
 
                <a v-if="tab.type === 'data'" class="tab-link">
-                  <i class="mdi mdi-18px mr-1" :class="workspace.breadcrumbs.table ? 'mdi-table' : 'mdi-table-eye'" />
+                  <i class="mdi mdi-18px mr-1" :class="tab.element === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
                   <span :title="`${$t('word.data').toUpperCase()}: ${tab.table}`">
                      {{ tab.table }}
                      <span
@@ -326,7 +326,7 @@ export default {
          this.addWheelEvent();
       },
       openAsDataTab (tab) {
-         this.newTab({ uid: this.connection.uid, schema: tab.schema, table: tab.table, type: 'data' });
+         this.newTab({ uid: this.connection.uid, schema: tab.schema, table: tab.table, type: 'data', element: tab.element });
          this.addWheelEvent();
       },
       closeTab (tab) {

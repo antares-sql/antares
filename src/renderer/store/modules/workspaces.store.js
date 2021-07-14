@@ -178,7 +178,7 @@ export default {
             }
             : workspace);
       },
-      NEW_TAB (state, { uid, tab, content, type, autorun, schema, table }) {
+      NEW_TAB (state, { uid, tab, content, type, autorun, schema, table, element }) {
          if (type === 'query')
             tabIndex[uid] = tabIndex[uid] ? ++tabIndex[uid] : 1;
 
@@ -189,6 +189,7 @@ export default {
             type,
             schema,
             table,
+            element,
             fields: [],
             keyUsage: [],
             content: content || '',
@@ -217,14 +218,14 @@ export default {
                return workspace;
          });
       },
-      REPLACE_TAB (state, { uid, tab: tUid, type, schema, table }) {
+      REPLACE_TAB (state, { uid, tab: tUid, type, schema, table, element }) {
          state.workspaces = state.workspaces.map(workspace => {
             if (workspace.uid === uid) {
                return {
                   ...workspace,
                   tabs: workspace.tabs.map(tab => {
                      if (tab.uid === tUid)
-                        return { ...tab, type, schema, table };
+                        return { ...tab, type, schema, table, element };
 
                      return tab;
                   })
@@ -491,7 +492,7 @@ export default {
       setSearchTerm ({ commit, getters }, term) {
          commit('SET_SEARCH_TERM', { uid: getters.getSelected, term });
       },
-      newTab ({ state, commit }, { uid, content, type, autorun, schema, table }) {
+      newTab ({ state, commit }, { uid, content, type, autorun, schema, table, element }) {
          let tabUid;
          const workspaceTabs = state.workspaces.find(workspace => workspace.uid === uid);
 
@@ -510,13 +511,13 @@ export default {
                const tempTabs = workspaceTabs ? workspaceTabs.tabs.filter(tab => tab.type === 'temp-data') : false;
                if (tempTabs && tempTabs.length) { // if temp table already opened
                   for (const tab of tempTabs) {
-                     commit('REPLACE_TAB', { uid, tab: tab.uid, type, schema, table });
+                     commit('REPLACE_TAB', { uid, tab: tab.uid, type, schema, table, element });
                      tabUid = tab.uid;
                   }
                }
                else {
                   tabUid = uidGen('T');
-                  commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, table });
+                  commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, table, element });
                }
             }
          }
@@ -529,7 +530,7 @@ export default {
                : false;
 
             if (existentTab) {
-               commit('REPLACE_TAB', { uid, tab: existentTab.uid, type, schema, table });
+               commit('REPLACE_TAB', { uid, tab: existentTab.uid, type, schema, table, element });
                tabUid = existentTab.uid;
             }
             else {
