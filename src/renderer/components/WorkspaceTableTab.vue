@@ -115,8 +115,8 @@
                <div v-if="hasApproximately || (page > 1 && tableInfo.rows)">
                   {{ $t('word.total') }}: <b>{{ tableInfo.rows | localeString }}</b> <small>({{ $t('word.approximately') }})</small>
                </div>
-               <div v-if="workspace.breadcrumbs.database">
-                  {{ $t('word.schema') }}: <b>{{ workspace.breadcrumbs.database }}</b>
+               <div class="d-flex" :title="$t('word.schema')">
+                  <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
                </div>
             </div>
          </div>
