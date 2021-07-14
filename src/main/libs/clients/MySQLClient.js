@@ -1419,7 +1419,7 @@ export class MySQLClient extends AntaresCore {
                         name: field.orgName,
                         alias: field.name,
                         orgName: field.orgName,
-                        schema: field.schema || args.schema,
+                        schema: args.schema || field.schema,
                         table: field.table,
                         tableAlias: field.table,
                         orgTable: field.orgTable,
