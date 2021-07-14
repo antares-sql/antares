@@ -1280,7 +1280,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async duplicateTable (params) {
-      const sql = `CREATE TABLE \`${this._schema}\`.\`${params.table}_copy\` LIKE \`${this._schema}\`.\`${params.table}\``;
+      const sql = `CREATE TABLE \`${params.schema}\`.\`${params.table}_copy\` LIKE \`${params.schema}\`.\`${params.table}\``;
       return await this.raw(sql);
    }
 
@@ -1291,7 +1291,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async truncateTable (params) {
-      const sql = `TRUNCATE TABLE \`${this._schema}\`.\`${params.table}\``;
+      const sql = `TRUNCATE TABLE \`${params.schema}\`.\`${params.table}\``;
       return await this.raw(sql);
    }
 
@@ -1302,7 +1302,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async dropTable (params) {
-      const sql = `DROP TABLE \`${this._schema}\`.\`${params.table}\``;
+      const sql = `DROP TABLE \`${params.schema}\`.\`${params.table}\``;
       return await this.raw(sql);
    }
 

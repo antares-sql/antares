@@ -100,7 +100,7 @@
       />
       <DatabaseContext
          v-if="isDatabaseContext"
-         :selected-database="selectedDatabase"
+         :selected-schema="selectedSchema"
          :context-event="databaseContextEvent"
          @close-context="closeDatabaseContext"
          @show-create-table-modal="showCreateTableModal"
@@ -114,6 +114,7 @@
       />
       <TableContext
          v-if="isTableContext"
+         :selected-schema="selectedSchema"
          :selected-table="selectedTable"
          :context-event="tableContextEvent"
          @close-context="closeTableContext"
@@ -211,7 +212,7 @@ export default {
          tableContextEvent: null,
          miscContextEvent: null,
 
-         selectedDatabase: '',
+         selectedSchema: '',
          selectedTable: null,
          selectedMisc: null,
          searchTerm: ''
@@ -315,14 +316,14 @@ export default {
 
          if (status === 'success') {
             await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedDatabase, table: payload.name });
+            this.changeBreadcrumbs({ schema: this.selectedSchema, table: payload.name });
             this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
          }
          else
             this.addNotification({ status: 'error', message: response });
       },
       openSchemaContext (payload) {
-         this.selectedDatabase = payload.schema;
+         this.selectedSchema = payload.schema;
          this.databaseContextEvent = payload.event;
          this.isDatabaseContext = true;
       },
@@ -331,6 +332,7 @@ export default {
       },
       openTableContext (payload) {
          this.selectedTable = payload.table;
+         this.selectedSchema = payload.schema;
          this.tableContextEvent = payload.event;
          this.isTableContext = true;
       },
@@ -371,7 +373,7 @@ export default {
 
          if (status === 'success') {
             await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedDatabase, view: payload.name });
+            this.changeBreadcrumbs({ schema: this.selectedSchema, view: payload.name });
             this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
          }
          else
@@ -396,7 +398,7 @@ export default {
          if (status === 'success') {
             await this.refresh();
             const triggerName = this.customizations.triggerTableInName ? `${payload.table}.${payload.name}` : payload.name;
-            this.changeBreadcrumbs({ schema: this.selectedDatabase, trigger: triggerName });
+            this.changeBreadcrumbs({ schema: this.selectedSchema, trigger: triggerName });
             this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
          }
          else
@@ -420,7 +422,7 @@ export default {
 
          if (status === 'success') {
             await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedDatabase, procedure: payload.name });
+            this.changeBreadcrumbs({ schema: this.selectedSchema, procedure: payload.name });
             this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
          }
          else
@@ -460,7 +462,7 @@ export default {
 
          if (status === 'success') {
             await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedDatabase, function: payload.name });
+            this.changeBreadcrumbs({ schema: this.selectedSchema, function: payload.name });
             this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
          }
          else
@@ -476,7 +478,7 @@ export default {
 
          if (status === 'success') {
             await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedDatabase, triggerFunction: payload.name });
+            this.changeBreadcrumbs({ schema: this.selectedSchema, triggerFunction: payload.name });
             this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
          }
          else
@@ -492,7 +494,7 @@ export default {
 
          if (status === 'success') {
             await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedDatabase, scheduler: payload.name });
+            this.changeBreadcrumbs({ schema: this.selectedSchema, scheduler: payload.name });
             this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
          }
          else

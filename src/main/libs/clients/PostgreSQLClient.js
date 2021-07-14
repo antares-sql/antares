@@ -1157,7 +1157,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async duplicateTable (params) {
-      const sql = `CREATE TABLE ${this._schema}.${params.table}_copy (LIKE ${this._schema}.${params.table} INCLUDING ALL)`;
+      const sql = `CREATE TABLE ${params.schema}.${params.table}_copy (LIKE ${params.schema}.${params.table} INCLUDING ALL)`;
       return await this.raw(sql);
    }
 
@@ -1168,7 +1168,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async truncateTable (params) {
-      const sql = `TRUNCATE TABLE ${this._schema}.${params.table}`;
+      const sql = `TRUNCATE TABLE ${params.schema}.${params.table}`;
       return await this.raw(sql);
    }
 
@@ -1179,7 +1179,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async dropTable (params) {
-      const sql = `DROP TABLE ${this._schema}.${params.table}`;
+      const sql = `DROP TABLE ${params.schema}.${params.table}`;
       return await this.raw(sql);
    }
 

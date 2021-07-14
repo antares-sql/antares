@@ -295,7 +295,7 @@ export default {
       },
       showTableContext (event, table) {
          // this.setBreadcrumbs({ schema: this.database.name, [table.type]: table.name });
-         this.$emit('show-table-context', { event, table });
+         this.$emit('show-table-context', { event, schema: this.database.name, table });
       },
       showMiscContext (event, misc) {
          this.setBreadcrumbs({ schema: this.database.name, [misc.type]: misc.name });

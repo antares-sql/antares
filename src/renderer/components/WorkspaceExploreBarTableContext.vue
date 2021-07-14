@@ -72,7 +72,8 @@ export default {
    },
    props: {
       contextEvent: MouseEvent,
-      selectedTable: Object
+      selectedTable: Object,
+      selectedSchema: String
    },
    data () {
       return {
@@ -116,7 +117,8 @@ export default {
          try {
             const { status, response } = await Tables.duplicateTable({
                uid: this.selectedWorkspace,
-               table: this.selectedTable.name
+               table: this.selectedTable.name,
+               schema: this.selectedSchema
             });
 
             if (status === 'success') {
@@ -134,7 +136,8 @@ export default {
          try {
             const { status, response } = await Tables.truncateTable({
                uid: this.selectedWorkspace,
-               table: this.selectedTable.name
+               table: this.selectedTable.name,
+               schema: this.selectedSchema
             });
 
             if (status === 'success') {
@@ -155,13 +158,15 @@ export default {
             if (this.selectedTable.type === 'table') {
                res = await Tables.dropTable({
                   uid: this.selectedWorkspace,
-                  table: this.selectedTable.name
+                  table: this.selectedTable.name,
+                  schema: this.selectedSchema
                });
             }
             else if (this.selectedTable.type === 'view') {
                res = await Views.dropView({
                   uid: this.selectedWorkspace,
-                  view: this.selectedTable.name
+                  view: this.selectedTable.name,
+                  schema: this.selectedSchema
                });
             }
 
