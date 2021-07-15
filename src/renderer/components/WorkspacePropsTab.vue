@@ -1,5 +1,5 @@
 <template>
-   <div class="workspace-query-tab column col-12 columns col-gapless">
+   <div v-show="isSelected" class="workspace-query-tab column col-12 columns col-gapless">
       <div class="workspace-query-runner column col-12">
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
@@ -49,6 +49,11 @@
                   <i class="mdi mdi-24px mdi-cogs mr-1" />
                   <span>{{ $t('word.options') }}</span>
                </button>
+            </div>
+            <div class="workspace-query-info">
+               <div class="d-flex" :title="$t('word.schema')">
+                  <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
+               </div>
             </div>
          </div>
       </div>
@@ -126,11 +131,13 @@ export default {
    },
    props: {
       connection: Object,
-      table: String
+      isSelected: Boolean,
+      table: String,
+      schema: String
    },
    data () {
       return {
-         tabUid: 'prop',
+         tabUid: 'prop', // ???
          isLoading: false,
          isSaving: false,
          isOptionsModal: false,
@@ -164,12 +171,6 @@ export default {
       defaultEngine () {
          return this.getDatabaseVariable(this.connection.uid, 'default_storage_engine').value || '';
       },
-      isSelected () {
-         return this.workspace.selected_tab === 'prop' && this.selectedWorkspace === this.workspace.uid && this.table;
-      },
-      schema () {
-         return this.workspace.breadcrumbs.schema;
-      },
       schemaTables () {
          const schemaTables = this.workspace.structure
             .filter(schema => schema.name === this.schema)
@@ -198,9 +199,11 @@ export default {
          }
       },
       isSelected (val) {
-         if (val && this.lastTable !== this.table) {
-            this.getFieldsData();
-            this.lastTable = this.table;
+         if (val) {
+            this.changeBreadcrumbs({ schema: this.schema, table: this.table });
+
+            if (this.lastTable !== this.table)
+               this.getFieldsData();
          }
       },
       isChanged (val) {
@@ -209,6 +212,7 @@ export default {
       }
    },
    created () {
+      this.getFieldsData();
       window.addEventListener('keydown', this.onKey);
    },
    beforeDestroy () {
@@ -219,12 +223,14 @@ export default {
          addNotification: 'notifications/addNotification',
          refreshStructure: 'workspaces/refreshStructure',
          setUnsavedChanges: 'workspaces/setUnsavedChanges',
+         newTab: 'workspaces/newTab',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
       async getFieldsData () {
          if (!this.table) return;
 
          this.localFields = [];
+         this.lastTable = this.table;
          this.newFieldsCounter = 0;
          this.isLoading = true;
          this.localOptions = JSON.parse(JSON.stringify(this.tableOptions));
@@ -435,6 +441,7 @@ export default {
 
                if (oldName !== this.localOptions.name) {
                   this.setUnsavedChanges(false);
+                  this.newTab({ uid: this.connection.uid, schema: this.schema, table: this.localOptions.name, type: 'table-props' });// TODO: rename function that gets new and old name and change it on all opened tables
                   this.changeBreadcrumbs({ schema: this.schema, table: this.localOptions.name });
                }
 

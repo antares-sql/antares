@@ -86,6 +86,18 @@
                      />
                   </span>
                </a>
+
+               <a v-else-if="tab.type === 'table-props'" class="tab-link">
+                  <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.table}`">
+                     {{ tab.table }}
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
             </li>
             <li slot="header" class="tab-item dropdown tools-dropdown">
                <a
@@ -134,12 +146,7 @@
                </a>
             </li>
          </Draggable>
-         <!-- <WorkspacePropsTab
-            v-show="selectedTab === 'prop' && workspace.breadcrumbs.table"
-            :is-selected="selectedTab === 'prop'"
-            :connection="connection"
-            :table="workspace.breadcrumbs.table"
-         />
+         <!--
          <WorkspacePropsTabView
             v-show="selectedTab === 'prop' && workspace.breadcrumbs.view"
             :is-selected="selectedTab === 'prop'"
@@ -193,6 +200,14 @@
                :schema="tab.schema"
                :element-type="tab.element"
             />
+            <WorkspacePropsTab
+               v-else-if="tab.type === 'table-props'"
+               :key="tab.uid"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
+               :table="tab.table"
+               :schema="tab.schema"
+            />
          </template>
       </div>
       <WorkspaceEditConnectionPanel v-else :connection="connection" />
@@ -212,7 +227,7 @@ import WorkspaceExploreBar from '@/components/WorkspaceExploreBar';
 import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPanel';
 import WorkspaceQueryTab from '@/components/WorkspaceQueryTab';
 import WorkspaceTableTab from '@/components/WorkspaceTableTab';
-// import WorkspacePropsTab from '@/components/WorkspacePropsTab';
+import WorkspacePropsTab from '@/components/WorkspacePropsTab';
 // import WorkspacePropsTabView from '@/components/WorkspacePropsTabView';
 // import WorkspacePropsTabTrigger from '@/components/WorkspacePropsTabTrigger';
 // import WorkspacePropsTabRoutine from '@/components/WorkspacePropsTabRoutine';
@@ -229,7 +244,7 @@ export default {
       WorkspaceEditConnectionPanel,
       WorkspaceQueryTab,
       WorkspaceTableTab,
-      // WorkspacePropsTab,
+      WorkspacePropsTab,
       // WorkspacePropsTabView,
       // WorkspacePropsTabTrigger,
       // WorkspacePropsTabRoutine,

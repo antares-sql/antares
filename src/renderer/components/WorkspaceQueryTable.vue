@@ -228,6 +228,9 @@ export default {
       },
       resultsetIndex () {
          this.setLocalResults();
+      },
+      isSelected (val) {
+         if (val) this.refreshScroller();
       }
    },
    updated () {

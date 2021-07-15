@@ -542,6 +542,23 @@ export default {
                commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, table });
             }
          }
+         else if (type === 'table-props') {
+            const existentTab = workspaceTabs
+               ? workspaceTabs.tabs.find(tab =>
+                  tab.schema === schema &&
+                  tab.table === table &&
+                  tab.type === type)
+               : false;
+
+            if (existentTab) {
+               commit('REPLACE_TAB', { uid, tab: existentTab.uid, type, schema, table, element });
+               tabUid = existentTab.uid;
+            }
+            else {
+               tabUid = uidGen('T');
+               commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, table });
+            }
+         }
          else {
             tabUid = uidGen('T');
             commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, table });
