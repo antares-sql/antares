@@ -8,19 +8,23 @@
             @close-context="isContext = false"
          />
          <ul class="settingbar-elements">
-            <Draggable v-model="connections">
+            <Draggable
+               v-model="connections"
+               @start="isDragging = true"
+               @end="dragStop"
+            >
                <li
                   v-for="connection in connections"
                   :key="connection.uid"
                   draggable="true"
                   class="settingbar-element btn btn-link ex-tooltip"
                   :class="{'selected': connection.uid === selectedWorkspace}"
-                  @click="selectWorkspace(connection.uid)"
+                  @click.stop="selectWorkspace(connection.uid)"
                   @contextmenu.prevent="contextMenu($event, connection)"
                   @mouseover.self="tooltipPosition"
                >
                   <i class="settingbar-element-icon dbi" :class="`dbi-${connection.client} ${getStatusBadge(connection.uid)}`" />
-                  <span class="ex-tooltip-content">{{ getConnectionName(connection.uid) }}</span>
+                  <span v-if="!isDragging" class="ex-tooltip-content">{{ getConnectionName(connection.uid) }}</span>
                </li>
             </Draggable>
             <li
@@ -65,6 +69,7 @@ export default {
       return {
          dragElement: null,
          isContext: false,
+         isDragging: false,
          contextEvent: null,
          contextConnection: {},
          scale: 0
@@ -106,7 +111,7 @@ export default {
          return connection.ask ? '' : `${connection.user + '@'}${connection.host}:${connection.port}`;
       },
       tooltipPosition (e) {
-         const el = e.target;
+         const el = e.target ? e.target : e;
          const fromTop = window.pageYOffset + el.getBoundingClientRect().top - (el.offsetHeight / 4);
          el.querySelector('.ex-tooltip-content').style.top = `${fromTop}px`;
       },
@@ -125,6 +130,13 @@ export default {
                   return '';
             }
          }
+      },
+      dragStop (e) {
+         this.isDragging = false;
+
+         setTimeout(() => {
+            this.tooltipPosition(e.originalEvent.target.parentNode);
+         }, 200);
       }
    }
 };
@@ -235,7 +247,13 @@ export default {
       transition: opacity 0.2s;
     }
 
-    &:hover .ex-tooltip-content {
+    &.sortable-chosen {
+      .ex-tooltip-content {
+        opacity: 0 !important;
+      }
+    }
+
+    &:hover:not(.selected) .ex-tooltip-content {
       visibility: visible;
       opacity: 1;
     }

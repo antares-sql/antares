@@ -239,7 +239,7 @@ export default {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, selected_tab: tab } : workspace);
       },
       UPDATE_TABS (state, { uid, tabs }) {
-         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, tabs } : workspace); ;
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, tabs } : workspace);
       },
       SET_TAB_FIELDS (state, { cUid, tUid, fields }) {
          state.workspaces = state.workspaces.map(workspace => {
