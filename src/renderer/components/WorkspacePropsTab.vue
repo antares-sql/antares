@@ -137,7 +137,6 @@ export default {
    },
    data () {
       return {
-         tabUid: 'prop', // ???
          isLoading: false,
          isSaving: false,
          isOptionsModal: false,
@@ -163,6 +162,9 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
+      },
+      tabUid () {
+         return this.$vnode.key;
       },
       tableOptions () {
          const db = this.workspace.structure.find(db => db.name === this.schema);
@@ -207,8 +209,7 @@ export default {
          }
       },
       isChanged (val) {
-         if (this.isSelected && this.lastTable === this.table && this.table !== null)
-            this.setUnsavedChanges(val);
+         this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: val });
       }
    },
    created () {

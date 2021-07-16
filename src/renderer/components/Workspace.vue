@@ -87,7 +87,11 @@
                   </span>
                </a>
 
-               <a v-else-if="tab.type === 'table-props'" class="tab-link">
+               <a
+                  v-else-if="tab.type === 'table-props'"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+               >
                   <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
                   <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
                      {{ tab.elementName }}
@@ -99,7 +103,11 @@
                   </span>
                </a>
 
-               <a v-else-if="tab.type === 'view-props'" class="tab-link">
+               <a
+                  v-else-if="tab.type === 'view-props'"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+               >
                   <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
                   <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
                      {{ tab.elementName }}
@@ -230,6 +238,12 @@
          :connection="connection"
          @close="hideProcessesModal"
       />
+
+      <ModalDiscardChanges
+         v-if="unsavedTab"
+         @confirm="closeTab(unsavedTab, true)"
+         @close="unsavedTab = null"
+      />
    </div>
 </template>
 
@@ -249,6 +263,7 @@ import WorkspacePropsTabView from '@/components/WorkspacePropsTabView';
 // import WorkspacePropsTabTriggerFunction from '@/components/WorkspacePropsTabTriggerFunction';
 // import WorkspacePropsTabScheduler from '@/components/WorkspacePropsTabScheduler';
 import ModalProcessesList from '@/components/ModalProcessesList';
+import ModalDiscardChanges from '@/components/ModalDiscardChanges';
 
 export default {
    name: 'Workspace',
@@ -265,7 +280,8 @@ export default {
       // WorkspacePropsTabFunction,
       // WorkspacePropsTabTriggerFunction,
       // WorkspacePropsTabScheduler,
-      ModalProcessesList
+      ModalProcessesList,
+      ModalDiscardChanges
    },
    props: {
       connection: Object
@@ -273,7 +289,8 @@ export default {
    data () {
       return {
          hasWheelEvent: false,
-         isProcessesModal: false
+         isProcessesModal: false,
+         unsavedTab: null
       };
    },
    computed: {
@@ -365,8 +382,13 @@ export default {
       openAsDataTab (tab) {
          this.newTab({ uid: this.connection.uid, schema: tab.schema, elementName: tab.elementName, type: 'data', elementType: tab.elementType });
       },
-      closeTab (tab) {
+      closeTab (tab, force) {
+         this.unsavedTab = null;
          if (tab.type === 'query' && this.queryTabs.length === 1) return;
+         if (!force && tab.isChanged) {
+            this.unsavedTab = tab;
+            return;
+         }
 
          this.removeTab({ uid: this.connection.uid, tab: tab.uid });
          if (this.selectedTab === tab.uid && this.workspace.tabs.length)
@@ -425,6 +447,12 @@ export default {
           align-items: center;
           opacity: 0.7;
           transition: opacity 0.2s;
+
+          &.badge::after {
+            position: absolute;
+            right: 35px;
+            top: 25px;
+          }
 
           .btn-clear {
             margin-left: 0.5rem;

@@ -2,8 +2,8 @@
    <ConfirmModal
       :confirm-text="$t('word.discard')"
       :cancel-text="$t('word.stay')"
-      @confirm="discardUnsavedChanges"
-      @hide="closeUnsavedChangesModal"
+      @confirm="$emit('confirm')"
+      @hide="$emit('close')"
    >
       <template slot="header">
          <div class="d-flex">
@@ -19,7 +19,6 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
 import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
@@ -34,13 +33,6 @@ export default {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
-      ...mapActions({
-         discardUnsavedChanges: 'workspaces/discardUnsavedChanges',
-         closeUnsavedChangesModal: 'workspaces/closeUnsavedChangesModal'
-      }),
-      closeModal () {
-         this.$emit('close');
-      },
       onKey (e) {
          e.stopPropagation();
          if (e.key === 'Escape')

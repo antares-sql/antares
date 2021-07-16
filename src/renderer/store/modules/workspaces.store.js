@@ -11,10 +11,7 @@ export default {
    strict: true,
    state: {
       workspaces: [],
-      selected_workspace: null,
-      has_unsaved_changes: false,
-      is_unsaved_discard_modal: false,
-      pending_breadcrumbs: {}
+      selected_workspace: null
    },
    getters: {
       getSelected: state => {
@@ -45,9 +42,6 @@ export default {
       },
       getSearchTerm: state => uid => {
          return state.workspaces.find(workspace => workspace.uid === uid).search_term;
-      },
-      isUnsavedDiscardModal: state => {
-         return state.is_unsaved_discard_modal;
       }
    },
    mutations: {
@@ -296,12 +290,26 @@ export default {
                return workspace;
          });
       },
-      SET_UNSAVED_CHANGES (state, val) {
-         state.has_unsaved_changes = !!val;
+      SET_UNSAVED_CHANGES (state, { uid, tUid, isChanged }) {
+         state.workspaces = state.workspaces.map(workspace => {
+            if (workspace.uid === uid) {
+               return {
+                  ...workspace,
+                  tabs: workspace.tabs.map(tab => {
+                     if (tab.uid === tUid)
+                        return { ...tab, isChanged };
+
+                     return tab;
+                  })
+               };
+            }
+            else
+               return workspace;
+         });
       },
-      SET_UNSAVED_DISCARD_MODAL (state, val) {
-         state.is_unsaved_discard_modal = !!val;
-      },
+      // SET_UNSAVED_DISCARD_MODAL (state, val) {
+      //    state.is_unsaved_discard_modal = !!val;
+      // },
       SET_PENDING_BREADCRUMBS (state, payload) {
          state.pending_breadcrumbs = payload;
       },
@@ -483,11 +491,11 @@ export default {
          dispatch('setUnsavedChanges', false);
       },
       changeBreadcrumbs ({ state, commit, getters }, payload) {
-         if (state.has_unsaved_changes) {
-            commit('SET_UNSAVED_DISCARD_MODAL', true);
-            commit('SET_PENDING_BREADCRUMBS', payload);
-            return;
-         }
+         // if (state.has_unsaved_changes) {
+         //    commit('SET_UNSAVED_DISCARD_MODAL', true);
+         //    commit('SET_PENDING_BREADCRUMBS', payload);
+         //    return;
+         // }
 
          const breadcrumbsObj = {
             schema: null,
@@ -607,17 +615,8 @@ export default {
       setTabKeyUsage ({ commit }, payload) {
          commit('SET_TAB_KEY_USAGE', payload);
       },
-      setUnsavedChanges ({ commit }, val) {
-         commit('SET_UNSAVED_CHANGES', val);
-      },
-      discardUnsavedChanges ({ state, commit, dispatch }) {
-         dispatch('setUnsavedChanges', false);
-         dispatch('changeBreadcrumbs', state.pending_breadcrumbs);
-         commit('SET_UNSAVED_DISCARD_MODAL', false);
-         commit('SET_PENDING_BREADCRUMBS', {});
-      },
-      closeUnsavedChangesModal ({ commit }) {
-         commit('SET_UNSAVED_DISCARD_MODAL', false);
+      setUnsavedChanges ({ commit }, payload) {
+         commit('SET_UNSAVED_CHANGES', payload);
       }
    }
 };

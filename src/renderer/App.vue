@@ -16,7 +16,6 @@
             <TheNotificationsBoard />
             <TheScratchpad v-if="isScratchpad" />
             <ModalSettings v-if="isSettingModal" />
-            <ModalDiscardChanges v-if="isUnsavedDiscardModal" />
             <BaseTextEditor class="d-none" value="" />
          </div>
       </div>
@@ -39,7 +38,6 @@ export default {
       WorkspaceAddConnectionPanel: () => import(/* webpackChunkName: "WorkspaceAddConnectionPanel" */'@/components/WorkspaceAddConnectionPanel'),
       ModalSettings: () => import(/* webpackChunkName: "ModalSettings" */'@/components/ModalSettings'),
       TheScratchpad: () => import(/* webpackChunkName: "TheScratchpad" */'@/components/TheScratchpad'),
-      ModalDiscardChanges: () => import(/* webpackChunkName: "ModalDiscardChanges" */'@/components/ModalDiscardChanges'),
       BaseTextEditor: () => import(/* webpackChunkName: "BaseTextEditor" */'@/components/BaseTextEditor')
    },
    data () {

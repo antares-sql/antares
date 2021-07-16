@@ -169,7 +169,7 @@ module.exports = {
       deleteTable: 'Delete table',
       emptyCorfirm: 'Do you confirm to empty',
       unsavedChanges: 'Unsaved changes',
-      discardUnsavedChanges: 'You have some unsaved changes. By leaving this tab these changes will be discarded.',
+      discardUnsavedChanges: 'You have some unsaved changes. Closing this tab these changes will be discarded.',
       thereAreNoIndexes: 'There are no indexes',
       thereAreNoForeign: 'There are no foreign keys',
       createNewForeign: 'Create new foreign key',

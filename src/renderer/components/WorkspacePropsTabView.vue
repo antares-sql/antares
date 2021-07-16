@@ -23,6 +23,11 @@
                   <span>{{ $t('word.clear') }}</span>
                </button>
             </div>
+            <div class="workspace-query-info">
+               <div class="d-flex" :title="$t('word.schema')">
+                  <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
+               </div>
+            </div>
          </div>
       </div>
       <div class="container">
@@ -192,7 +197,6 @@ export default {
    },
    data () {
       return {
-         tabUid: 'prop',
          isLoading: false,
          isSaving: false,
          originalView: null,
@@ -209,6 +213,9 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
+      },
+      tabUid () {
+         return this.$vnode.key;
       },
       isChanged () {
          return JSON.stringify(this.originalView) !== JSON.stringify(this.localView);
@@ -241,8 +248,7 @@ export default {
          }
       },
       isChanged (val) {
-         if (this.isSelected && this.lastView === this.view && this.view !== null)
-            this.setUnsavedChanges(val);
+         this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: val });
       }
    },
    async created () {
