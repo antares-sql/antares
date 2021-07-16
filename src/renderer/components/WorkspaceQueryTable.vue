@@ -10,6 +10,7 @@
          v-if="isContext"
          :context-event="contextEvent"
          :selected-rows="selectedRows"
+         :selected-cell="selectedCell"
          @show-delete-modal="showDeleteConfirmModal"
          @set-null="setNull"
          @copy-cell="copyCell"
