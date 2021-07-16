@@ -224,6 +224,7 @@ export default {
          refreshStructure: 'workspaces/refreshStructure',
          setUnsavedChanges: 'workspaces/setUnsavedChanges',
          newTab: 'workspaces/newTab',
+         renameTabs: 'workspaces/renameTabs',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
       async getFieldsData () {
@@ -233,7 +234,10 @@ export default {
          this.lastTable = this.table;
          this.newFieldsCounter = 0;
          this.isLoading = true;
-         this.localOptions = JSON.parse(JSON.stringify(this.tableOptions));
+         try {
+            this.localOptions = JSON.parse(JSON.stringify(this.tableOptions));
+         }
+         catch (error) {}
 
          const params = {
             uid: this.connection.uid,
@@ -441,7 +445,13 @@ export default {
 
                if (oldName !== this.localOptions.name) {
                   this.setUnsavedChanges(false);
-                  this.newTab({ uid: this.connection.uid, schema: this.schema, table: this.localOptions.name, type: 'table-props' });// TODO: rename function that gets new and old name and change it on all opened tables
+                  this.renameTabs({
+                     uid: this.connection.uid,
+                     schema: this.schema,
+                     elementName: oldName,
+                     elementNewName: this.localOptions.name,
+                     elementType: 'table'
+                  });
                   this.changeBreadcrumbs({ schema: this.schema, table: this.localOptions.name });
                }
 

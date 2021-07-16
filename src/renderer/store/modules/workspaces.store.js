@@ -235,6 +235,27 @@ export default {
                return workspace;
          });
       },
+      RENAME_TABS (state, { uid, schema, elementName, elementType, elementNewName }) {
+         state.workspaces = state.workspaces.map(workspace => {
+            if (workspace.uid === uid) {
+               return {
+                  ...workspace,
+                  tabs: workspace.tabs.map(tab => {
+                     if (tab[elementType] === elementName && tab.schema === schema) {
+                        return {
+                           ...tab,
+                           [elementType]: elementNewName
+                        };
+                     }
+
+                     return tab;
+                  })
+               };
+            }
+            else
+               return workspace;
+         });
+      },
       SELECT_TAB (state, { uid, tab }) {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, selected_tab: tab } : workspace);
       },
@@ -565,6 +586,9 @@ export default {
          }
 
          commit('SELECT_TAB', { uid, tab: tabUid });
+      },
+      renameTabs ({ commit }, payload) {
+         commit('RENAME_TABS', payload);
       },
       removeTab ({ commit }, payload) {
          commit('REMOVE_TAB', payload);
