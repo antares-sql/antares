@@ -64,9 +64,9 @@
                   class="tab-link"
                   @dblclick="openAsDataTab(tab)"
                >
-                  <i class="mdi mdi-18px mr-1" :class="tab.element === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
-                  <span :title="`${$t('word.data').toUpperCase()}: ${tab.table}`">
-                     <span class=" text-italic">{{ tab.table }}</span>
+                  <i class="mdi mdi-18px mr-1" :class="tab.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
+                  <span :title="`${$t('word.data').toUpperCase()}: ${tab.elementType}`">
+                     <span class=" text-italic">{{ tab.elementName }}</span>
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
@@ -76,9 +76,9 @@
                </a>
 
                <a v-else-if="tab.type === 'data'" class="tab-link">
-                  <i class="mdi mdi-18px mr-1" :class="tab.element === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
-                  <span :title="`${$t('word.data').toUpperCase()}: ${tab.table}`">
-                     {{ tab.table }}
+                  <i class="mdi mdi-18px mr-1" :class="tab.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
+                  <span :title="`${$t('word.data').toUpperCase()}: ${tab.elementType}`">
+                     {{ tab.elementName }}
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
@@ -89,8 +89,20 @@
 
                <a v-else-if="tab.type === 'table-props'" class="tab-link">
                   <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
-                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.table}`">
-                     {{ tab.table }}
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
+                     {{ tab.elementName }}
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a v-else-if="tab.type === 'view-props'" class="tab-link">
+                  <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
+                     {{ tab.elementName }}
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
@@ -147,12 +159,6 @@
             </li>
          </Draggable>
          <!--
-         <WorkspacePropsTabView
-            v-show="selectedTab === 'prop' && workspace.breadcrumbs.view"
-            :is-selected="selectedTab === 'prop'"
-            :connection="connection"
-            :view="workspace.breadcrumbs.view"
-         />
          <WorkspacePropsTabTrigger
             v-show="selectedTab === 'prop' && workspace.breadcrumbs.trigger"
             :is-selected="selectedTab === 'prop'"
@@ -196,7 +202,7 @@
                :key="tab.uid"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
-               :table="tab.table"
+               :table="tab.elementName"
                :schema="tab.schema"
                :element-type="tab.element"
             />
@@ -205,7 +211,15 @@
                :key="tab.uid"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
-               :table="tab.table"
+               :table="tab.elementName"
+               :schema="tab.schema"
+            />
+            <WorkspacePropsTabView
+               v-else-if="tab.type === 'view-props'"
+               :key="tab.uid"
+               :is-selected="selectedTab === tab.uid"
+               :connection="connection"
+               :view="tab.elementName"
                :schema="tab.schema"
             />
          </template>
@@ -228,7 +242,7 @@ import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPa
 import WorkspaceQueryTab from '@/components/WorkspaceQueryTab';
 import WorkspaceTableTab from '@/components/WorkspaceTableTab';
 import WorkspacePropsTab from '@/components/WorkspacePropsTab';
-// import WorkspacePropsTabView from '@/components/WorkspacePropsTabView';
+import WorkspacePropsTabView from '@/components/WorkspacePropsTabView';
 // import WorkspacePropsTabTrigger from '@/components/WorkspacePropsTabTrigger';
 // import WorkspacePropsTabRoutine from '@/components/WorkspacePropsTabRoutine';
 // import WorkspacePropsTabFunction from '@/components/WorkspacePropsTabFunction';
@@ -245,7 +259,7 @@ export default {
       WorkspaceQueryTab,
       WorkspaceTableTab,
       WorkspacePropsTab,
-      // WorkspacePropsTabView,
+      WorkspacePropsTabView,
       // WorkspacePropsTabTrigger,
       // WorkspacePropsTabRoutine,
       // WorkspacePropsTabFunction,
@@ -349,7 +363,7 @@ export default {
          this.newTab({ uid: this.connection.uid, type: 'query' });
       },
       openAsDataTab (tab) {
-         this.newTab({ uid: this.connection.uid, schema: tab.schema, table: tab.table, type: 'data', element: tab.element });
+         this.newTab({ uid: this.connection.uid, schema: tab.schema, elementName: tab.elementName, type: 'data', elementType: tab.elementType });
       },
       closeTab (tab) {
          if (tab.type === 'query' && this.queryTabs.length === 1) return;

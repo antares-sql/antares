@@ -237,12 +237,12 @@ export default {
          try {
             this.localOptions = JSON.parse(JSON.stringify(this.tableOptions));
          }
-         catch (error) {}
+         catch (err) {}
 
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            table: this.workspace.breadcrumbs.table
+            table: this.table
          };
 
          try { // Columns data
@@ -426,7 +426,7 @@ export default {
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            table: this.workspace.breadcrumbs.table,
+            table: this.table,
             additions,
             changes,
             deletions,
@@ -454,8 +454,6 @@ export default {
                   });
                   this.changeBreadcrumbs({ schema: this.schema, table: this.localOptions.name });
                }
-
-               this.getFieldsData();
             }
             else
                this.addNotification({ status: 'error', message: response });

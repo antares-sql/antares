@@ -1,5 +1,5 @@
 <template>
-   <div class="workspace-query-tab column col-12 columns col-gapless">
+   <div v-show="isSelected" class="workspace-query-tab column col-12 columns col-gapless">
       <div class="workspace-query-runner column col-12">
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
@@ -186,6 +186,8 @@ export default {
    },
    props: {
       connection: Object,
+      isSelected: Boolean,
+      schema: String,
       view: String
    },
    data () {
@@ -208,12 +210,6 @@ export default {
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
-      isSelected () {
-         return this.workspace.selected_tab === 'prop' && this.selectedWorkspace === this.workspace.uid && this.view;
-      },
-      schema () {
-         return this.workspace.breadcrumbs.schema;
-      },
       isChanged () {
          return JSON.stringify(this.originalView) !== JSON.stringify(this.localView);
       },
@@ -222,18 +218,26 @@ export default {
       }
    },
    watch: {
-      async view () {
+      schema () {
          if (this.isSelected) {
-            await this.getViewData();
+            this.getViewData();
             this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
             this.lastView = this.view;
          }
       },
-      async isSelected (val) {
-         if (val && this.lastView !== this.view) {
-            await this.getViewData();
+      view () {
+         if (this.isSelected) {
+            this.getViewData();
             this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
             this.lastView = this.view;
+         }
+      },
+      isSelected (val) {
+         if (val) {
+            this.changeBreadcrumbs({ schema: this.schema, view: this.view });
+
+            if (this.lastView !== this.view)
+               this.getViewData();
          }
       },
       isChanged (val) {
@@ -241,14 +245,16 @@ export default {
             this.setUnsavedChanges(val);
       }
    },
+   async created () {
+      await this.getViewData();
+      this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
+      window.addEventListener('keydown', this.onKey);
+   },
    mounted () {
       window.addEventListener('resize', this.resizeQueryEditor);
    },
    destroyed () {
       window.removeEventListener('resize', this.resizeQueryEditor);
-   },
-   created () {
-      window.addEventListener('keydown', this.onKey);
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);
@@ -258,17 +264,19 @@ export default {
          addNotification: 'notifications/addNotification',
          refreshStructure: 'workspaces/refreshStructure',
          setUnsavedChanges: 'workspaces/setUnsavedChanges',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         renameTabs: 'workspaces/renameTabs'
       }),
       async getViewData () {
          if (!this.view) return;
          this.isLoading = true;
          this.localView = { sql: '' };
+         this.lastView = this.view;
 
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            view: this.workspace.breadcrumbs.view
+            view: this.view
          };
 
          try {
@@ -310,10 +318,16 @@ export default {
 
                if (oldName !== this.localView.name) {
                   this.setUnsavedChanges(false);
+
+                  this.renameTabs({
+                     uid: this.connection.uid,
+                     schema: this.schema,
+                     elementName: oldName,
+                     elementNewName: this.localView.name,
+                     elementType: 'view'
+                  });
                   this.changeBreadcrumbs({ schema: this.schema, view: this.localView.name });
                }
-
-               this.getViewData();
             }
             else
                this.addNotification({ status: 'error', message: response });

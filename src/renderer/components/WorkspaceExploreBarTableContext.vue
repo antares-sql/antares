@@ -6,7 +6,14 @@
       <div
          v-if="selectedTable.type === 'table' && workspace.customizations.tableSettings"
          class="context-element"
-         @click="openSettingTab"
+         @click="openTableSettingTab"
+      >
+         <span class="d-flex"><i class="mdi mdi-18px mdi-tune-vertical-variant text-light pr-1" /> {{ $t('word.settings') }}</span>
+      </div>
+      <div
+         v-if="selectedTable.type === 'view' && workspace.customizations.viewSettings"
+         class="context-element"
+         @click="openViewSettingTab"
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-tune-vertical-variant text-light pr-1" /> {{ $t('word.settings') }}</span>
       </div>
@@ -121,18 +128,34 @@ export default {
       closeContext () {
          this.$emit('close-context');
       },
-      openSettingTab () {
+      openTableSettingTab () {
          this.newTab({
             uid: this.selectedWorkspace,
-            table: this.selectedTable.name,
+            elementName: this.selectedTable.name,
             schema: this.selectedSchema,
             type: 'table-props',
-            element: this.selectedTable.type
+            elementType: 'table'
          });
 
          this.changeBreadcrumbs({
             schema: this.selectedSchema,
-            [this.selectedTable.type]: this.selectedTable.name
+            table: this.selectedTable.name
+         });
+
+         this.closeContext();
+      },
+      openViewSettingTab () {
+         this.newTab({
+            uid: this.selectedWorkspace,
+            elementType: 'table',
+            elementName: this.selectedTable.name,
+            schema: this.selectedSchema,
+            type: 'view-props'
+         });
+
+         this.changeBreadcrumbs({
+            schema: this.selectedSchema,
+            view: this.selectedTable.name
          });
 
          this.closeContext();

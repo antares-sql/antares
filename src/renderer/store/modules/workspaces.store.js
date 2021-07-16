@@ -178,7 +178,7 @@ export default {
             }
             : workspace);
       },
-      NEW_TAB (state, { uid, tab, content, type, autorun, schema, table, element }) {
+      NEW_TAB (state, { uid, tab, content, type, autorun, schema, elementName, elementType }) {
          if (type === 'query')
             tabIndex[uid] = tabIndex[uid] ? ++tabIndex[uid] : 1;
 
@@ -188,8 +188,8 @@ export default {
             selected: false,
             type,
             schema,
-            table,
-            element,
+            elementName,
+            elementType,
             fields: [],
             keyUsage: [],
             content: content || '',
@@ -218,14 +218,14 @@ export default {
                return workspace;
          });
       },
-      REPLACE_TAB (state, { uid, tab: tUid, type, schema, table, element }) {
+      REPLACE_TAB (state, { uid, tab: tUid, type, schema, elementName, elementType }) {
          state.workspaces = state.workspaces.map(workspace => {
             if (workspace.uid === uid) {
                return {
                   ...workspace,
                   tabs: workspace.tabs.map(tab => {
                      if (tab.uid === tUid)
-                        return { ...tab, type, schema, table, element };
+                        return { ...tab, type, schema, elementName, elementType };
 
                      return tab;
                   })
@@ -241,10 +241,10 @@ export default {
                return {
                   ...workspace,
                   tabs: workspace.tabs.map(tab => {
-                     if (tab[elementType] === elementName && tab.schema === schema) {
+                     if (tab.elementName === elementName && tab.schema === schema) {
                         return {
                            ...tab,
-                           [elementType]: elementNewName
+                           elementName: elementNewName
                         };
                      }
 
@@ -517,7 +517,7 @@ export default {
       setSearchTerm ({ commit, getters }, term) {
          commit('SET_SEARCH_TERM', { uid: getters.getSelected, term });
       },
-      newTab ({ state, commit }, { uid, content, type, autorun, schema, table, element }) {
+      newTab ({ state, commit }, { uid, content, type, autorun, schema, elementName, elementType }) {
          let tabUid;
          const workspaceTabs = state.workspaces.find(workspace => workspace.uid === uid);
 
@@ -525,7 +525,8 @@ export default {
             const existentTab = workspaceTabs
                ? workspaceTabs.tabs.find(tab =>
                   tab.schema === schema &&
-                  tab.table === table &&
+                  tab.elementName === elementName &&
+                  tab.elementType === elementType &&
                   ['temp-data', 'data'].includes(tab.type))
                : false;
 
@@ -536,13 +537,13 @@ export default {
                const tempTabs = workspaceTabs ? workspaceTabs.tabs.filter(tab => tab.type === 'temp-data') : false;
                if (tempTabs && tempTabs.length) { // if temp table already opened
                   for (const tab of tempTabs) {
-                     commit('REPLACE_TAB', { uid, tab: tab.uid, type, schema, table, element });
+                     commit('REPLACE_TAB', { uid, tab: tab.uid, type, schema, elementName, elementType });
                      tabUid = tab.uid;
                   }
                }
                else {
                   tabUid = uidGen('T');
-                  commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, table, element });
+                  commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
                }
             }
          }
@@ -550,39 +551,40 @@ export default {
             const existentTab = workspaceTabs
                ? workspaceTabs.tabs.find(tab =>
                   tab.schema === schema &&
-                  tab.table === table &&
+                  tab.elementName === elementName &&
+                  tab.elementType === elementType &&
                   ['temp-data', 'data'].includes(tab.type))
                : false;
 
             if (existentTab) {
-               commit('REPLACE_TAB', { uid, tab: existentTab.uid, type, schema, table, element });
+               commit('REPLACE_TAB', { uid, tab: existentTab.uid, type, schema, elementName, elementType });
                tabUid = existentTab.uid;
             }
             else {
                tabUid = uidGen('T');
-               commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, table });
+               commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
             }
          }
          else if (type === 'table-props') {
             const existentTab = workspaceTabs
                ? workspaceTabs.tabs.find(tab =>
-                  tab.schema === schema &&
-                  tab.table === table &&
+                  tab.elementName === elementName &&
+                  tab.elementType === elementType &&
                   tab.type === type)
                : false;
 
             if (existentTab) {
-               commit('REPLACE_TAB', { uid, tab: existentTab.uid, type, schema, table, element });
+               commit('REPLACE_TAB', { uid, tab: existentTab.uid, type, schema, elementName, elementType });
                tabUid = existentTab.uid;
             }
             else {
                tabUid = uidGen('T');
-               commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, table });
+               commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
             }
          }
          else {
             tabUid = uidGen('T');
-            commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, table });
+            commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
          }
 
          commit('SELECT_TAB', { uid, tab: tabUid });
