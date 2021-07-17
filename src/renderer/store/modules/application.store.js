@@ -12,6 +12,7 @@ export default {
       is_loading: false,
       is_new_modal: false,
       is_setting_modal: false,
+      is_export_modal: false,
       is_scratchpad: false,
       selected_setting_tab: 'general',
       selected_conection: {},
@@ -28,6 +29,7 @@ export default {
       getSelectedConnection: state => state.selected_conection,
       isNewModal: state => state.is_new_modal,
       isSettingModal: state => state.is_setting_modal,
+      isExportModal: state => state.is_export_modal,
       isScratchpad: state => state.is_scratchpad,
       selectedSettingTab: state => state.selected_setting_tab,
       getUpdateStatus: state => state.update_status,
@@ -52,6 +54,12 @@ export default {
       },
       HIDE_SETTING_MODAL (state) {
          state.is_setting_modal = false;
+      },
+      SHOW_EXPORT_MODAL (state) {
+         state.is_export_modal = true;
+      },
+      HIDE_EXPORT_MODAL (state) {
+         state.is_export_modal = false;
       },
       SHOW_SCRATCHPAD (state) {
          state.is_scratchpad = true;
@@ -101,6 +109,14 @@ export default {
       },
       hideScratchpad ({ commit }) {
          commit('HIDE_SCRATCHPAD');
+      },
+      showExportModal ({ commit }) {
+         console.log(commit);
+         commit('SHOW_EXPORT_MODAL');
+      },
+      hideExportModal ({ commit }) {
+         console.log(commit);
+         commit('HIDE_EXPORT_MODAL');
       }
    }
 };

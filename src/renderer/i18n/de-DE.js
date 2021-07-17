@@ -105,7 +105,7 @@ module.exports = {
       scratchpad: 'Scratchpad',
       array: 'Array',
       format: 'Formatierung',
-      sshTunnel: 'SSH Tunnel'
+      sshTunnel: 'SSH Tunnel',
    },
    message: {
       appWelcome: 'Willkommen im Antares SQL Client!',
@@ -212,7 +212,8 @@ module.exports = {
       markdownSupported: 'Unterstützt Markdown',
       plantATree: 'Pflanze einen Baum',
       dataTabPageSize: 'Einträge pro Tab / Seite',
-      enableSsh: 'Aktiviere SSH'
+      enableSsh: 'Aktiviere SSH',
+      exportTable: 'Tabelle exportieren',
    },
    faker: {
       address: 'Adresse',

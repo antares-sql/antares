@@ -496,6 +496,9 @@ export default {
       },
       closeUnsavedChangesModal ({ commit }) {
          commit('SET_UNSAVED_DISCARD_MODAL', false);
-      }
+      },
+      export ({ commit }, connection) {
+         commit('EXPORT', connection);
+      },
    }
 };

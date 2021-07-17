@@ -113,7 +113,10 @@ module.exports = {
       large: 'Large',
       row: 'Row | Rows',
       cell: 'Cell | Cells',
-      triggerFunction: 'Trigger function | Trigger functions'
+      triggerFunction: 'Trigger function | Trigger functions',
+      sql: 'SQL',
+      csv: 'CSV',
+      json: 'JSON',
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -222,7 +225,8 @@ module.exports = {
       dataTabPageSize: 'DATA tab page size',
       enableSsh: 'Enable SSH',
       pageNumber: 'Page number',
-      duplicateTable: 'Duplicate table'
+      duplicateTable: 'Duplicate table',
+      exportTable: 'Export table',
    },
    faker: {
       address: 'Address',

@@ -65,6 +65,6 @@ export default {
       },
       updateConnections ({ commit }, connections) {
          commit('UPDATE_CONNECTIONS', connections);
-      }
+      },
    }
 };
