@@ -212,6 +212,22 @@ export default {
                return workspace;
          });
       },
+      REMOVE_TABS (state, { uid, schema, elementName, elementType }) { // Multiple tabs based on schema and element name
+         state.workspaces = state.workspaces.map(workspace => {
+            if (workspace.uid === uid) {
+               return {
+                  ...workspace,
+                  tabs: workspace.tabs.filter(tab =>
+                     tab.schema !== schema ||
+                     tab.elementName !== elementName ||
+                     tab.elementType !== elementType
+                  )
+               };
+            }
+            else
+               return workspace;
+         });
+      },
       REPLACE_TAB (state, { uid, tab: tUid, type, schema, elementName, elementType }) {
          state.workspaces = state.workspaces.map(workspace => {
             if (workspace.uid === uid) {
@@ -490,13 +506,7 @@ export default {
 
          dispatch('setUnsavedChanges', false);
       },
-      changeBreadcrumbs ({ state, commit, getters }, payload) {
-         // if (state.has_unsaved_changes) {
-         //    commit('SET_UNSAVED_DISCARD_MODAL', true);
-         //    commit('SET_PENDING_BREADCRUMBS', payload);
-         //    return;
-         // }
-
+      changeBreadcrumbs ({ commit, getters }, payload) {
          const breadcrumbsObj = {
             schema: null,
             table: null,
@@ -597,11 +607,25 @@ export default {
 
          commit('SELECT_TAB', { uid, tab: tabUid });
       },
+      checkSelectedTabExists ({ state, commit }, uid) {
+         const workspace = state.workspaces.find(workspace => workspace.uid === uid);
+         const isSelectedExistent = workspace
+            ? workspace.tabs.some(tab => tab.uid === workspace.selected_tab)
+            : false;
+
+         if (!isSelectedExistent)
+            commit('SELECT_TAB', { uid, tab: workspace.tabs[workspace.tabs.length - 1].uid });
+      },
       renameTabs ({ commit }, payload) {
          commit('RENAME_TABS', payload);
       },
-      removeTab ({ commit }, payload) {
+      removeTab ({ commit, dispatch }, payload) {
          commit('REMOVE_TAB', payload);
+         dispatch('checkSelectedTabExists', payload.uid);
+      },
+      removeTabs ({ commit, dispatch }, payload) {
+         commit('REMOVE_TABS', payload);
+         dispatch('checkSelectedTabExists', payload.uid);
       },
       selectTab ({ commit }, payload) {
          commit('SELECT_TAB', payload);

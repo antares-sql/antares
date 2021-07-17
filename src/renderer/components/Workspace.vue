@@ -212,7 +212,7 @@
                :is-selected="selectedTab === tab.uid"
                :table="tab.elementName"
                :schema="tab.schema"
-               :element-type="tab.element"
+               :element-type="tab.elementType"
             />
             <WorkspacePropsTab
                v-else-if="tab.type === 'table-props'"
@@ -323,30 +323,6 @@ export default {
          return false;
       },
       selectedTab () {
-         // if (
-         //    (
-         //       this.workspace.breadcrumbs.table === null &&
-         //       this.workspace.breadcrumbs.view === null &&
-         //       this.workspace.breadcrumbs.trigger === null &&
-         //       this.workspace.breadcrumbs.procedure === null &&
-         //       this.workspace.breadcrumbs.function === null &&
-         //       this.workspace.breadcrumbs.triggerFunction === null &&
-         //       this.workspace.breadcrumbs.scheduler === null &&
-         //       ['data', 'prop'].includes(this.workspace.selected_tab)
-         //    ) ||
-         //    (
-         //       this.workspace.breadcrumbs.table === null &&
-         //       this.workspace.breadcrumbs.view === null &&
-         //       this.workspace.selected_tab === 'data'
-         //    )
-         // )
-         //    return this.queryTabs[0].uid;
-
-         // return this.queryTabs.find(tab => tab.uid === this.workspace.selected_tab) ||
-         // ['data', 'prop'].includes(this.workspace.selected_tab)
-         //    ? this.workspace.selected_tab
-         //    : this.queryTabs[0].uid;
-
          return this.workspace.selected_tab;
       },
       queryTabs () {
@@ -391,8 +367,6 @@ export default {
          }
 
          this.removeTab({ uid: this.connection.uid, tab: tab.uid });
-         if (this.selectedTab === tab.uid && this.workspace.tabs.length)
-            this.selectTab({ uid: this.workspace.uid, tab: this.workspace.tabs[0].uid });
       },
       showProcessesModal () {
          this.isProcessesModal = true;

@@ -108,6 +108,7 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification',
          newTab: 'workspaces/newTab',
+         removeTabs: 'workspaces/removeTabs',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
       showCreateTableModal () {
@@ -220,8 +221,12 @@ export default {
             const { status, response } = res;
 
             if (status === 'success') {
-               if (this.selectedTable.name === this.workspace.breadcrumbs.table || this.selectedTable.name === this.workspace.breadcrumbs.view)
-                  this.changeBreadcrumbs({ table: null, view: null });
+               this.removeTabs({
+                  uid: this.selectedWorkspace,
+                  elementName: this.selectedTable.name,
+                  elementType: this.selectedTable.type,
+                  schema: this.selectedSchema
+               });
 
                this.closeContext();
                this.$emit('reload');
