@@ -186,6 +186,7 @@ export default {
    },
    methods: {
       confirmIndexesChange () {
+         this.indexesProxy = this.indexesProxy.filter(index => index.fields.length);
          this.$emit('indexes-update', this.indexesProxy);
       },
       selectIndex (event, id) {
