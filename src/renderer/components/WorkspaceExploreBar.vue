@@ -123,6 +123,7 @@
       <MiscContext
          v-if="isMiscContext"
          :selected-misc="selectedMisc"
+         :selected-schema="selectedSchema"
          :context-event="miscContextEvent"
          @close-context="closeMiscContext"
          @reload="refresh"
@@ -130,6 +131,7 @@
       <MiscFolderContext
          v-if="isMiscFolderContext"
          :selected-misc="selectedMisc"
+         :selected-schema="selectedSchema"
          :context-event="miscContextEvent"
          @show-create-trigger-modal="showCreateTriggerModal"
          @show-create-routine-modal="showCreateRoutineModal"
@@ -347,11 +349,13 @@ export default {
       },
       openMiscContext (payload) {
          this.selectedMisc = payload.misc;
+         this.selectedSchema = payload.schema;
          this.miscContextEvent = payload.event;
          this.isMiscContext = true;
       },
       openMiscFolderContext (payload) {
          this.selectedMisc = payload.type;
+         this.selectedSchema = payload.schema;
          this.miscContextEvent = payload.event;
          this.isMiscFolderContext = true;
       },
@@ -384,7 +388,7 @@ export default {
                uid: this.workspace.uid,
                schema: this.selectedSchema,
                elementName: payload.name,
-               elementType: 'ciew',
+               elementType: 'view',
                type: 'view-props'
             });
          }
@@ -411,7 +415,14 @@ export default {
             await this.refresh();
             const triggerName = this.customizations.triggerTableInName ? `${payload.table}.${payload.name}` : payload.name;
             this.changeBreadcrumbs({ schema: this.selectedSchema, trigger: triggerName });
-            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+
+            this.newTab({
+               uid: this.workspace.uid,
+               schema: this.selectedSchema,
+               elementName: triggerName,
+               elementType: 'trigger',
+               type: 'trigger-props'
+            });
          }
          else
             this.addNotification({ status: 'error', message: response });

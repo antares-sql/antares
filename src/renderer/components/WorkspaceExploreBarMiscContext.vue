@@ -59,7 +59,8 @@ export default {
    },
    props: {
       contextEvent: MouseEvent,
-      selectedMisc: Object
+      selectedMisc: Object,
+      selectedSchema: String
    },
    data () {
       return {
@@ -97,6 +98,7 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         removeTabs: 'workspaces/removeTabs',
          newTab: 'workspaces/newTab'
       }),
       showCreateTableModal () {
@@ -153,7 +155,12 @@ export default {
             const { status, response } = res;
 
             if (status === 'success') {
-               this.changeBreadcrumbs({ [this.selectedMisc.type]: null });
+               this.removeTabs({
+                  uid: this.selectedWorkspace,
+                  elementName: this.selectedMisc.name,
+                  elementType: this.selectedMisc.type,
+                  schema: this.selectedSchema
+               });
 
                this.closeContext();
                this.$emit('reload');

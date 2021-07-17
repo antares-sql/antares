@@ -56,7 +56,8 @@
                            :key="trigger.name"
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.trigger === trigger.name}"
-                           @click="setBreadcrumbs({schema: database.name, trigger: trigger.name})"
+                           @click="selectMisc({schema: database.name, misc: trigger, type: 'trigger'})"
+                           @dblclick="openMiscPermanentTab({schema: database.name, misc: trigger, type: 'trigger'})"
                            @contextmenu.prevent="showMiscContext($event, {...trigger, type: 'trigger'})"
                         >
                            <a class="table-name">
@@ -285,9 +286,32 @@ export default {
          this.newTab({ uid: this.connection.uid, elementName: table.name, schema: this.database.name, type: 'temp-data', elementType: table.type });
          this.setBreadcrumbs({ schema, [table.type]: table.name });
       },
+      selectMisc ({ schema, misc, type }) {
+         const miscTempTabs = {
+            trigger: 'temp-trigger-props'
+         };
+
+         this.newTab({
+            uid: this.connection.uid,
+            elementName: misc.name,
+            schema: this.database.name,
+            type: miscTempTabs[type],
+            elementType: type
+         });
+
+         this.setBreadcrumbs({ schema, [type]: misc.name });
+      },
       openDataTab ({ schema, table }) {
          this.newTab({ uid: this.connection.uid, elementName: table.name, schema: this.database.name, type: 'data', elementType: table.type });
          this.setBreadcrumbs({ schema, [table.type]: table.name });
+      },
+      openMiscPermanentTab ({ schema, misc, type }) {
+         const miscTabs = {
+            trigger: 'trigger-props'
+         };
+
+         this.newTab({ uid: this.connection.uid, elementName: misc.name, schema: this.database.name, type: miscTabs[type], elementType: type });
+         this.setBreadcrumbs({ schema, [type]: misc.name });
       },
       showSchemaContext (event, schema) {
          this.selectSchema(schema);
@@ -298,12 +322,12 @@ export default {
       },
       showMiscContext (event, misc) {
          this.setBreadcrumbs({ schema: this.database.name, [misc.type]: misc.name });
-         this.$emit('show-misc-context', { event, misc });
+         this.$emit('show-misc-context', { event, schema: this.database.name, misc });
       },
       showMiscFolderContext (event, type) {
          this.selectSchema(this.database.name);
          this.setBreadcrumbs({ schema: this.database.name, type });
-         this.$emit('show-misc-folder-context', { event, type });
+         this.$emit('show-misc-folder-context', { event, schema: this.database.name, type });
       },
       piePercentage (val) {
          const perc = val / this.maxSize * 100;

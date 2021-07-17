@@ -62,7 +62,7 @@
                <a
                   v-else-if="tab.type === 'temp-data'"
                   class="tab-link"
-                  @dblclick="openAsDataTab(tab)"
+                  @dblclick="openAsPermanentTab(tab)"
                >
                   <i class="mdi mdi-18px mr-1" :class="tab.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
                   <span :title="`${$t('word.data').toUpperCase()}: ${tab.elementType}`">
@@ -109,6 +109,39 @@
                   :class="{'badge': tab.isChanged}"
                >
                   <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
+                     {{ tab.elementName }}
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a
+                  v-else-if="tab.type === 'temp-trigger-props'"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+                  @dblclick="openAsPermanentTab(tab)"
+               >
+                  <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
+                     <span class=" text-italic">{{ tab.elementName }}</span>
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a
+                  v-else-if="tab.type === 'trigger-props'"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+               >
+                  <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
                   <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
                      {{ tab.elementName }}
                      <span
@@ -230,6 +263,14 @@
                :view="tab.elementName"
                :schema="tab.schema"
             />
+            <WorkspacePropsTabTrigger
+               v-else-if="['temp-trigger-props', 'trigger-props'].includes(tab.type)"
+               :key="tab.uid"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
+               :trigger="tab.elementName"
+               :schema="tab.schema"
+            />
          </template>
       </div>
       <WorkspaceEditConnectionPanel v-else :connection="connection" />
@@ -257,7 +298,7 @@ import WorkspaceQueryTab from '@/components/WorkspaceQueryTab';
 import WorkspaceTableTab from '@/components/WorkspaceTableTab';
 import WorkspacePropsTab from '@/components/WorkspacePropsTab';
 import WorkspacePropsTabView from '@/components/WorkspacePropsTabView';
-// import WorkspacePropsTabTrigger from '@/components/WorkspacePropsTabTrigger';
+import WorkspacePropsTabTrigger from '@/components/WorkspacePropsTabTrigger';
 // import WorkspacePropsTabRoutine from '@/components/WorkspacePropsTabRoutine';
 // import WorkspacePropsTabFunction from '@/components/WorkspacePropsTabFunction';
 // import WorkspacePropsTabTriggerFunction from '@/components/WorkspacePropsTabTriggerFunction';
@@ -275,7 +316,7 @@ export default {
       WorkspaceTableTab,
       WorkspacePropsTab,
       WorkspacePropsTabView,
-      // WorkspacePropsTabTrigger,
+      WorkspacePropsTabTrigger,
       // WorkspacePropsTabRoutine,
       // WorkspacePropsTabFunction,
       // WorkspacePropsTabTriggerFunction,
@@ -355,8 +396,20 @@ export default {
       addQueryTab () {
          this.newTab({ uid: this.connection.uid, type: 'query' });
       },
-      openAsDataTab (tab) {
-         this.newTab({ uid: this.connection.uid, schema: tab.schema, elementName: tab.elementName, type: 'data', elementType: tab.elementType });
+      openAsPermanentTab (tab) {
+         const permanentTabs = {
+            table: 'data',
+            view: 'data',
+            trigger: 'trigger-props'
+         };
+
+         this.newTab({
+            uid: this.connection.uid,
+            schema: tab.schema,
+            elementName: tab.elementName,
+            type: permanentTabs[tab.elementType],
+            elementType: tab.elementType
+         });
       },
       closeTab (tab, force) {
          this.unsavedTab = null;
@@ -410,7 +463,6 @@ export default {
       }
 
       .tab-item {
-        max-width: 12rem;
         width: fit-content;
         flex: initial;
 

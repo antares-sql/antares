@@ -323,9 +323,6 @@ export default {
                return workspace;
          });
       },
-      // SET_UNSAVED_DISCARD_MODAL (state, val) {
-      //    state.is_unsaved_discard_modal = !!val;
-      // },
       SET_PENDING_BREADCRUMBS (state, payload) {
          state.pending_breadcrumbs = payload;
       },
@@ -503,8 +500,6 @@ export default {
 
          if (getters.getWorkspace(uid).tabs.length < 3)
             dispatch('newTab', { uid, type: 'query' });
-
-         dispatch('setUnsavedChanges', false);
       },
       changeBreadcrumbs ({ commit, getters }, payload) {
          const breadcrumbsObj = {
@@ -539,70 +534,121 @@ export default {
          let tabUid;
          const workspaceTabs = state.workspaces.find(workspace => workspace.uid === uid);
 
-         if (type === 'temp-data') {
-            const existentTab = workspaceTabs
-               ? workspaceTabs.tabs.find(tab =>
-                  tab.schema === schema &&
-                  tab.elementName === elementName &&
-                  tab.elementType === elementType &&
-                  ['temp-data', 'data'].includes(tab.type))
-               : false;
+         switch (type) {
+            case 'temp-data': {
+               const existentTab = workspaceTabs
+                  ? workspaceTabs.tabs.find(tab =>
+                     tab.schema === schema &&
+                     tab.elementName === elementName &&
+                     tab.elementType === elementType &&
+                     ['temp-data', 'data'].includes(tab.type))
+                  : false;
 
-            if (existentTab) { // if data tab exists
-               tabUid = existentTab.uid;
-            }
-            else {
-               const tempTabs = workspaceTabs ? workspaceTabs.tabs.filter(tab => tab.type === 'temp-data') : false;
-               if (tempTabs && tempTabs.length) { // if temp table already opened
-                  for (const tab of tempTabs) {
-                     commit('REPLACE_TAB', { uid, tab: tab.uid, type, schema, elementName, elementType });
-                     tabUid = tab.uid;
+               if (existentTab) { // if data tab exists
+                  tabUid = existentTab.uid;
+               }
+               else {
+                  const tempTabs = workspaceTabs ? workspaceTabs.tabs.filter(tab => tab.type === 'temp-data') : false;
+                  if (tempTabs && tempTabs.length) { // if temp table already opened
+                     for (const tab of tempTabs) {
+                        commit('REPLACE_TAB', { uid, tab: tab.uid, type, schema, elementName, elementType });
+                        tabUid = tab.uid;
+                     }
                   }
+                  else {
+                     tabUid = uidGen('T');
+                     commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
+                  }
+               }
+            }
+               break;
+            case 'data': {
+               const existentTab = workspaceTabs
+                  ? workspaceTabs.tabs.find(tab =>
+                     tab.schema === schema &&
+                        tab.elementName === elementName &&
+                        tab.elementType === elementType &&
+                        ['temp-data', 'data'].includes(tab.type))
+                  : false;
+
+               if (existentTab) {
+                  commit('REPLACE_TAB', { uid, tab: existentTab.uid, type, schema, elementName, elementType });
+                  tabUid = existentTab.uid;
                }
                else {
                   tabUid = uidGen('T');
                   commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
                }
             }
-         }
-         else if (type === 'data') {
-            const existentTab = workspaceTabs
-               ? workspaceTabs.tabs.find(tab =>
-                  tab.schema === schema &&
-                  tab.elementName === elementName &&
-                  tab.elementType === elementType &&
-                  ['temp-data', 'data'].includes(tab.type))
-               : false;
+               break;
+            case 'table-props': {
+               const existentTab = workspaceTabs
+                  ? workspaceTabs.tabs.find(tab =>
+                     tab.elementName === elementName &&
+                        tab.elementType === elementType &&
+                        tab.type === type)
+                  : false;
 
-            if (existentTab) {
-               commit('REPLACE_TAB', { uid, tab: existentTab.uid, type, schema, elementName, elementType });
-               tabUid = existentTab.uid;
+               if (existentTab) {
+                  commit('REPLACE_TAB', { uid, tab: existentTab.uid, type, schema, elementName, elementType });
+                  tabUid = existentTab.uid;
+               }
+               else {
+                  tabUid = uidGen('T');
+                  commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
+               }
             }
-            else {
+               break;
+            case 'temp-trigger-props': {
+               const existentTab = workspaceTabs
+                  ? workspaceTabs.tabs.find(tab =>
+                     tab.schema === schema &&
+                        tab.elementName === elementName &&
+                        tab.elementType === elementType &&
+                        ['temp-trigger-props', 'trigger-props'].includes(tab.type))
+                  : false;
+
+               if (existentTab) { // if tab exists
+                  tabUid = existentTab.uid;
+               }
+               else {
+                  const tempTabs = workspaceTabs ? workspaceTabs.tabs.filter(tab => tab.type === 'temp-trigger-props') : false;
+                  if (tempTabs && tempTabs.length) { // if temp tab already opened
+                     for (const tab of tempTabs) {
+                        commit('REPLACE_TAB', { uid, tab: tab.uid, type, schema, elementName, elementType });
+                        tabUid = tab.uid;
+                     }
+                  }
+                  else {
+                     tabUid = uidGen('T');
+                     commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
+                  }
+               }
+            }
+               break;
+            case 'trigger-props': {
+               const existentTab = workspaceTabs
+                  ? workspaceTabs.tabs.find(tab =>
+                     tab.schema === schema &&
+                     tab.elementName === elementName &&
+                     tab.elementType === elementType &&
+                     ['temp-trigger-props', 'trigger-props'].includes(tab.type))
+                  : false;
+
+               if (existentTab) {
+                  commit('REPLACE_TAB', { uid, tab: existentTab.uid, type, schema, elementName, elementType });
+                  tabUid = existentTab.uid;
+               }
+               else {
+                  tabUid = uidGen('T');
+                  commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
+               }
+            }
+               break;
+            default:
                tabUid = uidGen('T');
                commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
-            }
-         }
-         else if (type === 'table-props') {
-            const existentTab = workspaceTabs
-               ? workspaceTabs.tabs.find(tab =>
-                  tab.elementName === elementName &&
-                  tab.elementType === elementType &&
-                  tab.type === type)
-               : false;
-
-            if (existentTab) {
-               commit('REPLACE_TAB', { uid, tab: existentTab.uid, type, schema, elementName, elementType });
-               tabUid = existentTab.uid;
-            }
-            else {
-               tabUid = uidGen('T');
-               commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
-            }
-         }
-         else {
-            tabUid = uidGen('T');
-            commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
+               break;
          }
 
          commit('SELECT_TAB', { uid, tab: tabUid });

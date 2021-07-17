@@ -224,7 +224,6 @@ export default {
          addNotification: 'notifications/addNotification',
          refreshStructure: 'workspaces/refreshStructure',
          setUnsavedChanges: 'workspaces/setUnsavedChanges',
-         newTab: 'workspaces/newTab',
          renameTabs: 'workspaces/renameTabs',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
