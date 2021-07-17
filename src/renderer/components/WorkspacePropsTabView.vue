@@ -10,8 +10,8 @@
                   title="CTRL+S"
                   @click="saveChanges"
                >
+                  <i class="mdi mdi-24px mdi-content-save mr-1" />
                   <span>{{ $t('word.save') }}</span>
-                  <i class="mdi mdi-24px mdi-content-save ml-1" />
                </button>
                <button
                   :disabled="!isChanged"
@@ -19,8 +19,8 @@
                   :title="$t('message.clearChanges')"
                   @click="clearChanges"
                >
+                  <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
                   <span>{{ $t('word.clear') }}</span>
-                  <i class="mdi mdi-24px mdi-delete-sweep ml-1" />
                </button>
             </div>
          </div>

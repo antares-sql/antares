@@ -114,6 +114,8 @@ module.exports = {
       row: 'Row | Rows',
       cell: 'Cell | Cells',
       triggerFunction: 'Trigger function | Trigger functions',
+      all: 'All',
+      duplicate: 'Duplicate',
       sql: 'SQL',
       csv: 'CSV',
       json: 'JSON',

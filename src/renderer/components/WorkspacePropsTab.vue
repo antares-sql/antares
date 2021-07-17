@@ -10,8 +10,8 @@
                   title="CTRL+S"
                   @click="saveChanges"
                >
+                  <i class="mdi mdi-24px mdi-content-save mr-1" />
                   <span>{{ $t('word.save') }}</span>
-                  <i class="mdi mdi-24px mdi-content-save ml-1" />
                </button>
                <button
                   :disabled="!isChanged"
@@ -19,8 +19,8 @@
                   :title="$t('message.clearChanges')"
                   @click="clearChanges"
                >
+                  <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
                   <span>{{ $t('word.clear') }}</span>
-                  <i class="mdi mdi-24px mdi-delete-sweep ml-1" />
                </button>
 
                <div class="divider-vert py-3" />
@@ -30,24 +30,24 @@
                   :title="$t('message.addNewField')"
                   @click="addField"
                >
+                  <i class="mdi mdi-24px mdi-playlist-plus mr-1" />
                   <span>{{ $t('word.add') }}</span>
-                  <i class="mdi mdi-24px mdi-playlist-plus ml-1" />
                </button>
                <button
                   class="btn btn-dark btn-sm"
                   :title="$t('message.manageIndexes')"
                   @click="showIntdexesModal"
                >
+                  <i class="mdi mdi-24px mdi-key mdi-rotate-45 mr-1" />
                   <span>{{ $t('word.indexes') }}</span>
-                  <i class="mdi mdi-24px mdi-key mdi-rotate-45 ml-1" />
                </button>
                <button class="btn btn-dark btn-sm" @click="showForeignModal">
+                  <i class="mdi mdi-24px mdi-key-link mr-1" />
                   <span>{{ $t('word.foreignKeys') }}</span>
-                  <i class="mdi mdi-24px mdi-key-link ml-1" />
                </button>
                <button class="btn btn-dark btn-sm" @click="showOptionsModal">
+                  <i class="mdi mdi-24px mdi-cogs mr-1" />
                   <span>{{ $t('word.options') }}</span>
-                  <i class="mdi mdi-24px mdi-cogs ml-1" />
                </button>
             </div>
          </div>

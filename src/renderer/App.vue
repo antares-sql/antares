@@ -4,22 +4,21 @@
       <div id="window-content">
          <TheSettingBar />
          <div id="main-content" class="container">
-            <TheAppWelcome v-if="!connections.length" @new-conn="showNewConnModal" />
-            <div v-else class="columns col-gapless">
+            <div class="columns col-gapless">
                <Workspace
                   v-for="connection in connections"
                   :key="connection.uid"
                   :connection="connection"
                />
+               <WorkspaceAddConnectionPanel v-if="selectedWorkspace === 'NEW'" />
             </div>
+            <TheFooter />
+            <TheNotificationsBoard />
+            <TheScratchpad v-if="isScratchpad" />
+            <ModalSettings v-if="isSettingModal" />
+            <ModalDiscardChanges v-if="isUnsavedDiscardModal" />
+            <BaseTextEditor class="d-none" value="" />
          </div>
-         <TheFooter />
-         <TheNotificationsBoard />
-         <ModalNewConnection v-if="isNewConnModal" />
-         <TheScratchpad v-if="isScratchpad" />
-         <ModalSettings v-if="isSettingModal" />
-         <ModalDiscardChanges v-if="isUnsavedDiscardModal" />
-         <BaseTextEditor class="d-none" value="" />
       </div>
    </div>
 </template>
@@ -36,9 +35,8 @@ export default {
       TheSettingBar: () => import(/* webpackChunkName: "TheSettingBar" */'@/components/TheSettingBar'),
       TheFooter: () => import(/* webpackChunkName: "TheFooter" */'@/components/TheFooter'),
       TheNotificationsBoard: () => import(/* webpackChunkName: "TheNotificationsBoard" */'@/components/TheNotificationsBoard'),
-      TheAppWelcome: () => import(/* webpackChunkName: "TheAppWelcome" */'@/components/TheAppWelcome'),
       Workspace: () => import(/* webpackChunkName: "Workspace" */'@/components/Workspace'),
-      ModalNewConnection: () => import(/* webpackChunkName: "ModalNewConnection" */'@/components/ModalNewConnection'),
+      WorkspaceAddConnectionPanel: () => import(/* webpackChunkName: "WorkspaceAddConnectionPanel" */'@/components/WorkspaceAddConnectionPanel'),
       ModalSettings: () => import(/* webpackChunkName: "ModalSettings" */'@/components/ModalSettings'),
       TheScratchpad: () => import(/* webpackChunkName: "TheScratchpad" */'@/components/TheScratchpad'),
       ModalDiscardChanges: () => import(/* webpackChunkName: "ModalDiscardChanges" */'@/components/ModalDiscardChanges'),
@@ -49,9 +47,8 @@ export default {
    },
    computed: {
       ...mapGetters({
+         selectedWorkspace: 'workspaces/getSelected',
          isLoading: 'application/isLoading',
-         isNewConnModal: 'application/isNewModal',
-         isEditModal: 'application/isEditModal',
          isSettingModal: 'application/isSettingModal',
          isScratchpad: 'application/isScratchpad',
          connections: 'connections/getConnections',

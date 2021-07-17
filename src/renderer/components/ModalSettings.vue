@@ -60,7 +60,7 @@
                            {{ $t('word.application') }}
                         </div>
                         <div class="column col-8 col-sm-12 mb-2">
-                           <div class="form-group mb-4">
+                           <div class="form-group">
                               <div class="col-6 col-sm-12">
                                  <label class="form-label">
                                     <i class="mdi mdi-18px mdi-translate mr-1" />

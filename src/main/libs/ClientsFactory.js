@@ -12,6 +12,11 @@ export class ClientsFactory {
     * @param {String} args.params.host
     * @param {Number} args.params.port
     * @param {String} args.params.password
+<<<<<<< HEAD
+=======
+    * @param {String=} args.params.database
+    * @param {String=} args.params.schema
+>>>>>>> upstream/master
     * @param {String} args.params.ssh.host
     * @param {String} args.params.ssh.username
     * @param {String} args.params.ssh.password

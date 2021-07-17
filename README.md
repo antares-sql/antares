@@ -9,9 +9,9 @@
 Antares is an SQL client based on [Electron.js](https://github.com/electron/electron) and [Vue.js](https://github.com/vuejs/vue) that aims to become a useful tool, especially for developers.  
 My target is to support as many databases as possible, and all major operating systems, including the ARM versions.  
 
-**At the moment this application is in development state, many features will come in future updates**, and supports only MySQL/MariaDB and PostgreSQL (partially).  
-Many of its current features are enough to have a pleasant user experience with MySQL/MariaDB, and basic functionalites with PostgreSQL, so give it a chance and send me your feedback, I would really appreciate it.  
-I'm actively working on it, hoping to provide cool features and fixes as soon as possible.
+**At the moment this application is in development state, many features will come in future updates**, and supports only MySQL/MariaDB and PostgreSQL.  
+At the moment, however, there are all the features necessary to have a pleasant database management experience, so give it a chance and send us your feedback, we would really appreciate it.  
+We are actively working on it, hoping to provide new cool features, improvements and fixes as soon as possible.  
 
 🔗 If you are curious to try Antares you can download and install the [latest release](https://github.com/Fabio286/antares/releases/latest).  
 👁 To stay tuned for new releases [follow Antares SQL](https://twitter.com/AntaresSQL) on Twitter.  
@@ -19,9 +19,9 @@ I'm actively working on it, hoping to provide cool features and fixes as soon as
 
 ## Philosophy
 
-Why am I developing an SQL client when there are a lot of them on the market?  
+Why are we developing an SQL client when there are a lot of them on the market?  
 The main goal is to develop a totally free, full featured, cross platform and open source alternative, empowered by JavaScript's ecosystem.  
-A modern application created with minimalism and semplicity in mind, with features in the right places, not hundreds of tiny buttons, tabs or submenu.  
+A modern application created with minimalism and semplicity in mind, with features in the right places, not hundreds of tiny buttons, nested tabs or submenu; productivity comes first.  
 
 ## Download
 
@@ -43,6 +43,7 @@ A modern application created with minimalism and semplicity in mind, with featur
 - Fake table data filler.
 - Run queries on multiple tabs.
 - Query suggestions and auto complete.
+- SSH tunnel support.
 - Dark and light theme.
 - Scratchpad.
 - Multi language.
@@ -54,13 +55,10 @@ This is a roadmap with major features will come in near future.
 
 - Support for other databases.
 - Database tools.
-- SSH tunnel support.
 - Users management (add/edit/delete).
-- UI/UX improvements.
-- Query history.
+- Query history and bookmarks.
 - More context menu shortcuts.
 - More keyboard shortcuts.
-- Query logs console.
 - Import/export and migration.
 
 ## Currently supported
@@ -68,7 +66,7 @@ This is a roadmap with major features will come in near future.
 ### Databases
 
 - [x] MySQL/MariaDB
-- [x] PostgreSQL (partially, work in progress)
+- [x] PostgreSQL
 - [ ] SQLite
 - [ ] MSSQL
 - [ ] OracleDB

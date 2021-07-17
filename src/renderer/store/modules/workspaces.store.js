@@ -20,7 +20,7 @@ export default {
       getSelected: state => {
          if (state.selected_workspace) return state.selected_workspace;
          if (state.workspaces.length) return state.workspaces[0].uid;
-         return null;
+         return 'NEW';
       },
       getWorkspace: state => uid => {
          return state.workspaces.find(workspace => workspace.uid === uid);
@@ -52,7 +52,10 @@ export default {
    },
    mutations: {
       SELECT_WORKSPACE (state, uid) {
-         state.selected_workspace = uid;
+         if (!uid)
+            state.selected_workspace = state.workspaces.length ? state.workspaces[0].uid : 'NEW';
+         else
+            state.selected_workspace = uid;
       },
       SET_CONNECTED (state, payload) {
          const { uid, client, dataTypes, indexTypes, customizations, structure, version } = payload;

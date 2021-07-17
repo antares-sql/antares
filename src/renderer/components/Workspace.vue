@@ -1,6 +1,10 @@
 <template>
    <div v-show="isSelected" class="workspace column columns col-gapless">
-      <WorkspaceExploreBar :connection="connection" :is-selected="isSelected" />
+      <WorkspaceExploreBar
+         v-if="workspace.connection_status === 'connected'"
+         :connection="connection"
+         :is-selected="isSelected"
+      />
       <div v-if="workspace.connection_status === 'connected'" class="workspace-tabs column columns col-gapless">
          <ul
             id="tabWrap"
@@ -152,6 +156,7 @@
             :connection="connection"
          />
       </div>
+      <WorkspaceEditConnectionPanel v-else :connection="connection" />
       <ModalProcessesList
          v-if="isProcessesModal"
          :connection="connection"
@@ -164,6 +169,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import Connection from '@/ipc-api/Connection';
 import WorkspaceExploreBar from '@/components/WorkspaceExploreBar';
+import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPanel';
 import WorkspaceQueryTab from '@/components/WorkspaceQueryTab';
 import WorkspaceTableTab from '@/components/WorkspaceTableTab';
 import WorkspacePropsTab from '@/components/WorkspacePropsTab';
@@ -179,6 +185,7 @@ export default {
    name: 'Workspace',
    components: {
       WorkspaceExploreBar,
+      WorkspaceEditConnectionPanel,
       WorkspaceQueryTab,
       WorkspaceTableTab,
       WorkspacePropsTab,

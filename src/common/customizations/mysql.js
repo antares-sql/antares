@@ -7,6 +7,7 @@ module.exports = {
    defaultUser: 'root',
    defaultDatabase: null,
    // Core
+   connectionSchema: true,
    collations: true,
    engines: true,
    // Tools

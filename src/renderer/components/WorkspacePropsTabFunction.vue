@@ -10,8 +10,8 @@
                   title="CTRL+S"
                   @click="saveChanges"
                >
+                  <i class="mdi mdi-24px mdi-content-save mr-1" />
                   <span>{{ $t('word.save') }}</span>
-                  <i class="mdi mdi-24px mdi-content-save ml-1" />
                </button>
                <button
                   :disabled="!isChanged"
@@ -19,8 +19,8 @@
                   :title="$t('message.clearChanges')"
                   @click="clearChanges"
                >
+                  <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
                   <span>{{ $t('word.clear') }}</span>
-                  <i class="mdi mdi-24px mdi-delete-sweep ml-1" />
                </button>
 
                <div class="divider-vert py-3" />
@@ -30,16 +30,16 @@
                   :disabled="isChanged"
                   @click="runFunctionCheck"
                >
+                  <i class="mdi mdi-24px mdi-play mr-1" />
                   <span>{{ $t('word.run') }}</span>
-                  <i class="mdi mdi-24px mdi-play ml-1" />
                </button>
                <button class="btn btn-dark btn-sm" @click="showParamsModal">
+                  <i class="mdi mdi-24px mdi-dots-horizontal mr-1" />
                   <span>{{ $t('word.parameters') }}</span>
-                  <i class="mdi mdi-24px mdi-dots-horizontal ml-1" />
                </button>
                <button class="btn btn-dark btn-sm" @click="showOptionsModal">
+                  <i class="mdi mdi-24px mdi-cogs mr-1" />
                   <span>{{ $t('word.options') }}</span>
-                  <i class="mdi mdi-24px mdi-cogs ml-1" />
                </button>
             </div>
          </div>
