@@ -272,6 +272,7 @@ export default {
          refreshStructure: 'workspaces/refreshStructure',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
          selectTab: 'workspaces/selectTab',
+         newTab: 'workspaces/newTab',
          setSearchTerm: 'workspaces/setSearchTerm',
          addNotification: 'notifications/addNotification',
          changeExplorebarSize: 'settings/changeExplorebarSize'
@@ -316,8 +317,13 @@ export default {
 
          if (status === 'success') {
             await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedSchema, table: payload.name });
-            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+            this.newTab({
+               uid: this.workspace.uid,
+               schema: this.selectedSchema,
+               elementName: payload.name,
+               elementType: 'table',
+               type: 'table-props'
+            });
          }
          else
             this.addNotification({ status: 'error', message: response });
@@ -374,7 +380,13 @@ export default {
          if (status === 'success') {
             await this.refresh();
             this.changeBreadcrumbs({ schema: this.selectedSchema, view: payload.name });
-            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+            this.newTab({
+               uid: this.workspace.uid,
+               schema: this.selectedSchema,
+               elementName: payload.name,
+               elementType: 'ciew',
+               type: 'view-props'
+            });
          }
          else
             this.addNotification({ status: 'error', message: response });
