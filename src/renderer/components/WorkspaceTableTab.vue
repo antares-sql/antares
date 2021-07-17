@@ -11,9 +11,9 @@
                         title="F5"
                         @click="reloadTable"
                      >
+                        <i v-if="!+autorefreshTimer" class="mdi mdi-24px mdi-refresh mr-1" />
+                        <i v-else class="mdi mdi-24px mdi-history mdi-flip-h mr-1" />
                         <span>{{ $t('word.refresh') }}</span>
-                        <i v-if="!+autorefreshTimer" class="mdi mdi-24px mdi-refresh ml-1" />
-                        <i v-else class="mdi mdi-24px mdi-history mdi-flip-h ml-1" />
                      </button>
                      <div class="btn btn-dark btn-sm dropdown-toggle pl-0 pr-0" tabindex="0">
                         <i class="mdi mdi-24px mdi-menu-down" />
@@ -77,8 +77,8 @@
                   :disabled="isQuering"
                   @click="showFakerModal"
                >
+                  <i class="mdi mdi-24px mdi-playlist-plus mr-1" />
                   <span>{{ $t('message.tableFiller') }}</span>
-                  <i class="mdi mdi-24px mdi-playlist-plus ml-1" />
                </button>
 
                <div class="dropdown table-dropdown pr-2">
@@ -87,8 +87,8 @@
                      class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
                      tabindex="0"
                   >
+                     <i class="mdi mdi-24px mdi-file-export mr-1" />
                      <span>{{ $t('word.export') }}</span>
-                     <i class="mdi mdi-24px mdi-file-export ml-1" />
                      <i class="mdi mdi-24px mdi-menu-down" />
                   </button>
                   <ul class="menu text-left">

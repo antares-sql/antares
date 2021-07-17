@@ -67,6 +67,9 @@ export default connections => {
       if (conn.database)
          params.database = conn.database;
 
+      if (conn.schema)
+         params.schema = conn.schema;
+
       if (conn.ssl) {
          params.ssl = {
             key: conn.key ? fs.readFileSync(conn.key) : null,

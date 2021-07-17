@@ -7,6 +7,7 @@ module.exports = {
    database: false,
    collations: false,
    engines: false,
+   connectionSchema: false,
    // Tools
    processesList: false,
    usersManagement: false,

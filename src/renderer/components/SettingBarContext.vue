@@ -3,18 +3,13 @@
       :context-event="contextEvent"
       @close-context="$emit('close-context')"
    >
-      <div class="context-element" @click="showEditModal(contextConnection)">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-pencil text-light pr-1" /> {{ $t('word.edit') }}</span>
+      <div class="context-element" @click="duplicateConnection">
+         <span class="d-flex"><i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ $t('word.duplicate') }}</span>
       </div>
       <div class="context-element" @click="showConfirmModal">
          <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ $t('word.delete') }}</span>
       </div>
 
-      <ModalEditConnection
-         v-if="isEditModal"
-         :connection="contextConnection"
-         @close="hideEditModal"
-      />
       <ConfirmModal
          v-if="isConfirmModal"
          @confirm="confirmDeleteConnection"
@@ -36,15 +31,14 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { uidGen } from 'common/libs/uidGen';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
-import ModalEditConnection from '@/components/ModalEditConnection';
 
 export default {
    name: 'SettingBarContext',
    components: {
       BaseContextMenu,
-      ModalEditConnection,
       ConfirmModal
    },
    props: {
@@ -59,7 +53,8 @@ export default {
    },
    computed: {
       ...mapGetters({
-         getConnectionName: 'connections/getConnectionName'
+         getConnectionName: 'connections/getConnectionName',
+         selectedWorkspace: 'workspaces/getSelected'
       }),
       connectionName () {
          return this.getConnectionName(this.contextConnection.uid);
@@ -67,17 +62,25 @@ export default {
    },
    methods: {
       ...mapActions({
-         deleteConnection: 'connections/deleteConnection'
+         addConnection: 'connections/addConnection',
+         deleteConnection: 'connections/deleteConnection',
+         selectWorkspace: 'workspaces/selectWorkspace'
       }),
       confirmDeleteConnection () {
+         if (this.selectedWorkspace === this.contextConnection.uid)
+            this.selectWorkspace();
          this.deleteConnection(this.contextConnection);
          this.closeContext();
       },
-      showEditModal () {
-         this.isEditModal = true;
-      },
-      hideEditModal () {
-         this.isEditModal = false;
+      duplicateConnection () {
+         let connectionCopy = Object.assign({}, this.contextConnection);
+         connectionCopy = {
+            ...connectionCopy,
+            uid: uidGen('C'),
+            name: connectionCopy.name ? `${connectionCopy.name}_copy` : ''
+         };
+
+         this.addConnection(connectionCopy);
          this.closeContext();
       },
       showConfirmModal () {

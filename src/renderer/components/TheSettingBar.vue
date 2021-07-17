@@ -25,7 +25,8 @@
             </draggable>
             <li
                class="settingbar-element btn btn-link ex-tooltip"
-               @click="showNewConnModal"
+               :class="{'selected': 'NEW' === selectedWorkspace}"
+               @click="selectWorkspace('NEW')"
                @mouseover.self="tooltipPosition"
             >
                <i class="settingbar-element-icon mdi mdi-24px mdi-plus text-light" />
@@ -92,7 +93,6 @@ export default {
    methods: {
       ...mapActions({
          updateConnections: 'connections/updateConnections',
-         showNewConnModal: 'application/showNewConnModal',
          showSettingModal: 'application/showSettingModal',
          showScratchpad: 'application/showScratchpad',
          selectWorkspace: 'workspaces/selectWorkspace'
@@ -167,14 +167,13 @@ export default {
         height: $settingbar-width;
         width: 100%;
         margin: 0;
-        border-left: 3px solid transparent;
         opacity: 0.5;
         transition: opacity 0.2s;
         display: flex;
-        align-content: center;
-        justify-content: center;
-        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
         border-radius: 0;
+        padding: 0;
 
         &:hover {
           opacity: 1;
@@ -194,12 +193,12 @@ export default {
           width: 3px;
           transition: height 0.2s;
           background-color: $primary-color;
-          position: absolute;
-          left: 0;
           border-radius: $border-radius;
         }
 
         .settingbar-element-icon {
+          margin: 0 auto;
+
           &.badge::after {
             bottom: -10px;
             right: 0;

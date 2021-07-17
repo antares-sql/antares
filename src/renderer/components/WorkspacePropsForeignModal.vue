@@ -19,8 +19,8 @@
                   <div class="panel-header pt-0 pl-0">
                      <div class="d-flex">
                         <button class="btn btn-dark btn-sm d-flex" @click="addForeign">
+                           <i class="mdi mdi-24px mdi-link-plus mr-1" />
                            <span>{{ $t('word.add') }}</span>
-                           <i class="mdi mdi-24px mdi-link-plus ml-1" />
                         </button>
                         <button
                            class="btn btn-dark btn-sm d-flex ml-2 mr-0"
@@ -28,8 +28,8 @@
                            :disabled="!isChanged"
                            @click.prevent="clearChanges"
                         >
+                           <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
                            <span>{{ $t('word.clear') }}</span>
-                           <i class="mdi mdi-24px mdi-delete-sweep ml-1" />
                         </button>
                      </div>
                   </div>
@@ -267,6 +267,12 @@ export default {
          addNotification: 'notifications/addNotification'
       }),
       confirmForeignsChange () {
+         this.foreignProxy = this.foreignProxy.filter(foreign =>
+            foreign.field &&
+            foreign.refField &&
+            foreign.table &&
+            foreign.refTable
+         );
          this.$emit('foreigns-update', this.foreignProxy);
       },
       selectForeign (event, id) {
@@ -331,6 +337,8 @@ export default {
          this.selectedForeignID = this.foreignProxy.length ? this.foreignProxy[0]._id : '';
       },
       async getRefFields () {
+         if (!this.selectedForeignObj.refTable) return;
+
          const params = {
             uid: this.connection.uid,
             schema: this.selectedForeignObj.refSchema,

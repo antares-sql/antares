@@ -113,7 +113,7 @@ export class MySQLClient extends AntaresCore {
          ssl: null
       };
 
-      if (this._params.database?.length) dbConfig.database = this._params.database;
+      if (this._params.schema?.length) dbConfig.database = this._params.schema;
 
       if (this._params.ssl) dbConfig.ssl = { ...this._params.ssl };
 
@@ -127,7 +127,8 @@ export class MySQLClient extends AntaresCore {
          dbConfig.port = this._tunnel.localPort;
       }
 
-      if (!this._poolSize) this._connection = await mysql.createConnection(dbConfig);
+      if (!this._poolSize)
+         this._connection = await mysql.createConnection(dbConfig);
       else {
          this._connection = mysql.createPool({
             ...dbConfig,
@@ -168,6 +169,12 @@ export class MySQLClient extends AntaresCore {
     */
    async getStructure (schemas) {
       const { rows: databases } = await this.raw('SHOW DATABASES');
+
+      let filteredDatabases = databases;
+
+      if (this._params.schema)
+         filteredDatabases = filteredDatabases.filter(db => db.Database === this._params.schema);
+
       const { rows: functions } = await this.raw('SHOW FUNCTION STATUS');
       const { rows: procedures } = await this.raw('SHOW PROCEDURE STATUS');
       const { rows: schedulers } = await this.raw('SELECT *, EVENT_SCHEMA AS `Db`, EVENT_NAME AS `Name` FROM information_schema.`EVENTS`');
@@ -175,7 +182,7 @@ export class MySQLClient extends AntaresCore {
       const tablesArr = [];
       const triggersArr = [];
 
-      for (const db of databases) {
+      for (const db of filteredDatabases) {
          if (!schemas.has(db.Database)) continue;
 
          let { rows: tables } = await this.raw(`SHOW TABLE STATUS FROM \`${db.Database}\``);
@@ -197,7 +204,7 @@ export class MySQLClient extends AntaresCore {
          }
       }
 
-      return databases.map(db => {
+      return filteredDatabases.map(db => {
          if (schemas.has(db.Database)) {
             // TABLES
             const remappedTables = tablesArr.filter(table => table.Db === db.Database).map(table => {

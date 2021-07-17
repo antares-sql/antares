@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.1](https://github.com/Fabio286/antares/compare/v0.2.0...v0.2.1) (2021-07-09)
+
+
+### Features
+
+* **UI:** contextual menu shortcuts to create new elements on folders ([0252a06](https://github.com/Fabio286/antares/commit/0252a064d99df09b01c020c7d10c76dd43d4ede8))
+* context menu option to duplicate connections ([439356a](https://github.com/Fabio286/antares/commit/439356a01993a6a248f5a7d7df305ac5e0e63775))
+* **MySQL:** possibility to set a default schema in connection parameters ([c6897af](https://github.com/Fabio286/antares/commit/c6897af22d04ed930289a55124b3e8d080fbae3a))
+* **UI:** new connection add panel ([8cd76e7](https://github.com/Fabio286/antares/commit/8cd76e711c9328254d498b4f9afa221311f5a487))
+* **UI:** new connection edit panel ([9af71a6](https://github.com/Fabio286/antares/commit/9af71a6e343deda1bf79d8410511cf861af3c304))
+* SSH Tunnel functionality ([#81](https://github.com/Fabio286/antares/issues/81)) ([1801bef](https://github.com/Fabio286/antares/commit/1801bef019cee77a99df7e3822145ad952465abb))
+
+
+### Bug Fixes
+
+* clear corrupted configurations to avoid exceptions ([56fcc26](https://github.com/Fabio286/antares/commit/56fcc2650b93ece398118f39f027dc9520dd8a6a))
+* **UI:** connection tab indicator when scrolling ([a0ab63b](https://github.com/Fabio286/antares/commit/a0ab63bdb533aac9b2bdc2ee07a3b1f2b70ea227))
+* avoid to trigger schema loading multiple times ([7570b0a](https://github.com/Fabio286/antares/commit/7570b0add8cb9130f15cf8cb807a96dbfd2837d0))
+
 ## [0.2.0](https://github.com/Fabio286/antares/compare/v0.1.13...v0.2.0) (2021-07-03)
 
 
