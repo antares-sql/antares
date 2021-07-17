@@ -152,6 +152,7 @@ export default {
       return {
          isLoading: false,
          isSaving: false,
+         isReady: false,
          originalTrigger: null,
          localTrigger: { sql: '' },
          lastTrigger: null,
@@ -211,10 +212,10 @@ export default {
                this.getTriggerData();
          }
       },
-      isChanged (val, oldVal) {
+      isChanged (val) {
          this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: val });
 
-         if (val && !oldVal) {
+         if (val) {
             const triggerName = this.customizations.triggerTableInName ? `${this.originalTrigger.table}.${this.originalTrigger.name}` : this.originalTrigger.name;
 
             this.newTab({
@@ -233,7 +234,7 @@ export default {
       window.addEventListener('keydown', this.onKey);
    },
    mounted () {
-      window.addEventListener('resize', this.resizeQueryEditor);
+      window.addEventListener('resize', this.resizeQueryEditor); ;
    },
    destroyed () {
       window.removeEventListener('resize', this.resizeQueryEditor);
@@ -273,6 +274,7 @@ export default {
                this.originalTrigger = response;
                this.localTrigger = JSON.parse(JSON.stringify(this.originalTrigger));
                this.sqlProxy = this.localTrigger.sql;
+               this.isReady = true;
 
                if (this.customizations.triggerMultipleEvents) {
                   this.originalTrigger.event.forEach(e => {

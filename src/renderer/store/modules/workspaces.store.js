@@ -566,9 +566,9 @@ export default {
                const existentTab = workspaceTabs
                   ? workspaceTabs.tabs.find(tab =>
                      tab.schema === schema &&
-                        tab.elementName === elementName &&
-                        tab.elementType === elementType &&
-                        ['temp-data', 'data'].includes(tab.type))
+                     tab.elementName === elementName &&
+                     tab.elementType === elementType &&
+                     ['temp-data', 'data'].includes(tab.type))
                   : false;
 
                if (existentTab) {
@@ -585,8 +585,8 @@ export default {
                const existentTab = workspaceTabs
                   ? workspaceTabs.tabs.find(tab =>
                      tab.elementName === elementName &&
-                        tab.elementType === elementType &&
-                        tab.type === type)
+                     tab.elementType === elementType &&
+                     tab.type === type)
                   : false;
 
                if (existentTab) {
@@ -603,9 +603,9 @@ export default {
                const existentTab = workspaceTabs
                   ? workspaceTabs.tabs.find(tab =>
                      tab.schema === schema &&
-                        tab.elementName === elementName &&
-                        tab.elementType === elementType &&
-                        ['temp-trigger-props', 'trigger-props'].includes(tab.type))
+                     tab.elementName === elementName &&
+                     tab.elementType === elementType &&
+                     ['temp-trigger-props', 'trigger-props'].includes(tab.type))
                   : false;
 
                if (existentTab) { // if tab exists

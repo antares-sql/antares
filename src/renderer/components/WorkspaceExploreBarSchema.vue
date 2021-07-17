@@ -310,7 +310,13 @@ export default {
             trigger: 'trigger-props'
          };
 
-         this.newTab({ uid: this.connection.uid, elementName: misc.name, schema: this.database.name, type: miscTabs[type], elementType: type });
+         this.newTab({
+            uid: this.connection.uid,
+            elementName: misc.name,
+            schema: this.database.name,
+            type: miscTabs[type],
+            elementType: type
+         });
          this.setBreadcrumbs({ schema, [type]: misc.name });
       },
       showSchemaContext (event, schema) {
