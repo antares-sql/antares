@@ -321,7 +321,6 @@ export default {
                await this.refreshStructure(this.connection.uid);
 
                if (this.originalTrigger.name !== this.localTrigger.name) {
-                  this.setUnsavedChanges(false);
                   const triggerName = this.customizations.triggerTableInName ? `${this.localTrigger.table}.${this.localTrigger.name}` : this.localTrigger.name;
                   const triggerOldName = this.customizations.triggerTableInName ? `${this.originalTrigger.table}.${this.originalTrigger.name}` : this.originalTrigger.name;
 

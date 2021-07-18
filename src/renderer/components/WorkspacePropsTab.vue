@@ -444,7 +444,6 @@ export default {
                await this.refreshStructure(this.connection.uid);
 
                if (oldName !== this.localOptions.name) {
-                  this.setUnsavedChanges(false);
                   this.renameTabs({
                      uid: this.connection.uid,
                      schema: this.schema,
@@ -452,8 +451,11 @@ export default {
                      elementNewName: this.localOptions.name,
                      elementType: 'table'
                   });
+
                   this.changeBreadcrumbs({ schema: this.schema, table: this.localOptions.name });
                }
+
+               this.getFieldsData();
             }
             else
                this.addNotification({ status: 'error', message: response });

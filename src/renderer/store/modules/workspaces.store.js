@@ -498,8 +498,8 @@ export default {
 
          commit('ADD_WORKSPACE', workspace);
 
-         if (getters.getWorkspace(uid).tabs.length < 3)
-            dispatch('newTab', { uid, type: 'query' });
+         // if (getters.getWorkspace(uid).tabs.length < 3)
+         //    dispatch('newTab', { uid, type: 'query' });
       },
       changeBreadcrumbs ({ commit, getters }, payload) {
          const breadcrumbsObj = {
@@ -659,7 +659,7 @@ export default {
             ? workspace.tabs.some(tab => tab.uid === workspace.selected_tab)
             : false;
 
-         if (!isSelectedExistent)
+         if (!isSelectedExistent && workspace.tabs.length)
             commit('SELECT_TAB', { uid, tab: workspace.tabs[workspace.tabs.length - 1].uid });
       },
       renameTabs ({ commit }, payload) {

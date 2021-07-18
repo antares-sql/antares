@@ -323,8 +323,6 @@ export default {
                await this.refreshStructure(this.connection.uid);
 
                if (oldName !== this.localView.name) {
-                  this.setUnsavedChanges(false);
-
                   this.renameTabs({
                      uid: this.connection.uid,
                      schema: this.schema,
@@ -332,8 +330,11 @@ export default {
                      elementNewName: this.localView.name,
                      elementType: 'view'
                   });
+
                   this.changeBreadcrumbs({ schema: this.schema, view: this.localView.name });
                }
+
+               this.getViewData();
             }
             else
                this.addNotification({ status: 'error', message: response });

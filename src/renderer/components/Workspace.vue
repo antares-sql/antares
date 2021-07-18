@@ -51,7 +51,6 @@
                   <span>
                      Query #{{ tab.index }}
                      <span
-                        v-if="queryTabs.length > 1"
                         class="btn btn-clear"
                         :title="$t('word.close')"
                         @click.stop="closeTab(tab)"
@@ -230,6 +229,7 @@
             :connection="connection"
             :scheduler="workspace.breadcrumbs.scheduler"
          /> -->
+         <WorkspaceEmptyState v-if="!workspace.tabs.length" @new-tab="addQueryTab" />
          <template v-for="tab of workspace.tabs">
             <WorkspaceQueryTab
                v-if="tab.type==='query'"
@@ -292,6 +292,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import Draggable from 'vuedraggable';
 import Connection from '@/ipc-api/Connection';
+import WorkspaceEmptyState from '@/components/WorkspaceEmptyState';
 import WorkspaceExploreBar from '@/components/WorkspaceExploreBar';
 import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPanel';
 import WorkspaceQueryTab from '@/components/WorkspaceQueryTab';
@@ -310,6 +311,7 @@ export default {
    name: 'Workspace',
    components: {
       Draggable,
+      WorkspaceEmptyState,
       WorkspaceExploreBar,
       WorkspaceEditConnectionPanel,
       WorkspaceQueryTab,
@@ -413,7 +415,7 @@ export default {
       },
       closeTab (tab, force) {
          this.unsavedTab = null;
-         if (tab.type === 'query' && this.queryTabs.length === 1) return;
+         // if (tab.type === 'query' && this.queryTabs.length === 1) return;
          if (!force && tab.isChanged) {
             this.unsavedTab = tab;
             return;

@@ -224,7 +224,8 @@ module.exports = {
       dataTabPageSize: 'DATA tab page size',
       enableSsh: 'Enable SSH',
       pageNumber: 'Page number',
-      duplicateTable: 'Duplicate table'
+      duplicateTable: 'Duplicate table',
+      noOpenTabs: 'There are no open tabs, navigate on the left bar or:'
    },
    faker: {
       address: 'Address',
