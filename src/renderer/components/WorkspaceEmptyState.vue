@@ -3,9 +3,6 @@
       <div class="empty-icon">
          <img :src="require(`@/images/logo-${applicationTheme}.svg`).default" width="200">
       </div>
-      <!-- <p class="empty-title h5">
-         {{ $t('message.appWelcome') }}
-      </p> -->
       <p class="h6 empty-subtitle">
          {{ $t('message.noOpenTabs') }}
       </p>

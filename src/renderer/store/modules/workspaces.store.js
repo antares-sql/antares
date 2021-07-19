@@ -497,9 +497,6 @@ export default {
          };
 
          commit('ADD_WORKSPACE', workspace);
-
-         // if (getters.getWorkspace(uid).tabs.length < 3)
-         //    dispatch('newTab', { uid, type: 'query' });
       },
       changeBreadcrumbs ({ commit, getters }, payload) {
          const breadcrumbsObj = {
@@ -615,8 +612,23 @@ export default {
                   const tempTabs = workspaceTabs ? workspaceTabs.tabs.filter(tab => tab.type === 'temp-trigger-props') : false;
                   if (tempTabs && tempTabs.length) { // if temp tab already opened
                      for (const tab of tempTabs) {
-                        commit('REPLACE_TAB', { uid, tab: tab.uid, type, schema, elementName, elementType });
-                        tabUid = tab.uid;
+                        if (tab.isChanged) {
+                           commit('REPLACE_TAB', { // make permanent a temp table with unsaved changes
+                              uid,
+                              tab: tab.uid,
+                              type: 'trigger-props',
+                              schema: tab.schema,
+                              elementName: tab.elementName,
+                              elementType: tab.elementType
+                           });
+
+                           tabUid = uidGen('T');
+                           commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
+                        }
+                        else {
+                           commit('REPLACE_TAB', { uid, tab: tab.uid, type, schema, elementName, elementType });
+                           tabUid = tab.uid;
+                        }
                      }
                   }
                   else {
