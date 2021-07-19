@@ -1,5 +1,5 @@
 <template>
-   <div class="workspace-query-tab column col-12 columns col-gapless">
+   <div v-show="isSelected" class="workspace-query-tab column col-12 columns col-gapless">
       <div class="workspace-query-runner column col-12">
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
@@ -80,11 +80,12 @@ export default {
    },
    props: {
       connection: Object,
-      function: String
+      function: String,
+      isSelected: Boolean,
+      schema: String
    },
    data () {
       return {
-         tabUid: 'prop',
          isLoading: false,
          isSaving: false,
          isOptionsModal: false,
@@ -105,11 +106,8 @@ export default {
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
-      isSelected () {
-         return this.workspace.selected_tab === 'prop' && this.selectedWorkspace === this.workspace.uid && this.function;
-      },
-      schema () {
-         return this.workspace.breadcrumbs.schema;
+      tabUid () {
+         return this.$vnode.key;
       },
       isChanged () {
          return JSON.stringify(this.originalFunction) !== JSON.stringify(this.localFunction);
@@ -128,6 +126,13 @@ export default {
       }
    },
    watch: {
+      async schema () {
+         if (this.isSelected) {
+            await this.getFunctionData();
+            this.$refs.queryEditor.editor.session.setValue(this.localFunction.sql);
+            this.lastFunction = this.function;
+         }
+      },
       async function () {
          if (this.isSelected) {
             await this.getFunctionData();
@@ -136,25 +141,27 @@ export default {
          }
       },
       async isSelected (val) {
-         if (val && this.lastFunction !== this.function) {
-            await this.getFunctionData();
-            this.$refs.queryEditor.editor.session.setValue(this.localFunction.sql);
-            this.lastFunction = this.function;
+         if (val) {
+            this.changeBreadcrumbs({ schema: this.schema, triggerFunction: this.function });
+
+            if (this.lastFunction !== this.function)
+               await this.getFunctionData();
          }
       },
       isChanged (val) {
-         if (this.isSelected && this.lastFunction === this.function && this.function !== null)
-            this.setUnsavedChanges(val);
+         this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: val });
       }
+   },
+   async created () {
+      await this.getFunctionData();
+      this.$refs.queryEditor.editor.session.setValue(this.localFunction.sql);
+      window.addEventListener('keydown', this.onKey);
    },
    mounted () {
       window.addEventListener('resize', this.resizeQueryEditor);
    },
    destroyed () {
       window.removeEventListener('resize', this.resizeQueryEditor);
-   },
-   created () {
-      window.addEventListener('keydown', this.onKey);
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);
@@ -163,15 +170,17 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification',
          refreshStructure: 'workspaces/refreshStructure',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges',
+         renameTabs: 'workspaces/renameTabs',
+         newTab: 'workspaces/newTab',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
-         newTab: 'workspaces/newTab'
+         setUnsavedChanges: 'workspaces/setUnsavedChanges'
       }),
       async getFunctionData () {
          if (!this.function) return;
 
          this.isLoading = true;
          this.localFunction = { sql: '' };
+         this.lastFunction = this.function;
 
          const params = {
             uid: this.connection.uid,
@@ -223,8 +232,15 @@ export default {
                await this.refreshStructure(this.connection.uid);
 
                if (oldName !== this.localFunction.name) {
-                  this.setUnsavedChanges(false);
-                  this.changeBreadcrumbs({ schema: this.schema, function: this.localFunction.name });
+                  this.renameTabs({
+                     uid: this.connection.uid,
+                     schema: this.schema,
+                     elementName: oldName,
+                     elementNewName: this.localFunction.name,
+                     elementType: 'triggerFunction'
+                  });
+
+                  this.changeBreadcrumbs({ schema: this.schema, triggerFunction: this.localFunction.name });
                }
 
                this.getFunctionData();

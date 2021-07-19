@@ -16,12 +16,20 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 export default {
    name: 'WorkspaceEmptyState',
    computed: {
       ...mapGetters({
          applicationTheme: 'settings/getApplicationTheme'
+      })
+   },
+   created () {
+      this.changeBreadcrumbs({});
+   },
+   methods: {
+      ...mapActions({
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       })
    }
 };

@@ -121,7 +121,8 @@
                            :key="`${func.name}-${i}`"
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.triggerFunction === func.name}"
-                           @click="setBreadcrumbs({schema: database.name, triggerFunction: func.name})"
+                           @click="selectMisc({schema: database.name, misc: func, type: 'triggerFunction'})"
+                           @dblclick="openMiscPermanentTab({schema: database.name, misc: func, type: 'triggerFunction'})"
                            @contextmenu.prevent="showMiscContext($event, {...func, type: 'triggerFunction'})"
                         >
                            <a class="table-name">
@@ -288,7 +289,8 @@ export default {
       },
       selectMisc ({ schema, misc, type }) {
          const miscTempTabs = {
-            trigger: 'temp-trigger-props'
+            trigger: 'temp-trigger-props',
+            triggerFunction: 'temp-trigger-function-props'
          };
 
          this.newTab({
@@ -307,7 +309,8 @@ export default {
       },
       openMiscPermanentTab ({ schema, misc, type }) {
          const miscTabs = {
-            trigger: 'trigger-props'
+            trigger: 'trigger-props',
+            triggerFunction: 'trigger-function-props'
          };
 
          this.newTab({

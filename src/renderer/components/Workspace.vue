@@ -15,28 +15,6 @@
             draggable=".tab-draggable"
             @mouseover.native="addWheelEvent"
          >
-            <!-- <li
-               v-if="schemaChild && isSettingSupported"
-               class="tab-item"
-               :class="{'active': selectedTab === 'prop'}"
-               @click="selectTab({uid: workspace.uid, tab: 'prop'})"
-            >
-               <a class="tab-link">
-                  <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
-                  <span :title="schemaChild">{{ $t('word.settings').toUpperCase() }}: {{ schemaChild }}</span>
-               </a>
-            </li>
-            <li
-               v-if="workspace.breadcrumbs.table || workspace.breadcrumbs.view"
-               class="tab-item"
-               :class="{'active': selectedTab === 'data'}"
-               @click="selectTab({uid: workspace.uid, tab: 'data'})"
-            >
-               <a class="tab-link">
-                  <i class="mdi mdi-18px mr-1" :class="workspace.breadcrumbs.table ? 'mdi-table' : 'mdi-table-eye'" />
-                  <span :title="schemaChild">{{ $t('word.data').toUpperCase() }}: {{ schemaChild }}</span>
-               </a>
-            </li> -->
             <li
                v-for="(tab, i) of draggableTabs"
                :key="i"
@@ -150,6 +128,39 @@
                      />
                   </span>
                </a>
+
+               <a
+                  v-else-if="tab.type === 'temp-trigger-function-props'"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+                  @dblclick="openAsPermanentTab(tab)"
+               >
+                  <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
+                     <span class=" text-italic">{{ tab.elementName }}</span>
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a
+                  v-else-if="tab.type === 'trigger-function-props'"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+               >
+                  <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
+                     {{ tab.elementName }}
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
             </li>
             <li slot="header" class="tab-item dropdown tools-dropdown">
                <a
@@ -199,12 +210,6 @@
             </li>
          </Draggable>
          <!--
-         <WorkspacePropsTabTrigger
-            v-show="selectedTab === 'prop' && workspace.breadcrumbs.trigger"
-            :is-selected="selectedTab === 'prop'"
-            :connection="connection"
-            :trigger="workspace.breadcrumbs.trigger"
-         />
          <WorkspacePropsTabRoutine
             v-show="selectedTab === 'prop' && workspace.breadcrumbs.procedure"
             :is-selected="selectedTab === 'prop'"
@@ -216,12 +221,6 @@
             :is-selected="selectedTab === 'prop'"
             :connection="connection"
             :function="workspace.breadcrumbs.function"
-         />
-         <WorkspacePropsTabTriggerFunction
-            v-show="selectedTab === 'prop' && workspace.breadcrumbs.triggerFunction"
-            :is-selected="selectedTab === 'prop'"
-            :connection="connection"
-            :function="workspace.breadcrumbs.triggerFunction"
          />
          <WorkspacePropsTabScheduler
             v-show="selectedTab === 'prop' && workspace.breadcrumbs.scheduler"
@@ -271,6 +270,14 @@
                :trigger="tab.elementName"
                :schema="tab.schema"
             />
+            <WorkspacePropsTabTriggerFunction
+               v-else-if="['temp-trigger-function-props', 'trigger-function-props'].includes(tab.type)"
+               :key="tab.uid"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
+               :function="tab.elementName"
+               :schema="tab.schema"
+            />
          </template>
       </div>
       <WorkspaceEditConnectionPanel v-else :connection="connection" />
@@ -300,9 +307,9 @@ import WorkspaceTableTab from '@/components/WorkspaceTableTab';
 import WorkspacePropsTab from '@/components/WorkspacePropsTab';
 import WorkspacePropsTabView from '@/components/WorkspacePropsTabView';
 import WorkspacePropsTabTrigger from '@/components/WorkspacePropsTabTrigger';
+import WorkspacePropsTabTriggerFunction from '@/components/WorkspacePropsTabTriggerFunction';
 // import WorkspacePropsTabRoutine from '@/components/WorkspacePropsTabRoutine';
 // import WorkspacePropsTabFunction from '@/components/WorkspacePropsTabFunction';
-// import WorkspacePropsTabTriggerFunction from '@/components/WorkspacePropsTabTriggerFunction';
 // import WorkspacePropsTabScheduler from '@/components/WorkspacePropsTabScheduler';
 import ModalProcessesList from '@/components/ModalProcessesList';
 import ModalDiscardChanges from '@/components/ModalDiscardChanges';
@@ -319,9 +326,9 @@ export default {
       WorkspacePropsTab,
       WorkspacePropsTabView,
       WorkspacePropsTabTrigger,
+      WorkspacePropsTabTriggerFunction,
       // WorkspacePropsTabRoutine,
       // WorkspacePropsTabFunction,
-      // WorkspacePropsTabTriggerFunction,
       // WorkspacePropsTabScheduler,
       ModalProcessesList,
       ModalDiscardChanges
@@ -402,7 +409,8 @@ export default {
          const permanentTabs = {
             table: 'data',
             view: 'data',
-            trigger: 'trigger-props'
+            trigger: 'trigger-props',
+            triggerFunction: 'trigger-function-props'
          };
 
          this.newTab({

@@ -596,27 +596,28 @@ export default {
                }
             }
                break;
-            case 'temp-trigger-props': {
+            case 'temp-trigger-props':
+            case 'temp-trigger-function-props': {
                const existentTab = workspaceTabs
                   ? workspaceTabs.tabs.find(tab =>
                      tab.schema === schema &&
                      tab.elementName === elementName &&
                      tab.elementType === elementType &&
-                     ['temp-trigger-props', 'trigger-props'].includes(tab.type))
+                     [type, type.replace('temp-', '')].includes(tab.type))
                   : false;
 
                if (existentTab) { // if tab exists
                   tabUid = existentTab.uid;
                }
                else {
-                  const tempTabs = workspaceTabs ? workspaceTabs.tabs.filter(tab => tab.type === 'temp-trigger-props') : false;
+                  const tempTabs = workspaceTabs ? workspaceTabs.tabs.filter(tab => tab.type.includes('temp-')) : false;
                   if (tempTabs && tempTabs.length) { // if temp tab already opened
                      for (const tab of tempTabs) {
                         if (tab.isChanged) {
                            commit('REPLACE_TAB', { // make permanent a temp table with unsaved changes
                               uid,
                               tab: tab.uid,
-                              type: 'trigger-props',
+                              type: tab.type.replace('temp-', ''),
                               schema: tab.schema,
                               elementName: tab.elementName,
                               elementType: tab.elementType
@@ -638,13 +639,14 @@ export default {
                }
             }
                break;
-            case 'trigger-props': {
+            case 'trigger-props':
+            case 'trigger-function-props': {
                const existentTab = workspaceTabs
                   ? workspaceTabs.tabs.find(tab =>
                      tab.schema === schema &&
                      tab.elementName === elementName &&
                      tab.elementType === elementType &&
-                     ['temp-trigger-props', 'trigger-props'].includes(tab.type))
+                     [`temp-${type}`, type].includes(tab.type))
                   : false;
 
                if (existentTab) {
