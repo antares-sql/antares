@@ -1,5 +1,5 @@
 <template>
-   <div class="workspace-query-tab column col-12 columns col-gapless">
+   <div v-show="isSelected" class="workspace-query-tab column col-12 columns col-gapless">
       <div class="workspace-query-runner column col-12">
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
@@ -28,6 +28,11 @@
                   <i class="mdi mdi-24px mdi-timer mr-1" />
                   <span>{{ $t('word.timing') }}</span>
                </button>
+            </div>
+            <div class="workspace-query-info">
+               <div class="d-flex" :title="$t('word.schema')">
+                  <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
+               </div>
             </div>
          </div>
       </div>
@@ -153,11 +158,12 @@ export default {
    },
    props: {
       connection: Object,
-      scheduler: String
+      scheduler: String,
+      isSelected: Boolean,
+      schema: String
    },
    data () {
       return {
-         tabUid: 'prop',
          isLoading: false,
          isSaving: false,
          isTimingModal: false,
@@ -176,11 +182,8 @@ export default {
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
-      isSelected () {
-         return this.workspace.selected_tab === 'prop' && this.selectedWorkspace === this.workspace.uid && this.scheduler;
-      },
-      schema () {
-         return this.workspace.breadcrumbs.schema;
+      tabUid () {
+         return this.$vnode.key;
       },
       isChanged () {
          return JSON.stringify(this.originalScheduler) !== JSON.stringify(this.localScheduler);
@@ -197,6 +200,13 @@ export default {
       }
    },
    watch: {
+      async schema () {
+         if (this.isSelected) {
+            await this.getSchedulerData();
+            this.$refs.queryEditor.editor.session.setValue(this.localScheduler.sql);
+            this.lastScheduler = this.scheduler;
+         }
+      },
       async scheduler () {
          if (this.isSelected) {
             await this.getSchedulerData();
@@ -205,25 +215,27 @@ export default {
          }
       },
       async isSelected (val) {
-         if (val && this.lastScheduler !== this.scheduler) {
-            await this.getSchedulerData();
-            this.$refs.queryEditor.editor.session.setValue(this.localScheduler.sql);
-            this.lastScheduler = this.scheduler;
+         if (val) {
+            this.changeBreadcrumbs({ schema: this.schema, scheduler: this.scheduler });
+
+            if (this.lastScheduler !== this.scheduler)
+               this.getSchedulerData();
          }
       },
       isChanged (val) {
-         if (this.isSelected && this.lastScheduler === this.scheduler && this.scheduler !== null)
-            this.setUnsavedChanges(val);
+         this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: val });
       }
+   },
+   async created () {
+      await this.getSchedulerData();
+      this.$refs.queryEditor.editor.session.setValue(this.localScheduler.sql);
+      window.addEventListener('keydown', this.onKey);
    },
    mounted () {
       window.addEventListener('resize', this.resizeQueryEditor);
    },
    destroyed () {
       window.removeEventListener('resize', this.resizeQueryEditor);
-   },
-   created () {
-      window.addEventListener('keydown', this.onKey);
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);
@@ -232,17 +244,21 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification',
          refreshStructure: 'workspaces/refreshStructure',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
+         renameTabs: 'workspaces/renameTabs',
+         newTab: 'workspaces/newTab',
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         setUnsavedChanges: 'workspaces/setUnsavedChanges'
       }),
       async getSchedulerData () {
          if (!this.scheduler) return;
+
          this.isLoading = true;
+         this.lastScheduler = this.scheduler;
 
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            scheduler: this.workspace.breadcrumbs.scheduler
+            scheduler: this.scheduler
          };
 
          try {
@@ -283,7 +299,14 @@ export default {
                await this.refreshStructure(this.connection.uid);
 
                if (oldName !== this.localScheduler.name) {
-                  this.setUnsavedChanges(false);
+                  this.renameTabs({
+                     uid: this.connection.uid,
+                     schema: this.schema,
+                     elementName: oldName,
+                     elementNewName: this.localScheduler.name,
+                     elementType: 'scheduler'
+                  });
+
                   this.changeBreadcrumbs({ schema: this.schema, scheduler: this.localScheduler.name });
                }
 

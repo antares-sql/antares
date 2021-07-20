@@ -97,7 +97,7 @@
                </a>
 
                <a
-                  v-else-if="tab.type === 'temp-trigger-props'"
+                  v-else-if="tab.type.includes('temp-')"
                   class="tab-link"
                   :class="{'badge': tab.isChanged}"
                   @dblclick="openAsPermanentTab(tab)"
@@ -114,7 +114,7 @@
                </a>
 
                <a
-                  v-else-if="tab.type === 'trigger-props'"
+                  v-else
                   class="tab-link"
                   :class="{'badge': tab.isChanged}"
                >
@@ -129,7 +129,7 @@
                   </span>
                </a>
 
-               <a
+               <!-- <a
                   v-else-if="tab.type === 'temp-trigger-function-props'"
                   class="tab-link"
                   :class="{'badge': tab.isChanged}"
@@ -160,7 +160,7 @@
                         @click.stop="closeTab(tab)"
                      />
                   </span>
-               </a>
+               </a> -->
             </li>
             <li slot="header" class="tab-item dropdown tools-dropdown">
                <a
@@ -209,20 +209,7 @@
                </a>
             </li>
          </Draggable>
-         <!--
-         <WorkspacePropsTabRoutine
-            v-show="selectedTab === 'prop' && workspace.breadcrumbs.procedure"
-            :is-selected="selectedTab === 'prop'"
-            :connection="connection"
-            :routine="workspace.breadcrumbs.procedure"
-         />
-         <WorkspacePropsTabFunction
-            v-show="selectedTab === 'prop' && workspace.breadcrumbs.function"
-            :is-selected="selectedTab === 'prop'"
-            :connection="connection"
-            :function="workspace.breadcrumbs.function"
-         />
-         <WorkspacePropsTabScheduler
+         <!--<WorkspacePropsTabScheduler
             v-show="selectedTab === 'prop' && workspace.breadcrumbs.scheduler"
             :is-selected="selectedTab === 'prop'"
             :connection="connection"
@@ -278,6 +265,30 @@
                :function="tab.elementName"
                :schema="tab.schema"
             />
+            <WorkspacePropsTabRoutine
+               v-else-if="['temp-routine-props', 'routine-props'].includes(tab.type)"
+               :key="tab.uid"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
+               :routine="tab.elementName"
+               :schema="tab.schema"
+            />
+            <WorkspacePropsTabFunction
+               v-else-if="['temp-function-props', 'function-props'].includes(tab.type)"
+               :key="tab.uid"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
+               :function="tab.elementName"
+               :schema="tab.schema"
+            />
+            <WorkspacePropsTabScheduler
+               v-else-if="['temp-scheduler-props', 'scheduler-props'].includes(tab.type)"
+               :key="tab.uid"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
+               :scheduler="tab.elementName"
+               :schema="tab.schema"
+            />
          </template>
       </div>
       <WorkspaceEditConnectionPanel v-else :connection="connection" />
@@ -308,9 +319,9 @@ import WorkspacePropsTab from '@/components/WorkspacePropsTab';
 import WorkspacePropsTabView from '@/components/WorkspacePropsTabView';
 import WorkspacePropsTabTrigger from '@/components/WorkspacePropsTabTrigger';
 import WorkspacePropsTabTriggerFunction from '@/components/WorkspacePropsTabTriggerFunction';
-// import WorkspacePropsTabRoutine from '@/components/WorkspacePropsTabRoutine';
-// import WorkspacePropsTabFunction from '@/components/WorkspacePropsTabFunction';
-// import WorkspacePropsTabScheduler from '@/components/WorkspacePropsTabScheduler';
+import WorkspacePropsTabRoutine from '@/components/WorkspacePropsTabRoutine';
+import WorkspacePropsTabFunction from '@/components/WorkspacePropsTabFunction';
+import WorkspacePropsTabScheduler from '@/components/WorkspacePropsTabScheduler';
 import ModalProcessesList from '@/components/ModalProcessesList';
 import ModalDiscardChanges from '@/components/ModalDiscardChanges';
 
@@ -327,9 +338,9 @@ export default {
       WorkspacePropsTabView,
       WorkspacePropsTabTrigger,
       WorkspacePropsTabTriggerFunction,
-      // WorkspacePropsTabRoutine,
-      // WorkspacePropsTabFunction,
-      // WorkspacePropsTabScheduler,
+      WorkspacePropsTabRoutine,
+      WorkspacePropsTabFunction,
+      WorkspacePropsTabScheduler,
       ModalProcessesList,
       ModalDiscardChanges
    },

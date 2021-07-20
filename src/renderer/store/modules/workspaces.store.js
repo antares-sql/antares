@@ -597,7 +597,10 @@ export default {
             }
                break;
             case 'temp-trigger-props':
-            case 'temp-trigger-function-props': {
+            case 'temp-trigger-function-props':
+            case 'temp-function-props':
+            case 'temp-routine-props':
+            case 'temp-scheduler-props': {
                const existentTab = workspaceTabs
                   ? workspaceTabs.tabs.find(tab =>
                      tab.schema === schema &&
@@ -640,7 +643,10 @@ export default {
             }
                break;
             case 'trigger-props':
-            case 'trigger-function-props': {
+            case 'trigger-function-props':
+            case 'function-props':
+            case 'routine-props':
+            case 'scheduler-props': {
                const existentTab = workspaceTabs
                   ? workspaceTabs.tabs.find(tab =>
                      tab.schema === schema &&

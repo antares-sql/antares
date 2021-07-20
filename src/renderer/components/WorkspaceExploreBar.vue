@@ -10,15 +10,15 @@
             <span class="workspace-explorebar-title">{{ connectionName }}</span>
             <span v-if="workspace.connection_status === 'connected'" class="workspace-explorebar-tools">
                <i
-                  class="mdi mdi-18px mdi-database-plus c-hand mr-2"
-                  :title="$t('message.createNewSchema')"
-                  @click="showNewDBModal"
-               />
-               <i
                   class="mdi mdi-18px mdi-refresh c-hand mr-2"
                   :class="{'rotate':isRefreshing}"
                   :title="$t('word.refresh')"
                   @click="refresh"
+               />
+               <i
+                  class="mdi mdi-18px mdi-database-plus c-hand mr-2"
+                  :title="$t('message.createNewSchema')"
+                  @click="showNewDBModal"
                />
                <i
                   class="mdi mdi-18px mdi-power-plug-off c-hand"
@@ -384,6 +384,7 @@ export default {
          if (status === 'success') {
             await this.refresh();
             this.changeBreadcrumbs({ schema: this.selectedSchema, view: payload.name });
+
             this.newTab({
                uid: this.workspace.uid,
                schema: this.selectedSchema,
@@ -445,8 +446,15 @@ export default {
 
          if (status === 'success') {
             await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedSchema, procedure: payload.name });
-            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+            this.changeBreadcrumbs({ schema: this.selectedSchema, routine: payload.name });
+
+            this.newTab({
+               uid: this.workspace.uid,
+               schema: this.selectedSchema,
+               elementName: payload.name,
+               elementType: 'procedure',
+               type: 'procedure-props'
+            });
          }
          else
             this.addNotification({ status: 'error', message: response });
@@ -486,7 +494,14 @@ export default {
          if (status === 'success') {
             await this.refresh();
             this.changeBreadcrumbs({ schema: this.selectedSchema, function: payload.name });
-            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+
+            this.newTab({
+               uid: this.workspace.uid,
+               schema: this.selectedSchema,
+               elementName: payload.name,
+               elementType: 'function',
+               type: 'function-props'
+            });
          }
          else
             this.addNotification({ status: 'error', message: response });
@@ -502,7 +517,14 @@ export default {
          if (status === 'success') {
             await this.refresh();
             this.changeBreadcrumbs({ schema: this.selectedSchema, triggerFunction: payload.name });
-            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+
+            this.newTab({
+               uid: this.workspace.uid,
+               schema: this.selectedSchema,
+               elementName: payload.name,
+               elementType: 'triggerFunction',
+               type: 'trigger-function-props'
+            });
          }
          else
             this.addNotification({ status: 'error', message: response });
@@ -518,7 +540,14 @@ export default {
          if (status === 'success') {
             await this.refresh();
             this.changeBreadcrumbs({ schema: this.selectedSchema, scheduler: payload.name });
-            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+
+            this.newTab({
+               uid: this.workspace.uid,
+               schema: this.selectedSchema,
+               elementName: payload.name,
+               elementType: 'scheduler',
+               type: 'scheduler-props'
+            });
          }
          else
             this.addNotification({ status: 'error', message: response });
