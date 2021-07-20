@@ -225,7 +225,8 @@ module.exports = {
       enableSsh: 'Enable SSH',
       pageNumber: 'Page number',
       duplicateTable: 'Duplicate table',
-      noOpenTabs: 'There are no open tabs, navigate on the left bar or:'
+      noOpenTabs: 'There are no open tabs, navigate on the left bar or:',
+      noSchema: 'No schema'
    },
    faker: {
       address: 'Address',

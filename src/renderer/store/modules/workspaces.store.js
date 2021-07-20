@@ -4,7 +4,6 @@ import Schema from '@/ipc-api/Schema';
 import Users from '@/ipc-api/Users';
 import { uidGen } from 'common/libs/uidGen';
 const tabIndex = [];
-let lastBreadcrumbs = {};
 
 export default {
    namespaced: true,
@@ -503,6 +502,7 @@ export default {
             schema: null,
             table: null,
             trigger: null,
+            triggerFunction: null,
             procedure: null,
             function: null,
             scheduler: null,
@@ -510,16 +510,7 @@ export default {
             query: null
          };
 
-         const hasLastChildren = Object.keys(lastBreadcrumbs).filter(b => b !== 'schema').some(b => lastBreadcrumbs[b]);
-         const hasChildren = Object.keys(payload).filter(b => b !== 'schema').some(b => payload[b]);
-
-         if (lastBreadcrumbs.schema === payload.schema && hasLastChildren && !hasChildren) return;
-
-         if (lastBreadcrumbs.schema !== payload.schema)
-            Schema.useSchema({ uid: getters.getSelected, schema: payload.schema });
-
          commit('CHANGE_BREADCRUMBS', { uid: getters.getSelected, breadcrumbs: { ...breadcrumbsObj, ...payload } });
-         lastBreadcrumbs = { ...breadcrumbsObj, ...payload };
 
          if (payload.schema)
             commit('ADD_LOADED_SCHEMA', { uid: getters.getSelected, schema: payload.schema });

@@ -21,11 +21,16 @@ export default {
    name: 'WorkspaceEmptyState',
    computed: {
       ...mapGetters({
-         applicationTheme: 'settings/getApplicationTheme'
-      })
+         applicationTheme: 'settings/getApplicationTheme',
+         getWorkspace: 'workspaces/getWorkspace',
+         selectedWorkspace: 'workspaces/getSelected'
+      }),
+      workspace () {
+         return this.getWorkspace(this.selectedWorkspace);
+      }
    },
    created () {
-      this.changeBreadcrumbs({});
+      this.changeBreadcrumbs({ schema: this.workspace.breadcrumbs.schema });
    },
    methods: {
       ...mapActions({

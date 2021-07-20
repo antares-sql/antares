@@ -14,7 +14,7 @@
             :auto-focus="true"
             :value.sync="query"
             :workspace="workspace"
-            :schema="schema"
+            :schema="breadcrumbsSchema"
             :is-selected="isSelected"
             :height="editorHeight"
          />
@@ -86,12 +86,16 @@
                <div v-if="affectedCount">
                   {{ $t('message.affectedRows') }}: <b>{{ affectedCount }}</b>
                </div>
-               <div
-                  v-if="workspace.breadcrumbs.schema"
-                  class="d-flex"
-                  :title="$t('word.schema')"
-               >
-                  <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ workspace.breadcrumbs.schema }}</b>
+               <div class="input-group" :title="$t('word.schema')">
+                  <i class="input-group-addon addon-sm mdi mdi-24px mdi-database" />
+                  <select v-model="selectedSchema" class="form-select select-sm text-bold">
+                     <option :value="null">
+                        {{ $t('message.noSchema') }}
+                     </option>
+                     <option v-for="schemaName in databaseSchemas" :key="schemaName">
+                        {{ schemaName }}
+                     </option>
+                  </select>
                </div>
             </div>
          </div>
@@ -142,6 +146,7 @@ export default {
          lastQuery: '',
          isQuering: false,
          results: [],
+         selectedSchema: null,
          resultsCount: 0,
          durationsCount: 0,
          affectedCount: 0,
@@ -156,8 +161,14 @@ export default {
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
-      schema () {
+      breadcrumbsSchema () {
          return this.workspace.breadcrumbs.schema;
+      },
+      databaseSchemas () {
+         return this.workspace.structure.reduce((acc, curr) => {
+            acc.push(curr.name);
+            return acc;
+         }, []);
       },
       isWorkspaceSelected () {
          return this.workspace.uid === this.selectedWorkspace;
@@ -166,12 +177,16 @@ export default {
    watch: {
       isSelected (val) {
          if (val)
-            this.changeBreadcrumbs({ schema: this.schema, query: `Query #${this.tab.index}` });
+            this.changeBreadcrumbs({ schema: this.selectedSchema, query: `Query #${this.tab.index}` });
+      },
+      selectedSchema () {
+         this.changeBreadcrumbs({ schema: this.selectedSchema, query: `Query #${this.tab.index}` });
       }
    },
    created () {
       this.query = this.tab.content;
-      this.changeBreadcrumbs({ schema: this.schema, query: `Query #${this.tab.index}` });
+      this.selectedSchema = this.breadcrumbsSchema;
+      this.changeBreadcrumbs({ schema: this.selectedSchema, query: `Query #${this.tab.index}` });
 
       window.addEventListener('keydown', this.onKey);
    },
@@ -205,7 +220,7 @@ export default {
          try { // Query Data
             const params = {
                uid: this.connection.uid,
-               schema: this.schema,
+               schema: this.selectedSchema,
                query
             };
 
@@ -314,8 +329,10 @@ export default {
       align-items: center;
       height: 42px;
 
-      .workspace-query-buttons {
+      .workspace-query-buttons,
+      .workspace-query-info {
         display: flex;
+        align-items: center;
 
         .btn {
           display: flex;
@@ -325,7 +342,7 @@ export default {
       }
 
       .workspace-query-info {
-        display: flex;
+        overflow: visible;
 
         > div + div {
           padding-left: 0.6rem;
