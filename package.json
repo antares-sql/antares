@@ -102,7 +102,7 @@
     "source-map-support": "^0.5.16",
     "spectre.css": "^0.5.9",
     "sql-formatter": "^4.0.2",
-    "ssh2-promise": "^0.1.7",
+    "ssh2-promise": "^1.0.0",
     "v-mask": "^2.2.4",
     "vue-i18n": "^8.24.4",
     "vuedraggable": "^2.24.3",
