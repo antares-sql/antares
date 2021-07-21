@@ -212,6 +212,8 @@ export default {
          });
       },
       REMOVE_TABS (state, { uid, schema, elementName, elementType }) { // Multiple tabs based on schema and element name
+         if (elementType === 'procedure') elementType = 'routine'; // TODO: pass directly "routine"
+
          state.workspaces = state.workspaces.map(workspace => {
             if (workspace.uid === uid) {
                return {

@@ -128,7 +128,12 @@ export default connections => {
       if (!query) return;
 
       try {
-         const result = await connections[uid].raw(query, { nest: true, details: true, schema });
+         const result = await connections[uid].raw(query, {
+            nest: true,
+            details: true,
+            schema,
+            comments: false
+         });
 
          return { status: 'success', response: result };
       }

@@ -307,9 +307,9 @@ export default {
          this.isSaving = true;
          const params = {
             uid: this.connection.uid,
-            schema: this.schema,
             view: {
                ...this.localView,
+               schema: this.schema,
                oldName: this.originalView.name
             }
          };

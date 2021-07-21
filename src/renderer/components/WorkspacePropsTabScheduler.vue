@@ -283,9 +283,9 @@ export default {
          this.isSaving = true;
          const params = {
             uid: this.connection.uid,
-            schema: this.schema,
             scheduler: {
                ...this.localScheduler,
+               schema: this.schema,
                oldName: this.originalScheduler.name
             }
          };

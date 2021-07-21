@@ -421,7 +421,10 @@ export default {
             table: 'data',
             view: 'data',
             trigger: 'trigger-props',
-            triggerFunction: 'trigger-function-props'
+            triggerFunction: 'trigger-function-props',
+            function: 'function-props',
+            routine: 'routine-props',
+            scheduler: 'scheduler-props'
          };
 
          this.newTab({

@@ -312,6 +312,7 @@ export default {
       async openCreateTableEditor (payload) {
          const params = {
             uid: this.connection.uid,
+            schema: this.selectedSchema,
             ...payload
          };
 
@@ -376,6 +377,7 @@ export default {
       async openCreateViewEditor (payload) {
          const params = {
             uid: this.connection.uid,
+            schema: this.selectedSchema,
             ...payload
          };
 
@@ -407,6 +409,7 @@ export default {
       async openCreateTriggerEditor (payload) {
          const params = {
             uid: this.connection.uid,
+            schema: this.selectedSchema,
             ...payload
          };
 
@@ -439,6 +442,7 @@ export default {
       async openCreateRoutineEditor (payload) {
          const params = {
             uid: this.connection.uid,
+            schema: this.selectedSchema,
             ...payload
          };
 
@@ -452,8 +456,8 @@ export default {
                uid: this.workspace.uid,
                schema: this.selectedSchema,
                elementName: payload.name,
-               elementType: 'procedure',
-               type: 'procedure-props'
+               elementType: 'routine',
+               type: 'routine-props'
             });
          }
          else
@@ -486,6 +490,7 @@ export default {
       async openCreateFunctionEditor (payload) {
          const params = {
             uid: this.connection.uid,
+            schema: this.selectedSchema,
             ...payload
          };
 
@@ -509,6 +514,7 @@ export default {
       async openCreateTriggerFunctionEditor (payload) {
          const params = {
             uid: this.connection.uid,
+            schema: this.selectedSchema,
             ...payload
          };
 
@@ -532,6 +538,7 @@ export default {
       async openCreateSchedulerEditor (payload) {
          const params = {
             uid: this.connection.uid,
+            schema: this.selectedSchema,
             ...payload
          };
 

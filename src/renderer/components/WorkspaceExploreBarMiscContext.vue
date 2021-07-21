@@ -128,12 +128,14 @@ export default {
                case 'trigger':
                   res = await Triggers.dropTrigger({
                      uid: this.selectedWorkspace,
+                     schema: this.selectedSchema,
                      trigger: this.selectedMisc.name
                   });
                   break;
                case 'procedure':
                   res = await Routines.dropRoutine({
                      uid: this.selectedWorkspace,
+                     schema: this.selectedSchema,
                      routine: this.selectedMisc.name
                   });
                   break;
@@ -141,12 +143,14 @@ export default {
                case 'triggerFunction':
                   res = await Functions.dropFunction({
                      uid: this.selectedWorkspace,
+                     schema: this.selectedSchema,
                      func: this.selectedMisc.name
                   });
                   break;
                case 'scheduler':
                   res = await Schedulers.dropScheduler({
                      uid: this.selectedWorkspace,
+                     schema: this.selectedSchema,
                      scheduler: this.selectedMisc.name
                   });
                   break;
@@ -187,8 +191,8 @@ export default {
       async runRoutineCheck () {
          const params = {
             uid: this.selectedWorkspace,
-            schema: this.workspace.breadcrumbs.schema,
-            routine: this.workspace.breadcrumbs.procedure
+            schema: this.selectedSchema,
+            routine: this.selectedMisc.name
          };
 
          try {
@@ -231,8 +235,8 @@ export default {
       async runFunctionCheck () {
          const params = {
             uid: this.selectedWorkspace,
-            schema: this.workspace.breadcrumbs.schema,
-            func: this.workspace.breadcrumbs.function
+            schema: this.selectedSchema,
+            func: this.selectedMisc.name
          };
 
          try {
@@ -270,7 +274,7 @@ export default {
                sql = `SELECT \`${this.localElement.name}\` (${params.join(',')})`;
          }
 
-         this.newTab({ uid: this.workspace.uid, content: sql, autorun: true });
+         this.newTab({ uid: this.workspace.uid, content: sql, type: 'query', autorun: true });
          this.closeContext();
       }
    }

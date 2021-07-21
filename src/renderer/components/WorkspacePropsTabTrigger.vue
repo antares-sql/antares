@@ -293,9 +293,9 @@ export default {
          this.isSaving = true;
          const params = {
             uid: this.connection.uid,
-            schema: this.schema,
             trigger: {
                ...this.localTrigger,
+               schema: this.schema,
                oldName: this.originalTrigger.name
             }
          };

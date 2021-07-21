@@ -242,9 +242,9 @@ export default {
          this.isSaving = true;
          const params = {
             uid: this.connection.uid,
-            schema: this.schema,
             routine: {
                ...this.localRoutine,
+               schema: this.schema,
                oldName: this.originalRoutine.name
             }
          };
