@@ -320,8 +320,8 @@ export default {
 
                   this.changeBreadcrumbs({ schema: this.schema, trigger: triggerName });
                }
-
-               this.getTriggerData();
+               else
+                  this.getTriggerData();
             }
             else
                this.addNotification({ status: 'error', message: response });

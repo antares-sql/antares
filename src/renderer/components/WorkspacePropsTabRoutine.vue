@@ -268,8 +268,8 @@ export default {
 
                   this.changeBreadcrumbs({ schema: this.schema, procedure: this.localRoutine.name });
                }
-
-               this.getRoutineData();
+               else
+                  this.getRoutineData();
             }
             else
                this.addNotification({ status: 'error', message: response });

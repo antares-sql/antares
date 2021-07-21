@@ -309,8 +309,8 @@ export default {
 
                   this.changeBreadcrumbs({ schema: this.schema, scheduler: this.localScheduler.name });
                }
-
-               this.getSchedulerData();
+               else
+                  this.getSchedulerData();
             }
             else
                this.addNotification({ status: 'error', message: response });

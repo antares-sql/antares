@@ -333,8 +333,8 @@ export default {
 
                   this.changeBreadcrumbs({ schema: this.schema, view: this.localView.name });
                }
-
-               this.getViewData();
+               else
+                  this.getViewData();
             }
             else
                this.addNotification({ status: 'error', message: response });

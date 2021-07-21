@@ -242,8 +242,8 @@ export default {
 
                   this.changeBreadcrumbs({ schema: this.schema, triggerFunction: this.localFunction.name });
                }
-
-               this.getFunctionData();
+               else
+                  this.getFunctionData();
             }
             else
                this.addNotification({ status: 'error', message: response });

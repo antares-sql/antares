@@ -454,8 +454,8 @@ export default {
 
                   this.changeBreadcrumbs({ schema: this.schema, table: this.localOptions.name });
                }
-
-               this.getFieldsData();
+               else
+                  this.getFieldsData();
             }
             else
                this.addNotification({ status: 'error', message: response });
