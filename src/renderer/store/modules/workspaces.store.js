@@ -513,9 +513,9 @@ export default {
          };
 
          commit('CHANGE_BREADCRUMBS', { uid: getters.getSelected, breadcrumbs: { ...breadcrumbsObj, ...payload } });
-
-         if (payload.schema)
-            commit('ADD_LOADED_SCHEMA', { uid: getters.getSelected, schema: payload.schema });
+      },
+      addLoadedSchema ({ commit, getters }, schema) {
+         commit('ADD_LOADED_SCHEMA', { uid: getters.getSelected, schema });
       },
       setSearchTerm ({ commit, getters }, term) {
          commit('SET_SEARCH_TERM', { uid: getters.getSelected, term });

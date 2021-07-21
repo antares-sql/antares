@@ -41,7 +41,7 @@
                </form>
             </div>
          </div>
-         <div class="modal-footer text-light">
+         <div class="modal-footer">
             <button class="btn btn-primary mr-2" @click.stop="sendCredentials">
                {{ $t('word.send') }}
             </button>

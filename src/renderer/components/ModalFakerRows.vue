@@ -52,7 +52,7 @@
                </form>
             </div>
          </div>
-         <div class="modal-footer text-light columns">
+         <div class="modal-footer columns">
             <div class="column d-flex" :class="hasFakes ? 'col-4' : 'col-2'">
                <div class="input-group tooltip tooltip-right" :data-tooltip="$t('message.numberOfInserts')">
                   <input

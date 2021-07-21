@@ -333,7 +333,7 @@
                </div>
             </div>
          </div>
-         <div class="modal-footer text-light">
+         <div class="modal-footer">
             <button
                class="btn btn-gray mr-2"
                :class="{'loading': isTesting}"

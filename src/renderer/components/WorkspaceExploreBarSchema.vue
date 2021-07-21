@@ -273,6 +273,7 @@ export default {
    methods: {
       ...mapActions({
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         addLoadedSchema: 'workspaces/addLoadedSchema',
          newTab: 'workspaces/newTab',
          refreshSchema: 'workspaces/refreshSchema'
       }),
@@ -281,6 +282,7 @@ export default {
          if (!this.loadedSchemas.has(schema) && !this.isLoading) {
             this.isLoading = true;
             await this.refreshSchema({ uid: this.connection.uid, schema });
+            this.addLoadedSchema(schema);
             this.isLoading = false;
          }
 

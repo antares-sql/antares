@@ -53,7 +53,7 @@
                </form>
             </div>
          </div>
-         <div class="modal-footer text-light">
+         <div class="modal-footer">
             <button class="btn btn-primary mr-2" @click.stop="updateSchema">
                {{ $t('word.update') }}
             </button>
