@@ -162,7 +162,7 @@ export default {
          return this.getWorkspace(this.connection.uid);
       },
       breadcrumbsSchema () {
-         return this.workspace.breadcrumbs.schema;
+         return this.workspace.breadcrumbs.schema || null;
       },
       databaseSchemas () {
          return this.workspace.structure.reduce((acc, curr) => {
@@ -185,8 +185,8 @@ export default {
    },
    created () {
       this.query = this.tab.content;
-      this.selectedSchema = this.breadcrumbsSchema;
-      this.changeBreadcrumbs({ schema: this.selectedSchema, query: `Query #${this.tab.index}` });
+      this.selectedSchema = this.tab.schema || this.breadcrumbsSchema;
+      // this.changeBreadcrumbs({ schema: this.selectedSchema, query: `Query #${this.tab.index}` });
 
       window.addEventListener('keydown', this.onKey);
    },
@@ -209,7 +209,8 @@ export default {
    methods: {
       ...mapActions({
          addNotification: 'notifications/addNotification',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         updateTabContent: 'workspaces/updateTabContent'
       }),
       async runQuery (query) {
          if (!query || this.isQuering) return;
@@ -231,6 +232,8 @@ export default {
                this.resultsCount += this.results.reduce((acc, curr) => acc + (curr.rows ? curr.rows.length : 0), 0);
                this.durationsCount += this.results.reduce((acc, curr) => acc + curr.duration, 0);
                this.affectedCount += this.results.reduce((acc, curr) => acc + (curr.report ? curr.report.affectedRows : 0), 0);
+
+               this.updateTabContent({ uid: this.connection.uid, tab: this.tab.uid, type: 'query', schema: this.selectedSchema, content: query });
             }
             else
                this.addNotification({ status: 'error', message: response });

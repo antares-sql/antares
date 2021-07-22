@@ -16,7 +16,8 @@ export default {
       line_wrap: persistentStore.get('line_wrap', true),
       application_theme: persistentStore.get('application_theme', 'dark'),
       editor_theme: persistentStore.get('editor_theme', 'twilight'),
-      editor_font_size: persistentStore.get('editor_font_size', 'medium')
+      editor_font_size: persistentStore.get('editor_font_size', 'medium'),
+      restore_tabs: persistentStore.get('restore_tabs', true)
    },
    getters: {
       getLocale: state => state.locale,
@@ -28,7 +29,8 @@ export default {
       getLineWrap: state => state.line_wrap,
       getApplicationTheme: state => state.application_theme,
       getEditorTheme: state => state.editor_theme,
-      getEditorFontSize: state => state.editor_font_size
+      getEditorFontSize: state => state.editor_font_size,
+      getRestoreTabs: state => state.restore_tabs
    },
    mutations: {
       SET_LOCALE (state, locale) {
@@ -71,6 +73,10 @@ export default {
       SET_EDITOR_FONT_SIZE (state, size) {
          state.editor_font_size = size;
          persistentStore.set('editor_font_size', state.editor_font_size);
+      },
+      SET_RESTORE_TABS (state, val) {
+         state.restore_tabs = val;
+         persistentStore.set('restore_tabs', state.restore_tabs);
       }
    },
    actions: {
@@ -103,6 +109,9 @@ export default {
       },
       changeEditorFontSize ({ commit }, size) {
          commit('SET_EDITOR_FONT_SIZE', size);
+      },
+      changeRestoreTabs ({ commit }, size) {
+         commit('SET_RESTORE_TABS', size);
       }
    }
 };

@@ -166,7 +166,7 @@
          <BaseLoader v-if="isLoading" />
          <label class="form-label ml-2">{{ $t('message.selectStatement') }}</label>
          <QueryEditor
-            v-if="isSelected"
+            v-show="isSelected"
             ref="queryEditor"
             :value.sync="localView.sql"
             :workspace="workspace"
@@ -225,16 +225,16 @@ export default {
       }
    },
    watch: {
-      schema () {
+      async schema () {
          if (this.isSelected) {
-            this.getViewData();
+            await this.getViewData();
             this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
             this.lastView = this.view;
          }
       },
-      view () {
+      async view () {
          if (this.isSelected) {
-            this.getViewData();
+            await this.getViewData();
             this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
             this.lastView = this.view;
          }

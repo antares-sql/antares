@@ -226,7 +226,8 @@ module.exports = {
       pageNumber: 'Page number',
       duplicateTable: 'Duplicate table',
       noOpenTabs: 'There are no open tabs, navigate on the left bar or:',
-      noSchema: 'No schema'
+      noSchema: 'No schema',
+      restorePreviourSession: 'Restore previous session'
    },
    faker: {
       address: 'Address',

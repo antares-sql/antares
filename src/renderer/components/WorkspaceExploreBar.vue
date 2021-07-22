@@ -10,18 +10,18 @@
             <span class="workspace-explorebar-title">{{ connectionName }}</span>
             <span v-if="workspace.connection_status === 'connected'" class="workspace-explorebar-tools">
                <i
+                  class="mdi mdi-18px mdi-database-plus c-hand mr-2"
+                  :title="$t('message.createNewSchema')"
+                  @click="showNewDBModal"
+               />
+               <i
                   class="mdi mdi-18px mdi-refresh c-hand mr-2"
                   :class="{'rotate':isRefreshing}"
                   :title="$t('word.refresh')"
                   @click="refresh"
                />
                <i
-                  class="mdi mdi-18px mdi-database-plus c-hand mr-2"
-                  :title="$t('message.createNewSchema')"
-                  @click="showNewDBModal"
-               />
-               <i
-                  class="mdi mdi-18px mdi-power-plug-off c-hand"
+                  class="mdi mdi-18px mdi-power c-hand"
                   :title="$t('word.disconnect')"
                   @click="disconnectWorkspace(connection.uid)"
                />

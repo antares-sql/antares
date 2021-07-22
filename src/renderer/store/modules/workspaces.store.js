@@ -1,8 +1,10 @@
 'use strict';
+import Store from 'electron-store';
 import Connection from '@/ipc-api/Connection';
 import Schema from '@/ipc-api/Schema';
 import Users from '@/ipc-api/Users';
 import { uidGen } from 'common/libs/uidGen';
+const persistentStore = new Store({ name: 'tabs' });
 const tabIndex = [];
 
 export default {
@@ -53,6 +55,15 @@ export default {
       SET_CONNECTED (state, payload) {
          const { uid, client, dataTypes, indexTypes, customizations, structure, version } = payload;
 
+         const cachedTabs = payload.restoreTabs ? persistentStore.get(uid, []) : [];
+
+         if (cachedTabs.length) {
+            tabIndex[uid] = cachedTabs.reduce((acc, curr) => {
+               if (curr.index > acc) acc = curr.index;
+               return acc;
+            }, null);
+         }
+
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
             ? {
                ...workspace,
@@ -62,6 +73,8 @@ export default {
                customizations,
                structure,
                connection_status: 'connected',
+               tabs: cachedTabs,
+               selected_tab: cachedTabs.length ? cachedTabs[0].uid : null,
                version
             }
             : workspace);
@@ -188,6 +201,7 @@ export default {
             content: content || '',
             autorun: !!autorun
          };
+
          state.workspaces = state.workspaces.map(workspace => {
             if (workspace.uid === uid) {
                return {
@@ -198,6 +212,8 @@ export default {
             else
                return workspace;
          });
+
+         persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
       },
       REMOVE_TAB (state, { uid, tab: tUid }) {
          state.workspaces = state.workspaces.map(workspace => {
@@ -210,6 +226,8 @@ export default {
             else
                return workspace;
          });
+
+         persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
       },
       REMOVE_TABS (state, { uid, schema, elementName, elementType }) { // Multiple tabs based on schema and element name
          if (elementType === 'procedure') elementType = 'routine'; // TODO: pass directly "routine"
@@ -228,15 +246,17 @@ export default {
             else
                return workspace;
          });
+
+         persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
       },
-      REPLACE_TAB (state, { uid, tab: tUid, type, schema, elementName, elementType }) {
+      REPLACE_TAB (state, { uid, tab: tUid, type, schema, content, elementName, elementType }) {
          state.workspaces = state.workspaces.map(workspace => {
             if (workspace.uid === uid) {
                return {
                   ...workspace,
                   tabs: workspace.tabs.map(tab => {
                      if (tab.uid === tUid)
-                        return { ...tab, type, schema, elementName, elementType };
+                        return { ...tab, type, schema, content, elementName, elementType };
 
                      return tab;
                   })
@@ -245,6 +265,8 @@ export default {
             else
                return workspace;
          });
+
+         persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
       },
       RENAME_TABS (state, { uid, schema, elementName, elementType, elementNewName }) {
          state.workspaces = state.workspaces.map(workspace => {
@@ -266,12 +288,15 @@ export default {
             else
                return workspace;
          });
+
+         persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
       },
       SELECT_TAB (state, { uid, tab }) {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, selected_tab: tab } : workspace);
       },
       UPDATE_TABS (state, { uid, tabs }) {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, tabs } : workspace);
+         persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
       },
       SET_TAB_FIELDS (state, { cUid, tUid, fields }) {
          state.workspaces = state.workspaces.map(workspace => {
@@ -289,6 +314,8 @@ export default {
             else
                return workspace;
          });
+
+         persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
       },
       SET_TAB_KEY_USAGE (state, { cUid, tUid, keyUsage }) {
          state.workspaces = state.workspaces.map(workspace => {
@@ -306,6 +333,8 @@ export default {
             else
                return workspace;
          });
+
+         persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
       },
       SET_UNSAVED_CHANGES (state, { uid, tUid, isChanged }) {
          state.workspaces = state.workspaces.map(workspace => {
@@ -324,9 +353,6 @@ export default {
                return workspace;
          });
       },
-      SET_PENDING_BREADCRUMBS (state, payload) {
-         state.pending_breadcrumbs = payload;
-      },
       ADD_LOADED_SCHEMA (state, payload) {
          state.workspaces = state.workspaces.map(workspace => {
             if (workspace.uid === payload.uid)
@@ -339,7 +365,7 @@ export default {
       selectWorkspace ({ commit }, uid) {
          commit('SELECT_WORKSPACE', uid);
       },
-      async connectWorkspace ({ dispatch, commit }, connection) {
+      async connectWorkspace ({ dispatch, commit, getters, rootGetters }, connection) {
          commit('SET_CONNECTING', connection.uid);
 
          try {
@@ -372,6 +398,7 @@ export default {
                if (status === 'error')
                   dispatch('notifications/addNotification', { status, message: version }, { root: true });
 
+               // Check if Maria or MySQL
                const isMySQL = version.name.includes('MySQL');
 
                if (isMySQL && connection.client !== 'mysql') {
@@ -392,7 +419,8 @@ export default {
                   indexTypes,
                   customizations,
                   structure: response,
-                  version
+                  version,
+                  restoreTabs: rootGetters['settings/getRestoreTabs']
                });
                dispatch('refreshCollations', connection.uid);
                dispatch('refreshVariables', connection.uid);
@@ -482,7 +510,7 @@ export default {
          commit('SET_DISCONNECTED', uid);
          commit('SELECT_TAB', { uid, tab: 0 });
       },
-      addWorkspace ({ commit, dispatch, getters }, uid) {
+      addWorkspace ({ commit }, uid) {
          const workspace = {
             uid,
             connection_status: 'disconnected',
@@ -674,6 +702,9 @@ export default {
 
          if (!isSelectedExistent && workspace.tabs.length)
             commit('SELECT_TAB', { uid, tab: workspace.tabs[workspace.tabs.length - 1].uid });
+      },
+      updateTabContent ({ commit }, { uid, tab, type, schema, content }) {
+         commit('REPLACE_TAB', { uid, tab, type, schema, content });
       },
       renameTabs ({ commit }, payload) {
          commit('RENAME_TABS', payload);
