@@ -4,9 +4,7 @@ summary: Open source SQL client made to be simple and complete.
 description: |
   Antares is an SQL client that aims to become an useful and complete tool, especially for developers.
   The target is to support as many databases as possible, and all major operating systems, including the ARM versions.
-  At the moment this application is an alpha and supports only MySQL and x86 architecture.
-  Most of its current features might be enough for MySQL management, so give it a chance and send us your feedback, we would really appreciate it.
-base: core18
+base: core20
 
 grade: stable
 confinement: strict
@@ -60,6 +58,7 @@ parts:
       - fcitx-frontend-gtk3
       - libappindicator3-1
       - libasound2
+      - libcurl4
       - libgconf-2-4
       - libgtk-3-0
       - libnotify4
@@ -71,13 +70,59 @@ parts:
       - libsecret-1-0
       - libxtst6
       - libxkbfile1
+      - gcc-10-base
+      - libapparmor1
+      - libblkid1
+      - libbsd0
+      - libcom-err2
+      - libcrypt1
+      - libdb5.3
+      - libdbus-1-3
+      - libexpat1
+      - libffi7
+      - libgcc-s1
+      - libgcrypt20
+      - libglib2.0-0
+      - libgmp10
+      - libgnutls30
+      - libgpg-error0
+      - libgssapi-krb5-2
+      - libhogweed5
+      - libidn2-0
+      - libjson-c4
+      - libk5crypto3
+      - libkeyutils1
+      - libkrb5-3
+      - libkrb5support0
+      - liblz4-1
+      - liblzma5
+      - libmount1
+      - libnettle7
+      - libp11-kit0
+      - libpcre2-8-0
+      - libselinux1
+      - libsqlite3-0
+      - libssl1.1
+      - libstdc++6
+      - libsystemd0
+      - libtasn1-6
+      - libudev1
+      - libunistring2
+      - libuuid1
+      - libwrap0
+      - libzstd1
+      - zlib1g 
+      - libx11-xcb1
+      - libdrm2
+      - libgbm1
+      - libxcb-dri3-0
   cleanup:
     after: [antares]
     plugin: nil
-    build-snaps: [gnome-3-28-1804]
+    build-snaps: [gnome-3-38-2004]
     override-prime: |
       set -eux
-      cd /snap/gnome-3-28-1804/current
+      cd /snap/gnome-3-38-2004/current
       find . -type f,l -exec rm -f $SNAPCRAFT_PRIME/{} \;
 
   mdns-lookup:
@@ -91,7 +136,7 @@ parts:
       - libnss-mdns
     override-prime: |
       set -eux
-      sed -Ee 's/^\s*hosts:(\s+)files/hosts:\1files mdns4_minimal \[NOTFOUND=return\]/' /snap/core18/current/etc/nsswitch.conf > $SNAPCRAFT_STAGE/etc/nsswitch.conf
+      sed -Ee 's/^\s*hosts:(\s+)files/hosts:\1files mdns4_minimal \[NOTFOUND=return\]/' /snap/core20/current/etc/nsswitch.conf > $SNAPCRAFT_STAGE/etc/nsswitch.conf
       snapcraftctl prime
     prime:
       - lib/$SNAPCRAFT_ARCH_TRIPLET/libnss_mdns4_minimal*
@@ -101,7 +146,7 @@ apps:
   antares:
     command: opt/Antares/antares --no-sandbox
     desktop: usr/share/applications/antares.desktop
-    extensions: [gnome-3-28]
+    extensions: [gnome-3-38]
     environment:
       # Fallback to XWayland if running in a Wayland session.
       DISABLE_WAYLAND: 1
