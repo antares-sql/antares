@@ -10,6 +10,7 @@
          v-if="isContext"
          :context-event="contextEvent"
          :selected-rows="selectedRows"
+         :selected-cell="selectedCell"
          @show-delete-modal="showDeleteConfirmModal"
          @set-null="setNull"
          @copy-cell="copyCell"
@@ -71,6 +72,7 @@
                   :row="row"
                   :fields="fieldsObj"
                   :key-usage="keyUsage"
+                  :element-type="elementType"
                   :class="{'selected': selectedRows.includes(row._id)}"
                   @select-row="selectRow($event, row._id)"
                   @update-field="updateField($event, row)"
@@ -123,7 +125,8 @@ export default {
       results: Array,
       connUid: String,
       mode: String,
-      isSelected: Boolean
+      isSelected: Boolean,
+      elementType: { type: String, default: 'table' }
    },
    data () {
       return {
@@ -226,6 +229,9 @@ export default {
       },
       resultsetIndex () {
          this.setLocalResults();
+      },
+      isSelected (val) {
+         if (val) this.refreshScroller();
       }
    },
    updated () {

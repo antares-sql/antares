@@ -1,7 +1,7 @@
 <template>
    <div
       v-show="isSelected"
-      class="workspace-query-tab column col-12 columns col-gapless no-outline"
+      class="workspace-query-tab column col-12 columns col-gapless no-outline p-0"
       tabindex="0"
       @keydown.116="runQuery(query)"
       @keydown.ctrl.87="clear"
@@ -14,7 +14,7 @@
             :auto-focus="true"
             :value.sync="query"
             :workspace="workspace"
-            :schema="schema"
+            :schema="breadcrumbsSchema"
             :is-selected="isSelected"
             :height="editorHeight"
          />
@@ -86,12 +86,16 @@
                <div v-if="affectedCount">
                   {{ $t('message.affectedRows') }}: <b>{{ affectedCount }}</b>
                </div>
-               <div
-                  v-if="workspace.breadcrumbs.schema"
-                  class="d-flex"
-                  :title="$t('word.schema')"
-               >
-                  <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ workspace.breadcrumbs.schema }}</b>
+               <div class="input-group" :title="$t('word.schema')">
+                  <i class="input-group-addon addon-sm mdi mdi-24px mdi-database" />
+                  <select v-model="selectedSchema" class="form-select select-sm text-bold">
+                     <option :value="null">
+                        {{ $t('message.noSchema') }}
+                     </option>
+                     <option v-for="schemaName in databaseSchemas" :key="schemaName">
+                        {{ schemaName }}
+                     </option>
+                  </select>
                </div>
             </div>
          </div>
@@ -142,6 +146,7 @@ export default {
          lastQuery: '',
          isQuering: false,
          results: [],
+         selectedSchema: null,
          resultsCount: 0,
          durationsCount: 0,
          affectedCount: 0,
@@ -156,12 +161,32 @@ export default {
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
+      breadcrumbsSchema () {
+         return this.workspace.breadcrumbs.schema || null;
+      },
+      databaseSchemas () {
+         return this.workspace.structure.reduce((acc, curr) => {
+            acc.push(curr.name);
+            return acc;
+         }, []);
+      },
       isWorkspaceSelected () {
          return this.workspace.uid === this.selectedWorkspace;
       }
    },
+   watch: {
+      isSelected (val) {
+         if (val)
+            this.changeBreadcrumbs({ schema: this.selectedSchema, query: `Query #${this.tab.index}` });
+      },
+      selectedSchema () {
+         this.changeBreadcrumbs({ schema: this.selectedSchema, query: `Query #${this.tab.index}` });
+      }
+   },
    created () {
       this.query = this.tab.content;
+      this.selectedSchema = this.tab.schema || this.breadcrumbsSchema;
+      // this.changeBreadcrumbs({ schema: this.selectedSchema, query: `Query #${this.tab.index}` });
 
       window.addEventListener('keydown', this.onKey);
    },
@@ -183,7 +208,9 @@ export default {
    },
    methods: {
       ...mapActions({
-         addNotification: 'notifications/addNotification'
+         addNotification: 'notifications/addNotification',
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         updateTabContent: 'workspaces/updateTabContent'
       }),
       async runQuery (query) {
          if (!query || this.isQuering) return;
@@ -194,7 +221,7 @@ export default {
          try { // Query Data
             const params = {
                uid: this.connection.uid,
-               schema: this.schema,
+               schema: this.selectedSchema,
                query
             };
 
@@ -205,6 +232,8 @@ export default {
                this.resultsCount += this.results.reduce((acc, curr) => acc + (curr.rows ? curr.rows.length : 0), 0);
                this.durationsCount += this.results.reduce((acc, curr) => acc + curr.duration, 0);
                this.affectedCount += this.results.reduce((acc, curr) => acc + (curr.report ? curr.report.affectedRows : 0), 0);
+
+               this.updateTabContent({ uid: this.connection.uid, tab: this.tab.uid, type: 'query', schema: this.selectedSchema, content: query });
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -303,8 +332,10 @@ export default {
       align-items: center;
       height: 42px;
 
-      .workspace-query-buttons {
+      .workspace-query-buttons,
+      .workspace-query-info {
         display: flex;
+        align-items: center;
 
         .btn {
           display: flex;
@@ -314,7 +345,7 @@ export default {
       }
 
       .workspace-query-info {
-        display: flex;
+        overflow: visible;
 
         > div + div {
           padding-left: 0.6rem;

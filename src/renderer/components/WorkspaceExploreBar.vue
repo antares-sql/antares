@@ -21,7 +21,7 @@
                   @click="refresh"
                />
                <i
-                  class="mdi mdi-18px mdi-power-plug-off c-hand"
+                  class="mdi mdi-18px mdi-power c-hand"
                   :title="$t('word.disconnect')"
                   @click="disconnectWorkspace(connection.uid)"
                />
@@ -100,7 +100,7 @@
       />
       <DatabaseContext
          v-if="isDatabaseContext"
-         :selected-database="selectedDatabase"
+         :selected-schema="selectedSchema"
          :context-event="databaseContextEvent"
          @close-context="closeDatabaseContext"
          @show-create-table-modal="showCreateTableModal"
@@ -114,6 +114,7 @@
       />
       <TableContext
          v-if="isTableContext"
+         :selected-schema="selectedSchema"
          :selected-table="selectedTable"
          :context-event="tableContextEvent"
          @close-context="closeTableContext"
@@ -122,6 +123,7 @@
       <MiscContext
          v-if="isMiscContext"
          :selected-misc="selectedMisc"
+         :selected-schema="selectedSchema"
          :context-event="miscContextEvent"
          @close-context="closeMiscContext"
          @reload="refresh"
@@ -129,6 +131,7 @@
       <MiscFolderContext
          v-if="isMiscFolderContext"
          :selected-misc="selectedMisc"
+         :selected-schema="selectedSchema"
          :context-event="miscContextEvent"
          @show-create-trigger-modal="showCreateTriggerModal"
          @show-create-routine-modal="showCreateRoutineModal"
@@ -211,7 +214,7 @@ export default {
          tableContextEvent: null,
          miscContextEvent: null,
 
-         selectedDatabase: '',
+         selectedSchema: '',
          selectedTable: null,
          selectedMisc: null,
          searchTerm: ''
@@ -271,6 +274,7 @@ export default {
          refreshStructure: 'workspaces/refreshStructure',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
          selectTab: 'workspaces/selectTab',
+         newTab: 'workspaces/newTab',
          setSearchTerm: 'workspaces/setSearchTerm',
          addNotification: 'notifications/addNotification',
          changeExplorebarSize: 'settings/changeExplorebarSize'
@@ -308,6 +312,7 @@ export default {
       async openCreateTableEditor (payload) {
          const params = {
             uid: this.connection.uid,
+            schema: this.selectedSchema,
             ...payload
          };
 
@@ -315,14 +320,19 @@ export default {
 
          if (status === 'success') {
             await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedDatabase, table: payload.name });
-            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+            this.newTab({
+               uid: this.workspace.uid,
+               schema: this.selectedSchema,
+               elementName: payload.name,
+               elementType: 'table',
+               type: 'table-props'
+            });
          }
          else
             this.addNotification({ status: 'error', message: response });
       },
       openSchemaContext (payload) {
-         this.selectedDatabase = payload.schema;
+         this.selectedSchema = payload.schema;
          this.databaseContextEvent = payload.event;
          this.isDatabaseContext = true;
       },
@@ -331,6 +341,7 @@ export default {
       },
       openTableContext (payload) {
          this.selectedTable = payload.table;
+         this.selectedSchema = payload.schema;
          this.tableContextEvent = payload.event;
          this.isTableContext = true;
       },
@@ -339,11 +350,13 @@ export default {
       },
       openMiscContext (payload) {
          this.selectedMisc = payload.misc;
+         this.selectedSchema = payload.schema;
          this.miscContextEvent = payload.event;
          this.isMiscContext = true;
       },
       openMiscFolderContext (payload) {
          this.selectedMisc = payload.type;
+         this.selectedSchema = payload.schema;
          this.miscContextEvent = payload.event;
          this.isMiscFolderContext = true;
       },
@@ -364,6 +377,7 @@ export default {
       async openCreateViewEditor (payload) {
          const params = {
             uid: this.connection.uid,
+            schema: this.selectedSchema,
             ...payload
          };
 
@@ -371,8 +385,15 @@ export default {
 
          if (status === 'success') {
             await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedDatabase, view: payload.name });
-            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+            this.changeBreadcrumbs({ schema: this.selectedSchema, view: payload.name });
+
+            this.newTab({
+               uid: this.workspace.uid,
+               schema: this.selectedSchema,
+               elementName: payload.name,
+               elementType: 'view',
+               type: 'view-props'
+            });
          }
          else
             this.addNotification({ status: 'error', message: response });
@@ -388,6 +409,7 @@ export default {
       async openCreateTriggerEditor (payload) {
          const params = {
             uid: this.connection.uid,
+            schema: this.selectedSchema,
             ...payload
          };
 
@@ -396,8 +418,15 @@ export default {
          if (status === 'success') {
             await this.refresh();
             const triggerName = this.customizations.triggerTableInName ? `${payload.table}.${payload.name}` : payload.name;
-            this.changeBreadcrumbs({ schema: this.selectedDatabase, trigger: triggerName });
-            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+            this.changeBreadcrumbs({ schema: this.selectedSchema, trigger: triggerName });
+
+            this.newTab({
+               uid: this.workspace.uid,
+               schema: this.selectedSchema,
+               elementName: triggerName,
+               elementType: 'trigger',
+               type: 'trigger-props'
+            });
          }
          else
             this.addNotification({ status: 'error', message: response });
@@ -413,6 +442,7 @@ export default {
       async openCreateRoutineEditor (payload) {
          const params = {
             uid: this.connection.uid,
+            schema: this.selectedSchema,
             ...payload
          };
 
@@ -420,8 +450,15 @@ export default {
 
          if (status === 'success') {
             await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedDatabase, procedure: payload.name });
-            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+            this.changeBreadcrumbs({ schema: this.selectedSchema, routine: payload.name });
+
+            this.newTab({
+               uid: this.workspace.uid,
+               schema: this.selectedSchema,
+               elementName: payload.name,
+               elementType: 'routine',
+               type: 'routine-props'
+            });
          }
          else
             this.addNotification({ status: 'error', message: response });
@@ -453,6 +490,7 @@ export default {
       async openCreateFunctionEditor (payload) {
          const params = {
             uid: this.connection.uid,
+            schema: this.selectedSchema,
             ...payload
          };
 
@@ -460,8 +498,15 @@ export default {
 
          if (status === 'success') {
             await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedDatabase, function: payload.name });
-            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+            this.changeBreadcrumbs({ schema: this.selectedSchema, function: payload.name });
+
+            this.newTab({
+               uid: this.workspace.uid,
+               schema: this.selectedSchema,
+               elementName: payload.name,
+               elementType: 'function',
+               type: 'function-props'
+            });
          }
          else
             this.addNotification({ status: 'error', message: response });
@@ -469,6 +514,7 @@ export default {
       async openCreateTriggerFunctionEditor (payload) {
          const params = {
             uid: this.connection.uid,
+            schema: this.selectedSchema,
             ...payload
          };
 
@@ -476,8 +522,15 @@ export default {
 
          if (status === 'success') {
             await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedDatabase, triggerFunction: payload.name });
-            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+            this.changeBreadcrumbs({ schema: this.selectedSchema, triggerFunction: payload.name });
+
+            this.newTab({
+               uid: this.workspace.uid,
+               schema: this.selectedSchema,
+               elementName: payload.name,
+               elementType: 'triggerFunction',
+               type: 'trigger-function-props'
+            });
          }
          else
             this.addNotification({ status: 'error', message: response });
@@ -485,6 +538,7 @@ export default {
       async openCreateSchedulerEditor (payload) {
          const params = {
             uid: this.connection.uid,
+            schema: this.selectedSchema,
             ...payload
          };
 
@@ -492,8 +546,15 @@ export default {
 
          if (status === 'success') {
             await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedDatabase, scheduler: payload.name });
-            this.selectTab({ uid: this.workspace.uid, tab: 'prop' });
+            this.changeBreadcrumbs({ schema: this.selectedSchema, scheduler: payload.name });
+
+            this.newTab({
+               uid: this.workspace.uid,
+               schema: this.selectedSchema,
+               elementName: payload.name,
+               elementType: 'scheduler',
+               type: 'scheduler-props'
+            });
          }
          else
             this.addNotification({ status: 'error', message: response });

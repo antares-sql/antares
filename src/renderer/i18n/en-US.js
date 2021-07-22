@@ -169,7 +169,7 @@ module.exports = {
       deleteTable: 'Delete table',
       emptyCorfirm: 'Do you confirm to empty',
       unsavedChanges: 'Unsaved changes',
-      discardUnsavedChanges: 'You have some unsaved changes. By leaving this tab these changes will be discarded.',
+      discardUnsavedChanges: 'You have some unsaved changes. Closing this tab these changes will be discarded.',
       thereAreNoIndexes: 'There are no indexes',
       thereAreNoForeign: 'There are no foreign keys',
       createNewForeign: 'Create new foreign key',
@@ -224,7 +224,10 @@ module.exports = {
       dataTabPageSize: 'DATA tab page size',
       enableSsh: 'Enable SSH',
       pageNumber: 'Page number',
-      duplicateTable: 'Duplicate table'
+      duplicateTable: 'Duplicate table',
+      noOpenTabs: 'There are no open tabs, navigate on the left bar or:',
+      noSchema: 'No schema',
+      restorePreviourSession: 'Restore previous session'
    },
    faker: {
       address: 'Address',

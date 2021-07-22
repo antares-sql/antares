@@ -86,7 +86,7 @@
                </form>
             </div>
          </div>
-         <div class="modal-footer text-light">
+         <div class="modal-footer">
             <div class="input-group col-3 tooltip tooltip-right" :data-tooltip="$t('message.numberOfInserts')">
                <input
                   v-model="nInserts"

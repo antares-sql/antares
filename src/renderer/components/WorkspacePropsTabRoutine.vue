@@ -1,5 +1,5 @@
 <template>
-   <div class="workspace-query-tab column col-12 columns col-gapless">
+   <div v-show="isSelected" class="workspace-query-tab column col-12 columns col-gapless">
       <div class="workspace-query-runner column col-12">
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
@@ -41,6 +41,11 @@
                   <i class="mdi mdi-24px mdi-cogs mr-1" />
                   <span>{{ $t('word.options') }}</span>
                </button>
+            </div>
+            <div class="workspace-query-info">
+               <div class="d-flex" :title="$t('word.schema')">
+                  <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
+               </div>
             </div>
          </div>
       </div>
@@ -103,11 +108,12 @@ export default {
    },
    props: {
       connection: Object,
-      routine: String
+      routine: String,
+      isSelected: Boolean,
+      schema: String
    },
    data () {
       return {
-         tabUid: 'prop',
          isLoading: false,
          isSaving: false,
          isOptionsModal: false,
@@ -128,11 +134,8 @@ export default {
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
-      isSelected () {
-         return this.workspace.selected_tab === 'prop' && this.selectedWorkspace === this.workspace.uid && this.routine;
-      },
-      schema () {
-         return this.workspace.breadcrumbs.schema;
+      tabUid () {
+         return this.$vnode.key;
       },
       isChanged () {
          return JSON.stringify(this.originalRoutine) !== JSON.stringify(this.localRoutine);
@@ -149,6 +152,13 @@ export default {
       }
    },
    watch: {
+      async schema () {
+         if (this.isSelected) {
+            await this.getRoutineData();
+            this.$refs.queryEditor.editor.session.setValue(this.localRoutine.sql);
+            this.lastRoutine = this.routine;
+         }
+      },
       async routine () {
          if (this.isSelected) {
             await this.getRoutineData();
@@ -157,25 +167,27 @@ export default {
          }
       },
       async isSelected (val) {
-         if (val && this.lastRoutine !== this.routine) {
-            await this.getRoutineData();
-            this.$refs.queryEditor.editor.session.setValue(this.localRoutine.sql);
-            this.lastRoutine = this.routine;
+         if (val) {
+            this.changeBreadcrumbs({ schema: this.schema, routine: this.routine });
+
+            if (this.lastRoutine !== this.routine)
+               this.getRoutineData();
          }
       },
       isChanged (val) {
-         if (this.isSelected && this.lastRoutine === this.routine && this.routine !== null)
-            this.setUnsavedChanges(val);
+         this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: val });
       }
+   },
+   async created () {
+      await this.getRoutineData();
+      this.$refs.queryEditor.editor.session.setValue(this.localRoutine.sql);
+      window.addEventListener('keydown', this.onKey);
    },
    mounted () {
       window.addEventListener('resize', this.resizeQueryEditor);
    },
    destroyed () {
       window.removeEventListener('resize', this.resizeQueryEditor);
-   },
-   created () {
-      window.addEventListener('keydown', this.onKey);
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);
@@ -184,19 +196,22 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification',
          refreshStructure: 'workspaces/refreshStructure',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges',
+         renameTabs: 'workspaces/renameTabs',
+         newTab: 'workspaces/newTab',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
-         newTab: 'workspaces/newTab'
+         setUnsavedChanges: 'workspaces/setUnsavedChanges'
       }),
       async getRoutineData () {
          if (!this.routine) return;
+
          this.localRoutine = { sql: '' };
          this.isLoading = true;
+         this.lastRoutine = this.routine;
 
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            routine: this.workspace.breadcrumbs.procedure
+            routine: this.routine
          };
 
          try {
@@ -227,9 +242,9 @@ export default {
          this.isSaving = true;
          const params = {
             uid: this.connection.uid,
-            schema: this.schema,
             routine: {
                ...this.localRoutine,
+               schema: this.schema,
                oldName: this.originalRoutine.name
             }
          };
@@ -243,11 +258,18 @@ export default {
                await this.refreshStructure(this.connection.uid);
 
                if (oldName !== this.localRoutine.name) {
-                  this.setUnsavedChanges(false);
+                  this.renameTabs({
+                     uid: this.connection.uid,
+                     schema: this.schema,
+                     elementName: oldName,
+                     elementNewName: this.localRoutine.name,
+                     elementType: 'procedure'
+                  });
+
                   this.changeBreadcrumbs({ schema: this.schema, procedure: this.localRoutine.name });
                }
-
-               this.getRoutineData();
+               else
+                  this.getRoutineData();
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -299,7 +321,7 @@ export default {
                sql = `CALL \`${this.originalRoutine.name}\`(${params.join(',')})`;
          }
 
-         this.newTab({ uid: this.connection.uid, content: sql, autorun: true });
+         this.newTab({ uid: this.connection.uid, content: sql, type: 'query', autorun: true });
       },
       showOptionsModal () {
          this.isOptionsModal = true;

@@ -1,5 +1,5 @@
 <template>
-   <div class="workspace-query-tab column col-12 columns col-gapless">
+   <div v-show="isSelected" class="workspace-query-tab column col-12 columns col-gapless">
       <div class="workspace-query-runner column col-12">
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
@@ -22,6 +22,11 @@
                   <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
                   <span>{{ $t('word.clear') }}</span>
                </button>
+            </div>
+            <div class="workspace-query-info">
+               <div class="d-flex" :title="$t('word.schema')">
+                  <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
+               </div>
             </div>
          </div>
       </div>
@@ -139,11 +144,12 @@ export default {
    },
    props: {
       connection: Object,
-      trigger: String
+      trigger: String,
+      isSelected: Boolean,
+      schema: String
    },
    data () {
       return {
-         tabUid: 'prop',
          isLoading: false,
          isSaving: false,
          originalTrigger: null,
@@ -162,14 +168,11 @@ export default {
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
+      tabUid () {
+         return this.$vnode.key;
+      },
       customizations () {
          return this.workspace.customizations;
-      },
-      isSelected () {
-         return this.workspace.selected_tab === 'prop' && this.selectedWorkspace === this.workspace.uid && this.trigger;
-      },
-      schema () {
-         return this.workspace.breadcrumbs.schema;
       },
       isChanged () {
          return JSON.stringify(this.originalTrigger) !== JSON.stringify(this.localTrigger);
@@ -186,6 +189,13 @@ export default {
       }
    },
    watch: {
+      async schema () {
+         if (this.isSelected) {
+            await this.getTriggerData();
+            this.$refs.queryEditor.editor.session.setValue(this.localTrigger.sql);
+            this.lastTrigger = this.trigger;
+         }
+      },
       async trigger () {
          if (this.isSelected) {
             await this.getTriggerData();
@@ -194,25 +204,27 @@ export default {
          }
       },
       async isSelected (val) {
-         if (val && this.lastTrigger !== this.trigger) {
-            await this.getTriggerData();
-            this.$refs.queryEditor.editor.session.setValue(this.localTrigger.sql);
-            this.lastTrigger = this.trigger;
+         if (val) {
+            this.changeBreadcrumbs({ schema: this.schema, trigger: this.trigger });
+
+            if (this.lastTrigger !== this.trigger)
+               this.getTriggerData();
          }
       },
       isChanged (val) {
-         if (this.isSelected && this.lastTrigger === this.trigger && this.trigger !== null)
-            this.setUnsavedChanges(val);
+         this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: val });
       }
+   },
+   async created () {
+      await this.getTriggerData();
+      this.$refs.queryEditor.editor.session.setValue(this.localTrigger.sql);
+      window.addEventListener('keydown', this.onKey);
    },
    mounted () {
       window.addEventListener('resize', this.resizeQueryEditor);
    },
    destroyed () {
       window.removeEventListener('resize', this.resizeQueryEditor);
-   },
-   created () {
-      window.addEventListener('keydown', this.onKey);
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);
@@ -221,8 +233,10 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification',
          refreshStructure: 'workspaces/refreshStructure',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
+         renameTabs: 'workspaces/renameTabs',
+         newTab: 'workspaces/newTab',
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         setUnsavedChanges: 'workspaces/setUnsavedChanges'
       }),
       async getTriggerData () {
          if (!this.trigger) return;
@@ -233,6 +247,7 @@ export default {
 
          this.localTrigger = { sql: '' };
          this.isLoading = true;
+         this.lastTrigger = this.trigger;
 
          const params = {
             uid: this.connection.uid,
@@ -278,9 +293,9 @@ export default {
          this.isSaving = true;
          const params = {
             uid: this.connection.uid,
-            schema: this.schema,
             trigger: {
                ...this.localTrigger,
+               schema: this.schema,
                oldName: this.originalTrigger.name
             }
          };
@@ -289,17 +304,24 @@ export default {
             const { status, response } = await Triggers.alterTrigger(params);
 
             if (status === 'success') {
-               const oldName = this.originalTrigger.name;
-
                await this.refreshStructure(this.connection.uid);
 
-               if (oldName !== this.localTrigger.name) {
-                  this.setUnsavedChanges(false);
+               if (this.originalTrigger.name !== this.localTrigger.name) {
                   const triggerName = this.customizations.triggerTableInName ? `${this.localTrigger.table}.${this.localTrigger.name}` : this.localTrigger.name;
+                  const triggerOldName = this.customizations.triggerTableInName ? `${this.originalTrigger.table}.${this.originalTrigger.name}` : this.originalTrigger.name;
+
+                  this.renameTabs({
+                     uid: this.connection.uid,
+                     schema: this.schema,
+                     elementName: triggerOldName,
+                     elementNewName: triggerName,
+                     elementType: 'trigger'
+                  });
+
                   this.changeBreadcrumbs({ schema: this.schema, trigger: triggerName });
                }
-
-               this.getTriggerData();
+               else
+                  this.getTriggerData();
             }
             else
                this.addNotification({ status: 'error', message: response });

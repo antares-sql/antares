@@ -1,5 +1,5 @@
 <template>
-   <div v-show="isSelected" class="workspace-query-tab column col-12 columns col-gapless">
+   <div v-show="isSelected" class="workspace-query-tab column col-12 columns col-gapless no-outline p-0">
       <div class="workspace-query-runner column col-12">
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
@@ -115,8 +115,8 @@
                <div v-if="hasApproximately || (page > 1 && tableInfo.rows)">
                   {{ $t('word.total') }}: <b>{{ tableInfo.rows | localeString }}</b> <small>({{ $t('word.approximately') }})</small>
                </div>
-               <div v-if="workspace.breadcrumbs.database">
-                  {{ $t('word.schema') }}: <b>{{ workspace.breadcrumbs.database }}</b>
+               <div class="d-flex" :title="$t('word.schema')">
+                  <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
                </div>
             </div>
          </div>
@@ -131,6 +131,7 @@
             :conn-uid="connection.uid"
             :is-selected="isSelected"
             mode="table"
+            :element-type="elementType"
             @update-field="updateField"
             @delete-selected="deleteSelected"
             @hard-sort="hardSort"
@@ -181,11 +182,14 @@ export default {
    mixins: [tableTabs],
    props: {
       connection: Object,
-      table: String
+      isSelected: Boolean,
+      table: String,
+      schema: String,
+      elementType: String
    },
    data () {
       return {
-         tabUid: 'data',
+         tabUid: 'data', // ???
          isQuering: false,
          isPageMenu: false,
          results: [],
@@ -207,9 +211,6 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
-      },
-      isSelected () {
-         return this.workspace.selected_tab === 'data' && this.workspace.uid === this.selectedWorkspace;
       },
       isTable () {
          return !!this.workspace.breadcrumbs.table;
@@ -237,6 +238,15 @@ export default {
       }
    },
    watch: {
+      schema () {
+         if (this.isSelected) {
+            this.page = 1;
+            this.sortParams = {};
+            this.getTableData();
+            this.lastTable = this.table;
+            this.$refs.queryTable.resetSort();
+         }
+      },
       table () {
          if (this.isSelected) {
             this.page = 1;
@@ -253,9 +263,11 @@ export default {
          }
       },
       isSelected (val) {
-         if (val && this.lastTable !== this.table) {
-            this.getTableData();
-            this.lastTable = this.table;
+         if (val) {
+            this.changeBreadcrumbs({ schema: this.schema, [this.elementType]: this.table });
+
+            if (this.lastTable !== this.table)
+               this.getTableData();
          }
       }
    },
@@ -269,7 +281,8 @@ export default {
    },
    methods: {
       ...mapActions({
-         addNotification: 'notifications/addNotification'
+         addNotification: 'notifications/addNotification',
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
       async getTableData (sortParams) {
          if (!this.table) return;
@@ -279,10 +292,12 @@ export default {
          if (this.lastTable !== this.table)
             this.results = [];
 
+         this.lastTable = this.table;
+
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            table: this.workspace.breadcrumbs.table || this.workspace.breadcrumbs.view,
+            table: this.table,
             limit: this.limit,
             page: this.page,
             sortParams

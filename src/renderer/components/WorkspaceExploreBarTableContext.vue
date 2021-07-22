@@ -4,6 +4,20 @@
       @close-context="closeContext"
    >
       <div
+         v-if="selectedTable.type === 'table' && workspace.customizations.tableSettings"
+         class="context-element"
+         @click="openTableSettingTab"
+      >
+         <span class="d-flex"><i class="mdi mdi-18px mdi-tune-vertical-variant text-light pr-1" /> {{ $t('word.settings') }}</span>
+      </div>
+      <div
+         v-if="selectedTable.type === 'view' && workspace.customizations.viewSettings"
+         class="context-element"
+         @click="openViewSettingTab"
+      >
+         <span class="d-flex"><i class="mdi mdi-18px mdi-tune-vertical-variant text-light pr-1" /> {{ $t('word.settings') }}</span>
+      </div>
+      <div
          v-if="selectedTable.type === 'table'"
          class="context-element"
          @click="duplicateTable"
@@ -72,7 +86,8 @@ export default {
    },
    props: {
       contextEvent: MouseEvent,
-      selectedTable: Object
+      selectedTable: Object,
+      selectedSchema: String
    },
    data () {
       return {
@@ -92,6 +107,8 @@ export default {
    methods: {
       ...mapActions({
          addNotification: 'notifications/addNotification',
+         newTab: 'workspaces/newTab',
+         removeTabs: 'workspaces/removeTabs',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
       showCreateTableModal () {
@@ -112,11 +129,44 @@ export default {
       closeContext () {
          this.$emit('close-context');
       },
+      openTableSettingTab () {
+         this.newTab({
+            uid: this.selectedWorkspace,
+            elementName: this.selectedTable.name,
+            schema: this.selectedSchema,
+            type: 'table-props',
+            elementType: 'table'
+         });
+
+         this.changeBreadcrumbs({
+            schema: this.selectedSchema,
+            table: this.selectedTable.name
+         });
+
+         this.closeContext();
+      },
+      openViewSettingTab () {
+         this.newTab({
+            uid: this.selectedWorkspace,
+            elementType: 'table',
+            elementName: this.selectedTable.name,
+            schema: this.selectedSchema,
+            type: 'view-props'
+         });
+
+         this.changeBreadcrumbs({
+            schema: this.selectedSchema,
+            view: this.selectedTable.name
+         });
+
+         this.closeContext();
+      },
       async duplicateTable () {
          try {
             const { status, response } = await Tables.duplicateTable({
                uid: this.selectedWorkspace,
-               table: this.selectedTable.name
+               table: this.selectedTable.name,
+               schema: this.selectedSchema
             });
 
             if (status === 'success') {
@@ -134,13 +184,11 @@ export default {
          try {
             const { status, response } = await Tables.truncateTable({
                uid: this.selectedWorkspace,
-               table: this.selectedTable.name
+               table: this.selectedTable.name,
+               schema: this.selectedSchema
             });
 
             if (status === 'success') {
-               if (this.selectedTable.name === this.workspace.breadcrumbs.table)
-                  this.changeBreadcrumbs({ table: null });
-
                this.closeContext();
                this.$emit('reload');
             }
@@ -158,21 +206,27 @@ export default {
             if (this.selectedTable.type === 'table') {
                res = await Tables.dropTable({
                   uid: this.selectedWorkspace,
-                  table: this.selectedTable.name
+                  table: this.selectedTable.name,
+                  schema: this.selectedSchema
                });
             }
             else if (this.selectedTable.type === 'view') {
                res = await Views.dropView({
                   uid: this.selectedWorkspace,
-                  view: this.selectedTable.name
+                  view: this.selectedTable.name,
+                  schema: this.selectedSchema
                });
             }
 
             const { status, response } = res;
 
             if (status === 'success') {
-               if (this.selectedTable.name === this.workspace.breadcrumbs.table || this.selectedTable.name === this.workspace.breadcrumbs.view)
-                  this.changeBreadcrumbs({ table: null, view: null });
+               this.removeTabs({
+                  uid: this.selectedWorkspace,
+                  elementName: this.selectedTable.name,
+                  elementType: this.selectedTable.type,
+                  schema: this.selectedSchema
+               });
 
                this.closeContext();
                this.$emit('reload');

@@ -52,7 +52,8 @@ export default {
    },
    props: {
       contextEvent: MouseEvent,
-      selectedMisc: String
+      selectedMisc: String,
+      selectedSchema: String
    },
    data () {
       return {

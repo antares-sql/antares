@@ -19,7 +19,8 @@
                   :key="table.name"
                   class="menu-item"
                   :class="{'text-bold': breadcrumbs.schema === database.name && [breadcrumbs.table, breadcrumbs.view].includes(table.name)}"
-                  @click="setBreadcrumbs({schema: database.name, [table.type]: table.name})"
+                  @click="selectTable({schema: database.name, table})"
+                  @dblclick="openDataTab({schema: database.name, table})"
                   @contextmenu.prevent="showTableContext($event, table)"
                >
                   <a class="table-name">
@@ -55,7 +56,8 @@
                            :key="trigger.name"
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.trigger === trigger.name}"
-                           @click="setBreadcrumbs({schema: database.name, trigger: trigger.name})"
+                           @click="selectMisc({schema: database.name, misc: trigger, type: 'trigger'})"
+                           @dblclick="openMiscPermanentTab({schema: database.name, misc: trigger, type: 'trigger'})"
                            @contextmenu.prevent="showMiscContext($event, {...trigger, type: 'trigger'})"
                         >
                            <a class="table-name">
@@ -73,7 +75,7 @@
             <details class="accordion">
                <summary
                   class="accordion-header misc-name"
-                  :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.procedure}"
+                  :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.routine}"
                   @contextmenu.prevent="showMiscFolderContext($event, 'procedure')"
                >
                   <i class="misc-icon mdi mdi-18px mdi-folder-sync mr-1" />
@@ -86,8 +88,9 @@
                            v-for="(procedure, i) of filteredProcedures"
                            :key="`${procedure.name}-${i}`"
                            class="menu-item"
-                           :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.procedure === procedure.name}"
-                           @click="setBreadcrumbs({schema: database.name, procedure: procedure.name})"
+                           :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.routine === procedure.name}"
+                           @click="selectMisc({schema: database.name, misc: procedure, type: 'routine'})"
+                           @dblclick="openMiscPermanentTab({schema: database.name, misc: procedure, type: 'routine'})"
                            @contextmenu.prevent="showMiscContext($event, {...procedure, type: 'procedure'})"
                         >
                            <a class="table-name">
@@ -119,7 +122,8 @@
                            :key="`${func.name}-${i}`"
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.triggerFunction === func.name}"
-                           @click="setBreadcrumbs({schema: database.name, triggerFunction: func.name})"
+                           @click="selectMisc({schema: database.name, misc: func, type: 'triggerFunction'})"
+                           @dblclick="openMiscPermanentTab({schema: database.name, misc: func, type: 'triggerFunction'})"
                            @contextmenu.prevent="showMiscContext($event, {...func, type: 'triggerFunction'})"
                         >
                            <a class="table-name">
@@ -151,7 +155,8 @@
                            :key="`${func.name}-${i}`"
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.function === func.name}"
-                           @click="setBreadcrumbs({schema: database.name, function: func.name})"
+                           @click="selectMisc({schema: database.name, misc: func, type: 'function'})"
+                           @dblclick="openMiscPermanentTab({schema: database.name, misc: func, type: 'function'})"
                            @contextmenu.prevent="showMiscContext($event, {...func, type: 'function'})"
                         >
                            <a class="table-name">
@@ -183,7 +188,8 @@
                            :key="scheduler.name"
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.scheduler === scheduler.name}"
-                           @click="setBreadcrumbs({schema: database.name, scheduler: scheduler.name})"
+                           @click="selectMisc({schema: database.name, misc: scheduler, type: 'scheduler'})"
+                           @dblclick="openMiscPermanentTab({schema: database.name, misc: scheduler, type: 'scheduler'})"
                            @contextmenu.prevent="showMiscContext($event, {...scheduler, type: 'scheduler'})"
                         >
                            <a class="table-name">
@@ -267,6 +273,8 @@ export default {
    methods: {
       ...mapActions({
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         addLoadedSchema: 'workspaces/addLoadedSchema',
+         newTab: 'workspaces/newTab',
          refreshSchema: 'workspaces/refreshSchema'
       }),
       formatBytes,
@@ -274,27 +282,68 @@ export default {
          if (!this.loadedSchemas.has(schema) && !this.isLoading) {
             this.isLoading = true;
             await this.refreshSchema({ uid: this.connection.uid, schema });
+            this.addLoadedSchema(schema);
             this.isLoading = false;
          }
 
          this.changeBreadcrumbs({ schema, table: null });
       },
+      selectTable ({ schema, table }) {
+         this.newTab({ uid: this.connection.uid, elementName: table.name, schema: this.database.name, type: 'temp-data', elementType: table.type });
+         this.setBreadcrumbs({ schema, [table.type]: table.name });
+      },
+      selectMisc ({ schema, misc, type }) {
+         const miscTempTabs = {
+            trigger: 'temp-trigger-props',
+            triggerFunction: 'temp-trigger-function-props',
+            function: 'temp-function-props',
+            routine: 'temp-routine-props',
+            scheduler: 'temp-scheduler-props'
+         };
+
+         this.newTab({
+            uid: this.connection.uid,
+            elementName: misc.name,
+            schema: this.database.name,
+            type: miscTempTabs[type],
+            elementType: type
+         });
+
+         this.setBreadcrumbs({ schema, [type]: misc.name });
+      },
+      openDataTab ({ schema, table }) {
+         this.newTab({ uid: this.connection.uid, elementName: table.name, schema: this.database.name, type: 'data', elementType: table.type });
+         this.setBreadcrumbs({ schema, [table.type]: table.name });
+      },
+      openMiscPermanentTab ({ schema, misc, type }) {
+         const miscTabs = {
+            trigger: 'trigger-props',
+            triggerFunction: 'trigger-function-props',
+            function: 'function-props',
+            routine: 'routine-props',
+            scheduler: 'scheduler-props'
+         };
+
+         this.newTab({
+            uid: this.connection.uid,
+            elementName: misc.name,
+            schema: this.database.name,
+            type: miscTabs[type],
+            elementType: type
+         });
+         this.setBreadcrumbs({ schema, [type]: misc.name });
+      },
       showSchemaContext (event, schema) {
-         this.selectSchema(schema);
          this.$emit('show-schema-context', { event, schema });
       },
       showTableContext (event, table) {
-         this.setBreadcrumbs({ schema: this.database.name, [table.type]: table.name });
-         this.$emit('show-table-context', { event, table });
+         this.$emit('show-table-context', { event, schema: this.database.name, table });
       },
       showMiscContext (event, misc) {
-         this.setBreadcrumbs({ schema: this.database.name, [misc.type]: misc.name });
-         this.$emit('show-misc-context', { event, misc });
+         this.$emit('show-misc-context', { event, schema: this.database.name, misc });
       },
       showMiscFolderContext (event, type) {
-         this.selectSchema(this.database.name);
-         this.setBreadcrumbs({ schema: this.database.name, type });
-         this.$emit('show-misc-folder-context', { event, type });
+         this.$emit('show-misc-folder-context', { event, schema: this.database.name, type });
       },
       piePercentage (val) {
          const perc = val / this.maxSize * 100;

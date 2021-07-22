@@ -335,11 +335,11 @@ export class MySQLClient extends AntaresCore {
          .select('*')
          .schema('information_schema')
          .from('COLUMNS')
-         .where({ TABLE_SCHEMA: `= '${this._schema || schema}'`, TABLE_NAME: `= '${table}'` })
+         .where({ TABLE_SCHEMA: `= '${schema}'`, TABLE_NAME: `= '${table}'` })
          .orderBy({ ORDINAL_POSITION: 'ASC' })
          .run();
 
-      const { rows: fields } = await this.raw(`SHOW CREATE TABLE \`${this._schema || schema}\`.\`${table}\``);
+      const { rows: fields } = await this.raw(`SHOW CREATE TABLE \`${schema}\`.\`${table}\``);
 
       const remappedFields = fields.map(row => {
          if (!row['Create Table']) return false;
@@ -363,15 +363,14 @@ export class MySQLClient extends AntaresCore {
 
                   const details = fieldArr.slice(2).join(' ');
                   let defaultValue = null;
-                  if (details.includes('DEFAULT')) {
+                  if (details.includes('DEFAULT'))
                      defaultValue = details.match(/(?<=DEFAULT ).*?$/gs)[0].split(' COMMENT')[0];
-                     const defaultValueArr = defaultValue.split('');
-                     if (defaultValueArr[0] === '\'') {
-                        defaultValueArr.shift();
-                        defaultValueArr.pop();
-                        defaultValue = defaultValueArr.join('');
-                     }
-                  }
+                     // const defaultValueArr = defaultValue.split('');
+                     // if (defaultValueArr[0] === '\'') {
+                     //    defaultValueArr.shift();
+                     //    defaultValueArr.pop();
+                     //    defaultValue = defaultValueArr.join('');
+                     // }
 
                   const typeAndLength = nameAndType[1].replace(')', '').split('(');
 
@@ -574,7 +573,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async dropView (params) {
-      const sql = `DROP VIEW \`${this._schema}\`.\`${params.view}\``;
+      const sql = `DROP VIEW \`${params.schema}\`.\`${params.view}\``;
       return await this.raw(sql);
    }
 
@@ -586,10 +585,10 @@ export class MySQLClient extends AntaresCore {
     */
    async alterView (params) {
       const { view } = params;
-      let sql = `ALTER ALGORITHM = ${view.algorithm}${view.definer ? ` DEFINER=${view.definer}` : ''} SQL SECURITY ${view.security} VIEW \`${this._schema}\`.\`${view.oldName}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}`;
+      let sql = `ALTER ALGORITHM = ${view.algorithm}${view.definer ? ` DEFINER=${view.definer}` : ''} SQL SECURITY ${view.security} VIEW \`${view.schema}\`.\`${view.oldName}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}`;
 
       if (view.name !== view.oldName)
-         sql += `; RENAME TABLE \`${this._schema}\`.\`${view.oldName}\` TO \`${this._schema}\`.\`${view.name}\``;
+         sql += `; RENAME TABLE \`${view.schema}\`.\`${view.oldName}\` TO \`${view.schema}\`.\`${view.name}\``;
 
       return await this.raw(sql);
    }
@@ -600,8 +599,8 @@ export class MySQLClient extends AntaresCore {
     * @returns {Array.<Object>} parameters
     * @memberof MySQLClient
     */
-   async createView (view) {
-      const sql = `CREATE ALGORITHM = ${view.algorithm} ${view.definer ? `DEFINER=${view.definer} ` : ''}SQL SECURITY ${view.security} VIEW \`${this._schema}\`.\`${view.name}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}`;
+   async createView (params) {
+      const sql = `CREATE ALGORITHM = ${params.algorithm} ${params.definer ? `DEFINER=${params.definer} ` : ''}SQL SECURITY ${params.security} VIEW \`${params.schema}\`.\`${params.name}\` AS ${params.sql} ${params.updateOption ? `WITH ${params.updateOption} CHECK OPTION` : ''}`;
       return await this.raw(sql);
    }
 
@@ -634,7 +633,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async dropTrigger (params) {
-      const sql = `DROP TRIGGER \`${this._schema}\`.\`${params.trigger}\``;
+      const sql = `DROP TRIGGER \`${params.schema}\`.\`${params.trigger}\``;
       return await this.raw(sql);
    }
 
@@ -651,8 +650,8 @@ export class MySQLClient extends AntaresCore {
 
       try {
          await this.createTrigger(tempTrigger);
-         await this.dropTrigger({ trigger: tempTrigger.name });
-         await this.dropTrigger({ trigger: trigger.oldName });
+         await this.dropTrigger({ schema: trigger.schema, trigger: tempTrigger.name });
+         await this.dropTrigger({ schema: trigger.schema, trigger: trigger.oldName });
          await this.createTrigger(trigger);
       }
       catch (err) {
@@ -666,8 +665,8 @@ export class MySQLClient extends AntaresCore {
     * @returns {Array.<Object>} parameters
     * @memberof MySQLClient
     */
-   async createTrigger (trigger) {
-      const sql = `CREATE ${trigger.definer ? `DEFINER=${trigger.definer} ` : ''}TRIGGER \`${this._schema}\`.\`${trigger.name}\` ${trigger.activation} ${trigger.event} ON \`${trigger.table}\` FOR EACH ROW ${trigger.sql}`;
+   async createTrigger (params) {
+      const sql = `CREATE ${params.definer ? `DEFINER=${params.definer} ` : ''}TRIGGER \`${params.schema}\`.\`${params.name}\` ${params.activation} ${params.event} ON \`${params.table}\` FOR EACH ROW ${params.sql}`;
       return await this.raw(sql, { split: false });
    }
 
@@ -741,7 +740,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async dropRoutine (params) {
-      const sql = `DROP PROCEDURE \`${this._schema}\`.\`${params.routine}\``;
+      const sql = `DROP PROCEDURE \`${params.schema}\`.\`${params.routine}\``;
       return await this.raw(sql);
    }
 
@@ -758,8 +757,8 @@ export class MySQLClient extends AntaresCore {
 
       try {
          await this.createRoutine(tempProcedure);
-         await this.dropRoutine({ routine: tempProcedure.name });
-         await this.dropRoutine({ routine: routine.oldName });
+         await this.dropRoutine({ schema: routine.schema, routine: tempProcedure.name });
+         await this.dropRoutine({ schema: routine.schema, routine: routine.oldName });
          await this.createRoutine(routine);
       }
       catch (err) {
@@ -773,21 +772,21 @@ export class MySQLClient extends AntaresCore {
     * @returns {Array.<Object>} parameters
     * @memberof MySQLClient
     */
-   async createRoutine (routine) {
-      const parameters = 'parameters' in routine
-         ? routine.parameters.reduce((acc, curr) => {
+   async createRoutine (params) {
+      const parameters = 'parameters' in params
+         ? params.parameters.reduce((acc, curr) => {
             acc.push(`${curr.context} \`${curr.name}\` ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
             return acc;
          }, []).join(',')
          : '';
 
-      const sql = `CREATE ${routine.definer ? `DEFINER=${routine.definer} ` : ''}PROCEDURE \`${this._schema}\`.\`${routine.name}\`(${parameters})
+      const sql = `CREATE ${params.definer ? `DEFINER=${params.definer} ` : ''}PROCEDURE \`${params.schema}\`.\`${params.name}\`(${parameters})
          LANGUAGE SQL
-         ${routine.deterministic ? 'DETERMINISTIC' : 'NOT DETERMINISTIC'}
-         ${routine.dataAccess}
-         SQL SECURITY ${routine.security}
-         COMMENT '${routine.comment}'
-         ${routine.sql}`;
+         ${params.deterministic ? 'DETERMINISTIC' : 'NOT DETERMINISTIC'}
+         ${params.dataAccess}
+         SQL SECURITY ${params.security}
+         COMMENT '${params.comment}'
+         ${params.sql}`;
 
       return await this.raw(sql, { split: false });
    }
@@ -868,7 +867,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async dropFunction (params) {
-      const sql = `DROP FUNCTION \`${this._schema}\`.\`${params.func}\``;
+      const sql = `DROP FUNCTION \`${params.schema}\`.\`${params.func}\``;
       return await this.raw(sql);
    }
 
@@ -885,8 +884,8 @@ export class MySQLClient extends AntaresCore {
 
       try {
          await this.createFunction(tempProcedure);
-         await this.dropFunction({ func: tempProcedure.name });
-         await this.dropFunction({ func: func.oldName });
+         await this.dropFunction({ schema: func.schema, func: tempProcedure.name });
+         await this.dropFunction({ schema: func.schema, func: func.oldName });
          await this.createFunction(func);
       }
       catch (err) {
@@ -900,20 +899,20 @@ export class MySQLClient extends AntaresCore {
     * @returns {Array.<Object>} parameters
     * @memberof MySQLClient
     */
-   async createFunction (func) {
-      const parameters = func.parameters.reduce((acc, curr) => {
+   async createFunction (params) {
+      const parameters = params.parameters.reduce((acc, curr) => {
          acc.push(`\`${curr.name}\` ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
          return acc;
       }, []).join(',');
 
-      const body = func.returns ? func.sql : 'BEGIN\n  RETURN 0;\nEND';
+      const body = params.returns ? params.sql : 'BEGIN\n  RETURN 0;\nEND';
 
-      const sql = `CREATE ${func.definer ? `DEFINER=${func.definer} ` : ''}FUNCTION \`${this._schema}\`.\`${func.name}\`(${parameters}) RETURNS ${func.returns || 'SMALLINT'}${func.returnsLength ? `(${func.returnsLength})` : ''}
+      const sql = `CREATE ${params.definer ? `DEFINER=${params.definer} ` : ''}FUNCTION \`${params.schema}\`.\`${params.name}\`(${parameters}) RETURNS ${params.returns || 'SMALLINT'}${params.returnsLength ? `(${params.returnsLength})` : ''}
          LANGUAGE SQL
-         ${func.deterministic ? 'DETERMINISTIC' : 'NOT DETERMINISTIC'}
-         ${func.dataAccess}
-         SQL SECURITY ${func.security}
-         COMMENT '${func.comment}'
+         ${params.deterministic ? 'DETERMINISTIC' : 'NOT DETERMINISTIC'}
+         ${params.dataAccess}
+         SQL SECURITY ${params.security}
+         COMMENT '${params.comment}'
          ${body}`;
 
       return await this.raw(sql, { split: false });
@@ -960,7 +959,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async dropEvent (params) {
-      const sql = `DROP EVENT \`${this._schema}\`.\`${params.scheduler}\``;
+      const sql = `DROP EVENT \`${params.schema}\`.\`${params.scheduler}\``;
       return await this.raw(sql);
    }
 
@@ -976,13 +975,13 @@ export class MySQLClient extends AntaresCore {
       if (scheduler.execution === 'EVERY' && scheduler.every[0].includes('-'))
          scheduler.every[0] = `'${scheduler.every[0]}'`;
 
-      const sql = `ALTER ${scheduler.definer ? ` DEFINER=${scheduler.definer}` : ''} EVENT \`${this._schema}\`.\`${scheduler.oldName}\` 
+      const sql = `ALTER ${scheduler.definer ? ` DEFINER=${scheduler.definer}` : ''} EVENT \`${scheduler.schema}\`.\`${scheduler.oldName}\` 
       ON SCHEDULE
          ${scheduler.execution === 'EVERY'
       ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
       : `AT '${scheduler.at}'`}
       ON COMPLETION${!scheduler.preserve ? ' NOT' : ''} PRESERVE
-      ${scheduler.name !== scheduler.oldName ? `RENAME TO \`${this._schema}\`.\`${scheduler.name}\`` : ''}
+      ${scheduler.name !== scheduler.oldName ? `RENAME TO \`${scheduler.schema}\`.\`${scheduler.name}\`` : ''}
       ${scheduler.state}
       COMMENT '${scheduler.comment}'
       DO ${scheduler.sql}`;
@@ -996,16 +995,16 @@ export class MySQLClient extends AntaresCore {
     * @returns {Array.<Object>} parameters
     * @memberof MySQLClient
     */
-   async createEvent (scheduler) {
-      const sql = `CREATE ${scheduler.definer ? ` DEFINER=${scheduler.definer}` : ''} EVENT \`${this._schema}\`.\`${scheduler.name}\` 
+   async createEvent (params) {
+      const sql = `CREATE ${params.definer ? ` DEFINER=${params.definer}` : ''} EVENT \`${params.schema}\`.\`${params.name}\` 
       ON SCHEDULE
-         ${scheduler.execution === 'EVERY'
-      ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
-      : `AT '${scheduler.at}'`}
-      ON COMPLETION${!scheduler.preserve ? ' NOT' : ''} PRESERVE
-      ${scheduler.state}
-      COMMENT '${scheduler.comment}'
-      DO ${scheduler.sql}`;
+         ${params.execution === 'EVERY'
+      ? `EVERY ${params.every.join(' ')}${params.starts ? ` STARTS '${params.starts}'` : ''}${params.ends ? ` ENDS '${params.ends}'` : ''}`
+      : `AT '${params.at}'`}
+      ON COMPLETION${!params.preserve ? ' NOT' : ''} PRESERVE
+      ${params.state}
+      COMMENT '${params.comment}'
+      DO ${params.sql}`;
 
       return await this.raw(sql, { split: false });
    }
@@ -1127,14 +1126,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async createTable (params) {
-      const {
-         name,
-         collation,
-         comment,
-         engine
-      } = params;
-
-      const sql = `CREATE TABLE \`${this._schema}\`.\`${name}\` (\`${name}_ID\` INT NULL) COMMENT='${comment}', COLLATE='${collation}', ENGINE=${engine}`;
+      const sql = `CREATE TABLE \`${params.schema}\`.\`${params.name}\` (\`${params.name}_ID\` INT NULL) COMMENT='${params.comment}', COLLATE='${params.collation}', ENGINE=${params.engine}`;
 
       return await this.raw(sql);
    }
@@ -1148,6 +1140,7 @@ export class MySQLClient extends AntaresCore {
    async alterTable (params) {
       const {
          table,
+         schema,
          additions,
          deletions,
          changes,
@@ -1156,7 +1149,7 @@ export class MySQLClient extends AntaresCore {
          options
       } = params;
 
-      let sql = `ALTER TABLE \`${this._schema || params.options.schema}\`.\`${table}\` `;
+      let sql = `ALTER TABLE \`${schema}\`.\`${table}\` `;
       const alterColumns = [];
 
       // OPTIONS
@@ -1268,7 +1261,7 @@ export class MySQLClient extends AntaresCore {
       sql += alterColumns.join(', ');
 
       // RENAME
-      if (options.name) sql += `; RENAME TABLE \`${this._schema}\`.\`${table}\` TO \`${this._schema}\`.\`${options.name}\``;
+      if (options.name) sql += `; RENAME TABLE \`${schema}\`.\`${table}\` TO \`${schema}\`.\`${options.name}\``;
 
       return await this.raw(sql);
    }
@@ -1280,7 +1273,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async duplicateTable (params) {
-      const sql = `CREATE TABLE \`${this._schema}\`.\`${params.table}_copy\` LIKE \`${this._schema}\`.\`${params.table}\``;
+      const sql = `CREATE TABLE \`${params.schema}\`.\`${params.table}_copy\` LIKE \`${params.schema}\`.\`${params.table}\``;
       return await this.raw(sql);
    }
 
@@ -1291,7 +1284,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async truncateTable (params) {
-      const sql = `TRUNCATE TABLE \`${this._schema}\`.\`${params.table}\``;
+      const sql = `TRUNCATE TABLE \`${params.schema}\`.\`${params.table}\``;
       return await this.raw(sql);
    }
 
@@ -1302,7 +1295,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async dropTable (params) {
-      const sql = `DROP TABLE \`${this._schema}\`.\`${params.table}\``;
+      const sql = `DROP TABLE \`${params.schema}\`.\`${params.table}\``;
       return await this.raw(sql);
    }
 
@@ -1373,15 +1366,18 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async raw (sql, args) {
-      sql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '');
       if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
 
       args = {
          nest: false,
          details: false,
          split: true,
+         comments: true,
          ...args
       };
+
+      if (!args.comments)
+         sql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '');// Remove comments
 
       const nestTables = args.nest ? '.' : false;
       const resultsArr = [];
@@ -1419,7 +1415,7 @@ export class MySQLClient extends AntaresCore {
                         name: field.orgName,
                         alias: field.name,
                         orgName: field.orgName,
-                        schema: field.schema,
+                        schema: args.schema || field.schema,
                         table: field.table,
                         tableAlias: field.table,
                         orgTable: field.orgTable,

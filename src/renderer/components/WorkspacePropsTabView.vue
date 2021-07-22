@@ -1,5 +1,5 @@
 <template>
-   <div class="workspace-query-tab column col-12 columns col-gapless">
+   <div v-show="isSelected" class="workspace-query-tab column col-12 columns col-gapless">
       <div class="workspace-query-runner column col-12">
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
@@ -22,6 +22,11 @@
                   <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
                   <span>{{ $t('word.clear') }}</span>
                </button>
+            </div>
+            <div class="workspace-query-info">
+               <div class="d-flex" :title="$t('word.schema')">
+                  <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
+               </div>
             </div>
          </div>
       </div>
@@ -161,7 +166,7 @@
          <BaseLoader v-if="isLoading" />
          <label class="form-label ml-2">{{ $t('message.selectStatement') }}</label>
          <QueryEditor
-            v-if="isSelected"
+            v-show="isSelected"
             ref="queryEditor"
             :value.sync="localView.sql"
             :workspace="workspace"
@@ -186,11 +191,12 @@ export default {
    },
    props: {
       connection: Object,
+      isSelected: Boolean,
+      schema: String,
       view: String
    },
    data () {
       return {
-         tabUid: 'prop',
          isLoading: false,
          isSaving: false,
          originalView: null,
@@ -208,11 +214,8 @@ export default {
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
-      isSelected () {
-         return this.workspace.selected_tab === 'prop' && this.selectedWorkspace === this.workspace.uid && this.view;
-      },
-      schema () {
-         return this.workspace.breadcrumbs.schema;
+      tabUid () {
+         return this.$vnode.key;
       },
       isChanged () {
          return JSON.stringify(this.originalView) !== JSON.stringify(this.localView);
@@ -222,6 +225,13 @@ export default {
       }
    },
    watch: {
+      async schema () {
+         if (this.isSelected) {
+            await this.getViewData();
+            this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
+            this.lastView = this.view;
+         }
+      },
       async view () {
          if (this.isSelected) {
             await this.getViewData();
@@ -229,26 +239,28 @@ export default {
             this.lastView = this.view;
          }
       },
-      async isSelected (val) {
-         if (val && this.lastView !== this.view) {
-            await this.getViewData();
-            this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
-            this.lastView = this.view;
+      isSelected (val) {
+         if (val) {
+            this.changeBreadcrumbs({ schema: this.schema, view: this.view });
+
+            if (this.lastView !== this.view)
+               this.getViewData();
          }
       },
       isChanged (val) {
-         if (this.isSelected && this.lastView === this.view && this.view !== null)
-            this.setUnsavedChanges(val);
+         this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: val });
       }
+   },
+   async created () {
+      await this.getViewData();
+      this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
+      window.addEventListener('keydown', this.onKey);
    },
    mounted () {
       window.addEventListener('resize', this.resizeQueryEditor);
    },
    destroyed () {
       window.removeEventListener('resize', this.resizeQueryEditor);
-   },
-   created () {
-      window.addEventListener('keydown', this.onKey);
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);
@@ -258,17 +270,19 @@ export default {
          addNotification: 'notifications/addNotification',
          refreshStructure: 'workspaces/refreshStructure',
          setUnsavedChanges: 'workspaces/setUnsavedChanges',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
+         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         renameTabs: 'workspaces/renameTabs'
       }),
       async getViewData () {
          if (!this.view) return;
          this.isLoading = true;
          this.localView = { sql: '' };
+         this.lastView = this.view;
 
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            view: this.workspace.breadcrumbs.view
+            view: this.view
          };
 
          try {
@@ -293,9 +307,9 @@ export default {
          this.isSaving = true;
          const params = {
             uid: this.connection.uid,
-            schema: this.schema,
             view: {
                ...this.localView,
+               schema: this.schema,
                oldName: this.originalView.name
             }
          };
@@ -309,11 +323,18 @@ export default {
                await this.refreshStructure(this.connection.uid);
 
                if (oldName !== this.localView.name) {
-                  this.setUnsavedChanges(false);
+                  this.renameTabs({
+                     uid: this.connection.uid,
+                     schema: this.schema,
+                     elementName: oldName,
+                     elementNewName: this.localView.name,
+                     elementType: 'view'
+                  });
+
                   this.changeBreadcrumbs({ schema: this.schema, view: this.localView.name });
                }
-
-               this.getViewData();
+               else
+                  this.getViewData();
             }
             else
                this.addNotification({ status: 'error', message: response });

@@ -6,12 +6,163 @@
          :is-selected="isSelected"
       />
       <div v-if="workspace.connection_status === 'connected'" class="workspace-tabs column columns col-gapless">
-         <ul
-            id="tabWrap"
+         <Draggable
             ref="tabWrap"
+            v-model="draggableTabs"
+            tag="ul"
+            group="tabs"
             class="tab tab-block column col-12"
+            draggable=".tab-draggable"
+            @mouseover.native="addWheelEvent"
          >
-            <li class="tab-item dropdown tools-dropdown">
+            <li
+               v-for="(tab, i) of draggableTabs"
+               :key="i"
+               class="tab-item tab-draggable"
+               draggable="true"
+               :class="{'active': selectedTab === tab.uid}"
+               @click="selectTab({uid: workspace.uid, tab: tab.uid})"
+               @mouseup.middle="closeTab(tab)"
+            >
+               <a v-if="tab.type === 'query'" class="tab-link">
+                  <i class="mdi mdi-18px mdi-code-tags mr-1" />
+                  <span>
+                     Query #{{ tab.index }}
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a
+                  v-else-if="tab.type === 'temp-data'"
+                  class="tab-link"
+                  @dblclick="openAsPermanentTab(tab)"
+               >
+                  <i class="mdi mdi-18px mr-1" :class="tab.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
+                  <span :title="`${$t('word.data').toUpperCase()}: ${tab.elementType}`">
+                     <span class=" text-italic">{{ tab.elementName }}</span>
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a v-else-if="tab.type === 'data'" class="tab-link">
+                  <i class="mdi mdi-18px mr-1" :class="tab.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
+                  <span :title="`${$t('word.data').toUpperCase()}: ${tab.elementType}`">
+                     {{ tab.elementName }}
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a
+                  v-else-if="tab.type === 'table-props'"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+               >
+                  <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
+                     {{ tab.elementName }}
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a
+                  v-else-if="tab.type === 'view-props'"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+               >
+                  <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
+                     {{ tab.elementName }}
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a
+                  v-else-if="tab.type.includes('temp-')"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+                  @dblclick="openAsPermanentTab(tab)"
+               >
+                  <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
+                     <span class=" text-italic">{{ tab.elementName }}</span>
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a
+                  v-else
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+               >
+                  <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
+                     {{ tab.elementName }}
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <!-- <a
+                  v-else-if="tab.type === 'temp-trigger-function-props'"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+                  @dblclick="openAsPermanentTab(tab)"
+               >
+                  <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
+                     <span class=" text-italic">{{ tab.elementName }}</span>
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a
+                  v-else-if="tab.type === 'trigger-function-props'"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+               >
+                  <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
+                     {{ tab.elementName }}
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a> -->
+            </li>
+            <li slot="header" class="tab-item dropdown tools-dropdown">
                <a
                   class="tab-link workspace-tools-link dropdown-toggle"
                   tabindex="0"
@@ -48,113 +199,97 @@
                   </li>
                </ul>
             </li>
-            <li
-               v-if="schemaChild && isSettingSupported"
-               class="tab-item"
-               :class="{'active': selectedTab === 'prop'}"
-               @click="selectTab({uid: workspace.uid, tab: 'prop'})"
-            >
-               <a class="tab-link">
-                  <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
-                  <span :title="schemaChild">{{ $t('word.settings').toUpperCase() }}: {{ schemaChild }}</span>
-               </a>
-            </li>
-            <li
-               v-if="workspace.breadcrumbs.table || workspace.breadcrumbs.view"
-               class="tab-item"
-               :class="{'active': selectedTab === 'data'}"
-               @click="selectTab({uid: workspace.uid, tab: 'data'})"
-            >
-               <a class="tab-link">
-                  <i class="mdi mdi-18px mr-1" :class="workspace.breadcrumbs.table ? 'mdi-table' : 'mdi-table-eye'" />
-                  <span :title="schemaChild">{{ $t('word.data').toUpperCase() }}: {{ schemaChild }}</span>
-               </a>
-            </li>
-            <li
-               v-for="tab of queryTabs"
-               :key="tab.uid"
-               class="tab-item"
-               :class="{'active': selectedTab === tab.uid}"
-               @click="selectTab({uid: workspace.uid, tab: tab.uid})"
-               @mouseup.middle="closeTab(tab.uid)"
-            >
-               <a class="tab-link">
-                  <i class="mdi mdi-18px mdi-code-tags mr-1" />
-                  <span>
-                     Query #{{ tab.index }}
-                     <span
-                        v-if="queryTabs.length > 1"
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @click.stop="closeTab(tab.uid)"
-                     />
-                  </span>
-               </a>
-            </li>
-            <li class="tab-item">
+            <li slot="footer" class="tab-item">
                <a
                   class="tab-add"
                   :title="$t('message.openNewTab')"
-                  @click="addTab"
+                  @click="addQueryTab"
                >
                   <i class="mdi mdi-24px mdi-plus" />
                </a>
             </li>
-         </ul>
-         <WorkspacePropsTab
-            v-show="selectedTab === 'prop' && workspace.breadcrumbs.table"
-            :is-selected="selectedTab === 'prop'"
-            :connection="connection"
-            :table="workspace.breadcrumbs.table"
-         />
-         <WorkspacePropsTabView
-            v-show="selectedTab === 'prop' && workspace.breadcrumbs.view"
-            :is-selected="selectedTab === 'prop'"
-            :connection="connection"
-            :view="workspace.breadcrumbs.view"
-         />
-         <WorkspacePropsTabTrigger
-            v-show="selectedTab === 'prop' && workspace.breadcrumbs.trigger"
-            :is-selected="selectedTab === 'prop'"
-            :connection="connection"
-            :trigger="workspace.breadcrumbs.trigger"
-         />
-         <WorkspacePropsTabRoutine
-            v-show="selectedTab === 'prop' && workspace.breadcrumbs.procedure"
-            :is-selected="selectedTab === 'prop'"
-            :connection="connection"
-            :routine="workspace.breadcrumbs.procedure"
-         />
-         <WorkspacePropsTabFunction
-            v-show="selectedTab === 'prop' && workspace.breadcrumbs.function"
-            :is-selected="selectedTab === 'prop'"
-            :connection="connection"
-            :function="workspace.breadcrumbs.function"
-         />
-         <WorkspacePropsTabTriggerFunction
-            v-show="selectedTab === 'prop' && workspace.breadcrumbs.triggerFunction"
-            :is-selected="selectedTab === 'prop'"
-            :connection="connection"
-            :function="workspace.breadcrumbs.triggerFunction"
-         />
-         <WorkspacePropsTabScheduler
+         </Draggable>
+         <!--<WorkspacePropsTabScheduler
             v-show="selectedTab === 'prop' && workspace.breadcrumbs.scheduler"
             :is-selected="selectedTab === 'prop'"
             :connection="connection"
             :scheduler="workspace.breadcrumbs.scheduler"
-         />
-         <WorkspaceTableTab
-            v-show="selectedTab === 'data'"
-            :connection="connection"
-            :table="workspace.breadcrumbs.table || workspace.breadcrumbs.view"
-         />
-         <WorkspaceQueryTab
-            v-for="tab of queryTabs"
-            :key="tab.uid"
-            :tab="tab"
-            :is-selected="selectedTab === tab.uid"
-            :connection="connection"
-         />
+         /> -->
+         <WorkspaceEmptyState v-if="!workspace.tabs.length" @new-tab="addQueryTab" />
+         <template v-for="tab of workspace.tabs">
+            <WorkspaceQueryTab
+               v-if="tab.type==='query'"
+               :key="tab.uid"
+               :tab="tab"
+               :is-selected="selectedTab === tab.uid"
+               :connection="connection"
+            />
+            <WorkspaceTableTab
+               v-else-if="['temp-data', 'data'].includes(tab.type)"
+               :key="tab.uid"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
+               :table="tab.elementName"
+               :schema="tab.schema"
+               :element-type="tab.elementType"
+            />
+            <WorkspacePropsTab
+               v-else-if="tab.type === 'table-props'"
+               :key="tab.uid"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
+               :table="tab.elementName"
+               :schema="tab.schema"
+            />
+            <WorkspacePropsTabView
+               v-else-if="tab.type === 'view-props'"
+               :key="tab.uid"
+               :is-selected="selectedTab === tab.uid"
+               :connection="connection"
+               :view="tab.elementName"
+               :schema="tab.schema"
+            />
+            <WorkspacePropsTabTrigger
+               v-else-if="['temp-trigger-props', 'trigger-props'].includes(tab.type)"
+               :key="tab.uid"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
+               :trigger="tab.elementName"
+               :schema="tab.schema"
+            />
+            <WorkspacePropsTabTriggerFunction
+               v-else-if="['temp-trigger-function-props', 'trigger-function-props'].includes(tab.type)"
+               :key="tab.uid"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
+               :function="tab.elementName"
+               :schema="tab.schema"
+            />
+            <WorkspacePropsTabRoutine
+               v-else-if="['temp-routine-props', 'routine-props'].includes(tab.type)"
+               :key="tab.uid"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
+               :routine="tab.elementName"
+               :schema="tab.schema"
+            />
+            <WorkspacePropsTabFunction
+               v-else-if="['temp-function-props', 'function-props'].includes(tab.type)"
+               :key="tab.uid"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
+               :function="tab.elementName"
+               :schema="tab.schema"
+            />
+            <WorkspacePropsTabScheduler
+               v-else-if="['temp-scheduler-props', 'scheduler-props'].includes(tab.type)"
+               :key="tab.uid"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
+               :scheduler="tab.elementName"
+               :schema="tab.schema"
+            />
+         </template>
       </div>
       <WorkspaceEditConnectionPanel v-else :connection="connection" />
       <ModalProcessesList
@@ -162,12 +297,20 @@
          :connection="connection"
          @close="hideProcessesModal"
       />
+
+      <ModalDiscardChanges
+         v-if="unsavedTab"
+         @confirm="closeTab(unsavedTab, true)"
+         @close="unsavedTab = null"
+      />
    </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import Draggable from 'vuedraggable';
 import Connection from '@/ipc-api/Connection';
+import WorkspaceEmptyState from '@/components/WorkspaceEmptyState';
 import WorkspaceExploreBar from '@/components/WorkspaceExploreBar';
 import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPanel';
 import WorkspaceQueryTab from '@/components/WorkspaceQueryTab';
@@ -175,15 +318,18 @@ import WorkspaceTableTab from '@/components/WorkspaceTableTab';
 import WorkspacePropsTab from '@/components/WorkspacePropsTab';
 import WorkspacePropsTabView from '@/components/WorkspacePropsTabView';
 import WorkspacePropsTabTrigger from '@/components/WorkspacePropsTabTrigger';
+import WorkspacePropsTabTriggerFunction from '@/components/WorkspacePropsTabTriggerFunction';
 import WorkspacePropsTabRoutine from '@/components/WorkspacePropsTabRoutine';
 import WorkspacePropsTabFunction from '@/components/WorkspacePropsTabFunction';
-import WorkspacePropsTabTriggerFunction from '@/components/WorkspacePropsTabTriggerFunction';
 import WorkspacePropsTabScheduler from '@/components/WorkspacePropsTabScheduler';
 import ModalProcessesList from '@/components/ModalProcessesList';
+import ModalDiscardChanges from '@/components/ModalDiscardChanges';
 
 export default {
    name: 'Workspace',
    components: {
+      Draggable,
+      WorkspaceEmptyState,
       WorkspaceExploreBar,
       WorkspaceEditConnectionPanel,
       WorkspaceQueryTab,
@@ -191,11 +337,12 @@ export default {
       WorkspacePropsTab,
       WorkspacePropsTabView,
       WorkspacePropsTabTrigger,
+      WorkspacePropsTabTriggerFunction,
       WorkspacePropsTabRoutine,
       WorkspacePropsTabFunction,
-      WorkspacePropsTabTriggerFunction,
       WorkspacePropsTabScheduler,
-      ModalProcessesList
+      ModalProcessesList,
+      ModalDiscardChanges
    },
    props: {
       connection: Object
@@ -203,7 +350,8 @@ export default {
    data () {
       return {
          hasWheelEvent: false,
-         isProcessesModal: false
+         isProcessesModal: false,
+         unsavedTab: null
       };
    },
    computed: {
@@ -213,6 +361,14 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
+      },
+      draggableTabs: {
+         get () {
+            return this.workspace.tabs;
+         },
+         set (val) {
+            this.updateTabs({ uid: this.connection.uid, tabs: val });
+         }
       },
       isSelected () {
          return this.selectedWorkspace === this.connection.uid;
@@ -228,29 +384,7 @@ export default {
          return false;
       },
       selectedTab () {
-         if (
-            (
-               this.workspace.breadcrumbs.table === null &&
-               this.workspace.breadcrumbs.view === null &&
-               this.workspace.breadcrumbs.trigger === null &&
-               this.workspace.breadcrumbs.procedure === null &&
-               this.workspace.breadcrumbs.function === null &&
-               this.workspace.breadcrumbs.triggerFunction === null &&
-               this.workspace.breadcrumbs.scheduler === null &&
-               ['data', 'prop'].includes(this.workspace.selected_tab)
-            ) ||
-            (
-               this.workspace.breadcrumbs.table === null &&
-               this.workspace.breadcrumbs.view === null &&
-               this.workspace.selected_tab === 'data'
-            )
-         )
-            return this.queryTabs[0].uid;
-
-         return this.queryTabs.find(tab => tab.uid === this.workspace.selected_tab) ||
-         ['data', 'prop'].includes(this.workspace.selected_tab)
-            ? this.workspace.selected_tab
-            : this.queryTabs[0].uid;
+         return this.workspace.selected_tab;
       },
       queryTabs () {
          return this.workspace.tabs.filter(tab => tab.type === 'query');
@@ -269,14 +403,6 @@ export default {
       if (isInitiated)
          this.connectWorkspace(this.connection);
    },
-   mounted () {
-      if (this.$refs.tabWrap) {
-         this.$refs.tabWrap.addEventListener('wheel', e => {
-            if (e.deltaY > 0) this.$refs.tabWrap.scrollLeft += 50;
-            else this.$refs.tabWrap.scrollLeft -= 50;
-         });
-      }
-   },
    methods: {
       ...mapActions({
          addWorkspace: 'workspaces/addWorkspace',
@@ -284,28 +410,55 @@ export default {
          removeConnected: 'workspaces/removeConnected',
          selectTab: 'workspaces/selectTab',
          newTab: 'workspaces/newTab',
-         removeTab: 'workspaces/removeTab'
+         removeTab: 'workspaces/removeTab',
+         updateTabs: 'workspaces/updateTabs'
       }),
-      addTab () {
-         this.newTab({ uid: this.connection.uid });
-
-         if (!this.hasWheelEvent) {
-            this.$refs.tabWrap.addEventListener('wheel', e => {
-               if (e.deltaY > 0) this.$refs.tabWrap.scrollLeft += 50;
-               else this.$refs.tabWrap.scrollLeft -= 50;
-            });
-            this.hasWheelEvent = true;
-         }
+      addQueryTab () {
+         this.newTab({ uid: this.connection.uid, type: 'query' });
       },
-      closeTab (tUid) {
-         if (this.queryTabs.length === 1) return;
-         this.removeTab({ uid: this.connection.uid, tab: tUid });
+      openAsPermanentTab (tab) {
+         const permanentTabs = {
+            table: 'data',
+            view: 'data',
+            trigger: 'trigger-props',
+            triggerFunction: 'trigger-function-props',
+            function: 'function-props',
+            routine: 'routine-props',
+            scheduler: 'scheduler-props'
+         };
+
+         this.newTab({
+            uid: this.connection.uid,
+            schema: tab.schema,
+            elementName: tab.elementName,
+            type: permanentTabs[tab.elementType],
+            elementType: tab.elementType
+         });
+      },
+      closeTab (tab, force) {
+         this.unsavedTab = null;
+         // if (tab.type === 'query' && this.queryTabs.length === 1) return;
+         if (!force && tab.isChanged) {
+            this.unsavedTab = tab;
+            return;
+         }
+
+         this.removeTab({ uid: this.connection.uid, tab: tab.uid });
       },
       showProcessesModal () {
          this.isProcessesModal = true;
       },
       hideProcessesModal () {
          this.isProcessesModal = false;
+      },
+      addWheelEvent () {
+         if (!this.hasWheelEvent) {
+            this.$refs.tabWrap.$el.addEventListener('wheel', e => {
+               if (e.deltaY > 0) this.$refs.tabWrap.$el.scrollLeft += 50;
+               else this.$refs.tabWrap.$el.scrollLeft -= 50;
+            });
+            this.hasWheelEvent = true;
+         }
       }
    }
 };
@@ -334,20 +487,35 @@ export default {
       }
 
       .tab-item {
-        max-width: 12rem;
         width: fit-content;
         flex: initial;
 
         > a {
-          padding: 0.2rem 0.8rem;
+          padding: 0.2rem 0.6rem;
           cursor: pointer;
           display: flex;
           align-items: center;
           opacity: 0.7;
           transition: opacity 0.2s;
 
+          &.badge::after {
+            position: absolute;
+            right: 35px;
+            top: 25px;
+          }
+
+          .btn-clear {
+            margin-left: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+          }
+
           &:hover {
             opacity: 1;
+
+            .btn-clear {
+              opacity: 1;
+            }
           }
 
           &.tab-add {
@@ -366,9 +534,15 @@ export default {
 
         &.active a {
           opacity: 1;
+
+          .btn-clear {
+            opacity: 1;
+          }
         }
 
         &.tools-dropdown {
+          height: 34px;
+
           .tab-link:focus {
             opacity: 1;
             outline: 0;

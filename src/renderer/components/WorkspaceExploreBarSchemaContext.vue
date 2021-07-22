@@ -82,13 +82,13 @@
          </template>
          <div slot="body">
             <div class="mb-2">
-               {{ $t('message.deleteCorfirm') }} "<b>{{ selectedDatabase }}</b>"?
+               {{ $t('message.deleteCorfirm') }} "<b>{{ selectedSchema }}</b>"?
             </div>
          </div>
       </ConfirmModal>
       <ModalEditSchema
          v-if="isEditModal"
-         :selected-database="selectedDatabase"
+         :selected-schema="selectedSchema"
          @close="hideEditModal"
       />
    </BaseContextMenu>
@@ -110,7 +110,7 @@ export default {
    },
    props: {
       contextEvent: MouseEvent,
-      selectedDatabase: String
+      selectedSchema: String
    },
    data () {
       return {
@@ -173,11 +173,11 @@ export default {
          try {
             const { status, response } = await Schema.deleteSchema({
                uid: this.selectedWorkspace,
-               database: this.selectedDatabase
+               database: this.selectedSchema
             });
 
             if (status === 'success') {
-               if (this.selectedDatabase === this.workspace.breadcrumbs.schema)
+               if (this.selectedSchema === this.workspace.breadcrumbs.schema)
                   this.changeBreadcrumbs({ schema: null });
 
                this.closeContext();

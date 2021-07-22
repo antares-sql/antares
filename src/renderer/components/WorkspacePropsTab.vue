@@ -1,5 +1,5 @@
 <template>
-   <div class="workspace-query-tab column col-12 columns col-gapless">
+   <div v-show="isSelected" class="workspace-query-tab column col-12 columns col-gapless">
       <div class="workspace-query-runner column col-12">
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
@@ -49,6 +49,11 @@
                   <i class="mdi mdi-24px mdi-cogs mr-1" />
                   <span>{{ $t('word.options') }}</span>
                </button>
+            </div>
+            <div class="workspace-query-info">
+               <div class="d-flex" :title="$t('word.schema')">
+                  <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
+               </div>
             </div>
          </div>
       </div>
@@ -126,11 +131,12 @@ export default {
    },
    props: {
       connection: Object,
-      table: String
+      isSelected: Boolean,
+      table: String,
+      schema: String
    },
    data () {
       return {
-         tabUid: 'prop',
          isLoading: false,
          isSaving: false,
          isOptionsModal: false,
@@ -157,18 +163,15 @@ export default {
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
+      tabUid () {
+         return this.$vnode.key;
+      },
       tableOptions () {
          const db = this.workspace.structure.find(db => db.name === this.schema);
          return db && this.table ? db.tables.find(table => table.name === this.table) : {};
       },
       defaultEngine () {
          return this.getDatabaseVariable(this.connection.uid, 'default_storage_engine').value || '';
-      },
-      isSelected () {
-         return this.workspace.selected_tab === 'prop' && this.selectedWorkspace === this.workspace.uid && this.table;
-      },
-      schema () {
-         return this.workspace.breadcrumbs.schema;
       },
       schemaTables () {
          const schemaTables = this.workspace.structure
@@ -185,6 +188,12 @@ export default {
       }
    },
    watch: {
+      schema () {
+         if (this.isSelected) {
+            this.getFieldsData();
+            this.lastTable = this.table;
+         }
+      },
       table () {
          if (this.isSelected) {
             this.getFieldsData();
@@ -192,17 +201,19 @@ export default {
          }
       },
       isSelected (val) {
-         if (val && this.lastTable !== this.table) {
-            this.getFieldsData();
-            this.lastTable = this.table;
+         if (val) {
+            this.changeBreadcrumbs({ schema: this.schema, table: this.table });
+
+            if (this.lastTable !== this.table)
+               this.getFieldsData();
          }
       },
       isChanged (val) {
-         if (this.isSelected && this.lastTable === this.table && this.table !== null)
-            this.setUnsavedChanges(val);
+         this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: val });
       }
    },
    created () {
+      this.getFieldsData();
       window.addEventListener('keydown', this.onKey);
    },
    beforeDestroy () {
@@ -213,20 +224,25 @@ export default {
          addNotification: 'notifications/addNotification',
          refreshStructure: 'workspaces/refreshStructure',
          setUnsavedChanges: 'workspaces/setUnsavedChanges',
+         renameTabs: 'workspaces/renameTabs',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
       async getFieldsData () {
          if (!this.table) return;
 
          this.localFields = [];
+         this.lastTable = this.table;
          this.newFieldsCounter = 0;
          this.isLoading = true;
-         this.localOptions = JSON.parse(JSON.stringify(this.tableOptions));
+         try {
+            this.localOptions = JSON.parse(JSON.stringify(this.tableOptions));
+         }
+         catch (err) {}
 
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            table: this.workspace.breadcrumbs.table
+            table: this.table
          };
 
          try { // Columns data
@@ -410,7 +426,7 @@ export default {
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            table: this.workspace.breadcrumbs.table,
+            table: this.table,
             additions,
             changes,
             deletions,
@@ -428,11 +444,18 @@ export default {
                await this.refreshStructure(this.connection.uid);
 
                if (oldName !== this.localOptions.name) {
-                  this.setUnsavedChanges(false);
+                  this.renameTabs({
+                     uid: this.connection.uid,
+                     schema: this.schema,
+                     elementName: oldName,
+                     elementNewName: this.localOptions.name,
+                     elementType: 'table'
+                  });
+
                   this.changeBreadcrumbs({ schema: this.schema, table: this.localOptions.name });
                }
-
-               this.getFieldsData();
+               else
+                  this.getFieldsData();
             }
             else
                this.addNotification({ status: 'error', message: response });

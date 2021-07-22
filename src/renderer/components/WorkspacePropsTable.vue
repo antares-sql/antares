@@ -100,7 +100,7 @@
                </div>
             </div>
          </div>
-         <draggable
+         <Draggable
             ref="resultTable"
             :list="fields"
             class="tbody"
@@ -117,14 +117,14 @@
                @contextmenu="contextMenu"
                @rename-field="$emit('rename-field', $event)"
             />
-         </draggable>
+         </Draggable>
       </div>
    </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import draggable from 'vuedraggable';
+import Draggable from 'vuedraggable';
 import TableRow from '@/components/WorkspacePropsTableRow';
 import TableContext from '@/components/WorkspacePropsTableContext';
 
@@ -133,7 +133,7 @@ export default {
    components: {
       TableRow,
       TableContext,
-      draggable
+      Draggable
    },
    props: {
       fields: Array,

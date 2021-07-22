@@ -1,20 +1,18 @@
 'use strict';
+import Store from 'electron-store';
 import Connection from '@/ipc-api/Connection';
 import Schema from '@/ipc-api/Schema';
 import Users from '@/ipc-api/Users';
 import { uidGen } from 'common/libs/uidGen';
+const persistentStore = new Store({ name: 'tabs' });
 const tabIndex = [];
-let lastBreadcrumbs = {};
 
 export default {
    namespaced: true,
    strict: true,
    state: {
       workspaces: [],
-      selected_workspace: null,
-      has_unsaved_changes: false,
-      is_unsaved_discard_modal: false,
-      pending_breadcrumbs: {}
+      selected_workspace: null
    },
    getters: {
       getSelected: state => {
@@ -45,9 +43,6 @@ export default {
       },
       getSearchTerm: state => uid => {
          return state.workspaces.find(workspace => workspace.uid === uid).search_term;
-      },
-      isUnsavedDiscardModal: state => {
-         return state.is_unsaved_discard_modal;
       }
    },
    mutations: {
@@ -60,6 +55,15 @@ export default {
       SET_CONNECTED (state, payload) {
          const { uid, client, dataTypes, indexTypes, customizations, structure, version } = payload;
 
+         const cachedTabs = payload.restoreTabs ? persistentStore.get(uid, []) : [];
+
+         if (cachedTabs.length) {
+            tabIndex[uid] = cachedTabs.reduce((acc, curr) => {
+               if (curr.index > acc) acc = curr.index;
+               return acc;
+            }, null);
+         }
+
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
             ? {
                ...workspace,
@@ -69,6 +73,8 @@ export default {
                customizations,
                structure,
                connection_status: 'connected',
+               tabs: cachedTabs,
+               selected_tab: cachedTabs.length ? cachedTabs[0].uid : null,
                version
             }
             : workspace);
@@ -178,18 +184,24 @@ export default {
             }
             : workspace);
       },
-      NEW_TAB (state, { uid, tab, content, autorun }) {
-         tabIndex[uid] = tabIndex[uid] ? ++tabIndex[uid] : 1;
+      NEW_TAB (state, { uid, tab, content, type, autorun, schema, elementName, elementType }) {
+         if (type === 'query')
+            tabIndex[uid] = tabIndex[uid] ? ++tabIndex[uid] : 1;
+
          const newTab = {
             uid: tab,
-            index: tabIndex[uid],
+            index: type === 'query' ? tabIndex[uid] : null,
             selected: false,
-            type: 'query',
+            type,
+            schema,
+            elementName,
+            elementType,
             fields: [],
             keyUsage: [],
             content: content || '',
             autorun: !!autorun
          };
+
          state.workspaces = state.workspaces.map(workspace => {
             if (workspace.uid === uid) {
                return {
@@ -200,6 +212,8 @@ export default {
             else
                return workspace;
          });
+
+         persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
       },
       REMOVE_TAB (state, { uid, tab: tUid }) {
          state.workspaces = state.workspaces.map(workspace => {
@@ -212,9 +226,77 @@ export default {
             else
                return workspace;
          });
+
+         persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
+      },
+      REMOVE_TABS (state, { uid, schema, elementName, elementType }) { // Multiple tabs based on schema and element name
+         if (elementType === 'procedure') elementType = 'routine'; // TODO: pass directly "routine"
+
+         state.workspaces = state.workspaces.map(workspace => {
+            if (workspace.uid === uid) {
+               return {
+                  ...workspace,
+                  tabs: workspace.tabs.filter(tab =>
+                     tab.schema !== schema ||
+                     tab.elementName !== elementName ||
+                     tab.elementType !== elementType
+                  )
+               };
+            }
+            else
+               return workspace;
+         });
+
+         persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
+      },
+      REPLACE_TAB (state, { uid, tab: tUid, type, schema, content, elementName, elementType }) {
+         state.workspaces = state.workspaces.map(workspace => {
+            if (workspace.uid === uid) {
+               return {
+                  ...workspace,
+                  tabs: workspace.tabs.map(tab => {
+                     if (tab.uid === tUid)
+                        return { ...tab, type, schema, content, elementName, elementType };
+
+                     return tab;
+                  })
+               };
+            }
+            else
+               return workspace;
+         });
+
+         persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
+      },
+      RENAME_TABS (state, { uid, schema, elementName, elementType, elementNewName }) {
+         state.workspaces = state.workspaces.map(workspace => {
+            if (workspace.uid === uid) {
+               return {
+                  ...workspace,
+                  tabs: workspace.tabs.map(tab => {
+                     if (tab.elementName === elementName && tab.schema === schema) {
+                        return {
+                           ...tab,
+                           elementName: elementNewName
+                        };
+                     }
+
+                     return tab;
+                  })
+               };
+            }
+            else
+               return workspace;
+         });
+
+         persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
       },
       SELECT_TAB (state, { uid, tab }) {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, selected_tab: tab } : workspace);
+      },
+      UPDATE_TABS (state, { uid, tabs }) {
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, tabs } : workspace);
+         persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
       },
       SET_TAB_FIELDS (state, { cUid, tUid, fields }) {
          state.workspaces = state.workspaces.map(workspace => {
@@ -232,6 +314,8 @@ export default {
             else
                return workspace;
          });
+
+         persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
       },
       SET_TAB_KEY_USAGE (state, { cUid, tUid, keyUsage }) {
          state.workspaces = state.workspaces.map(workspace => {
@@ -249,15 +333,25 @@ export default {
             else
                return workspace;
          });
+
+         persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
       },
-      SET_UNSAVED_CHANGES (state, val) {
-         state.has_unsaved_changes = !!val;
-      },
-      SET_UNSAVED_DISCARD_MODAL (state, val) {
-         state.is_unsaved_discard_modal = !!val;
-      },
-      SET_PENDING_BREADCRUMBS (state, payload) {
-         state.pending_breadcrumbs = payload;
+      SET_UNSAVED_CHANGES (state, { uid, tUid, isChanged }) {
+         state.workspaces = state.workspaces.map(workspace => {
+            if (workspace.uid === uid) {
+               return {
+                  ...workspace,
+                  tabs: workspace.tabs.map(tab => {
+                     if (tab.uid === tUid)
+                        return { ...tab, isChanged };
+
+                     return tab;
+                  })
+               };
+            }
+            else
+               return workspace;
+         });
       },
       ADD_LOADED_SCHEMA (state, payload) {
          state.workspaces = state.workspaces.map(workspace => {
@@ -271,7 +365,7 @@ export default {
       selectWorkspace ({ commit }, uid) {
          commit('SELECT_WORKSPACE', uid);
       },
-      async connectWorkspace ({ dispatch, commit }, connection) {
+      async connectWorkspace ({ dispatch, commit, getters, rootGetters }, connection) {
          commit('SET_CONNECTING', connection.uid);
 
          try {
@@ -304,6 +398,7 @@ export default {
                if (status === 'error')
                   dispatch('notifications/addNotification', { status, message: version }, { root: true });
 
+               // Check if Maria or MySQL
                const isMySQL = version.name.includes('MySQL');
 
                if (isMySQL && connection.client !== 'mysql') {
@@ -324,7 +419,8 @@ export default {
                   indexTypes,
                   customizations,
                   structure: response,
-                  version
+                  version,
+                  restoreTabs: rootGetters['settings/getRestoreTabs']
                });
                dispatch('refreshCollations', connection.uid);
                dispatch('refreshVariables', connection.uid);
@@ -414,7 +510,7 @@ export default {
          commit('SET_DISCONNECTED', uid);
          commit('SELECT_TAB', { uid, tab: 0 });
       },
-      addWorkspace ({ commit, dispatch, getters }, uid) {
+      addWorkspace ({ commit }, uid) {
          const workspace = {
             uid,
             connection_status: 'disconnected',
@@ -430,57 +526,202 @@ export default {
          };
 
          commit('ADD_WORKSPACE', workspace);
-
-         if (getters.getWorkspace(uid).tabs.length < 3)
-            dispatch('newTab', { uid });
-
-         dispatch('setUnsavedChanges', false);
       },
-      changeBreadcrumbs ({ state, commit, getters }, payload) {
-         if (state.has_unsaved_changes) {
-            commit('SET_UNSAVED_DISCARD_MODAL', true);
-            commit('SET_PENDING_BREADCRUMBS', payload);
-            return;
-         }
-
+      changeBreadcrumbs ({ commit, getters }, payload) {
          const breadcrumbsObj = {
             schema: null,
             table: null,
             trigger: null,
+            triggerFunction: null,
             procedure: null,
             function: null,
             scheduler: null,
-            view: null
+            view: null,
+            query: null
          };
 
-         const hasLastChildren = Object.keys(lastBreadcrumbs).filter(b => b !== 'schema').some(b => lastBreadcrumbs[b]);
-         const hasChildren = Object.keys(payload).filter(b => b !== 'schema').some(b => payload[b]);
-
-         if (lastBreadcrumbs.schema === payload.schema && hasLastChildren && !hasChildren) return;
-
-         if (lastBreadcrumbs.schema !== payload.schema)
-            Schema.useSchema({ uid: getters.getSelected, schema: payload.schema });
-
          commit('CHANGE_BREADCRUMBS', { uid: getters.getSelected, breadcrumbs: { ...breadcrumbsObj, ...payload } });
-         lastBreadcrumbs = { ...breadcrumbsObj, ...payload };
-
-         if (payload.schema)
-            commit('ADD_LOADED_SCHEMA', { uid: getters.getSelected, schema: payload.schema });
+      },
+      addLoadedSchema ({ commit, getters }, schema) {
+         commit('ADD_LOADED_SCHEMA', { uid: getters.getSelected, schema });
       },
       setSearchTerm ({ commit, getters }, term) {
          commit('SET_SEARCH_TERM', { uid: getters.getSelected, term });
       },
-      newTab ({ commit }, { uid, content, autorun }) {
-         const tab = uidGen('T');
+      newTab ({ state, commit }, { uid, content, type, autorun, schema, elementName, elementType }) {
+         let tabUid;
+         const workspaceTabs = state.workspaces.find(workspace => workspace.uid === uid);
 
-         commit('NEW_TAB', { uid, tab, content, autorun });
-         commit('SELECT_TAB', { uid, tab });
+         switch (type) {
+            case 'temp-data': {
+               const existentTab = workspaceTabs
+                  ? workspaceTabs.tabs.find(tab =>
+                     tab.schema === schema &&
+                     tab.elementName === elementName &&
+                     tab.elementType === elementType &&
+                     ['temp-data', 'data'].includes(tab.type))
+                  : false;
+
+               if (existentTab) { // if data tab exists
+                  tabUid = existentTab.uid;
+               }
+               else {
+                  const tempTabs = workspaceTabs ? workspaceTabs.tabs.filter(tab => tab.type === 'temp-data') : false;
+                  if (tempTabs && tempTabs.length) { // if temp table already opened
+                     for (const tab of tempTabs) {
+                        commit('REPLACE_TAB', { uid, tab: tab.uid, type, schema, elementName, elementType });
+                        tabUid = tab.uid;
+                     }
+                  }
+                  else {
+                     tabUid = uidGen('T');
+                     commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
+                  }
+               }
+            }
+               break;
+            case 'data': {
+               const existentTab = workspaceTabs
+                  ? workspaceTabs.tabs.find(tab =>
+                     tab.schema === schema &&
+                     tab.elementName === elementName &&
+                     tab.elementType === elementType &&
+                     ['temp-data', 'data'].includes(tab.type))
+                  : false;
+
+               if (existentTab) {
+                  commit('REPLACE_TAB', { uid, tab: existentTab.uid, type, schema, elementName, elementType });
+                  tabUid = existentTab.uid;
+               }
+               else {
+                  tabUid = uidGen('T');
+                  commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
+               }
+            }
+               break;
+            case 'table-props': {
+               const existentTab = workspaceTabs
+                  ? workspaceTabs.tabs.find(tab =>
+                     tab.elementName === elementName &&
+                     tab.elementType === elementType &&
+                     tab.type === type)
+                  : false;
+
+               if (existentTab) {
+                  commit('REPLACE_TAB', { uid, tab: existentTab.uid, type, schema, elementName, elementType });
+                  tabUid = existentTab.uid;
+               }
+               else {
+                  tabUid = uidGen('T');
+                  commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
+               }
+            }
+               break;
+            case 'temp-trigger-props':
+            case 'temp-trigger-function-props':
+            case 'temp-function-props':
+            case 'temp-routine-props':
+            case 'temp-scheduler-props': {
+               const existentTab = workspaceTabs
+                  ? workspaceTabs.tabs.find(tab =>
+                     tab.schema === schema &&
+                     tab.elementName === elementName &&
+                     tab.elementType === elementType &&
+                     [type, type.replace('temp-', '')].includes(tab.type))
+                  : false;
+
+               if (existentTab) { // if tab exists
+                  tabUid = existentTab.uid;
+               }
+               else {
+                  const tempTabs = workspaceTabs ? workspaceTabs.tabs.filter(tab => tab.type.includes('temp-')) : false;
+                  if (tempTabs && tempTabs.length) { // if temp tab already opened
+                     for (const tab of tempTabs) {
+                        if (tab.isChanged) {
+                           commit('REPLACE_TAB', { // make permanent a temp table with unsaved changes
+                              uid,
+                              tab: tab.uid,
+                              type: tab.type.replace('temp-', ''),
+                              schema: tab.schema,
+                              elementName: tab.elementName,
+                              elementType: tab.elementType
+                           });
+
+                           tabUid = uidGen('T');
+                           commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
+                        }
+                        else {
+                           commit('REPLACE_TAB', { uid, tab: tab.uid, type, schema, elementName, elementType });
+                           tabUid = tab.uid;
+                        }
+                     }
+                  }
+                  else {
+                     tabUid = uidGen('T');
+                     commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
+                  }
+               }
+            }
+               break;
+            case 'trigger-props':
+            case 'trigger-function-props':
+            case 'function-props':
+            case 'routine-props':
+            case 'scheduler-props': {
+               const existentTab = workspaceTabs
+                  ? workspaceTabs.tabs.find(tab =>
+                     tab.schema === schema &&
+                     tab.elementName === elementName &&
+                     tab.elementType === elementType &&
+                     [`temp-${type}`, type].includes(tab.type))
+                  : false;
+
+               if (existentTab) {
+                  commit('REPLACE_TAB', { uid, tab: existentTab.uid, type, schema, elementName, elementType });
+                  tabUid = existentTab.uid;
+               }
+               else {
+                  tabUid = uidGen('T');
+                  commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
+               }
+            }
+               break;
+            default:
+               tabUid = uidGen('T');
+               commit('NEW_TAB', { uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
+               break;
+         }
+
+         commit('SELECT_TAB', { uid, tab: tabUid });
       },
-      removeTab ({ commit }, payload) {
+      checkSelectedTabExists ({ state, commit }, uid) {
+         const workspace = state.workspaces.find(workspace => workspace.uid === uid);
+         const isSelectedExistent = workspace
+            ? workspace.tabs.some(tab => tab.uid === workspace.selected_tab)
+            : false;
+
+         if (!isSelectedExistent && workspace.tabs.length)
+            commit('SELECT_TAB', { uid, tab: workspace.tabs[workspace.tabs.length - 1].uid });
+      },
+      updateTabContent ({ commit }, { uid, tab, type, schema, content }) {
+         commit('REPLACE_TAB', { uid, tab, type, schema, content });
+      },
+      renameTabs ({ commit }, payload) {
+         commit('RENAME_TABS', payload);
+      },
+      removeTab ({ commit, dispatch }, payload) {
          commit('REMOVE_TAB', payload);
+         dispatch('checkSelectedTabExists', payload.uid);
+      },
+      removeTabs ({ commit, dispatch }, payload) {
+         commit('REMOVE_TABS', payload);
+         dispatch('checkSelectedTabExists', payload.uid);
       },
       selectTab ({ commit }, payload) {
          commit('SELECT_TAB', payload);
+      },
+      updateTabs ({ commit }, payload) {
+         commit('UPDATE_TABS', payload);
       },
       setTabFields ({ commit }, payload) {
          commit('SET_TAB_FIELDS', payload);
@@ -488,17 +729,8 @@ export default {
       setTabKeyUsage ({ commit }, payload) {
          commit('SET_TAB_KEY_USAGE', payload);
       },
-      setUnsavedChanges ({ commit }, val) {
-         commit('SET_UNSAVED_CHANGES', val);
-      },
-      discardUnsavedChanges ({ state, commit, dispatch }) {
-         dispatch('setUnsavedChanges', false);
-         dispatch('changeBreadcrumbs', state.pending_breadcrumbs);
-         commit('SET_UNSAVED_DISCARD_MODAL', false);
-         commit('SET_PENDING_BREADCRUMBS', {});
-      },
-      closeUnsavedChangesModal ({ commit }) {
-         commit('SET_UNSAVED_DISCARD_MODAL', false);
+      setUnsavedChanges ({ commit }, payload) {
+         commit('SET_UNSAVED_CHANGES', payload);
       }
    }
 };

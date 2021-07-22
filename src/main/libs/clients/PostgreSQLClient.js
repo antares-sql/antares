@@ -483,7 +483,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async dropView (params) {
-      const sql = `DROP VIEW ${this._schema}.${params.view}`;
+      const sql = `DROP VIEW ${params.schema}.${params.view}`;
       return await this.raw(sql);
    }
 
@@ -495,10 +495,10 @@ export class PostgreSQLClient extends AntaresCore {
     */
    async alterView (params) {
       const { view } = params;
-      let sql = `CREATE OR REPLACE VIEW ${this._schema}.${view.oldName} AS ${view.sql}`;
+      let sql = `CREATE OR REPLACE VIEW ${view.schema}.${view.oldName} AS ${view.sql}`;
 
       if (view.name !== view.oldName)
-         sql += `; ALTER VIEW ${this._schema}.${view.oldName} RENAME TO ${view.name}`;
+         sql += `; ALTER VIEW ${view.schema}.${view.oldName} RENAME TO ${view.name}`;
 
       return await this.raw(sql);
    }
@@ -509,8 +509,8 @@ export class PostgreSQLClient extends AntaresCore {
     * @returns {Array.<Object>} parameters
     * @memberof PostgreSQLClient
     */
-   async createView (view) {
-      const sql = `CREATE VIEW ${this._schema}.${view.name} AS ${view.sql}`;
+   async createView (params) {
+      const sql = `CREATE VIEW ${params.schema}.${params.name} AS ${params.sql}`;
       return await this.raw(sql);
    }
 
@@ -560,7 +560,7 @@ export class PostgreSQLClient extends AntaresCore {
     */
    async dropTrigger (params) {
       const triggerParts = params.trigger.split('.');
-      const sql = `DROP TRIGGER "${triggerParts[1]}" ON "${triggerParts[0]}"`;
+      const sql = `DROP TRIGGER "${triggerParts[1]}" ON "${params.schema}"."${triggerParts[0]}"`;
       return await this.raw(sql);
    }
 
@@ -577,8 +577,8 @@ export class PostgreSQLClient extends AntaresCore {
 
       try {
          await this.createTrigger(tempTrigger);
-         await this.dropTrigger({ trigger: `${tempTrigger.table}.${tempTrigger.name}` });
-         await this.dropTrigger({ trigger: `${trigger.table}.${trigger.oldName}` });
+         await this.dropTrigger({ schema: trigger.schema, trigger: `${tempTrigger.table}.${tempTrigger.name}` });
+         await this.dropTrigger({ schema: trigger.schema, trigger: `${trigger.table}.${trigger.oldName}` });
          await this.createTrigger(trigger);
       }
       catch (err) {
@@ -592,9 +592,9 @@ export class PostgreSQLClient extends AntaresCore {
     * @returns {Array.<Object>} parameters
     * @memberof PostgreSQLClient
     */
-   async createTrigger (trigger) {
-      const eventsString = Array.isArray(trigger.event) ? trigger.event.join(' OR ') : trigger.event;
-      const sql = `CREATE TRIGGER "${trigger.name}" ${trigger.activation} ${eventsString} ON "${trigger.table}" FOR EACH ROW ${trigger.sql}`;
+   async createTrigger (params) {
+      const eventsString = Array.isArray(params.event) ? params.event.join(' OR ') : params.event;
+      const sql = `CREATE TRIGGER "${params.name}" ${params.activation} ${eventsString} ON "${params.schema}"."${params.table}" FOR EACH ROW ${params.sql}`;
       return await this.raw(sql, { split: false });
    }
 
@@ -637,6 +637,7 @@ export class PostgreSQLClient extends AntaresCore {
             AND proc.routine_type = 'PROCEDURE'
             AND proc.routine_name = '${routine}'
             AND proc.specific_schema = '${schema}'
+            AND args.data_type != NULL
          ORDER BY procedure_schema,
             specific_name,
             procedure_name,
@@ -675,7 +676,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async dropRoutine (params) {
-      const sql = `DROP PROCEDURE ${this._schema}.${params.routine}`;
+      const sql = `DROP PROCEDURE "${params.schema}"."${params.routine}"`;
       return await this.raw(sql);
    }
 
@@ -692,8 +693,8 @@ export class PostgreSQLClient extends AntaresCore {
 
       try {
          await this.createRoutine(tempProcedure);
-         await this.dropRoutine({ routine: tempProcedure.name });
-         await this.dropRoutine({ routine: routine.oldName });
+         await this.dropRoutine({ schema: routine.schema, routine: tempProcedure.name });
+         await this.dropRoutine({ schema: routine.schema, routine: routine.oldName });
          await this.createRoutine(routine);
       }
       catch (err) {
@@ -715,10 +716,10 @@ export class PostgreSQLClient extends AntaresCore {
          }, []).join(',')
          : '';
 
-      if (this._schema !== 'public')
-         await this.use(this._schema);
+      if (routine.schema !== 'public')
+         await this.use(routine.schema);
 
-      const sql = `CREATE PROCEDURE ${this._schema}.${routine.name}(${parameters})
+      const sql = `CREATE PROCEDURE "${routine.schema}"."${routine.name}"(${parameters})
          LANGUAGE ${routine.language}
          SECURITY ${routine.security}
          AS ${routine.sql}`;
@@ -804,7 +805,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async dropFunction (params) {
-      const sql = `DROP FUNCTION ${this._schema}.${params.func}`;
+      const sql = `DROP FUNCTION "${params.schema}"."${params.func}"`;
       return await this.raw(sql);
    }
 
@@ -821,8 +822,8 @@ export class PostgreSQLClient extends AntaresCore {
 
       try {
          await this.createFunction(tempProcedure);
-         await this.dropFunction({ func: tempProcedure.name });
-         await this.dropFunction({ func: func.oldName });
+         await this.dropFunction({ schema: func.schema, func: tempProcedure.name });
+         await this.dropFunction({ schema: func.schema, func: func.oldName });
          await this.createFunction(func);
       }
       catch (err) {
@@ -839,17 +840,17 @@ export class PostgreSQLClient extends AntaresCore {
    async createFunction (func) {
       const parameters = 'parameters' in func
          ? func.parameters.reduce((acc, curr) => {
-            acc.push(`${curr.context} ${curr.name} ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
+            acc.push(`${curr.context} ${curr.name || ''} ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
             return acc;
          }, []).join(',')
          : '';
 
-      if (this._schema !== 'public')
-         await this.use(this._schema);
+      if (func.schema !== 'public')
+         await this.use(func.schema);
 
       const body = func.returns ? func.sql : '$function$\n$function$';
 
-      const sql = `CREATE FUNCTION ${this._schema}.${func.name}(${parameters})
+      const sql = `CREATE FUNCTION "${func.schema}"."${func.name}" (${parameters})
          RETURNS ${func.returns || 'void'}
          LANGUAGE ${func.language}
          SECURITY ${func.security}
@@ -867,12 +868,12 @@ export class PostgreSQLClient extends AntaresCore {
    async alterTriggerFunction (params) {
       const { func } = params;
 
-      if (this._schema !== 'public')
-         await this.use(this._schema);
+      if (func.schema !== 'public')
+         await this.use(func.schema);
 
       const body = func.returns ? func.sql : '$function$\n$function$';
 
-      const sql = `CREATE OR REPLACE FUNCTION ${this._schema}.${func.name}()
+      const sql = `CREATE OR REPLACE FUNCTION "${func.schema}"."${func.name}" ()
          RETURNS TRIGGER
          LANGUAGE ${func.language}
          AS ${body}`;
@@ -887,12 +888,12 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async createTriggerFunction (func) {
-      if (this._schema !== 'public')
-         await this.use(this._schema);
+      if (func.schema !== 'public')
+         await this.use(func.schema);
 
       const body = func.returns ? func.sql : '$function$\r\nBEGIN\r\n\r\nEND\r\n$function$';
 
-      const sql = `CREATE FUNCTION ${this._schema}.${func.name}()
+      const sql = `CREATE FUNCTION "${func.schema}"."${func.name}" ()
          RETURNS TRIGGER
          LANGUAGE ${func.language}
          AS ${body}`;
@@ -988,11 +989,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async createTable (params) {
-      const {
-         name
-      } = params;
-
-      const sql = `CREATE TABLE ${this._schema}.${name} (${name}_id INTEGER NULL); ALTER TABLE ${this._schema}.${name} DROP COLUMN ${name}_id`;
+      const sql = `CREATE TABLE "${params.schema}"."${params.name}" (${params.name}_id INTEGER NULL); ALTER TABLE "${params.schema}"."${params.name}" DROP COLUMN ${params.name}_id`;
 
       return await this.raw(sql);
    }
@@ -1006,6 +1003,7 @@ export class PostgreSQLClient extends AntaresCore {
    async alterTable (params) {
       const {
          table,
+         schema,
          additions,
          deletions,
          changes,
@@ -1014,8 +1012,8 @@ export class PostgreSQLClient extends AntaresCore {
          options
       } = params;
 
-      if (this._schema !== 'public')
-         await this.use(this._schema);
+      if (schema !== 'public')
+         await this.use(schema);
 
       let sql = '';
       const alterColumns = [];
@@ -1056,7 +1054,7 @@ export class PostgreSQLClient extends AntaresCore {
          else if (type === 'UNIQUE')
             alterColumns.push(`ADD CONSTRAINT ${addition.name} UNIQUE (${fields})`);
          else
-            manageIndexes.push(`CREATE INDEX ${addition.name} ON ${this._schema}.${table}(${fields})`);
+            manageIndexes.push(`CREATE INDEX ${addition.name} ON "${schema}"."${table}" (${fields})`);
       });
 
       // ADD FOREIGN KEYS
@@ -1094,7 +1092,7 @@ export class PostgreSQLClient extends AntaresCore {
          }
 
          if (change.orgName !== change.name)
-            renameColumns.push(`ALTER TABLE "${this._schema}"."${table}" RENAME COLUMN "${change.orgName}" TO "${change.name}"`);
+            renameColumns.push(`ALTER TABLE "${schema}"."${table}" RENAME COLUMN "${change.orgName}" TO "${change.name}"`);
       });
 
       // CHANGE INDEX
@@ -1112,7 +1110,7 @@ export class PostgreSQLClient extends AntaresCore {
          else if (type === 'UNIQUE')
             alterColumns.push(`ADD CONSTRAINT ${change.name} UNIQUE (${fields})`);
          else
-            manageIndexes.push(`CREATE INDEX ${change.name} ON ${this._schema}.${table}(${fields})`);
+            manageIndexes.push(`CREATE INDEX ${change.name} ON "${schema}"."${table}" (${fields})`);
       });
 
       // CHANGE FOREIGN KEYS
@@ -1139,10 +1137,10 @@ export class PostgreSQLClient extends AntaresCore {
          alterColumns.push(`DROP CONSTRAINT ${deletion.constraintName}`);
       });
 
-      if (alterColumns.length) sql += `ALTER TABLE "${this._schema}"."${table}" ${alterColumns.join(', ')}; `;
+      if (alterColumns.length) sql += `ALTER TABLE "${schema}"."${table}" ${alterColumns.join(', ')}; `;
       if (createSequences.length) sql = `${createSequences.join(';')}; ${sql}`;
       if (manageIndexes.length) sql = `${manageIndexes.join(';')}; ${sql}`;
-      if (options.name) sql += `ALTER TABLE "${this._schema}"."${table}" RENAME TO "${options.name}"; `;
+      if (options.name) sql += `ALTER TABLE "${schema}"."${table}" RENAME TO "${options.name}"; `;
 
       // RENAME
       if (renameColumns.length) sql = `${renameColumns.join(';')}; ${sql}`;
@@ -1157,7 +1155,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async duplicateTable (params) {
-      const sql = `CREATE TABLE ${this._schema}.${params.table}_copy (LIKE ${this._schema}.${params.table} INCLUDING ALL)`;
+      const sql = `CREATE TABLE ${params.schema}.${params.table}_copy (LIKE ${params.schema}.${params.table} INCLUDING ALL)`;
       return await this.raw(sql);
    }
 
@@ -1168,7 +1166,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async truncateTable (params) {
-      const sql = `TRUNCATE TABLE ${this._schema}.${params.table}`;
+      const sql = `TRUNCATE TABLE ${params.schema}.${params.table}`;
       return await this.raw(sql);
    }
 
@@ -1179,7 +1177,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async dropTable (params) {
-      const sql = `DROP TABLE ${this._schema}.${params.table}`;
+      const sql = `DROP TABLE ${params.schema}.${params.table}`;
       return await this.raw(sql);
    }
 
@@ -1250,17 +1248,19 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async raw (sql, args) {
-      sql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '');
-
       args = {
          nest: false,
          details: false,
          split: true,
+         comments: true,
          ...args
       };
 
       if (args.schema && args.schema !== 'public')
          await this.use(args.schema);
+
+      if (!args.comments)
+         sql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '');// Remove comments
 
       const resultsArr = [];
       let paramsArr = [];

@@ -63,6 +63,12 @@
         background-color: $primary-color;
       }
     }
+
+    &.btn-clear {
+      &:hover {
+        background: rgba($light-color, 20%);
+      }
+    }
   }
 
   .modal {
@@ -191,19 +197,8 @@
             color: $body-font-color-dark;
           }
 
-          & &.tools-dropdown {
-            .tab-link:focus {
-              color: $primary-color;
-            }
-
-            .menu {
-              .menu-item a {
-                &:hover {
-                  color: $primary-color;
-                  background: $bg-color-gray;
-                }
-              }
-            }
+          &.tools-dropdown {
+            background-color: $bg-color-light-dark;
           }
         }
 
@@ -391,11 +386,6 @@
     .ex-tooltip-content {
       background: rgba(48, 55, 66, 0.95);
       color: #fff;
-    }
-
-    &:hover .ex-tooltip-content {
-      visibility: visible;
-      opacity: 1;
     }
   }
 

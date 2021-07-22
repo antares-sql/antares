@@ -107,6 +107,19 @@
                            <div class="form-group">
                               <div class="col-6 col-sm-12">
                                  <label class="form-label">
+                                    {{ $t('message.restorePreviourSession') }}
+                                 </label>
+                              </div>
+                              <div class="col-6 col-sm-12">
+                                 <label class="form-switch d-inline-block" @click.prevent="toggleRestoreSession">
+                                    <input type="checkbox" :checked="restoreTabs">
+                                    <i class="form-icon" />
+                                 </label>
+                              </div>
+                           </div>
+                           <div class="form-group">
+                              <div class="col-6 col-sm-12">
+                                 <label class="form-label">
                                     {{ $t('message.notificationsTimeout') }}
                                  </label>
                               </div>
@@ -369,6 +382,7 @@ export default {
          selectedAutoComplete: 'settings/getAutoComplete',
          selectedLineWrap: 'settings/getLineWrap',
          notificationsTimeout: 'settings/getNotificationsTimeout',
+         restoreTabs: 'settings/getRestoreTabs',
          applicationTheme: 'settings/getApplicationTheme',
          editorTheme: 'settings/getEditorTheme',
          editorFontSize: 'settings/getEditorFontSize',
@@ -423,6 +437,7 @@ ORDER BY
          closeModal: 'application/hideSettingModal',
          changeLocale: 'settings/changeLocale',
          changePageSize: 'settings/changePageSize',
+         changeRestoreTabs: 'settings/changeRestoreTabs',
          changeAutoComplete: 'settings/changeAutoComplete',
          changeLineWrap: 'settings/changeLineWrap',
          changeApplicationTheme: 'settings/changeApplicationTheme',
@@ -446,6 +461,9 @@ ORDER BY
          e.stopPropagation();
          if (e.key === 'Escape')
             this.closeModal();
+      },
+      toggleRestoreSession () {
+         this.changeRestoreTabs(!this.restoreTabs);
       },
       toggleAutoComplete () {
          this.changeAutoComplete(!this.selectedAutoComplete);

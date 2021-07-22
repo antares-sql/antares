@@ -53,7 +53,7 @@
                </form>
             </div>
          </div>
-         <div class="modal-footer text-light">
+         <div class="modal-footer">
             <button class="btn btn-primary mr-2" @click.stop="updateSchema">
                {{ $t('word.update') }}
             </button>
@@ -72,7 +72,7 @@ import Schema from '@/ipc-api/Schema';
 export default {
    name: 'ModalEditSchema',
    props: {
-      selectedDatabase: String
+      selectedSchema: String
    },
    data () {
       return {
@@ -99,7 +99,7 @@ export default {
    async created () {
       let actualCollation;
       try {
-         const { status, response } = await Schema.getDatabaseCollation({ uid: this.selectedWorkspace, database: this.selectedDatabase });
+         const { status, response } = await Schema.getDatabaseCollation({ uid: this.selectedWorkspace, database: this.selectedSchema });
 
          if (status === 'success')
             actualCollation = response;
@@ -112,8 +112,8 @@ export default {
       }
 
       this.database = {
-         name: this.selectedDatabase,
-         prevName: this.selectedDatabase,
+         name: this.selectedSchema,
+         prevName: this.selectedSchema,
          collation: actualCollation || this.defaultCollation,
          prevCollation: actualCollation || this.defaultCollation
       };

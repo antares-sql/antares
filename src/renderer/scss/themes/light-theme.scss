@@ -168,11 +168,6 @@
       background: rgba(48, 55, 66, 0.95);
       color: #fff;
     }
-
-    &:hover .ex-tooltip-content {
-      visibility: visible;
-      opacity: 1;
-    }
   }
 
   .workspace {
@@ -187,6 +182,16 @@
 
         .table-size {
           opacity: 0.4;
+        }
+      }
+    }
+
+    .workspace-tabs {
+      .tab-block {
+        .tab-item {
+          &.tools-dropdown {
+            background-color: $body-bg;
+          }
         }
       }
     }

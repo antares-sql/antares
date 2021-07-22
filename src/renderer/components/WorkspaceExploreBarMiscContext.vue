@@ -59,7 +59,8 @@ export default {
    },
    props: {
       contextEvent: MouseEvent,
-      selectedMisc: Object
+      selectedMisc: Object,
+      selectedSchema: String
    },
    data () {
       return {
@@ -97,6 +98,7 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         removeTabs: 'workspaces/removeTabs',
          newTab: 'workspaces/newTab'
       }),
       showCreateTableModal () {
@@ -126,12 +128,14 @@ export default {
                case 'trigger':
                   res = await Triggers.dropTrigger({
                      uid: this.selectedWorkspace,
+                     schema: this.selectedSchema,
                      trigger: this.selectedMisc.name
                   });
                   break;
                case 'procedure':
                   res = await Routines.dropRoutine({
                      uid: this.selectedWorkspace,
+                     schema: this.selectedSchema,
                      routine: this.selectedMisc.name
                   });
                   break;
@@ -139,12 +143,14 @@ export default {
                case 'triggerFunction':
                   res = await Functions.dropFunction({
                      uid: this.selectedWorkspace,
+                     schema: this.selectedSchema,
                      func: this.selectedMisc.name
                   });
                   break;
                case 'scheduler':
                   res = await Schedulers.dropScheduler({
                      uid: this.selectedWorkspace,
+                     schema: this.selectedSchema,
                      scheduler: this.selectedMisc.name
                   });
                   break;
@@ -153,7 +159,12 @@ export default {
             const { status, response } = res;
 
             if (status === 'success') {
-               this.changeBreadcrumbs({ [this.selectedMisc.type]: null });
+               this.removeTabs({
+                  uid: this.selectedWorkspace,
+                  elementName: this.selectedMisc.name,
+                  elementType: this.selectedMisc.type,
+                  schema: this.selectedSchema
+               });
 
                this.closeContext();
                this.$emit('reload');
@@ -180,8 +191,8 @@ export default {
       async runRoutineCheck () {
          const params = {
             uid: this.selectedWorkspace,
-            schema: this.workspace.breadcrumbs.schema,
-            routine: this.workspace.breadcrumbs.procedure
+            schema: this.selectedSchema,
+            routine: this.selectedMisc.name
          };
 
          try {
@@ -218,14 +229,14 @@ export default {
                sql = `CALL \`${this.localElement.name}\`(${params.join(',')})`;
          }
 
-         this.newTab({ uid: this.workspace.uid, content: sql, autorun: true });
+         this.newTab({ uid: this.workspace.uid, content: sql, type: 'query', autorun: true });
          this.closeContext();
       },
       async runFunctionCheck () {
          const params = {
             uid: this.selectedWorkspace,
-            schema: this.workspace.breadcrumbs.schema,
-            func: this.workspace.breadcrumbs.function
+            schema: this.selectedSchema,
+            func: this.selectedMisc.name
          };
 
          try {
@@ -263,7 +274,7 @@ export default {
                sql = `SELECT \`${this.localElement.name}\` (${params.join(',')})`;
          }
 
-         this.newTab({ uid: this.workspace.uid, content: sql, autorun: true });
+         this.newTab({ uid: this.workspace.uid, content: sql, type: 'query', autorun: true });
          this.closeContext();
       }
    }

@@ -28,7 +28,7 @@
          </div>
       </div>
       <div
-         v-if="selectedRows.length === 1"
+         v-if="selectedRows.length === 1 && selectedCell.isEditable"
          class="context-element"
          @click="setNull"
       >
@@ -36,7 +36,11 @@
             <i class="mdi mdi-18px mdi-null text-light pr-1" /> {{ $t('message.setNull') }}
          </span>
       </div>
-      <div class="context-element" @click="showConfirmModal">
+      <div
+         v-if="selectedCell.isEditable"
+         class="context-element"
+         @click="showConfirmModal"
+      >
          <span class="d-flex">
             <i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ $tc('message.deleteRows', selectedRows.length) }}
          </span>
@@ -54,7 +58,8 @@ export default {
    },
    props: {
       contextEvent: MouseEvent,
-      selectedRows: Array
+      selectedRows: Array,
+      selectedCell: Object
    },
    computed: {
    },

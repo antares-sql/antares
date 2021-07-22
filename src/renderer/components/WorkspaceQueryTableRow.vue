@@ -260,7 +260,8 @@ export default {
    props: {
       row: Object,
       fields: Object,
-      keyUsage: Array
+      keyUsage: Array,
+      elementType: { type: String, default: 'table' }
    },
    data () {
       return {
@@ -334,6 +335,8 @@ export default {
          return this.keyUsage.map(key => key.field);
       },
       isEditable () {
+         if (this.elementType === 'view') return false;
+
          if (this.fields) {
             const nElements = Object.keys(this.fields).reduce((acc, curr) => {
                acc.add(this.fields[curr].table);
@@ -503,10 +506,9 @@ export default {
          return this.keyUsage.find(key => key.field === keyName);
       },
       openContext (event, payload) {
-         if (this.isEditable) {
-            payload.field = this.fields[payload.field].name;// Ensures field name only
-            this.$emit('contextmenu', event, payload);
-         }
+         payload.field = this.fields[payload.field].name;// Ensures field name only
+         payload.isEditable = this.isEditable;
+         this.$emit('contextmenu', event, payload);
       },
       onKey (e) {
          e.stopPropagation();
