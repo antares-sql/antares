@@ -14,7 +14,7 @@
                   <span>{{ $t('word.save') }}</span>
                </button>
                <button
-                  :disabled="!isChanged"
+                  :disabled="!isChanged || isSaving"
                   class="btn btn-link btn-sm mr-0"
                   :title="$t('message.clearChanges')"
                   @click="clearChanges"
@@ -26,6 +26,7 @@
                <div class="divider-vert py-3" />
 
                <button
+                  :disabled="isSaving"
                   class="btn btn-dark btn-sm"
                   :title="$t('message.addNewField')"
                   @click="addField"
@@ -34,6 +35,7 @@
                   <span>{{ $t('word.add') }}</span>
                </button>
                <button
+                  :disabled="isSaving"
                   class="btn btn-dark btn-sm"
                   :title="$t('message.manageIndexes')"
                   @click="showIntdexesModal"
@@ -41,11 +43,19 @@
                   <i class="mdi mdi-24px mdi-key mdi-rotate-45 mr-1" />
                   <span>{{ $t('word.indexes') }}</span>
                </button>
-               <button class="btn btn-dark btn-sm" @click="showForeignModal">
+               <button
+                  class="btn btn-dark btn-sm"
+                  :disabled="isSaving"
+                  @click="showForeignModal"
+               >
                   <i class="mdi mdi-24px mdi-key-link mr-1" />
                   <span>{{ $t('word.foreignKeys') }}</span>
                </button>
-               <button class="btn btn-dark btn-sm" @click="showOptionsModal">
+               <button
+                  class="btn btn-dark btn-sm"
+                  :disabled="isSaving"
+                  @click="showOptionsModal"
+               >
                   <i class="mdi mdi-24px mdi-cogs mr-1" />
                   <span>{{ $t('word.options') }}</span>
                </button>
