@@ -284,7 +284,7 @@ export default {
          addNotification: 'notifications/addNotification',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
-      async getTableData (sortParams) {
+      async getTableData () {
          if (!this.table) return;
          this.isQuering = true;
 
@@ -300,7 +300,7 @@ export default {
             table: this.table,
             limit: this.limit,
             page: this.page,
-            sortParams
+            sortParams: this.sortParams
          };
 
          try { // Table data
@@ -321,11 +321,11 @@ export default {
          return this.table;
       },
       reloadTable () {
-         this.getTableData(this.sortParams);
+         this.getTableData();
       },
       hardSort (sortParams) {
          this.sortParams = sortParams;
-         this.getTableData(sortParams);
+         this.getTableData();
       },
       openPageMenu () {
          if (this.isQuering) return;
