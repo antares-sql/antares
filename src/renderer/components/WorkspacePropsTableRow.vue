@@ -450,7 +450,7 @@ export default {
          });
 
          this.defaultValue.onUpdate = this.localRow.onUpdate;
-         this.defaultValue.type = this.localRow.defaultType;
+         this.defaultValue.type = this.localRow.defaultType || 'noval';
          if (this.defaultValue.type === 'custom') {
             this.defaultValue.custom = this.localRow.default
                ? this.localRow.default.includes('\'')
@@ -458,7 +458,7 @@ export default {
                   : this.localRow.default
                : '';
          }
-         if (this.defaultValue.type === 'expression')
+         else if (this.defaultValue.type === 'expression')
             this.defaultValue.expression = this.localRow.default;
       },
       editON (event, content, field) {
