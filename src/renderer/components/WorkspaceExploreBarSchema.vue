@@ -19,7 +19,7 @@
                   :key="table.name"
                   class="menu-item"
                   :class="{'text-bold': breadcrumbs.schema === database.name && [breadcrumbs.table, breadcrumbs.view].includes(table.name)}"
-                  @click="selectTable({schema: database.name, table})"
+                  @mousedown="selectTable({schema: database.name, table})"
                   @dblclick="openDataTab({schema: database.name, table})"
                   @contextmenu.prevent="showTableContext($event, table)"
                >
@@ -56,7 +56,7 @@
                            :key="trigger.name"
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.trigger === trigger.name}"
-                           @click="selectMisc({schema: database.name, misc: trigger, type: 'trigger'})"
+                           @mousedown="selectMisc({schema: database.name, misc: trigger, type: 'trigger'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: trigger, type: 'trigger'})"
                            @contextmenu.prevent="showMiscContext($event, {...trigger, type: 'trigger'})"
                         >
@@ -89,7 +89,7 @@
                            :key="`${procedure.name}-${i}`"
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.routine === procedure.name}"
-                           @click="selectMisc({schema: database.name, misc: procedure, type: 'routine'})"
+                           @mousedown="selectMisc({schema: database.name, misc: procedure, type: 'routine'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: procedure, type: 'routine'})"
                            @contextmenu.prevent="showMiscContext($event, {...procedure, type: 'procedure'})"
                         >
@@ -122,7 +122,7 @@
                            :key="`${func.name}-${i}`"
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.triggerFunction === func.name}"
-                           @click="selectMisc({schema: database.name, misc: func, type: 'triggerFunction'})"
+                           @mousedown="selectMisc({schema: database.name, misc: func, type: 'triggerFunction'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: func, type: 'triggerFunction'})"
                            @contextmenu.prevent="showMiscContext($event, {...func, type: 'triggerFunction'})"
                         >
@@ -155,7 +155,7 @@
                            :key="`${func.name}-${i}`"
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.function === func.name}"
-                           @click="selectMisc({schema: database.name, misc: func, type: 'function'})"
+                           @mousedown="selectMisc({schema: database.name, misc: func, type: 'function'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: func, type: 'function'})"
                            @contextmenu.prevent="showMiscContext($event, {...func, type: 'function'})"
                         >
@@ -188,7 +188,7 @@
                            :key="scheduler.name"
                            class="menu-item"
                            :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.scheduler === scheduler.name}"
-                           @click="selectMisc({schema: database.name, misc: scheduler, type: 'scheduler'})"
+                           @mousedown="selectMisc({schema: database.name, misc: scheduler, type: 'scheduler'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: scheduler, type: 'scheduler'})"
                            @contextmenu.prevent="showMiscContext($event, {...scheduler, type: 'scheduler'})"
                         >

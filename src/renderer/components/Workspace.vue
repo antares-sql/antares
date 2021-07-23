@@ -21,7 +21,7 @@
                class="tab-item tab-draggable"
                draggable="true"
                :class="{'active': selectedTab === tab.uid}"
-               @click="selectTab({uid: workspace.uid, tab: tab.uid})"
+               @mousedown="selectTab({uid: workspace.uid, tab: tab.uid})"
                @mouseup.middle="closeTab(tab)"
             >
                <a v-if="tab.type === 'query'" class="tab-link">
