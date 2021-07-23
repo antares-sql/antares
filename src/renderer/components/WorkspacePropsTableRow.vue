@@ -458,8 +458,13 @@ export default {
                   : this.localRow.default
                : '';
          }
-         else if (this.defaultValue.type === 'expression')
-            this.defaultValue.expression = this.localRow.default;
+         else if (this.defaultValue.type === 'expression') {
+            console.log(this.localRow.default);
+            if (this.localRow.default.toUpperCase().includes('ON UPDATE'))
+               this.defaultValue.expression = this.localRow.default.replace(/ on update.*$/i, '');
+            else
+               this.defaultValue.expression = this.localRow.default;
+         }
       },
       editON (event, content, field) {
          if (field === 'length') {

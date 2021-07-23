@@ -328,7 +328,7 @@ export default {
          this.getTableData();
       },
       openPageMenu () {
-         if (this.isQuering) return;
+         if (this.isQuering || (this.results.length && this.results[0].rows.length < this.limit && this.page === 1)) return;
 
          this.isPageMenu = true;
          if (this.isPageMenu)
