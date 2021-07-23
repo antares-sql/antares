@@ -243,6 +243,10 @@ export default {
          if (val) {
             this.changeBreadcrumbs({ schema: this.schema, view: this.view });
 
+            setTimeout(() => {
+               this.resizeQueryEditor();
+            }, 200);
+
             if (this.lastView !== this.view)
                this.getViewData();
          }

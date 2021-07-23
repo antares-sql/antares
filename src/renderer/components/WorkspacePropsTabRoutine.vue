@@ -170,6 +170,10 @@ export default {
          if (val) {
             this.changeBreadcrumbs({ schema: this.schema, routine: this.routine });
 
+            setTimeout(() => {
+               this.resizeQueryEditor();
+            }, 200);
+
             if (this.lastRoutine !== this.routine)
                this.getRoutineData();
          }

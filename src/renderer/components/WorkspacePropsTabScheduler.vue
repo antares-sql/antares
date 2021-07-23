@@ -218,6 +218,10 @@ export default {
          if (val) {
             this.changeBreadcrumbs({ schema: this.schema, scheduler: this.scheduler });
 
+            setTimeout(() => {
+               this.resizeQueryEditor();
+            }, 200);
+
             if (this.lastScheduler !== this.scheduler)
                this.getSchedulerData();
          }

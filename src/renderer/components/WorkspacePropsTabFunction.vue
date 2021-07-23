@@ -171,6 +171,10 @@ export default {
          if (val) {
             this.changeBreadcrumbs({ schema: this.schema, function: this.function });
 
+            setTimeout(() => {
+               this.resizeQueryEditor();
+            }, 200);
+
             if (this.lastFunction !== this.function)
                this.getRoutineData();
          }

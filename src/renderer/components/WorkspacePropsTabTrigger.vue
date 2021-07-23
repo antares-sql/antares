@@ -207,6 +207,10 @@ export default {
          if (val) {
             this.changeBreadcrumbs({ schema: this.schema, trigger: this.trigger });
 
+            setTimeout(() => {
+               this.resizeQueryEditor();
+            }, 200);
+
             if (this.lastTrigger !== this.trigger)
                this.getTriggerData();
          }
@@ -252,7 +256,7 @@ export default {
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            trigger: this.workspace.breadcrumbs.trigger
+            trigger: this.trigger
          };
 
          try {

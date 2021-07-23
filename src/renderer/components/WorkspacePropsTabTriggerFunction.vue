@@ -144,6 +144,10 @@ export default {
          if (val) {
             this.changeBreadcrumbs({ schema: this.schema, triggerFunction: this.function });
 
+            setTimeout(() => {
+               this.resizeQueryEditor();
+            }, 200);
+
             if (this.lastFunction !== this.function)
                await this.getFunctionData();
          }
@@ -185,7 +189,7 @@ export default {
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            func: this.workspace.breadcrumbs.triggerFunction
+            func: this.function
          };
 
          try {
