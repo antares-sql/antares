@@ -19,7 +19,7 @@
                   :key="table.name"
                   class="menu-item"
                   :class="{'text-bold': breadcrumbs.schema === database.name && [breadcrumbs.table, breadcrumbs.view].includes(table.name)}"
-                  @mousedown="selectTable({schema: database.name, table})"
+                  @mousedown.left="selectTable({schema: database.name, table})"
                   @dblclick="openDataTab({schema: database.name, table})"
                   @contextmenu.prevent="showTableContext($event, table)"
                >
