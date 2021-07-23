@@ -2,6 +2,52 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/Fabio286/antares/compare/v0.2.1...v0.3.0) (2021-07-23)
+
+
+### Features
+
+* close tabs if element deleted ([320aa8b](https://github.com/Fabio286/antares/commit/320aa8ba04d464f628b938b812165cd1ec786492))
+* new data tabs ([ab382df](https://github.com/Fabio286/antares/commit/ab382dfbcd89f8ab38a8cbdb4d87e1705618fd0d))
+* new function, procedure and scheduler tabs ([0a9983d](https://github.com/Fabio286/antares/commit/0a9983d30d6aeb9aee1c68b31a31f8c605deea45))
+* new trigger function tabs ([58b91eb](https://github.com/Fabio286/antares/commit/58b91ebfe0ab200d76d4cfd442b9f2970ae97384))
+* new trigger setting tabs ([f6faad9](https://github.com/Fabio286/antares/commit/f6faad98f88222500dfb7265b74c1be914b894cd))
+* new unsaved change reminder ([f7a74df](https://github.com/Fabio286/antares/commit/f7a74df0097867a82a2a2d8b3c278a81897d7898))
+* new view setting tabs ([003c02b](https://github.com/Fabio286/antares/commit/003c02b1fbe5aba7f53f3faa5610b0c2f7706793))
+* option to restore session on startup ([adc5477](https://github.com/Fabio286/antares/commit/adc5477673603cd63fabf77a53db5397e3774e0e))
+* option to select schema in query tabs ([a73a2f4](https://github.com/Fabio286/antares/commit/a73a2f483ef6927def4ba635e306277c34ae4b53))
+* **UI:** empty workspace view ([e1855a2](https://github.com/Fabio286/antares/commit/e1855a262dc24363fc143a38a70154938308bd71))
+* rename tabs if element is renamed ([ef21ea7](https://github.com/Fabio286/antares/commit/ef21ea74481839ba67ca79d40d5f47e1c12aebc0))
+* **MySQL:** improved schema detection for queries ([5bb4e49](https://github.com/Fabio286/antares/commit/5bb4e496f289f3ae8a46f24d1a2fbb896d9da86e))
+* **UI:** close temp data tabs ([88c4cdc](https://github.com/Fabio286/antares/commit/88c4cdc8e2a60ffbe26b0f831184c3a6dd9a1637))
+* **UI:** display schema in data tabs ([0105733](https://github.com/Fabio286/antares/commit/01057332b090997c107bf395bb1fc3b9195e8218))
+* **UI:** new table settings tabs ([7845e3e](https://github.com/Fabio286/antares/commit/7845e3e501bb7f890d07b42d4f3eb5f9f4bc8586))
+* **UI:** sortable tabs ([d38097d](https://github.com/Fabio286/antares/commit/d38097d0567020b5265b5a0b347f5e1f38e0b1d4))
+* **UI:** temporary table data tabs ([a87079c](https://github.com/Fabio286/antares/commit/a87079cd179033cebb6fd228ad7f1b991f3b6c46))
+
+
+### Bug Fixes
+
+* clear empty indexes and foreign keys on confirm respective modals ([04fa320](https://github.com/Fabio286/antares/commit/04fa320820df1f70a4ef05e4a6e4cbcd4081d047))
+* enabled copy context on non editable rows ([525c964](https://github.com/Fabio286/antares/commit/525c964c623e7574f6abe732a2b315b8805d5eee))
+* issues with trigger temp tabs ([6b725b1](https://github.com/Fabio286/antares/commit/6b725b1d40753ad89bfad6f1df57c6fb737e5262))
+* manual page input not disabled when only one page is available ([62f7e57](https://github.com/Fabio286/antares/commit/62f7e57d0ccf6041b5469bec6a1864aa5b045609))
+* new field default value unknown instead 'noval' ([77c5d28](https://github.com/Fabio286/antares/commit/77c5d280325792e20befc845f3a6834837131e39))
+* reload twice after element rename ([1e543aa](https://github.com/Fabio286/antares/commit/1e543aa6b0b63e9134bf544682a26bd98573b794))
+* solved a vulnerability in table names ([5c855a5](https://github.com/Fabio286/antares/commit/5c855a520a6bc66cc00b0b8afc6d2c03c75c0fab))
+* sort order of tables is lost switching pages ([14577d1](https://github.com/Fabio286/antares/commit/14577d14bb337898a1fd0fdee1c3760812b9d21f))
+* wrong editor height with some conditions ([d7fdf53](https://github.com/Fabio286/antares/commit/d7fdf53932a4d0609a88641c40d451c71b12c242))
+* **UI:** multiple trigger tabs open on single click on explore bar ([e78ca24](https://github.com/Fabio286/antares/commit/e78ca2417e8f996fa0507c5a5586a75393dfe8ee))
+* **UI:** not disabled buttons during save table setting tabs ([a0105cf](https://github.com/Fabio286/antares/commit/a0105cf1c37144ea27b212029d39275918f4f95e))
+* tab won't open after table or view creation ([f7c3aa8](https://github.com/Fabio286/antares/commit/f7c3aa883dfcad0a28222c53cf22ab49d381559c))
+* wrong loaded schema change ([c41e059](https://github.com/Fabio286/antares/commit/c41e059b0ba6d8c6d545c3b86a21a9a2abb6f537))
+* **UI:** table icon in view data tabs ([f0fa7c8](https://github.com/Fabio286/antares/commit/f0fa7c81b7aa2a05833ce0b243afed39db98d66b))
+
+
+### Improvements
+
+* **UI:** improvements in setting bar connections sort ([0c29e0d](https://github.com/Fabio286/antares/commit/0c29e0d566c792ffd1b2b7045124e170b9c51985))
+
 ### [0.2.1](https://github.com/Fabio286/antares/compare/v0.2.0...v0.2.1) (2021-07-09)
 
 
