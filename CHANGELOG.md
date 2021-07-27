@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.1](https://github.com/Fabio286/antares/compare/v0.3.0...v0.3.1) (2021-07-27)
+
+
+### Bug Fixes
+
+* **UI:** tabs or explorebar elements selected with mouse wheel or right button ([a8a47ed](https://github.com/Fabio286/antares/commit/a8a47ed5f7d5d8cbbdd6c33ef8307d9dce5b193b))
+
 ## [0.3.0](https://github.com/Fabio286/antares/compare/v0.2.1...v0.3.0) (2021-07-23)
 
 
