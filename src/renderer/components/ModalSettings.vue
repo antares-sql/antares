@@ -59,15 +59,15 @@
                         <div class="column col-12 h6 text-uppercase mb-1">
                            {{ $t('word.application') }}
                         </div>
-                        <div class="column col-8 col-sm-12 mb-2">
+                        <div class="column col-9 col-sm-12 mb-2">
                            <div class="form-group">
-                              <div class="col-6 col-sm-12">
+                              <div class="col-7 col-sm-12">
                                  <label class="form-label">
                                     <i class="mdi mdi-18px mdi-translate mr-1" />
                                     {{ $t('word.language') }}
                                  </label>
                               </div>
-                              <div class="col-6 col-sm-12">
+                              <div class="col-5 col-sm-12">
                                  <select
                                     v-model="localLocale"
                                     class="form-select"
@@ -84,12 +84,12 @@
                               </div>
                            </div>
                            <div class="form-group">
-                              <div class="col-6 col-sm-12">
+                              <div class="col-7 col-sm-12">
                                  <label class="form-label">
                                     {{ $t('message.dataTabPageSize') }}
                                  </label>
                               </div>
-                              <div class="col-6 col-sm-12">
+                              <div class="col-5 col-sm-12">
                                  <select
                                     v-model="localPageSize"
                                     class="form-select"
@@ -104,13 +104,13 @@
                                  </select>
                               </div>
                            </div>
-                           <div class="form-group">
-                              <div class="col-6 col-sm-12">
+                           <div class="form-group mb-0">
+                              <div class="col-7 col-sm-12">
                                  <label class="form-label">
                                     {{ $t('message.restorePreviourSession') }}
                                  </label>
                               </div>
-                              <div class="col-6 col-sm-12">
+                              <div class="col-5 col-sm-12">
                                  <label class="form-switch d-inline-block" @click.prevent="toggleRestoreSession">
                                     <input type="checkbox" :checked="restoreTabs">
                                     <i class="form-icon" />
@@ -118,12 +118,12 @@
                               </div>
                            </div>
                            <div class="form-group">
-                              <div class="col-6 col-sm-12">
+                              <div class="col-7 col-sm-12">
                                  <label class="form-label">
                                     {{ $t('message.notificationsTimeout') }}
                                  </label>
                               </div>
-                              <div class="col-6 col-sm-12">
+                              <div class="col-5 col-sm-12">
                                  <div class="input-group">
                                     <input
                                        v-model="localTimeout"
@@ -141,29 +141,27 @@
                         <div class="column col-12 h6 mt-4 text-uppercase mb-1">
                            {{ $t('word.editor') }}
                         </div>
-                        <div class="column col-8 col-sm-12">
-                           <div class="form-group">
-                              <div class="col-6 col-sm-12">
+                        <div class="column col-9 col-sm-12">
+                           <div class="form-group mb-0">
+                              <div class="col-7 col-sm-12">
                                  <label class="form-label">
                                     {{ $t('word.autoCompletion') }}
                                  </label>
                               </div>
-                              <div class="col-6 col-sm-12">
+                              <div class="col-5 col-sm-12">
                                  <label class="form-switch d-inline-block" @click.prevent="toggleAutoComplete">
                                     <input type="checkbox" :checked="selectedAutoComplete">
                                     <i class="form-icon" />
                                  </label>
                               </div>
                            </div>
-                        </div>
-                        <div class="column col-8 col-sm-12">
-                           <div class="form-group">
-                              <div class="col-6 col-sm-12">
+                           <div class="form-group mb-0">
+                              <div class="col-7 col-sm-12">
                                  <label class="form-label">
                                     {{ $t('message.wrapLongLines') }}
                                  </label>
                               </div>
-                              <div class="col-6 col-sm-12">
+                              <div class="col-5 col-sm-12">
                                  <label class="form-switch d-inline-block" @click.prevent="toggleLineWrap">
                                     <input type="checkbox" :checked="selectedLineWrap">
                                     <i class="form-icon" />

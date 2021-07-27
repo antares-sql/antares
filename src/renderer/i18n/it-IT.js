@@ -106,7 +106,16 @@ module.exports = {
       array: 'Array',
       changelog: 'Changelog',
       format: 'Formatta',
-      sshTunnel: 'SSH tunnel'
+      sshTunnel: 'SSH tunnel',
+      structure: 'Structure',
+      small: 'Piccolo',
+      medium: 'Medio',
+      large: 'Largo',
+      row: 'Riga | Righe',
+      cell: 'Cella | Celle',
+      triggerFunction: 'Funzione di trigger | Funzioni di trigger',
+      all: 'Tutto',
+      duplicate: 'Duplica'
    },
    message: {
       appWelcome: 'Benvenuto in Antares SQL Client!',
@@ -212,7 +221,13 @@ module.exports = {
       deleteSchema: 'Elimina schema',
       markdownSupported: 'Markdown supportato',
       plantATree: 'Pianta un albero',
-      enableSsh: 'Abilita SSH'
+      dataTabPageSize: 'Grandezza pagina tab DATI',
+      enableSsh: 'Abilita SSH',
+      pageNumber: 'Numero pagina',
+      duplicateTable: 'Duplica tabella',
+      noOpenTabs: 'Non ci sono tab aperte, naviga nella barra sinistra o:',
+      noSchema: 'Nessuno schema',
+      restorePreviourSession: 'Ripristina sessione precedente'
    },
    faker: {
       address: 'Indirizzo',
