@@ -31,6 +31,7 @@
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
+                        @mousedown.left.stop
                         @click.stop="closeTab(tab)"
                      />
                   </span>
@@ -42,11 +43,12 @@
                   @dblclick="openAsPermanentTab(tab)"
                >
                   <i class="mdi mdi-18px mr-1" :class="tab.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
-                  <span :title="`${$t('word.data').toUpperCase()}: ${tab.elementType}`">
+                  <span :title="`${$t('word.data').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
                      <span class=" text-italic">{{ tab.elementName }}</span>
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
+                        @mousedown.left.stop
                         @click.stop="closeTab(tab)"
                      />
                   </span>
@@ -54,11 +56,12 @@
 
                <a v-else-if="tab.type === 'data'" class="tab-link">
                   <i class="mdi mdi-18px mr-1" :class="tab.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
-                  <span :title="`${$t('word.data').toUpperCase()}: ${tab.elementType}`">
+                  <span :title="`${$t('word.data').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
                      {{ tab.elementName }}
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
+                        @mousedown.left.stop
                         @click.stop="closeTab(tab)"
                      />
                   </span>
@@ -70,11 +73,12 @@
                   :class="{'badge': tab.isChanged}"
                >
                   <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
-                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
                      {{ tab.elementName }}
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
+                        @mousedown.left.stop
                         @click.stop="closeTab(tab)"
                      />
                   </span>
@@ -86,11 +90,12 @@
                   :class="{'badge': tab.isChanged}"
                >
                   <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
-                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
                      {{ tab.elementName }}
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
+                        @mousedown.left.stop
                         @click.stop="closeTab(tab)"
                      />
                   </span>
@@ -103,11 +108,12 @@
                   @dblclick="openAsPermanentTab(tab)"
                >
                   <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
-                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
                      <span class=" text-italic">{{ tab.elementName }}</span>
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
+                        @mousedown.left.stop
                         @click.stop="closeTab(tab)"
                      />
                   </span>
@@ -119,48 +125,16 @@
                   :class="{'badge': tab.isChanged}"
                >
                   <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
-                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
                      {{ tab.elementName }}
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
+                        @mousedown.left.stop
                         @click.stop="closeTab(tab)"
                      />
                   </span>
                </a>
-
-               <!-- <a
-                  v-else-if="tab.type === 'temp-trigger-function-props'"
-                  class="tab-link"
-                  :class="{'badge': tab.isChanged}"
-                  @dblclick="openAsPermanentTab(tab)"
-               >
-                  <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
-                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
-                     <span class=" text-italic">{{ tab.elementName }}</span>
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
-
-               <a
-                  v-else-if="tab.type === 'trigger-function-props'"
-                  class="tab-link"
-                  :class="{'badge': tab.isChanged}"
-               >
-                  <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
-                  <span :title="`${$t('word.settings').toUpperCase()}: ${tab.elementType}`">
-                     {{ tab.elementName }}
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a> -->
             </li>
             <li slot="header" class="tab-item dropdown tools-dropdown">
                <a

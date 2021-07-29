@@ -20,9 +20,9 @@
                      title="F5"
                      @click="getProcessesList"
                   >
+                     <i v-if="!+autorefreshTimer" class="mdi mdi-24px mdi-refresh mr-1" />
+                     <i v-else class="mdi mdi-24px mdi-history mdi-flip-h mr-1" />
                      <span>{{ $t('word.refresh') }}</span>
-                     <i v-if="!+autorefreshTimer" class="mdi mdi-24px mdi-refresh ml-1" />
-                     <i v-else class="mdi mdi-24px mdi-history mdi-flip-h ml-1" />
                   </button>
                   <div class="btn btn-dark btn-sm dropdown-toggle pl-0 pr-0" tabindex="0">
                      <i class="mdi mdi-24px mdi-menu-down" />

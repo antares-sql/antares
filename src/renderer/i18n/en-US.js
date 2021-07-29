@@ -115,7 +115,8 @@ module.exports = {
       cell: 'Cell | Cells',
       triggerFunction: 'Trigger function | Trigger functions',
       all: 'All',
-      duplicate: 'Duplicate'
+      duplicate: 'Duplicate',
+      routine: 'Routine'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
