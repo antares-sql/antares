@@ -17,37 +17,48 @@ We are actively working on it, hoping to provide new cool features, improvements
 👁 To stay tuned for new releases [follow Antares SQL](https://twitter.com/AntaresSQL) on Twitter.  
 🌟 Don't forget to **leave a star** if you appreciate this project.
 
+## Current key features
+
+- Multiple database connections at same time.
+- Database management (add/edit/delete).
+- Full tables management, including indexes and foreign keys.
+- Views, triggers, stored routines, functions and schedulers management (add/edit/delete).
+- A modern and friendly tab system; keep open every kind of tab you need in your workspace.
+- Fake table data filler to generate tons of data for test purpose.
+- Query suggestions and auto complete.
+- SSH tunnel support.
+- Dark and light theme.
+- Editor themes.
+- Scratchpad.
+- Secure password storage.
+
 ## Philosophy
 
 Why are we developing an SQL client when there are a lot of them on the market?  
 The main goal is to develop a totally free, full featured, cross platform and open source alternative, empowered by JavaScript's ecosystem.  
 A modern application created with minimalism and semplicity in mind, with features in the right places, not hundreds of tiny buttons, nested tabs or submenu; productivity comes first.  
 
+## Installation
+
+Based on your operating system you can have one or more distribution formats to choose based on your preferences.  
+Since Antares SQL is a free software we haven't a budget to spend in annual licenses or certificates. This can result that on some platforms you need some additional passages to install this app.
+
+### Linux
+
+On Linux you can simply download and run `.AppImage` distributions, install from Snap Store or from AUR.
+
+### Windows
+
+On Windows you can choose between Microsoft Store and download `.exe` distribution. The latter lacks of a certificate, so to install you need to click on "More info" and then "Run anyway" on SmartScreen prompt.
+
+### MacOS
+
+On macOS you can run `.dmg` distribution following [this guide](https://support.apple.com/guide/mac-help/mh40616/mac) to install apps from unknown developers.
+
 ## Download
 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/antares) [![Get it from AUR](https://raw.githubusercontent.com/Fabio286/antares/3e00c4bae6e036300c752c1a40c5a038fea9c169/docs/aur-badge.svg)](https://aur.archlinux.org/packages/antares-sql/) [![Get it from Microsoft Store](https://raw.githubusercontent.com/Fabio286/antares/gh-pages/src/assets/ms-store.png)](https://www.microsoft.com/p/antares-sql-client/9nhtb9sq51r1?cid=storebadge&ocid=badge&rtc=1&activetab=pivot:overviewtab)  
 🚀 **[Other Downloads](https://github.com/Fabio286/antares/releases/latest)**
-
-## How to contribute
-
-- 🌍 [Translate Antares](https://github.com/Fabio286/antares/wiki/Translate-Antares)
-- 📖 [Contributors Guide](https://github.com/Fabio286/antares/wiki/Contributors-Guide)
-- 🚧 [Project Board](https://github.com/users/Fabio286/projects/1)
-
-## Current main features
-
-- Multiple database connections at same time.
-- Database management (add/edit/delete).
-- Full tables management, including indexes and foreign keys.
-- Views, triggers, stored routines, functions and schedulers management (add/edit/delete).
-- Fake table data filler.
-- Run queries on multiple tabs.
-- Query suggestions and auto complete.
-- SSH tunnel support.
-- Dark and light theme.
-- Scratchpad.
-- Multi language.
-- Secure password storage.
 
 ## Coming soon
 
@@ -60,6 +71,7 @@ This is a roadmap with major features will come in near future.
 - More context menu shortcuts.
 - More keyboard shortcuts.
 - Import/export and migration.
+- Apple Silicon distribution
 
 ## Currently supported
 
@@ -78,13 +90,19 @@ This is a roadmap with major features will come in near future.
 
 - [x] Windows
 - [x] Linux
-- [x] MacOS (not tested due lack of hardware)
+- [x] MacOS
 
 #### • ARM
 
 - [ ] Windows
 - [x] Linux
 - [ ] MacOS
+
+## How to contribute
+
+- 🌍 [Translate Antares](https://github.com/Fabio286/antares/wiki/Translate-Antares)
+- 📖 [Contributors Guide](https://github.com/Fabio286/antares/wiki/Contributors-Guide)
+- 🚧 [Project Board](https://github.com/users/Fabio286/projects/1)
 
 ## Translations
 
@@ -94,7 +112,3 @@ This is a roadmap with major features will come in near future.
 **French Translation** (needs updates) / [MrAnyx](https://github.com/MrAnyx) [[#44](https://github.com/Fabio286/antares/pull/44)]  
 **Portugues (Brasil)** / [Daniel Eduardo](https://github.com/daeleduardo) [[#54](https://github.com/Fabio286/antares/pull/54)]  
 **Deutsch (Deutschland)** / [Christian Ratz](https://github.com/digitalgopnik) [[#74](https://github.com/Fabio286/antares/pull/74)]
-
-## Reviews
-
-<a target="_blank" href="https://www.softx64.com/windows/antares-sql-client.html" title="Antares SQL Client review"><img src="https://www.softx64.com/softx64-review.png" alt="Antares SQL Client review" /></a>
