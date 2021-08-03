@@ -117,7 +117,7 @@ export default {
       },
       getStatusBadge (uid) {
          if (this.getWorkspace(uid)) {
-            const status = this.getWorkspace(uid).connection_status;
+            const status = this.getWorkspace(uid).connectionStatus;
 
             switch (status) {
                case 'connected':

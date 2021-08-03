@@ -24,7 +24,12 @@
                   @contextmenu.prevent="showTableContext($event, table)"
                >
                   <a class="table-name">
-                     <i class="table-icon mdi mdi-18px mr-1" :class="table.type === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
+                     <div v-if="checkLoadingStatus(table.name, 'table')" class="icon loading mr-1" />
+                     <i
+                        v-else
+                        class="table-icon mdi mdi-18px mr-1"
+                        :class="table.type === 'view' ? 'mdi-table-eye' : 'mdi-table'"
+                     />
                      <span v-html="highlightWord(table.name)" />
                   </a>
                   <div
@@ -251,11 +256,14 @@ export default {
       filteredSchedulers () {
          return this.database.schedulers.filter(scheduler => scheduler.name.search(this.searchTerm) >= 0);
       },
+      workspace () {
+         return this.getWorkspace(this.connection.uid);
+      },
       breadcrumbs () {
-         return this.getWorkspace(this.connection.uid).breadcrumbs;
+         return this.workspace.breadcrumbs;
       },
       customizations () {
-         return this.getWorkspace(this.connection.uid).customizations;
+         return this.workspace.customizations;
       },
       loadedSchemas () {
          return this.getLoadedSchemas(this.connection.uid);
@@ -365,6 +373,12 @@ export default {
          }
          else
             return string;
+      },
+      checkLoadingStatus (name, type) {
+         return this.workspace.loadingElements.some(el =>
+            el.name === name &&
+            el.type === type &&
+            el.schema === this.database.name);
       }
    }
 };

@@ -4,14 +4,14 @@
       @close-context="closeContext"
    >
       <div
-         v-if="selectedTable.type === 'table' && workspace.customizations.tableSettings"
+         v-if="selectedTable.type === 'table' && customizations.tableSettings"
          class="context-element"
          @click="openTableSettingTab"
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-tune-vertical-variant text-light pr-1" /> {{ $t('word.settings') }}</span>
       </div>
       <div
-         v-if="selectedTable.type === 'view' && workspace.customizations.viewSettings"
+         v-if="selectedTable.type === 'view' && customizations.viewSettings"
          class="context-element"
          @click="openViewSettingTab"
       >
@@ -102,6 +102,9 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.selectedWorkspace);
+      },
+      customizations () {
+         return this.workspace ? this.workspace.customizations : {};
       }
    },
    methods: {
@@ -109,6 +112,8 @@ export default {
          addNotification: 'notifications/addNotification',
          newTab: 'workspaces/newTab',
          removeTabs: 'workspaces/removeTabs',
+         addLoadingElement: 'workspaces/addLoadingElement',
+         removeLoadingElement: 'workspaces/removeLoadingElement',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
       showCreateTableModal () {
@@ -162,6 +167,14 @@ export default {
          this.closeContext();
       },
       async duplicateTable () {
+         this.closeContext();
+
+         this.addLoadingElement({
+            name: this.selectedTable.name,
+            schema: this.selectedSchema,
+            type: 'table'
+         });
+
          try {
             const { status, response } = await Tables.duplicateTable({
                uid: this.selectedWorkspace,
@@ -169,18 +182,30 @@ export default {
                schema: this.selectedSchema
             });
 
-            if (status === 'success') {
-               this.closeContext();
+            if (status === 'success')
                this.$emit('reload');
-            }
             else
                this.addNotification({ status: 'error', message: response });
          }
          catch (err) {
             this.addNotification({ status: 'error', message: err.stack });
          }
+
+         this.removeLoadingElement({
+            name: this.selectedTable.name,
+            schema: this.selectedSchema,
+            type: 'table'
+         });
       },
       async emptyTable () {
+         this.closeContext();
+
+         this.addLoadingElement({
+            name: this.selectedTable.name,
+            schema: this.selectedSchema,
+            type: 'table'
+         });
+
          try {
             const { status, response } = await Tables.truncateTable({
                uid: this.selectedWorkspace,
@@ -188,18 +213,30 @@ export default {
                schema: this.selectedSchema
             });
 
-            if (status === 'success') {
-               this.closeContext();
+            if (status === 'success')
                this.$emit('reload');
-            }
             else
                this.addNotification({ status: 'error', message: response });
          }
          catch (err) {
             this.addNotification({ status: 'error', message: err.stack });
          }
+
+         this.removeLoadingElement({
+            name: this.selectedTable.name,
+            schema: this.selectedSchema,
+            type: 'table'
+         });
       },
       async deleteTable () {
+         this.closeContext();
+
+         this.addLoadingElement({
+            name: this.selectedTable.name,
+            schema: this.selectedSchema,
+            type: 'table'
+         });
+
          try {
             let res;
 
@@ -228,7 +265,6 @@ export default {
                   schema: this.selectedSchema
                });
 
-               this.closeContext();
                this.$emit('reload');
             }
             else
@@ -237,6 +273,12 @@ export default {
          catch (err) {
             this.addNotification({ status: 'error', message: err.stack });
          }
+
+         this.removeLoadingElement({
+            name: this.selectedTable.name,
+            schema: this.selectedSchema,
+            type: 'table'
+         });
       }
    }
 };

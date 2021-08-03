@@ -35,14 +35,14 @@ export default {
       },
       getConnected: state => {
          return state.workspaces
-            .filter(workspace => workspace.connection_status === 'connected')
+            .filter(workspace => workspace.connectionStatus === 'connected')
             .map(workspace => workspace.uid);
       },
       getLoadedSchemas: state => uid => {
-         return state.workspaces.find(workspace => workspace.uid === uid).loaded_schemas;
+         return state.workspaces.find(workspace => workspace.uid === uid).loadedSchemas;
       },
       getSearchTerm: state => uid => {
-         return state.workspaces.find(workspace => workspace.uid === uid).search_term;
+         return state.workspaces.find(workspace => workspace.uid === uid).searchTerm;
       }
    },
    mutations: {
@@ -72,9 +72,9 @@ export default {
                indexTypes,
                customizations,
                structure,
-               connection_status: 'connected',
+               connectionStatus: 'connected',
                tabs: cachedTabs,
-               selected_tab: cachedTabs.length ? cachedTabs[0].uid : null,
+               selectedTab: cachedTabs.length ? cachedTabs[0].uid : null,
                version
             }
             : workspace);
@@ -85,8 +85,8 @@ export default {
                ...workspace,
                structure: {},
                breadcrumbs: {},
-               loaded_schemas: new Set(),
-               connection_status: 'connecting'
+               loadedSchemas: new Set(),
+               connectionStatus: 'connecting'
             }
             : workspace);
       },
@@ -96,8 +96,8 @@ export default {
                ...workspace,
                structure: {},
                breadcrumbs: {},
-               loaded_schemas: new Set(),
-               connection_status: 'failed'
+               loadedSchemas: new Set(),
+               connectionStatus: 'failed'
             }
             : workspace);
       },
@@ -107,8 +107,8 @@ export default {
                ...workspace,
                structure: {},
                breadcrumbs: {},
-               loaded_schemas: new Set(),
-               connection_status: 'disconnected'
+               loadedSchemas: new Set(),
+               connectionStatus: 'disconnected'
             }
             : workspace);
       },
@@ -180,7 +180,7 @@ export default {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid
             ? {
                ...workspace,
-               search_term: term
+               searchTerm: term
             }
             : workspace);
       },
@@ -292,7 +292,7 @@ export default {
          persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
       },
       SELECT_TAB (state, { uid, tab }) {
-         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, selected_tab: tab } : workspace);
+         state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, selectedTab: tab } : workspace);
       },
       UPDATE_TABS (state, { uid, tabs }) {
          state.workspaces = state.workspaces.map(workspace => workspace.uid === uid ? { ...workspace, tabs } : workspace);
@@ -356,7 +356,28 @@ export default {
       ADD_LOADED_SCHEMA (state, payload) {
          state.workspaces = state.workspaces.map(workspace => {
             if (workspace.uid === payload.uid)
-               workspace.loaded_schemas.add(payload.schema);
+               workspace.loadedSchemas.add(payload.schema);
+            return workspace;
+         });
+      },
+      ADD_LOADING_ELEMENT (state, payload) {
+         state.workspaces = state.workspaces.map(workspace => {
+            if (workspace.uid === payload.uid)
+               workspace.loadingElements.push(payload.element);
+            return workspace;
+         });
+      },
+      REMOVE_LOADING_ELEMENT (state, payload) {
+         state.workspaces = state.workspaces.map(workspace => {
+            if (workspace.uid === payload.uid) {
+               const loadingElements = workspace.loadingElements.filter(el =>
+                  el.schema !== payload.element.schema &&
+                  el.name !== payload.element.name &&
+                  el.type !== payload.element.type
+               );
+
+               workspace = { ...workspace, loadingElements };
+            }
             return workspace;
          });
       }
@@ -513,16 +534,17 @@ export default {
       addWorkspace ({ commit }, uid) {
          const workspace = {
             uid,
-            connection_status: 'disconnected',
-            selected_tab: 0,
-            search_term: '',
+            connectionStatus: 'disconnected',
+            selectedTab: 0,
+            searchTerm: '',
             tabs: [],
             structure: {},
             variables: [],
             collations: [],
             users: [],
             breadcrumbs: {},
-            loaded_schemas: new Set()
+            loadingElements: [],
+            loadedSchemas: new Set()
          };
 
          commit('ADD_WORKSPACE', workspace);
@@ -544,6 +566,12 @@ export default {
       },
       addLoadedSchema ({ commit, getters }, schema) {
          commit('ADD_LOADED_SCHEMA', { uid: getters.getSelected, schema });
+      },
+      addLoadingElement ({ commit, getters }, element) {
+         commit('ADD_LOADING_ELEMENT', { uid: getters.getSelected, element });
+      },
+      removeLoadingElement ({ commit, getters }, element) {
+         commit('REMOVE_LOADING_ELEMENT', { uid: getters.getSelected, element });
       },
       setSearchTerm ({ commit, getters }, term) {
          commit('SET_SEARCH_TERM', { uid: getters.getSelected, term });
@@ -697,7 +725,7 @@ export default {
       checkSelectedTabExists ({ state, commit }, uid) {
          const workspace = state.workspaces.find(workspace => workspace.uid === uid);
          const isSelectedExistent = workspace
-            ? workspace.tabs.some(tab => tab.uid === workspace.selected_tab)
+            ? workspace.tabs.some(tab => tab.uid === workspace.selectedTab)
             : false;
 
          if (!isSelectedExistent && workspace.tabs.length)

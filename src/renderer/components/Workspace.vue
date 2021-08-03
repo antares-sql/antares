@@ -1,11 +1,11 @@
 <template>
    <div v-show="isSelected" class="workspace column columns col-gapless">
       <WorkspaceExploreBar
-         v-if="workspace.connection_status === 'connected'"
+         v-if="workspace.connectionStatus === 'connected'"
          :connection="connection"
          :is-selected="isSelected"
       />
-      <div v-if="workspace.connection_status === 'connected'" class="workspace-tabs column columns col-gapless">
+      <div v-if="workspace.connectionStatus === 'connected'" class="workspace-tabs column columns col-gapless">
          <Draggable
             ref="tabWrap"
             v-model="draggableTabs"
@@ -183,12 +183,6 @@
                </a>
             </li>
          </Draggable>
-         <!--<WorkspacePropsTabScheduler
-            v-show="selectedTab === 'prop' && workspace.breadcrumbs.scheduler"
-            :is-selected="selectedTab === 'prop'"
-            :connection="connection"
-            :scheduler="workspace.breadcrumbs.scheduler"
-         /> -->
          <WorkspaceEmptyState v-if="!workspace.tabs.length" @new-tab="addQueryTab" />
          <template v-for="tab of workspace.tabs">
             <WorkspaceQueryTab
@@ -358,7 +352,7 @@ export default {
          return false;
       },
       selectedTab () {
-         return this.workspace.selected_tab;
+         return this.workspace.selectedTab;
       },
       queryTabs () {
          return this.workspace.tabs.filter(tab => tab.type === 'query');
