@@ -228,7 +228,8 @@ module.exports = {
       duplicateTable: 'Duplicate table',
       noOpenTabs: 'There are no open tabs, navigate on the left bar or:',
       noSchema: 'No schema',
-      restorePreviourSession: 'Restore previous session'
+      restorePreviourSession: 'Restore previous session',
+      runQuery: 'Run query'
    },
    faker: {
       address: 'Address',

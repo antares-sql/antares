@@ -1,6 +1,6 @@
 'use strict';
 
-import { app, BrowserWindow, /* session, */ nativeImage } from 'electron';
+import { app, BrowserWindow, /* session, */ nativeImage, Menu } from 'electron';
 import * as path from 'path';
 import Store from 'electron-store';
 
@@ -96,6 +96,7 @@ else {
    // create main BrowserWindow when electron is ready
    app.on('ready', async () => {
       mainWindow = await createMainWindow();
+      Menu.setApplicationMenu(null);
       if (isDevelopment)
          mainWindow.webContents.openDevTools();
    });

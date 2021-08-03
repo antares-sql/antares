@@ -100,6 +100,7 @@
             </div>
          </div>
       </div>
+      <WorkspaceQueryEmptyState v-if="!results.length && !isQuering" />
       <div class="workspace-query-results p-relative column col-12">
          <BaseLoader v-if="isQuering" />
          <WorkspaceQueryTable
@@ -124,6 +125,7 @@ import Schema from '@/ipc-api/Schema';
 import QueryEditor from '@/components/QueryEditor';
 import BaseLoader from '@/components/BaseLoader';
 import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
+import WorkspaceQueryEmptyState from '@/components/WorkspaceQueryEmptyState';
 import { mapGetters, mapActions } from 'vuex';
 import tableTabs from '@/mixins/tableTabs';
 
@@ -132,7 +134,8 @@ export default {
    components: {
       BaseLoader,
       QueryEditor,
-      WorkspaceQueryTable
+      WorkspaceQueryTable,
+      WorkspaceQueryEmptyState
    },
    mixins: [tableTabs],
    props: {

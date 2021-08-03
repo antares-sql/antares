@@ -135,6 +135,11 @@
     background: $bg-color-light-dark;
   }
 
+  code {
+    background-color: #000;
+    color: $body-font-color-dark;
+  }
+
   // Antares
   .workspace {
     .workspace-explorebar {

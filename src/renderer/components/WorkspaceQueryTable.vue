@@ -130,7 +130,7 @@ export default {
    },
    data () {
       return {
-         resultsSize: 1000,
+         resultsSize: 0,
          localResults: [],
          isContext: false,
          isDeleteConfirmModal: false,
