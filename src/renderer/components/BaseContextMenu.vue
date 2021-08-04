@@ -29,18 +29,23 @@ export default {
    },
    computed: {
       position () {
-         const { clientY, clientX } = this.contextEvent;
-         let topCord = `${clientY + 2}px`;
-         let leftCord = `${clientX + 5}px`;
+         let topCord = 0;
+         let leftCord = 0;
 
-         if (this.contextSize) {
-            if (clientY + (this.contextSize.height < 200 ? 200 : this.contextSize.height) + 5 >= window.innerHeight) {
-               topCord = `${clientY + 3 - this.contextSize.height}px`;
-               this.isBottom = true;
+         if (this.contextEvent) {
+            const { clientY, clientX } = this.contextEvent;
+            topCord = `${clientY + 2}px`;
+            leftCord = `${clientX + 5}px`;
+
+            if (this.contextSize) {
+               if (clientY + (this.contextSize.height < 200 ? 200 : this.contextSize.height) + 5 >= window.innerHeight) {
+                  topCord = `${clientY + 3 - this.contextSize.height}px`;
+                  this.isBottom = true;
+               }
+
+               if (clientX + this.contextSize.width + 5 >= window.innerWidth)
+                  leftCord = `${clientX - this.contextSize.width}px`;
             }
-
-            if (clientX + this.contextSize.width + 5 >= window.innerWidth)
-               leftCord = `${clientX - this.contextSize.width}px`;
          }
 
          return {
@@ -53,7 +58,8 @@ export default {
       window.addEventListener('keydown', this.onKey);
    },
    mounted () {
-      this.contextSize = this.$refs.contextContent.getBoundingClientRect();
+      if (this.$refs.contextContent)
+         this.contextSize = this.$refs.contextContent.getBoundingClientRect();
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);

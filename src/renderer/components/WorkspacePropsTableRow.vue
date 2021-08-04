@@ -459,7 +459,6 @@ export default {
                : '';
          }
          else if (this.defaultValue.type === 'expression') {
-            console.log(this.localRow.default);
             if (this.localRow.default.toUpperCase().includes('ON UPDATE'))
                this.defaultValue.expression = this.localRow.default.replace(/ on update.*$/i, '');
             else

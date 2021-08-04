@@ -4,28 +4,28 @@
       @close-context="closeContext"
    >
       <div
-         v-if="selectedTable.type === 'table' && customizations.tableSettings"
+         v-if="selectedTable && selectedTable.type === 'table' && customizations.tableSettings"
          class="context-element"
          @click="openTableSettingTab"
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-tune-vertical-variant text-light pr-1" /> {{ $t('word.settings') }}</span>
       </div>
       <div
-         v-if="selectedTable.type === 'view' && customizations.viewSettings"
+         v-if="selectedTable && selectedTable.type === 'view' && customizations.viewSettings"
          class="context-element"
          @click="openViewSettingTab"
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-tune-vertical-variant text-light pr-1" /> {{ $t('word.settings') }}</span>
       </div>
       <div
-         v-if="selectedTable.type === 'table'"
+         v-if="selectedTable && selectedTable.type === 'table'"
          class="context-element"
          @click="duplicateTable"
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-table-multiple text-light pr-1" /> {{ $t('message.duplicateTable') }}</span>
       </div>
       <div
-         v-if="selectedTable.type === 'table'"
+         v-if="selectedTable && selectedTable.type === 'table'"
          class="context-element"
          @click="showEmptyModal"
       >

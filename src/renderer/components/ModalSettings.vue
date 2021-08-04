@@ -318,7 +318,7 @@ export default {
          localTimeout: null,
          localEditorTheme: null,
          selectedTab: 'general',
-         pageSizes: [40, 100, 250, 500, 1000],
+         pageSizes: [30, 40, 100, 250, 500, 1000],
          editorThemes: [
             {
                group: this.$t('word.light'),

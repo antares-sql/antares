@@ -81,6 +81,7 @@
             :table="table"
             :schema="schema"
             mode="table"
+            @duplicate-field="duplicateField"
             @remove-field="removeField"
             @add-new-index="addNewIndex"
             @add-to-index="addToIndex"
@@ -526,6 +527,13 @@ export default {
                key.field = payload.new;
             return key;
          });
+      },
+      duplicateField (uid) {
+         const fieldToClone = Object.assign({}, this.localFields.find(field => field._id === uid));
+         fieldToClone._id = uidGen();
+         fieldToClone.name = `${fieldToClone.name}_copy`;
+         fieldToClone.order = this.localFields.length + 1;
+         this.localFields = [...this.localFields, fieldToClone];
       },
       removeField (uid) {
          this.localFields = this.localFields.filter(field => field._id !== uid);

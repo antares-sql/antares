@@ -11,6 +11,7 @@
          :index-types="indexTypes"
          :indexes="indexes"
          @delete-selected="removeField"
+         @duplicate-selected="duplicateField"
          @close-context="isContext = false"
          @add-new-index="$emit('add-new-index', $event)"
          @add-to-index="$emit('add-to-index', $event)"
@@ -219,6 +220,9 @@ export default {
          this.selectedField = this.fields.find(field => field._id === uid);
          this.contextEvent = event;
          this.isContext = true;
+      },
+      duplicateField () {
+         this.$emit('duplicate-field', this.selectedField._id);
       },
       removeField () {
          this.$emit('remove-field', this.selectedField._id);

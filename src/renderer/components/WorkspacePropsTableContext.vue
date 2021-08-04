@@ -33,6 +33,9 @@
             </div>
          </div>
       </div>
+      <div class="context-element" @click="duplicateField">
+         <span class="d-flex"><i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ $t('word.duplicate') }}</span>
+      </div>
       <div class="context-element" @click="deleteField">
          <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ $t('message.deleteField') }}</span>
       </div>
@@ -61,6 +64,10 @@ export default {
    methods: {
       closeContext () {
          this.$emit('close-context');
+      },
+      duplicateField () {
+         this.$emit('duplicate-selected');
+         this.closeContext();
       },
       deleteField () {
          this.$emit('delete-selected');
