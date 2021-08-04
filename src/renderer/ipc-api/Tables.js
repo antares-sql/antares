@@ -10,6 +10,10 @@ export default class {
       return ipcRenderer.invoke('get-table-data', params);
    }
 
+   static getTableApproximateCount (params) {
+      return ipcRenderer.invoke('get-table-count', params);
+   }
+
    static getTableIndexes (params) {
       return ipcRenderer.invoke('get-table-indexes', params);
    }

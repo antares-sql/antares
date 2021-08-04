@@ -297,6 +297,19 @@ export class PostgreSQLClient extends AntaresCore {
     * @param {Object} params
     * @param {String} params.schema
     * @param {String} params.table
+    * @returns {Object} table row count
+    * @memberof PostgreSQLClient
+    */
+   async getTableApproximateCount ({ schema, table }) {
+      const { rows } = await this.raw(`SELECT reltuples AS count FROM pg_class WHERE relname = '${table}'`);
+
+      return rows.length ? rows[0].count : 0;
+   }
+
+   /**
+    * @param {Object} params
+    * @param {String} params.schema
+    * @param {String} params.table
     * @returns {Object} table indexes
     * @memberof PostgreSQLClient
     */

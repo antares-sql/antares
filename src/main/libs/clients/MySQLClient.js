@@ -428,6 +428,19 @@ export class MySQLClient extends AntaresCore {
     * @param {Object} params
     * @param {String} params.schema
     * @param {String} params.table
+    * @returns {Object} table row count
+    * @memberof MySQLClient
+    */
+   async getTableApproximateCount ({ schema, table }) {
+      const { rows } = await this.raw(`SELECT table_rows "count" FROM information_schema.tables WHERE table_name = "${table}" AND table_schema = "${schema}"`);
+
+      return rows.length ? rows[0].count : 0;
+   }
+
+   /**
+    * @param {Object} params
+    * @param {String} params.schema
+    * @param {String} params.table
     * @returns {Object} table indexes
     * @memberof MySQLClient
     */

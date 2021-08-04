@@ -104,7 +104,7 @@ export default {
          return this.getWorkspace(this.selectedWorkspace);
       },
       customizations () {
-         return this.workspace ? this.workspace.customizations : {};
+         return this.workspace && this.workspace.customizations ? this.workspace.customizations : {};
       }
    },
    methods: {

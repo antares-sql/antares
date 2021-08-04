@@ -112,8 +112,8 @@
                <div v-if="results.length && results[0].rows">
                   {{ $t('word.results') }}: <b>{{ results[0].rows.length | localeString }}</b>
                </div>
-               <div v-if="hasApproximately || (page > 1 && tableInfo.rows)">
-                  {{ $t('word.total') }}: <b>{{ tableInfo.rows | localeString }}</b> <small>({{ $t('word.approximately') }})</small>
+               <div v-if="hasApproximately || (page > 1 && approximateCount)">
+                  {{ $t('word.total') }}: <b :title="$t('word.approximately')">≈ {{ approximateCount | localeString }}</b>
                </div>
                <div class="d-flex" :title="$t('word.schema')">
                   <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
@@ -175,7 +175,7 @@ export default {
    },
    filters: {
       localeString (val) {
-         if (val)
+         if (val !== null)
             return val.toLocaleString();
       }
    },
@@ -200,7 +200,8 @@ export default {
          refreshInterval: null,
          sortParams: {},
          page: 1,
-         pageProxy: 1
+         pageProxy: 1,
+         approximateCount: 0
       };
    },
    computed: {
@@ -232,15 +233,15 @@ export default {
       hasApproximately () {
          return this.results.length &&
             this.results[0].rows &&
-            this.tableInfo &&
             this.results[0].rows.length === this.limit &&
-            this.results[0].rows.length < this.tableInfo.rows;
+            this.results[0].rows.length < this.approximateCount;
       }
    },
    watch: {
       schema () {
          if (this.isSelected) {
             this.page = 1;
+            this.approximateCount = 0;
             this.sortParams = {};
             this.getTableData();
             this.lastTable = this.table;
@@ -250,6 +251,7 @@ export default {
       table () {
          if (this.isSelected) {
             this.page = 1;
+            this.approximateCount = 0;
             this.sortParams = {};
             this.getTableData();
             this.lastTable = this.table;
@@ -313,6 +315,20 @@ export default {
          }
          catch (err) {
             this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         if (this.results.length && this.results[0].rows.length === this.limit) {
+            try { // Table approximate count
+               const { status, response } = await Tables.getTableApproximateCount(params);
+
+               if (status === 'success')
+                  this.approximateCount = response;
+               else
+                  this.addNotification({ status: 'error', message: response });
+            }
+            catch (err) {
+               this.addNotification({ status: 'error', message: err.stack });
+            }
          }
 
          this.isQuering = false;
