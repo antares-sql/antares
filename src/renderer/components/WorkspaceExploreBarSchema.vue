@@ -473,7 +473,8 @@ export default {
     line-height: 1.2;
     position: relative;
 
-    &:hover {
+    &:hover,
+    &.selected {
       border-radius: $border-radius;
     }
   }

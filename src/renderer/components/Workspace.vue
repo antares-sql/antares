@@ -27,7 +27,7 @@
                <a v-if="tab.type === 'query'" class="tab-link">
                   <i class="mdi mdi-18px mdi-code-tags mr-1" />
                   <span>
-                     Query #{{ tab.index }}
+                     <span>{{ tab.content || 'Query' | cutText }} #{{ tab.index }}</span>
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
@@ -44,7 +44,7 @@
                >
                   <i class="mdi mdi-18px mr-1" :class="tab.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
                   <span :title="`${$t('word.data').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     <span class=" text-italic">{{ tab.elementName }}</span>
+                     <span class=" text-italic">{{ tab.elementName | cutText }}</span>
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
@@ -57,7 +57,7 @@
                <a v-else-if="tab.type === 'data'" class="tab-link">
                   <i class="mdi mdi-18px mr-1" :class="tab.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
                   <span :title="`${$t('word.data').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     {{ tab.elementName }}
+                     {{ tab.elementName | cutText }}
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
@@ -74,7 +74,7 @@
                >
                   <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
                   <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     {{ tab.elementName }}
+                     {{ tab.elementName | cutText }}
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
@@ -91,7 +91,7 @@
                >
                   <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
                   <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     {{ tab.elementName }}
+                     {{ tab.elementName | cutText }}
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
@@ -109,7 +109,7 @@
                >
                   <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
                   <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     <span class=" text-italic">{{ tab.elementName }}</span>
+                     <span class=" text-italic">{{ tab.elementName | cutText }}</span>
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
@@ -126,7 +126,7 @@
                >
                   <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
                   <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     {{ tab.elementName }}
+                     {{ tab.elementName | cutText }}
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
@@ -311,6 +311,15 @@ export default {
       WorkspacePropsTabScheduler,
       ModalProcessesList,
       ModalDiscardChanges
+   },
+   filters: {
+      cutText (string) {
+         const limit = 20;
+         const escapedString = string.replace(/\s{2,}/g, ' ');
+         if (escapedString.length > limit)
+            return `${escapedString.substr(0, limit)}...`;
+         return escapedString;
+      }
    },
    props: {
       connection: Object
