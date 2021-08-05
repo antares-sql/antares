@@ -35,7 +35,12 @@
                   type="text"
                   :placeholder="$t('message.searchForElements')"
                >
-               <i class="form-icon mdi mdi-magnify mdi-18px" />
+               <i v-if="!searchTerm" class="form-icon mdi mdi-magnify mdi-18px" />
+               <i
+                  v-else
+                  class="form-icon c-hand mdi mdi-backspace mdi-18px pr-1"
+                  @click="searchTerm = ''"
+               />
             </div>
          </div>
          <div class="workspace-explorebar-body">
