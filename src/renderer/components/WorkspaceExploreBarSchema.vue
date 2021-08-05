@@ -16,9 +16,10 @@
             <ul class="menu menu-nav pt-0">
                <li
                   v-for="table of filteredTables"
+                  :ref="breadcrumbs.schema === database.name && [breadcrumbs.table, breadcrumbs.view].includes(table.name) ? 'explorebar-selected' : ''"
                   :key="table.name"
                   class="menu-item"
-                  :class="{'text-bold': breadcrumbs.schema === database.name && [breadcrumbs.table, breadcrumbs.view].includes(table.name)}"
+                  :class="{'selected': breadcrumbs.schema === database.name && [breadcrumbs.table, breadcrumbs.view].includes(table.name)}"
                   @mousedown.left="selectTable({schema: database.name, table})"
                   @dblclick="openDataTab({schema: database.name, table})"
                   @contextmenu.prevent="showTableContext($event, table)"
@@ -59,8 +60,9 @@
                         <li
                            v-for="trigger of filteredTriggers"
                            :key="trigger.name"
+                           :ref="breadcrumbs.schema === database.name && breadcrumbs.trigger === trigger.name ? 'explorebar-selected' : ''"
                            class="menu-item"
-                           :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.trigger === trigger.name}"
+                           :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.trigger === trigger.name}"
                            @mousedown="selectMisc({schema: database.name, misc: trigger, type: 'trigger'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: trigger, type: 'trigger'})"
                            @contextmenu.prevent="showMiscContext($event, {...trigger, type: 'trigger'})"
@@ -92,8 +94,9 @@
                         <li
                            v-for="(procedure, i) of filteredProcedures"
                            :key="`${procedure.name}-${i}`"
+                           :ref="breadcrumbs.schema === database.name && breadcrumbs.routine === procedure.name ? 'explorebar-selected' : ''"
                            class="menu-item"
-                           :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.routine === procedure.name}"
+                           :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.routine === procedure.name}"
                            @mousedown="selectMisc({schema: database.name, misc: procedure, type: 'routine'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: procedure, type: 'routine'})"
                            @contextmenu.prevent="showMiscContext($event, {...procedure, type: 'procedure'})"
@@ -125,8 +128,9 @@
                         <li
                            v-for="(func, i) of filteredTriggerFunctions"
                            :key="`${func.name}-${i}`"
+                           :ref="breadcrumbs.schema === database.name && breadcrumbs.triggerFunction === func.name ? 'explorebar-selected' : ''"
                            class="menu-item"
-                           :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.triggerFunction === func.name}"
+                           :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.triggerFunction === func.name}"
                            @mousedown="selectMisc({schema: database.name, misc: func, type: 'triggerFunction'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: func, type: 'triggerFunction'})"
                            @contextmenu.prevent="showMiscContext($event, {...func, type: 'triggerFunction'})"
@@ -158,8 +162,9 @@
                         <li
                            v-for="(func, i) of filteredFunctions"
                            :key="`${func.name}-${i}`"
+                           :ref="breadcrumbs.schema === database.name && breadcrumbs.function === func.name ? 'explorebar-selected' : ''"
                            class="menu-item"
-                           :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.function === func.name}"
+                           :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.function === func.name}"
                            @mousedown="selectMisc({schema: database.name, misc: func, type: 'function'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: func, type: 'function'})"
                            @contextmenu.prevent="showMiscContext($event, {...func, type: 'function'})"
@@ -191,8 +196,9 @@
                         <li
                            v-for="scheduler of filteredSchedulers"
                            :key="scheduler.name"
+                           :ref="breadcrumbs.schema === database.name && breadcrumbs.scheduler === scheduler.name ? 'explorebar-selected' : ''"
                            class="menu-item"
-                           :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.scheduler === scheduler.name}"
+                           :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.scheduler === scheduler.name}"
                            @mousedown="selectMisc({schema: database.name, misc: scheduler, type: 'scheduler'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: scheduler, type: 'scheduler'})"
                            @contextmenu.prevent="showMiscContext($event, {...scheduler, type: 'scheduler'})"
@@ -276,6 +282,27 @@ export default {
       },
       totalSize () {
          return this.database.tables.reduce((acc, curr) => acc + curr.size, 0);
+      }
+   },
+   watch: {
+      breadcrumbs (newVal, oldVal) {
+         if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
+            setTimeout(() => {
+               const element = this.$refs['explorebar-selected'] ? this.$refs['explorebar-selected'][0] : null;
+               if (element) {
+                  const rect = element.getBoundingClientRect();
+                  const elemTop = rect.top;
+                  const elemBottom = rect.bottom;
+                  const isVisible = (elemTop >= 0) && (elemBottom <= window.innerHeight);
+
+                  if (!isVisible) {
+                     element.setAttribute('tabindex', '-1');
+                     element.focus();
+                     element.removeAttribute('tabindex');
+                  }
+               }
+            }, 50);
+         }
       }
    },
    methods: {
@@ -386,6 +413,10 @@ export default {
 
 <style lang="scss">
 .workspace-explorebar-database {
+  .selected {
+    font-weight: 700;
+  }
+
   .database-name {
     position: sticky;
     top: 0;

@@ -18,20 +18,11 @@
     background: #ababab;
   }
 
-  #titlebar {
-    background: $bg-color-light;
-    box-shadow: 0 0 1px 0 #000;
-
-    .titlebar-elements {
-      .titlebar-element {
-        &:hover {
-          opacity: 1;
-          background: rgba($color: rgb(172, 172, 172), $alpha: 0.2);
-        }
-
-        &.close-button:hover {
-          background: red;
-        }
+  .menu {
+    .menu-item a {
+      &:hover {
+        color: $body-font-color;
+        background: rgba($color: #000, $alpha: 0.1);
       }
     }
   }
@@ -111,6 +102,24 @@
     }
   }
 
+  #titlebar {
+    background: $bg-color-light;
+    box-shadow: 0 0 1px 0 #000;
+
+    .titlebar-elements {
+      .titlebar-element {
+        &:hover {
+          opacity: 1;
+          background: rgba($color: rgb(172, 172, 172), $alpha: 0.2);
+        }
+
+        &.close-button:hover {
+          background: red;
+        }
+      }
+    }
+  }
+
   #settingbar {
     width: $settingbar-width;
     height: calc(100vh - #{$excluding-size});
@@ -178,6 +187,13 @@
       .workspace-explorebar-database {
         .database-name {
           background: $bg-color-light-gray;
+        }
+
+        .menu-item {
+          &:hover,
+          &.selected {
+            background: rgba($color: #000, $alpha: 0.05);
+          }
         }
 
         .table-size {

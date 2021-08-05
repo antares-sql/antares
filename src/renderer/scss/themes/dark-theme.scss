@@ -167,7 +167,8 @@
         }
 
         .menu-item {
-          &:hover {
+          &:hover,
+          &.selected {
             color: $body-font-color-dark;
             background: rgba($color: #fff, $alpha: 0.05);
           }
