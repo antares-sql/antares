@@ -362,7 +362,7 @@ export default {
          return false;
       },
       selectedTab () {
-         return this.workspace.selectedTab || null;
+         return this.workspace ? this.workspace.selectedTab : null;
       },
       queryTabs () {
          return this.workspace.tabs.filter(tab => tab.type === 'query');

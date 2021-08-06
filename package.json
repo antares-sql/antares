@@ -96,7 +96,7 @@
     "faker": "^5.5.3",
     "marked": "^2.1.1",
     "moment": "^2.29.1",
-    "mysql2": "^2.2.5",
+    "mysql2": "^2.3.0",
     "pg": "^8.7.1",
     "pgsql-ast-parser": "^7.2.1",
     "source-map-support": "^0.5.16",
@@ -109,7 +109,7 @@
     "vuex": "^3.6.2"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.14.9",
+    "@babel/eslint-parser": "^7.15.0",
     "cross-env": "^7.0.2",
     "electron": "^13.1.8",
     "electron-builder": "^22.11.7",
