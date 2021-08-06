@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.2](https://github.com/Fabio286/antares/compare/v0.3.1...v0.3.2) (2021-08-06)
+
+
+### Features
+
+* contextual menu option to duplicate table fields ([3abff36](https://github.com/Fabio286/antares/commit/3abff3613618ddc86e1d6c898f83bcb360e8e5d9))
+* **UI:** automatic scroll on selected tab ([e834fe3](https://github.com/Fabio286/antares/commit/e834fe31ac8b73f249e3ad8654e97da834b28cfe))
+* **UI:** automatic scroll to selected tab element in left bar ([04fc1bb](https://github.com/Fabio286/antares/commit/04fc1bbee0cdc3b02288ff5d3b2c402633cae1f1))
+* **UI:** button to clear sidebar search input ([1573de5](https://github.com/Fabio286/antares/commit/1573de5b1f545328523aaaaac541f5a8046617be))
+* **UI:** query tab name based on content ([065de3a](https://github.com/Fabio286/antares/commit/065de3a0a28a9e6667df4e41ac1c5fa5561d2171))
+* **UI:** shortcuts info on empty query tab ([70354aa](https://github.com/Fabio286/antares/commit/70354aa828121004f70e91d65cb9f0a4811dce57))
+
+
+### Bug Fixes
+
+* tab selected when clicking closing cross ([07ee1ae](https://github.com/Fabio286/antares/commit/07ee1ae828bb5f9971a263f2e39e73c760fed50a))
+
+
+### Improvements
+
+* approximate table total updated on table refresh ([dea3780](https://github.com/Fabio286/antares/commit/dea378014dd45bf90f51a599b4a801e0bc22059f))
+* **UI:** loading animation on tables and table context menu improvements ([372049a](https://github.com/Fabio286/antares/commit/372049ae64232e8e61a974edc8be5b319c5c0811))
+* update italian translation ([cbe0e29](https://github.com/Fabio286/antares/commit/cbe0e2980a9d4562941aec37a57cc936a46f41d8))
+
 ### [0.3.1](https://github.com/Fabio286/antares/compare/v0.3.0...v0.3.1) (2021-07-27)
 
 
