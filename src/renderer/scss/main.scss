@@ -15,6 +15,15 @@ body {
   user-select: none;
 }
 
+::selection,
+option:hover,
+option:focus,
+option:active,
+option:checked {
+  background-color: $primary-color;
+  color: $light-color;
+}
+
 /* Additions */
 @include margin-variant(3, $unit-3);
 @include margin-variant(4, $unit-4);
