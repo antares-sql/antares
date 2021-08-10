@@ -51,18 +51,90 @@
                   <i class="mdi mdi-24px mdi-key-link mr-1" />
                   <span>{{ $t('word.foreignKeys') }}</span>
                </button>
-               <button
+               <!-- <button
+                  v-if="workspace.customizations.tableOptions"
                   class="btn btn-dark btn-sm"
                   :disabled="isSaving"
                   @click="showOptionsModal"
                >
                   <i class="mdi mdi-24px mdi-cogs mr-1" />
                   <span>{{ $t('word.options') }}</span>
-               </button>
+               </button> -->
             </div>
             <div class="workspace-query-info">
                <div class="d-flex" :title="$t('word.schema')">
                   <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="container">
+         <div class="columns mb-4">
+            <div class="column col-auto">
+               <div class="form-group">
+                  <label class="form-label">{{ $t('word.name') }}</label>
+                  <input
+                     v-model="localOptions.name"
+                     class="form-input"
+                     type="text"
+                  >
+               </div>
+            </div>
+            <div v-if="workspace.customizations.comment" class="column">
+               <div class="form-group">
+                  <label class="form-label">{{ $t('word.comment') }}</label>
+                  <input
+                     v-model="localOptions.comment"
+                     class="form-input"
+                     type="text"
+                  >
+               </div>
+            </div>
+
+            <div v-if="workspace.customizations.autoIncrement" class="column col-auto">
+               <div class="form-group">
+                  <label class="form-label">
+                     {{ $t('word.autoIncrement') }}
+                  </label>
+                  <input
+                     ref="firstInput"
+                     v-model="localOptions.autoIncrement"
+                     class="form-input"
+                     type="number"
+                     :disabled="localOptions.autoIncrement === null"
+                  >
+               </div>
+            </div>
+            <div v-if="workspace.customizations.collations" class="column col-auto">
+               <div class="form-group">
+                  <label class="form-label">
+                     {{ $t('word.collation') }}
+                  </label>
+                  <select v-model="localOptions.collation" class="form-select">
+                     <option
+                        v-for="collation in workspace.collations"
+                        :key="collation.id"
+                        :value="collation.collation"
+                     >
+                        {{ collation.collation }}
+                     </option>
+                  </select>
+               </div>
+            </div>
+            <div v-if="workspace.customizations.engines" class="column col-auto">
+               <div class="form-group">
+                  <label class="form-label">
+                     {{ $t('word.engine') }}
+                  </label>
+                  <select v-model="localOptions.engine" class="form-select">
+                     <option
+                        v-for="engine in workspace.engines"
+                        :key="engine.name"
+                        :value="engine.name"
+                     >
+                        {{ engine.name }}
+                     </option>
+                  </select>
                </div>
             </div>
          </div>
@@ -88,14 +160,14 @@
             @rename-field="renameField"
          />
       </div>
-      <WorkspacePropsOptionsModal
+      <!-- <WorkspacePropsOptionsModal
          v-if="isOptionsModal"
          :local-options="localOptions"
          :table="table"
          :workspace="workspace"
          @hide="hideOptionsModal"
          @options-update="optionsUpdate"
-      />
+      /> -->
       <WorkspacePropsIndexesModal
          v-if="isIndexesModal"
          :local-indexes="localIndexes"
@@ -127,7 +199,7 @@ import { uidGen } from 'common/libs/uidGen';
 import Tables from '@/ipc-api/Tables';
 import BaseLoader from '@/components/BaseLoader';
 import WorkspacePropsTable from '@/components/WorkspacePropsTable';
-import WorkspacePropsOptionsModal from '@/components/WorkspacePropsOptionsModal';
+// import WorkspacePropsOptionsModal from '@/components/WorkspacePropsOptionsModal';
 import WorkspacePropsIndexesModal from '@/components/WorkspacePropsIndexesModal';
 import WorkspacePropsForeignModal from '@/components/WorkspacePropsForeignModal';
 
@@ -136,7 +208,7 @@ export default {
    components: {
       BaseLoader,
       WorkspacePropsTable,
-      WorkspacePropsOptionsModal,
+      // WorkspacePropsOptionsModal,
       WorkspacePropsIndexesModal,
       WorkspacePropsForeignModal
    },
@@ -182,7 +254,8 @@ export default {
          return db && this.table ? db.tables.find(table => table.name === this.table) : {};
       },
       defaultEngine () {
-         return this.getDatabaseVariable(this.connection.uid, 'default_storage_engine').value || '';
+         const engine = this.getDatabaseVariable(this.connection.uid, 'default_storage_engine');
+         return engine ? engine.value : '';
       },
       schemaTables () {
          const schemaTables = this.workspace.structure
@@ -534,6 +607,11 @@ export default {
          fieldToClone.name = `${fieldToClone.name}_copy`;
          fieldToClone.order = this.localFields.length + 1;
          this.localFields = [...this.localFields, fieldToClone];
+
+         setTimeout(() => {
+            const scrollable = this.$refs.indexTable.$refs.tableWrapper;
+            scrollable.scrollTop = scrollable.scrollHeight + 30;
+         }, 20);
       },
       removeField (uid) {
          this.localFields = this.localFields.filter(field => field._id !== uid);

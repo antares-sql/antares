@@ -31,7 +31,7 @@
          </div>
       </div>
       <div class="container">
-         <div class="columns mb-4">
+         <div class="columns">
             <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.name') }}</label>
@@ -71,49 +71,49 @@
                   </select>
                </div>
             </div>
-         </div>
-         <fieldset class="columns" :disabled="customizations.triggerOnlyRename">
-            <div class="column col-auto">
-               <div class="form-group">
-                  <label class="form-label">{{ $t('word.table') }}</label>
-                  <select v-model="localTrigger.table" class="form-select">
-                     <option v-for="table in schemaTables" :key="table.name">
-                        {{ table.name }}
-                     </option>
-                  </select>
-               </div>
-            </div>
-            <div class="column col-auto">
-               <div class="form-group">
-                  <label class="form-label">{{ $t('word.event') }}</label>
-                  <div class="input-group">
-                     <select v-model="localTrigger.activation" class="form-select">
-                        <option>BEFORE</option>
-                        <option>AFTER</option>
-                     </select>
-                     <select
-                        v-if="!customizations.triggerMultipleEvents"
-                        v-model="localTrigger.event"
-                        class="form-select"
-                     >
-                        <option v-for="event in Object.keys(localEvents)" :key="event">
-                           {{ event }}
+            <fieldset class="column columns mb-0" :disabled="customizations.triggerOnlyRename">
+               <div class="column col-auto">
+                  <div class="form-group">
+                     <label class="form-label">{{ $t('word.table') }}</label>
+                     <select v-model="localTrigger.table" class="form-select">
+                        <option v-for="table in schemaTables" :key="table.name">
+                           {{ table.name }}
                         </option>
                      </select>
-                     <div v-if="customizations.triggerMultipleEvents" class="px-4">
-                        <label
-                           v-for="event in Object.keys(localEvents)"
-                           :key="event"
-                           class="form-checkbox form-inline"
-                           @change.prevent="changeEvents(event)"
+                  </div>
+               </div>
+               <div class="column col-auto">
+                  <div class="form-group">
+                     <label class="form-label">{{ $t('word.event') }}</label>
+                     <div class="input-group">
+                        <select v-model="localTrigger.activation" class="form-select">
+                           <option>BEFORE</option>
+                           <option>AFTER</option>
+                        </select>
+                        <select
+                           v-if="!customizations.triggerMultipleEvents"
+                           v-model="localTrigger.event"
+                           class="form-select"
                         >
-                           <input :checked="localEvents[event]" type="checkbox"><i class="form-icon" /> {{ event }}
-                        </label>
+                           <option v-for="event in Object.keys(localEvents)" :key="event">
+                              {{ event }}
+                           </option>
+                        </select>
+                        <div v-if="customizations.triggerMultipleEvents" class="px-4">
+                           <label
+                              v-for="event in Object.keys(localEvents)"
+                              :key="event"
+                              class="form-checkbox form-inline"
+                              @change.prevent="changeEvents(event)"
+                           >
+                              <input :checked="localEvents[event]" type="checkbox"><i class="form-icon" /> {{ event }}
+                           </label>
+                        </div>
                      </div>
                   </div>
                </div>
-            </div>
-         </fieldset>
+            </fieldset>
+         </div>
       </div>
       <div class="workspace-query-results column col-12 mt-2 p-relative">
          <BaseLoader v-if="isLoading" />

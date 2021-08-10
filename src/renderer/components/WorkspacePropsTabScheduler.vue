@@ -37,7 +37,7 @@
          </div>
       </div>
       <div class="container">
-         <div class="columns mb-4">
+         <div class="columns">
             <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.name') }}</label>
@@ -87,8 +87,6 @@
                   >
                </div>
             </div>
-         </div>
-         <div class="columns">
             <div class="column">
                <div class="form-group">
                   <label class="form-label mr-2">{{ $t('word.state') }}</label>

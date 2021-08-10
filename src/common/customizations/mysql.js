@@ -40,6 +40,7 @@ module.exports = {
    unsigned: true,
    nullable: true,
    zerofill: true,
+   tableOptions: true,
    autoIncrement: true,
    comment: true,
    collation: true,

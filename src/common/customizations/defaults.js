@@ -44,6 +44,7 @@ module.exports = {
    unsigned: false,
    nullable: false,
    zerofill: false,
+   tableOptions: false,
    autoIncrement: false,
    comment: false,
    collation: false,

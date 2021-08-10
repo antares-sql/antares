@@ -37,14 +37,116 @@
                   <i class="mdi mdi-24px mdi-dots-horizontal mr-1" />
                   <span>{{ $t('word.parameters') }}</span>
                </button>
-               <button class="btn btn-dark btn-sm" @click="showOptionsModal">
+               <!-- <button class="btn btn-dark btn-sm" @click="showOptionsModal">
                   <i class="mdi mdi-24px mdi-cogs mr-1" />
                   <span>{{ $t('word.options') }}</span>
-               </button>
+               </button> -->
             </div>
             <div class="workspace-query-info">
                <div class="d-flex" :title="$t('word.schema')">
                   <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="container">
+         <div class="columns">
+            <div class="column col-auto">
+               <div class="form-group">
+                  <label class="form-label">
+                     {{ $t('word.name') }}
+                  </label>
+                  <input
+                     ref="firstInput"
+                     v-model="localRoutine.name"
+                     class="form-input"
+                     :class="{'is-error': !isTableNameValid}"
+                     type="text"
+                  >
+               </div>
+            </div>
+            <div v-if="customizations.languages" class="column col-auto">
+               <div class="form-group">
+                  <label class="form-label">
+                     {{ $t('word.language') }}
+                  </label>
+                  <select v-model="localRoutine.language" class="form-select">
+                     <option v-for="language in customizations.languages" :key="language">
+                        {{ language }}
+                     </option>
+                  </select>
+               </div>
+            </div>
+            <div v-if="customizations.definer" class="column col-auto">
+               <div class="form-group">
+                  <label class="form-label">
+                     {{ $t('word.definer') }}
+                  </label>
+                  <select
+                     v-if="workspace.users.length"
+                     v-model="localRoutine.definer"
+                     class="form-select"
+                  >
+                     <option value="">
+                        {{ $t('message.currentUser') }}
+                     </option>
+                     <option
+                        v-for="user in workspace.users"
+                        :key="`${user.name}@${user.host}`"
+                        :value="`\`${user.name}\`@\`${user.host}\``"
+                     >
+                        {{ user.name }}@{{ user.host }}
+                     </option>
+                  </select>
+                  <select v-if="!workspace.users.length" class="form-select">
+                     <option value="">
+                        {{ $t('message.currentUser') }}
+                     </option>
+                  </select>
+               </div>
+            </div>
+            <div v-if="customizations.comment" class="column">
+               <div class="form-group">
+                  <label class="form-label">
+                     {{ $t('word.comment') }}
+                  </label>
+                  <input
+                     v-model="localRoutine.comment"
+                     class="form-input"
+                     type="text"
+                  >
+               </div>
+            </div>
+            <div class="column col-auto">
+               <div class="form-group">
+                  <label class="form-label">
+                     {{ $t('message.sqlSecurity') }}
+                  </label>
+                  <select v-model="localRoutine.security" class="form-select">
+                     <option>DEFINER</option>
+                     <option>INVOKER</option>
+                  </select>
+               </div>
+            </div>
+            <div v-if="customizations.procedureDataAccess" class="column col-auto">
+               <div class="form-group">
+                  <label class="form-label">
+                     {{ $t('message.dataAccess') }}
+                  </label>
+                  <select v-model="localRoutine.dataAccess" class="form-select">
+                     <option>CONTAINS SQL</option>
+                     <option>NO SQL</option>
+                     <option>READS SQL DATA</option>
+                     <option>MODIFIES SQL DATA</option>
+                  </select>
+               </div>
+            </div>
+            <div v-if="customizations.procedureDeterministic" class="column col-auto">
+               <div class="form-group">
+                  <label class="form-label d-invisible">.</label>
+                  <label class="form-checkbox form-inline">
+                     <input v-model="localRoutine.deterministic" type="checkbox"><i class="form-icon" /> {{ $t('word.deterministic') }}
+                  </label>
                </div>
             </div>
          </div>
@@ -62,13 +164,13 @@
             :height="editorHeight"
          />
       </div>
-      <WorkspacePropsRoutineOptionsModal
+      <!-- <WorkspacePropsRoutineOptionsModal
          v-if="isOptionsModal"
          :local-options="localRoutine"
          :workspace="workspace"
          @hide="hideOptionsModal"
          @options-update="optionsUpdate"
-      />
+      /> -->
       <WorkspacePropsRoutineParamsModal
          v-if="isParamsModal"
          :local-parameters="localRoutine.parameters"
@@ -92,7 +194,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { uidGen } from 'common/libs/uidGen';
 import QueryEditor from '@/components/QueryEditor';
 import BaseLoader from '@/components/BaseLoader';
-import WorkspacePropsRoutineOptionsModal from '@/components/WorkspacePropsRoutineOptionsModal';
+// import WorkspacePropsRoutineOptionsModal from '@/components/WorkspacePropsRoutineOptionsModal';
 import WorkspacePropsRoutineParamsModal from '@/components/WorkspacePropsRoutineParamsModal';
 import ModalAskParameters from '@/components/ModalAskParameters';
 import Routines from '@/ipc-api/Routines';
@@ -102,7 +204,7 @@ export default {
    components: {
       QueryEditor,
       BaseLoader,
-      WorkspacePropsRoutineOptionsModal,
+      // WorkspacePropsRoutineOptionsModal,
       WorkspacePropsRoutineParamsModal,
       ModalAskParameters
    },
@@ -134,6 +236,9 @@ export default {
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
+      customizations () {
+         return this.workspace.customizations;
+      },
       tabUid () {
          return this.$vnode.key;
       },
@@ -142,6 +247,9 @@ export default {
       },
       isDefinerInUsers () {
          return this.originalRoutine ? this.workspace.users.some(user => this.originalRoutine.definer === `\`${user.name}\`@\`${user.host}\``) : true;
+      },
+      isTableNameValid () {
+         return this.localRoutine.name !== '';
       },
       schemaTables () {
          const schemaTables = this.workspace.structure

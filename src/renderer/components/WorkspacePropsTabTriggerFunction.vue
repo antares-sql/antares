@@ -25,10 +25,64 @@
 
                <div class="divider-vert py-3" />
 
-               <button class="btn btn-dark btn-sm" @click="showOptionsModal">
+               <!-- <button class="btn btn-dark btn-sm" @click="showOptionsModal">
                   <i class="mdi mdi-24px mdi-cogs mr-1" />
                   <span>{{ $t('word.options') }}</span>
-               </button>
+               </button> -->
+            </div>
+         </div>
+      </div>
+      <div class="container">
+         <div class="columns">
+            <div v-if="customizations.triggerFunctionlanguages" class="column col-auto">
+               <div class="form-group">
+                  <label class="form-label">
+                     {{ $t('word.language') }}
+                  </label>
+                  <select v-model="localFunction.language" class="form-select">
+                     <option v-for="language in customizations.triggerFunctionlanguages" :key="language">
+                        {{ language }}
+                     </option>
+                  </select>
+               </div>
+            </div>
+            <div v-if="customizations.definer" class="column col-auto">
+               <div class="form-group">
+                  <label class="form-label">
+                     {{ $t('word.definer') }}
+                  </label>
+                  <select
+                     v-if="workspace.users.length"
+                     v-model="localFunction.definer"
+                     class="form-select"
+                  >
+                     <option value="">
+                        {{ $t('message.currentUser') }}
+                     </option>
+                     <option
+                        v-for="user in workspace.users"
+                        :key="`${user.name}@${user.host}`"
+                        :value="`\`${user.name}\`@\`${user.host}\``"
+                     >
+                        {{ user.name }}@{{ user.host }}
+                     </option>
+                  </select>
+                  <select v-if="!workspace.users.length" class="form-select">
+                     <option value="">
+                        {{ $t('message.currentUser') }}
+                     </option>
+                  </select>
+               </div>
+            </div>
+            <div v-if="customizations.comment" class="form-group">
+               <label class="form-label">
+                  {{ $t('word.comment') }}
+               </label>
+               <input
+                  v-model="localFunction.comment"
+                  class="form-input"
+                  type="text"
+               >
             </div>
          </div>
       </div>
@@ -44,13 +98,13 @@
             :height="editorHeight"
          />
       </div>
-      <WorkspacePropsTriggerFunctionOptionsModal
+      <!-- <WorkspacePropsTriggerFunctionOptionsModal
          v-if="isOptionsModal"
          :local-options="localFunction"
          :workspace="workspace"
          @hide="hideOptionsModal"
          @options-update="optionsUpdate"
-      />
+      /> -->
       <ModalAskParameters
          v-if="isAskingParameters"
          :local-routine="localFunction"
@@ -66,7 +120,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { uidGen } from 'common/libs/uidGen';
 import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
-import WorkspacePropsTriggerFunctionOptionsModal from '@/components/WorkspacePropsTriggerFunctionOptionsModal';
+// import WorkspacePropsTriggerFunctionOptionsModal from '@/components/WorkspacePropsTriggerFunctionOptionsModal';
 import ModalAskParameters from '@/components/ModalAskParameters';
 import Functions from '@/ipc-api/Functions';
 
@@ -75,7 +129,7 @@ export default {
    components: {
       BaseLoader,
       QueryEditor,
-      WorkspacePropsTriggerFunctionOptionsModal,
+      // WorkspacePropsTriggerFunctionOptionsModal,
       ModalAskParameters
    },
    props: {
@@ -105,6 +159,9 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
+      },
+      customizations () {
+         return this.workspace.customizations;
       },
       tabUid () {
          return this.$vnode.key;

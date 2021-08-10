@@ -9,7 +9,7 @@ autoUpdater.allowPrerelease = persistentStore.get('allow_prerelease', true);
 export default () => {
    ipcMain.on('check-for-updates', event => {
       mainWindow = event;
-      if (process.windowsStore)
+      if (process.windowsStore || (process.platform === 'linux' && !process.env.APPIMAGE))
          mainWindow.reply('no-auto-update');
       else {
          autoUpdater.checkForUpdatesAndNotify().catch(() => {

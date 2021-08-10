@@ -63,7 +63,7 @@
                            :ref="breadcrumbs.schema === database.name && breadcrumbs.trigger === trigger.name ? 'explorebar-selected' : ''"
                            class="menu-item"
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.trigger === trigger.name}"
-                           @mousedown="selectMisc({schema: database.name, misc: trigger, type: 'trigger'})"
+                           @mousedown.left="selectMisc({schema: database.name, misc: trigger, type: 'trigger'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: trigger, type: 'trigger'})"
                            @contextmenu.prevent="showMiscContext($event, {...trigger, type: 'trigger'})"
                         >
@@ -97,7 +97,7 @@
                            :ref="breadcrumbs.schema === database.name && breadcrumbs.routine === procedure.name ? 'explorebar-selected' : ''"
                            class="menu-item"
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.routine === procedure.name}"
-                           @mousedown="selectMisc({schema: database.name, misc: procedure, type: 'routine'})"
+                           @mousedown.left="selectMisc({schema: database.name, misc: procedure, type: 'routine'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: procedure, type: 'routine'})"
                            @contextmenu.prevent="showMiscContext($event, {...procedure, type: 'procedure'})"
                         >
@@ -131,7 +131,7 @@
                            :ref="breadcrumbs.schema === database.name && breadcrumbs.triggerFunction === func.name ? 'explorebar-selected' : ''"
                            class="menu-item"
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.triggerFunction === func.name}"
-                           @mousedown="selectMisc({schema: database.name, misc: func, type: 'triggerFunction'})"
+                           @mousedown.left="selectMisc({schema: database.name, misc: func, type: 'triggerFunction'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: func, type: 'triggerFunction'})"
                            @contextmenu.prevent="showMiscContext($event, {...func, type: 'triggerFunction'})"
                         >
@@ -165,7 +165,7 @@
                            :ref="breadcrumbs.schema === database.name && breadcrumbs.function === func.name ? 'explorebar-selected' : ''"
                            class="menu-item"
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.function === func.name}"
-                           @mousedown="selectMisc({schema: database.name, misc: func, type: 'function'})"
+                           @mousedown.left="selectMisc({schema: database.name, misc: func, type: 'function'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: func, type: 'function'})"
                            @contextmenu.prevent="showMiscContext($event, {...func, type: 'function'})"
                         >
@@ -199,7 +199,7 @@
                            :ref="breadcrumbs.schema === database.name && breadcrumbs.scheduler === scheduler.name ? 'explorebar-selected' : ''"
                            class="menu-item"
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.scheduler === scheduler.name}"
-                           @mousedown="selectMisc({schema: database.name, misc: scheduler, type: 'scheduler'})"
+                           @mousedown.left="selectMisc({schema: database.name, misc: scheduler, type: 'scheduler'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: scheduler, type: 'scheduler'})"
                            @contextmenu.prevent="showMiscContext($event, {...scheduler, type: 'scheduler'})"
                         >
@@ -320,8 +320,6 @@ export default {
             this.addLoadedSchema(schema);
             this.isLoading = false;
          }
-
-         this.changeBreadcrumbs({ schema, table: null });
       },
       selectTable ({ schema, table }) {
          this.newTab({ uid: this.connection.uid, elementName: table.name, schema: this.database.name, type: 'temp-data', elementType: table.type });
