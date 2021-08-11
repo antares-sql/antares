@@ -322,7 +322,14 @@ export default {
          }
       },
       selectTable ({ schema, table }) {
-         this.newTab({ uid: this.connection.uid, elementName: table.name, schema: this.database.name, type: 'temp-data', elementType: table.type });
+         this.newTab({
+            uid: this.connection.uid,
+            elementName: table.name,
+            schema: this.database.name,
+            type: 'temp-data',
+            elementType: table.type
+         });
+
          this.setBreadcrumbs({ schema, [table.type]: table.name });
       },
       selectMisc ({ schema, misc, type }) {
