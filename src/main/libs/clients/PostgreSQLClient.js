@@ -310,6 +310,40 @@ export class PostgreSQLClient extends AntaresCore {
     * @param {Object} params
     * @param {String} params.schema
     * @param {String} params.table
+    * @returns {Object} table options
+    * @memberof MySQLClient
+    */
+   async getTableOptions ({ schema, table }) {
+      const { rows } = await this.raw(`
+         SELECT *, 
+            pg_table_size(QUOTE_IDENT(t.TABLE_SCHEMA) || '.' || QUOTE_IDENT(t.TABLE_NAME))::bigint AS data_length, 
+            pg_relation_size(QUOTE_IDENT(t.TABLE_SCHEMA) || '.' || QUOTE_IDENT(t.TABLE_NAME))::bigint AS index_length, 
+            c.reltuples, obj_description(c.oid) AS comment 
+         FROM "information_schema"."tables" AS t 
+         LEFT JOIN "pg_namespace" n ON t.table_schema = n.nspname 
+         LEFT JOIN "pg_class" c ON n.oid = c.relnamespace AND c.relname=t.table_name 
+         WHERE t."table_schema" = '${schema}'
+         AND table_name = '${table}'
+      `);
+
+      if (rows.length) {
+         return {
+            name: rows[0].table_name,
+            type: rows[0].table_type === 'VIEW' ? 'view' : 'table',
+            rows: rows[0].reltuples,
+            size: +rows[0].data_length + +rows[0].index_length,
+            collation: rows[0].Collation,
+            comment: rows[0].comment,
+            engine: ''
+         };
+      };
+      return {};
+   }
+
+   /**
+    * @param {Object} params
+    * @param {String} params.schema
+    * @param {String} params.table
     * @returns {Object} table indexes
     * @memberof PostgreSQLClient
     */

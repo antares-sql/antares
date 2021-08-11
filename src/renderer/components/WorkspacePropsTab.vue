@@ -232,6 +232,7 @@ export default {
          localKeyUsage: [],
          originalIndexes: [],
          localIndexes: [],
+         tableOptions: {},
          localOptions: {},
          lastTable: null,
          newFieldsCounter: 0
@@ -248,10 +249,6 @@ export default {
       },
       tabUid () {
          return this.$vnode.key;
-      },
-      tableOptions () {
-         const db = this.workspace.structure.find(db => db.name === this.schema);
-         return db && this.table ? db.tables.find(table => table.name === this.table) : {};
       },
       defaultEngine () {
          const engine = this.getDatabaseVariable(this.connection.uid, 'default_storage_engine');
@@ -311,6 +308,20 @@ export default {
          renameTabs: 'workspaces/renameTabs',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
+      async getTableOptions (params) {
+         const db = this.workspace.structure.find(db => db.name === this.schema);
+
+         if (db && db.tables.length && this.table)
+            this.tableOptions = db.tables.find(table => table.name === this.table);
+         else {
+            const { status, response } = await Tables.getTableOptions(params);
+
+            if (status === 'success')
+               this.tableOptions = response;
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+      },
       async getFieldsData () {
          if (!this.table) return;
 
@@ -318,16 +329,20 @@ export default {
          this.lastTable = this.table;
          this.newFieldsCounter = 0;
          this.isLoading = true;
-         try {
-            this.localOptions = JSON.parse(JSON.stringify(this.tableOptions));
-         }
-         catch (err) {}
 
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
             table: this.table
          };
+
+         try {
+            await this.getTableOptions(params);
+            this.localOptions = JSON.parse(JSON.stringify(this.tableOptions));
+         }
+         catch (err) {
+            console.error(err);
+         }
 
          try { // Columns data
             const { status, response } = await Tables.getTableColumns(params);

@@ -441,6 +441,43 @@ export class MySQLClient extends AntaresCore {
     * @param {Object} params
     * @param {String} params.schema
     * @param {String} params.table
+    * @returns {Object} table options
+    * @memberof MySQLClient
+    */
+   async getTableOptions ({ schema, table }) {
+      const { rows } = await this.raw(`SHOW TABLE STATUS FROM \`${schema}\` WHERE Name = '${table}'`);
+
+      if (rows.length) {
+         let tableType;
+         switch (rows[0].Comment) {
+            case 'VIEW':
+               tableType = 'view';
+               break;
+            default:
+               tableType = 'table';
+               break;
+         }
+
+         return {
+            name: rows[0].Name,
+            type: tableType,
+            rows: rows[0].Rows,
+            created: rows[0].Create_time,
+            updated: rows[0].Update_time,
+            engine: rows[0].Engine,
+            comment: rows[0].Comment,
+            size: rows[0].Data_length + rows[0].Index_length,
+            autoIncrement: rows[0].Auto_increment,
+            collation: rows[0].Collation
+         };
+      };
+      return {};
+   }
+
+   /**
+    * @param {Object} params
+    * @param {String} params.schema
+    * @param {String} params.table
     * @returns {Object} table indexes
     * @memberof MySQLClient
     */

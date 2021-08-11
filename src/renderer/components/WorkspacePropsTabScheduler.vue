@@ -77,7 +77,7 @@
                   </select>
                </div>
             </div>
-            <div class="column col-4">
+            <div class="column">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.comment') }}</label>
                   <input
