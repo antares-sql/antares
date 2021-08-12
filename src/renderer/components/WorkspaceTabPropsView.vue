@@ -31,7 +31,7 @@
          </div>
       </div>
       <div class="container">
-         <div class="columns mb-4">
+         <div class="columns">
             <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.name') }}</label>
@@ -71,93 +71,35 @@
                   </select>
                </div>
             </div>
-         </div>
-         <div class="columns">
             <div class="column col-auto mr-2">
                <div v-if="workspace.customizations.viewSqlSecurity" class="form-group">
                   <label class="form-label">{{ $t('message.sqlSecurity') }}</label>
-                  <label class="form-radio">
-                     <input
-                        v-model="localView.security"
-                        type="radio"
-                        name="security"
-                        value="DEFINER"
-                     >
-                     <i class="form-icon" /> DEFINER
-                  </label>
-                  <label class="form-radio">
-                     <input
-                        v-model="localView.security"
-                        type="radio"
-                        name="security"
-                        value="INVOKER"
-                     >
-                     <i class="form-icon" /> INVOKER
-                  </label>
+                  <select v-model="localView.security" class="form-select">
+                     <option>DEFINER</option>
+                     <option>INVOKER</option>
+                  </select>
                </div>
             </div>
             <div class="column col-auto mr-2">
                <div v-if="workspace.customizations.viewAlgorithm" class="form-group">
                   <label class="form-label">{{ $t('word.algorithm') }}</label>
-                  <label class="form-radio">
-                     <input
-                        v-model="localView.algorithm"
-                        type="radio"
-                        name="algorithm"
-                        value="UNDEFINED"
-                     >
-                     <i class="form-icon" /> UNDEFINED
-                  </label>
-                  <label class="form-radio">
-                     <input
-                        v-model="localView.algorithm"
-                        type="radio"
-                        value="MERGE"
-                        name="algorithm"
-                     >
-                     <i class="form-icon" /> MERGE
-                  </label>
-                  <label class="form-radio">
-                     <input
-                        v-model="localView.algorithm"
-                        type="radio"
-                        value="TEMPTABLE"
-                        name="algorithm"
-                     >
-                     <i class="form-icon" /> TEMPTABLE
-                  </label>
+                  <select v-model="localView.algorithm" class="form-select">
+                     <option>UNDEFINED</option>
+                     <option>MERGE</option>
+                     <option>TEMPTABLE</option>
+                  </select>
                </div>
             </div>
             <div v-if="workspace.customizations.viewUpdateOption" class="column col-auto mr-2">
                <div class="form-group">
                   <label class="form-label">{{ $t('message.updateOption') }}</label>
-                  <label class="form-radio">
-                     <input
-                        v-model="localView.updateOption"
-                        type="radio"
-                        name="update"
-                        value=""
-                     >
-                     <i class="form-icon" /> None
-                  </label>
-                  <label class="form-radio">
-                     <input
-                        v-model="localView.updateOption"
-                        type="radio"
-                        name="update"
-                        value="CASCADED"
-                     >
-                     <i class="form-icon" /> CASCADED
-                  </label>
-                  <label class="form-radio">
-                     <input
-                        v-model="localView.updateOption"
-                        type="radio"
-                        name="update"
-                        value="LOCAL"
-                     >
-                     <i class="form-icon" /> LOCAL
-                  </label>
+                  <select v-model="localView.updateOption" class="form-select">
+                     <option value="">
+                        None
+                     </option>
+                     <option>CASCADED</option>
+                     <option>LOCAL</option>
+                  </select>
                </div>
             </div>
          </div>

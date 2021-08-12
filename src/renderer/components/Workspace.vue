@@ -91,7 +91,7 @@
                   :class="{'badge': tab.isChanged}"
                >
                   <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
-                  <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.view`)}`">
                      {{ tab.elementName | cutText }}
                      <span
                         class="btn btn-clear"
