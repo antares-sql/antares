@@ -137,7 +137,7 @@ import BaseLoader from '@/components/BaseLoader';
 import Triggers from '@/ipc-api/Triggers';
 
 export default {
-   name: 'WorkspacePropsTabTrigger',
+   name: 'WorkspaceTabPropsTrigger',
    components: {
       BaseLoader,
       QueryEditor

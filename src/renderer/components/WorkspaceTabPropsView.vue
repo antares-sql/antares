@@ -22,12 +22,6 @@
                   <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
                   <span>{{ $t('word.clear') }}</span>
                </button>
-
-               <div class="divider-vert py-3" />
-               <button class="btn btn-dark btn-sm" @click="showTimingModal">
-                  <i class="mdi mdi-24px mdi-timer mr-1" />
-                  <span>{{ $t('word.timing') }}</span>
-               </button>
             </div>
             <div class="workspace-query-info">
                <div class="d-flex" :title="$t('word.schema')">
@@ -37,30 +31,30 @@
          </div>
       </div>
       <div class="container">
-         <div class="columns">
+         <div class="columns mb-4">
             <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.name') }}</label>
                   <input
-                     v-model="localScheduler.name"
+                     v-model="localView.name"
                      class="form-input"
                      type="text"
                   >
                </div>
             </div>
             <div class="column col-auto">
-               <div class="form-group">
+               <div v-if="workspace.customizations.definer" class="form-group">
                   <label class="form-label">{{ $t('word.definer') }}</label>
                   <select
                      v-if="workspace.users.length"
-                     v-model="localScheduler.definer"
+                     v-model="localView.definer"
                      class="form-select"
                   >
                      <option value="">
                         {{ $t('message.currentUser') }}
                      </option>
-                     <option v-if="!isDefinerInUsers" :value="originalScheduler.definer">
-                        {{ originalScheduler.definer.replaceAll('`', '') }}
+                     <option v-if="!isDefinerInUsers" :value="originalView.definer">
+                        {{ originalView.definer.replaceAll('`', '') }}
                      </option>
                      <option
                         v-for="user in workspace.users"
@@ -77,42 +71,92 @@
                   </select>
                </div>
             </div>
-            <div class="column">
-               <div class="form-group">
-                  <label class="form-label">{{ $t('word.comment') }}</label>
-                  <input
-                     v-model="localScheduler.comment"
-                     class="form-input"
-                     type="text"
-                  >
+         </div>
+         <div class="columns">
+            <div class="column col-auto mr-2">
+               <div v-if="workspace.customizations.viewSqlSecurity" class="form-group">
+                  <label class="form-label">{{ $t('message.sqlSecurity') }}</label>
+                  <label class="form-radio">
+                     <input
+                        v-model="localView.security"
+                        type="radio"
+                        name="security"
+                        value="DEFINER"
+                     >
+                     <i class="form-icon" /> DEFINER
+                  </label>
+                  <label class="form-radio">
+                     <input
+                        v-model="localView.security"
+                        type="radio"
+                        name="security"
+                        value="INVOKER"
+                     >
+                     <i class="form-icon" /> INVOKER
+                  </label>
                </div>
             </div>
-            <div class="column">
+            <div class="column col-auto mr-2">
+               <div v-if="workspace.customizations.viewAlgorithm" class="form-group">
+                  <label class="form-label">{{ $t('word.algorithm') }}</label>
+                  <label class="form-radio">
+                     <input
+                        v-model="localView.algorithm"
+                        type="radio"
+                        name="algorithm"
+                        value="UNDEFINED"
+                     >
+                     <i class="form-icon" /> UNDEFINED
+                  </label>
+                  <label class="form-radio">
+                     <input
+                        v-model="localView.algorithm"
+                        type="radio"
+                        value="MERGE"
+                        name="algorithm"
+                     >
+                     <i class="form-icon" /> MERGE
+                  </label>
+                  <label class="form-radio">
+                     <input
+                        v-model="localView.algorithm"
+                        type="radio"
+                        value="TEMPTABLE"
+                        name="algorithm"
+                     >
+                     <i class="form-icon" /> TEMPTABLE
+                  </label>
+               </div>
+            </div>
+            <div v-if="workspace.customizations.viewUpdateOption" class="column col-auto mr-2">
                <div class="form-group">
-                  <label class="form-label mr-2">{{ $t('word.state') }}</label>
-                  <label class="form-radio form-inline">
+                  <label class="form-label">{{ $t('message.updateOption') }}</label>
+                  <label class="form-radio">
                      <input
-                        v-model="localScheduler.state"
+                        v-model="localView.updateOption"
                         type="radio"
-                        name="state"
-                        value="ENABLE"
-                     ><i class="form-icon" /> ENABLE
+                        name="update"
+                        value=""
+                     >
+                     <i class="form-icon" /> None
                   </label>
-                  <label class="form-radio form-inline">
+                  <label class="form-radio">
                      <input
-                        v-model="localScheduler.state"
+                        v-model="localView.updateOption"
                         type="radio"
-                        name="state"
-                        value="DISABLE"
-                     ><i class="form-icon" /> DISABLE
+                        name="update"
+                        value="CASCADED"
+                     >
+                     <i class="form-icon" /> CASCADED
                   </label>
-                  <label class="form-radio form-inline">
+                  <label class="form-radio">
                      <input
-                        v-model="localScheduler.state"
+                        v-model="localView.updateOption"
                         type="radio"
-                        name="state"
-                        value="DISABLE ON SLAVE"
-                     ><i class="form-icon" /> DISABLE ON SLAVE
+                        name="update"
+                        value="LOCAL"
+                     >
+                     <i class="form-icon" /> LOCAL
                   </label>
                </div>
             </div>
@@ -120,23 +164,16 @@
       </div>
       <div class="workspace-query-results column col-12 mt-2 p-relative">
          <BaseLoader v-if="isLoading" />
-         <label class="form-label ml-2">{{ $t('message.schedulerBody') }}</label>
+         <label class="form-label ml-2">{{ $t('message.selectStatement') }}</label>
          <QueryEditor
             v-show="isSelected"
             ref="queryEditor"
-            :value.sync="localScheduler.sql"
+            :value.sync="localView.sql"
             :workspace="workspace"
             :schema="schema"
             :height="editorHeight"
          />
       </div>
-      <WorkspacePropsSchedulerTimingModal
-         v-if="isTimingModal"
-         :local-options="localScheduler"
-         :workspace="workspace"
-         @hide="hideTimingModal"
-         @options-update="timingUpdate"
-      />
    </div>
 </template>
 
@@ -144,30 +181,27 @@
 import { mapGetters, mapActions } from 'vuex';
 import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
-import WorkspacePropsSchedulerTimingModal from '@/components/WorkspacePropsSchedulerTimingModal';
-import Schedulers from '@/ipc-api/Schedulers';
+import Views from '@/ipc-api/Views';
 
 export default {
-   name: 'WorkspacePropsTabScheduler',
+   name: 'WorkspaceTabPropsView',
    components: {
       BaseLoader,
-      QueryEditor,
-      WorkspacePropsSchedulerTimingModal
+      QueryEditor
    },
    props: {
       connection: Object,
-      scheduler: String,
       isSelected: Boolean,
-      schema: String
+      schema: String,
+      view: String
    },
    data () {
       return {
          isLoading: false,
          isSaving: false,
-         isTimingModal: false,
-         originalScheduler: null,
-         localScheduler: { sql: '' },
-         lastScheduler: null,
+         originalView: null,
+         localView: { sql: '' },
+         lastView: null,
          sqlProxy: '',
          editorHeight: 300
       };
@@ -184,44 +218,37 @@ export default {
          return this.$vnode.key;
       },
       isChanged () {
-         return JSON.stringify(this.originalScheduler) !== JSON.stringify(this.localScheduler);
+         return JSON.stringify(this.originalView) !== JSON.stringify(this.localView);
       },
       isDefinerInUsers () {
-         return this.originalScheduler ? this.workspace.users.some(user => this.originalScheduler.definer === `\`${user.name}\`@\`${user.host}\``) : true;
-      },
-      schemaTables () {
-         const schemaTables = this.workspace.structure
-            .filter(schema => schema.name === this.schema)
-            .map(schema => schema.tables);
-
-         return schemaTables.length ? schemaTables[0].filter(table => table.type === 'table') : [];
+         return this.originalView ? this.workspace.users.some(user => this.originalView.definer === `\`${user.name}\`@\`${user.host}\``) : true;
       }
    },
    watch: {
       async schema () {
          if (this.isSelected) {
-            await this.getSchedulerData();
-            this.$refs.queryEditor.editor.session.setValue(this.localScheduler.sql);
-            this.lastScheduler = this.scheduler;
+            await this.getViewData();
+            this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
+            this.lastView = this.view;
          }
       },
-      async scheduler () {
+      async view () {
          if (this.isSelected) {
-            await this.getSchedulerData();
-            this.$refs.queryEditor.editor.session.setValue(this.localScheduler.sql);
-            this.lastScheduler = this.scheduler;
+            await this.getViewData();
+            this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
+            this.lastView = this.view;
          }
       },
-      async isSelected (val) {
+      isSelected (val) {
          if (val) {
-            this.changeBreadcrumbs({ schema: this.schema, scheduler: this.scheduler });
+            this.changeBreadcrumbs({ schema: this.schema, view: this.view });
 
             setTimeout(() => {
                this.resizeQueryEditor();
             }, 200);
 
-            if (this.lastScheduler !== this.scheduler)
-               this.getSchedulerData();
+            if (this.lastView !== this.view)
+               this.getViewData();
          }
       },
       isChanged (val) {
@@ -229,8 +256,8 @@ export default {
       }
    },
    async created () {
-      await this.getSchedulerData();
-      this.$refs.queryEditor.editor.session.setValue(this.localScheduler.sql);
+      await this.getViewData();
+      this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
       window.addEventListener('keydown', this.onKey);
    },
    mounted () {
@@ -246,29 +273,28 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification',
          refreshStructure: 'workspaces/refreshStructure',
-         renameTabs: 'workspaces/renameTabs',
-         newTab: 'workspaces/newTab',
+         setUnsavedChanges: 'workspaces/setUnsavedChanges',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges'
+         renameTabs: 'workspaces/renameTabs'
       }),
-      async getSchedulerData () {
-         if (!this.scheduler) return;
-
+      async getViewData () {
+         if (!this.view) return;
          this.isLoading = true;
-         this.lastScheduler = this.scheduler;
+         this.localView = { sql: '' };
+         this.lastView = this.view;
 
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            scheduler: this.scheduler
+            view: this.view
          };
 
          try {
-            const { status, response } = await Schedulers.getSchedulerInformations(params);
+            const { status, response } = await Views.getViewInformations(params);
             if (status === 'success') {
-               this.originalScheduler = response;
-               this.localScheduler = JSON.parse(JSON.stringify(this.originalScheduler));
-               this.sqlProxy = this.localScheduler.sql;
+               this.originalView = response;
+               this.localView = JSON.parse(JSON.stringify(this.originalView));
+               this.sqlProxy = this.localView.sql;
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -285,34 +311,34 @@ export default {
          this.isSaving = true;
          const params = {
             uid: this.connection.uid,
-            scheduler: {
-               ...this.localScheduler,
+            view: {
+               ...this.localView,
                schema: this.schema,
-               oldName: this.originalScheduler.name
+               oldName: this.originalView.name
             }
          };
 
          try {
-            const { status, response } = await Schedulers.alterScheduler(params);
+            const { status, response } = await Views.alterView(params);
 
             if (status === 'success') {
-               const oldName = this.originalScheduler.name;
+               const oldName = this.originalView.name;
 
                await this.refreshStructure(this.connection.uid);
 
-               if (oldName !== this.localScheduler.name) {
+               if (oldName !== this.localView.name) {
                   this.renameTabs({
                      uid: this.connection.uid,
                      schema: this.schema,
                      elementName: oldName,
-                     elementNewName: this.localScheduler.name,
-                     elementType: 'scheduler'
+                     elementNewName: this.localView.name,
+                     elementType: 'view'
                   });
 
-                  this.changeBreadcrumbs({ schema: this.schema, scheduler: this.localScheduler.name });
+                  this.changeBreadcrumbs({ schema: this.schema, view: this.localView.name });
                }
                else
-                  this.getSchedulerData();
+                  this.getViewData();
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -324,8 +350,8 @@ export default {
          this.isSaving = false;
       },
       clearChanges () {
-         this.localScheduler = JSON.parse(JSON.stringify(this.originalScheduler));
-         this.$refs.queryEditor.editor.session.setValue(this.localScheduler.sql);
+         this.localView = JSON.parse(JSON.stringify(this.originalView));
+         this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
       },
       resizeQueryEditor () {
          if (this.$refs.queryEditor) {
@@ -334,15 +360,6 @@ export default {
             this.editorHeight = size;
             this.$refs.queryEditor.editor.resize();
          }
-      },
-      showTimingModal () {
-         this.isTimingModal = true;
-      },
-      hideTimingModal () {
-         this.isTimingModal = false;
-      },
-      timingUpdate (options) {
-         this.localScheduler = options;
       },
       onKey (e) {
          if (this.isSelected) {

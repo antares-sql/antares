@@ -208,7 +208,7 @@ import Tables from '@/ipc-api/Tables';
 import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
-   name: 'WorkspacePropsForeignModal',
+   name: 'WorkspaceTabPropsTableForeignModal',
    components: {
       ConfirmModal
    },

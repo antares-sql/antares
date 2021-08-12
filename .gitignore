@@ -4,6 +4,6 @@ node_modules/
 thumbs.db
 .idea/
 .vscode
-TODO.md
+NOTES.md
 *.txt
 package-lock.json

@@ -164,14 +164,14 @@
             :height="editorHeight"
          />
       </div>
-      <!-- <WorkspacePropsRoutineOptionsModal
+      <!-- <WorkspaceTabPropsRoutineOptionsModal
          v-if="isOptionsModal"
          :local-options="localRoutine"
          :workspace="workspace"
          @hide="hideOptionsModal"
          @options-update="optionsUpdate"
       /> -->
-      <WorkspacePropsRoutineParamsModal
+      <WorkspaceTabPropsRoutineParamsModal
          v-if="isParamsModal"
          :local-parameters="localRoutine.parameters"
          :workspace="workspace"
@@ -194,18 +194,18 @@ import { mapGetters, mapActions } from 'vuex';
 import { uidGen } from 'common/libs/uidGen';
 import QueryEditor from '@/components/QueryEditor';
 import BaseLoader from '@/components/BaseLoader';
-// import WorkspacePropsRoutineOptionsModal from '@/components/WorkspacePropsRoutineOptionsModal';
-import WorkspacePropsRoutineParamsModal from '@/components/WorkspacePropsRoutineParamsModal';
+// import WorkspaceTabPropsRoutineOptionsModal from '@/components/WorkspaceTabPropsRoutineOptionsModal';
+import WorkspaceTabPropsRoutineParamsModal from '@/components/WorkspaceTabPropsRoutineParamsModal';
 import ModalAskParameters from '@/components/ModalAskParameters';
 import Routines from '@/ipc-api/Routines';
 
 export default {
-   name: 'WorkspacePropsTabRoutine',
+   name: 'WorkspaceTabPropsRoutine',
    components: {
       QueryEditor,
       BaseLoader,
-      // WorkspacePropsRoutineOptionsModal,
-      WorkspacePropsRoutineParamsModal,
+      // WorkspaceTabPropsRoutineOptionsModal,
+      WorkspaceTabPropsRoutineParamsModal,
       ModalAskParameters
    },
    props: {

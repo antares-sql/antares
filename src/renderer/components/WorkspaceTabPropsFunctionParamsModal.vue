@@ -176,7 +176,7 @@ import { uidGen } from 'common/libs/uidGen';
 import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
-   name: 'WorkspacePropsRoutineParamsModal',
+   name: 'WorkspaceTabPropsRoutineParamsModal',
    components: {
       ConfirmModal
    },

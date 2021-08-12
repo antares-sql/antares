@@ -207,14 +207,14 @@
             :height="editorHeight"
          />
       </div>
-      <!-- <WorkspacePropsFunctionOptionsModal
+      <!-- <WorkspaceTabPropsFunctionOptionsModal
          v-if="isOptionsModal"
          :local-options="localFunction"
          :workspace="workspace"
          @hide="hideOptionsModal"
          @options-update="optionsUpdate"
       /> -->
-      <WorkspacePropsFunctionParamsModal
+      <WorkspaceTabPropsFunctionParamsModal
          v-if="isParamsModal"
          :local-parameters="localFunction.parameters"
          :workspace="workspace"
@@ -237,18 +237,18 @@ import { mapGetters, mapActions } from 'vuex';
 import { uidGen } from 'common/libs/uidGen';
 import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
-// import WorkspacePropsFunctionOptionsModal from '@/components/WorkspacePropsFunctionOptionsModal';
-import WorkspacePropsFunctionParamsModal from '@/components/WorkspacePropsFunctionParamsModal';
+// import WorkspaceTabPropsFunctionOptionsModal from '@/components/WorkspaceTabPropsFunctionOptionsModal';
+import WorkspaceTabPropsFunctionParamsModal from '@/components/WorkspaceTabPropsFunctionParamsModal';
 import ModalAskParameters from '@/components/ModalAskParameters';
 import Functions from '@/ipc-api/Functions';
 
 export default {
-   name: 'WorkspacePropsTabFunction',
+   name: 'WorkspaceTabPropsFunction',
    components: {
       BaseLoader,
       QueryEditor,
-      // WorkspacePropsFunctionOptionsModal,
-      WorkspacePropsFunctionParamsModal,
+      // WorkspaceTabPropsFunctionOptionsModal,
+      WorkspaceTabPropsFunctionParamsModal,
       ModalAskParameters
    },
    props: {

@@ -141,7 +141,7 @@
       </div>
       <div class="workspace-query-results column col-12 p-relative">
          <BaseLoader v-if="isLoading" />
-         <WorkspacePropsTable
+         <WorkspaceTabPropsTableFIelds
             v-if="localFields"
             ref="indexTable"
             :fields="localFields"
@@ -160,7 +160,7 @@
             @rename-field="renameField"
          />
       </div>
-      <!-- <WorkspacePropsOptionsModal
+      <!-- <WorkspaceTabPropsTableOptionsModal
          v-if="isOptionsModal"
          :local-options="localOptions"
          :table="table"
@@ -168,7 +168,7 @@
          @hide="hideOptionsModal"
          @options-update="optionsUpdate"
       /> -->
-      <WorkspacePropsIndexesModal
+      <WorkspaceTabPropsTableIndexesModal
          v-if="isIndexesModal"
          :local-indexes="localIndexes"
          :table="table"
@@ -178,7 +178,7 @@
          @hide="hideIndexesModal"
          @indexes-update="indexesUpdate"
       />
-      <WorkspacePropsForeignModal
+      <WorkspaceTabPropsTableForeignModal
          v-if="isForeignModal"
          :local-key-usage="localKeyUsage"
          :connection="connection"
@@ -198,19 +198,19 @@ import { mapGetters, mapActions } from 'vuex';
 import { uidGen } from 'common/libs/uidGen';
 import Tables from '@/ipc-api/Tables';
 import BaseLoader from '@/components/BaseLoader';
-import WorkspacePropsTable from '@/components/WorkspacePropsTable';
-// import WorkspacePropsOptionsModal from '@/components/WorkspacePropsOptionsModal';
-import WorkspacePropsIndexesModal from '@/components/WorkspacePropsIndexesModal';
-import WorkspacePropsForeignModal from '@/components/WorkspacePropsForeignModal';
+import WorkspaceTabPropsTableFIelds from '@/components/WorkspaceTabPropsTableFIelds';
+// import WorkspaceTabPropsTableOptionsModal from '@/components/WorkspaceTabPropsTableOptionsModal';
+import WorkspaceTabPropsTableIndexesModal from '@/components/WorkspaceTabPropsTableIndexesModal';
+import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTableForeignModal';
 
 export default {
-   name: 'WorkspacePropsTab',
+   name: 'WorkspaceTabPropsTable',
    components: {
       BaseLoader,
-      WorkspacePropsTable,
-      // WorkspacePropsOptionsModal,
-      WorkspacePropsIndexesModal,
-      WorkspacePropsForeignModal
+      WorkspaceTabPropsTableFIelds,
+      // WorkspaceTabPropsTableOptionsModal,
+      WorkspaceTabPropsTableIndexesModal,
+      WorkspaceTabPropsTableForeignModal
    },
    props: {
       connection: Object,

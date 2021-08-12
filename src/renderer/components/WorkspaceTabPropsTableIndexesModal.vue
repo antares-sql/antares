@@ -142,7 +142,7 @@ import { uidGen } from 'common/libs/uidGen';
 import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
-   name: 'WorkspacePropsIndexesModal',
+   name: 'WorkspaceTabPropsTableIndexesModal',
    components: {
       ConfirmModal
    },

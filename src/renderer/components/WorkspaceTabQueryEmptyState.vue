@@ -29,7 +29,7 @@
 
 <script>
 export default {
-   name: 'WorkspaceQueryEmptyState'
+   name: 'WorkspaceTabQueryEmptyState'
 };
 </script>
 

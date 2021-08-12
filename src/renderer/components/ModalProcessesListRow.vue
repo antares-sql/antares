@@ -51,7 +51,7 @@ import ConfirmModal from '@/components/BaseConfirmModal';
 import TextEditor from '@/components/BaseTextEditor';
 
 export default {
-   name: 'ProcessesListRow',
+   name: 'ModalProcessesListRow',
    components: {
       ConfirmModal,
       TextEditor

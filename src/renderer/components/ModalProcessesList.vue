@@ -83,7 +83,7 @@
                      :scroll-element="scrollElement"
                   >
                      <template slot-scope="{ items }">
-                        <ProcessesListRow
+                        <ModalProcessesListRow
                            v-for="row in items"
                            :key="row._id"
                            class="process-row"
@@ -104,13 +104,13 @@
 import { mapGetters, mapActions } from 'vuex';
 import Schema from '@/ipc-api/Schema';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
-import ProcessesListRow from '@/components/ProcessesListRow';
+import ModalProcessesListRow from '@/components/ModalProcessesListRow';
 
 export default {
    name: 'ModalProcessesList',
    components: {
       BaseVirtualScroll,
-      ProcessesListRow
+      ModalProcessesListRow
    },
    props: {
       connection: Object

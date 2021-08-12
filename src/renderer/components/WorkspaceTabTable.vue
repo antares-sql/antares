@@ -123,7 +123,7 @@
       </div>
       <div class="workspace-query-results p-relative column col-12">
          <BaseLoader v-if="isQuering" />
-         <WorkspaceQueryTable
+         <WorkspaceTabQueryTable
             v-if="results"
             ref="queryTable"
             :results="results"
@@ -159,17 +159,17 @@
 <script>
 import Tables from '@/ipc-api/Tables';
 import BaseLoader from '@/components/BaseLoader';
-import WorkspaceQueryTable from '@/components/WorkspaceQueryTable';
+import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable';
 import ModalNewTableRow from '@/components/ModalNewTableRow';
 import ModalFakerRows from '@/components/ModalFakerRows';
 import { mapGetters, mapActions } from 'vuex';
 import tableTabs from '@/mixins/tableTabs';
 
 export default {
-   name: 'WorkspaceTableTab',
+   name: 'WorkspaceTabTable',
    components: {
       BaseLoader,
-      WorkspaceQueryTable,
+      WorkspaceTabQueryTable,
       ModalNewTableRow,
       ModalFakerRows
    },

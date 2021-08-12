@@ -143,7 +143,7 @@ import { VueMaskDirective } from 'v-mask';
 import moment from 'moment';
 
 export default {
-   name: 'WorkspacePropsSchedulerTimingModal',
+   name: 'WorkspaceTabPropsSchedulerTimingModal',
    components: {
       ConfirmModal
    },

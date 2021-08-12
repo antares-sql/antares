@@ -200,7 +200,7 @@ import TextEditor from '@/components/BaseTextEditor';
 import ForeignKeySelect from '@/components/ForeignKeySelect';
 
 export default {
-   name: 'WorkspaceQueryTableRow',
+   name: 'WorkspaceTabQueryTableRow',
    components: {
       ConfirmModal,
       TextEditor,

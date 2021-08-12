@@ -334,7 +334,7 @@ import { mapGetters } from 'vuex';
 import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
-   name: 'WorkspacePropsTableRow',
+   name: 'WorkspaceTabPropsTableRow',
    components: {
       ConfirmModal
    },

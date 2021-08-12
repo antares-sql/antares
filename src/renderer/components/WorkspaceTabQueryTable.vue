@@ -66,7 +66,7 @@
             :scroll-element="scrollElement"
          >
             <template slot-scope="{ items }">
-               <WorkspaceQueryTableRow
+               <WorkspaceTabQueryTableRow
                   v-for="row in items"
                   :key="row._id"
                   :row="row"
@@ -107,17 +107,17 @@ import { uidGen } from 'common/libs/uidGen';
 import arrayToFile from '../libs/arrayToFile';
 import { TEXT, LONG_TEXT, BLOB } from 'common/fieldTypes';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
-import WorkspaceQueryTableRow from '@/components/WorkspaceQueryTableRow';
-import TableContext from '@/components/WorkspaceQueryTableContext';
+import WorkspaceTabQueryTableRow from '@/components/WorkspaceTabQueryTableRow';
+import TableContext from '@/components/WorkspaceTabQueryTableContext';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import { mapActions, mapGetters } from 'vuex';
 import moment from 'moment';
 
 export default {
-   name: 'WorkspaceQueryTable',
+   name: 'WorkspaceTabQueryTable',
    components: {
       BaseVirtualScroll,
-      WorkspaceQueryTableRow,
+      WorkspaceTabQueryTableRow,
       TableContext,
       ConfirmModal
    },

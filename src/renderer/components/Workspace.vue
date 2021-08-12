@@ -186,14 +186,14 @@
          </Draggable>
          <WorkspaceEmptyState v-if="!workspace.tabs.length" @new-tab="addQueryTab" />
          <template v-for="tab of workspace.tabs">
-            <WorkspaceQueryTab
+            <WorkspaceTabQuery
                v-if="tab.type==='query'"
                :key="tab.uid"
                :tab="tab"
                :is-selected="selectedTab === tab.uid"
                :connection="connection"
             />
-            <WorkspaceTableTab
+            <WorkspaceTabTable
                v-else-if="['temp-data', 'data'].includes(tab.type)"
                :key="tab.uid"
                :connection="connection"
@@ -202,7 +202,7 @@
                :schema="tab.schema"
                :element-type="tab.elementType"
             />
-            <WorkspacePropsTab
+            <WorkspaceTabPropsTable
                v-else-if="tab.type === 'table-props'"
                :key="tab.uid"
                :connection="connection"
@@ -210,7 +210,7 @@
                :table="tab.elementName"
                :schema="tab.schema"
             />
-            <WorkspacePropsTabView
+            <WorkspaceTabPropsView
                v-else-if="tab.type === 'view-props'"
                :key="tab.uid"
                :is-selected="selectedTab === tab.uid"
@@ -218,7 +218,7 @@
                :view="tab.elementName"
                :schema="tab.schema"
             />
-            <WorkspacePropsTabTrigger
+            <WorkspaceTabPropsTrigger
                v-else-if="['temp-trigger-props', 'trigger-props'].includes(tab.type)"
                :key="tab.uid"
                :connection="connection"
@@ -226,7 +226,7 @@
                :trigger="tab.elementName"
                :schema="tab.schema"
             />
-            <WorkspacePropsTabTriggerFunction
+            <WorkspaceTabPropsTriggerFunction
                v-else-if="['temp-trigger-function-props', 'trigger-function-props'].includes(tab.type)"
                :key="tab.uid"
                :connection="connection"
@@ -234,7 +234,7 @@
                :function="tab.elementName"
                :schema="tab.schema"
             />
-            <WorkspacePropsTabRoutine
+            <WorkspaceTabPropsRoutine
                v-else-if="['temp-routine-props', 'routine-props'].includes(tab.type)"
                :key="tab.uid"
                :connection="connection"
@@ -242,7 +242,7 @@
                :routine="tab.elementName"
                :schema="tab.schema"
             />
-            <WorkspacePropsTabFunction
+            <WorkspaceTabPropsFunction
                v-else-if="['temp-function-props', 'function-props'].includes(tab.type)"
                :key="tab.uid"
                :connection="connection"
@@ -250,7 +250,7 @@
                :function="tab.elementName"
                :schema="tab.schema"
             />
-            <WorkspacePropsTabScheduler
+            <WorkspaceTabPropsScheduler
                v-else-if="['temp-scheduler-props', 'scheduler-props'].includes(tab.type)"
                :key="tab.uid"
                :connection="connection"
@@ -282,15 +282,15 @@ import Connection from '@/ipc-api/Connection';
 import WorkspaceEmptyState from '@/components/WorkspaceEmptyState';
 import WorkspaceExploreBar from '@/components/WorkspaceExploreBar';
 import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPanel';
-import WorkspaceQueryTab from '@/components/WorkspaceQueryTab';
-import WorkspaceTableTab from '@/components/WorkspaceTableTab';
-import WorkspacePropsTab from '@/components/WorkspacePropsTab';
-import WorkspacePropsTabView from '@/components/WorkspacePropsTabView';
-import WorkspacePropsTabTrigger from '@/components/WorkspacePropsTabTrigger';
-import WorkspacePropsTabTriggerFunction from '@/components/WorkspacePropsTabTriggerFunction';
-import WorkspacePropsTabRoutine from '@/components/WorkspacePropsTabRoutine';
-import WorkspacePropsTabFunction from '@/components/WorkspacePropsTabFunction';
-import WorkspacePropsTabScheduler from '@/components/WorkspacePropsTabScheduler';
+import WorkspaceTabQuery from '@/components/WorkspaceTabQuery';
+import WorkspaceTabTable from '@/components/WorkspaceTabTable';
+import WorkspaceTabPropsTable from '@/components/WorkspaceTabPropsTable';
+import WorkspaceTabPropsView from '@/components/WorkspaceTabPropsView';
+import WorkspaceTabPropsTrigger from '@/components/WorkspaceTabPropsTrigger';
+import WorkspaceTabPropsTriggerFunction from '@/components/WorkspaceTabPropsTriggerFunction';
+import WorkspaceTabPropsRoutine from '@/components/WorkspaceTabPropsRoutine';
+import WorkspaceTabPropsFunction from '@/components/WorkspaceTabPropsFunction';
+import WorkspaceTabPropsScheduler from '@/components/WorkspaceTabPropsScheduler';
 import ModalProcessesList from '@/components/ModalProcessesList';
 import ModalDiscardChanges from '@/components/ModalDiscardChanges';
 
@@ -301,15 +301,15 @@ export default {
       WorkspaceEmptyState,
       WorkspaceExploreBar,
       WorkspaceEditConnectionPanel,
-      WorkspaceQueryTab,
-      WorkspaceTableTab,
-      WorkspacePropsTab,
-      WorkspacePropsTabView,
-      WorkspacePropsTabTrigger,
-      WorkspacePropsTabTriggerFunction,
-      WorkspacePropsTabRoutine,
-      WorkspacePropsTabFunction,
-      WorkspacePropsTabScheduler,
+      WorkspaceTabQuery,
+      WorkspaceTabTable,
+      WorkspaceTabPropsTable,
+      WorkspaceTabPropsView,
+      WorkspaceTabPropsTrigger,
+      WorkspaceTabPropsTriggerFunction,
+      WorkspaceTabPropsRoutine,
+      WorkspaceTabPropsFunction,
+      WorkspaceTabPropsScheduler,
       ModalProcessesList,
       ModalDiscardChanges
    },

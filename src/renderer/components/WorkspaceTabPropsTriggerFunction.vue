@@ -98,7 +98,7 @@
             :height="editorHeight"
          />
       </div>
-      <!-- <WorkspacePropsTriggerFunctionOptionsModal
+      <!-- <WorkspaceTabPropsTriggerFunctionOptionsModal
          v-if="isOptionsModal"
          :local-options="localFunction"
          :workspace="workspace"
@@ -120,16 +120,16 @@ import { mapGetters, mapActions } from 'vuex';
 import { uidGen } from 'common/libs/uidGen';
 import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
-// import WorkspacePropsTriggerFunctionOptionsModal from '@/components/WorkspacePropsTriggerFunctionOptionsModal';
+// import WorkspaceTabPropsTriggerFunctionOptionsModal from '@/components/WorkspaceTabPropsTriggerFunctionOptionsModal';
 import ModalAskParameters from '@/components/ModalAskParameters';
 import Functions from '@/ipc-api/Functions';
 
 export default {
-   name: 'WorkspacePropsTabTriggerFunction',
+   name: 'WorkspaceTabPropsTriggerFunction',
    components: {
       BaseLoader,
       QueryEditor,
-      // WorkspacePropsTriggerFunctionOptionsModal,
+      // WorkspaceTabPropsTriggerFunctionOptionsModal,
       ModalAskParameters
    },
    props: {
