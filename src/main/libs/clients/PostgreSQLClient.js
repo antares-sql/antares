@@ -94,7 +94,7 @@ export class PostgreSQLClient extends AntaresCore {
    }
 
    /**
-    * Executes an USE query
+    * Executes an "USE" query
     *
     * @param {String} schema
     * @memberof PostgreSQLClient
@@ -1036,8 +1036,54 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async createTable (params) {
-      const sql = `CREATE TABLE "${params.schema}"."${params.name}" (${params.name}_id INTEGER NULL); ALTER TABLE "${params.schema}"."${params.name}" DROP COLUMN ${params.name}_id`;
+      const {
+         schema,
+         fields,
+         foreigns,
+         indexes,
+         options
+      } = params;
+      const newColumns = [];
+      const newIndexes = [];
+      const manageIndexes = [];
+      const newForeigns = [];
 
+      let sql = `CREATE TABLE "${schema}"."${options.name}"`;
+
+      // ADD FIELDS
+      fields.forEach(field => {
+         const typeInfo = this._getTypeInfo(field.type);
+         const length = typeInfo.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
+
+         newColumns.push(`${field.name} 
+            ${field.type.toUpperCase()}${length ? `(${length})` : ''} 
+            ${field.unsigned ? 'UNSIGNED' : ''} 
+            ${field.zerofill ? 'ZEROFILL' : ''}
+            ${field.nullable ? 'NULL' : 'NOT NULL'}
+            ${field.default ? `DEFAULT ${field.default}` : ''}
+            ${field.onUpdate ? `ON UPDATE ${field.onUpdate}` : ''}`);
+      });
+
+      // ADD INDEX
+      indexes.forEach(index => {
+         const fields = index.fields.map(field => `${field}`).join(',');
+         const type = index.type;
+
+         if (type === 'PRIMARY')
+            newIndexes.push(`PRIMARY KEY (${fields})`);
+         else if (type === 'UNIQUE')
+            newIndexes.push(`CONSTRAINT ${index.name} UNIQUE (${fields})`);
+         else
+            manageIndexes.push(`CREATE INDEX ${index.name} ON "${schema}"."${options.name}" (${fields})`);
+      });
+
+      // ADD FOREIGN KEYS
+      foreigns.forEach(foreign => {
+         newForeigns.push(`CONSTRAINT ${foreign.constraintName} FOREIGN KEY (${foreign.field}) REFERENCES "${schema}"."${foreign.refTable}" (${foreign.refField}) ON UPDATE ${foreign.onUpdate} ON DELETE ${foreign.onDelete}`);
+      });
+
+      sql = `${sql} (${[...newColumns, ...newIndexes, ...newForeigns].join(', ')})`;
+      if (manageIndexes.length) sql = `${sql}; ${manageIndexes.join(';')}`;
       return await this.raw(sql);
    }
 
@@ -1068,12 +1114,6 @@ export class PostgreSQLClient extends AntaresCore {
       const createSequences = [];
       const manageIndexes = [];
 
-      // OPTIONS
-      if ('comment' in options) alterColumns.push(`COMMENT='${options.comment}'`);
-      if ('engine' in options) alterColumns.push(`ENGINE=${options.engine}`);
-      if ('autoIncrement' in options) alterColumns.push(`AUTO_INCREMENT=${+options.autoIncrement}`);
-      if ('collation' in options) alterColumns.push(`COLLATE='${options.collation}'`);
-
       // ADD FIELDS
       additions.forEach(addition => {
          const typeInfo = this._getTypeInfo(addition.type);
@@ -1084,10 +1124,7 @@ export class PostgreSQLClient extends AntaresCore {
             ${addition.unsigned ? 'UNSIGNED' : ''} 
             ${addition.zerofill ? 'ZEROFILL' : ''}
             ${addition.nullable ? 'NULL' : 'NOT NULL'}
-            ${addition.autoIncrement ? 'AUTO_INCREMENT' : ''}
             ${addition.default ? `DEFAULT ${addition.default}` : ''}
-            ${addition.comment ? `COMMENT '${addition.comment}'` : ''}
-            ${addition.collation ? `COLLATE ${addition.collation}` : ''}
             ${addition.onUpdate ? `ON UPDATE ${addition.onUpdate}` : ''}`);
       });
 
@@ -1106,7 +1143,7 @@ export class PostgreSQLClient extends AntaresCore {
 
       // ADD FOREIGN KEYS
       foreignChanges.additions.forEach(addition => {
-         alterColumns.push(`ADD CONSTRAINT ${addition.constraintName} FOREIGN KEY (${addition.field}) REFERENCES ${addition.refTable} (${addition.refField}) ON UPDATE ${addition.onUpdate} ON DELETE ${addition.onDelete}`);
+         alterColumns.push(`ADD CONSTRAINT ${addition.constraintName} FOREIGN KEY (${addition.field}) REFERENCES "${schema}"."${addition.refTable}" (${addition.refField}) ON UPDATE ${addition.onUpdate} ON DELETE ${addition.onDelete}`);
       });
 
       // CHANGE FIELDS
@@ -1163,7 +1200,7 @@ export class PostgreSQLClient extends AntaresCore {
       // CHANGE FOREIGN KEYS
       foreignChanges.changes.forEach(change => {
          alterColumns.push(`DROP CONSTRAINT ${change.oldName}`);
-         alterColumns.push(`ADD CONSTRAINT ${change.constraintName} FOREIGN KEY (${change.field}) REFERENCES ${change.refTable} (${change.refField}) ON UPDATE ${change.onUpdate} ON DELETE ${change.onDelete}`);
+         alterColumns.push(`ADD CONSTRAINT ${change.constraintName} FOREIGN KEY (${change.field}) REFERENCES "${schema}"."${change.refTable}" (${change.refField}) ON UPDATE ${change.onUpdate} ON DELETE ${change.onDelete}`);
       });
 
       // DROP FIELDS

@@ -116,9 +116,6 @@ export default {
          removeLoadingElement: 'workspaces/removeLoadingElement',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
-      showCreateTableModal () {
-         this.$emit('show-create-table-modal');
-      },
       showDeleteModal () {
          this.isDeleteModal = true;
       },

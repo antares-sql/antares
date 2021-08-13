@@ -1181,7 +1181,57 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async createTable (params) {
-      const sql = `CREATE TABLE \`${params.schema}\`.\`${params.name}\` (\`${params.name}_ID\` INT NULL) COMMENT='${params.comment}', COLLATE='${params.collation}', ENGINE=${params.engine}`;
+      const {
+         schema,
+         fields,
+         foreigns,
+         indexes,
+         options
+      } = params;
+      const newColumns = [];
+      const newIndexes = [];
+      const newForeigns = [];
+
+      let sql = `CREATE TABLE \`${schema}\`.\`${options.name}\``;
+
+      // ADD FIELDS
+      fields.forEach(field => {
+         const typeInfo = this._getTypeInfo(field.type);
+         const length = typeInfo.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
+
+         newColumns.push(`\`${field.name}\` 
+            ${field.type.toUpperCase()}${length ? `(${length})` : ''} 
+            ${field.unsigned ? 'UNSIGNED' : ''} 
+            ${field.zerofill ? 'ZEROFILL' : ''}
+            ${field.nullable ? 'NULL' : 'NOT NULL'}
+            ${field.autoIncrement ? 'AUTO_INCREMENT' : ''}
+            ${field.default ? `DEFAULT ${field.default}` : ''}
+            ${field.comment ? `COMMENT '${field.comment}'` : ''}
+            ${field.collation ? `COLLATE ${field.collation}` : ''}
+            ${field.onUpdate ? `ON UPDATE ${field.onUpdate}` : ''}`);
+      });
+
+      // ADD INDEX
+      indexes.forEach(index => {
+         const fields = index.fields.map(field => `\`${field}\``).join(',');
+         let type = index.type;
+
+         if (type === 'PRIMARY')
+            newIndexes.push(`PRIMARY KEY (${fields})`);
+         else {
+            if (type === 'UNIQUE')
+               type = 'UNIQUE INDEX';
+
+            newIndexes.push(`${type} \`${index.name}\` (${fields})`);
+         }
+      });
+
+      // ADD FOREIGN KEYS
+      foreigns.forEach(foreign => {
+         newForeigns.push(`CONSTRAINT \`${foreign.constraintName}\` FOREIGN KEY (\`${foreign.field}\`) REFERENCES \`${foreign.refTable}\` (\`${foreign.refField}\`) ON UPDATE ${foreign.onUpdate} ON DELETE ${foreign.onDelete}`);
+      });
+
+      sql = `${sql} (${[...newColumns, ...newIndexes, ...newForeigns].join(', ')}) COMMENT='${options.comment}', COLLATE='${options.collation}', ENGINE=${options.engine}`;
 
       return await this.raw(sql);
    }

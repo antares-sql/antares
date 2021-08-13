@@ -69,6 +69,23 @@
                </a>
 
                <a
+                  v-else-if="tab.type === 'new-table'"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+               >
+                  <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                  <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
+                     {{ $t('message.newTable') }}
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @mousedown.left.stop
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a
                   v-else-if="tab.type === 'table-props'"
                   class="tab-link"
                   :class="{'badge': tab.isChanged}"
@@ -202,6 +219,15 @@
                :schema="tab.schema"
                :element-type="tab.elementType"
             />
+            <WorkspaceTabNewTable
+               v-else-if="tab.type === 'new-table'"
+               :key="tab.uid"
+               :tab="tab"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
+               :table="tab.elementName"
+               :schema="tab.schema"
+            />
             <WorkspaceTabPropsTable
                v-else-if="tab.type === 'table-props'"
                :key="tab.uid"
@@ -284,6 +310,9 @@ import WorkspaceExploreBar from '@/components/WorkspaceExploreBar';
 import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPanel';
 import WorkspaceTabQuery from '@/components/WorkspaceTabQuery';
 import WorkspaceTabTable from '@/components/WorkspaceTabTable';
+
+import WorkspaceTabNewTable from '@/components/WorkspaceTabNewTable';
+
 import WorkspaceTabPropsTable from '@/components/WorkspaceTabPropsTable';
 import WorkspaceTabPropsView from '@/components/WorkspaceTabPropsView';
 import WorkspaceTabPropsTrigger from '@/components/WorkspaceTabPropsTrigger';
@@ -303,6 +332,7 @@ export default {
       WorkspaceEditConnectionPanel,
       WorkspaceTabQuery,
       WorkspaceTabTable,
+      WorkspaceTabNewTable,
       WorkspaceTabPropsTable,
       WorkspaceTabPropsView,
       WorkspaceTabPropsTrigger,

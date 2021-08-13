@@ -37,10 +37,6 @@
                   <i class="mdi mdi-24px mdi-dots-horizontal mr-1" />
                   <span>{{ $t('word.parameters') }}</span>
                </button>
-               <!-- <button class="btn btn-dark btn-sm" @click="showOptionsModal">
-                  <i class="mdi mdi-24px mdi-cogs mr-1" />
-                  <span>{{ $t('word.options') }}</span>
-               </button> -->
             </div>
             <div class="workspace-query-info">
                <div class="d-flex" :title="$t('word.schema')">
@@ -164,13 +160,6 @@
             :height="editorHeight"
          />
       </div>
-      <!-- <WorkspaceTabPropsRoutineOptionsModal
-         v-if="isOptionsModal"
-         :local-options="localRoutine"
-         :workspace="workspace"
-         @hide="hideOptionsModal"
-         @options-update="optionsUpdate"
-      /> -->
       <WorkspaceTabPropsRoutineParamsModal
          v-if="isParamsModal"
          :local-parameters="localRoutine.parameters"
@@ -194,7 +183,6 @@ import { mapGetters, mapActions } from 'vuex';
 import { uidGen } from 'common/libs/uidGen';
 import QueryEditor from '@/components/QueryEditor';
 import BaseLoader from '@/components/BaseLoader';
-// import WorkspaceTabPropsRoutineOptionsModal from '@/components/WorkspaceTabPropsRoutineOptionsModal';
 import WorkspaceTabPropsRoutineParamsModal from '@/components/WorkspaceTabPropsRoutineParamsModal';
 import ModalAskParameters from '@/components/ModalAskParameters';
 import Routines from '@/ipc-api/Routines';
@@ -204,7 +192,6 @@ export default {
    components: {
       QueryEditor,
       BaseLoader,
-      // WorkspaceTabPropsRoutineOptionsModal,
       WorkspaceTabPropsRoutineParamsModal,
       ModalAskParameters
    },
@@ -218,7 +205,6 @@ export default {
       return {
          isLoading: false,
          isSaving: false,
-         isOptionsModal: false,
          isParamsModal: false,
          isAskingParameters: false,
          originalRoutine: null,
@@ -434,12 +420,6 @@ export default {
          }
 
          this.newTab({ uid: this.connection.uid, content: sql, type: 'query', autorun: true });
-      },
-      showOptionsModal () {
-         this.isOptionsModal = true;
-      },
-      hideOptionsModal () {
-         this.isOptionsModal = false;
       },
       showParamsModal () {
          this.isParamsModal = true;

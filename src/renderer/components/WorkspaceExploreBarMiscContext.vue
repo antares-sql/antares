@@ -101,9 +101,6 @@ export default {
          removeTabs: 'workspaces/removeTabs',
          newTab: 'workspaces/newTab'
       }),
-      showCreateTableModal () {
-         this.$emit('show-create-table-modal');
-      },
       showDeleteModal () {
          this.isDeleteModal = true;
       },

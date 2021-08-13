@@ -74,9 +74,6 @@ export default {
          addNotification: 'notifications/addNotification',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
-      showCreateTableModal () {
-         this.$emit('show-create-table-modal');
-      },
       showDeleteModal () {
          this.isDeleteModal = true;
       },

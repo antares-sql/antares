@@ -116,7 +116,8 @@ module.exports = {
       triggerFunction: 'Trigger function | Trigger functions',
       all: 'All',
       duplicate: 'Duplicate',
-      routine: 'Routine'
+      routine: 'Routine',
+      new: 'New'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -229,7 +230,8 @@ module.exports = {
       noOpenTabs: 'There are no open tabs, navigate on the left bar or:',
       noSchema: 'No schema',
       restorePreviourSession: 'Restore previous session',
-      runQuery: 'Run query'
+      runQuery: 'Run query',
+      newTable: 'New table'
    },
    faker: {
       address: 'Address',

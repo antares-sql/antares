@@ -10,7 +10,7 @@
             <div
                v-if="workspace.customizations.tableAdd"
                class="context-element"
-               @click="showCreateTableModal"
+               @click="openCreateTableTab"
             >
                <span class="d-flex"><i class="mdi mdi-18px mdi-table text-light pr-1" /> {{ $t('word.table') }}</span>
             </div>
@@ -132,8 +132,8 @@ export default {
          addNotification: 'notifications/addNotification',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
-      showCreateTableModal () {
-         this.$emit('show-create-table-modal');
+      openCreateTableTab () {
+         this.$emit('open-create-table-tab');
       },
       showCreateViewModal () {
          this.$emit('show-create-view-modal');

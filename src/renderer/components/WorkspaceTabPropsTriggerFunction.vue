@@ -22,13 +22,6 @@
                   <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
                   <span>{{ $t('word.clear') }}</span>
                </button>
-
-               <div class="divider-vert py-3" />
-
-               <!-- <button class="btn btn-dark btn-sm" @click="showOptionsModal">
-                  <i class="mdi mdi-24px mdi-cogs mr-1" />
-                  <span>{{ $t('word.options') }}</span>
-               </button> -->
             </div>
          </div>
       </div>
@@ -98,13 +91,6 @@
             :height="editorHeight"
          />
       </div>
-      <!-- <WorkspaceTabPropsTriggerFunctionOptionsModal
-         v-if="isOptionsModal"
-         :local-options="localFunction"
-         :workspace="workspace"
-         @hide="hideOptionsModal"
-         @options-update="optionsUpdate"
-      /> -->
       <ModalAskParameters
          v-if="isAskingParameters"
          :local-routine="localFunction"
@@ -120,7 +106,6 @@ import { mapGetters, mapActions } from 'vuex';
 import { uidGen } from 'common/libs/uidGen';
 import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
-// import WorkspaceTabPropsTriggerFunctionOptionsModal from '@/components/WorkspaceTabPropsTriggerFunctionOptionsModal';
 import ModalAskParameters from '@/components/ModalAskParameters';
 import Functions from '@/ipc-api/Functions';
 
@@ -129,7 +114,6 @@ export default {
    components: {
       BaseLoader,
       QueryEditor,
-      // WorkspaceTabPropsTriggerFunctionOptionsModal,
       ModalAskParameters
    },
    props: {
@@ -142,7 +126,6 @@ export default {
       return {
          isLoading: false,
          isSaving: false,
-         isOptionsModal: false,
          isParamsModal: false,
          isAskingParameters: false,
          originalFunction: null,
@@ -359,12 +342,6 @@ export default {
          }
 
          this.newTab({ uid: this.connection.uid, content: sql, type: 'query', autorun: true });
-      },
-      showOptionsModal () {
-         this.isOptionsModal = true;
-      },
-      hideOptionsModal () {
-         this.isOptionsModal = false;
       },
       showParamsModal () {
          this.isParamsModal = true;

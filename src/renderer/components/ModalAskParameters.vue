@@ -31,7 +31,11 @@
                            class="form-input"
                            type="text"
                         >
-                        <span class="input-group-addon field-type" :class="typeClass(parameter.type)">
+                        <span
+                           :title="`${parameter.type} ${parameter.length}`"
+                           class="input-group-addon field-type cut-text"
+                           :class="typeClass(parameter.type)"
+                        >
                            {{ parameter.type }} {{ parameter.length | wrapNumber }}
                         </span>
                      </div>
@@ -126,5 +130,9 @@ export default {
 <style scoped>
   .field-type {
     font-size: 0.6rem;
+  }
+
+  .input-group-addon {
+    max-width: 100px;
   }
 </style>

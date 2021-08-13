@@ -61,12 +61,6 @@
          @close="hideNewDBModal"
          @reload="refresh"
       />
-      <ModalNewTable
-         v-if="isNewTableModal"
-         :workspace="workspace"
-         @close="hideCreateTableModal"
-         @open-create-table-editor="openCreateTableEditor"
-      />
       <ModalNewView
          v-if="isNewViewModal"
          :workspace="workspace"
@@ -108,7 +102,7 @@
          :selected-schema="selectedSchema"
          :context-event="databaseContextEvent"
          @close-context="closeDatabaseContext"
-         @show-create-table-modal="showCreateTableModal"
+         @open-create-table-tab="openCreateTableTab"
          @show-create-view-modal="showCreateViewModal"
          @show-create-trigger-modal="showCreateTriggerModal"
          @show-create-routine-modal="showCreateRoutineModal"
@@ -165,7 +159,6 @@ import TableContext from '@/components/WorkspaceExploreBarTableContext';
 import MiscContext from '@/components/WorkspaceExploreBarMiscContext';
 import MiscFolderContext from '@/components/WorkspaceExploreBarMiscFolderContext';
 import ModalNewSchema from '@/components/ModalNewSchema';
-import ModalNewTable from '@/components/ModalNewTable';
 import ModalNewView from '@/components/ModalNewView';
 import ModalNewTrigger from '@/components/ModalNewTrigger';
 import ModalNewRoutine from '@/components/ModalNewRoutine';
@@ -182,7 +175,6 @@ export default {
       MiscContext,
       MiscFolderContext,
       ModalNewSchema,
-      ModalNewTable,
       ModalNewView,
       ModalNewTrigger,
       ModalNewRoutine,
@@ -199,7 +191,6 @@ export default {
          isRefreshing: false,
 
          isNewDBModal: false,
-         isNewTableModal: false,
          isNewViewModal: false,
          isNewTriggerModal: false,
          isNewRoutineModal: false,
@@ -307,9 +298,16 @@ export default {
       hideNewDBModal () {
          this.isNewDBModal = false;
       },
-      showCreateTableModal () {
+      openCreateTableTab () {
          this.closeDatabaseContext();
-         this.isNewTableModal = true;
+
+         this.newTab({
+            uid: this.workspace.uid,
+            schema: this.selectedSchema,
+            elementName: '',
+            elementType: 'table',
+            type: 'new-table'
+         });
       },
       hideCreateTableModal () {
          this.isNewTableModal = false;

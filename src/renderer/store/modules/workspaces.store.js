@@ -581,6 +581,24 @@ export default {
          const workspaceTabs = state.workspaces.find(workspace => workspace.uid === uid);
 
          switch (type) {
+            case 'new-table':
+            case 'new-trigger':
+            case 'new-trigger-function':
+            case 'new-function':
+            case 'new-routine':
+            case 'new-scheduler':
+               tabUid = uidGen('T');
+               commit('NEW_TAB', {
+                  uid,
+                  tab: tabUid,
+                  content,
+                  type,
+                  autorun,
+                  schema,
+                  elementName,
+                  elementType
+               });
+               break;
             case 'temp-data':
             case 'temp-trigger-props':
             case 'temp-trigger-function-props':
