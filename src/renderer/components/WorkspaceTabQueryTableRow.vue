@@ -11,7 +11,7 @@
          <template v-if="cKey !== '_id'">
             <span
                v-if="!isInlineEditor[cKey] && fields[cKey]"
-               class="cell-content px-2"
+               class="cell-content"
                :class="`${isNull(col)} ${typeClass(fields[cKey].type)}`"
                @dblclick="editON($event, col, cKey)"
             >{{ col | typeFormat(fields[cKey].type.toLowerCase(), fields[cKey].length) | cutText }}</span>
@@ -31,7 +31,7 @@
                   v-mask="inputProps.mask"
                   :type="inputProps.type"
                   autofocus
-                  class="editable-field px-2"
+                  class="editable-field form-input input-sm px-1"
                   @blur="editOFF"
                >
                <select
@@ -59,7 +59,7 @@
                   v-model="editingContent"
                   :type="inputProps.type"
                   autofocus
-                  class="editable-field px-2"
+                  class="editable-field form-input input-sm px-1"
                   @blur="editOFF"
                >
             </template>
@@ -528,6 +528,9 @@ export default {
   border: none;
   line-height: 1;
   width: 100%;
+  max-height: 21px;
+  border-radius: 3px;
+  font-size: 0.7rem;
   position: absolute;
   left: 0;
   right: 0;
@@ -535,6 +538,7 @@ export default {
 
 .cell-content {
   display: block;
+  padding: 0 0.2rem;
   min-height: 0.8rem;
   text-overflow: ellipsis;
   white-space: nowrap;

@@ -11,7 +11,7 @@
          <template v-if="cKey !== '_id'">
             <span
                v-if="!isInlineEditor[cKey]"
-               class="cell-content px-2"
+               class="cell-content"
                :class="`${isNull(col)} type-${typeof col === 'number' ? 'int' : 'varchar'}`"
                @dblclick="dblClick(cKey)"
             >{{ col | cutText }}</span>
@@ -126,6 +126,7 @@ export default {
 
 .cell-content {
   display: block;
+  padding: 0 0.2rem;
   min-height: 0.8rem;
   text-overflow: ellipsis;
   white-space: nowrap;

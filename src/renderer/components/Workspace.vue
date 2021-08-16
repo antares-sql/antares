@@ -619,7 +619,7 @@ export default {
       .th {
         position: sticky;
         top: 0;
-        border: 1px solid;
+        border: 2px solid;
         border-left: none;
         border-bottom-width: 2px;
         padding: 0;
@@ -628,15 +628,15 @@ export default {
         z-index: 1;
 
         > div {
-          padding: 0.1rem 0.4rem;
+          padding: 0.1rem 0.2rem;
           min-width: -webkit-fill-available;
         }
       }
 
       .td {
-        border-right: 1px solid;
-        border-bottom: 1px solid;
-        padding: 0 0.4rem;
+        border-right: 2px solid;
+        border-bottom: 2px solid;
+        padding: 0 0.2rem;
         text-overflow: ellipsis;
         max-width: 200px;
         white-space: nowrap;

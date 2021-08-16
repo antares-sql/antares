@@ -251,7 +251,7 @@ export default {
          if (field.default === 'NULL') fieldDefault = null;
          else {
             if ([...NUMBER, ...FLOAT].includes(field.type))
-               fieldDefault = Number.isNaN(+field.default) ? null : +field.default;
+               fieldDefault = !field.default || Number.isNaN(+field.default.replaceAll('\'', '')) ? null : +field.default.replaceAll('\'', '');
             else if ([...TEXT, ...LONG_TEXT].includes(field.type)) {
                fieldDefault = field.default
                   ? field.default.includes('\'')

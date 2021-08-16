@@ -20,6 +20,11 @@
     }
   }
 
+  option,
+  optgroup {
+    background-color: $bg-color-gray;
+  }
+
   // Override Spectre.css
   .menu {
     background: $bg-color-light-dark;
@@ -179,16 +184,29 @@
     .workspace-query-results {
       .table {
         .th {
-          background: $bg-color-dark;
-          border-color: $bg-color-light-dark;
+          border-color: darken($bg-color-light-gray, 80%);
+          background-color: $body-bg-dark;
         }
 
-        .td {
-          border-color: $bg-color-light-dark;
+        .tr {
+          background-color: darken($bg-color-light-gray, 80%);
 
-          &:focus {
-            box-shadow: inset 0 0 0 1px $body-font-color-dark;
-            background: rgba($color: #000, $alpha: 0.3);
+          .td:first-child {
+            border-left: 2px solid $body-bg-dark;
+          }
+
+          .td {
+            border-color: $body-bg-dark;
+
+            &:focus {
+              box-shadow: inset 0 0 0 2px darken($body-font-color-dark, 40%);
+              background-color: rgba($color: #000, $alpha: 0.3);
+            }
+
+            .editable-field {
+              box-shadow: inset 0 0 0 2px darken($body-font-color-dark, 40%);
+              background-color: rgba($color: #000, $alpha: 0.3);
+            }
           }
         }
       }

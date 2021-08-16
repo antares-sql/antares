@@ -1,12 +1,12 @@
 <template>
    <div class="tr" @contextmenu.prevent="$emit('contextmenu', $event, localRow._id)">
-      <div class="td" tabindex="0">
+      <div class="td p-0" tabindex="0">
          <div :class="customizations.sortableFields ? 'row-draggable' : 'text-center'">
             <i v-if="customizations.sortableFields" class="mdi mdi-drag-horizontal row-draggable-icon" />
             {{ localRow.order }}
          </div>
       </div>
-      <div class="td" tabindex="0">
+      <div class="td p-0" tabindex="0">
          <div class="text-center">
             <i
                v-for="(index, i) in indexes"
@@ -23,7 +23,7 @@
             />
          </div>
       </div>
-      <div class="td" tabindex="0">
+      <div class="td p-0" tabindex="0">
          <span
             v-if="!isInlineEditor.name"
             class="cell-content"
@@ -37,12 +37,12 @@
             v-model="editingContent"
             type="text"
             autofocus
-            class="editable-field px-2"
+            class="editable-field form-input input-sm px-1"
             @blur="editOFF"
          >
       </div>
       <div
-         class="td text-uppercase"
+         class="td p-0 text-uppercase"
          tabindex="0"
       >
          <span
@@ -57,7 +57,7 @@
             v-else
             ref="editField"
             v-model="editingContent"
-            class="form-select editable-field small-select text-uppercase"
+            class="form-select editable-field pl-1 pr-4 small-select text-uppercase"
             @blur="editOFF"
          >
             <option v-if="!isInDataTypes">
@@ -81,7 +81,7 @@
       </div>
       <div
          v-if="customizations.tableArray"
-         class="td"
+         class="td p-0"
          tabindex="0"
       >
          <label class="form-checkbox">
@@ -89,7 +89,7 @@
             <i class="form-icon" />
          </label>
       </div>
-      <div class="td type-int" tabindex="0">
+      <div class="td p-0 type-int" tabindex="0">
          <template v-if="fieldType.length">
             <span
                v-if="!isInlineEditor.length"
@@ -109,7 +109,7 @@
                v-model="editingContent"
                type="text"
                autofocus
-               class="editable-field px-2"
+               class="editable-field form-input input-sm px-1"
                @blur="editOFF"
             >
             <input
@@ -118,14 +118,14 @@
                v-model="editingContent"
                type="number"
                autofocus
-               class="editable-field px-2"
+               class="editable-field form-input input-sm px-1"
                @blur="editOFF"
             >
          </template>
       </div>
       <div
          v-if="customizations.unsigned"
-         class="td"
+         class="td p-0"
          tabindex="0"
       >
          <label class="form-checkbox">
@@ -139,7 +139,7 @@
       </div>
       <div
          v-if="customizations.nullable"
-         class="td"
+         class="td p-0"
          tabindex="0"
       >
          <label class="form-checkbox">
@@ -153,7 +153,7 @@
       </div>
       <div
          v-if="customizations.zerofill"
-         class="td"
+         class="td p-0"
          tabindex="0"
       >
          <label class="form-checkbox">
@@ -165,14 +165,14 @@
             <i class="form-icon" />
          </label>
       </div>
-      <div class="td" tabindex="0">
+      <div class="td p-0" tabindex="0">
          <span class="cell-content" @dblclick="editON($event, localRow.default, 'default')">
             {{ fieldDefault }}
          </span>
       </div>
       <div
          v-if="customizations.comment"
-         class="td type-varchar"
+         class="td p-0 type-varchar"
          tabindex="0"
       >
          <span
@@ -188,13 +188,13 @@
             v-model="editingContent"
             type="text"
             autofocus
-            class="editable-field px-2"
+            class="editable-field form-input input-sm px-1"
             @blur="editOFF"
          >
       </div>
       <div
          v-if="customizations.collation"
-         class="td"
+         class="td p-0"
          tabindex="0"
       >
          <template v-if="fieldType.collation">
@@ -209,7 +209,7 @@
                v-else
                ref="editField"
                v-model="editingContent"
-               class="form-select small-select editable-field"
+               class="form-select small-select pl-1 pr-4 editable-field"
                @blur="editOFF"
             >
                <option
@@ -575,12 +575,16 @@ export default {
   position: absolute;
   left: 0;
   right: 0;
+  max-height: 21px;
+  border-radius: 3px;
+  font-size: 0.7rem;
 }
 
 .row-draggable {
   position: relative;
   text-align: right;
   padding-left: 28px;
+  padding-right: 2px;
   cursor: grab;
 
   .row-draggable-icon {
@@ -609,6 +613,7 @@ export default {
 
 .cell-content {
   display: block;
+  padding: 0 0.2rem;
   min-height: 0.8rem;
   text-overflow: ellipsis;
   white-space: nowrap;
