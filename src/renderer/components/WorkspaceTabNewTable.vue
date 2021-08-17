@@ -119,8 +119,9 @@
       </div>
       <div class="workspace-query-results column col-12 p-relative">
          <BaseLoader v-if="isLoading" />
-         <WorkspaceTabPropsTableFIelds
-            v-if="localFields"
+         <WorkspaceTabNewTableEmptyState v-if="!localFields.length" @new-field="addField" />
+         <WorkspaceTabPropsTableFields
+            v-if="localFields.length"
             ref="indexTable"
             :fields="localFields"
             :indexes="localIndexes"
@@ -168,17 +169,19 @@ import { mapGetters, mapActions } from 'vuex';
 import { uidGen } from 'common/libs/uidGen';
 import Tables from '@/ipc-api/Tables';
 import BaseLoader from '@/components/BaseLoader';
-import WorkspaceTabPropsTableFIelds from '@/components/WorkspaceTabPropsTableFIelds';
+import WorkspaceTabPropsTableFields from '@/components/WorkspaceTabPropsTableFields';
 import WorkspaceTabPropsTableIndexesModal from '@/components/WorkspaceTabPropsTableIndexesModal';
 import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTableForeignModal';
+import WorkspaceTabNewTableEmptyState from '@/components/WorkspaceTabNewTableEmptyState';
 
 export default {
    name: 'WorkspaceTabNewTable',
    components: {
       BaseLoader,
-      WorkspaceTabPropsTableFIelds,
+      WorkspaceTabPropsTableFields,
       WorkspaceTabPropsTableIndexesModal,
-      WorkspaceTabPropsTableForeignModal
+      WorkspaceTabPropsTableForeignModal,
+      WorkspaceTabNewTableEmptyState
    },
    props: {
       connection: Object,
