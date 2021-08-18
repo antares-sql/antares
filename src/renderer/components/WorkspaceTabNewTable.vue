@@ -129,7 +129,7 @@
             :tab-uid="tabUid"
             :conn-uid="connection.uid"
             :index-types="workspace.indexTypes"
-            :table="table"
+            table="new"
             :schema="schema"
             mode="table"
             @duplicate-field="duplicateField"
@@ -142,7 +142,7 @@
       <WorkspaceTabPropsTableIndexesModal
          v-if="isIndexesModal"
          :local-indexes="localIndexes"
-         :table="table"
+         table="new"
          :fields="localFields"
          :index-types="workspace.indexTypes"
          :workspace="workspace"
@@ -187,7 +187,6 @@ export default {
       connection: Object,
       tab: Object,
       isSelected: Boolean,
-      table: String,
       schema: String
    },
    data () {
@@ -246,14 +245,6 @@ export default {
       }
    },
    watch: {
-      schema () {
-         if (this.isSelected)
-            this.lastTable = this.table;
-      },
-      table () {
-         if (this.isSelected)
-            this.lastTable = this.table;
-      },
       isSelected (val) {
          if (val)
             this.changeBreadcrumbs({ schema: this.schema });
@@ -357,7 +348,6 @@ export default {
             key: '',
             type: this.workspace.dataTypes[0].types[0].name,
             schema: this.schema,
-            table: this.table,
             numPrecision: null,
             numLength: this.workspace.dataTypes[0].types[0].length,
             datePrecision: null,

@@ -130,7 +130,7 @@ import TableRow from '@/components/WorkspaceTabPropsTableRow';
 import TableContext from '@/components/WorkspaceTabPropsTableContext';
 
 export default {
-   name: 'WorkspaceTabPropsTableFIelds',
+   name: 'WorkspaceTabPropsTableFields',
    components: {
       TableRow,
       TableContext,

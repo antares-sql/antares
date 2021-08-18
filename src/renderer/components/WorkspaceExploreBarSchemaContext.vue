@@ -17,7 +17,7 @@
             <div
                v-if="workspace.customizations.viewAdd"
                class="context-element"
-               @click="showCreateViewModal"
+               @click="openCreateViewTab"
             >
                <span class="d-flex"><i class="mdi mdi-18px mdi-table-eye text-light pr-1" /> {{ $t('word.view') }}</span>
             </div>
@@ -135,8 +135,8 @@ export default {
       openCreateTableTab () {
          this.$emit('open-create-table-tab');
       },
-      showCreateViewModal () {
-         this.$emit('show-create-view-modal');
+      openCreateViewTab () {
+         this.$emit('open-create-view-tab');
       },
       showCreateTriggerModal () {
          this.$emit('show-create-trigger-modal');

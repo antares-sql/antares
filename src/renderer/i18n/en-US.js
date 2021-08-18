@@ -231,8 +231,9 @@ module.exports = {
       noSchema: 'No schema',
       restorePreviourSession: 'Restore previous session',
       runQuery: 'Run query',
+      thereAreNoTableFields: 'There are no table fields',
       newTable: 'New table',
-      thereAreNoTableFields: 'There are no table fields'
+      newView: 'New view'
    },
    faker: {
       address: 'Address',

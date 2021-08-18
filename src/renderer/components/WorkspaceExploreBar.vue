@@ -61,12 +61,6 @@
          @close="hideNewDBModal"
          @reload="refresh"
       />
-      <ModalNewView
-         v-if="isNewViewModal"
-         :workspace="workspace"
-         @close="hideCreateViewModal"
-         @open-create-view-editor="openCreateViewEditor"
-      />
       <ModalNewTrigger
          v-if="isNewTriggerModal"
          :workspace="workspace"
@@ -102,8 +96,8 @@
          :selected-schema="selectedSchema"
          :context-event="databaseContextEvent"
          @close-context="closeDatabaseContext"
-         @open-create-table-tab="openCreateTableTab"
-         @show-create-view-modal="showCreateViewModal"
+         @open-create-table-tab="openCreateElementTab('table')"
+         @open-create-view-tab="openCreateElementTab('view')"
          @show-create-trigger-modal="showCreateTriggerModal"
          @show-create-routine-modal="showCreateRoutineModal"
          @show-create-function-modal="showCreateFunctionModal"
@@ -146,8 +140,6 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
-import Tables from '@/ipc-api/Tables';
-import Views from '@/ipc-api/Views';
 import Triggers from '@/ipc-api/Triggers';
 import Routines from '@/ipc-api/Routines';
 import Functions from '@/ipc-api/Functions';
@@ -159,7 +151,6 @@ import TableContext from '@/components/WorkspaceExploreBarTableContext';
 import MiscContext from '@/components/WorkspaceExploreBarMiscContext';
 import MiscFolderContext from '@/components/WorkspaceExploreBarMiscFolderContext';
 import ModalNewSchema from '@/components/ModalNewSchema';
-import ModalNewView from '@/components/ModalNewView';
 import ModalNewTrigger from '@/components/ModalNewTrigger';
 import ModalNewRoutine from '@/components/ModalNewRoutine';
 import ModalNewFunction from '@/components/ModalNewFunction';
@@ -175,7 +166,6 @@ export default {
       MiscContext,
       MiscFolderContext,
       ModalNewSchema,
-      ModalNewView,
       ModalNewTrigger,
       ModalNewRoutine,
       ModalNewFunction,
@@ -298,41 +288,16 @@ export default {
       hideNewDBModal () {
          this.isNewDBModal = false;
       },
-      openCreateTableTab () {
+      openCreateElementTab (element) {
          this.closeDatabaseContext();
 
          this.newTab({
             uid: this.workspace.uid,
             schema: this.selectedSchema,
             elementName: '',
-            elementType: 'table',
-            type: 'new-table'
+            elementType: element,
+            type: `new-${element}`
          });
-      },
-      hideCreateTableModal () {
-         this.isNewTableModal = false;
-      },
-      async openCreateTableEditor (payload) {
-         const params = {
-            uid: this.connection.uid,
-            schema: this.selectedSchema,
-            ...payload
-         };
-
-         const { status, response } = await Tables.createTable(params);
-
-         if (status === 'success') {
-            await this.refresh();
-            this.newTab({
-               uid: this.workspace.uid,
-               schema: this.selectedSchema,
-               elementName: payload.name,
-               elementType: 'table',
-               type: 'table-props'
-            });
-         }
-         else
-            this.addNotification({ status: 'error', message: response });
       },
       openSchemaContext (payload) {
          this.selectedSchema = payload.schema;
@@ -368,38 +333,6 @@ export default {
       },
       closeMiscFolderContext () {
          this.isMiscFolderContext = false;
-      },
-      showCreateViewModal () {
-         this.closeDatabaseContext();
-         this.closeMiscFolderContext();
-         this.isNewViewModal = true;
-      },
-      hideCreateViewModal () {
-         this.isNewViewModal = false;
-      },
-      async openCreateViewEditor (payload) {
-         const params = {
-            uid: this.connection.uid,
-            schema: this.selectedSchema,
-            ...payload
-         };
-
-         const { status, response } = await Views.createView(params);
-
-         if (status === 'success') {
-            await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedSchema, view: payload.name });
-
-            this.newTab({
-               uid: this.workspace.uid,
-               schema: this.selectedSchema,
-               elementName: payload.name,
-               elementType: 'view',
-               type: 'view-props'
-            });
-         }
-         else
-            this.addNotification({ status: 'error', message: response });
       },
       showCreateTriggerModal () {
          this.closeDatabaseContext();

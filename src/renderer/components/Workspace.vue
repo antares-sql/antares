@@ -103,6 +103,23 @@
                </a>
 
                <a
+                  v-else-if="tab.type === 'new-view'"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+               >
+                  <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                  <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
+                     {{ $t('message.newView') }}
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @mousedown.left.stop
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a
                   v-else-if="tab.type === 'view-props'"
                   class="tab-link"
                   :class="{'badge': tab.isChanged}"
@@ -225,7 +242,6 @@
                :tab="tab"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
-               :table="tab.elementName"
                :schema="tab.schema"
             />
             <WorkspaceTabPropsTable
@@ -234,6 +250,14 @@
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
                :table="tab.elementName"
+               :schema="tab.schema"
+            />
+            <WorkspaceTabNewView
+               v-else-if="tab.type === 'new-view'"
+               :key="tab.uid"
+               :tab="tab"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
                :schema="tab.schema"
             />
             <WorkspaceTabPropsView
@@ -312,6 +336,7 @@ import WorkspaceTabQuery from '@/components/WorkspaceTabQuery';
 import WorkspaceTabTable from '@/components/WorkspaceTabTable';
 
 import WorkspaceTabNewTable from '@/components/WorkspaceTabNewTable';
+import WorkspaceTabNewView from '@/components/WorkspaceTabNewView';
 
 import WorkspaceTabPropsTable from '@/components/WorkspaceTabPropsTable';
 import WorkspaceTabPropsView from '@/components/WorkspaceTabPropsView';
@@ -333,6 +358,7 @@ export default {
       WorkspaceTabQuery,
       WorkspaceTabTable,
       WorkspaceTabNewTable,
+      WorkspaceTabNewView,
       WorkspaceTabPropsTable,
       WorkspaceTabPropsView,
       WorkspaceTabPropsTrigger,
