@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.3](https://github.com/Fabio286/antares/compare/v0.3.2...v0.3.3) (2021-08-22)
+
+
+### Features
+
+* new create table tabs ([c9fa941](https://github.com/Fabio286/antares/commit/c9fa9415787c3953043db5876a99b3664c69c071))
+* new create view tabs ([8b93c49](https://github.com/Fabio286/antares/commit/8b93c497784ea431f9747c5afb53f6ef075ea9d6))
+* new table empty state ([0842e00](https://github.com/Fabio286/antares/commit/0842e00098ba420412937aa52276ee33bda53693))
+
+
+### Bug Fixes
+
+* **MySQL:** editing a view causes error for missing database in some conditions ([4048df3](https://github.com/Fabio286/antares/commit/4048df3c7bc2d42a60f7a57c9a4b8b5b445fcd43))
+* table options not loaded on restored setting tabs at startup ([622b519](https://github.com/Fabio286/antares/commit/622b519cbb5fbe4e38a4baffb8eab169b21eed21))
+* **UI:** multiple temp tabs opened switching to tables from other elements ([b35fc5b](https://github.com/Fabio286/antares/commit/b35fc5b78bdbeff1422ef088441b17c8b0df663c))
+* **UI:** no round borders on left of file upload inputs ([d5b2bde](https://github.com/Fabio286/antares/commit/d5b2bde2eaf8ff3e14f49cc26acdcb201b4cb15c))
+
+
+### Improvements
+
+* **UI:** element options in setting tabs accessible directly ([71e2c91](https://github.com/Fabio286/antares/commit/71e2c911ae23e86543b2af1fa885981ff271777d))
+* **UI:** improved view setting tab ([1983686](https://github.com/Fabio286/antares/commit/198368605b084bd58fd6f7ca0b19895ba23a45e6))
+* **UI:** primary app color on selected text backgrouns ([756d49b](https://github.com/Fabio286/antares/commit/756d49b2596dea58376c6afa8e0bad0cd62b146c))
+* **UI:** visual improvements of tables ([bc82289](https://github.com/Fabio286/antares/commit/bc82289d54550a93300fe66d7a660aa70db2fd23))
+
 ### [0.3.2](https://github.com/Fabio286/antares/compare/v0.3.1...v0.3.2) (2021-08-06)
 
 
