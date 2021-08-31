@@ -106,7 +106,7 @@
          @reload="refresh"
       />
       <TableContext
-         v-show="isTableContext"
+         v-if="isTableContext"
          :selected-schema="selectedSchema"
          :selected-table="selectedTable"
          :context-event="tableContextEvent"
