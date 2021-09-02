@@ -61,12 +61,6 @@
          @close="hideNewDBModal"
          @reload="refresh"
       />
-      <ModalNewTrigger
-         v-if="isNewTriggerModal"
-         :workspace="workspace"
-         @close="hideCreateTriggerModal"
-         @open-create-trigger-editor="openCreateTriggerEditor"
-      />
       <ModalNewRoutine
          v-if="isNewRoutineModal"
          :workspace="workspace"
@@ -98,7 +92,7 @@
          @close-context="closeDatabaseContext"
          @open-create-table-tab="openCreateElementTab('table')"
          @open-create-view-tab="openCreateElementTab('view')"
-         @show-create-trigger-modal="showCreateTriggerModal"
+         @open-create-trigger-tab="openCreateElementTab('trigger')"
          @show-create-routine-modal="showCreateRoutineModal"
          @show-create-function-modal="showCreateFunctionModal"
          @show-create-trigger-function-modal="showCreateTriggerFunctionModal"
@@ -151,7 +145,7 @@ import TableContext from '@/components/WorkspaceExploreBarTableContext';
 import MiscContext from '@/components/WorkspaceExploreBarMiscContext';
 import MiscFolderContext from '@/components/WorkspaceExploreBarMiscFolderContext';
 import ModalNewSchema from '@/components/ModalNewSchema';
-import ModalNewTrigger from '@/components/ModalNewTrigger';
+
 import ModalNewRoutine from '@/components/ModalNewRoutine';
 import ModalNewFunction from '@/components/ModalNewFunction';
 import ModalNewTriggerFunction from '@/components/ModalNewTriggerFunction';
@@ -166,7 +160,7 @@ export default {
       MiscContext,
       MiscFolderContext,
       ModalNewSchema,
-      ModalNewTrigger,
+
       ModalNewRoutine,
       ModalNewFunction,
       ModalNewTriggerFunction,

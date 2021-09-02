@@ -233,7 +233,8 @@ module.exports = {
       runQuery: 'Run query',
       thereAreNoTableFields: 'There are no table fields',
       newTable: 'New table',
-      newView: 'New view'
+      newView: 'New view',
+      newTrigger: 'New trigger'
    },
    faker: {
       address: 'Address',

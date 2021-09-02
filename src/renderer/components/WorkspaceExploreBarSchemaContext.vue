@@ -24,7 +24,7 @@
             <div
                v-if="workspace.customizations.triggerAdd"
                class="context-element"
-               @click="showCreateTriggerModal"
+               @click="openCreateTriggerTab"
             >
                <span class="d-flex"><i class="mdi mdi-18px mdi-table-cog text-light pr-1" /> {{ $tc('word.trigger', 1) }}</span>
             </div>
@@ -138,8 +138,8 @@ export default {
       openCreateViewTab () {
          this.$emit('open-create-view-tab');
       },
-      showCreateTriggerModal () {
-         this.$emit('show-create-trigger-modal');
+      openCreateTriggerTab () {
+         this.$emit('open-create-trigger-tab');
       },
       showCreateRoutineModal () {
          this.$emit('show-create-routine-modal');
