@@ -103,6 +103,23 @@
                </a>
 
                <a
+                  v-else-if="tab.type === 'view-props'"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+               >
+                  <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
+                  <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.view`)}`">
+                     {{ tab.elementName | cutText }}
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @mousedown.left.stop
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a
                   v-else-if="tab.type === 'new-view'"
                   class="tab-link"
                   :class="{'badge': tab.isChanged}"
@@ -137,13 +154,13 @@
                </a>
 
                <a
-                  v-else-if="tab.type === 'view-props'"
+                  v-else-if="tab.type === 'new-routine'"
                   class="tab-link"
                   :class="{'badge': tab.isChanged}"
                >
-                  <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
-                  <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.view`)}`">
-                     {{ tab.elementName | cutText }}
+                  <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                  <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
+                     {{ $t('message.newRoutine') }}
                      <span
                         class="btn btn-clear"
                         :title="$t('word.close')"
@@ -310,6 +327,15 @@
                :function="tab.elementName"
                :schema="tab.schema"
             />
+            <WorkspaceTabNewRoutine
+               v-else-if="tab.type === 'new-routine'"
+               :key="tab.uid"
+               :tab="tab"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
+               :trigger="tab.elementName"
+               :schema="tab.schema"
+            />
             <WorkspaceTabPropsRoutine
                v-else-if="['temp-routine-props', 'routine-props'].includes(tab.type)"
                :key="tab.uid"
@@ -364,6 +390,7 @@ import WorkspaceTabTable from '@/components/WorkspaceTabTable';
 import WorkspaceTabNewTable from '@/components/WorkspaceTabNewTable';
 import WorkspaceTabNewView from '@/components/WorkspaceTabNewView';
 import WorkspaceTabNewTrigger from '@/components/WorkspaceTabNewTrigger';
+import WorkspaceTabNewRoutine from '@/components/WorkspaceTabNewRoutine';
 
 import WorkspaceTabPropsTable from '@/components/WorkspaceTabPropsTable';
 import WorkspaceTabPropsView from '@/components/WorkspaceTabPropsView';
@@ -391,6 +418,7 @@ export default {
       WorkspaceTabNewTrigger,
       WorkspaceTabPropsTrigger,
       WorkspaceTabPropsTriggerFunction,
+      WorkspaceTabNewRoutine,
       WorkspaceTabPropsRoutine,
       WorkspaceTabPropsFunction,
       WorkspaceTabPropsScheduler,

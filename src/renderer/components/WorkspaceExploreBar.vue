@@ -61,12 +61,6 @@
          @close="hideNewDBModal"
          @reload="refresh"
       />
-      <ModalNewRoutine
-         v-if="isNewRoutineModal"
-         :workspace="workspace"
-         @close="hideCreateRoutineModal"
-         @open-create-routine-editor="openCreateRoutineEditor"
-      />
       <ModalNewFunction
          v-if="isNewFunctionModal"
          :workspace="workspace"
@@ -93,7 +87,7 @@
          @open-create-table-tab="openCreateElementTab('table')"
          @open-create-view-tab="openCreateElementTab('view')"
          @open-create-trigger-tab="openCreateElementTab('trigger')"
-         @show-create-routine-modal="showCreateRoutineModal"
+         @open-create-routine-tab="openCreateElementTab('routine')"
          @show-create-function-modal="showCreateFunctionModal"
          @show-create-trigger-function-modal="showCreateTriggerFunctionModal"
          @show-create-scheduler-modal="showCreateSchedulerModal"
@@ -120,8 +114,8 @@
          :selected-misc="selectedMisc"
          :selected-schema="selectedSchema"
          :context-event="miscContextEvent"
-         @show-create-trigger-modal="showCreateTriggerModal"
-         @show-create-routine-modal="showCreateRoutineModal"
+         @open-create-trigger-tab="openCreateElementTab('trigger')"
+         @open-create-routine-tab="openCreateElementTab('routine')"
          @show-create-function-modal="showCreateFunctionModal"
          @show-create-trigger-function-modal="showCreateTriggerFunctionModal"
          @show-create-scheduler-modal="showCreateSchedulerModal"
@@ -134,6 +128,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
+// import Tables from '@/ipc-api/Tables';
 import Triggers from '@/ipc-api/Triggers';
 import Routines from '@/ipc-api/Routines';
 import Functions from '@/ipc-api/Functions';
@@ -146,7 +141,6 @@ import MiscContext from '@/components/WorkspaceExploreBarMiscContext';
 import MiscFolderContext from '@/components/WorkspaceExploreBarMiscFolderContext';
 import ModalNewSchema from '@/components/ModalNewSchema';
 
-import ModalNewRoutine from '@/components/ModalNewRoutine';
 import ModalNewFunction from '@/components/ModalNewFunction';
 import ModalNewTriggerFunction from '@/components/ModalNewTriggerFunction';
 import ModalNewScheduler from '@/components/ModalNewScheduler';
@@ -161,7 +155,6 @@ export default {
       MiscFolderContext,
       ModalNewSchema,
 
-      ModalNewRoutine,
       ModalNewFunction,
       ModalNewTriggerFunction,
       ModalNewScheduler
@@ -284,6 +277,7 @@ export default {
       },
       openCreateElementTab (element) {
          this.closeDatabaseContext();
+         this.closeMiscFolderContext();
 
          this.newTab({
             uid: this.workspace.uid,

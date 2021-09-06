@@ -22,6 +22,13 @@
                   <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
                   <span>{{ $t('word.clear') }}</span>
                </button>
+
+               <div class="divider-vert py-3" />
+
+               <button class="btn btn-dark btn-sm" @click="showParamsModal">
+                  <i class="mdi mdi-24px mdi-dots-horizontal mr-1" />
+                  <span>{{ $t('word.parameters') }}</span>
+               </button>
             </div>
             <div class="workspace-query-info">
                <div class="d-flex" :title="$t('word.schema')">
@@ -34,28 +41,41 @@
          <div class="columns">
             <div class="column col-auto">
                <div class="form-group">
-                  <label class="form-label">{{ $t('word.name') }}</label>
+                  <label class="form-label">
+                     {{ $t('word.name') }}
+                  </label>
                   <input
                      ref="firstInput"
-                     v-model="localTrigger.name"
+                     v-model="localRoutine.name"
                      class="form-input"
                      type="text"
                   >
                </div>
             </div>
+            <div v-if="customizations.languages" class="column col-auto">
+               <div class="form-group">
+                  <label class="form-label">
+                     {{ $t('word.language') }}
+                  </label>
+                  <select v-model="localRoutine.language" class="form-select">
+                     <option v-for="language in customizations.languages" :key="language">
+                        {{ language }}
+                     </option>
+                  </select>
+               </div>
+            </div>
             <div v-if="customizations.definer" class="column col-auto">
                <div class="form-group">
-                  <label class="form-label">{{ $t('word.definer') }}</label>
+                  <label class="form-label">
+                     {{ $t('word.definer') }}
+                  </label>
                   <select
                      v-if="workspace.users.length"
-                     v-model="localTrigger.definer"
+                     v-model="localRoutine.definer"
                      class="form-select"
                   >
                      <option value="">
                         {{ $t('message.currentUser') }}
-                     </option>
-                     <option v-if="!isDefinerInUsers" :value="originalTrigger.definer">
-                        {{ originalTrigger.definer.replaceAll('`', '') }}
                      </option>
                      <option
                         v-for="user in workspace.users"
@@ -72,76 +92,89 @@
                   </select>
                </div>
             </div>
-            <fieldset class="column columns mb-0" :disabled="customizations.triggerOnlyRename">
-               <div class="column col-auto">
-                  <div class="form-group">
-                     <label class="form-label">{{ $t('word.table') }}</label>
-                     <select v-model="localTrigger.table" class="form-select">
-                        <option v-for="table in schemaTables" :key="table.name">
-                           {{ table.name }}
-                        </option>
-                     </select>
-                  </div>
+            <div v-if="customizations.comment" class="column">
+               <div class="form-group">
+                  <label class="form-label">
+                     {{ $t('word.comment') }}
+                  </label>
+                  <input
+                     v-model="localRoutine.comment"
+                     class="form-input"
+                     type="text"
+                  >
                </div>
-               <div class="column col-auto">
-                  <div class="form-group">
-                     <label class="form-label">{{ $t('word.event') }}</label>
-                     <div class="input-group">
-                        <select v-model="localTrigger.activation" class="form-select">
-                           <option>BEFORE</option>
-                           <option>AFTER</option>
-                        </select>
-                        <select
-                           v-if="!customizations.triggerMultipleEvents"
-                           v-model="localTrigger.event"
-                           class="form-select"
-                        >
-                           <option v-for="event in Object.keys(localEvents)" :key="event">
-                              {{ event }}
-                           </option>
-                        </select>
-                        <div v-if="customizations.triggerMultipleEvents" class="px-4">
-                           <label
-                              v-for="event in Object.keys(localEvents)"
-                              :key="event"
-                              class="form-checkbox form-inline"
-                              @change.prevent="changeEvents(event)"
-                           >
-                              <input :checked="localEvents[event]" type="checkbox"><i class="form-icon" /> {{ event }}
-                           </label>
-                        </div>
-                     </div>
-                  </div>
+            </div>
+            <div class="column col-auto">
+               <div class="form-group">
+                  <label class="form-label">
+                     {{ $t('message.sqlSecurity') }}
+                  </label>
+                  <select v-model="localRoutine.security" class="form-select">
+                     <option>DEFINER</option>
+                     <option>INVOKER</option>
+                  </select>
                </div>
-            </fieldset>
+            </div>
+            <div v-if="customizations.procedureDataAccess" class="column col-auto">
+               <div class="form-group">
+                  <label class="form-label">
+                     {{ $t('message.dataAccess') }}
+                  </label>
+                  <select v-model="localRoutine.dataAccess" class="form-select">
+                     <option>CONTAINS SQL</option>
+                     <option>NO SQL</option>
+                     <option>READS SQL DATA</option>
+                     <option>MODIFIES SQL DATA</option>
+                  </select>
+               </div>
+            </div>
+            <div v-if="customizations.procedureDeterministic" class="column col-auto">
+               <div class="form-group">
+                  <label class="form-label d-invisible">.</label>
+                  <label class="form-checkbox form-inline">
+                     <input v-model="localRoutine.deterministic" type="checkbox"><i class="form-icon" /> {{ $t('word.deterministic') }}
+                  </label>
+               </div>
+            </div>
          </div>
       </div>
       <div class="workspace-query-results column col-12 mt-2 p-relative">
          <BaseLoader v-if="isLoading" />
-         <label class="form-label ml-2">{{ $t('message.triggerStatement') }}</label>
+         <label class="form-label ml-2">{{ $t('message.routineBody') }}</label>
          <QueryEditor
             v-show="isSelected"
+            :key="`new-${_uid}`"
             ref="queryEditor"
-            :value.sync="localTrigger.sql"
+            :value.sync="localRoutine.sql"
             :workspace="workspace"
             :schema="schema"
             :height="editorHeight"
          />
       </div>
+      <WorkspaceTabPropsRoutineParamsModal
+         v-if="isParamsModal"
+         :local-parameters="localRoutine.parameters"
+         :workspace="workspace"
+         routine="new"
+         @hide="hideParamsModal"
+         @parameters-update="parametersUpdate"
+      />
    </div>
 </template>
 
 <script>
-import QueryEditor from '@/components/QueryEditor';
 import { mapGetters, mapActions } from 'vuex';
+import QueryEditor from '@/components/QueryEditor';
 import BaseLoader from '@/components/BaseLoader';
-import Triggers from '@/ipc-api/Triggers';
+import WorkspaceTabPropsRoutineParamsModal from '@/components/WorkspaceTabPropsRoutineParamsModal';
+import Routines from '@/ipc-api/Routines';
 
 export default {
-   name: 'WorkspaceTabNewTrigger',
+   name: 'WorkspaceTabNewRoutine',
    components: {
+      QueryEditor,
       BaseLoader,
-      QueryEditor
+      WorkspaceTabPropsRoutineParamsModal
    },
    props: {
       connection: Object,
@@ -153,12 +186,12 @@ export default {
       return {
          isLoading: false,
          isSaving: false,
-         originalTrigger: {},
-         localTrigger: {},
-         lastTrigger: null,
+         isParamsModal: false,
+         originalRoutine: {},
+         localRoutine: {},
+         lastRoutine: null,
          sqlProxy: '',
-         editorHeight: 300,
-         localEvents: { INSERT: false, UPDATE: false, DELETE: false }
+         editorHeight: 300
       };
    },
    computed: {
@@ -169,17 +202,17 @@ export default {
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
-      tabUid () {
-         return this.$vnode.key;
-      },
       customizations () {
          return this.workspace.customizations;
       },
+      tabUid () {
+         return this.$vnode.key;
+      },
       isChanged () {
-         return JSON.stringify(this.originalTrigger) !== JSON.stringify(this.localTrigger);
+         return JSON.stringify(this.originalRoutine) !== JSON.stringify(this.localRoutine);
       },
       isDefinerInUsers () {
-         return this.originalTrigger ? this.workspace.users.some(user => this.originalTrigger.definer === `\`${user.name}\`@\`${user.host}\``) : true;
+         return this.originalRoutine ? this.workspace.users.some(user => this.originalRoutine.definer === `\`${user.name}\`@\`${user.host}\``) : true;
       },
       schemaTables () {
          const schemaTables = this.workspace.structure
@@ -190,7 +223,7 @@ export default {
       }
    },
    watch: {
-      isSelected (val) {
+      async isSelected (val) {
          if (val)
             this.changeBreadcrumbs({ schema: this.schema });
       },
@@ -199,16 +232,18 @@ export default {
       }
    },
    created () {
-      this.originalTrigger = {
-         sql: this.customizations.triggerSql,
+      this.originalRoutine = {
+         sql: this.customizations.procedureSql,
+         language: this.customizations.languages ? this.customizations.languages[0] : null,
+         name: '',
          definer: '',
-         table: this.schemaTables.length ? this.schemaTables[0].name : null,
-         activation: 'BEFORE',
-         event: this.customizations.triggerMultipleEvents ? ['INSERT'] : 'INSERT',
-         name: ''
+         comment: '',
+         security: 'DEFINER',
+         dataAccess: 'CONTAINS SQL',
+         deterministic: false
       };
 
-      this.localTrigger = JSON.parse(JSON.stringify(this.originalTrigger));
+      this.localRoutine = JSON.parse(JSON.stringify(this.originalRoutine));
 
       setTimeout(() => {
          this.resizeQueryEditor();
@@ -240,27 +275,17 @@ export default {
          removeTab: 'workspaces/removeTab',
          renameTabs: 'workspaces/renameTabs'
       }),
-      changeEvents (event) {
-         if (this.customizations.triggerMultipleEvents) {
-            this.localEvents[event] = !this.localEvents[event];
-            this.localTrigger.event = [];
-            for (const key in this.localEvents) {
-               if (this.localEvents[key])
-                  this.localTrigger.event.push(key);
-            }
-         }
-      },
       async saveChanges () {
          if (this.isSaving) return;
          this.isSaving = true;
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            ...this.localTrigger
+            ...this.localRoutine
          };
 
          try {
-            const { status, response } = await Triggers.createTrigger(params);
+            const { status, response } = await Routines.createRoutine(params);
 
             if (status === 'success') {
                await this.refreshStructure(this.connection.uid);
@@ -268,13 +293,13 @@ export default {
                this.newTab({
                   uid: this.connection.uid,
                   schema: this.schema,
-                  elementName: this.localTrigger.name,
-                  elementType: 'trigger',
-                  type: 'trigger-props'
+                  elementName: this.localRoutine.name,
+                  elementType: 'routine',
+                  type: 'routine-props'
                });
 
                this.removeTab({ uid: this.connection.uid, tab: this.tab.uid });
-               this.changeBreadcrumbs({ schema: this.schema, trigger: this.localTrigger.name });
+               this.changeBreadcrumbs({ schema: this.schema, routine: this.localRoutine.name });
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -286,18 +311,8 @@ export default {
          this.isSaving = false;
       },
       clearChanges () {
-         this.localTrigger = JSON.parse(JSON.stringify(this.originalTrigger));
-         this.$refs.queryEditor.editor.session.setValue(this.localTrigger.sql);
-
-         Object.keys(this.localEvents).forEach(event => {
-            this.localEvents[event] = false;
-         });
-
-         if (this.customizations.triggerMultipleEvents) {
-            this.originalTrigger.event.forEach(e => {
-               this.localEvents[e] = true;
-            });
-         }
+         this.localRoutine = JSON.parse(JSON.stringify(this.originalRoutine));
+         this.$refs.queryEditor.editor.session.setValue(this.localRoutine.sql);
       },
       resizeQueryEditor () {
          if (this.$refs.queryEditor) {
@@ -306,6 +321,21 @@ export default {
             this.editorHeight = size;
             this.$refs.queryEditor.editor.resize();
          }
+      },
+      parametersUpdate (parameters) {
+         this.localRoutine = { ...this.localRoutine, parameters };
+      },
+      showParamsModal () {
+         this.isParamsModal = true;
+      },
+      hideParamsModal () {
+         this.isParamsModal = false;
+      },
+      showAskParamsModal () {
+         this.isAskingParameters = true;
+      },
+      hideAskParamsModal () {
+         this.isAskingParameters = false;
       },
       onKey (e) {
          if (this.isSelected) {

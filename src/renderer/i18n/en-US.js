@@ -234,7 +234,8 @@ module.exports = {
       thereAreNoTableFields: 'There are no table fields',
       newTable: 'New table',
       newView: 'New view',
-      newTrigger: 'New trigger'
+      newTrigger: 'New trigger',
+      newRoutine: 'New routine'
    },
    faker: {
       address: 'Address',

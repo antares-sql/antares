@@ -31,7 +31,7 @@
             <div
                v-if="workspace.customizations.routineAdd"
                class="context-element"
-               @click="showCreateRoutineModal"
+               @click="openCreateRoutineTab"
             >
                <span class="d-flex"><i class="mdi mdi-18px mdi-sync-circle pr-1" /> {{ $tc('word.storedRoutine', 1) }}</span>
             </div>
@@ -141,8 +141,8 @@ export default {
       openCreateTriggerTab () {
          this.$emit('open-create-trigger-tab');
       },
-      showCreateRoutineModal () {
-         this.$emit('show-create-routine-modal');
+      openCreateRoutineTab () {
+         this.$emit('open-create-routine-tab');
       },
       showCreateFunctionModal () {
          this.$emit('show-create-function-modal');

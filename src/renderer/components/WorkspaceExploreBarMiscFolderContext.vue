@@ -6,14 +6,14 @@
       <div
          v-if="selectedMisc === 'trigger'"
          class="context-element"
-         @click="$emit('show-create-trigger-modal')"
+         @click="$emit('open-create-trigger-tab')"
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-table-cog text-light pr-1" /> {{ $t('message.createNewTrigger') }}</span>
       </div>
       <div
          v-if="selectedMisc === 'procedure'"
          class="context-element"
-         @click="$emit('show-create-routine-modal')"
+         @click="$emit('open-create-routine-tab')"
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-sync-circle text-light pr-1" /> {{ $t('message.createNewRoutine') }}</span>
       </div>
