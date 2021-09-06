@@ -76,7 +76,6 @@ import { mapGetters, mapActions } from 'vuex';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import Tables from '@/ipc-api/Tables';
-import Views from '@/ipc-api/Views';
 
 export default {
    name: 'WorkspaceExploreBarTableContext',
@@ -163,36 +162,8 @@ export default {
 
          this.closeContext();
       },
-      async duplicateTable () {
-         this.closeContext();
-
-         this.addLoadingElement({
-            name: this.selectedTable.name,
-            schema: this.selectedSchema,
-            type: 'table'
-         });
-
-         try {
-            const { status, response } = await Tables.duplicateTable({
-               uid: this.selectedWorkspace,
-               table: this.selectedTable.name,
-               schema: this.selectedSchema
-            });
-
-            if (status === 'success')
-               this.$emit('reload');
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.removeLoadingElement({
-            name: this.selectedTable.name,
-            schema: this.selectedSchema,
-            type: 'table'
-         });
+      duplicateTable () {
+         this.$emit('duplicate-table', { schema: this.selectedSchema, table: this.selectedTable });
       },
       async emptyTable () {
          this.closeContext();
@@ -225,57 +196,8 @@ export default {
             type: 'table'
          });
       },
-      async deleteTable () {
-         this.closeContext();
-
-         this.addLoadingElement({
-            name: this.selectedTable.name,
-            schema: this.selectedSchema,
-            type: 'table'
-         });
-
-         try {
-            let res;
-
-            if (this.selectedTable.type === 'table') {
-               res = await Tables.dropTable({
-                  uid: this.selectedWorkspace,
-                  table: this.selectedTable.name,
-                  schema: this.selectedSchema
-               });
-            }
-            else if (this.selectedTable.type === 'view') {
-               res = await Views.dropView({
-                  uid: this.selectedWorkspace,
-                  view: this.selectedTable.name,
-                  schema: this.selectedSchema
-               });
-            }
-
-            const { status, response } = res;
-
-            if (status === 'success') {
-               this.removeTabs({
-                  uid: this.selectedWorkspace,
-                  elementName: this.selectedTable.name,
-                  elementType: this.selectedTable.type,
-                  schema: this.selectedSchema
-               });
-
-               this.$emit('reload');
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.removeLoadingElement({
-            name: this.selectedTable.name,
-            schema: this.selectedSchema,
-            type: 'table'
-         });
+      deleteTable () {
+         this.$emit('delete-table', { schema: this.selectedSchema, table: this.selectedTable });
       }
    }
 };

@@ -250,6 +250,7 @@ export default {
                });
 
                this.removeTab({ uid: this.connection.uid, tab: this.tab.uid });
+               this.changeBreadcrumbs({ schema: this.schema, view: this.localView.name });
             }
             else
                this.addNotification({ status: 'error', message: response });

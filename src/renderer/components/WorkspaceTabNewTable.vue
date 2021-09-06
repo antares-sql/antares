@@ -314,6 +314,7 @@ export default {
                });
 
                this.removeTab({ uid: this.connection.uid, tab: this.tab.uid });
+               this.changeBreadcrumbs({ schema: this.schema, table: this.localOptions.name });
             }
             else
                this.addNotification({ status: 'error', message: response });

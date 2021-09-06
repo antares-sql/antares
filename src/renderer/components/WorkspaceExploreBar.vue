@@ -98,6 +98,8 @@
          :selected-schema="selectedSchema"
          :selected-table="selectedTable"
          :context-event="tableContextEvent"
+         @delete-table="deleteTable"
+         @duplicate-table="duplicateTable"
          @close-context="closeTableContext"
          @reload="refresh"
       />
@@ -128,9 +130,8 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
-// import Tables from '@/ipc-api/Tables';
-import Triggers from '@/ipc-api/Triggers';
-import Routines from '@/ipc-api/Routines';
+import Tables from '@/ipc-api/Tables';
+import Views from '@/ipc-api/Views';
 import Functions from '@/ipc-api/Functions';
 import Schedulers from '@/ipc-api/Schedulers';
 
@@ -248,9 +249,12 @@ export default {
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
          selectTab: 'workspaces/selectTab',
          newTab: 'workspaces/newTab',
+         removeTabs: 'workspaces/removeTabs',
          setSearchTerm: 'workspaces/setSearchTerm',
          addNotification: 'notifications/addNotification',
-         changeExplorebarSize: 'settings/changeExplorebarSize'
+         changeExplorebarSize: 'settings/changeExplorebarSize',
+         addLoadingElement: 'workspaces/addLoadingElement',
+         removeLoadingElement: 'workspaces/removeLoadingElement'
       }),
       async refresh () {
          if (!this.isRefreshing) {
@@ -330,31 +334,6 @@ export default {
       hideCreateTriggerModal () {
          this.isNewTriggerModal = false;
       },
-      async openCreateTriggerEditor (payload) {
-         const params = {
-            uid: this.connection.uid,
-            schema: this.selectedSchema,
-            ...payload
-         };
-
-         const { status, response } = await Triggers.createTrigger(params);
-
-         if (status === 'success') {
-            await this.refresh();
-            const triggerName = this.customizations.triggerTableInName ? `${payload.table}.${payload.name}` : payload.name;
-            this.changeBreadcrumbs({ schema: this.selectedSchema, trigger: triggerName });
-
-            this.newTab({
-               uid: this.workspace.uid,
-               schema: this.selectedSchema,
-               elementName: triggerName,
-               elementType: 'trigger',
-               type: 'trigger-props'
-            });
-         }
-         else
-            this.addNotification({ status: 'error', message: response });
-      },
       showCreateRoutineModal () {
          this.closeDatabaseContext();
          this.closeMiscFolderContext();
@@ -362,30 +341,6 @@ export default {
       },
       hideCreateRoutineModal () {
          this.isNewRoutineModal = false;
-      },
-      async openCreateRoutineEditor (payload) {
-         const params = {
-            uid: this.connection.uid,
-            schema: this.selectedSchema,
-            ...payload
-         };
-
-         const { status, response } = await Routines.createRoutine(params);
-
-         if (status === 'success') {
-            await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedSchema, routine: payload.name });
-
-            this.newTab({
-               uid: this.workspace.uid,
-               schema: this.selectedSchema,
-               elementName: payload.name,
-               elementType: 'routine',
-               type: 'routine-props'
-            });
-         }
-         else
-            this.addNotification({ status: 'error', message: response });
       },
       showCreateFunctionModal () {
          this.closeDatabaseContext();
@@ -410,6 +365,89 @@ export default {
       },
       hideCreateSchedulerModal () {
          this.isNewSchedulerModal = false;
+      },
+      async deleteTable (payload) {
+         this.closeTableContext();
+
+         this.addLoadingElement({
+            name: payload.table.name,
+            schema: payload.schema,
+            type: 'table'
+         });
+
+         try {
+            let res;
+
+            if (payload.table.type === 'table') {
+               res = await Tables.dropTable({
+                  uid: this.connection.uid,
+                  table: payload.table.name,
+                  schema: payload.schema
+               });
+            }
+            else if (payload.table.type === 'view') {
+               res = await Views.dropView({
+                  uid: this.connection.uid,
+                  view: payload.table.name,
+                  schema: payload.schema
+               });
+            }
+
+            const { status, response } = res;
+
+            if (status === 'success') {
+               this.refresh();
+
+               this.removeTabs({
+                  uid: this.connection.uid,
+                  elementName: payload.table.name,
+                  elementType: payload.table.type,
+                  schema: payload.schema
+               });
+            }
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         this.removeLoadingElement({
+            name: payload.table.name,
+            schema: payload.schema,
+            type: 'table'
+         });
+      },
+      async duplicateTable (payload) {
+         this.closeTableContext();
+
+         this.addLoadingElement({
+            name: payload.table.name,
+            schema: payload.schema,
+            type: 'table'
+         });
+
+         try {
+            const { status, response } = await Tables.duplicateTable({
+               uid: this.connection.uid,
+               table: payload.table.name,
+               schema: payload.schema
+            });
+
+            if (status === 'success')
+               this.refresh();
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         this.removeLoadingElement({
+            name: payload.table.name,
+            schema: payload.schema,
+            type: 'table'
+         });
       },
       async openCreateFunctionEditor (payload) {
          const params = {
