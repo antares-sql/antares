@@ -176,7 +176,7 @@ import { uidGen } from 'common/libs/uidGen';
 import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
-   name: 'WorkspaceTabPropsRoutineParamsModal',
+   name: 'WorkspaceTabPropsFunctionParamsModal',
    components: {
       ConfirmModal
    },
@@ -242,7 +242,7 @@ export default {
             name: `Param${this.i++}`,
             type: 'INT',
             context: 'IN',
-            length: 10
+            length: ''
          }];
 
          if (this.parametersProxy.length === 1)

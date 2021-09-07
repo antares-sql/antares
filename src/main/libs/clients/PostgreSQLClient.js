@@ -758,7 +758,7 @@ export class PostgreSQLClient extends AntaresCore {
    async createRoutine (routine) {
       const parameters = 'parameters' in routine
          ? routine.parameters.reduce((acc, curr) => {
-            acc.push(`${curr.context} ${curr.name} ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
+            acc.push(`${curr.context} ${curr.name} ${curr.type}`);
             return acc;
          }, []).join(',')
          : '';
@@ -887,7 +887,7 @@ export class PostgreSQLClient extends AntaresCore {
    async createFunction (func) {
       const parameters = 'parameters' in func
          ? func.parameters.reduce((acc, curr) => {
-            acc.push(`${curr.context} ${curr.name || ''} ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
+            acc.push(`${curr.context} ${curr.name || ''} ${curr.type}`);
             return acc;
          }, []).join(',')
          : '';

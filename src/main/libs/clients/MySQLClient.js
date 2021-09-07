@@ -955,10 +955,12 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async createFunction (params) {
-      const parameters = params.parameters.reduce((acc, curr) => {
-         acc.push(`\`${curr.name}\` ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
-         return acc;
-      }, []).join(',');
+      const parameters = 'parameters' in params
+         ? params.parameters.reduce((acc, curr) => {
+            acc.push(`\`${curr.name}\` ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
+            return acc;
+         }, []).join(',')
+         : '';
 
       const body = params.returns ? params.sql : 'BEGIN\n  RETURN 0;\nEND';
 

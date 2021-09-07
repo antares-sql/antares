@@ -20,7 +20,7 @@
       <div
          v-if="selectedMisc === 'function'"
          class="context-element"
-         @click="$emit('show-create-function-modal')"
+         @click="$emit('open-create-function-tab')"
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-arrow-right-bold-box text-light pr-1" /> {{ $t('message.createNewFunction') }}</span>
       </div>

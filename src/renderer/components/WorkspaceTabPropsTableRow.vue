@@ -606,7 +606,7 @@ export default {
   min-height: auto;
 
   .form-icon {
-    top: 0.15rem;
+    top: -0.65rem;
     left: calc(50% - 8px);
   }
 }

@@ -38,7 +38,7 @@
             <div
                v-if="workspace.customizations.functionAdd"
                class="context-element"
-               @click="showCreateFunctionModal"
+               @click="openCreateFunctionTab"
             >
                <span class="d-flex"><i class="mdi mdi-18px mdi-arrow-right-bold-box pr-1" /> {{ $tc('word.function', 1) }}</span>
             </div>
@@ -144,8 +144,8 @@ export default {
       openCreateRoutineTab () {
          this.$emit('open-create-routine-tab');
       },
-      showCreateFunctionModal () {
-         this.$emit('show-create-function-modal');
+      openCreateFunctionTab () {
+         this.$emit('open-create-function-tab');
       },
       showCreateTriggerFunctionModal () {
          this.$emit('show-create-trigger-function-modal');

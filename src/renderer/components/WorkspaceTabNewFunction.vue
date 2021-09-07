@@ -46,7 +46,7 @@
                   </label>
                   <input
                      ref="firstInput"
-                     v-model="localRoutine.name"
+                     v-model="localFunction.name"
                      class="form-input"
                      type="text"
                   >
@@ -57,7 +57,7 @@
                   <label class="form-label">
                      {{ $t('word.language') }}
                   </label>
-                  <select v-model="localRoutine.language" class="form-select">
+                  <select v-model="localFunction.language" class="form-select">
                      <option v-for="language in customizations.languages" :key="language">
                         {{ language }}
                      </option>
@@ -71,7 +71,7 @@
                   </label>
                   <select
                      v-if="workspace.users.length"
-                     v-model="localRoutine.definer"
+                     v-model="localFunction.definer"
                      class="form-select"
                   >
                      <option value="">
@@ -92,13 +92,54 @@
                   </select>
                </div>
             </div>
+            <div class="column col-auto">
+               <div class="form-group">
+                  <label class="form-label">
+                     {{ $t('word.returns') }}
+                  </label>
+                  <div class="input-group">
+                     <select
+                        v-model="localFunction.returns"
+                        class="form-select text-uppercase"
+                        style="max-width: 150px;"
+                     >
+                        <option v-if="localFunction.returns === 'VOID'">
+                           VOID
+                        </option>
+                        <optgroup
+                           v-for="group in workspace.dataTypes"
+                           :key="group.group"
+                           :label="group.group"
+                        >
+                           <option
+                              v-for="type in group.types"
+                              :key="type.name"
+                              :selected="localFunction.returns === type.name"
+                              :value="type.name"
+                           >
+                              {{ type.name }}
+                           </option>
+                        </optgroup>
+                     </select>
+                     <input
+                        v-if="customizations.parametersLength"
+                        v-model="localFunction.returnsLength"
+                        style="max-width: 150px;"
+                        class="form-input"
+                        type="number"
+                        min="0"
+                        :placeholder="$t('word.length')"
+                     >
+                  </div>
+               </div>
+            </div>
             <div v-if="customizations.comment" class="column">
                <div class="form-group">
                   <label class="form-label">
                      {{ $t('word.comment') }}
                   </label>
                   <input
-                     v-model="localRoutine.comment"
+                     v-model="localFunction.comment"
                      class="form-input"
                      type="text"
                   >
@@ -109,18 +150,18 @@
                   <label class="form-label">
                      {{ $t('message.sqlSecurity') }}
                   </label>
-                  <select v-model="localRoutine.security" class="form-select">
+                  <select v-model="localFunction.security" class="form-select">
                      <option>DEFINER</option>
                      <option>INVOKER</option>
                   </select>
                </div>
             </div>
-            <div v-if="customizations.procedureDataAccess" class="column col-auto">
+            <div v-if="customizations.functionDataAccess" class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
                      {{ $t('message.dataAccess') }}
                   </label>
-                  <select v-model="localRoutine.dataAccess" class="form-select">
+                  <select v-model="localFunction.dataAccess" class="form-select">
                      <option>CONTAINS SQL</option>
                      <option>NO SQL</option>
                      <option>READS SQL DATA</option>
@@ -128,11 +169,11 @@
                   </select>
                </div>
             </div>
-            <div v-if="customizations.procedureDeterministic" class="column col-auto">
+            <div v-if="customizations.functionDeterministic" class="column col-auto">
                <div class="form-group">
                   <label class="form-label d-invisible">.</label>
                   <label class="form-checkbox form-inline">
-                     <input v-model="localRoutine.deterministic" type="checkbox"><i class="form-icon" /> {{ $t('word.deterministic') }}
+                     <input v-model="localFunction.deterministic" type="checkbox"><i class="form-icon" /> {{ $t('word.deterministic') }}
                   </label>
                </div>
             </div>
@@ -140,22 +181,21 @@
       </div>
       <div class="workspace-query-results column col-12 mt-2 p-relative">
          <BaseLoader v-if="isLoading" />
-         <label class="form-label ml-2">{{ $t('message.routineBody') }}</label>
+         <label class="form-label ml-2">{{ $t('message.functionBody') }}</label>
          <QueryEditor
             v-show="isSelected"
-            :key="`new-${_uid}`"
             ref="queryEditor"
-            :value.sync="localRoutine.sql"
+            :value.sync="localFunction.sql"
             :workspace="workspace"
             :schema="schema"
             :height="editorHeight"
          />
       </div>
-      <WorkspaceTabPropsRoutineParamsModal
+      <WorkspaceTabPropsFunctionParamsModal
          v-if="isParamsModal"
-         :local-parameters="localRoutine.parameters"
+         :local-parameters="localFunction.parameters"
          :workspace="workspace"
-         routine="new"
+         :func="localFunction.name"
          @hide="hideParamsModal"
          @parameters-update="parametersUpdate"
       />
@@ -164,17 +204,17 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import QueryEditor from '@/components/QueryEditor';
 import BaseLoader from '@/components/BaseLoader';
-import WorkspaceTabPropsRoutineParamsModal from '@/components/WorkspaceTabPropsRoutineParamsModal';
-import Routines from '@/ipc-api/Routines';
+import QueryEditor from '@/components/QueryEditor';
+import WorkspaceTabPropsFunctionParamsModal from '@/components/WorkspaceTabPropsFunctionParamsModal';
+import Functions from '@/ipc-api/Functions';
 
 export default {
-   name: 'WorkspaceTabNewRoutine',
+   name: 'WorkspaceTabNewFunction',
    components: {
-      QueryEditor,
       BaseLoader,
-      WorkspaceTabPropsRoutineParamsModal
+      QueryEditor,
+      WorkspaceTabPropsFunctionParamsModal
    },
    props: {
       connection: Object,
@@ -187,9 +227,9 @@ export default {
          isLoading: false,
          isSaving: false,
          isParamsModal: false,
-         originalRoutine: {},
-         localRoutine: {},
-         lastRoutine: null,
+         originalFunction: {},
+         localFunction: {},
+         lastFunction: null,
          sqlProxy: '',
          editorHeight: 300
       };
@@ -209,10 +249,12 @@ export default {
          return this.$vnode.key;
       },
       isChanged () {
-         return JSON.stringify(this.originalRoutine) !== JSON.stringify(this.localRoutine);
+         return JSON.stringify(this.originalFunction) !== JSON.stringify(this.localFunction);
       },
       isDefinerInUsers () {
-         return this.originalRoutine ? this.workspace.users.some(user => this.originalRoutine.definer === `\`${user.name}\`@\`${user.host}\``) : true;
+         return this.originalFunction
+            ? this.workspace.users.some(user => this.originalFunction.definer === `\`${user.name}\`@\`${user.host}\``)
+            : true;
       },
       schemaTables () {
          const schemaTables = this.workspace.structure
@@ -232,7 +274,7 @@ export default {
       }
    },
    created () {
-      this.originalRoutine = {
+      this.originalFunction = {
          sql: this.customizations.procedureSql,
          language: this.customizations.languages ? this.customizations.languages[0] : null,
          name: '',
@@ -240,10 +282,11 @@ export default {
          comment: '',
          security: 'DEFINER',
          dataAccess: 'CONTAINS SQL',
-         deterministic: false
+         deterministic: false,
+         returns: this.workspace.dataTypes.length ? this.workspace.dataTypes[0].types[0].name : null
       };
 
-      this.localRoutine = JSON.parse(JSON.stringify(this.originalRoutine));
+      this.localFunction = JSON.parse(JSON.stringify(this.originalFunction));
 
       setTimeout(() => {
          this.resizeQueryEditor();
@@ -281,11 +324,11 @@ export default {
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
-            ...this.localRoutine
+            ...this.localFunction
          };
 
          try {
-            const { status, response } = await Routines.createRoutine(params);
+            const { status, response } = await Functions.createFunction(params);
 
             if (status === 'success') {
                await this.refreshStructure(this.connection.uid);
@@ -293,13 +336,13 @@ export default {
                this.newTab({
                   uid: this.connection.uid,
                   schema: this.schema,
-                  elementName: this.localRoutine.name,
-                  elementType: 'routine',
-                  type: 'routine-props'
+                  elementName: this.localFunction.name,
+                  elementType: 'function',
+                  type: 'function-props'
                });
 
                this.removeTab({ uid: this.connection.uid, tab: this.tab.uid });
-               this.changeBreadcrumbs({ schema: this.schema, routine: this.localRoutine.name });
+               this.changeBreadcrumbs({ schema: this.schema, function: this.localFunction.name });
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -311,8 +354,8 @@ export default {
          this.isSaving = false;
       },
       clearChanges () {
-         this.localRoutine = JSON.parse(JSON.stringify(this.originalRoutine));
-         this.$refs.queryEditor.editor.session.setValue(this.localRoutine.sql);
+         this.localFunction = JSON.parse(JSON.stringify(this.originalFunction));
+         this.$refs.queryEditor.editor.session.setValue(this.localFunction.sql);
       },
       resizeQueryEditor () {
          if (this.$refs.queryEditor) {
@@ -322,8 +365,11 @@ export default {
             this.$refs.queryEditor.editor.resize();
          }
       },
+      optionsUpdate (options) {
+         this.localFunction = options;
+      },
       parametersUpdate (parameters) {
-         this.localRoutine = { ...this.localRoutine, parameters };
+         this.localFunction = { ...this.localFunction, parameters };
       },
       showParamsModal () {
          this.isParamsModal = true;

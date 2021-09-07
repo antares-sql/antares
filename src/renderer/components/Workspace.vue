@@ -171,6 +171,23 @@
                </a>
 
                <a
+                  v-else-if="tab.type === 'new-function'"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+               >
+                  <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                  <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
+                     {{ $t('message.newFunction') }}
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @mousedown.left.stop
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a
                   v-else-if="tab.type.includes('temp-')"
                   class="tab-link"
                   :class="{'badge': tab.isChanged}"
@@ -344,6 +361,15 @@
                :routine="tab.elementName"
                :schema="tab.schema"
             />
+            <WorkspaceTabNewFunction
+               v-else-if="tab.type === 'new-function'"
+               :key="tab.uid"
+               :tab="tab"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
+               :trigger="tab.elementName"
+               :schema="tab.schema"
+            />
             <WorkspaceTabPropsFunction
                v-else-if="['temp-function-props', 'function-props'].includes(tab.type)"
                :key="tab.uid"
@@ -391,6 +417,7 @@ import WorkspaceTabNewTable from '@/components/WorkspaceTabNewTable';
 import WorkspaceTabNewView from '@/components/WorkspaceTabNewView';
 import WorkspaceTabNewTrigger from '@/components/WorkspaceTabNewTrigger';
 import WorkspaceTabNewRoutine from '@/components/WorkspaceTabNewRoutine';
+import WorkspaceTabNewFunction from '@/components/WorkspaceTabNewFunction';
 
 import WorkspaceTabPropsTable from '@/components/WorkspaceTabPropsTable';
 import WorkspaceTabPropsView from '@/components/WorkspaceTabPropsView';
@@ -419,6 +446,7 @@ export default {
       WorkspaceTabPropsTrigger,
       WorkspaceTabPropsTriggerFunction,
       WorkspaceTabNewRoutine,
+      WorkspaceTabNewFunction,
       WorkspaceTabPropsRoutine,
       WorkspaceTabPropsFunction,
       WorkspaceTabPropsScheduler,
