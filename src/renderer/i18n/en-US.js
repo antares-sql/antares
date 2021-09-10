@@ -236,7 +236,8 @@ module.exports = {
       newView: 'New view',
       newTrigger: 'New trigger',
       newRoutine: 'New routine',
-      newFunction: 'New function'
+      newFunction: 'New function',
+      newScheduler: 'New scheduler'
    },
    faker: {
       address: 'Address',

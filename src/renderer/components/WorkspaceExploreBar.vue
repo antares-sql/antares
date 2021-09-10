@@ -73,12 +73,6 @@
          @close="hideCreateTriggerFunctionModal"
          @open-create-function-editor="openCreateTriggerFunctionEditor"
       />
-      <ModalNewScheduler
-         v-if="isNewSchedulerModal"
-         :workspace="workspace"
-         @close="hideCreateSchedulerModal"
-         @open-create-scheduler-editor="openCreateSchedulerEditor"
-      />
       <DatabaseContext
          v-if="isDatabaseContext"
          :selected-schema="selectedSchema"
@@ -90,7 +84,7 @@
          @open-create-routine-tab="openCreateElementTab('routine')"
          @open-create-function-tab="openCreateElementTab('function')"
          @show-create-trigger-function-modal="showCreateTriggerFunctionModal"
-         @show-create-scheduler-modal="showCreateSchedulerModal"
+         @open-create-scheduler-tab="openCreateElementTab('scheduler')"
          @reload="refresh"
       />
       <TableContext
@@ -120,7 +114,7 @@
          @open-create-routine-tab="openCreateElementTab('routine')"
          @open-create-function-tab="openCreateElementTab('function')"
          @show-create-trigger-function-modal="showCreateTriggerFunctionModal"
-         @show-create-scheduler-modal="showCreateSchedulerModal"
+         @open-create-scheduler-tab="openCreateElementTab('scheduler')"
          @close-context="closeMiscFolderContext"
          @reload="refresh"
       />
@@ -142,9 +136,7 @@ import MiscContext from '@/components/WorkspaceExploreBarMiscContext';
 import MiscFolderContext from '@/components/WorkspaceExploreBarMiscFolderContext';
 import ModalNewSchema from '@/components/ModalNewSchema';
 
-import ModalNewFunction from '@/components/ModalNewFunction';
 import ModalNewTriggerFunction from '@/components/ModalNewTriggerFunction';
-import ModalNewScheduler from '@/components/ModalNewScheduler';
 
 export default {
    name: 'WorkspaceExploreBar',
@@ -156,9 +148,7 @@ export default {
       MiscFolderContext,
       ModalNewSchema,
 
-      ModalNewFunction,
-      ModalNewTriggerFunction,
-      ModalNewScheduler
+      ModalNewTriggerFunction
    },
    props: {
       connection: Object,

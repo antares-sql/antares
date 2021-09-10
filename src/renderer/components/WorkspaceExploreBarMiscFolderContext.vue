@@ -34,7 +34,7 @@
       <div
          v-if="selectedMisc === 'scheduler'"
          class="context-element"
-         @click="$emit('show-create-scheduler-modal')"
+         @click="$emit('open-create-scheduler-tab')"
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-calendar-clock text-light pr-1" /> {{ $t('message.createNewScheduler') }}</span>
       </div>

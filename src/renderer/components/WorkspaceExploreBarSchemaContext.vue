@@ -52,7 +52,7 @@
             <div
                v-if="workspace.customizations.schedulerAdd"
                class="context-element"
-               @click="showCreateSchedulerModal"
+               @click="openCreateSchedulerTab"
             >
                <span class="d-flex"><i class="mdi mdi-18px mdi-calendar-clock text-light pr-1" /> {{ $tc('word.scheduler', 1) }}</span>
             </div>
@@ -150,8 +150,8 @@ export default {
       showCreateTriggerFunctionModal () {
          this.$emit('show-create-trigger-function-modal');
       },
-      showCreateSchedulerModal () {
-         this.$emit('show-create-scheduler-modal');
+      openCreateSchedulerTab () {
+         this.$emit('open-create-scheduler-tab');
       },
       showDeleteModal () {
          this.isDeleteModal = true;
