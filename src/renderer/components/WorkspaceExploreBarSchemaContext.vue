@@ -45,7 +45,7 @@
             <div
                v-if="workspace.customizations.triggerFunctionAdd"
                class="context-element"
-               @click="showCreateTriggerFunctionModal"
+               @click="openCreateTriggerFunctionTab"
             >
                <span class="d-flex"><i class="mdi mdi-18px mdi-cog-clockwise pr-1" /> {{ $tc('word.triggerFunction', 1) }}</span>
             </div>
@@ -147,8 +147,8 @@ export default {
       openCreateFunctionTab () {
          this.$emit('open-create-function-tab');
       },
-      showCreateTriggerFunctionModal () {
-         this.$emit('show-create-trigger-function-modal');
+      openCreateTriggerFunctionTab () {
+         this.$emit('open-create-trigger-function-tab');
       },
       openCreateSchedulerTab () {
          this.$emit('open-create-scheduler-tab');

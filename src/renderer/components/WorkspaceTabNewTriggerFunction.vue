@@ -22,18 +22,6 @@
                   <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
                   <span>{{ $t('word.clear') }}</span>
                </button>
-
-               <div class="divider-vert py-3" />
-
-               <button class="btn btn-dark btn-sm" @click="showParamsModal">
-                  <i class="mdi mdi-24px mdi-dots-horizontal mr-1" />
-                  <span>{{ $t('word.parameters') }}</span>
-               </button>
-            </div>
-            <div class="workspace-query-info">
-               <div class="d-flex" :title="$t('word.schema')">
-                  <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
-               </div>
             </div>
          </div>
       </div>
@@ -52,13 +40,13 @@
                   >
                </div>
             </div>
-            <div v-if="customizations.languages" class="column col-auto">
+            <div v-if="customizations.triggerFunctionlanguages" class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
                      {{ $t('word.language') }}
                   </label>
                   <select v-model="localFunction.language" class="form-select">
-                     <option v-for="language in customizations.languages" :key="language">
+                     <option v-for="language in customizations.triggerFunctionlanguages" :key="language">
                         {{ language }}
                      </option>
                   </select>
@@ -92,90 +80,15 @@
                   </select>
                </div>
             </div>
-            <div class="column col-auto">
-               <div class="form-group">
-                  <label class="form-label">
-                     {{ $t('word.returns') }}
-                  </label>
-                  <div class="input-group">
-                     <select
-                        v-model="localFunction.returns"
-                        class="form-select text-uppercase"
-                        style="max-width: 150px;"
-                     >
-                        <option v-if="localFunction.returns === 'VOID'">
-                           VOID
-                        </option>
-                        <optgroup
-                           v-for="group in workspace.dataTypes"
-                           :key="group.group"
-                           :label="group.group"
-                        >
-                           <option
-                              v-for="type in group.types"
-                              :key="type.name"
-                              :selected="localFunction.returns === type.name"
-                              :value="type.name"
-                           >
-                              {{ type.name }}
-                           </option>
-                        </optgroup>
-                     </select>
-                     <input
-                        v-if="customizations.parametersLength"
-                        v-model="localFunction.returnsLength"
-                        style="max-width: 150px;"
-                        class="form-input"
-                        type="number"
-                        min="0"
-                        :placeholder="$t('word.length')"
-                     >
-                  </div>
-               </div>
-            </div>
-            <div v-if="customizations.comment" class="column">
-               <div class="form-group">
-                  <label class="form-label">
-                     {{ $t('word.comment') }}
-                  </label>
-                  <input
-                     v-model="localFunction.comment"
-                     class="form-input"
-                     type="text"
-                  >
-               </div>
-            </div>
-            <div class="column col-auto">
-               <div class="form-group">
-                  <label class="form-label">
-                     {{ $t('message.sqlSecurity') }}
-                  </label>
-                  <select v-model="localFunction.security" class="form-select">
-                     <option>DEFINER</option>
-                     <option>INVOKER</option>
-                  </select>
-               </div>
-            </div>
-            <div v-if="customizations.functionDataAccess" class="column col-auto">
-               <div class="form-group">
-                  <label class="form-label">
-                     {{ $t('message.dataAccess') }}
-                  </label>
-                  <select v-model="localFunction.dataAccess" class="form-select">
-                     <option>CONTAINS SQL</option>
-                     <option>NO SQL</option>
-                     <option>READS SQL DATA</option>
-                     <option>MODIFIES SQL DATA</option>
-                  </select>
-               </div>
-            </div>
-            <div v-if="customizations.functionDeterministic" class="column col-auto">
-               <div class="form-group">
-                  <label class="form-label d-invisible">.</label>
-                  <label class="form-checkbox form-inline">
-                     <input v-model="localFunction.deterministic" type="checkbox"><i class="form-icon" /> {{ $t('word.deterministic') }}
-                  </label>
-               </div>
+            <div v-if="customizations.comment" class="form-group">
+               <label class="form-label">
+                  {{ $t('word.comment') }}
+               </label>
+               <input
+                  v-model="localFunction.comment"
+                  class="form-input"
+                  type="text"
+               >
             </div>
          </div>
       </div>
@@ -191,14 +104,6 @@
             :height="editorHeight"
          />
       </div>
-      <WorkspaceTabPropsFunctionParamsModal
-         v-if="isParamsModal"
-         :local-parameters="localFunction.parameters"
-         :workspace="workspace"
-         :func="localFunction.name"
-         @hide="hideParamsModal"
-         @parameters-update="parametersUpdate"
-      />
    </div>
 </template>
 
@@ -206,15 +111,13 @@
 import { mapGetters, mapActions } from 'vuex';
 import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
-import WorkspaceTabPropsFunctionParamsModal from '@/components/WorkspaceTabPropsFunctionParamsModal';
 import Functions from '@/ipc-api/Functions';
 
 export default {
-   name: 'WorkspaceTabNewFunction',
+   name: 'WorkspaceTabNewTriggerFunction',
    components: {
       BaseLoader,
-      QueryEditor,
-      WorkspaceTabPropsFunctionParamsModal
+      QueryEditor
    },
    props: {
       connection: Object,
@@ -227,6 +130,7 @@ export default {
          isLoading: false,
          isSaving: false,
          isParamsModal: false,
+         isAskingParameters: false,
          originalFunction: {},
          localFunction: {},
          lastFunction: null,
@@ -275,15 +179,9 @@ export default {
    },
    created () {
       this.originalFunction = {
-         sql: this.customizations.functionSql,
-         language: this.customizations.languages ? this.customizations.languages[0] : null,
-         name: '',
-         definer: '',
-         comment: '',
-         security: 'DEFINER',
-         dataAccess: 'CONTAINS SQL',
-         deterministic: false,
-         returns: this.workspace.dataTypes.length ? this.workspace.dataTypes[0].types[0].name : null
+         sql: this.customizations.triggerFunctionSql,
+         language: this.customizations.triggerFunctionlanguages.length ? this.customizations.triggerFunctionlanguages[0] : null,
+         name: ''
       };
 
       this.localFunction = JSON.parse(JSON.stringify(this.originalFunction));
@@ -301,6 +199,8 @@ export default {
       setTimeout(() => {
          this.$refs.firstInput.focus();
       }, 100);
+
+      window.addEventListener('resize', this.resizeQueryEditor);
    },
    destroyed () {
       window.removeEventListener('resize', this.resizeQueryEditor);
@@ -328,7 +228,7 @@ export default {
          };
 
          try {
-            const { status, response } = await Functions.createFunction(params);
+            const { status, response } = await Functions.createTriggerFunction(params);
 
             if (status === 'success') {
                await this.refreshStructure(this.connection.uid);
@@ -337,12 +237,12 @@ export default {
                   uid: this.connection.uid,
                   schema: this.schema,
                   elementName: this.localFunction.name,
-                  elementType: 'function',
-                  type: 'function-props'
+                  elementType: 'triggerFunction',
+                  type: 'trigger-function-props'
                });
 
                this.removeTab({ uid: this.connection.uid, tab: this.tab.uid });
-               this.changeBreadcrumbs({ schema: this.schema, function: this.localFunction.name });
+               this.changeBreadcrumbs({ schema: this.schema, triggerFunction: this.localFunction.name });
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -364,24 +264,6 @@ export default {
             this.editorHeight = size;
             this.$refs.queryEditor.editor.resize();
          }
-      },
-      optionsUpdate (options) {
-         this.localFunction = options;
-      },
-      parametersUpdate (parameters) {
-         this.localFunction = { ...this.localFunction, parameters };
-      },
-      showParamsModal () {
-         this.isParamsModal = true;
-      },
-      hideParamsModal () {
-         this.isParamsModal = false;
-      },
-      showAskParamsModal () {
-         this.isAskingParameters = true;
-      },
-      hideAskParamsModal () {
-         this.isAskingParameters = false;
       },
       onKey (e) {
          if (this.isSelected) {

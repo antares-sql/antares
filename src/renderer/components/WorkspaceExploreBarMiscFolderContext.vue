@@ -27,7 +27,7 @@
       <div
          v-if="selectedMisc === 'triggerFunction'"
          class="context-element"
-         @click="$emit('show-create-trigger-function-modal')"
+         @click="$emit('open-create-trigger-function-tab')"
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-cog-clockwise text-light pr-1" /> {{ $t('message.createNewFunction') }}</span>
       </div>

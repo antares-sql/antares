@@ -61,18 +61,6 @@
          @close="hideNewDBModal"
          @reload="refresh"
       />
-      <ModalNewFunction
-         v-if="isNewFunctionModal"
-         :workspace="workspace"
-         @close="hideCreateFunctionModal"
-         @open-create-function-editor="openCreateFunctionEditor"
-      />
-      <ModalNewTriggerFunction
-         v-if="isNewTriggerFunctionModal"
-         :workspace="workspace"
-         @close="hideCreateTriggerFunctionModal"
-         @open-create-function-editor="openCreateTriggerFunctionEditor"
-      />
       <DatabaseContext
          v-if="isDatabaseContext"
          :selected-schema="selectedSchema"
@@ -83,7 +71,7 @@
          @open-create-trigger-tab="openCreateElementTab('trigger')"
          @open-create-routine-tab="openCreateElementTab('routine')"
          @open-create-function-tab="openCreateElementTab('function')"
-         @show-create-trigger-function-modal="showCreateTriggerFunctionModal"
+         @open-create-trigger-function-tab="openCreateElementTab('trigger-function')"
          @open-create-scheduler-tab="openCreateElementTab('scheduler')"
          @reload="refresh"
       />
@@ -113,7 +101,7 @@
          @open-create-trigger-tab="openCreateElementTab('trigger')"
          @open-create-routine-tab="openCreateElementTab('routine')"
          @open-create-function-tab="openCreateElementTab('function')"
-         @show-create-trigger-function-modal="showCreateTriggerFunctionModal"
+         @open-create-trigger-function-tab="openCreateElementTab('trigger-function')"
          @open-create-scheduler-tab="openCreateElementTab('scheduler')"
          @close-context="closeMiscFolderContext"
          @reload="refresh"
@@ -136,8 +124,6 @@ import MiscContext from '@/components/WorkspaceExploreBarMiscContext';
 import MiscFolderContext from '@/components/WorkspaceExploreBarMiscFolderContext';
 import ModalNewSchema from '@/components/ModalNewSchema';
 
-import ModalNewTriggerFunction from '@/components/ModalNewTriggerFunction';
-
 export default {
    name: 'WorkspaceExploreBar',
    components: {
@@ -146,9 +132,7 @@ export default {
       TableContext,
       MiscContext,
       MiscFolderContext,
-      ModalNewSchema,
-
-      ModalNewTriggerFunction
+      ModalNewSchema
    },
    props: {
       connection: Object,

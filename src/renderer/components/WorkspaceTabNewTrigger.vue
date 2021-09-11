@@ -223,6 +223,8 @@ export default {
       setTimeout(() => {
          this.$refs.firstInput.focus();
       }, 100);
+
+      window.addEventListener('resize', this.resizeQueryEditor);
    },
    destroyed () {
       window.removeEventListener('resize', this.resizeQueryEditor);

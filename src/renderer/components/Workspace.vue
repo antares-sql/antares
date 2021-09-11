@@ -188,6 +188,23 @@
                </a>
 
                <a
+                  v-else-if="tab.type === 'new-trigger-function'"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+               >
+                  <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                  <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
+                     {{ $t('message.newTriggerFunction') }}
+                     <span
+                        class="btn btn-clear"
+                        :title="$t('word.close')"
+                        @mousedown.left.stop
+                        @click.stop="closeTab(tab)"
+                     />
+                  </span>
+               </a>
+
+               <a
                   v-else-if="tab.type === 'new-scheduler'"
                   class="tab-link"
                   :class="{'badge': tab.isChanged}"
@@ -353,6 +370,15 @@
                :trigger="tab.elementName"
                :schema="tab.schema"
             />
+            <WorkspaceTabNewTriggerFunction
+               v-else-if="tab.type === 'new-trigger-function'"
+               :key="tab.uid"
+               :tab="tab"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid"
+               :trigger="tab.elementName"
+               :schema="tab.schema"
+            />
             <WorkspaceTabPropsTriggerFunction
                v-else-if="['temp-trigger-function-props', 'trigger-function-props'].includes(tab.type)"
                :key="tab.uid"
@@ -445,6 +471,7 @@ import WorkspaceTabNewTrigger from '@/components/WorkspaceTabNewTrigger';
 import WorkspaceTabNewRoutine from '@/components/WorkspaceTabNewRoutine';
 import WorkspaceTabNewFunction from '@/components/WorkspaceTabNewFunction';
 import WorkspaceTabNewScheduler from '@/components/WorkspaceTabNewScheduler';
+import WorkspaceTabNewTriggerFunction from '@/components/WorkspaceTabNewTriggerFunction';
 
 import WorkspaceTabPropsTable from '@/components/WorkspaceTabPropsTable';
 import WorkspaceTabPropsView from '@/components/WorkspaceTabPropsView';
@@ -471,6 +498,7 @@ export default {
       WorkspaceTabPropsView,
       WorkspaceTabNewTrigger,
       WorkspaceTabPropsTrigger,
+      WorkspaceTabNewTriggerFunction,
       WorkspaceTabPropsTriggerFunction,
       WorkspaceTabNewRoutine,
       WorkspaceTabNewFunction,
