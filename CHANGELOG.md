@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.4](https://github.com/Fabio286/antares/compare/v0.3.3...v0.3.4) (2021-09-12)
+
+
+### Features
+
+* new create function tabs ([0203f69](https://github.com/Fabio286/antares/commit/0203f69e95093d25a7ef3e66df1c70f76edcedf2))
+* new create routine tabs ([3fd26a0](https://github.com/Fabio286/antares/commit/3fd26a05238368ae375197c79d42162a5910bb07))
+* new create scheduler tabs ([3c5a69a](https://github.com/Fabio286/antares/commit/3c5a69adc9cecdc4b8f46097676005f2a60f06cf))
+* new create trigger function tabs ([09c07ac](https://github.com/Fabio286/antares/commit/09c07acd5c2a6ed2b75640dbb83e782ed432bc30))
+* new create trigger tabs ([e217d51](https://github.com/Fabio286/antares/commit/e217d5181b37ec6304151120b4a2aba9455c6a84))
+* start search when typing with focus on the left bar ([265ed66](https://github.com/Fabio286/antares/commit/265ed66d25d35be99ed0a6b1668dab9f246ed71e))
+
+
+### Bug Fixes
+
+* **UI:** context menu of tables cut if close to bottom edge ([21e3e79](https://github.com/Fabio286/antares/commit/21e3e79ddf9e292bcfc5881b8fa76a1dc58b207c))
+
 ### [0.3.3](https://github.com/Fabio286/antares/compare/v0.3.2...v0.3.3) (2021-08-22)
 
 
