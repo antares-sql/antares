@@ -5,6 +5,9 @@
          ref="explorebar"
          class="workspace-explorebar column"
          :style="{width: localWidth ? localWidth+'px' : ''}"
+         tabindex="0"
+         @keypress="explorebarSearch"
+         @keydown="explorebarSearch"
       >
          <div class="workspace-explorebar-header">
             <span class="workspace-explorebar-title">{{ connectionName }}</span>
@@ -30,6 +33,7 @@
          <div class="workspace-explorebar-search">
             <div v-if="workspace.connectionStatus === 'connected'" class="has-icon-right">
                <input
+                  ref="searchInput"
                   v-model="searchTerm"
                   class="form-input input-sm"
                   type="text"
@@ -43,7 +47,7 @@
                />
             </div>
          </div>
-         <div class="workspace-explorebar-body">
+         <div class="workspace-explorebar-body" @click="$refs.explorebar.focus()">
             <WorkspaceExploreBarSchema
                v-for="db of workspace.structure"
                :key="db.name"
@@ -236,6 +240,19 @@ export default {
             await this.refreshStructure(this.connection.uid);
             this.isRefreshing = false;
          }
+      },
+      explorebarSearch (e) {
+         if (e.code === 'Backspace') {
+            e.preventDefault();
+            if (this.searchTerm.length)
+               this.searchTerm = this.searchTerm.slice(0, -1);
+            else
+               return;
+         }
+         else if (e.key.length > 1)// Prevent non-alphanumerics
+            return;
+
+         this.$refs.searchInput.focus();
       },
       resize (e) {
          const el = this.$refs.explorebar;
@@ -526,6 +543,10 @@ export default {
     flex: initial;
     position: relative;
     padding: 0;
+
+    &:focus {
+      outline: none;
+    }
 
     .workspace-explorebar-header {
       width: 100%;
