@@ -287,7 +287,7 @@ export default {
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
       async getTableData () {
-         if (!this.table) return;
+         if (!this.table || !this.isSelected) return;
          this.isQuering = true;
 
          // if table changes clear cached values
