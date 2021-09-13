@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.5](https://github.com/Fabio286/antares/compare/v0.3.4...v0.3.5) (2021-09-13)
+
+
+### Bug Fixes
+
+* **MySQL:** connections stuck at startup if 5 or more tabs are restored ([95b60df](https://github.com/Fabio286/antares/commit/95b60df8fc634b96a4c2c5c48dc6b10848888978))
+
 ### [0.3.4](https://github.com/Fabio286/antares/compare/v0.3.3...v0.3.4) (2021-09-12)
 
 
