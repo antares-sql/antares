@@ -393,6 +393,13 @@ export default {
          return this.isConnecting || this.isTesting;
       }
    },
+   watch: {
+      'connection.client' () {
+         this.connection.user = this.customizations.defaultUser;
+         this.connection.port = this.customizations.defaultPort;
+         this.connection.database = this.customizations.defaultDatabase;
+      }
+   },
    created () {
       this.setDefaults();
 
