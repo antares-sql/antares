@@ -97,7 +97,16 @@ else {
    app.on('ready', async () => {
       mainWindow = await createMainWindow();
       Menu.setApplicationMenu(null);
+
       if (isDevelopment)
          mainWindow.webContents.openDevTools();
+
+      process.on('uncaughtException', error => {
+         mainWindow.webContents.send('unhandled-exception', error);
+      });
+
+      process.on('unhandledRejection', error => {
+         mainWindow.webContents.send('unhandled-exception', error);
+      });
    });
 }
