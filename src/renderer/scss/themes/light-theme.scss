@@ -79,6 +79,12 @@
   }
 
   .tile {
+    transition: background 0.2s;
+
+    &:focus {
+      background: rgba($bg-color-light-gray, 70%);
+    }
+
     &:hover {
       background: $bg-color-light-gray;
     }

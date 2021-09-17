@@ -11,16 +11,22 @@
             <div class="mb-4">
                {{ $t('word.clear') }}
             </div>
+            <div class="mb-4">
+               {{ $t('word.history') }}
+            </div>
          </div>
          <div class="column col-16">
             <div class="mb-4">
                <code>F5</code>
             </div>
             <div class="mb-4">
-               <code>CTRL</code> + <code>F8</code>
+               <code>CTRL</code> + <code>B</code>
             </div>
             <div class="mb-4">
                <code>CTRL</code> + <code>W</code>
+            </div>
+            <div class="mb-4">
+               <code>CTRL</code> + <code>G</code>
             </div>
          </div>
       </div>

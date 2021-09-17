@@ -117,7 +117,9 @@ module.exports = {
       all: 'All',
       duplicate: 'Duplicate',
       routine: 'Routine',
-      new: 'New'
+      new: 'New',
+      history: 'History',
+      select: 'Select'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -238,7 +240,9 @@ module.exports = {
       newRoutine: 'New routine',
       newFunction: 'New function',
       newScheduler: 'New scheduler',
-      newTriggerFunction: 'New trigger function'
+      newTriggerFunction: 'New trigger function',
+      thereIsNoQueriesYet: 'There is no queries yet',
+      searchForQueries: 'Search for queries'
    },
    faker: {
       address: 'Address',

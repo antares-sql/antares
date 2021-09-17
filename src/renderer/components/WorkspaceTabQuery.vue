@@ -5,7 +5,8 @@
       tabindex="0"
       @keydown.116="runQuery(query)"
       @keydown.ctrl.87="clear"
-      @keydown.ctrl.119="beautify"
+      @keydown.ctrl.66="beautify"
+      @keydown.ctrl.71="openHistoryModal"
    >
       <div class="workspace-query-runner column col-12">
          <QueryEditor
@@ -32,16 +33,7 @@
                   <span>{{ $t('word.run') }}</span>
                </button>
                <button
-                  class="btn btn-dark btn-sm"
-                  :disabled="!query || isQuering"
-                  title="CTRL+F8"
-                  @click="beautify()"
-               >
-                  <i class="mdi mdi-24px mdi-brush pr-1" />
-                  <span>{{ $t('word.format') }}</span>
-               </button>
-               <button
-                  class="btn btn-link btn-sm"
+                  class="btn btn-link btn-sm mr-0"
                   :disabled="!query || isQuering"
                   title="CTRL+W"
                   @click="clear()"
@@ -52,6 +44,24 @@
 
                <div class="divider-vert py-3" />
 
+               <button
+                  class="btn btn-dark btn-sm"
+                  :disabled="!query || isQuering"
+                  title="CTRL+B"
+                  @click="beautify()"
+               >
+                  <i class="mdi mdi-24px mdi-brush pr-1" />
+                  <span>{{ $t('word.format') }}</span>
+               </button>
+               <button
+                  class="btn btn-dark btn-sm"
+                  :disabled="isQuering"
+                  title="CTRL+G"
+                  @click="openHistoryModal()"
+               >
+                  <i class="mdi mdi-24px mdi-history pr-1" />
+                  <span>{{ $t('word.history') }}</span>
+               </button>
                <div class="dropdown table-dropdown pr-2">
                   <button
                      :disabled="!results.length || isQuering"
@@ -116,17 +126,24 @@
             @delete-selected="deleteSelected"
          />
       </div>
+      <ModalHistory
+         v-if="isHistoryOpen"
+         :connection="connection"
+         @select-query="selectQuery"
+         @close="isHistoryOpen = false"
+      />
    </div>
 </template>
 
 <script>
 import { format } from 'sql-formatter';
+import { mapGetters, mapActions } from 'vuex';
 import Schema from '@/ipc-api/Schema';
 import QueryEditor from '@/components/QueryEditor';
 import BaseLoader from '@/components/BaseLoader';
 import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable';
 import WorkspaceTabQueryEmptyState from '@/components/WorkspaceTabQueryEmptyState';
-import { mapGetters, mapActions } from 'vuex';
+import ModalHistory from '@/components/ModalHistory';
 import tableTabs from '@/mixins/tableTabs';
 
 export default {
@@ -135,7 +152,8 @@ export default {
       BaseLoader,
       QueryEditor,
       WorkspaceTabQueryTable,
-      WorkspaceTabQueryEmptyState
+      WorkspaceTabQueryEmptyState,
+      ModalHistory
    },
    mixins: [tableTabs],
    props: {
@@ -153,13 +171,15 @@ export default {
          resultsCount: 0,
          durationsCount: 0,
          affectedCount: 0,
-         editorHeight: 200
+         editorHeight: 200,
+         isHistoryOpen: false
       };
    },
    computed: {
       ...mapGetters({
          getWorkspace: 'workspaces/getWorkspace',
-         selectedWorkspace: 'workspaces/getSelected'
+         selectedWorkspace: 'workspaces/getSelected',
+         getHistoryByWorkspace: 'history/getHistoryByWorkspace'
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
@@ -175,6 +195,9 @@ export default {
       },
       isWorkspaceSelected () {
          return this.workspace.uid === this.selectedWorkspace;
+      },
+      history () {
+         return this.getHistoryByWorkspace(this.connection.uid) || [];
       }
    },
    watch: {
@@ -189,7 +212,6 @@ export default {
    created () {
       this.query = this.tab.content;
       this.selectedSchema = this.tab.schema || this.breadcrumbsSchema;
-      // this.changeBreadcrumbs({ schema: this.selectedSchema, query: `Query #${this.tab.index}` });
 
       window.addEventListener('keydown', this.onKey);
    },
@@ -213,7 +235,8 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
-         updateTabContent: 'workspaces/updateTabContent'
+         updateTabContent: 'workspaces/updateTabContent',
+         saveHistory: 'history/saveHistory'
       }),
       async runQuery (query) {
          if (!query || this.isQuering) return;
@@ -236,7 +259,14 @@ export default {
                this.durationsCount += this.results.reduce((acc, curr) => acc + curr.duration, 0);
                this.affectedCount += this.results.reduce((acc, curr) => acc + (curr.report ? curr.report.affectedRows : 0), 0);
 
-               this.updateTabContent({ uid: this.connection.uid, tab: this.tab.uid, type: 'query', schema: this.selectedSchema, content: query });
+               this.updateTabContent({
+                  uid: this.connection.uid,
+                  tab: this.tab.uid,
+                  type: 'query',
+                  schema: this.selectedSchema,
+                  content: query
+               });
+               this.saveHistory(params);
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -294,6 +324,15 @@ export default {
             });
             this.$refs.queryEditor.editor.session.setValue(formattedQuery);
          }
+      },
+      openHistoryModal () {
+         this.isHistoryOpen = true;
+      },
+      selectQuery (sql) {
+         if (this.$refs.queryEditor)
+            this.$refs.queryEditor.editor.session.setValue(sql);
+
+         this.isHistoryOpen = false;
       },
       clear () {
          if (this.$refs.queryEditor)
