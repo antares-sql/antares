@@ -87,7 +87,7 @@
     }
   },
   "dependencies": {
-    "@electron/remote": "^1.2.1",
+    "@electron/remote": "^2.0.1",
     "@mdi/font": "^6.1.95",
     "ace-builds": "^1.4.12",
     "electron-log": "^4.4.1",
