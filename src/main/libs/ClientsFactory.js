@@ -4,7 +4,7 @@ import { PostgreSQLClient } from './clients/PostgreSQLClient';
 
 const queryLogger = sql => {
    // Remove comments, newlines and multiple spaces
-   const escapedSql = sql.replace(/(\/\*(.|[\r\n|\n|\r])*?\*\/)|(--(.*|[\r\n|\n|\r]))/gm, '').replace(/\s\s+/g, ' ');
+   const escapedSql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '').replace(/\s\s+/g, ' ');
    console.log(escapedSql);
 };
 

@@ -3,9 +3,11 @@
 import { app, BrowserWindow, /* session, */ nativeImage, Menu } from 'electron';
 import * as path from 'path';
 import Store from 'electron-store';
+import * as remoteMain from '@electron/remote/main';
 
 import ipcHandlers from './ipc-handlers';
 
+// remoteMain.initialize();
 Store.initRenderer();
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -30,12 +32,13 @@ async function createMainWindow () {
          nodeIntegration: true,
          contextIsolation: false,
          'web-security': false,
-         enableRemoteModule: true,
          spellcheck: false
       },
       frame: false,
       backgroundColor: '#1d1d1d'
    });
+
+   remoteMain.enable(window.webContents);
 
    try {
       if (isDevelopment) { //
