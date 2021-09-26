@@ -1,21 +1,18 @@
 <template>
-   <div class="tr" @click="selectRow($event, row._id)">
+   <div class="tr" @click="selectRow()">
       <div
          v-for="(col, cKey) in row"
-         v-show="cKey !== '_id'"
          :key="cKey"
          class="td p-0"
          tabindex="0"
-         @contextmenu.prevent="openContext($event, { id: row._id, field: cKey })"
+         @contextmenu.prevent="openContext($event, { id: row.id, field: cKey })"
       >
-         <template v-if="cKey !== '_id'">
-            <span
-               v-if="!isInlineEditor[cKey]"
-               class="cell-content"
-               :class="`${isNull(col)} type-${typeof col === 'number' ? 'int' : 'varchar'}`"
-               @dblclick="dblClick(cKey)"
-            >{{ col | cutText }}</span>
-         </template>
+         <span
+            v-if="!isInlineEditor[cKey]"
+            class="cell-content"
+            :class="`${isNull(col)} type-${typeof col === 'number' ? 'int' : 'varchar'}`"
+            @dblclick="dblClick(cKey)"
+         >{{ col | cutText }}</span>
       </div>
       <ConfirmModal
          v-if="isInfoModal"
@@ -73,25 +70,15 @@ export default {
       };
    },
    computed: {},
-   watch: {
-      fields () {
-         Object.keys(this.fields).forEach(field => {
-            this.isInlineEditor[field.name] = false;
-         });
-      }
-   },
    methods: {
       isNull (value) {
          return value === null ? ' is-null' : '';
       },
-      selectRow (event, row) {
-         this.$emit('select-row', event, row);
+      selectRow () {
+         this.$emit('select-row');
       },
       openContext (event, payload) {
-         if (this.isEditable) {
-            payload.field = this.fields[payload.field].name;// Ensures field name only
-            this.$emit('contextmenu', event, payload);
-         }
+         this.$emit('contextmenu', event, payload);
       },
       hideInfoModal () {
          this.isInfoModal = false;

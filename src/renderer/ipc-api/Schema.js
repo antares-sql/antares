@@ -42,6 +42,10 @@ export default class {
       return ipcRenderer.invoke('get-processes', uid);
    }
 
+   static killProcess (params) {
+      return ipcRenderer.invoke('kill-process', params);
+   }
+
    static useSchema (params) {
       return ipcRenderer.invoke('use-schema', params);
    }

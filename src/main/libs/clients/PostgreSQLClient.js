@@ -1029,6 +1029,10 @@ export class PostgreSQLClient extends AntaresCore {
       });
    }
 
+   async killProcess (id) {
+      return await this.raw(`SELECT pg_terminate_backend(${id})`);
+   }
+
    /**
     * CREATE TABLE
     *

@@ -112,6 +112,17 @@ export default connections => {
       }
    });
 
+   ipcMain.handle('kill-process', async (event, { uid, pid }) => {
+      try {
+         const result = await connections[uid].killProcess(pid);
+
+         return { status: 'success', response: result };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
    ipcMain.handle('use-schema', async (event, { uid, schema }) => {
       if (!schema) return;
 

@@ -1176,6 +1176,10 @@ export class MySQLClient extends AntaresCore {
       });
    }
 
+   async killProcess (id) {
+      return await this.raw(`KILL ${id}`);
+   }
+
    /**
     * CREATE TABLE
     *

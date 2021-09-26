@@ -1,5 +1,15 @@
 <template>
    <div class="modal active">
+      <ModalProcessesListContext
+         v-if="isContext"
+         :context-event="contextEvent"
+         :selected-row="selectedRow"
+         :selected-cell="selectedCell"
+         @copy-cell="copyCell"
+         @copy-row="copyRow"
+         @kill-process="killProcess"
+         @close-context="closeContext"
+      />
       <a class="modal-overlay" @click.stop="closeModal" />
       <div class="modal-container p-0 pb-4">
          <div class="modal-header pl-2">
@@ -85,9 +95,10 @@
                      <template slot-scope="{ items }">
                         <ModalProcessesListRow
                            v-for="row in items"
-                           :key="row._id"
+                           :key="row.id"
                            class="process-row"
                            :row="row"
+                           @select-row="selectRow(row.id)"
                            @contextmenu="contextMenu"
                            @stop-refresh="stopRefresh"
                         />
@@ -105,12 +116,14 @@ import { mapGetters, mapActions } from 'vuex';
 import Schema from '@/ipc-api/Schema';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
 import ModalProcessesListRow from '@/components/ModalProcessesListRow';
+import ModalProcessesListContext from '@/components/ModalProcessesListContext';
 
 export default {
    name: 'ModalProcessesList',
    components: {
       BaseVirtualScroll,
-      ModalProcessesListRow
+      ModalProcessesListRow,
+      ModalProcessesListContext
    },
    props: {
       connection: Object
@@ -119,8 +132,12 @@ export default {
       return {
          resultsSize: 1000,
          isQuering: false,
+         isContext: false,
          autorefreshTimer: 0,
          refreshInterval: null,
+         contextEvent: null,
+         selectedCell: null,
+         selectedRow: null,
          results: [],
          fields: [],
          currentSort: '',
@@ -245,7 +262,44 @@ export default {
          this.autorefreshTimer = 0;
          this.clearRefresh();
       },
-      contextMenu () {},
+      selectRow (row) {
+         this.selectedRow = row;
+      },
+      contextMenu (event, cell) {
+         if (event.target.localName === 'input') return;
+         this.stopRefresh();
+
+         this.selectedCell = cell;
+         this.selectedRow = cell.id;
+         this.contextEvent = event;
+         this.isContext = true;
+      },
+      async killProcess () {
+         try { // Table data
+            const { status, response } = await Schema.killProcess({ uid: this.connection.uid, pid: this.selectedRow });
+
+            if (status === 'success')
+               this.getProcessesList();
+            else
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+      },
+      closeContext () {
+         this.isContext = false;
+      },
+      copyCell () {
+         const row = this.results.find(row => row.id === this.selectedRow);
+         const valueToCopy = row[this.selectedCell.field];
+         navigator.clipboard.writeText(valueToCopy);
+      },
+      copyRow () {
+         const row = this.results.find(row => row.id === this.selectedRow);
+         const rowToCopy = JSON.parse(JSON.stringify(row));
+         navigator.clipboard.writeText(JSON.stringify(rowToCopy));
+      },
       closeModal () {
          this.$emit('close');
       },

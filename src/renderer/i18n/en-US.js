@@ -242,7 +242,8 @@ module.exports = {
       newScheduler: 'New scheduler',
       newTriggerFunction: 'New trigger function',
       thereIsNoQueriesYet: 'There is no queries yet',
-      searchForQueries: 'Search for queries'
+      searchForQueries: 'Search for queries',
+      killProcess: 'Kill process'
    },
    faker: {
       address: 'Address',
