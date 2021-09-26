@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.6](https://github.com/Fabio286/antares/compare/v0.3.5...v0.3.6) (2021-09-26)
+
+
+### Features
+
+* copy cell/row or kill connections on context menu from processes list ([85f625d](https://github.com/Fabio286/antares/commit/85f625daf7026815dac6223a29c5a6479830edbb))
+* processes list exportation ([13aa47c](https://github.com/Fabio286/antares/commit/13aa47cd4441aa47c93038dbd91d6a0e54f6a60c))
+* workspace query history ([3959333](https://github.com/Fabio286/antares/commit/39593336626e6d9f3d3b65d2a4081388900e37d6))
+
+
+### Bug Fixes
+
+* adding a connection default values not change when switching clients, closes [#101](https://github.com/Fabio286/antares/issues/101) ([d4888ad](https://github.com/Fabio286/antares/commit/d4888ad8fba3c8e8ec2d6b6d9a78bb212d83eeed))
+
+
+### Improvements
+
+* **core:** better communication of internal exceptions ([abd46aa](https://github.com/Fabio286/antares/commit/abd46aa32256f822e52eaac2fc698da378b8163f))
+
 ### [0.3.5](https://github.com/Fabio286/antares/compare/v0.3.4...v0.3.5) (2021-09-13)
 
 
