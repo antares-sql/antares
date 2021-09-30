@@ -26,6 +26,7 @@ We are actively working on it, hoping to provide new cool features, improvements
 - A modern and friendly tab system; keep open every kind of tab you need in your workspace.
 - Fake table data filler to generate tons of data for test purpose.
 - Query suggestions and auto complete.
+- Query history: search through the last 1000 queries.
 - SSH tunnel support.
 - Dark and light theme.
 - Editor themes.
@@ -67,7 +68,6 @@ This is a roadmap with major features will come in near future.
 - Support for other databases.
 - Database tools.
 - Users management (add/edit/delete).
-- Query history and bookmarks.
 - More context menu shortcuts.
 - More keyboard shortcuts.
 - Import/export and migration.
