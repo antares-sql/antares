@@ -2,6 +2,9 @@
 import i18n from '@/i18n';
 import Store from 'electron-store';
 const persistentStore = new Store({ name: 'settings' });
+const isDarkTheme = window.matchMedia('(prefers-color-scheme: dark)');
+const defaultAppTheme = isDarkTheme.matches ? 'dark' : 'light';
+const defaultEditorTheme = isDarkTheme.matches ? 'twilight' : 'sqlserver';
 
 export default {
    namespaced: true,
@@ -14,8 +17,8 @@ export default {
       data_tab_limit: persistentStore.get('data_tab_limit', 1000),
       auto_complete: persistentStore.get('auto_complete', true),
       line_wrap: persistentStore.get('line_wrap', true),
-      application_theme: persistentStore.get('application_theme', 'dark'),
-      editor_theme: persistentStore.get('editor_theme', 'twilight'),
+      application_theme: persistentStore.get('application_theme', defaultAppTheme),
+      editor_theme: persistentStore.get('editor_theme', defaultEditorTheme),
       editor_font_size: persistentStore.get('editor_font_size', 'medium'),
       restore_tabs: persistentStore.get('restore_tabs', true)
    },
