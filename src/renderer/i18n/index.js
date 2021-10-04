@@ -11,7 +11,8 @@ const i18n = new VueI18n({
       'es-ES': require('./es-ES'),
       'fr-FR': require('./fr-FR'),
       'pt-BR': require('./pt-BR'),
-      'de-DE': require('./de-DE')
+      'de-DE': require('./de-DE'),
+      'vi-VN': require('./vi-VN')
    }
 });
 export default i18n;
