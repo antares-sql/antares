@@ -454,6 +454,7 @@ export default {
       closeAsking () {
          this.isTesting = false;
          this.isAsking = false;
+         this.isConnecting = false;
       },
       selectTab (tab) {
          this.selectedTab = tab;

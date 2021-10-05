@@ -12,6 +12,7 @@ const i18n = new VueI18n({
       'fr-FR': require('./fr-FR'),
       'pt-BR': require('./pt-BR'),
       'de-DE': require('./de-DE'),
+      'vi-VN': require('./vi-VN'),
       'ja-JP': require('./ja-JP')
    }
 });
