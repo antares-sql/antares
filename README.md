@@ -106,10 +106,11 @@ This is a roadmap with major features will come in near future.
 
 ## Translations
 
-**Italian Translation** / [Giuseppe Gigliotti](https://github.com/ReverbOD) [[#20](https://github.com/Fabio286/antares/pull/20)]  
-**Arabic Translation** (needs updates) / [Mohd-PH](https://github.com/Mohd-PH) [[#29](https://github.com/Fabio286/antares/pull/29)]  
-**Spanish Translation** (needs updates) / [hongkfui](https://github.com/hongkfui) [[#32](https://github.com/Fabio286/antares/pull/32)]  
-**French Translation** (needs updates) / [MrAnyx](https://github.com/MrAnyx) [[#44](https://github.com/Fabio286/antares/pull/44)]  
+**Italian** / [Giuseppe Gigliotti](https://github.com/ReverbOD) [[#20](https://github.com/Fabio286/antares/pull/20)]  
+**Arabic** (needs updates) / [Mohd-PH](https://github.com/Mohd-PH) [[#29](https://github.com/Fabio286/antares/pull/29)]  
+**Spanish** (needs updates) / [hongkfui](https://github.com/hongkfui) [[#32](https://github.com/Fabio286/antares/pull/32)]  
+**French** (needs updates) / [MrAnyx](https://github.com/MrAnyx) [[#44](https://github.com/Fabio286/antares/pull/44)]  
 **Portugues (Brasil)** / [Daniel Eduardo](https://github.com/daeleduardo) [[#54](https://github.com/Fabio286/antares/pull/54)]  
 **Deutsch (Deutschland)** / [Christian Ratz](https://github.com/digitalgopnik) [[#74](https://github.com/Fabio286/antares/pull/74)]  
-**Tiếng Việt** / [Ngô Quốc Đạt](https://github.com/datlechin) [[#111](https://github.com/Fabio286/antares/pull/111)]
+**Vietnamese** / [Ngô Quốc Đạt](https://github.com/datlechin) [[#111](https://github.com/Fabio286/antares/pull/111)]  
+**Japanese** / [Isamu Sugiura](https://github.com/IsamuSugi) [[#115](https://github.com/Fabio286/antares/pull/115)]
