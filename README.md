@@ -111,4 +111,5 @@ This is a roadmap with major features will come in near future.
 **Spanish Translation** (needs updates) / [hongkfui](https://github.com/hongkfui) [[#32](https://github.com/Fabio286/antares/pull/32)]  
 **French Translation** (needs updates) / [MrAnyx](https://github.com/MrAnyx) [[#44](https://github.com/Fabio286/antares/pull/44)]  
 **Portugues (Brasil)** / [Daniel Eduardo](https://github.com/daeleduardo) [[#54](https://github.com/Fabio286/antares/pull/54)]  
-**Deutsch (Deutschland)** / [Christian Ratz](https://github.com/digitalgopnik) [[#74](https://github.com/Fabio286/antares/pull/74)]
+**Deutsch (Deutschland)** / [Christian Ratz](https://github.com/digitalgopnik) [[#74](https://github.com/Fabio286/antares/pull/74)]  
+**Tiếng Việt** / [Ngô Quốc Đạt](https://github.com/datlechin) [[#111](https://github.com/Fabio286/antares/pull/111)]

@@ -13,7 +13,7 @@
          </div>
          <div class="modal-body pb-0">
             <div class="content">
-               <form class="form-horizontal">
+               <form class="form-horizontal" @submit.prevent="createSchema">
                   <div class="form-group">
                      <div class="col-3">
                         <label class="form-label">{{ $t('word.name') }}</label>
