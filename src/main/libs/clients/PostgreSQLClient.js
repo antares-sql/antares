@@ -102,7 +102,7 @@ export class PostgreSQLClient extends AntaresCore {
    use (schema) {
       this._schema = schema;
       if (schema)
-         return this.raw(`SET search_path TO ${schema}`);
+         return this.raw(`SET search_path TO "${schema}"`);
    }
 
    /**
@@ -530,7 +530,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async dropView (params) {
-      const sql = `DROP VIEW ${params.schema}.${params.view}`;
+      const sql = `DROP VIEW "${params.schema}"."${params.view}"`;
       return await this.raw(sql);
    }
 
@@ -542,10 +542,10 @@ export class PostgreSQLClient extends AntaresCore {
     */
    async alterView (params) {
       const { view } = params;
-      let sql = `CREATE OR REPLACE VIEW ${view.schema}.${view.oldName} AS ${view.sql}`;
+      let sql = `CREATE OR REPLACE VIEW "${view.schema}"."${view.oldName}" AS ${view.sql}`;
 
       if (view.name !== view.oldName)
-         sql += `; ALTER VIEW ${view.schema}.${view.oldName} RENAME TO ${view.name}`;
+         sql += `; ALTER VIEW "${view.schema}"."${view.oldName}" RENAME TO "${view.name}"`;
 
       return await this.raw(sql);
    }
@@ -557,7 +557,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async createView (params) {
-      const sql = `CREATE VIEW ${params.schema}.${params.name} AS ${params.sql}`;
+      const sql = `CREATE VIEW "${params.schema}"."${params.name}" AS ${params.sql}`;
       return await this.raw(sql);
    }
 
@@ -1076,14 +1076,14 @@ export class PostgreSQLClient extends AntaresCore {
          if (type === 'PRIMARY')
             newIndexes.push(`PRIMARY KEY (${fields})`);
          else if (type === 'UNIQUE')
-            newIndexes.push(`CONSTRAINT ${index.name} UNIQUE (${fields})`);
+            newIndexes.push(`CONSTRAINT "${index.name}" UNIQUE (${fields})`);
          else
-            manageIndexes.push(`CREATE INDEX ${index.name} ON "${schema}"."${options.name}" (${fields})`);
+            manageIndexes.push(`CREATE INDEX "${index.name}" ON "${schema}"."${options.name}" (${fields})`);
       });
 
       // ADD FOREIGN KEYS
       foreigns.forEach(foreign => {
-         newForeigns.push(`CONSTRAINT ${foreign.constraintName} FOREIGN KEY (${foreign.field}) REFERENCES "${schema}"."${foreign.refTable}" (${foreign.refField}) ON UPDATE ${foreign.onUpdate} ON DELETE ${foreign.onDelete}`);
+         newForeigns.push(`CONSTRAINT "${foreign.constraintName}" FOREIGN KEY ("${foreign.field}") REFERENCES "${schema}"."${foreign.refTable}" ("${foreign.refField}") ON UPDATE ${foreign.onUpdate} ON DELETE ${foreign.onDelete}`);
       });
 
       sql = `${sql} (${[...newColumns, ...newIndexes, ...newForeigns].join(', ')})`;
@@ -1123,7 +1123,7 @@ export class PostgreSQLClient extends AntaresCore {
          const typeInfo = this._getTypeInfo(addition.type);
          const length = typeInfo.length ? addition.numLength || addition.charLength || addition.datePrecision : false;
 
-         alterColumns.push(`ADD COLUMN ${addition.name} 
+         alterColumns.push(`ADD COLUMN "${addition.name}" 
             ${addition.type.toUpperCase()}${length ? `(${length})` : ''}${addition.isArray ? '[]' : ''}
             ${addition.unsigned ? 'UNSIGNED' : ''} 
             ${addition.zerofill ? 'ZEROFILL' : ''}
@@ -1134,20 +1134,20 @@ export class PostgreSQLClient extends AntaresCore {
 
       // ADD INDEX
       indexChanges.additions.forEach(addition => {
-         const fields = addition.fields.map(field => `${field}`).join(',');
+         const fields = addition.fields.map(field => `"${field}"`).join(',');
          const type = addition.type;
 
          if (type === 'PRIMARY')
             alterColumns.push(`ADD PRIMARY KEY (${fields})`);
          else if (type === 'UNIQUE')
-            alterColumns.push(`ADD CONSTRAINT ${addition.name} UNIQUE (${fields})`);
+            alterColumns.push(`ADD CONSTRAINT "${addition.name}" UNIQUE (${fields})`);
          else
-            manageIndexes.push(`CREATE INDEX ${addition.name} ON "${schema}"."${table}" (${fields})`);
+            manageIndexes.push(`CREATE INDEX "${addition.name}" ON "${schema}"."${table}" (${fields})`);
       });
 
       // ADD FOREIGN KEYS
       foreignChanges.additions.forEach(addition => {
-         alterColumns.push(`ADD CONSTRAINT ${addition.constraintName} FOREIGN KEY (${addition.field}) REFERENCES "${schema}"."${addition.refTable}" (${addition.refField}) ON UPDATE ${addition.onUpdate} ON DELETE ${addition.onDelete}`);
+         alterColumns.push(`ADD CONSTRAINT "${addition.constraintName}" FOREIGN KEY ("${addition.field}") REFERENCES "${schema}"."${addition.refTable}" (${addition.refField}) ON UPDATE ${addition.onUpdate} ON DELETE ${addition.onDelete}`);
       });
 
       // CHANGE FIELDS
@@ -1173,6 +1173,7 @@ export class PostgreSQLClient extends AntaresCore {
          alterColumns.push(`ALTER COLUMN "${change.name}" TYPE ${localType}${length ? `(${length})` : ''}${change.isArray ? '[]' : ''} USING "${change.name}"::${localType}`);
          alterColumns.push(`ALTER COLUMN "${change.name}" ${change.nullable ? 'DROP NOT NULL' : 'SET NOT NULL'}`);
          alterColumns.push(`ALTER COLUMN "${change.name}" ${change.default ? `SET DEFAULT ${change.default}` : 'DROP DEFAULT'}`);
+
          if (['SERIAL', 'SMALLSERIAL', 'BIGSERIAL'].includes(change.type)) {
             const sequenceName = `${table}_${change.name}_seq`.replace(' ', '_');
             createSequences.push(`CREATE SEQUENCE IF NOT EXISTS ${sequenceName} OWNED BY "${table}"."${change.name}"`);
@@ -1190,39 +1191,39 @@ export class PostgreSQLClient extends AntaresCore {
          else
             manageIndexes.push(`DROP INDEX ${change.oldName}`);
 
-         const fields = change.fields.map(field => `${field}`).join(',');
+         const fields = change.fields.map(field => `"${field}"`).join(',');
          const type = change.type;
 
          if (type === 'PRIMARY')
             alterColumns.push(`ADD PRIMARY KEY (${fields})`);
          else if (type === 'UNIQUE')
-            alterColumns.push(`ADD CONSTRAINT ${change.name} UNIQUE (${fields})`);
+            alterColumns.push(`ADD CONSTRAINT "${change.name}" UNIQUE (${fields})`);
          else
-            manageIndexes.push(`CREATE INDEX ${change.name} ON "${schema}"."${table}" (${fields})`);
+            manageIndexes.push(`CREATE INDEX "${change.name}" ON "${schema}"."${table}" (${fields})`);
       });
 
       // CHANGE FOREIGN KEYS
       foreignChanges.changes.forEach(change => {
-         alterColumns.push(`DROP CONSTRAINT ${change.oldName}`);
-         alterColumns.push(`ADD CONSTRAINT ${change.constraintName} FOREIGN KEY (${change.field}) REFERENCES "${schema}"."${change.refTable}" (${change.refField}) ON UPDATE ${change.onUpdate} ON DELETE ${change.onDelete}`);
+         alterColumns.push(`DROP CONSTRAINT "${change.oldName}"`);
+         alterColumns.push(`ADD CONSTRAINT "${change.constraintName}" FOREIGN KEY (${change.field}) REFERENCES "${schema}"."${change.refTable}" ("${change.refField}") ON UPDATE ${change.onUpdate} ON DELETE ${change.onDelete}`);
       });
 
       // DROP FIELDS
       deletions.forEach(deletion => {
-         alterColumns.push(`DROP COLUMN ${deletion.name}`);
+         alterColumns.push(`DROP COLUMN "${deletion.name}"`);
       });
 
       // DROP INDEX
       indexChanges.deletions.forEach(deletion => {
          if (['PRIMARY', 'UNIQUE'].includes(deletion.type))
-            alterColumns.push(`DROP CONSTRAINT ${deletion.name}`);
+            alterColumns.push(`DROP CONSTRAINT "${deletion.name}"`);
          else
-            manageIndexes.push(`DROP INDEX ${deletion.name}`);
+            manageIndexes.push(`DROP INDEX "${deletion.name}"`);
       });
 
       // DROP FOREIGN KEYS
       foreignChanges.deletions.forEach(deletion => {
-         alterColumns.push(`DROP CONSTRAINT ${deletion.constraintName}`);
+         alterColumns.push(`DROP CONSTRAINT "${deletion.constraintName}"`);
       });
 
       if (alterColumns.length) sql += `ALTER TABLE "${schema}"."${table}" ${alterColumns.join(', ')}; `;
@@ -1243,7 +1244,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async duplicateTable (params) {
-      const sql = `CREATE TABLE ${params.schema}.${params.table}_copy (LIKE ${params.schema}.${params.table} INCLUDING ALL)`;
+      const sql = `CREATE TABLE "${params.schema}"."${params.table}_copy" (LIKE "${params.schema}"."${params.table}" INCLUDING ALL)`;
       return await this.raw(sql);
    }
 
@@ -1254,7 +1255,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async truncateTable (params) {
-      const sql = `TRUNCATE TABLE ${params.schema}.${params.table}`;
+      const sql = `TRUNCATE TABLE "${params.schema}"."${params.table}"`;
       return await this.raw(sql);
    }
 
@@ -1265,7 +1266,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async dropTable (params) {
-      const sql = `DROP TABLE ${params.schema}.${params.table}`;
+      const sql = `DROP TABLE "${params.schema}"."${params.table}"`;
       return await this.raw(sql);
    }
 
@@ -1289,7 +1290,7 @@ export class PostgreSQLClient extends AntaresCore {
       else if (Object.keys(this._query.insert).length)
          fromRaw = 'INTO';
 
-      fromRaw += this._query.from ? ` ${this._query.schema ? `${this._query.schema}.` : ''}${this._query.from} ` : '';
+      fromRaw += this._query.from ? ` ${this._query.schema ? `"${this._query.schema}".` : ''}"${this._query.from}" ` : '';
 
       // WHERE
       const whereArray = this._query.where.reduce(this._reducer, []);
