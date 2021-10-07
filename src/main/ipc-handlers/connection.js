@@ -30,7 +30,8 @@ export default connections => {
             username: conn.sshUser,
             password: conn.sshPass,
             port: conn.sshPort ? conn.sshPort : 22,
-            identity: conn.sshKey
+            privateKey: conn.sshKey ? fs.readFileSync(conn.sshKey) : null,
+            passphrase: conn.sshPassphrase
          };
       }
 
@@ -85,7 +86,8 @@ export default connections => {
             username: conn.sshUser,
             password: conn.sshPass,
             port: conn.sshPort ? conn.sshPort : 22,
-            identity: conn.sshKey
+            privateKey: conn.sshKey ? fs.readFileSync(conn.sshKey) : null,
+            passphrase: conn.sshPassphrase
          };
       }
 

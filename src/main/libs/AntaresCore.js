@@ -16,6 +16,7 @@ export class AntaresCore {
       this._params = args.params;
       this._poolSize = args.poolSize || false;
       this._connection = null;
+      this._ssh = null;
       this._logger = args.logger || console.log;
 
       this._queryDefaults = {

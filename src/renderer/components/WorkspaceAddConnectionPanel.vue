@@ -309,6 +309,18 @@
                            />
                         </div>
                      </div>
+                     <div class="form-group columns">
+                        <div class="column col-4 col-sm-12">
+                           <label class="form-label">{{ $t('word.passphrase') }}</label>
+                        </div>
+                        <div class="column col-8 col-sm-12">
+                           <input
+                              v-model="connection.sshPassphrase"
+                              class="form-input"
+                              type="password"
+                           >
+                        </div>
+                     </div>
                   </fieldset>
                </form>
             </div>
@@ -439,7 +451,7 @@ export default {
             try {
                const res = await Connection.makeTest(this.connection);
                if (res.status === 'error')
-                  this.addNotification({ status: 'error', message: res.response.message });
+                  this.addNotification({ status: 'error', message: res.response.message || res.response.toString() });
                else
                   this.addNotification({ status: 'success', message: this.$t('message.connectionSuccessfullyMade') });
             }
@@ -462,7 +474,7 @@ export default {
             else {
                const res = await Connection.makeTest(params);
                if (res.status === 'error')
-                  this.addNotification({ status: 'error', message: res.response.message });
+                  this.addNotification({ status: 'error', message: res.response.message || res.response.toString() });
                else
                   this.addNotification({ status: 'success', message: this.$t('message.connectionSuccessfullyMade') });
             }

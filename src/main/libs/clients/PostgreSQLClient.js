@@ -65,13 +65,19 @@ export class PostgreSQLClient extends AntaresCore {
       if (this._params.ssl) dbConfig.ssl = { ...this._params.ssl };
 
       if (this._params.ssh) {
-         this._ssh = new SSH2Promise({ ...this._params.ssh });
+         try {
+            this._ssh = new SSH2Promise({ ...this._params.ssh });
 
-         this._tunnel = await this._ssh.addTunnel({
-            remoteAddr: this._params.host,
-            remotePort: this._params.port
-         });
-         dbConfig.port = this._tunnel.localPort;
+            const tunnel = await this._ssh.addTunnel({
+               remoteAddr: this._params.host,
+               remotePort: this._params.port
+            });
+            dbConfig.port = tunnel.localPort;
+         }
+         catch (err) {
+            if (this._ssh) this._ssh.close();
+            throw err;
+         }
       }
 
       if (!this._poolSize) {
