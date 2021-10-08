@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.7](https://github.com/Fabio286/antares/compare/v0.3.6...v0.3.7) (2021-10-08)
+
+
+### Features
+
+* support to SSH private keys with passphrase, closes [#118](https://github.com/Fabio286/antares/issues/118) ([9407a29](https://github.com/Fabio286/antares/commit/9407a29922812ab6aa3cf67569ba2f509433657c))
+* **UI:** auto detect system theme as default app theme ([7a63608](https://github.com/Fabio286/antares/commit/7a63608f54e387d45e655855666041f5602b54b1))
+
+
+### Bug Fixes
+
+* closing ask credential modal during a connection doesn't stops loading, closes [#114](https://github.com/Fabio286/antares/issues/114) ([26446fb](https://github.com/Fabio286/antares/commit/26446fb7ed04216283736072d442786350252dbb))
+* **PostgreSQL:** issue with uppercase characters in table and field names, closes [#116](https://github.com/Fabio286/antares/issues/116) ([2fcd080](https://github.com/Fabio286/antares/commit/2fcd080bd47367a21590ea5a754410a975959bdd))
+* **UI:** window reload pressing enter in schema creation modal, closes [#113](https://github.com/Fabio286/antares/issues/113) ([db1641b](https://github.com/Fabio286/antares/commit/db1641b74fcd218f1f1d24163cba70b024cc6bd7))
+
 ### [0.3.6](https://github.com/Fabio286/antares/compare/v0.3.5...v0.3.6) (2021-09-26)
 
 
