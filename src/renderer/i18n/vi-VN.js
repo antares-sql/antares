@@ -119,7 +119,8 @@ module.exports = {
         routine: 'Routine',
         new: 'Mới',
         history: 'Lịch sử',
-        select: 'Chọn'
+        select: 'Chọn',
+        passphrase: 'Cụm mật khẩu'
     },
     message: {
         appWelcome: 'Chào bạn đến với Antares SQL Client!',
