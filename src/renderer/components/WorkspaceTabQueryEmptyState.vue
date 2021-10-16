@@ -14,6 +14,12 @@
             <div class="mb-4">
                {{ $t('word.history') }}
             </div>
+            <div class="mb-4">
+               {{ $t('message.openNewTab') }}
+            </div>
+            <div class="mb-4">
+               {{ $t('message.closeTab') }}
+            </div>
          </div>
          <div class="column col-16">
             <div class="mb-4">
@@ -23,10 +29,16 @@
                <code>CTRL</code> + <code>B</code>
             </div>
             <div class="mb-4">
-               <code>CTRL</code> + <code>W</code>
+               <code>CTRL</code> + <code>ALT</code> + <code>W</code>
             </div>
             <div class="mb-4">
                <code>CTRL</code> + <code>G</code>
+            </div>
+            <div class="mb-4">
+               <code>CTRL</code> + <code>T</code>
+            </div>
+            <div class="mb-4">
+               <code>CTRL</code> + <code>W</code>
             </div>
          </div>
       </div>

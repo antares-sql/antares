@@ -41,18 +41,18 @@ async function createMainWindow () {
    remoteMain.enable(window.webContents);
 
    try {
-      if (isDevelopment) { //
+      if (isDevelopment) {
+      //
          await window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`);
 
          // const { default: installExtension, VUEJS3_DEVTOOLS } = require('electron-devtools-installer');
 
-         // const oldDevToolsID = session.defaultSession.getAllExtensions().find(ext => ext.name === 'Vue.js devtools').id;
-         // session.defaultSession.removeExtension(oldDevToolsID);
-         // const toolName = await installExtension(VUEJS3_DEVTOOLS);
-         // console.log(toolName, 'installed');
+      // const oldDevToolsID = session.defaultSession.getAllExtensions().find(ext => ext.name === 'Vue.js devtools').id;
+      // session.defaultSession.removeExtension(oldDevToolsID);
+      // const toolName = await installExtension(VUEJS3_DEVTOOLS);
+      // console.log(toolName, 'installed');
       }
-      else
-         await window.loadURL(new URL(`file:///${path.join(__dirname, 'index.html')}`).href);
+      else await window.loadURL(new URL(`file:///${path.join(__dirname, 'index.html')}`).href);
    }
    catch (err) {
       console.log(err);
@@ -70,10 +70,9 @@ async function createMainWindow () {
    });
 
    return window;
-};
+}
 
-if (!gotTheLock)
-   app.quit();
+if (!gotTheLock) app.quit();
 else {
    require('@electron/remote/main').initialize();
 
@@ -83,33 +82,53 @@ else {
    // quit application when all windows are closed
    app.on('window-all-closed', () => {
       // on macOS it is common for applications to stay open until the user explicitly quits
-      if (process.platform !== 'darwin')
-         app.quit();
+      if (process.platform !== 'darwin') app.quit();
    });
 
    app.on('activate', async () => {
       // on macOS it is common to re-create a window even after all windows have been closed
       if (mainWindow === null) {
          mainWindow = await createMainWindow();
-         if (isDevelopment)
-            mainWindow.webContents.openDevTools();
+         if (isDevelopment) mainWindow.webContents.openDevTools();
       }
    });
 
    // create main BrowserWindow when electron is ready
    app.on('ready', async () => {
       mainWindow = await createMainWindow();
-      Menu.setApplicationMenu(null);
+      createAppMenu();
 
-      if (isDevelopment)
-         mainWindow.webContents.openDevTools();
+      if (isDevelopment) mainWindow.webContents.openDevTools();
 
-      process.on('uncaughtException', error => {
+      process.on('uncaughtException', (error) => {
          mainWindow.webContents.send('unhandled-exception', error);
       });
 
-      process.on('unhandledRejection', error => {
+      process.on('unhandledRejection', (error) => {
          mainWindow.webContents.send('unhandled-exception', error);
       });
    });
+}
+
+function createAppMenu () {
+   let menu = null;
+
+   if (process.platform === 'darwin') {
+      menu = Menu.buildFromTemplate([
+         {
+            label: app.name,
+            submenu: [
+               {
+                  role: 'about'
+               },
+               { type: 'separator' },
+               {
+                  role: 'quit'
+               }
+            ]
+         }
+      ]);
+   }
+
+   Menu.setApplicationMenu(menu);
 }

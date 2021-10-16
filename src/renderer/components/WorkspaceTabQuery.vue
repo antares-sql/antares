@@ -4,7 +4,7 @@
       class="workspace-query-tab column col-12 columns col-gapless no-outline p-0"
       tabindex="0"
       @keydown.116="runQuery(query)"
-      @keydown.ctrl.87="clear"
+      @keydown.ctrl.alt.87="clear"
       @keydown.ctrl.66="beautify"
       @keydown.ctrl.71="openHistoryModal"
    >

@@ -586,10 +586,14 @@ export default {
       }
    },
    async created () {
+      window.addEventListener('keydown', this.onKey);
       await this.addWorkspace(this.connection.uid);
       const isInitiated = await Connection.checkConnection(this.connection.uid);
       if (isInitiated)
          this.connectWorkspace(this.connection);
+   },
+   beforeDestroy () {
+      window.removeEventListener('keydown', this.onKey);
    },
    methods: {
       ...mapActions({
@@ -603,6 +607,25 @@ export default {
       }),
       addQueryTab () {
          this.newTab({ uid: this.connection.uid, type: 'query' });
+      },
+      getSelectedTab () {
+         return this.workspace.tabs.find(tab => tab.uid === this.selectedTab);
+      },
+      onKey (e) {
+         e.stopPropagation();
+
+         if (!this.isSelected)
+            return;
+
+         if ((e.ctrlKey || e.metaKey) && e.keyCode === 84 && !e.altKey) { // CTRL|Command + t
+            this.addQueryTab();
+         }
+
+         if ((e.ctrlKey || e.metaKey) && e.keyCode === 87 && !e.altKey) { // CTRL|Command + w
+            const currentTab = this.getSelectedTab();
+            if (currentTab)
+               this.closeTab(currentTab);
+         }
       },
       openAsPermanentTab (tab) {
          const permanentTabs = {
