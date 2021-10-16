@@ -5,6 +5,8 @@
       tabindex="0"
       :style="{'height': resultsSize+'px'}"
       @keyup.46="showDeleteConfirmModal"
+      @keydown.ctrl.65="selectAllRows"
+      @keydown.esc="deselectRows"
    >
       <TableContext
          v-if="isContext"
@@ -447,6 +449,16 @@ export default {
          }
          else
             this.selectedRows = [row];
+      },
+      selectAllRows () {
+         console.log('select all');
+         this.selectedRows = this.localResults.reduce((acc, curr) => {
+            acc.push(curr._id);
+            return acc;
+         }, []);
+      },
+      deselectRows () {
+         this.selectedRows = [];
       },
       contextMenu (event, cell) {
          if (event.target.localName === 'input') return;
