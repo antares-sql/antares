@@ -244,7 +244,8 @@ module.exports = {
       newTriggerFunction: 'New trigger function',
       thereIsNoQueriesYet: 'There is no queries yet',
       searchForQueries: 'Search for queries',
-      killProcess: 'Kill process'
+      killProcess: 'Kill process',
+      closeTab: 'Close tab'
    },
    faker: {
       address: 'Address',

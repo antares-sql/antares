@@ -451,7 +451,6 @@ export default {
             this.selectedRows = [row];
       },
       selectAllRows () {
-         console.log('select all');
          this.selectedRows = this.localResults.reduce((acc, curr) => {
             acc.push(curr._id);
             return acc;

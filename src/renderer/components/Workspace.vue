@@ -595,7 +595,6 @@ export default {
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);
    },
-
    methods: {
       ...mapActions({
          addWorkspace: 'workspaces/addWorkspace',
@@ -618,11 +617,11 @@ export default {
          if (!this.isSelected)
             return;
 
-         if ((e.ctrlKey || e.metaKey) && e.keyCode === 84) { // CTRL|Command + t
+         if ((e.ctrlKey || e.metaKey) && e.keyCode === 84 && !e.altKey) { // CTRL|Command + t
             this.addQueryTab();
          }
 
-         if ((e.ctrlKey || e.metaKey) && e.keyCode === 87) { // CTRL|Command + w
+         if ((e.ctrlKey || e.metaKey) && e.keyCode === 87 && !e.altKey) { // CTRL|Command + w
             const currentTab = this.getSelectedTab();
             if (currentTab)
                this.closeTab(currentTab);
