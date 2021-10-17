@@ -120,7 +120,8 @@ module.exports = {
       new: 'New',
       history: 'History',
       select: 'Select',
-      passphrase: 'Passphrase'
+      passphrase: 'Passphrase',
+      filter: 'Filter'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
