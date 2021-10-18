@@ -131,6 +131,9 @@ export default {
                value = '"' + filter.value + '"';
          }
 
+         if (isNumeric && value.length === 0)
+            value = '""';
+
          return `${filter.field} ${filter.op} ${value}`;
       }
    }
