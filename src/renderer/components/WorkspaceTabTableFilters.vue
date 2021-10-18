@@ -47,13 +47,6 @@
          <button
             class="btn btn-sm btn-dark mr-0 ml-2"
             type="button"
-            @click="addRow"
-         >
-            <i class="mdi mdi-plus-circle-outline" />
-         </button>
-         <button
-            class="btn btn-sm btn-dark mr-0 ml-2"
-            type="button"
             @click="removeRow(index)"
          >
             <i class="mdi mdi-minus-circle-outline" />
@@ -65,6 +58,13 @@
             type="submit"
          >
             {{ $t('word.filter') }}
+         </button>
+         <button
+            class="btn btn-sm btn-dark mr-0 ml-2"
+            type="button"
+            @click="addRow"
+         >
+            <i class="mdi mdi-plus-circle-outline" />
          </button>
       </div>
    </form>
@@ -89,13 +89,11 @@ export default {
    methods: {
       addRow () {
          this.rows.push({ active: true, field: this.fields[0].name, op: '=', value: '', value2: '' });
-         this.$emit('filter-change');
+         this.$emit('filter-change', this.rows);
       },
       removeRow (i) {
-         if (this.rows.length >= 2) {
-            this.rows = this.rows.filter((_, idx) => idx !== i);
-            this.$emit('filter-change');
-         }
+         this.rows = this.rows.filter((_, idx) => idx !== i);
+         this.$emit('filter-change', this.rows);
       },
       doFilter () {
          const clausoles = this.rows.filter(el => el.active).map(el => this.createClausole(el));
