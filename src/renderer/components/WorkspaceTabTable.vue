@@ -439,6 +439,7 @@ export default {
          this.$refs.queryTable.downloadTable(format, this.table);
       },
       onFilterChange (clausoles) {
+         this.resizeScroller();
          if (clausoles.length === 0)
             this.isSearch = false;
       },
