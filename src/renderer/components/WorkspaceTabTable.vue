@@ -132,6 +132,7 @@
          v-if="isSearch"
          :fields="fields"
          @filter="updateFilters"
+         @filter-change="resizeScroller"
       />
       <div class="workspace-query-results p-relative column col-12">
          <BaseLoader v-if="isQuering" />
@@ -293,6 +294,7 @@ export default {
             this.filters = [];
             this.getTableData();
          }
+         this.resizeScroller();
       }
    },
    created () {
@@ -435,6 +437,9 @@ export default {
       },
       downloadTable (format) {
          this.$refs.queryTable.downloadTable(format, this.table);
+      },
+      resizeScroller () {
+         setTimeout(() => this.$refs.queryTable.refreshScroller(), 1);
       },
       updateFilters (clausoles) {
          this.filters = clausoles;

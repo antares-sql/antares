@@ -116,6 +116,11 @@ module.exports = {
       triggerFunction: 'Funzione di trigger | Funzioni di trigger',
       all: 'Tutto',
       duplicate: 'Duplica',
+      routine: 'Routine',
+      new: 'Nuovo',
+      history: 'Cronologia',
+      select: 'Seleziona',
+      passphrase: 'Passphrase',
       filter: 'Filtra'
    },
    message: {

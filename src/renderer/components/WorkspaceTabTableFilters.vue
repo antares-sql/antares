@@ -5,7 +5,7 @@
          :key="index"
          class="workspace-table-filters-row"
       >
-         <label class="form-checkbox my-0" :title="$t('word.insert')">
+         <label class="form-checkbox my-0">
             <input
                v-model="row.active"
                type="checkbox"
@@ -89,10 +89,13 @@ export default {
    methods: {
       addRow () {
          this.rows.push({ active: true, field: this.fields[0].name, op: '=', value: '', value2: '' });
+         this.$emit('filter-change');
       },
       removeRow (i) {
-         if (this.rows.length >= 2)
+         if (this.rows.length >= 2) {
             this.rows = this.rows.filter((_, idx) => idx !== i);
+            this.$emit('filter-change');
+         }
       },
       doFilter () {
          const clausoles = this.rows.filter(el => el.active).map(el => this.createClausole(el));
