@@ -4,6 +4,7 @@ export const TEXT = [
    'CHARACTER',
    'CHARACTER VARYING'
 ];
+
 export const LONG_TEXT = [
    'TEXT',
    'MEDIUMTEXT',
@@ -50,6 +51,7 @@ export const BOOLEAN = [
 ];
 
 export const DATE = ['DATE'];
+
 export const TIME = [
    'TIME',
    'TIME WITH TIME ZONE'

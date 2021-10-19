@@ -71,9 +71,13 @@
 </template>
 
 <script>
+import customizations from 'common/customizations';
+import { NUMBER, FLOAT } from 'common/fieldTypes';
+
 export default {
    props: {
-      fields: Array
+      fields: Array,
+      connClient: String
    },
    data () {
       return {
@@ -82,6 +86,11 @@ export default {
             '=', '!=', '>', '<', '>=', '<=', 'IN', 'NOT IN', 'LIKE', 'BETWEEN', 'IS NULL', 'IS NOT NULL'
          ]
       };
+   },
+   computed: {
+      customizations () {
+         return customizations[this.connClient];
+      }
    },
    created () {
       this.addRow();
@@ -101,40 +110,40 @@ export default {
       },
       createClausole (filter) {
          const field = this.fields.find(field => field.name === filter.field);
-         const isNumeric = field.type.match(/INT|FLOAT|DECIMAL/);
-         let value = null;
+         const isNumeric = [...NUMBER, ...FLOAT].includes(field.type);
+         const { elementsWrapper: ew, stringsWrapper: sw } = this.customizations;
+         let value;
 
          switch (filter.op) {
             case '=':
             case '!=':
-               value = isNumeric ? filter.value : '"' + filter.value + '"';
+               value = isNumeric ? filter.value : `${sw}${filter.value}${sw}`;
                break;
             case 'BETWEEN':
-               value = isNumeric ? filter.value : '"' + filter.value + '"';
+               value = isNumeric ? filter.value : `${sw}${filter.value}${sw}`;
                value += ' AND ';
-               value += isNumeric ? filter.value2 : '"' + filter.value2 + '"';
-               console.log(value);
+               value += isNumeric ? filter.value2 : `${sw}${filter.value2}${sw}`;
                break;
             case 'IN':
             case 'NOT IN':
                value = filter.value.split(',').map(val => {
                   val = val.trim();
-                  return isNumeric ? val : '"' + val + '"';
+                  return isNumeric ? val : `${sw}${val}${sw}`;
                }).join(',');
-               value = '(' + filter.value + ')';
+               value = `(${filter.value})`;
                break;
             case 'IS NULL':
             case 'IS NOT NULL':
                value = '';
                break;
             default:
-               value = '"' + filter.value + '"';
+               value = `${sw}${filter.value}${sw}`;
          }
 
-         if (isNumeric && value.length === 0)
-            value = '""';
+         if (isNumeric && !value.length && !['IS NULL', 'IS NOT NULL'].includes(filter.op))
+            value = `${sw}${sw}`;
 
-         return `${filter.field} ${filter.op} ${value}`;
+         return `${ew}${filter.field}${ew} ${filter.op} ${value}`;
       }
    }
 };

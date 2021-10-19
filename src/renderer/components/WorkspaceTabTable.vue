@@ -131,6 +131,7 @@
       <WorkspaceTabTableFilters
          v-if="isSearch"
          :fields="fields"
+         :conn-client="connection.client"
          @filter="updateFilters"
          @filter-change="onFilterChange"
       />

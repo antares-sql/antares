@@ -18,6 +18,8 @@ module.exports = {
    routines: true,
    functions: true,
    // Settings
+   elementsWrapper: '"',
+   stringsWrapper: '\'',
    tableAdd: true,
    viewAdd: true,
    triggerAdd: true,

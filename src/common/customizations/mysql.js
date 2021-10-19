@@ -21,6 +21,8 @@ module.exports = {
    functions: true,
    schedulers: true,
    // Settings
+   elementsWrapper: '',
+   stringsWrapper: '"',
    tableAdd: true,
    viewAdd: true,
    triggerAdd: true,

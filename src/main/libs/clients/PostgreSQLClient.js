@@ -36,6 +36,26 @@ export class PostgreSQLClient extends AntaresCore {
       };
    }
 
+   _reducer (acc, curr) {
+      const type = typeof curr;
+
+      switch (type) {
+         case 'number':
+         case 'string':
+            return [...acc, curr];
+         case 'object':
+            if (Array.isArray(curr))
+               return [...acc, ...curr];
+            else {
+               const clausoles = [];
+               for (const key in curr)
+                  clausoles.push(`"${key}" ${curr[key]}`);
+
+               return clausoles;
+            }
+      }
+   }
+
    _getTypeInfo (type) {
       return dataTypes
          .reduce((acc, group) => [...acc, ...group.types], [])
@@ -1065,7 +1085,7 @@ export class PostgreSQLClient extends AntaresCore {
          const typeInfo = this._getTypeInfo(field.type);
          const length = typeInfo.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
 
-         newColumns.push(`${field.name} 
+         newColumns.push(`"${field.name}" 
             ${field.type.toUpperCase()}${length ? `(${length})` : ''} 
             ${field.unsigned ? 'UNSIGNED' : ''} 
             ${field.zerofill ? 'ZEROFILL' : ''}
