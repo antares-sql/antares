@@ -16,7 +16,7 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('get-table-data', async (event, { uid, schema, table, limit, page, sortParams }) => {
+   ipcMain.handle('get-table-data', async (event, { uid, schema, table, limit, page, sortParams, where }) => {
       try {
          const offset = (page - 1) * limit;
          const query = connections[uid]
@@ -28,6 +28,9 @@ export default (connections) => {
 
          if (sortParams && sortParams.field && sortParams.dir)
             query.orderBy({ [sortParams.field]: sortParams.dir.toUpperCase() });
+
+         if (where)
+            query.where(where);
 
          const result = await query.run({ details: true, schema });
 

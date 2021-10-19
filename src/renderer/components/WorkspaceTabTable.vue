@@ -72,6 +72,13 @@
                <div class="divider-vert py-3" />
 
                <button
+                  class="btn btn-sm"
+                  :class="{'btn-primary': isSearch, 'btn-dark': !isSearch}"
+                  @click="isSearch = !isSearch"
+               >
+                  <i class="mdi mdi-24px mdi-magnify" />
+               </button>
+               <button
                   v-if="isTable"
                   class="btn btn-dark btn-sm"
                   :disabled="isQuering"
@@ -121,6 +128,12 @@
             </div>
          </div>
       </div>
+      <WorkspaceTabTableFilters
+         v-if="isSearch"
+         :fields="fields"
+         @filter="updateFilters"
+         @filter-change="onFilterChange"
+      />
       <div class="workspace-query-results p-relative column col-12">
          <BaseLoader v-if="isQuering" />
          <WorkspaceTabQueryTable
@@ -160,6 +173,7 @@
 import Tables from '@/ipc-api/Tables';
 import BaseLoader from '@/components/BaseLoader';
 import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable';
+import WorkspaceTabTableFilters from '@/components/WorkspaceTabTableFilters';
 import ModalNewTableRow from '@/components/ModalNewTableRow';
 import ModalFakerRows from '@/components/ModalFakerRows';
 import { mapGetters, mapActions } from 'vuex';
@@ -170,6 +184,7 @@ export default {
    components: {
       BaseLoader,
       WorkspaceTabQueryTable,
+      WorkspaceTabTableFilters,
       ModalNewTableRow,
       ModalFakerRows
    },
@@ -192,6 +207,7 @@ export default {
          tabUid: 'data', // ???
          isQuering: false,
          isPageMenu: false,
+         isSearch: false,
          results: [],
          lastTable: null,
          isAddModal: false,
@@ -199,6 +215,7 @@ export default {
          autorefreshTimer: 0,
          refreshInterval: null,
          sortParams: {},
+         filters: [],
          page: 1,
          pageProxy: 1,
          approximateCount: 0
@@ -271,6 +288,13 @@ export default {
             if (this.lastTable !== this.table)
                this.getTableData();
          }
+      },
+      isSearch (val) {
+         if (this.filters.length > 0 && !val) {
+            this.filters = [];
+            this.getTableData();
+         }
+         this.resizeScroller();
       }
    },
    created () {
@@ -302,7 +326,8 @@ export default {
             table: this.table,
             limit: this.limit,
             page: this.page,
-            sortParams: this.sortParams
+            sortParams: this.sortParams,
+            where: this.filters || []
          };
 
          try { // Table data
@@ -389,11 +414,13 @@ export default {
             if (e.key === 'F5')
                this.reloadTable();
 
-            if (e.ctrlKey) {
+            if (e.ctrlKey || e.metaKey) {
                if (e.key === 'ArrowRight')
                   this.pageChange('next');
                if (e.key === 'ArrowLeft')
                   this.pageChange('prev');
+               if (e.keyCode === 70) // f
+                  this.isSearch = !this.isSearch;
             }
          }
       },
@@ -410,6 +437,18 @@ export default {
       },
       downloadTable (format) {
          this.$refs.queryTable.downloadTable(format, this.table);
+      },
+      onFilterChange (clausoles) {
+         this.resizeScroller();
+         if (clausoles.length === 0)
+            this.isSearch = false;
+      },
+      resizeScroller () {
+         setTimeout(() => this.$refs.queryTable.refreshScroller(), 1);
+      },
+      updateFilters (clausoles) {
+         this.filters = clausoles;
+         this.getTableData();
       }
    }
 };
