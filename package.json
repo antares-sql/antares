@@ -96,7 +96,7 @@
     "faker": "^5.5.3",
     "marked": "^3.0.4",
     "moment": "^2.29.1",
-    "mysql2": "^2.3.0",
+    "mysql2": "^2.3.2",
     "pg": "^8.7.1",
     "pgsql-ast-parser": "^7.2.1",
     "source-map-support": "^0.5.20",
@@ -110,9 +110,10 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.15.7",
+    "babel-loader": "^8.2.3",
     "cross-env": "^7.0.2",
-    "electron": "^15.0.0",
-    "electron-builder": "^22.11.7",
+    "electron": "^15.3.0",
+    "electron-builder": "^22.13.1",
     "electron-devtools-installer": "^3.2.0",
     "electron-webpack": "^2.8.2",
     "electron-webpack-vue": "^2.4.0",
@@ -129,6 +130,7 @@
     "stylelint-config-standard": "^22.0.0",
     "stylelint-scss": "^3.21.0",
     "vue": "^2.6.14",
+    "vue-loader": "^15.9.8",
     "vue-template-compiler": "^2.6.14",
     "webpack": "^4.46.0"
   }
