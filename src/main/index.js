@@ -41,16 +41,15 @@ async function createMainWindow () {
    remoteMain.enable(window.webContents);
 
    try {
-      if (isDevelopment) {
-      //
+      if (isDevelopment) { //
          await window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`);
 
          // const { default: installExtension, VUEJS3_DEVTOOLS } = require('electron-devtools-installer');
 
-      // const oldDevToolsID = session.defaultSession.getAllExtensions().find(ext => ext.name === 'Vue.js devtools').id;
-      // session.defaultSession.removeExtension(oldDevToolsID);
-      // const toolName = await installExtension(VUEJS3_DEVTOOLS);
-      // console.log(toolName, 'installed');
+         // const oldDevToolsID = session.defaultSession.getAllExtensions().find(ext => ext.name === 'Vue.js devtools').id;
+         // session.defaultSession.removeExtension(oldDevToolsID);
+         // const toolName = await installExtension(VUEJS3_DEVTOOLS);
+         // console.log(toolName, 'installed');
       }
       else await window.loadURL(new URL(`file:///${path.join(__dirname, 'index.html')}`).href);
    }
