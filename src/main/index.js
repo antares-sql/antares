@@ -11,6 +11,7 @@ import ipcHandlers from './ipc-handlers';
 Store.initRenderer();
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
+const isMacOS = process.platform === 'darwin';
 const gotTheLock = app.requestSingleInstanceLock();
 
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
@@ -35,6 +36,8 @@ async function createMainWindow () {
          spellcheck: false
       },
       frame: false,
+      titleBarStyle: isMacOS ? 'hidden' : 'default',
+      trafficLightPosition: isMacOS ? { x: 10, y: 8 } : undefined,
       backgroundColor: '#1d1d1d'
    });
 
@@ -81,7 +84,7 @@ else {
    // quit application when all windows are closed
    app.on('window-all-closed', () => {
       // on macOS it is common for applications to stay open until the user explicitly quits
-      if (process.platform !== 'darwin') app.quit();
+      if (isMacOS) app.quit();
    });
 
    app.on('activate', async () => {
@@ -112,7 +115,7 @@ else {
 function createAppMenu () {
    let menu = null;
 
-   if (process.platform === 'darwin') {
+   if (isMacOS) {
       menu = Menu.buildFromTemplate([
          {
             role: 'appMenu'
