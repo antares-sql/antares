@@ -115,16 +115,16 @@ function createAppMenu () {
    if (process.platform === 'darwin') {
       menu = Menu.buildFromTemplate([
          {
-            label: app.name,
-            submenu: [
-               {
-                  role: 'about'
-               },
-               { type: 'separator' },
-               {
-                  role: 'quit'
-               }
-            ]
+            role: 'appMenu'
+         },
+         {
+            role: 'editMenu'
+         },
+         {
+            role: 'viewMenu'
+         },
+         {
+            role: 'windowMenu'
          }
       ]);
    }
