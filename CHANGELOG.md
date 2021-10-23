@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.8](https://github.com/Fabio286/antares/compare/v0.3.7...v0.3.8) (2021-10-23)
+
+
+### Features
+
+* **UI:** CTRL+A to select all result rows ([4069ade](https://github.com/Fabio286/antares/commit/4069ade36df43e58f198dd1305778b5811824315))
+* **UI:** ctrl|cmd+t, ctrl|cmd+w shortcut to open/close workspace tabs ([9046b85](https://github.com/Fabio286/antares/commit/9046b858b1e4608af4c01bc4d69e1a49d4009c07))
+* **UI:** hide filter bar if there are no more rows in it ([9178805](https://github.com/Fabio286/antares/commit/91788054e6302e83cb4a7501ad6c3f72809cb3bb))
+* **UI:** multi column table filters ([0e15c39](https://github.com/Fabio286/antares/commit/0e15c39797fe34f7a649f85ee62204682d45c98a))
+
+
+### Bug Fixes
+
+* **PostgreSQL:** issue with uppercase characters in table field names ([aef17be](https://github.com/Fabio286/antares/commit/aef17be36cfcf3a6325a954e80f973623e250405))
+* query failure when a filter with a numeric value is used ([69cd083](https://github.com/Fabio286/antares/commit/69cd083054cae50d64475b9f1f5d7ebd39093e39))
+* regression during resize results table on filters change ([7dc33c7](https://github.com/Fabio286/antares/commit/7dc33c78aa4152264cc6833437be9af9b8621867))
+
+
+### Improvements
+
+* **UI:** resize results table on filters change ([f9ee7d0](https://github.com/Fabio286/antares/commit/f9ee7d0450a1386800223d7b96849e06ae02aece))
+
 ### [0.3.7](https://github.com/Fabio286/antares/compare/v0.3.6...v0.3.7) (2021-10-08)
 
 
