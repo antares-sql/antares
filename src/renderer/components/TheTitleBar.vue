@@ -1,5 +1,5 @@
 <template>
-   <div id="titlebar">
+   <div id="titlebar" @dblclick="toggleFullScreen">
       <div class="titlebar-resizer" />
       <div class="titlebar-elements">
          <img
