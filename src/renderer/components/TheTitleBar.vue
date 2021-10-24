@@ -2,7 +2,11 @@
    <div id="titlebar">
       <div class="titlebar-resizer" />
       <div class="titlebar-elements">
-         <img class="titlebar-logo" :src="require('@/images/logo.svg').default">
+         <img
+            v-if="!isMacOS"
+            class="titlebar-logo"
+            :src="require('@/images/logo.svg').default"
+         >
       </div>
       <div class="titlebar-elements titlebar-title">
          {{ windowTitle }}
@@ -22,14 +26,26 @@
          >
             <i class="mdi mdi-24px mdi-refresh" />
          </div>
-         <div class="titlebar-element" @click="minimizeApp">
+         <div
+            v-if="!isMacOS"
+            class="titlebar-element"
+            @click="minimizeApp"
+         >
             <i class="mdi mdi-24px mdi-minus" />
          </div>
-         <div class="titlebar-element" @click="toggleFullScreen">
+         <div
+            v-if="!isMacOS"
+            class="titlebar-element"
+            @click="toggleFullScreen"
+         >
             <i v-if="isMaximized" class="mdi mdi-24px mdi-fullscreen-exit" />
             <i v-else class="mdi mdi-24px mdi-fullscreen" />
          </div>
-         <div class="titlebar-element close-button" @click="closeApp">
+         <div
+            v-if="!isMacOS"
+            class="titlebar-element close-button"
+            @click="closeApp"
+         >
             <i class="mdi mdi-24px mdi-close" />
          </div>
       </div>
@@ -47,7 +63,8 @@ export default {
       return {
          w: getCurrentWindow(),
          isMaximized: getCurrentWindow().isMaximized(),
-         isDevelopment: process.env.NODE_ENV === 'development'
+         isDevelopment: process.env.NODE_ENV === 'development',
+         isMacOS: process.platform === 'darwin'
       };
    },
    computed: {
