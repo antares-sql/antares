@@ -13,6 +13,7 @@ import notifications from './modules/notifications.store';
 
 import ipcUpdates from './plugins/ipcUpdates';
 import ipcExceptions from './plugins/ipcExceptions';
+import ipcShortcuts from './plugins/ipcShortcuts';
 
 Vue.use(Vuex);
 
@@ -29,6 +30,7 @@ export default new Vuex.Store({
    },
    plugins: [
       ipcUpdates,
-      ipcExceptions
+      ipcExceptions,
+      ipcShortcuts
    ]
 });
