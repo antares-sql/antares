@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development electron-webpack dev",
     "compile": "electron-webpack",
-    "build": "cross-env NODE_ENV=production npm run compile",
+    "build": "cross-env NODE_ENV=production npm run compile:webpack",
     "build:local": "npm run build && electron-builder",
     "build:appx": "npm run build:local -- --win appx",
     "release": "standard-version",
@@ -16,12 +16,14 @@
     "test": "npm run lint",
     "lint": "eslint . --ext .js,.vue && stylelint \"./src/**/*.{css,scss,sass,vue}\"",
     "lint:fix": "eslint . --ext .js,.vue --fix && stylelint \"./src/**/*.{css,scss,sass,vue}\" --fix",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "compile:webpack": "webpack"
   },
   "author": "Fabio Di Stasio <fabio286@gmail.com>",
   "build": {
     "appId": "com.fabio286.antares",
     "artifactName": "${productName}-${version}-${os}_${arch}.${ext}",
+    "asarUnpack": ["**/*.node"],
     "win": {
       "target": [
         "nsis",
@@ -81,11 +83,6 @@
       ]
     }
   },
-  "electronWebpack": {
-    "renderer": {
-      "webpackConfig": "webpack.config.js"
-    }
-  },
   "dependencies": {
     "@electron/remote": "^2.0.1",
     "@mdi/font": "^6.1.95",
@@ -111,7 +108,10 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.15.7",
     "babel-loader": "^8.2.3",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^9.0.1",
     "cross-env": "^7.0.2",
+    "css-loader": "^6.5.0",
     "electron": "^15.3.0",
     "electron-builder": "^22.13.1",
     "electron-devtools-installer": "^3.2.0",
@@ -123,15 +123,20 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-vue": "^7.18.0",
+    "file-loader": "^6.2.0",
+    "node-loader": "^2.0.0",
     "sass": "^1.42.1",
     "sass-loader": "^10.2.0",
     "standard-version": "^9.3.1",
+    "style-loader": "^3.3.1",
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
     "stylelint-scss": "^3.21.0",
+    "url-loader": "^4.1.1",
     "vue": "^2.6.14",
     "vue-loader": "^15.9.8",
     "vue-template-compiler": "^2.6.14",
-    "webpack": "^4.46.0"
+    "webpack": "^5.60.0",
+    "webpack-cli": "^4.9.1"
   }
 }
