@@ -121,7 +121,8 @@ module.exports = {
       history: 'History',
       select: 'Select',
       passphrase: 'Passphrase',
-      filter: 'Filter'
+      filter: 'Filter',
+      change: 'Change'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -246,7 +247,9 @@ module.exports = {
       thereIsNoQueriesYet: 'There is no queries yet',
       searchForQueries: 'Search for queries',
       killProcess: 'Kill process',
-      closeTab: 'Close tab'
+      closeTab: 'Close tab',
+      exportSchema: 'Export schema',
+      directoryPath: 'Directory path'
    },
    faker: {
       address: 'Address',

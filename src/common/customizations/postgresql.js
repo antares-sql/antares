@@ -27,6 +27,7 @@ module.exports = {
    routineAdd: true,
    functionAdd: true,
    databaseEdit: false,
+   schemaExport: true,
    tableSettings: true,
    viewSettings: true,
    triggerSettings: true,

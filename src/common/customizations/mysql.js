@@ -30,6 +30,7 @@ module.exports = {
    functionAdd: true,
    schedulerAdd: true,
    schemaEdit: true,
+   schemaExport: true,
    tableSettings: true,
    viewSettings: true,
    triggerSettings: true,

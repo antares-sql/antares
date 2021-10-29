@@ -59,6 +59,13 @@
          </div>
       </div>
       <div
+         v-if="workspace.customizations.schemaExport"
+         class="context-element"
+         @click="showExportSchemaModal"
+      >
+         <span class="d-flex"><i class="mdi mdi-18px mdi-database-arrow-down text-light pr-1" /> {{ $t('word.export') }}</span>
+      </div>
+      <div
          v-if="workspace.customizations.schemaEdit"
          class="context-element"
          @click="showEditModal"
@@ -91,6 +98,11 @@
          :selected-schema="selectedSchema"
          @close="hideEditModal"
       />
+      <ModalExportSchema
+         v-if="isExportSchemaModal"
+         :selected-schema="selectedSchema"
+         @close="hideExportSchemaModal"
+      />
    </BaseContextMenu>
 </template>
 
@@ -99,6 +111,7 @@ import { mapGetters, mapActions } from 'vuex';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import ModalEditSchema from '@/components/ModalEditSchema';
+import ModalExportSchema from '@/components/ModalExportSchema';
 import Schema from '@/ipc-api/Schema';
 
 export default {
@@ -106,7 +119,8 @@ export default {
    components: {
       BaseContextMenu,
       ConfirmModal,
-      ModalEditSchema
+      ModalEditSchema,
+      ModalExportSchema
    },
    props: {
       contextEvent: MouseEvent,
@@ -115,7 +129,8 @@ export default {
    data () {
       return {
          isDeleteModal: false,
-         isEditModal: false
+         isEditModal: false,
+         isExportSchemaModal: false
       };
    },
    computed: {
@@ -165,6 +180,12 @@ export default {
       hideEditModal () {
          this.isEditModal = false;
          this.closeContext();
+      },
+      showExportSchemaModal () {
+         this.isExportSchemaModal = true;
+      },
+      hideExportSchemaModal () {
+         this.isExportSchemaModal = false;
       },
       closeContext () {
          this.$emit('close-context');

@@ -53,4 +53,12 @@ export default class {
    static rawQuery (params) {
       return ipcRenderer.invoke('raw-query', params);
    }
+
+   static export (params) {
+      return ipcRenderer.invoke('export', params);
+   }
+
+   static abortExport () {
+      return ipcRenderer.invoke('abort-export');
+   }
 }

@@ -121,7 +121,8 @@ module.exports = {
       history: 'Cronologia',
       select: 'Seleziona',
       passphrase: 'Passphrase',
-      filter: 'Filtra'
+      filter: 'Filtra',
+      change: 'Cambia'
    },
    message: {
       appWelcome: 'Benvenuto in Antares SQL Client!',
@@ -233,7 +234,9 @@ module.exports = {
       duplicateTable: 'Duplica tabella',
       noOpenTabs: 'Non ci sono tab aperte, naviga nella barra sinistra o:',
       noSchema: 'Nessuno schema',
-      restorePreviourSession: 'Ripristina sessione precedente'
+      restorePreviourSession: 'Ripristina sessione precedente',
+      exportSchema: 'Esporta schema',
+      directoryPath: 'Percorso directory'
    },
    faker: {
       address: 'Indirizzo',
