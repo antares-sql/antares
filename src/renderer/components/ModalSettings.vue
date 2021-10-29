@@ -184,7 +184,7 @@
                            :class="{'selected': applicationTheme === 'dark'}"
                            @click="changeApplicationTheme('dark')"
                         >
-                           <img :src="require('@/images/dark.png').default" class="img-responsive img-fit-cover s-rounded">
+                           <img src="../images/dark.png" class="img-responsive img-fit-cover s-rounded">
                            <div class="theme-name text-light">
                               <i class="mdi mdi-moon-waning-crescent mdi-48px" />
                               <div class="h6 mt-4">
@@ -197,7 +197,7 @@
                            :class="{'selected': applicationTheme === 'light'}"
                            @click="changeApplicationTheme('light')"
                         >
-                           <img :src="require('@/images/light.png').default" class="img-responsive img-fit-cover s-rounded">
+                           <img src="../images/light.png" class="img-responsive img-fit-cover s-rounded">
                            <div class="theme-name text-dark">
                               <i class="mdi mdi-white-balance-sunny mdi-48px" />
                               <div class="h6 mt-4">
@@ -280,7 +280,7 @@
 
                <div v-show="selectedTab === 'about'" class="panel-body py-4">
                   <div class="text-center">
-                     <img :src="require('@/images/logo.svg').default" width="128">
+                     <img src="../images/logo.svg" width="128">
                      <h4>{{ appName }}</h4>
                      <p>
                         {{ $t('word.version') }} {{ appVersion }}<br>

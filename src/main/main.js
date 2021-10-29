@@ -45,7 +45,7 @@ async function createMainWindow () {
 
    try {
       if (isDevelopment) { //
-         await window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`);
+         await window.loadURL(`http://localhost:${process.env.PORT}`);
 
          // const { default: installExtension, VUEJS3_DEVTOOLS } = require('electron-devtools-installer');
 
@@ -54,7 +54,10 @@ async function createMainWindow () {
          // const toolName = await installExtension(VUEJS3_DEVTOOLS);
          // console.log(toolName, 'installed');
       }
-      else await window.loadURL(new URL(`file:///${path.join(__dirname, 'index.html')}`).href);
+      else {
+         const indexPath = path.resolve(__dirname, 'index.html');
+         await window.loadFile(indexPath);
+      }
    }
    catch (err) {
       console.log(err);
@@ -91,7 +94,8 @@ else {
       // on macOS it is common to re-create a window even after all windows have been closed
       if (mainWindow === null) {
          mainWindow = await createMainWindow();
-         if (isDevelopment) mainWindow.webContents.openDevTools();
+         if (isDevelopment)
+            mainWindow.webContents.openDevTools();
       }
    });
 
@@ -100,7 +104,8 @@ else {
       mainWindow = await createMainWindow();
       createAppMenu();
 
-      if (isDevelopment) mainWindow.webContents.openDevTools();
+      // if (isDevelopment)
+      mainWindow.webContents.openDevTools();
 
       process.on('uncaughtException', (error) => {
          mainWindow.webContents.send('unhandled-exception', error);

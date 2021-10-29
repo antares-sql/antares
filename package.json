@@ -7,7 +7,7 @@
   "repository": "https://github.com/Fabio286/antares.git",
   "scripts": {
     "dev": "cross-env NODE_ENV=development electron-webpack dev",
-    "compile": "electron-webpack",
+    "compile": "npm run compile:main && npm run compile:renderer",
     "build": "cross-env NODE_ENV=production npm run compile:webpack",
     "build:local": "npm run build && electron-builder",
     "build:appx": "npm run build:local -- --win appx",
@@ -17,13 +17,21 @@
     "lint": "eslint . --ext .js,.vue && stylelint \"./src/**/*.{css,scss,sass,vue}\"",
     "lint:fix": "eslint . --ext .js,.vue --fix && stylelint \"./src/**/*.{css,scss,sass,vue}\" --fix",
     "postinstall": "electron-builder install-app-deps",
-    "compile:webpack": "webpack"
+    "compile:main": "webpack --mode=production --config webpack.main.config.js",
+    "compile:renderer": "webpack --mode=production --config webpack.renderer.config.js"
   },
   "author": "Fabio Di Stasio <fabio286@gmail.com>",
+  "main": "dist/app/main.js",
   "build": {
     "appId": "com.fabio286.antares",
     "artifactName": "${productName}-${version}-${os}_${arch}.${ext}",
-    "asarUnpack": ["**/*.node"],
+    "asar": true,
+    "asarUnpack": "**\\*.{node,dll}",
+    "files": [
+      "dist/app/**/*",
+      "node_modules",
+      "package.json"
+    ],
     "win": {
       "target": [
         "nsis",
@@ -107,16 +115,14 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.15.7",
+    "@babel/preset-env": "^7.15.8",
     "babel-loader": "^8.2.3",
     "clean-webpack-plugin": "^4.0.0",
-    "copy-webpack-plugin": "^9.0.1",
     "cross-env": "^7.0.2",
     "css-loader": "^6.5.0",
     "electron": "^15.3.0",
     "electron-builder": "^22.13.1",
     "electron-devtools-installer": "^3.2.0",
-    "electron-webpack": "^2.8.2",
-    "electron-webpack-vue": "^2.4.0",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.24.2",
@@ -124,6 +130,8 @@
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-vue": "^7.18.0",
     "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.5.0",
+    "mini-css-extract-plugin": "^2.4.3",
     "node-loader": "^2.0.0",
     "sass": "^1.42.1",
     "sass-loader": "^10.2.0",
