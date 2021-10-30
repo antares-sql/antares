@@ -50,12 +50,13 @@ async function createMainWindow () {
             loadExtensionOptions: { allowFileAccess: true }
          };
 
-         installExtension(VUEJS_DEVTOOLS, options)
-            .then((name) => {
-               console.log(`Added Extension: ${name}`);
-               mainWindow.webContents.openDevTools();
-            })
-            .catch((err) => console.log('An error occurred: ', err));
+         try {
+            const name = await installExtension(VUEJS_DEVTOOLS, options);
+            console.log(`Added Extension: ${name}`);
+         }
+         catch (err) {
+            console.log('An error occurred: ', err);
+         }
 
          await window.loadURL('http://localhost:9080');
       }
@@ -105,6 +106,9 @@ else {
    app.on('ready', async () => {
       mainWindow = await createMainWindow();
       createAppMenu();
+
+      if (isDevelopment)
+         mainWindow.webContents.openDevTools();
 
       process.on('uncaughtException', (error) => {
          mainWindow.webContents.send('unhandled-exception', error);

@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const ProgressPlugin = require('progress-webpack-plugin');
 
 const { dependencies, devDependencies, version } = require('./package.json');
 
@@ -20,7 +21,7 @@ const config = {
    target: 'electron-renderer',
    output: {
       libraryTarget: 'commonjs2',
-      path: path.resolve(__dirname, 'dist/app'),
+      path: path.resolve(__dirname, 'dist'),
       filename: '[name].js',
       publicPath: ''
    },
@@ -47,6 +48,7 @@ const config = {
       }
    },
    plugins: [
+      new ProgressPlugin(true),
       new HtmlWebpackPlugin({
          excludeChunks: ['processTaskWorker'],
          filename: 'index.html',
@@ -89,7 +91,8 @@ const config = {
                {
                   loader: 'sass-loader',
                   options: {
-                     additionalData: '@import "@/scss/_variables.scss";'
+                     additionalData: '@import "@/scss/_variables.scss";',
+                     sassOptions: { quietDeps: true }
                   }
                }
             ]

@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "cwd": "${workspaceFolder}",
+      "name": "Electron: Main",
+      "port": 9222,
+      "protocol": "inspector",
+      "request": "attach",
+      "sourceMaps": true,
+      "type": "node",
+      "timeout": 1000000
+    },
+    {
+      "name": "Electron: Renderer",
+      "port": 9223,
+      "request": "attach",
+      "sourceMaps": true,
+      "type": "chrome",
+      "webRoot": "${workspaceFolder}"
+    }
+  ],
+  "compounds": [
+      {
+          "name": "Electron: Main & Renderer",
+          "configurations": ["Electron: Main", "Electron: Renderer"]
+      }
+  ]
+}

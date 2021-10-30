@@ -1,5 +1,6 @@
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const ProgressPlugin = require('progress-webpack-plugin');
 
 const { dependencies, devDependencies } = require('./package.json');
 
@@ -11,13 +12,14 @@ module.exports = [
    { // Main
       name: 'main',
       mode: process.env.NODE_ENV,
+      devtool: isDevMode ? 'eval-source-map' : false,
       entry: {
          main: path.join(__dirname, './src/main/main.js')
       },
       target: 'electron-main',
       output: {
          libraryTarget: 'commonjs2',
-         path: path.join(__dirname, 'dist/app'),
+         path: path.join(__dirname, 'dist'),
          filename: '[name].js'
       },
       node: {
@@ -39,6 +41,7 @@ module.exports = [
          }
       },
       plugins: [
+         new ProgressPlugin(true),
          new CleanWebpackPlugin({ root: path.join(__dirname, 'dist') })
       ],
       module: {
