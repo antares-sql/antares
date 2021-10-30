@@ -7,8 +7,10 @@
   "repository": "https://github.com/Fabio286/antares.git",
   "scripts": {
     "dev": "cross-env NODE_ENV=development electron-webpack dev",
+    "debug": "npm run rebuild:electron && npm run debug-runner",
+    "debug-runner": "node scripts/dev-runner.js --remote-debug",
     "compile": "npm run compile:main && npm run compile:renderer",
-    "build": "cross-env NODE_ENV=production npm run compile:webpack",
+    "build": "cross-env NODE_ENV=production npm run compile",
     "build:local": "npm run build && electron-builder",
     "build:appx": "npm run build:local -- --win appx",
     "release": "standard-version",
@@ -18,7 +20,9 @@
     "lint:fix": "eslint . --ext .js,.vue --fix && stylelint \"./src/**/*.{css,scss,sass,vue}\" --fix",
     "postinstall": "electron-builder install-app-deps",
     "compile:main": "webpack --mode=production --config webpack.main.config.js",
-    "compile:renderer": "webpack --mode=production --config webpack.renderer.config.js"
+    "compile:renderer": "webpack --mode=production --config webpack.renderer.config.js",
+    "electron-builder-install": "electron-builder install-app-deps",
+    "rebuild:electron": "npm run electron-builder-install && electron-rebuild"
   },
   "author": "Fabio Di Stasio <fabio286@gmail.com>",
   "main": "dist/app/main.js",
@@ -117,12 +121,14 @@
     "@babel/eslint-parser": "^7.15.7",
     "@babel/preset-env": "^7.15.8",
     "babel-loader": "^8.2.3",
+    "chalk": "^4.1.2",
     "clean-webpack-plugin": "^4.0.0",
     "cross-env": "^7.0.2",
     "css-loader": "^6.5.0",
     "electron": "^15.3.0",
     "electron-builder": "^22.13.1",
     "electron-devtools-installer": "^3.2.0",
+    "electron-rebuild": "^3.2.3",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.24.2",
@@ -140,11 +146,12 @@
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
     "stylelint-scss": "^3.21.0",
-    "url-loader": "^4.1.1",
+    "tree-kill": "^1.2.2",
     "vue": "^2.6.14",
     "vue-loader": "^15.9.8",
     "vue-template-compiler": "^2.6.14",
     "webpack": "^5.60.0",
-    "webpack-cli": "^4.9.1"
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^3.11.2"
   }
 }
