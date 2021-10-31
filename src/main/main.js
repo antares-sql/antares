@@ -45,13 +45,13 @@ async function createMainWindow () {
 
    try {
       if (isDevelopment) {
-         const { default: installExtension, VUEJS_DEVTOOLS } = require('electron-devtools-installer');
+         const { default: installExtension, VUEJS3_DEVTOOLS } = require('electron-devtools-installer');
          const options = {
             loadExtensionOptions: { allowFileAccess: true }
          };
 
          try {
-            const name = await installExtension(VUEJS_DEVTOOLS, options);
+            const name = await installExtension(VUEJS3_DEVTOOLS, options);
             console.log(`Added Extension: ${name}`);
          }
          catch (err) {

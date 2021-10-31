@@ -26,7 +26,7 @@ if (remoteDebugging) {
 async function killElectron (pid) {
    return new Promise((resolve, reject) => {
       if (pid) {
-         kill(pid, 'SIGKILL', (err) => {
+         kill(pid, 'SIGKILL', err => {
             if (err) reject(err);
 
             resolve();
@@ -50,11 +50,11 @@ async function restartElectron () {
       remoteDebugging ? '--remote-debugging-port=9223' : ''
    ]);
 
-   electronProcess.stdout.on('data', (data) => {
+   electronProcess.stdout.on('data', data => {
       console.log(chalk.white(data.toString()));
    });
 
-   electronProcess.stderr.on('data', (data) => {
+   electronProcess.stderr.on('data', data => {
       console.error(chalk.red(data.toString()));
    });
 
@@ -120,7 +120,7 @@ function startRenderer (callback) {
       clientLogLevel: 'warning'
    });
 
-   server.listen(9080, '', (err) => {
+   server.listen(9080, '', err => {
       if (err) console.error(chalk.red(err));
 
       callback();
