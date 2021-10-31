@@ -1,9 +1,8 @@
 .DS_Store
-dist/
-node_modules/
+dist
+build
+node_modules
 thumbs.db
-.idea/
-.vscode
 NOTES.md
 *.txt
 package-lock.json

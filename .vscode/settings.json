@@ -1,0 +1,9 @@
+{
+   "conventionalCommits.scopes": [
+      "UI",
+      "core",
+      "MySQL",
+      "PostgreSQL"
+   ],
+   "svg.preview.background": "transparent"
+}

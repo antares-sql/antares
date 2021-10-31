@@ -5,7 +5,7 @@
          <img
             v-if="!isMacOS"
             class="titlebar-logo"
-            :src="require('@/images/logo.svg').default"
+            src="@/images/logo.svg"
          >
       </div>
       <div class="titlebar-elements titlebar-title">
