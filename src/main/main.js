@@ -126,7 +126,25 @@ function createAppMenu () {
    if (isMacOS) {
       menu = Menu.buildFromTemplate([
          {
-            role: 'appMenu'
+            label: app.name,
+            submenu: [
+               { role: 'about' },
+               { type: 'separator' },
+               {
+                  label: 'Check for Updates...',
+                  click: (_menuItem, win) => win.webContents.send('open-updates-preferences')
+               },
+               {
+                  label: 'Preferences',
+                  click: (_menuItem, win) => win.webContents.send('toggle-preferences'),
+                  accelerator: 'CmdOrCtrl+,'
+               },
+               { type: 'separator' },
+               { role: 'hide' },
+               { role: 'hideOthers' },
+               { type: 'separator' },
+               { role: 'quit' }
+            ]
          },
          {
             role: 'editMenu'
