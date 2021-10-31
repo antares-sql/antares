@@ -20,7 +20,9 @@
     "postinstall": "electron-builder install-app-deps",
     "test": "npm run lint",
     "lint": "eslint . --ext .js,.vue && stylelint \"./src/**/*.{css,scss,sass,vue}\"",
-    "lint:fix": "eslint . --ext .js,.vue --fix && stylelint \"./src/**/*.{css,scss,sass,vue}\" --fix"
+    "lint:fix": "eslint . --ext .js,.vue --fix && stylelint \"./src/**/*.{css,scss,sass,vue}\" --fix",
+    "contributors:add": "all-contributors add",
+    "contributors:generate": "all-contributors generate"
   },
   "author": "Fabio Di Stasio <fabio286@gmail.com>",
   "main": "./dist/main.js",
@@ -122,6 +124,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.15.7",
     "@babel/preset-env": "^7.15.8",
+    "all-contributors-cli": "^6.20.0",
     "babel-loader": "^8.2.3",
     "chalk": "^4.1.2",
     "clean-webpack-plugin": "^4.0.0",
