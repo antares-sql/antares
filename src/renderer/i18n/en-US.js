@@ -122,7 +122,17 @@ module.exports = {
       select: 'Select',
       passphrase: 'Passphrase',
       filter: 'Filter',
-      change: 'Change'
+      change: 'Change',
+      views: 'Views',
+      triggers: 'Triggers',
+      routines: 'Routines',
+      functions: 'Functions',
+      schedulers: 'Schedulers',
+      includes: 'Includes',
+      drop: 'Drop',
+      rows: 'Rows',
+      completed: 'Completed',
+      aborted: 'Aborted'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -145,10 +155,12 @@ module.exports = {
       downloadingUpdate: 'Downloading update',
       updateDownloaded: 'Update downloaded',
       restartToInstall: 'Restart Antares to install',
-      unableEditFieldWithoutPrimary: 'Unable to edit a field without a primary key in resultset',
+      unableEditFieldWithoutPrimary:
+         'Unable to edit a field without a primary key in resultset',
       editCell: 'Edit cell',
       deleteRows: 'Delete row | Delete {count} rows',
-      confirmToDeleteRows: 'Do you confirm to delete one row? | Do you confirm to delete {count} rows?',
+      confirmToDeleteRows:
+         'Do you confirm to delete one row? | Do you confirm to delete {count} rows?',
       notificationsTimeout: 'Notifications timeout',
       uploadFile: 'Upload file',
       addNewRow: 'Add new row',
@@ -176,7 +188,8 @@ module.exports = {
       deleteTable: 'Delete table',
       emptyCorfirm: 'Do you confirm to empty',
       unsavedChanges: 'Unsaved changes',
-      discardUnsavedChanges: 'You have some unsaved changes. Closing this tab these changes will be discarded.',
+      discardUnsavedChanges:
+         'You have some unsaved changes. Closing this tab these changes will be discarded.',
       thereAreNoIndexes: 'There are no indexes',
       thereAreNoForeign: 'There are no foreign keys',
       createNewForeign: 'Create new foreign key',
@@ -249,7 +262,11 @@ module.exports = {
       killProcess: 'Kill process',
       closeTab: 'Close tab',
       exportSchema: 'Export schema',
-      directoryPath: 'Directory path'
+      directoryPath: 'Directory path',
+      newInserStmtEvery: 'New INSERT statement every',
+      processingTableExport: 'Processing {table}',
+      fechingTableExport: 'Fetching {table} data',
+      writingTableExport: 'Writing {table} data'
    },
    faker: {
       address: 'Address',

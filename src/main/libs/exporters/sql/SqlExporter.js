@@ -3,8 +3,8 @@ import moment from 'moment';
 import { BaseExporter } from '../BaseExporter';
 
 export class SqlExporter extends BaseExporter {
-   constructor (client, options) {
-      super(options);
+   constructor (client, tables, options) {
+      super(tables, options);
       this._client = client;
       this._commentChar = '#';
    }
@@ -23,8 +23,15 @@ export class SqlExporter extends BaseExporter {
    }
 
    async dump () {
+      const { includes } = this._options;
+      const extraItems = Object.keys(includes).filter(key => includes[key]);
+      const totalTableToProcess = this._tables.filter(
+         t => t.includeStructure || t.includeContent || t.includeDropStatement
+      ).length;
+      const processingItemCount = totalTableToProcess + extraItems.length;
+
       const exportState = {
-         totalItems: this._options.items.length,
+         totalItems: processingItemCount,
          currentItemIndex: 0,
          currentItem: '',
          op: ''
@@ -34,13 +41,16 @@ export class SqlExporter extends BaseExporter {
       this.writeString(header);
       this.writeString('\n\n\n');
 
-      for (const item of this._options.items) {
+      for (const item of this._tables) {
          // user abort operation
-         if (this.isCancelled)
-            return;
+         if (this.isCancelled) return;
 
          // skip item if not set to output any detail for them
-         if (!item.includeStructure && !item.includeContent && !item.includeDropStatement)
+         if (
+            !item.includeStructure &&
+            !item.includeContent &&
+            !item.includeDropStatement
+         )
             continue;
 
          exportState.currentItemIndex++;
@@ -49,7 +59,9 @@ export class SqlExporter extends BaseExporter {
 
          this.emitUpdate(exportState);
 
-         const tableHeader = this.buildComment(`Dump of table ${item.table}\n------------------------------------------------------------`);
+         const tableHeader = this.buildComment(
+            `Dump of table ${item.table}\n------------------------------------------------------------`
+         );
          this.writeString(tableHeader);
          this.writeString('\n\n');
 
@@ -79,12 +91,38 @@ export class SqlExporter extends BaseExporter {
          this.writeString('\n\n');
       }
 
+      for (const item of extraItems) {
+         const processingMethod = `get${item.charAt(0).toUpperCase() +
+            item.slice(1)}`;
+         exportState.currentItemIndex++;
+         exportState.currentItem = item;
+         exportState.op = 'PROCESSING';
+         this.emitUpdate(exportState);
+
+         if (this[processingMethod]) {
+            const data = await this[processingMethod]();
+            if (data !== '') {
+               const header =
+                  this.buildComment(
+                     `Dump of ${item}\n------------------------------------------------------------`
+                  ) + '\n\n';
+
+               this.writeString(header);
+               this.writeString(data);
+               this.writeString('\n\n');
+            }
+         }
+      }
+
       const footer = await this.getFooter();
       this.writeString(footer);
    }
 
    buildComment (text) {
-      return text.split('\n').map(txt => `${this._commentChar} ${txt}`).join('\n');
+      return text
+         .split('\n')
+         .map(txt => `${this._commentChar} ${txt}`)
+         .join('\n');
    }
 
    async getSqlHeader () {
@@ -105,11 +143,13 @@ Generation time: ${moment().format()}
    }
 
    async getFooter () {
-      return '';
+      return this.buildComment(`Dump completed on ${moment().format()}`);
    }
 
    getCreateTable (tableName) {
-      throw new Error('Sql Exporter must implement the "getCreateTable" method');
+      throw new Error(
+         'Sql Exporter must implement the "getCreateTable" method'
+      );
    }
 
    getDropTable (tableName) {
@@ -117,6 +157,8 @@ Generation time: ${moment().format()}
    }
 
    getTableInsert (tableName) {
-      throw new Error('Sql Exporter must implement the "getTableInsert" method');
+      throw new Error(
+         'Sql Exporter must implement the "getTableInsert" method'
+      );
    }
 }

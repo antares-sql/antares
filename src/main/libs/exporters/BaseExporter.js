@@ -3,8 +3,9 @@ import path from 'path';
 import EventEmitter from 'events';
 
 export class BaseExporter extends EventEmitter {
-   constructor (options) {
+   constructor (tables, options) {
       super();
+      this._tables = tables;
       this._options = options;
       this._isCancelled = false;
       this._outputStream = fs.createWriteStream(this._options.outputFile, {

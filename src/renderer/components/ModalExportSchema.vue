@@ -37,111 +37,168 @@
                      </fieldset>
                   </div>
                </div>
-
-               <div class="columns mb-2">
-                  <div class="column col-auto d-flex p-0 text-italic ">
-                     <i class="mdi mdi-file-document-outline mr-2" />
-                     {{ filename }}
-                  </div>
-
-                  <div class="column col-auto col-ml-auto p-0">
-                     <button class="btn btn-dark btn-sm" @click="uncheckAllTables">
-                        <i class="mdi mdi-file-tree-outline" />
-                     </button>
-                     <button class="btn btn-dark btn-sm" @click="checkAllTables">
-                        <i class="mdi mdi-file-tree" />
-                     </button>
-                  </div>
-               </div>
             </div>
 
-            <div class="workspace-query-results">
-               <div ref="table" class="table table-hover">
-                  <div class="thead">
-                     <div class="tr">
-                        <div class="th c-hand" style="width: 50%;">
-                           <div class="table-column-title">
-                              <span>Table</span>
+            <div class="columns export-options">
+               <div class="column col-8 left">
+                  <div class="columns mb-2">
+                     <div class="column col-auto d-flex text-italic ">
+                        <i class="mdi mdi-file-document-outline mr-2" />
+                        {{ filename }}
+                     </div>
+
+                     <div class="column col-auto col-ml-auto ">
+                        <button class="btn btn-dark btn-sm" @click="refresh">
+                           <i class="mdi mdi-database-refresh" />
+                        </button>
+                        <button
+                           class="btn btn-dark btn-sm"
+                           :disabled="isRefreshing"
+                           @click="uncheckAllTables"
+                        >
+                           <i class="mdi mdi-file-tree-outline" />
+                        </button>
+                        <button
+                           class="btn btn-dark btn-sm"
+                           :disabled="isRefreshing"
+                           @click="checkAllTables"
+                        >
+                           <i class="mdi mdi-file-tree" />
+                        </button>
+                     </div>
+                  </div>
+                  <div class="workspace-query-results">
+                     <div ref="table" class="table table-hover">
+                        <div class="thead">
+                           <div class="tr">
+                              <div class="th c-hand" style="width: 50%;">
+                                 <div class="table-column-title">
+                                    <span>{{ $t('word.table') }}</span>
+                                 </div>
+                              </div>
+                              <div class="th c-hand text-center">
+                                 <div class="table-column-title">
+                                    <span>{{ $t('word.structure') }}</span>
+                                 </div>
+                              </div>
+                              <div class="th c-hand text-center">
+                                 <div class="table-column-title">
+                                    <span>{{ $t('word.content') }}</span>
+                                 </div>
+                              </div>
+                              <div class="th c-hand text-center">
+                                 <div class="table-column-title">
+                                    <span>{{ $t('word.drop') }}</span>
+                                 </div>
+                              </div>
                            </div>
                         </div>
-                        <div class="th c-hand">
-                           <div class="table-column-title">
-                              <span>Structure</span>
-                           </div>
-                        </div>
-                        <div class="th c-hand">
-                           <div class="table-column-title">
-                              <span>Content</span>
-                           </div>
-                        </div>
-                        <div class="th c-hand">
-                           <div class="table-column-title">
-                              <span>Drop</span>
+
+                        <div class="tbody">
+                           <div
+                              v-for="item in tables"
+                              :key="item.name"
+                              class="tr"
+                           >
+                              <div class="td">
+                                 {{ item.table }}
+                              </div>
+                              <div class="td text-center">
+                                 <label class="form-checkbox m-0 px-2 form-inline">
+                                    <input
+                                       v-model="item.includeStructure"
+                                       type="checkbox"
+                                    ><i class="form-icon" />
+                                 </label>
+                              </div>
+                              <div class="td text-center">
+                                 <label class="form-checkbox m-0 px-2 form-inline">
+                                    <input
+                                       v-model="item.includeContent"
+                                       type="checkbox"
+                                    ><i class="form-icon" />
+                                 </label>
+                              </div>
+                              <div class="td text-center">
+                                 <label class="form-checkbox m-0 px-2 form-inline">
+                                    <input
+                                       v-model="item.includeDropStatement"
+                                       type="checkbox"
+                                    ><i class="form-icon" />
+                                 </label>
+                              </div>
                            </div>
                         </div>
                      </div>
                   </div>
+               </div>
+               <div class="column col-4">
+                  <h4>
+                     {{ $t('word.options') }}
+                  </h4>
+                  <span>{{ $t('word.includes') }}:</span>
 
-                  <div class="tbody">
-                     <div
-                        v-for="item in tables"
-                        :key="item.name"
-                        class="tr"
-                     >
-                        <div class="td">
-                           {{ item.table }}
-                        </div>
-                        <div class="td">
-                           <label class="form-checkbox m-0 px-2">
-                              <input
-                                 v-model="item.includeStructure"
-                                 type="checkbox"
-                              ><i class="form-icon" />
-                           </label>
-                        </div>
-                        <div class="td">
-                           <label class="form-checkbox m-0 px-2">
-                              <input
-                                 v-model="item.includeContent"
-                                 type="checkbox"
-                              ><i class="form-icon" />
-                           </label>
-                        </div>
-                        <div class="td">
-                           <label class="form-checkbox m-0 px-2">
-                              <input
-                                 v-model="item.includeDropStatement"
-                                 type="checkbox"
-                              ><i class="form-icon" />
-                           </label>
-                        </div>
+                  <label
+                     v-for="(_, key) in options.includes"
+                     :key="key"
+                     class="form-checkbox"
+                  >
+                     <input v-model="options.includes[key]" type="checkbox"><i class="form-icon" /> {{ $t(`word.${key}`) }}
+                  </label>
+
+                  <div class="mt-4 mb-2">
+                     {{ $t('message.newInserStmtEvery') }}:
+                  </div>
+                  <div class="columns">
+                     <div class="column col-6">
+                        <input
+                           v-model.number="options.sqlInsertAfter"
+                           type="number"
+                           class="form-input"
+                           value="250"
+                        >
+                     </div>
+                     <div class="column col-6">
+                        <select v-model="options.sqlInsertDivider" class="form-select">
+                           <option value="bytes">
+                              KiB
+                           </option>
+                           <option value="rows">
+                              {{ $t('word.rows') }}
+                           </option>
+                        </select>
                      </div>
                   </div>
                </div>
-            </div>
-            <div v-if="progressPercentage > 0">
-               <progress
-                  class="progress"
-                  :value="progressPercentage"
-                  max="100"
-               />
-               <p class="empty-subtitle">
-                  {{ progressPercentage }}% - {{ progressStatus }}
-               </p>
             </div>
          </div>
-         <div class="modal-footer">
-            <button
-               class="btn btn-primary mr-2"
-               :class="{'loading': isExporting}"
-               :disabled="isExporting"
-               @click.stop="startExport"
-            >
-               {{ $t('word.export') }}
-            </button>
-            <button class="btn btn-link" @click.stop="closeModal">
-               {{ $t('word.close') }}
-            </button>
+         <div class="modal-footer columns">
+            <div class="column col modal-progress-wrapper text-left">
+               <div v-if="progressPercentage > 0" class="export-progress">
+                  <span class="progress-status">
+                     {{ progressPercentage }}% - {{ progressStatus }}
+                  </span>
+                  <progress
+                     class="progress d-block"
+                     :value="progressPercentage"
+                     max="100"
+                  />
+               </div>
+            </div>
+            <div class="column col-auto px-0">
+               <button class="btn btn-link" @click.stop="closeModal">
+                  {{ $t('word.close') }}
+               </button>
+               <button
+                  class="btn btn-primary mr-2"
+                  :class="{'loading': isExporting}"
+                  :disabled="isExporting || isRefreshing"
+                  autofocus
+                  @click.prevent="startExport"
+               >
+                  {{ $t('word.export') }}
+               </button>
+            </div>
          </div>
       </div>
    </div>
@@ -151,6 +208,7 @@
 import { ipcRenderer } from 'electron';
 import { mapActions, mapGetters } from 'vuex';
 import moment from 'moment';
+import customizations from 'common/customizations';
 import Application from '@/ipc-api/Application';
 import Schema from '@/ipc-api/Schema';
 
@@ -163,9 +221,15 @@ export default {
    data () {
       return {
          isExporting: false,
+         isRefreshing: false,
          progressPercentage: 0,
          progressStatus: '',
          tables: [],
+         options: {
+            includes: {},
+            sqlInsertAfter: 250,
+            sqlInsertDivider: 'bytes'
+         },
          basePath: ''
       };
    },
@@ -194,7 +258,7 @@ export default {
       }
    },
    async created () {
-      await this.refreshSchema({ uid: this.currentWorkspace.uid, schema: this.selectedSchema });
+      await this.refresh();
       window.addEventListener('keydown', this.onKey);
       this.basePath = await Application.getDownloadPathDirectory();
       this.tables = this.schemaItems.map(item => ({
@@ -203,6 +267,14 @@ export default {
          includeContent: true,
          includeDropStatement: true
       }));
+
+      const structure = ['views', 'triggers', 'routines', 'functions', 'schedulers', 'triggerFunctions'];
+
+      structure.forEach(feat => {
+         const val = customizations[this.currentWorkspace.client][feat];
+         if (val)
+            this.$set(this.options.includes, feat, true);
+      });
 
       ipcRenderer.on('export-progress', this.updateProgress);
    },
@@ -216,18 +288,20 @@ export default {
       }),
       async startExport () {
          this.isExporting = true;
-         const { uid } = this.currentWorkspace;
+         const { uid, client } = this.currentWorkspace;
          const params = {
             uid,
+            type: client,
             schema: this.selectedSchema,
             outputFile: this.dumpFilePath,
-            items: [...this.tables]
+            tables: [...this.tables],
+            ...this.options
          };
 
          const result = await Schema.export(params);
          if (result) {
             if (result.status === 'success')
-               this.progressStatus = result.response.cancelled ? 'Aborted' : 'Completed!';
+               this.progressStatus = result.response.cancelled ? this.$t('word.aborted') : this.$t('word.completed');
 
             else
                this.progressStatus = result.response;
@@ -237,7 +311,17 @@ export default {
       },
       updateProgress (event, state) {
          this.progressPercentage = Number((state.currentItemIndex / state.totalItems * 100).toFixed(1));
-         this.progressStatus = state.op + ' ' + state.currentItem;
+         switch (state.op) {
+            case 'PROCESSING':
+               this.progressStatus = this.$t('message.processingTableExport', { table: state.currentItem });
+               break;
+            case 'FETCH':
+               this.progressStatus = this.$t('message.fechingTableExport', { table: state.currentItem });
+               break;
+            case 'WRITE':
+               this.progressStatus = this.$t('message.writingTableExport', { table: state.currentItem });
+               break;
+         }
       },
       async closeModal () {
          let willClose = true;
@@ -261,6 +345,11 @@ export default {
       uncheckAllTables () {
          this.tables = this.tables.map(item => ({ table: item.table, includeStructure: false, includeContent: false, includeDropStatement: false }));
       },
+      async refresh () {
+         this.isRefreshing = true;
+         await this.refreshSchema({ uid: this.currentWorkspace.uid, schema: this.selectedSchema });
+         this.isRefreshing = false;
+      },
       async openPathDialog () {
          const result = await Application.showOpenDialog({ properties: ['openDirectory'] });
          if (result && !result.canceled)
@@ -271,9 +360,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.workspace-query-results {
-  flex: 1 1 auto;
+.export-options {
+  flex: 1;
+  overflow: hidden;
 
+  .left {
+     display: flex;
+     flex-direction: column;
+     flex: 1;
+  }
+}
+
+.workspace-query-results {
+   flex: 1 0 1px;
   .table {
     width: 100% !important;
   }
@@ -292,13 +391,22 @@ export default {
 
   .modal-container {
     max-width: 800px;
+  }
 
     .modal-body {
-      height: 60vh;
+      max-height: 60vh;
       display: flex;
       flex-direction: column;
     }
-  }
+
+    .modal-footer {
+       display: flex;
+    }
+}
+
+.progress-status {
+   font-style: italic;
+   font-size: 80%;
 }
 
 </style>

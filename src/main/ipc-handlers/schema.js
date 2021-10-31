@@ -167,14 +167,12 @@ export default connections => {
       }
    });
 
-   ipcMain.handle('export', async (event, { uid, ...rest }) => {
+   ipcMain.handle('export', async (event, { uid, type, tables, ...rest }) => {
       if (exporter !== null) return;
-
-      const type = connections[uid]._client;
 
       switch (type) {
          case 'mysql':
-            exporter = new MysqlExporter(connections[uid], rest);
+            exporter = new MysqlExporter(connections[uid], tables, rest);
             break;
          default:
             return {

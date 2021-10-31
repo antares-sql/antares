@@ -122,7 +122,17 @@ module.exports = {
       select: 'Seleziona',
       passphrase: 'Passphrase',
       filter: 'Filtra',
-      change: 'Cambia'
+      change: 'Cambia',
+      views: 'Viste',
+      triggers: 'Trigger',
+      routines: 'Routine',
+      functions: 'Function',
+      schedulers: 'Scheduler',
+      includes: 'Includi',
+      drop: 'Drop',
+      rows: 'Righe',
+      completed: 'Completato',
+      aborted: 'Annullato'
    },
    message: {
       appWelcome: 'Benvenuto in Antares SQL Client!',
@@ -145,10 +155,12 @@ module.exports = {
       downloadingUpdate: 'Download dell\'aggiornamento',
       updateDownloaded: 'Aggiornamento scaricato',
       restartToInstall: 'Riavvia Antares per installare l\'aggiornamento',
-      unableEditFieldWithoutPrimary: 'Impossibile modificare il campo senza una primary key nel resultset',
+      unableEditFieldWithoutPrimary:
+         'Impossibile modificare il campo senza una primary key nel resultset',
       editCell: 'Modifica cella',
       deleteRows: 'Elimina riga | Elimina {count} righe',
-      confirmToDeleteRows: 'Confermi di voler cancellare una riga? | Confermi di voler cancellare {count} righe?',
+      confirmToDeleteRows:
+         'Confermi di voler cancellare una riga? | Confermi di voler cancellare {count} righe?',
       notificationsTimeout: 'Timeout Notifiche',
       uploadFile: 'Carica file',
       addNewRow: 'Aggiungi nuova riga',
@@ -176,7 +188,8 @@ module.exports = {
       deleteTable: 'Cancella tabella',
       emptyCorfirm: 'Confermi di voler svuotare',
       unsavedChanges: 'Modifiche non salvate',
-      discardUnsavedChanges: 'Hai modifiche non salvate. Lasciando questa scheda le modifiche saranno scartate.',
+      discardUnsavedChanges:
+         'Hai modifiche non salvate. Lasciando questa scheda le modifiche saranno scartate.',
       thereAreNoIndexes: 'Non ci sono indici',
       thereAreNoForeign: 'Non ci sono chiavi esterne',
       createNewForeign: 'Crea nuova chiave esterna',
@@ -236,7 +249,11 @@ module.exports = {
       noSchema: 'Nessuno schema',
       restorePreviourSession: 'Ripristina sessione precedente',
       exportSchema: 'Esporta schema',
-      directoryPath: 'Percorso directory'
+      directoryPath: 'Percorso directory',
+      newInserStmtEvery: 'Nuova istruzione INSERT ogni',
+      processingTableExport: 'Processo {table}',
+      fechingTableExport: 'Ricavo i dati {table}',
+      writingTableExport: 'Scrittura dati {table}'
    },
    faker: {
       address: 'Indirizzo',
