@@ -44,17 +44,26 @@ async function createMainWindow () {
    remoteMain.enable(window.webContents);
 
    try {
-      if (isDevelopment) { //
-         await window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`);
+      if (isDevelopment) {
+         const { default: installExtension, VUEJS3_DEVTOOLS } = require('electron-devtools-installer');
+         const options = {
+            loadExtensionOptions: { allowFileAccess: true }
+         };
 
-         // const { default: installExtension, VUEJS3_DEVTOOLS } = require('electron-devtools-installer');
+         try {
+            const name = await installExtension(VUEJS3_DEVTOOLS, options);
+            console.log(`Added Extension: ${name}`);
+         }
+         catch (err) {
+            console.log('An error occurred: ', err);
+         }
 
-         // const oldDevToolsID = session.defaultSession.getAllExtensions().find(ext => ext.name === 'Vue.js devtools').id;
-         // session.defaultSession.removeExtension(oldDevToolsID);
-         // const toolName = await installExtension(VUEJS3_DEVTOOLS);
-         // console.log(toolName, 'installed');
+         await window.loadURL('http://localhost:9080');
       }
-      else await window.loadURL(new URL(`file:///${path.join(__dirname, 'index.html')}`).href);
+      else {
+         const indexPath = path.resolve(__dirname, 'index.html');
+         await window.loadFile(indexPath);
+      }
    }
    catch (err) {
       console.log(err);
@@ -89,10 +98,8 @@ else {
 
    app.on('activate', async () => {
       // on macOS it is common to re-create a window even after all windows have been closed
-      if (mainWindow === null) {
+      if (mainWindow === null)
          mainWindow = await createMainWindow();
-         if (isDevelopment) mainWindow.webContents.openDevTools();
-      }
    });
 
    // create main BrowserWindow when electron is ready
@@ -100,7 +107,8 @@ else {
       mainWindow = await createMainWindow();
       createAppMenu();
 
-      if (isDevelopment) mainWindow.webContents.openDevTools();
+      if (isDevelopment)
+         mainWindow.webContents.openDevTools();
 
       process.on('uncaughtException', (error) => {
          mainWindow.webContents.send('unhandled-exception', error);
@@ -118,7 +126,25 @@ function createAppMenu () {
    if (isMacOS) {
       menu = Menu.buildFromTemplate([
          {
-            role: 'appMenu'
+            label: app.name,
+            submenu: [
+               { role: 'about' },
+               { type: 'separator' },
+               {
+                  label: 'Check for Updates...',
+                  click: (_menuItem, win) => win.webContents.send('open-updates-preferences')
+               },
+               {
+                  label: 'Preferences',
+                  click: (_menuItem, win) => win.webContents.send('toggle-preferences'),
+                  accelerator: 'CmdOrCtrl+,'
+               },
+               { type: 'separator' },
+               { role: 'hide' },
+               { role: 'hideOthers' },
+               { type: 'separator' },
+               { role: 'quit' }
+            ]
          },
          {
             role: 'editMenu'

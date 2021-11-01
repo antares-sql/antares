@@ -57,8 +57,8 @@ The command to build Antares SQL locally is `npm run build:local`.
 
 - **PascalCase** for file names (with .vue extension) and including components inside others (`<MyComponent/>`).  
 - "**Base**" prefix for [base component names](https://vuejs.org/v2/style-guide/#Base-component-names-strongly-recommended).
-- "**The**" prefix for [single-instance component names](https://vuejs.org/v2/style-guide/#Single-instance-component-names-strongly-recommended).
-- [Tightly coupled component names ](https://vuejs.org/v2/style-guide/#Tightly-coupled-component-names-strongly-recommended).
+- "**The**" prefix for [single-instance component names](https://vuejs.org/v2/style-guide/#Single-instance-component-names-strongly-recommended).  
+- [Tightly coupled component names](https://vuejs.org/v2/style-guide/#Tightly-coupled-component-names-strongly-recommended).
 - [Order of words in component names](https://vuejs.org/v2/style-guide/#Order-of-words-in-component-names-strongly-recommended).
 - **kebab-case** in templates for property and event names.
 
@@ -74,14 +74,20 @@ The project includes [ESlint](https://eslint.org/) and [StyleLint](https://style
 Alternatively you can launch following commands to lint the project.  
 
 Check if all the style rules have been followed:
+
 ```console
 npm run lint
 ```
 
 Apply style rules globally if possible:  
+
 ```console
 npm run lint:fix
 ```
+
+### Other recommendations
+
+Please, use if possible **template literals** to compose strings and **avoid unnecessary dependencies**.
 
 ### Commits
 
@@ -91,30 +97,11 @@ For Visual Studio Code users may be useful [Conventional Commits](https://market
 
 ## Debug
 
-**Dev mode**:
+**Debug mode**:
 
 ```console
-npm run dev
+npm run debug
 ```
 
-**Visual Studio Code:**
-
-``` json
-{
-   "version": "0.2.0",
-   "configurations": [
-      {
-         "type": "node",
-         "request": "launch",
-         "name": "Launch Electron in debugger",
-         "autoAttachChildProcesses": true,
-         "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron-webpack",
-         "runtimeArgs": [
-             "dev"
-         ],
-         "env": {},
-         "console": "integratedTerminal",
-      }
-   ]
-}
-```
+After running the debug mode Antares will listen on port 9222 (main process) for a debugger.  
+On **Visual Studio Code** just launch "*Electron: Main*" configurations after running Antares in debug mode.

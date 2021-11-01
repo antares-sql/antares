@@ -1,7 +1,16 @@
 <template>
    <div class="column col-12 empty">
       <div class="empty-icon">
-         <img :src="require(`@/images/logo-${applicationTheme}.svg`).default" width="200">
+         <img
+            v-if="applicationTheme === 'dark'"
+            src="../images/logo-dark.svg"
+            width="200"
+         >
+         <img
+            v-if="applicationTheme === 'light'"
+            src="../images/logo-light.svg"
+            width="200"
+         >
       </div>
       <p class="h6 empty-subtitle">
          {{ $t('message.noOpenTabs') }}

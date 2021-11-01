@@ -1,11 +1,11 @@
 <template>
-   <div id="titlebar">
+   <div id="titlebar" @dblclick="toggleFullScreen">
       <div class="titlebar-resizer" />
       <div class="titlebar-elements">
          <img
             v-if="!isMacOS"
             class="titlebar-logo"
-            :src="require('@/images/logo.svg').default"
+            src="@/images/logo.svg"
          >
       </div>
       <div class="titlebar-elements titlebar-title">

@@ -1,6 +1,9 @@
+
+<!-- markdownlint-disable -->
 <p align="center">
     <img width="800" src="https://raw.githubusercontent.com/Fabio286/antares/master/docs/gh-logo.png">
 </p>
+<!-- markdownlint-restore -->
 
 # Antares SQL Client
 
@@ -104,13 +107,34 @@ This is a roadmap with major features will come in near future.
 - 📖 [Contributors Guide](https://github.com/Fabio286/antares/wiki/Contributors-Guide)
 - 🚧 [Project Board](https://github.com/users/Fabio286/projects/1)
 
-## Translations
+## Contributors ✨
 
-**Italian** / [Giuseppe Gigliotti](https://github.com/ReverbOD) [[#20](https://github.com/Fabio286/antares/pull/20)]  
-**Arabic** (needs updates) / [Mohd-PH](https://github.com/Mohd-PH) [[#29](https://github.com/Fabio286/antares/pull/29)]  
-**Spanish** (needs updates) / [hongkfui](https://github.com/hongkfui) [[#32](https://github.com/Fabio286/antares/pull/32)]  
-**French** (needs updates) / [MrAnyx](https://github.com/MrAnyx) [[#44](https://github.com/Fabio286/antares/pull/44)]  
-**Portugues (Brasil)** / [Daniel Eduardo](https://github.com/daeleduardo) [[#54](https://github.com/Fabio286/antares/pull/54)]  
-**Deutsch (Deutschland)** / [Christian Ratz](https://github.com/digitalgopnik) [[#74](https://github.com/Fabio286/antares/pull/74)]  
-**Vietnamese** / [Ngô Quốc Đạt](https://github.com/datlechin) [[#111](https://github.com/Fabio286/antares/pull/111)]  
-**Japanese** / [Isamu Sugiura](https://github.com/IsamuSugi) [[#115](https://github.com/Fabio286/antares/pull/115)]
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://fabiodistasio.it/"><img src="https://avatars.githubusercontent.com/u/31471771?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Fabio Di Stasio</b></sub></a><br /><a href="https://github.com/Fabio286/Antares/commits?author=Fabio286" title="Code">💻</a> <a href="#translation-Fabio286" title="Translation">🌍</a> <a href="https://github.com/Fabio286/Antares/commits?author=Fabio286" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://www.linkedin.com/in/giulioganci/"><img src="https://avatars.githubusercontent.com/u/4192159?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Giulio Ganci</b></sub></a><br /><a href="https://github.com/Fabio286/Antares/commits?author=toriphes" title="Code">💻</a></td>
+    <td align="center"><a href="https://christianratz.de/"><img src="https://avatars.githubusercontent.com/u/2630316?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Christian Ratz</b></sub></a><br /><a href="https://github.com/Fabio286/Antares/commits?author=digitalgopnik" title="Code">💻</a> <a href="#translation-digitalgopnik" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://reverb6821.github.io/"><img src="https://avatars.githubusercontent.com/u/55198803?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Giuseppe Gigliotti</b></sub></a><br /><a href="#translation-reverb6821" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/Mohd-PH"><img src="https://avatars.githubusercontent.com/u/9362157?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mohd-PH</b></sub></a><br /><a href="#translation-Mohd-PH" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/hongkfui"><img src="https://avatars.githubusercontent.com/u/37477191?v=4?s=100" width="100px;" alt=""/><br /><sub><b>hongkfui</b></sub></a><br /><a href="#translation-hongkfui" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/MrAnyx"><img src="https://avatars.githubusercontent.com/u/44176707?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Robin</b></sub></a><br /><a href="#translation-MrAnyx" title="Translation">🌍</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/daeleduardo"><img src="https://avatars.githubusercontent.com/u/8599078?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Daniel Eduardo</b></sub></a><br /><a href="#translation-daeleduardo" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://ngoquocdat.com/"><img src="https://avatars.githubusercontent.com/u/56961917?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ngô Quốc Đạt</b></sub></a><br /><a href="#translation-datlechin" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/IsamuSugi"><img src="https://avatars.githubusercontent.com/u/7746658?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Isamu Sugiura</b></sub></a><br /><a href="#translation-IsamuSugi" title="Translation">🌍</a></td>
+    <td align="center"><a href="http://rsacchetto.nexxontech.it/"><img src="https://avatars.githubusercontent.com/u/18429412?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Riccardo Sacchetto</b></sub></a><br /><a href="#platform-Occhioverde" title="Packaging/porting to new platform">📦</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!

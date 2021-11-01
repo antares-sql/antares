@@ -367,7 +367,7 @@ export default {
       },
       deleteSelected () {
          this.closeContext();
-         const rows = this.localResults.filter(row => this.selectedRows.includes(row._id)).map(row => {
+         const rows = JSON.parse(JSON.stringify(this.localResults)).filter(row => this.selectedRows.includes(row._id)).map(row => {
             delete row._id;
             return row;
          });
