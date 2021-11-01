@@ -155,12 +155,10 @@ module.exports = {
       downloadingUpdate: 'Download dell\'aggiornamento',
       updateDownloaded: 'Aggiornamento scaricato',
       restartToInstall: 'Riavvia Antares per installare l\'aggiornamento',
-      unableEditFieldWithoutPrimary:
-         'Impossibile modificare il campo senza una primary key nel resultset',
+      unableEditFieldWithoutPrimary: 'Impossibile modificare il campo senza una primary key nel resultset',
       editCell: 'Modifica cella',
       deleteRows: 'Elimina riga | Elimina {count} righe',
-      confirmToDeleteRows:
-         'Confermi di voler cancellare una riga? | Confermi di voler cancellare {count} righe?',
+      confirmToDeleteRows: 'Confermi di voler cancellare una riga? | Confermi di voler cancellare {count} righe?',
       notificationsTimeout: 'Timeout Notifiche',
       uploadFile: 'Carica file',
       addNewRow: 'Aggiungi nuova riga',
@@ -188,8 +186,7 @@ module.exports = {
       deleteTable: 'Cancella tabella',
       emptyCorfirm: 'Confermi di voler svuotare',
       unsavedChanges: 'Modifiche non salvate',
-      discardUnsavedChanges:
-         'Hai modifiche non salvate. Lasciando questa scheda le modifiche saranno scartate.',
+      discardUnsavedChanges: 'Hai modifiche non salvate. Lasciando questa scheda le modifiche saranno scartate.',
       thereAreNoIndexes: 'Non ci sono indici',
       thereAreNoForeign: 'Non ci sono chiavi esterne',
       createNewForeign: 'Crea nuova chiave esterna',
@@ -253,7 +250,9 @@ module.exports = {
       newInserStmtEvery: 'Nuova istruzione INSERT ogni',
       processingTableExport: 'Processo {table}',
       fechingTableExport: 'Ricavo i dati {table}',
-      writingTableExport: 'Scrittura dati {table}'
+      writingTableExport: 'Scrittura dati {table}',
+      checkAllTables: 'Seleziona tutte le tabelle',
+      uncheckAllTables: 'Deseleziona tutte le tabelle'
    },
    faker: {
       address: 'Indirizzo',

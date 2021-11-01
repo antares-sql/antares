@@ -48,11 +48,16 @@
                      </div>
 
                      <div class="column col-auto col-ml-auto ">
-                        <button class="btn btn-dark btn-sm" @click="refresh">
+                        <button
+                           class="btn btn-dark btn-sm"
+                           :title="$t('word.refresh')"
+                           @click="refresh"
+                        >
                            <i class="mdi mdi-database-refresh" />
                         </button>
                         <button
                            class="btn btn-dark btn-sm"
+                           :title="$t('message.uncheckAllTables')"
                            :disabled="isRefreshing"
                            @click="uncheckAllTables"
                         >
@@ -60,6 +65,7 @@
                         </button>
                         <button
                            class="btn btn-dark btn-sm"
+                           :title="$t('message.checkAllTables')"
                            :disabled="isRefreshing"
                            @click="checkAllTables"
                         >
@@ -258,8 +264,10 @@ export default {
       }
    },
    async created () {
-      await this.refresh();
+      if (!this.schemaItems.length) await this.refresh();
+
       window.addEventListener('keydown', this.onKey);
+
       this.basePath = await Application.getDownloadPathDirectory();
       this.tables = this.schemaItems.map(item => ({
          table: item.name,

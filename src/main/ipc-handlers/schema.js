@@ -172,6 +172,7 @@ export default connections => {
 
       switch (type) {
          case 'mysql':
+         case 'maria':
             exporter = new MysqlExporter(connections[uid], tables, rest);
             break;
          default:
