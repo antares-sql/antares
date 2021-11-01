@@ -146,7 +146,7 @@
     "node-loader": "^2.0.0",
     "progress-webpack-plugin": "^1.0.12",
     "sass": "^1.42.1",
-    "sass-loader": "^10.2.0",
+    "sass-loader": "^12.3.0",
     "standard-version": "^9.3.1",
     "style-loader": "^3.3.1",
     "stylelint": "^13.13.1",
