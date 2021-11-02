@@ -89,7 +89,7 @@
          :type="inputProps().type"
          :disabled="!isChecked"
       >
-      <template v-if="methodData && 'params' in methodData" class="columns">
+      <template v-if="methodData && 'params' in methodData">
          <input
             v-for="(option, key) in methodData.params"
             :key="key"

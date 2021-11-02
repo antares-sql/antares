@@ -62,7 +62,7 @@
             v-if="resultsWithRows[resultsetIndex] && resultsWithRows[resultsetIndex].rows"
             ref="resultTable"
             :items="sortedResults"
-            :item-height="22"
+            :item-height="23"
             class="tbody"
             :visible-height="resultsSize"
             :scroll-element="scrollElement"
