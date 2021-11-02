@@ -1,4 +1,4 @@
-/node_modules
-/assets/vendor
-/out
-/dist
+node_modules
+assets
+out
+dist
