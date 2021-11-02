@@ -45,6 +45,7 @@
         "no-console": "off",
         "no-undef": "off",
         "vue/no-side-effects-in-computed-properties": "off",
+        "vue/multi-word-component-names": "off",
         "vue/require-default-prop": "off",
         "vue/comment-directive": "off",
         "vue/no-v-html": "off",
@@ -61,10 +62,11 @@
         "vue/max-attributes-per-line": [
             "error",
             {
-                "singleline": 2,
+                "singleline": {
+                    "max": 2
+                },
                 "multiline": {
-                    "max": 1,
-                    "allowFirstLine": false
+                    "max": 1
                 }
             }
         ]

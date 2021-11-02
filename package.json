@@ -2,7 +2,7 @@
   "name": "antares",
   "productName": "Antares",
   "version": "0.3.8",
-  "description": "A cross-platform easy to use SQL client.",
+  "description": "A modern, fast and productivity driven SQL client with a focus in UX.",
   "license": "MIT",
   "repository": "https://github.com/Fabio286/antares.git",
   "scripts": {
@@ -139,7 +139,7 @@
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
-    "eslint-plugin-vue": "^7.18.0",
+    "eslint-plugin-vue": "^8.0.3",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^2.4.3",
