@@ -29,11 +29,18 @@
             {{ $t('message.checkForUpdates') }}
          </button>
          <button
-            v-if="updateStatus === 'downloaded'"
+            v-else-if="updateStatus === 'downloaded'"
             class="btn btn-primary"
             @click="restartToUpdate"
          >
             {{ $t('message.restartToInstall') }}
+         </button>
+         <button
+            v-else-if="updateStatus === 'link'"
+            class="btn btn-primary"
+            @click="openOutside('https://antares-sql.app/download.html')"
+         >
+            {{ $t('message.goToDownloadPage') }}
          </button>
       </div>
       <div class="form-group mt-4">
@@ -47,7 +54,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, shell } from 'electron';
 
 export default {
    name: 'ModalSettingsUpdate',
@@ -71,6 +78,8 @@ export default {
                return this.$t('message.downloadingUpdate');
             case 'downloaded':
                return this.$t('message.updateDownloaded');
+            case 'link':
+               return this.$t('message.updateAvailable');
             default:
                return this.updateStatus;
          }
@@ -80,6 +89,9 @@ export default {
       ...mapActions({
          changeAllowPrerelease: 'settings/changeAllowPrerelease'
       }),
+      openOutside (link) {
+         shell.openExternal(link);
+      },
       checkForUpdates () {
          ipcRenderer.send('check-for-updates');
       },
