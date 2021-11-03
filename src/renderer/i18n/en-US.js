@@ -246,7 +246,8 @@ module.exports = {
       thereIsNoQueriesYet: 'There is no queries yet',
       searchForQueries: 'Search for queries',
       killProcess: 'Kill process',
-      closeTab: 'Close tab'
+      closeTab: 'Close tab',
+      goToDownloadPage: 'Go to download page'
    },
    faker: {
       address: 'Address',

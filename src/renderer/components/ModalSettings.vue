@@ -396,7 +396,7 @@ export default {
          return locales;
       },
       hasUpdates () {
-         return ['available', 'downloading', 'downloaded'].includes(this.updateStatus);
+         return ['available', 'downloading', 'downloaded', 'link'].includes(this.updateStatus);
       },
       workspace () {
          return this.getWorkspace(this.selectedWorkspace);

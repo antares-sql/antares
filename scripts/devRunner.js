@@ -113,7 +113,6 @@ function startRenderer (callback) {
    });
 
    const server = new WebpackDevServer(compiler, {
-      static: path.join(__dirname, '../'),
       hot: true,
       port: 9080,
       client: {
