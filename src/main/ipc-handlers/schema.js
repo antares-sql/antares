@@ -210,6 +210,10 @@ export default connections => {
             resolve({ cancelled: exporter.isCancelled });
          });
 
+         exporter.once('cancel', () => {
+            fs.unlinkSync(exporter.outputFile);
+         });
+
          exporter.on('progress', state => {
             event.sender.send('export-progress', state);
          });

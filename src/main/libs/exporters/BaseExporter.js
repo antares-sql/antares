@@ -38,6 +38,10 @@ export class BaseExporter extends EventEmitter {
       return this._isCancelled;
    }
 
+   get outputFile () {
+      return this._options.outputFile;
+   }
+
    outputFileExists () {
       return fs.existsSync(this._options.outputFile);
    }
