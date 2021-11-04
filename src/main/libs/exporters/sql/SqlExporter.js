@@ -55,7 +55,7 @@ export class SqlExporter extends BaseExporter {
 
          exportState.currentItemIndex++;
          exportState.currentItem = item.table;
-         exportState.op = 'PROCESSING';
+         exportState.op = 'FETCH';
 
          this.emitUpdate(exportState);
 
@@ -78,13 +78,13 @@ export class SqlExporter extends BaseExporter {
          }
 
          if (item.includeContent) {
-            exportState.op = 'FETCH';
-            this.emitUpdate(exportState);
-            const tableInsertSyntax = await this.getTableInsert(item.table);
-
             exportState.op = 'WRITE';
             this.emitUpdate(exportState);
-            this.writeString(tableInsertSyntax);
+            for await (const sqlStr of this.getTableInsert(item.table)) {
+               if (this.isCancelled) return;
+               this.writeString(sqlStr);
+            }
+
             this.writeString('\n\n');
          }
 
@@ -92,8 +92,7 @@ export class SqlExporter extends BaseExporter {
       }
 
       for (const item of extraItems) {
-         const processingMethod = `get${item.charAt(0).toUpperCase() +
-            item.slice(1)}`;
+         const processingMethod = `get${item.charAt(0).toUpperCase() + item.slice(1)}`;
          exportState.currentItemIndex++;
          exportState.currentItem = item;
          exportState.op = 'PROCESSING';
