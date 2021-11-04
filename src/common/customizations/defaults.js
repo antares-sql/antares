@@ -72,6 +72,7 @@ module.exports = {
    triggerTableInName: false,
    triggerUpdateColumns: false,
    triggerOnlyRename: false,
+   triggerEnableDisable: false,
    triggerFunctionSql: false,
    triggerFunctionlanguages: false,
    parametersLength: false,

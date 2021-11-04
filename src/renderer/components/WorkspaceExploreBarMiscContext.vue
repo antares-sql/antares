@@ -10,6 +10,18 @@
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-play text-light pr-1" /> {{ $t('word.run') }}</span>
       </div>
+      <div
+         v-if="selectedMisc.type === 'trigger' && customizations.triggerEnableDisable"
+         class="context-element"
+         @click="toggleTrigger"
+      >
+         <span v-if="!selectedMisc.enabled" class="d-flex">
+            <i class="mdi mdi-18px mdi-play text-light pr-1" /> {{ $t('word.enable') }}
+         </span>
+         <span v-else class="d-flex">
+            <i class="mdi mdi-18px mdi-pause text-light pr-1" /> {{ $t('word.disable') }}
+         </span>
+      </div>
       <div class="context-element" @click="showDeleteModal">
          <span class="d-flex"><i class="mdi mdi-18px mdi-table-remove text-light pr-1" /> {{ $t('word.delete') }}</span>
       </div>
@@ -77,6 +89,9 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.selectedWorkspace);
+      },
+      customizations () {
+         return this.getWorkspace(this.selectedWorkspace).customizations;
       },
       deleteMessage () {
          switch (this.selectedMisc.type) {
@@ -273,6 +288,24 @@ export default {
 
          this.newTab({ uid: this.workspace.uid, content: sql, type: 'query', autorun: true });
          this.closeContext();
+      },
+      async toggleTrigger () {
+         try {
+            const { status, response } = await Triggers.toggleTrigger({
+               uid: this.selectedWorkspace,
+               schema: this.selectedSchema,
+               trigger: this.selectedMisc.name,
+               enabled: this.selectedMisc.enabled
+            });
+
+            if (status !== 'success')
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+         this.closeContext();
+         this.$emit('reload');
       }
    }
 };
