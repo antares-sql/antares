@@ -71,6 +71,13 @@
                               <i class="table-icon mdi mdi-table-cog mdi-18px mr-1" />
                               <span v-html="highlightWord(trigger.name)" />
                            </a>
+                           <div
+                              v-if="trigger.enabled === false"
+                              class="tooltip tooltip-left disabled-indicator"
+                              :data-tooltip="$t('word.disabled')"
+                           >
+                              <i class="table-icon mdi mdi-pause mdi-18px mr-1" />
+                           </div>
                         </li>
                      </ul>
                   </div>
@@ -500,7 +507,8 @@ export default {
     }
   }
 
-  .table-size {
+  .table-size,
+  .disabled-indicator {
     position: absolute;
     right: 0;
     top: 0;

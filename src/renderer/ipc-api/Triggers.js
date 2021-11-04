@@ -17,4 +17,8 @@ export default class {
    static createTrigger (params) {
       return ipcRenderer.invoke('create-trigger', params);
    }
+
+   static toggleTrigger (params) {
+      return ipcRenderer.invoke('toggle-trigger', params);
+   }
 }

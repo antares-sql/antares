@@ -168,19 +168,20 @@ export class PostgreSQLClient extends AntaresCore {
          }
 
          let { rows: triggers } = await this.raw(`
-            SELECT event_object_schema AS table_schema,
-               event_object_table AS table_name,
-               trigger_schema,
-               trigger_name,
-               string_agg(event_manipulation, ',') AS event,
-               action_timing AS activation,
-               action_condition AS condition,
-               action_statement AS definition
-            FROM information_schema.triggers
+            SELECT
+               pg_class.relname AS table_name,
+               pg_trigger.tgname AS trigger_name,
+               pg_namespace.nspname AS trigger_schema,
+               (pg_trigger.tgenabled != 'D')::bool AS enabled
+            FROM pg_trigger
+            JOIN pg_class ON pg_trigger.tgrelid = pg_class.oid
+            JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace
+            JOIN information_schema.triggers ON information_schema.triggers.trigger_schema = pg_namespace.nspname 
+               AND information_schema.triggers.event_object_table = pg_class.relname
+               AND information_schema.triggers.trigger_name = pg_trigger.tgname
             WHERE trigger_schema = '${db.database}'
-            GROUP BY 1,2,3,4,6,7,8
-            ORDER BY table_schema,
-                     table_name
+            GROUP BY 1, 2, 3, 4
+            ORDER BY table_name
          `);
 
          if (triggers.length) {
@@ -239,12 +240,10 @@ export class PostgreSQLClient extends AntaresCore {
                return {
                   name: `${trigger.table_name}.${trigger.trigger_name}`,
                   orgName: trigger.trigger_name,
-                  timing: trigger.activation,
                   definer: '',
-                  definition: trigger.definition,
-                  event: trigger.event,
                   table: trigger.table_name,
-                  sqlMode: ''
+                  sqlMode: '',
+                  enabled: trigger.enabled
                };
             });
 
@@ -597,19 +596,25 @@ export class PostgreSQLClient extends AntaresCore {
       const [table, triggerName] = trigger.split('.');
 
       const results = await this.raw(`
-         SELECT event_object_schema AS table_schema,
-            event_object_table AS table_name,
-            trigger_schema,
-            trigger_name,
-            string_agg(event_manipulation, ',') AS event,
+         SELECT
+            information_schema.triggers.event_object_schema AS table_schema,
+            information_schema.triggers.event_object_table AS table_name,
+            information_schema.triggers.trigger_schema,
+            information_schema.triggers.trigger_name,
+            string_agg(event_manipulation, ',') AS EVENT,
             action_timing AS activation,
             action_condition AS condition,
-            action_statement AS definition
-         FROM information_schema.triggers
+            action_statement AS definition,
+            (pg_trigger.tgenabled != 'D')::bool AS enabled
+         FROM pg_trigger
+         JOIN pg_class ON pg_trigger.tgrelid = pg_class.oid
+         JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace
+         JOIN information_schema.triggers ON pg_namespace.nspname = information_schema.triggers.trigger_schema
+            AND pg_class.relname = information_schema.triggers.event_object_table
          WHERE trigger_schema = '${schema}'
          AND trigger_name = '${triggerName}'
          AND event_object_table = '${table}'
-         GROUP BY 1,2,3,4,6,7,8
+         GROUP BY 1,2,3,4,6,7,8,9
          ORDER BY table_schema,
                   table_name
       `);
@@ -619,7 +624,7 @@ export class PostgreSQLClient extends AntaresCore {
             sql: row.definition,
             name: row.trigger_name,
             table: row.table_name,
-            event: row.event.split(','),
+            event: [...new Set(row.event.split(','))],
             activation: row.activation
          };
       })[0];
@@ -668,6 +673,18 @@ export class PostgreSQLClient extends AntaresCore {
    async createTrigger (params) {
       const eventsString = Array.isArray(params.event) ? params.event.join(' OR ') : params.event;
       const sql = `CREATE TRIGGER "${params.name}" ${params.activation} ${eventsString} ON "${params.schema}"."${params.table}" FOR EACH ROW ${params.sql}`;
+      return await this.raw(sql, { split: false });
+   }
+
+   async enableTrigger ({ schema, trigger }) {
+      const [table, triggerName] = trigger.split('.');
+      const sql = `ALTER TABLE "${schema}"."${table}" ENABLE TRIGGER "${triggerName}"`;
+      return await this.raw(sql, { split: false });
+   }
+
+   async disableTrigger ({ schema, trigger }) {
+      const [table, triggerName] = trigger.split('.');
+      const sql = `ALTER TABLE "${schema}"."${table}" DISABLE TRIGGER "${triggerName}"`;
       return await this.raw(sql, { split: false });
    }
 

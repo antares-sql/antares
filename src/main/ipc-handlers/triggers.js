@@ -40,4 +40,19 @@ export default (connections) => {
          return { status: 'error', response: err.toString() };
       }
    });
+
+   ipcMain.handle('toggle-trigger', async (event, params) => {
+      try {
+         if (!params.enabled)
+            await connections[params.uid].enableTrigger(params);
+
+         else
+            await connections[params.uid].disableTrigger(params);
+
+         return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
 };
