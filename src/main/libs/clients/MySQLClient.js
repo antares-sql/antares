@@ -276,7 +276,7 @@ export class MySQLClient extends AntaresCore {
                   body: scheduler.EVENT_BODY,
                   starts: scheduler.STARTS,
                   ends: scheduler.ENDS,
-                  status: scheduler.STATUS,
+                  enabled: scheduler.STATUS === 'ENABLED',
                   executeAt: scheduler.EXECUTE_AT,
                   intervalField: scheduler.INTERVAL_FIELD,
                   intervalValue: scheduler.INTERVAL_VALUE,
