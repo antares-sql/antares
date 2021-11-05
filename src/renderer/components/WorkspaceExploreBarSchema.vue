@@ -214,6 +214,13 @@
                               <i class="table-icon mdi mdi-calendar-clock mdi-18px mr-1" />
                               <span v-html="highlightWord(scheduler.name)" />
                            </a>
+                           <div
+                              v-if="scheduler.enabled === false"
+                              class="tooltip tooltip-left disabled-indicator"
+                              :data-tooltip="$t('word.disabled')"
+                           >
+                              <i class="table-icon mdi mdi-pause mdi-18px mr-1" />
+                           </div>
                         </li>
                      </ul>
                   </div>
