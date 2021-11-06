@@ -40,4 +40,17 @@ export default (connections) => {
          return { status: 'error', response: err.toString() };
       }
    });
+
+   ipcMain.handle('toggle-scheduler', async (event, params) => {
+      try {
+         if (!params.enabled)
+            await connections[params.uid].enableEvent({ ...params });
+         else
+            await connections[params.uid].disableEvent({ ...params });
+         return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
 };

@@ -1072,6 +1072,16 @@ export class MySQLClient extends AntaresCore {
       return await this.raw(sql, { split: false });
    }
 
+   async enableEvent ({ schema, scheduler }) {
+      const sql = `ALTER EVENT \`${schema}\`.\`${scheduler}\` ENABLE`;
+      return await this.raw(sql, { split: false });
+   }
+
+   async disableEvent ({ schema, scheduler }) {
+      const sql = `ALTER EVENT \`${schema}\`.\`${scheduler}\` DISABLE`;
+      return await this.raw(sql, { split: false });
+   }
+
    /**
     * SHOW COLLATION
     *

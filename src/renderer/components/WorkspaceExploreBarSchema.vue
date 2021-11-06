@@ -68,7 +68,8 @@
                            @contextmenu.prevent="showMiscContext($event, {...trigger, type: 'trigger'})"
                         >
                            <a class="table-name">
-                              <i class="table-icon mdi mdi-table-cog mdi-18px mr-1" />
+                              <div v-if="checkLoadingStatus(trigger.name, 'trigger')" class="icon loading mr-1" />
+                              <i v-else class="table-icon mdi mdi-table-cog mdi-18px mr-1" />
                               <span v-html="highlightWord(trigger.name)" />
                            </a>
                            <div
@@ -211,7 +212,8 @@
                            @contextmenu.prevent="showMiscContext($event, {...scheduler, type: 'scheduler'})"
                         >
                            <a class="table-name">
-                              <i class="table-icon mdi mdi-calendar-clock mdi-18px mr-1" />
+                              <div v-if="checkLoadingStatus(scheduler.name, 'scheduler')" class="icon loading mr-1" />
+                              <i v-else class="table-icon mdi mdi-calendar-clock mdi-18px mr-1" />
                               <span v-html="highlightWord(scheduler.name)" />
                            </a>
                            <div

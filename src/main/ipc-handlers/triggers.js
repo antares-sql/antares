@@ -45,10 +45,8 @@ export default (connections) => {
       try {
          if (!params.enabled)
             await connections[params.uid].enableTrigger(params);
-
          else
             await connections[params.uid].disableTrigger(params);
-
          return { status: 'success' };
       }
       catch (err) {
