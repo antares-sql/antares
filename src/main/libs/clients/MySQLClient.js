@@ -187,6 +187,7 @@ export class MySQLClient extends AntaresCore {
 
       const tablesArr = [];
       const triggersArr = [];
+      let schemaSize = 0;
 
       for (const db of filteredDatabases) {
          if (!schemas.has(db.Database)) continue;
@@ -224,6 +225,9 @@ export class MySQLClient extends AntaresCore {
                      break;
                }
 
+               const tableSize = table.Data_length + table.Index_length;
+               schemaSize += tableSize;
+
                return {
                   name: table.Name,
                   type: tableType,
@@ -232,7 +236,7 @@ export class MySQLClient extends AntaresCore {
                   updated: table.Update_time,
                   engine: table.Engine,
                   comment: table.Comment,
-                  size: table.Data_length + table.Index_length,
+                  size: tableSize,
                   autoIncrement: table.Auto_increment,
                   collation: table.Collation
                };
@@ -309,6 +313,7 @@ export class MySQLClient extends AntaresCore {
 
             return {
                name: db.Database,
+               size: schemaSize,
                tables: remappedTables,
                functions: remappedFunctions,
                procedures: remappedProcedures,
@@ -319,6 +324,7 @@ export class MySQLClient extends AntaresCore {
          else {
             return {
                name: db.Database,
+               size: 0,
                tables: [],
                functions: [],
                procedures: [],
