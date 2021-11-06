@@ -9,7 +9,16 @@
          <div v-if="isLoading" class="icon loading" />
          <i v-else class="icon mdi mdi-18px mdi-chevron-right" />
          <i class="database-icon mdi mdi-18px mdi-database mr-1" />
-         <span>{{ database.name }}</span>
+         <div class="">
+            <span>{{ database.name }}</span>
+            <div
+               v-if="database.size"
+               class="schema-size tooltip tooltip-left mr-1"
+               :data-tooltip="formatBytes(database.size)"
+            >
+               <i class="mdi mdi-information-outline pr-2" />
+            </div>
+         </div>
       </summary>
       <div class="accordion-body">
          <div class="database-tables">
@@ -442,6 +451,11 @@ export default {
     position: sticky;
     top: 0;
     z-index: 2;
+
+    .schema-size{
+       visibility: hidden;
+       width: 22.5px;
+    }
   }
 
   .database-name,
@@ -487,6 +501,10 @@ export default {
   .misc-name {
     &:hover {
       border-radius: $border-radius;
+
+      .schema-size{
+         visibility: visible;
+      }
     }
   }
 
@@ -516,6 +534,7 @@ export default {
     }
   }
 
+  .schema-size,
   .table-size,
   .disabled-indicator {
     position: absolute;

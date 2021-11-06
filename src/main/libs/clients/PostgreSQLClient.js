@@ -144,6 +144,7 @@ export class PostgreSQLClient extends AntaresCore {
 
       const tablesArr = [];
       const triggersArr = [];
+      let schemaSize = 0;
 
       for (const db of databases) {
          if (!schemas.has(db.database)) continue;
@@ -198,11 +199,14 @@ export class PostgreSQLClient extends AntaresCore {
          if (schemas.has(db.database)) {
             // TABLES
             const remappedTables = tablesArr.filter(table => table.Db === db.database).map(table => {
+               const tableSize = +table.data_length + table.index_length;
+               schemaSize += tableSize;
+
                return {
                   name: table.table_name,
                   type: table.table_type === 'VIEW' ? 'view' : 'table',
                   rows: table.reltuples,
-                  size: +table.data_length + +table.index_length,
+                  size: tableSize,
                   collation: table.Collation,
                   comment: table.comment,
                   engine: ''
@@ -250,6 +254,7 @@ export class PostgreSQLClient extends AntaresCore {
 
             return {
                name: db.database,
+               size: schemaSize,
                tables: remappedTables,
                functions: remappedFunctions,
                procedures: remappedProcedures,
@@ -261,6 +266,7 @@ export class PostgreSQLClient extends AntaresCore {
          else {
             return {
                name: db.database,
+               size: 0,
                tables: [],
                functions: [],
                procedures: [],
