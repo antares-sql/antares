@@ -22,6 +22,18 @@
             <i class="mdi mdi-18px mdi-pause text-light pr-1" /> {{ $t('word.disable') }}
          </span>
       </div>
+      <div
+         v-if="selectedMisc.type === 'scheduler'"
+         class="context-element"
+         @click="toggleScheduler"
+      >
+         <span v-if="!selectedMisc.enabled" class="d-flex">
+            <i class="mdi mdi-18px mdi-play text-light pr-1" /> {{ $t('word.enable') }}
+         </span>
+         <span v-else class="d-flex">
+            <i class="mdi mdi-18px mdi-pause text-light pr-1" /> {{ $t('word.disable') }}
+         </span>
+      </div>
       <div class="context-element" @click="showDeleteModal">
          <span class="d-flex"><i class="mdi mdi-18px mdi-table-remove text-light pr-1" /> {{ $t('word.delete') }}</span>
       </div>
@@ -113,6 +125,8 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         addLoadingElement: 'workspaces/addLoadingElement',
+         removeLoadingElement: 'workspaces/removeLoadingElement',
          removeTabs: 'workspaces/removeTabs',
          newTab: 'workspaces/newTab'
       }),
@@ -290,6 +304,12 @@ export default {
          this.closeContext();
       },
       async toggleTrigger () {
+         this.addLoadingElement({
+            name: this.selectedMisc.name,
+            schema: this.selectedSchema,
+            type: 'trigger'
+         });
+
          try {
             const { status, response } = await Triggers.toggleTrigger({
                uid: this.selectedWorkspace,
@@ -304,6 +324,44 @@ export default {
          catch (err) {
             this.addNotification({ status: 'error', message: err.stack });
          }
+
+         this.removeLoadingElement({
+            name: this.selectedMisc.name,
+            schema: this.selectedSchema,
+            type: 'trigger'
+         });
+
+         this.closeContext();
+         this.$emit('reload');
+      },
+      async toggleScheduler () {
+         this.addLoadingElement({
+            name: this.selectedMisc.name,
+            schema: this.selectedSchema,
+            type: 'scheduler'
+         });
+
+         try {
+            const { status, response } = await Schedulers.toggleScheduler({
+               uid: this.selectedWorkspace,
+               schema: this.selectedSchema,
+               scheduler: this.selectedMisc.name,
+               enabled: this.selectedMisc.enabled
+            });
+
+            if (status !== 'success')
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         this.removeLoadingElement({
+            name: this.selectedMisc.name,
+            schema: this.selectedSchema,
+            type: 'scheduler'
+         });
+
          this.closeContext();
          this.$emit('reload');
       }
