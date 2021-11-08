@@ -107,7 +107,7 @@
     "electron-store": "^8.0.1",
     "electron-updater": "^4.3.9",
     "faker": "^5.5.3",
-    "marked": "^3.0.4",
+    "marked": "^4.0.0",
     "moment": "^2.29.1",
     "mysql2": "^2.3.2",
     "pg": "^8.7.1",
