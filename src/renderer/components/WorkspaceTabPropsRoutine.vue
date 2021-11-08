@@ -318,7 +318,7 @@ export default {
                this.originalRoutine = response;
 
                this.originalRoutine.parameters = [...this.originalRoutine.parameters.map(param => {
-                  param._id = uidGen();
+                  param._antares_id = uidGen();
                   return param;
                })];
 

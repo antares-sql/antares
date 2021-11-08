@@ -36,10 +36,10 @@
                   <div ref="indexesPanel" class="panel-body p-0 pr-1">
                      <div
                         v-for="index in indexesProxy"
-                        :key="index._id"
+                        :key="index._antares_id"
                         class="tile tile-centered c-hand mb-1 p-1"
-                        :class="{'selected-element': selectedIndexID === index._id}"
-                        @click="selectIndex($event, index._id)"
+                        :class="{'selected-element': selectedIndexID === index._antares_id}"
+                        @click="selectIndex($event, index._antares_id)"
                      >
                         <div class="tile-icon">
                            <div>
@@ -56,7 +56,7 @@
                            <button
                               class="btn btn-link remove-field p-0 mr-2"
                               :title="$t('word.delete')"
-                              @click.prevent="removeIndex(index._id)"
+                              @click.prevent="removeIndex(index._antares_id)"
                            >
                               <i class="mdi mdi-close" />
                            </button>
@@ -163,7 +163,7 @@ export default {
    },
    computed: {
       selectedIndexObj () {
-         return this.indexesProxy.find(index => index._id === this.selectedIndexID);
+         return this.indexesProxy.find(index => index._antares_id === this.selectedIndexID);
       },
       isChanged () {
          return JSON.stringify(this.localIndexes) !== JSON.stringify(this.indexesProxy);
@@ -200,7 +200,7 @@ export default {
       },
       addIndex () {
          this.indexesProxy = [...this.indexesProxy, {
-            _id: uidGen(),
+            _antares_id: uidGen(),
             name: 'NEW_INDEX',
             fields: [],
             type: 'INDEX',
@@ -218,19 +218,19 @@ export default {
          }, 20);
       },
       removeIndex (id) {
-         this.indexesProxy = this.indexesProxy.filter(index => index._id !== id);
+         this.indexesProxy = this.indexesProxy.filter(index => index._antares_id !== id);
 
          if (this.selectedIndexID === id && this.indexesProxy.length)
             this.resetSelectedID();
       },
       clearChanges () {
          this.indexesProxy = JSON.parse(JSON.stringify(this.localIndexes));
-         if (!this.indexesProxy.some(index => index._id === this.selectedIndexID))
+         if (!this.indexesProxy.some(index => index._antares_id === this.selectedIndexID))
             this.resetSelectedID();
       },
       toggleField (field) {
          this.indexesProxy = this.indexesProxy.map(index => {
-            if (index._id === this.selectedIndexID) {
+            if (index._antares_id === this.selectedIndexID) {
                if (index.fields.includes(field))
                   index.fields = index.fields.filter(f => f !== field);
                else
@@ -240,7 +240,7 @@ export default {
          });
       },
       resetSelectedID () {
-         this.selectedIndexID = this.indexesProxy.length ? this.indexesProxy[0]._id : '';
+         this.selectedIndexID = this.indexesProxy.length ? this.indexesProxy[0]._antares_id : '';
       }
    }
 };

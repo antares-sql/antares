@@ -1,5 +1,5 @@
 <template>
-   <div class="tr" @contextmenu.prevent="$emit('contextmenu', $event, localRow._id)">
+   <div class="tr" @contextmenu.prevent="$emit('contextmenu', $event, localRow._antares_id)">
       <div class="td p-0" tabindex="0">
          <div :class="customizations.sortableFields ? 'row-draggable' : 'text-center'">
             <i v-if="customizations.sortableFields" class="mdi mdi-drag-horizontal row-draggable-icon" />

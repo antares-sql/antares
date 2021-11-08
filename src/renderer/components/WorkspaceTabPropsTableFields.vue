@@ -109,7 +109,7 @@
          >
             <TableRow
                v-for="row in fields"
-               :key="row._id"
+               :key="row._antares_id"
                :row="row"
                :indexes="getIndexes(row.name)"
                :foreigns="getForeigns(row.name)"
@@ -217,15 +217,15 @@ export default {
          this.resizeResults();
       },
       contextMenu (event, uid) {
-         this.selectedField = this.fields.find(field => field._id === uid);
+         this.selectedField = this.fields.find(field => field._antares_id === uid);
          this.contextEvent = event;
          this.isContext = true;
       },
       duplicateField () {
-         this.$emit('duplicate-field', this.selectedField._id);
+         this.$emit('duplicate-field', this.selectedField._antares_id);
       },
       removeField () {
-         this.$emit('remove-field', this.selectedField._id);
+         this.$emit('remove-field', this.selectedField._antares_id);
       },
       getIndexes (field) {
          return this.indexes.reduce((acc, curr) => {
