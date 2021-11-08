@@ -17,7 +17,7 @@
             <form class="form-horizontal">
                <div
                   v-for="(parameter, i) in inParameters"
-                  :key="parameter._id"
+                  :key="parameter._antares_id"
                   class="form-group"
                >
                   <div class="col-4">

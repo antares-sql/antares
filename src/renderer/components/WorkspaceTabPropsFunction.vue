@@ -373,7 +373,7 @@ export default {
                this.originalFunction = response;
 
                this.originalFunction.parameters = [...this.originalFunction.parameters.map(param => {
-                  param._id = uidGen();
+                  param._antares_id = uidGen();
                   return param;
                })];
 

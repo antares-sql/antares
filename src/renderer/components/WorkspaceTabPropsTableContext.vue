@@ -27,7 +27,7 @@
                :key="index.name"
                class="context-element"
                :class="{'disabled': index.fields.includes(selectedField.name)}"
-               @click="addToIndex(index._id)"
+               @click="addToIndex(index._antares_id)"
             >
                <span class="d-flex"><i class="mdi mdi-18px mdi-key column-key pr-1" :class="`key-${index.type}`" /> {{ index.name }}</span>
             </div>

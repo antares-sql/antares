@@ -1,14 +1,14 @@
 <template>
-   <div class="tr" @click="selectRow($event, row._id)">
+   <div class="tr" @click="selectRow($event, row._antares_id)">
       <div
          v-for="(col, cKey) in row"
-         v-show="cKey !== '_id'"
+         v-show="cKey !== '_antares_id'"
          :key="cKey"
          class="td p-0"
          tabindex="0"
-         @contextmenu.prevent="openContext($event, { id: row._id, field: cKey })"
+         @contextmenu.prevent="openContext($event, { id: row._antares_id, field: cKey })"
       >
-         <template v-if="cKey !== '_id'">
+         <template v-if="cKey !== '_antares_id'">
             <span
                v-if="!isInlineEditor[cKey] && fields[cKey]"
                class="cell-content"

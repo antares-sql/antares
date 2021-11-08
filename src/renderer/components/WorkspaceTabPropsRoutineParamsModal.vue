@@ -36,10 +36,10 @@
                   <div ref="parametersPanel" class="panel-body p-0 pr-1">
                      <div
                         v-for="param in parametersProxy"
-                        :key="param._id"
+                        :key="param._antares_id"
                         class="tile tile-centered c-hand mb-1 p-1"
-                        :class="{'selected-element': selectedParam === param._id}"
-                        @click="selectParameter($event, param._id)"
+                        :class="{'selected-element': selectedParam === param._antares_id}"
+                        @click="selectParameter($event, param._antares_id)"
                      >
                         <div class="tile-icon">
                            <div>
@@ -56,7 +56,7 @@
                            <button
                               class="btn btn-link remove-field p-0 mr-2"
                               :title="$t('word.delete')"
-                              @click.prevent="removeParameter(param._id)"
+                              @click.prevent="removeParameter(param._antares_id)"
                            >
                               <i class="mdi mdi-close" />
                            </button>
@@ -196,7 +196,7 @@ export default {
    },
    computed: {
       selectedParamObj () {
-         return this.parametersProxy.find(param => param._id === this.selectedParam);
+         return this.parametersProxy.find(param => param._antares_id === this.selectedParam);
       },
       isChanged () {
          return JSON.stringify(this.localParameters) !== JSON.stringify(this.parametersProxy);
@@ -238,7 +238,7 @@ export default {
       },
       addParameter () {
          this.parametersProxy = [...this.parametersProxy, {
-            _id: uidGen(),
+            _antares_id: uidGen(),
             name: `param${this.i++}`,
             type: this.workspace.dataTypes[0].types[0].name,
             context: 'IN',
@@ -253,7 +253,7 @@ export default {
          }, 20);
       },
       removeParameter (uid) {
-         this.parametersProxy = this.parametersProxy.filter(param => param._id !== uid);
+         this.parametersProxy = this.parametersProxy.filter(param => param._antares_id !== uid);
 
          if (this.selectedParam === name && this.parametersProxy.length)
             this.resetSelectedID();
@@ -266,7 +266,7 @@ export default {
             this.resetSelectedID();
       },
       resetSelectedID () {
-         this.selectedParam = this.parametersProxy.length ? this.parametersProxy[0]._id : '';
+         this.selectedParam = this.parametersProxy.length ? this.parametersProxy[0]._antares_id : '';
       }
    }
 };
