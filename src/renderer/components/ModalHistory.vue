@@ -253,6 +253,7 @@ export default {
       font-size: 100%;
       // color: $primary-color;
       opacity: 0.8;
+      font-weight: 600;
     }
 
     .tile-subtitle {
