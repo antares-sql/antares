@@ -16,7 +16,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import marked from 'marked';
+import { marked } from 'marked';
 import BaseLoader from '@/components/BaseLoader';
 
 export default {
