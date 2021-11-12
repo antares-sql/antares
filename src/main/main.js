@@ -26,7 +26,7 @@ async function createMainWindow () {
       height: 800,
       minWidth: 900,
       minHeight: 550,
-      title: 'Antares',
+      title: 'Antares SQL',
       autoHideMenuBar: true,
       icon: nativeImage.createFromDataURL(icon.default),
       webPreferences: {
