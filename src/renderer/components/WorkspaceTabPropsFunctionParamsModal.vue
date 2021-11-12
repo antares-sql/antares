@@ -237,10 +237,11 @@ export default {
             this.modalInnerHeight = modalBody.clientHeight - (parseFloat(getComputedStyle(modalBody).paddingTop) + parseFloat(getComputedStyle(modalBody).paddingBottom));
       },
       addParameter () {
+         const newUid = uidGen();
          this.parametersProxy = [...this.parametersProxy, {
-            _antares_id: uidGen(),
-            name: `Param${this.i++}`,
-            type: 'INT',
+            _antares_id: newUid,
+            name: `param${this.i++}`,
+            type: this.workspace.dataTypes[0].types[0].name,
             context: 'IN',
             length: ''
          }];
@@ -250,12 +251,13 @@ export default {
 
          setTimeout(() => {
             this.$refs.parametersPanel.scrollTop = this.$refs.parametersPanel.scrollHeight + 60;
+            this.selectedParam = newUid;
          }, 20);
       },
       removeParameter (uid) {
          this.parametersProxy = this.parametersProxy.filter(param => param._antares_id !== uid);
 
-         if (this.selectedParam === name && this.parametersProxy.length)
+         if (this.parametersProxy.length && this.selectedParam === uid)
             this.resetSelectedID();
       },
       clearChanges () {
