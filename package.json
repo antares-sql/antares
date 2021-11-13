@@ -14,7 +14,7 @@
     "build": "cross-env NODE_ENV=production npm run compile",
     "build:local": "npm run build && electron-builder",
     "build:appx": "npm run build:local -- --win appx",
-    "rebuild:electron": "npm run postinstall && electron-rebuild",
+    "rebuild:electron": "npm run postinstall",
     "release": "standard-version",
     "release:pre": "npm run release -- --prerelease alpha",
     "postinstall": "electron-builder install-app-deps",
@@ -30,6 +30,7 @@
     "appId": "com.fabio286.antares",
     "artifactName": "${productName}-${version}-${os}_${arch}.${ext}",
     "asar": true,
+    "buildDependenciesFromSource": true,
     "directories": {
       "output": "build",
       "buildResources": "assets"
@@ -104,6 +105,7 @@
     "@electron/remote": "^2.0.1",
     "@mdi/font": "^6.1.95",
     "ace-builds": "^1.4.13",
+    "better-sqlite3": "^7.4.4",
     "electron-log": "^4.4.1",
     "electron-store": "^8.0.1",
     "electron-updater": "^4.3.9",
@@ -134,7 +136,6 @@
     "electron": "^15.3.0",
     "electron-builder": "^22.13.1",
     "electron-devtools-installer": "^3.2.0",
-    "electron-rebuild": "^3.2.3",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.24.2",

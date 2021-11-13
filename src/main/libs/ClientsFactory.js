@@ -1,6 +1,7 @@
 'use strict';
 import { MySQLClient } from './clients/MySQLClient';
 import { PostgreSQLClient } from './clients/PostgreSQLClient';
+import { SQLiteClient } from './clients/SQLiteClient';
 
 const queryLogger = sql => {
    // Remove comments, newlines and multiple spaces
@@ -37,6 +38,8 @@ export class ClientsFactory {
             return new MySQLClient(args);
          case 'pg':
             return new PostgreSQLClient(args);
+         case 'sqlite':
+            return new SQLiteClient(args);
          default:
             throw new Error(`Unknown database client: ${args.client}`);
       }
