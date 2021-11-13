@@ -10,6 +10,8 @@ module.exports = {
    connectionSchema: true,
    collations: true,
    engines: true,
+   sslConnection: true,
+   sshConnection: true,
    // Tools
    processesList: true,
    // Structure

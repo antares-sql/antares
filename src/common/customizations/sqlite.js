@@ -8,9 +8,7 @@ module.exports = {
    collations: false,
    engines: false,
    connectionSchema: false,
-   sslConnection: false,
-   sshConnection: false,
-   fileConnection: false,
+   fileConnection: true,
    // Tools
    processesList: false,
    usersManagement: false,

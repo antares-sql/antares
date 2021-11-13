@@ -8,6 +8,8 @@ module.exports = {
    defaultDatabase: 'postgres',
    // Core
    database: true,
+   sslConnection: true,
+   sshConnection: true,
    // Tools
    processesList: true,
    // Structure
