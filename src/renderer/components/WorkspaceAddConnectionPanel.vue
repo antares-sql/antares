@@ -11,6 +11,7 @@
                   <a class="tab-link">{{ $t('word.general') }}</a>
                </li>
                <li
+                  v-if="customizations.sslConnection"
                   class="tab-item c-hand"
                   :class="{'active': selectedTab === 'ssl'}"
                   @click="selectTab('ssl')"
@@ -18,6 +19,7 @@
                   <a class="tab-link">{{ $t('word.ssl') }}</a>
                </li>
                <li
+                  v-if="customizations.sshConnection"
                   class="tab-item c-hand"
                   :class="{'active': selectedTab === 'ssh'}"
                   @click="selectTab('ssh')"
@@ -49,25 +51,17 @@
                         </div>
                         <div class="column col-8 col-sm-12">
                            <select v-model="connection.client" class="form-select">
-                              <option value="mysql">
-                                 MySQL
+                              <option
+                                 v-for="client in clients"
+                                 :key="client.slug"
+                                 :value="client.slug"
+                              >
+                                 {{ client.name }}
                               </option>
-                              <option value="maria">
-                                 MariaDB
-                              </option>
-                              <option value="pg">
-                                 PostgreSQL
-                              </option>
-                              <!-- <option value="mssql">
-                                       Microsoft SQL
-                                    </option>
-                                    <option value="oracledb">
-                                       Oracle DB
-                                    </option> -->
                            </select>
                         </div>
                      </div>
-                     <div class="form-group columns">
+                     <div v-if="!customizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
                            <label class="form-label">{{ $t('word.hostName') }}/IP</label>
                         </div>
@@ -79,7 +73,20 @@
                            >
                         </div>
                      </div>
-                     <div class="form-group columns">
+                     <div v-if="customizations.fileConnection" class="form-group columns">
+                        <div class="column col-4 col-sm-12">
+                           <label class="form-label">{{ $t('word.database') }}</label>
+                        </div>
+                        <div class="column col-8 col-sm-12">
+                           <BaseUploadInput
+                              :value="connection.databasePath"
+                              :message="$t('word.browse')"
+                              @clear="pathClear('databasePath')"
+                              @change="pathSelection($event, 'databasePath')"
+                           />
+                        </div>
+                     </div>
+                     <div v-if="!customizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
                            <label class="form-label">{{ $t('word.port') }}</label>
                         </div>
@@ -105,7 +112,7 @@
                            >
                         </div>
                      </div>
-                     <div class="form-group columns">
+                     <div v-if="!customizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
                            <label class="form-label">{{ $t('word.user') }}</label>
                         </div>
@@ -118,7 +125,7 @@
                            >
                         </div>
                      </div>
-                     <div class="form-group columns">
+                     <div v-if="!customizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
                            <label class="form-label">{{ $t('word.password') }}</label>
                         </div>
@@ -144,7 +151,7 @@
                            >
                         </div>
                      </div>
-                     <div class="form-group columns">
+                     <div v-if="!customizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12" />
                         <div class="column col-8 col-sm-12">
                            <label class="form-checkbox form-inline">
@@ -369,11 +376,18 @@ export default {
    },
    data () {
       return {
+         clients: [
+            { name: 'MySQL', slug: 'mysql' },
+            { name: 'MariaDB', slug: 'maria' },
+            { name: 'PostgreSQL', slug: 'pg' },
+            { name: 'SQLite', slug: 'sqlite' }
+         ],
          connection: {
             name: '',
             client: 'mysql',
             host: '127.0.0.1',
             database: null,
+            databasePath: '',
             port: null,
             user: null,
             password: '',

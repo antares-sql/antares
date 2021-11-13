@@ -20,6 +20,10 @@
     background-image: url("../images/svg/pg.svg");
   }
 
+  &.dbi-sqlite { 
+    background-image: url("../images/svg/sqlite.svg");
+  }
+
   &.dbi-oracledb {
     background-image: url("../images/svg/oracledb.svg");
   }
