@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.9](https://github.com/Fabio286/antares/compare/v0.3.8...v0.3.9) (2021-11-14)
+
+
+### Features
+
+* added macos basic shortcusts and menu ([430490a](https://github.com/Fabio286/antares/commit/430490ad93f3148962ced1f13a5330c79cd86b3b))
+* **MySQL:** enable/disable schedulers from contextual menu ([5ca3a22](https://github.com/Fabio286/antares/commit/5ca3a22dc538b27a4bf6402f1288c4b9f5bc5a90))
+* **MySQL:** scheduler status indicator in explore bar ([5c66824](https://github.com/Fabio286/antares/commit/5c668249cf102cd9d601f9f7b4943c7155775217))
+* **PostgreSQL:** enable/disable triggers from contextual menu ([534659f](https://github.com/Fabio286/antares/commit/534659f9aee12eb5ac477f91bfe5d764387dc17e))
+* schema size in explore bar ([fd25f88](https://github.com/Fabio286/antares/commit/fd25f881f95779709156cbad93a41d6b391f1a45))
+* **UI:** double click on the title bar will toggle window fullscreen size ([a35566f](https://github.com/Fabio286/antares/commit/a35566f273322602abe434b8bd30817ba8885900))
+* **UI:** improved topbar look&feel on MacOS ([7657d05](https://github.com/Fabio286/antares/commit/7657d05edfbeaed6a14eb337fc562da5126e6ba0))
+
+
+### Bug Fixes
+
+* copy&paste and basic usability on macOS ([1ddf8f0](https://github.com/Fabio286/antares/commit/1ddf8f0dbe22f94d6bffddf70636706d2d142ecf))
+* **PostgreSQL:** bigint fetched as string instead of number, closes [#134](https://github.com/Fabio286/antares/issues/134) ([39b9a59](https://github.com/Fabio286/antares/commit/39b9a59143b457a96f0711a3b8588c92dd80e28d))
+* row selection problems after a deletion fail, closes [#128](https://github.com/Fabio286/antares/issues/128) ([89fdd21](https://github.com/Fabio286/antares/commit/89fdd210ca48fc9ae399b195ea796c8523619627))
+* temporary solution on MacOS for unsigned app updates ([c00fd13](https://github.com/Fabio286/antares/commit/c00fd1381f451ba7aace7047b28b904ddcaf18f0))
+
+
+### Improvements
+
+* **UI:** improved function and routine parameters modals ([d19f475](https://github.com/Fabio286/antares/commit/d19f475fc28c0367ada569cb634769fa618b48b4))
+
 ### [0.3.8](https://github.com/Fabio286/antares/compare/v0.3.7...v0.3.8) (2021-10-23)
 
 
