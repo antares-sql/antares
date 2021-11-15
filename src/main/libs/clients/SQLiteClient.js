@@ -54,7 +54,7 @@ export class SQLiteClient extends AntaresCore {
       for (const db of filteredDatabases) {
          if (!schemas.has(db.name)) continue;
 
-         let { rows: tables } = await this.raw(`SELECT * FROM "${db.name}".sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';`);
+         let { rows: tables } = await this.raw(`SELECT * FROM "${db.name}".sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name`);
          if (tables.length) {
             tables = tables.map(table => {
                table.Db = db.name;
@@ -77,17 +77,7 @@ export class SQLiteClient extends AntaresCore {
          if (schemas.has(db.name)) {
             // TABLES
             const remappedTables = tablesArr.filter(table => table.Db === db.name).map(table => {
-               let tableType;
-               switch (table.Comment) {
-                  case 'VIEW':
-                     tableType = 'view';
-                     break;
-                  default:
-                     tableType = 'table';
-                     break;
-               }
-
-               const tableSize = table.Data_length + table.Index_length;
+               const tableSize = 0;
                schemaSize += tableSize;
 
                return {
@@ -246,7 +236,7 @@ export class SQLiteClient extends AntaresCore {
     * @memberof SQLiteClient
     */
    async getTableApproximateCount ({ schema, table }) {
-      const { rows } = await this.raw(`SELECT table_rows "count" FROM information_schema.tables WHERE table_name = "${table}" AND table_schema = "${schema}"`);
+      const { rows } = await this.raw(`SELECT COUNT(*) AS count FROM "${schema}"."${table}"`);
 
       return rows.length ? rows[0].count : 0;
    }
@@ -1182,10 +1172,12 @@ export class SQLiteClient extends AntaresCore {
       else if (Object.keys(this._query.insert).length)
          fromRaw = 'INTO';
 
-      fromRaw += this._query.from ? ` ${this._query.schema ? `\`${this._query.schema}\`.` : ''}\`${this._query.from}\` ` : '';
+      fromRaw += this._query.from ? ` ${this._query.schema ? `"${this._query.schema}".` : ''}"${this._query.from}" ` : '';
 
       // WHERE
-      const whereArray = this._query.where.reduce(this._reducer, []);
+      const whereArray = this._query.where
+         .reduce(this._reducer, [])
+         ?.map(clausole => clausole.replace('= null', 'IS NULL'));
       const whereRaw = whereArray.length ? `WHERE ${whereArray.join(' AND ')} ` : '';
 
       // UPDATE
@@ -1258,9 +1250,26 @@ export class SQLiteClient extends AntaresCore {
          const keysArr = [];
 
          const { rows, report, fields, keys, duration } = await new Promise((resolve, reject) => {
+            let queryResult;
+            let affectedRows;
+            let fields;
+            const detectedTypes = {};
+
             const stmt = connection.prepare(query);
-            const queryResult = stmt.all();
-            const fields = stmt.columns();
+            if (stmt.reader) {
+               queryResult = stmt.all();
+               fields = stmt.columns();
+
+               if (queryResult.length) {
+                  fields.forEach(field => {
+                     detectedTypes[field.name] = typeof queryResult[0][field.name];
+                  });
+               }
+            }
+            else {
+               const info = queryResult = stmt.run();
+               affectedRows = info.changes;
+            }
 
             const remappedFields = fields
                ? fields.map(field => {
@@ -1272,7 +1281,7 @@ export class SQLiteClient extends AntaresCore {
                      table: field.table,
                      tableAlias: field.table,
                      orgTable: field.table,
-                     type: field.type
+                     type: field.type !== null ? field.type : detectedTypes[field.name]
                   };
                }).filter(Boolean)
                : [];
@@ -1282,7 +1291,7 @@ export class SQLiteClient extends AntaresCore {
             resolve({
                duration: timeStop - timeStart,
                rows: Array.isArray(queryResult) ? queryResult.some(el => Array.isArray(el)) ? [] : queryResult : false,
-               report: !Array.isArray(queryResult) ? queryResult : false,
+               report: affectedRows !== undefined ? { affectedRows } : null,
                fields: remappedFields,
                keys: keysArr
             });

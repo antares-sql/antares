@@ -43,7 +43,7 @@
                      <span v-html="highlightWord(table.name)" />
                   </a>
                   <div
-                     v-if="table.type === 'table'"
+                     v-if="table.type === 'table' && table.size !== false"
                      class="table-size  tooltip tooltip-left mr-1"
                      :data-tooltip="formatBytes(table.size)"
                   >
