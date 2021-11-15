@@ -188,7 +188,7 @@ export default (connections) => {
             const fieldName = Object.keys(row)[0].includes('.') ? `${params.table}.${params.primary}` : params.primary;
 
             return typeof row[fieldName] === 'string'
-               ? `"${row[fieldName]}"`
+               ? `'${row[fieldName]}'`
                : row[fieldName];
          }).join(',');
 
