@@ -1,5 +1,5 @@
 {
-  "projectName": "Antares",
+  "projectName": "antares",
   "projectOwner": "Fabio286",
   "repoType": "github",
   "repoHost": "https://github.com",
@@ -111,7 +111,17 @@
       "contributions": [
         "platform"
       ]
+    },
+    {
+      "login": "kilianstallz",
+      "name": "Kilian Stallinger",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5290318?v=4",
+      "profile": "https://kilianstallinger.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
-  "contributorsPerLine": 7
+  "contributorsPerLine": 7,
+  "skipCi": true
 }
