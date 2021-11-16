@@ -1276,20 +1276,26 @@ export class SQLiteClient extends AntaresCore {
                let fields;
                const detectedTypes = {};
 
-               const stmt = connection.prepare(query);
-               if (stmt.reader) {
-                  queryResult = stmt.all();
-                  fields = stmt.columns();
+               try {
+                  const stmt = connection.prepare(query);
 
-                  if (queryResult.length) {
-                     fields.forEach(field => {
-                        detectedTypes[field.name] = typeof queryResult[0][field.name];
-                     });
+                  if (stmt.reader) {
+                     queryResult = stmt.all();
+                     fields = stmt.columns();
+
+                     if (queryResult.length) {
+                        fields.forEach(field => {
+                           detectedTypes[field.name] = typeof queryResult[0][field.name];
+                        });
+                     }
+                  }
+                  else {
+                     const info = queryResult = stmt.run();
+                     affectedRows = info.changes;
                   }
                }
-               else {
-                  const info = queryResult = stmt.run();
-                  affectedRows = info.changes;
+               catch (err) {
+                  reject(err);
                }
 
                timeStop = new Date();

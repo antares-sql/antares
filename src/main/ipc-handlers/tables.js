@@ -102,6 +102,9 @@ export default (connections) => {
                case 'pg':
                   escapedParam = `'${params.content.replaceAll('\'', '\'\'')}'`;
                   break;
+               case 'sqlite':
+                  escapedParam = `'${params.content.replaceAll('\'', '\'\'')}'`;
+                  break;
             }
          }
          else if (ARRAY.includes(params.type))
@@ -122,6 +125,10 @@ export default (connections) => {
                      fileBlob = fs.readFileSync(params.content);
                      escapedParam = `decode('${fileBlob.toString('hex')}', 'hex')`;
                      break;
+                  case 'sqlite':
+                     fileBlob = fs.readFileSync(params.content);
+                     escapedParam = `X'${fileBlob.toString('hex')}'`;
+                     break;
                }
                reload = true;
             }
@@ -133,6 +140,9 @@ export default (connections) => {
                      break;
                   case 'pg':
                      escapedParam = 'decode(\'\', \'hex\')';
+                     break;
+                  case 'sqlite':
+                     escapedParam = 'X\'\'';
                      break;
                }
             }
