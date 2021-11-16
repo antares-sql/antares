@@ -9,7 +9,8 @@ export default connections => {
          port: +conn.port,
          user: conn.user,
          password: conn.password,
-         application_name: 'Antares SQL'
+         application_name: 'Antares SQL',
+         readonly: conn.readonly
       };
 
       if (conn.database)
@@ -65,7 +66,8 @@ export default connections => {
          port: +conn.port,
          user: conn.user,
          password: conn.password,
-         application_name: 'Antares SQL'
+         application_name: 'Antares SQL',
+         readonly: conn.readonly
       };
 
       if (conn.database)

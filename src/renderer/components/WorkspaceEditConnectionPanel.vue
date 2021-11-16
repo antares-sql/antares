@@ -151,6 +151,14 @@
                            >
                         </div>
                      </div>
+                     <div v-if="customizations.readOnlyMode" class="form-group columns">
+                        <div class="column col-4 col-sm-12" />
+                        <div class="column col-8 col-sm-12">
+                           <label class="form-checkbox form-inline">
+                              <input v-model="localConnection.readonly" type="checkbox"><i class="form-icon" /> {{ $t('message.readOnlyMode') }}
+                           </label>
+                        </div>
+                     </div>
                      <div v-if="!customizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12" />
                         <div class="column col-8 col-sm-12">

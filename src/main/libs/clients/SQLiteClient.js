@@ -21,7 +21,8 @@ export class SQLiteClient extends AntaresCore {
     */
    async connect () {
       this._connection = sqlite(this._params.databasePath, {
-         fileMustExist: true
+         fileMustExist: true,
+         readonly: this._params.readonly
       });
    }
 

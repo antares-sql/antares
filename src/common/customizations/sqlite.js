@@ -78,5 +78,6 @@ module.exports = {
    triggerFunctionSql: false,
    triggerFunctionlanguages: false,
    parametersLength: false,
-   languages: false
+   languages: false,
+   readOnlyMode: true
 };
