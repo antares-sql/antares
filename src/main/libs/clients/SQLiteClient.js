@@ -286,20 +286,40 @@ export class SQLiteClient extends AntaresCore {
     * @memberof SQLiteClient
     */
    async getTableIndexes ({ schema, table }) {
-      const { rows } = await this.raw(`SHOW INDEXES FROM \`${table}\` FROM \`${schema}\``);
+      const remappedIndexes = [];
+      const { rows: primaryKeys } = await this.raw(`SELECT * FROM "${schema}".pragma_table_info('${table}') WHERE pk != 0`);
 
-      return rows.map(row => {
-         return {
-            unique: !row.Non_unique,
-            name: row.Key_name,
-            column: row.Column_name,
-            indexType: row.Index_type,
-            type: row.Key_name === 'PRIMARY' ? 'PRIMARY' : !row.Non_unique ? 'UNIQUE' : row.Index_type === 'FULLTEXT' ? 'FULLTEXT' : 'INDEX',
-            cardinality: row.Cardinality,
-            comment: row.Comment,
-            indexComment: row.Index_comment
-         };
-      });
+      for (const key of primaryKeys) {
+         remappedIndexes.push({
+            name: 'PRIMARY',
+            column: key.name,
+            indexType: null,
+            type: 'PRIMARY',
+            cardinality: null,
+            comment: '',
+            indexComment: ''
+         });
+      }
+
+      const { rows: indexes } = await this.raw(`SELECT * FROM "${schema}".pragma_index_list('${table}');`);
+
+      for (const index of indexes) {
+         const { rows: details } = await this.raw(`SELECT * FROM "${schema}".pragma_index_info('${index.name}');`);
+
+         for (const detail of details) {
+            remappedIndexes.push({
+               name: index.name,
+               column: detail.name,
+               indexType: null,
+               type: index.unique === 1 ? 'UNIQUE' : 'INDEX',
+               cardinality: null,
+               comment: '',
+               indexComment: ''
+            });
+         }
+      }
+
+      return remappedIndexes;
    }
 
    /**
@@ -1235,7 +1255,7 @@ export class SQLiteClient extends AntaresCore {
          sql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '');// Remove comments
 
       const resultsArr = [];
-      // let paramsArr = [];
+      let paramsArr = [];
       const queries = args.split
          ? sql.split(/((?:[^;'"]*(?:"(?:\\.|[^"])*"|'(?:\\.|[^'])*')[^;'"]*)+)|;/gm)
             .filter(Boolean)
@@ -1250,51 +1270,91 @@ export class SQLiteClient extends AntaresCore {
          const keysArr = [];
 
          const { rows, report, fields, keys, duration } = await new Promise((resolve, reject) => {
-            let queryResult;
-            let affectedRows;
-            let fields;
-            const detectedTypes = {};
+            (async () => {
+               let queryResult;
+               let affectedRows;
+               let fields;
+               const detectedTypes = {};
 
-            const stmt = connection.prepare(query);
-            if (stmt.reader) {
-               queryResult = stmt.all();
-               fields = stmt.columns();
+               const stmt = connection.prepare(query);
+               if (stmt.reader) {
+                  queryResult = stmt.all();
+                  fields = stmt.columns();
 
-               if (queryResult.length) {
-                  fields.forEach(field => {
-                     detectedTypes[field.name] = typeof queryResult[0][field.name];
-                  });
+                  if (queryResult.length) {
+                     fields.forEach(field => {
+                        detectedTypes[field.name] = typeof queryResult[0][field.name];
+                     });
+                  }
                }
-            }
-            else {
-               const info = queryResult = stmt.run();
-               affectedRows = info.changes;
-            }
+               else {
+                  const info = queryResult = stmt.run();
+                  affectedRows = info.changes;
+               }
 
-            const remappedFields = fields
-               ? fields.map(field => {
-                  return {
-                     name: field.name,
-                     alias: field.name,
-                     orgName: field.column,
-                     schema: field.database,
-                     table: field.table,
-                     tableAlias: field.table,
-                     orgTable: field.table,
-                     type: field.type !== null ? field.type : detectedTypes[field.name]
-                  };
-               }).filter(Boolean)
-               : [];
+               timeStop = new Date();
 
-            timeStop = new Date();
+               let remappedFields = fields
+                  ? fields.map(field => {
+                     return {
+                        name: field.name,
+                        alias: field.name,
+                        orgName: field.column,
+                        schema: field.database,
+                        table: field.table,
+                        tableAlias: field.table,
+                        orgTable: field.table,
+                        type: field.type !== null ? field.type : detectedTypes[field.name]
+                     };
+                  }).filter(Boolean)
+                  : [];
 
-            resolve({
-               duration: timeStop - timeStart,
-               rows: Array.isArray(queryResult) ? queryResult.some(el => Array.isArray(el)) ? [] : queryResult : false,
-               report: affectedRows !== undefined ? { affectedRows } : null,
-               fields: remappedFields,
-               keys: keysArr
-            });
+               if (args.details) {
+                  paramsArr = remappedFields.map(field => {
+                     return {
+                        table: field.table,
+                        schema: field.schema
+                     };
+                  }).filter((val, i, arr) => arr.findIndex(el => el.schema === val.schema && el.table === val.table) === i);
+
+                  for (const paramObj of paramsArr) {
+                     if (!paramObj.table || !paramObj.schema) continue;
+
+                     try {
+                        const indexes = await this.getTableIndexes(paramObj);
+
+                        remappedFields = remappedFields.map(field => {
+                        // const detailedField = columns.find(f => f.name === field.name);
+                           const fieldIndex = indexes.find(i => i.column === field.name);
+                           if (field.table === paramObj.table && field.schema === paramObj.schema) {
+                           // if (detailedField) {
+                           //    const length = detailedField.numPrecision || detailedField.charLength || detailedField.datePrecision || null;
+                           //    field = { ...field, ...detailedField, length };
+                           // }
+
+                              if (fieldIndex) {
+                                 const key = fieldIndex.type === 'PRIMARY' ? 'pri' : fieldIndex.type === 'UNIQUE' ? 'uni' : 'mul';
+                                 field = { ...field, key };
+                              };
+                           }
+
+                           return field;
+                        });
+                     }
+                     catch (err) {
+                        reject(err);
+                     }
+                  }
+               }
+
+               resolve({
+                  duration: timeStop - timeStart,
+                  rows: Array.isArray(queryResult) ? queryResult.some(el => Array.isArray(el)) ? [] : queryResult : false,
+                  report: affectedRows !== undefined ? { affectedRows } : null,
+                  fields: remappedFields,
+                  keys: keysArr
+               });
+            })();
          });
 
          resultsArr.push({ rows, report, fields, keys, duration });
