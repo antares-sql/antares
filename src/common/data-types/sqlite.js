@@ -101,7 +101,7 @@ module.exports = [
       types: [
          {
             name: 'DATE',
-            length: true,
+            length: false,
             collation: false,
             unsigned: false,
             zerofill: false

@@ -2,7 +2,7 @@
 import sqlite from 'better-sqlite3';
 import { AntaresCore } from '../AntaresCore';
 import dataTypes from 'common/data-types/mysql';
-import { NUMBER, FLOAT } from 'common/fieldTypes';
+import { NUMBER, FLOAT, TIME, DATETIME } from 'common/fieldTypes';
 
 export class SQLiteClient extends AntaresCore {
    constructor (args) {
@@ -150,7 +150,7 @@ export class SQLiteClient extends AntaresCore {
          return {
             name: field.name,
             key: null,
-            type,
+            type: type.trim(),
             schema: schema,
             table: table,
             numPrecision: [...NUMBER, ...FLOAT].includes(type) ? length : null,
@@ -730,9 +730,21 @@ export class SQLiteClient extends AntaresCore {
 
                let remappedFields = fields
                   ? fields.map(field => {
-                     const parsedType = field.type?.includes('(')
-                        ? field.type.split('(')[0]
-                        : field.type;
+                     let [parsedType, length] = field.type?.includes('(')
+                        ? field.type.replace(')', '').split('(').map(el => {
+                           if (!isNaN(el))
+                              el = +el;
+                           else
+                              el = el.trim();
+                           return el;
+                        })
+                        : [field.type, null];
+
+                     if ([...TIME, ...DATETIME].includes(parsedType)) {
+                        const firstNotNull = queryResult.find(res => res[field.name] !== null);
+                        if (firstNotNull[field.name].includes('.'))
+                           length = firstNotNull[field.name].split('.').pop().length;
+                     }
 
                      return {
                         name: field.name,
@@ -742,7 +754,8 @@ export class SQLiteClient extends AntaresCore {
                         table: field.table,
                         tableAlias: field.table,
                         orgTable: field.table,
-                        type: field.type !== null ? parsedType : detectedTypes[field.name]
+                        type: field.type !== null ? parsedType : detectedTypes[field.name],
+                        length
                      };
                   }).filter(Boolean)
                   : [];
