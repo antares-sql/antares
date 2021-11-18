@@ -413,8 +413,8 @@ export default {
                      customizations = require('common/customizations/postgresql');
                      break;
                   case 'sqlite':
-                     // dataTypes = require('common/data-types/sqlite');
-                     // indexTypes = require('common/index-types/sqlite');
+                     dataTypes = require('common/data-types/sqlite');
+                     indexTypes = require('common/index-types/sqlite');
                      customizations = require('common/customizations/sqlite');
                      break;
                }

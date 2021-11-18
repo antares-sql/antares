@@ -367,7 +367,8 @@ export default {
          getWorkspace: 'workspaces/getWorkspace'
       }),
       localLength () {
-         return this.localRow.numLength || this.localRow.charLength || this.localRow.datePrecision || this.localRow.numPrecision || 0;
+         const localLength = this.localRow.numLength || this.localRow.charLength || this.localRow.datePrecision || this.localRow.numPrecision || 0;
+         return localLength === true ? null : localLength;
       },
       fieldType () {
          const fieldType = this.dataTypes.reduce((acc, group) => [...acc, ...group.types], []).filter(type =>
@@ -391,7 +392,7 @@ export default {
          return this.indexes.some(index => ['PRIMARY', 'UNIQUE'].includes(index.type));
       },
       isNullable () {
-         return !this.indexes.some(index => ['PRIMARY'].includes(index.type));
+         return this.customizations.nullablePrimary || !this.indexes.some(index => ['PRIMARY'].includes(index.type));
       },
       isInDataTypes () {
          let typeNames = [];
