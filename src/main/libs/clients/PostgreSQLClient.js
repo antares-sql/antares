@@ -506,7 +506,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * CREATE SCHEMA
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async createSchema (params) {
@@ -516,7 +516,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * ALTER DATABASE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async alterSchema (params) {
@@ -526,7 +526,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * DROP DATABASE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async dropSchema (params) {
@@ -558,7 +558,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * DROP VIEW
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async dropView (params) {
@@ -569,7 +569,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * ALTER VIEW
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async alterView (params) {
@@ -585,7 +585,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * CREATE VIEW
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async createView (params) {
@@ -640,7 +640,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * DROP TRIGGER
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async dropTrigger (params) {
@@ -652,7 +652,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * ALTER TRIGGER
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async alterTrigger (params) {
@@ -674,7 +674,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * CREATE TRIGGER
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async createTrigger (params) {
@@ -1086,7 +1086,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * CREATE TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async createTable (params) {
@@ -1144,7 +1144,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * ALTER TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async alterTable (params) {
@@ -1290,7 +1290,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * DUPLICATE TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async duplicateTable (params) {
@@ -1301,7 +1301,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * TRUNCATE TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async truncateTable (params) {
@@ -1312,7 +1312,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * DROP TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async dropTable (params) {

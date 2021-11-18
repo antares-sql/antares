@@ -28,6 +28,7 @@ module.exports = {
    triggerFunctionAdd: true,
    routineAdd: true,
    functionAdd: true,
+   schemaDrop: true,
    databaseEdit: false,
    tableSettings: true,
    viewSettings: true,

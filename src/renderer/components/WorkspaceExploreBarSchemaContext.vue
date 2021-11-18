@@ -65,7 +65,11 @@
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-database-edit text-light pr-1" /> {{ $t('word.edit') }}</span>
       </div>
-      <div class="context-element" @click="showDeleteModal">
+      <div
+         v-if="workspace.customizations.schemaDrop"
+         class="context-element"
+         @click="showDeleteModal"
+      >
          <span class="d-flex"><i class="mdi mdi-18px mdi-database-remove text-light pr-1" /> {{ $t('word.delete') }}</span>
       </div>
 
