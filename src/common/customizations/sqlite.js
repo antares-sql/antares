@@ -2,7 +2,7 @@ module.exports = {
    // Core
    fileConnection: true,
    // Structure
-   schemas: true,
+   schemas: false,
    tables: true,
    views: true,
    triggers: true,
