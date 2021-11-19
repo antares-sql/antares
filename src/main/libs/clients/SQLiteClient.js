@@ -56,7 +56,13 @@ export class SQLiteClient extends AntaresCore {
       for (const db of filteredDatabases) {
          if (!schemas.has(db.name)) continue;
 
-         let { rows: tables } = await this.raw(`SELECT * FROM "${db.name}".sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name`);
+         let { rows: tables } = await this.raw(`
+            SELECT * 
+            FROM "${db.name}".sqlite_master 
+            WHERE type IN ('table', 'view') 
+            AND name NOT LIKE 'sqlite_%' 
+            ORDER BY name
+         `);
          if (tables.length) {
             tables = tables.map(table => {
                table.Db = db.name;
@@ -274,17 +280,13 @@ export class SQLiteClient extends AntaresCore {
     * @memberof SQLiteClient
     */
    async getViewInformations ({ schema, view }) {
-      const sql = `SHOW CREATE VIEW \`${schema}\`.\`${view}\``;
+      const sql = `SELECT "sql" FROM "${schema}".sqlite_master WHERE "type"='view' AND name='${view}'`;
       const results = await this.raw(sql);
 
       return results.rows.map(row => {
          return {
-            algorithm: row['Create View'].match(/(?<=CREATE ALGORITHM=).*?(?=\s)/gs)[0],
-            definer: row['Create View'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
-            security: row['Create View'].match(/(?<=SQL SECURITY ).*?(?=\s)/gs)[0],
-            updateOption: row['Create View'].match(/(?<=WITH ).*?(?=\s)/gs) ? row['Create View'].match(/(?<=WITH ).*?(?=\s)/gs)[0] : '',
-            sql: row['Create View'].match(/(?<=AS ).*?$/gs)[0],
-            name: row.View
+            sql: row.sql.match(/(?<=AS ).*?$/gs)[0],
+            name: view
          };
       })[0];
    }
@@ -296,7 +298,7 @@ export class SQLiteClient extends AntaresCore {
     * @memberof SQLiteClient
     */
    async dropView (params) {
-      const sql = `DROP VIEW \`${params.schema}\`.\`${params.view}\``;
+      const sql = `DROP VIEW "${params.schema}"."${params.view}"`;
       return await this.raw(sql);
    }
 
@@ -308,17 +310,11 @@ export class SQLiteClient extends AntaresCore {
     */
    async alterView (params) {
       const { view } = params;
-      let sql = `
-         USE \`${view.schema}\`; 
-         ALTER ALGORITHM = ${view.algorithm}${view.definer ? ` DEFINER=${view.definer}` : ''} 
-         SQL SECURITY ${view.security} 
-         VIEW \`${view.schema}\`.\`${view.oldName}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}
-      `;
 
-      if (view.name !== view.oldName)
-         sql += `; RENAME TABLE \`${view.schema}\`.\`${view.oldName}\` TO \`${view.schema}\`.\`${view.name}\``;
-
-      return await this.raw(sql);
+      return await Promise.all([
+         this.dropView({ schema: view.schema, view: view.oldName }),
+         this.createView(view)
+      ]);
    }
 
    /**
@@ -328,7 +324,7 @@ export class SQLiteClient extends AntaresCore {
     * @memberof SQLiteClient
     */
    async createView (params) {
-      const sql = `CREATE ALGORITHM = ${params.algorithm} ${params.definer ? `DEFINER=${params.definer} ` : ''}SQL SECURITY ${params.security} VIEW \`${params.schema}\`.\`${params.name}\` AS ${params.sql} ${params.updateOption ? `WITH ${params.updateOption} CHECK OPTION` : ''}`;
+      const sql = `CREATE VIEW "${params.schema}"."${params.name}" AS ${params.sql}`;
       return await this.raw(sql);
    }
 
