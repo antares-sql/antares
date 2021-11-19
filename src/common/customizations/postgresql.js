@@ -8,6 +8,8 @@ module.exports = {
    defaultDatabase: 'postgres',
    // Core
    database: true,
+   sslConnection: true,
+   sshConnection: true,
    // Tools
    processesList: true,
    // Structure
@@ -26,6 +28,7 @@ module.exports = {
    triggerFunctionAdd: true,
    routineAdd: true,
    functionAdd: true,
+   schemaDrop: true,
    databaseEdit: false,
    tableSettings: true,
    viewSettings: true,

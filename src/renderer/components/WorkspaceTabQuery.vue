@@ -93,7 +93,7 @@
                <div v-if="resultsCount">
                   {{ $t('word.results') }}: <b>{{ resultsCount.toLocaleString() }}</b>
                </div>
-               <div v-if="affectedCount">
+               <div v-if="affectedCount !== null">
                   {{ $t('message.affectedRows') }}: <b>{{ affectedCount }}</b>
                </div>
                <div class="input-group" :title="$t('word.schema')">
@@ -170,7 +170,7 @@ export default {
          selectedSchema: null,
          resultsCount: 0,
          durationsCount: 0,
-         affectedCount: 0,
+         affectedCount: null,
          editorHeight: 200,
          isHistoryOpen: false
       };
@@ -255,9 +255,14 @@ export default {
 
             if (status === 'success') {
                this.results = Array.isArray(response) ? response : [response];
-               this.resultsCount += this.results.reduce((acc, curr) => acc + (curr.rows ? curr.rows.length : 0), 0);
-               this.durationsCount += this.results.reduce((acc, curr) => acc + curr.duration, 0);
-               this.affectedCount += this.results.reduce((acc, curr) => acc + (curr.report ? curr.report.affectedRows : 0), 0);
+               this.resultsCount = this.results.reduce((acc, curr) => acc + (curr.rows ? curr.rows.length : 0), 0);
+               this.durationsCount = this.results.reduce((acc, curr) => acc + curr.duration, 0);
+               this.affectedCount = this.results
+                  .filter(result => result.report !== null)
+                  .reduce((acc, curr) => {
+                     if (acc === null) acc = 0;
+                     return acc + (curr.report ? curr.report.affectedRows : 0);
+                  }, null);
 
                this.updateTabContent({
                   uid: this.connection.uid,
@@ -285,7 +290,7 @@ export default {
          this.results = [];
          this.resultsCount = 0;
          this.durationsCount = 0;
-         this.affectedCount = 0;
+         this.affectedCount = null;
       },
       resize (e) {
          const el = this.$refs.queryEditor.$el;

@@ -250,7 +250,8 @@ module.exports = {
       searchForQueries: 'Search for queries',
       killProcess: 'Kill process',
       closeTab: 'Close tab',
-      goToDownloadPage: 'Go to download page'
+      goToDownloadPage: 'Go to download page',
+      readOnlyMode: 'Read-only mode'
    },
    faker: {
       address: 'Address',

@@ -571,7 +571,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * CREATE DATABASE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async createSchema (params) {
@@ -581,7 +581,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * ALTER DATABASE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async alterSchema (params) {
@@ -591,7 +591,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * DROP DATABASE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async dropSchema (params) {
@@ -631,7 +631,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * DROP VIEW
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async dropView (params) {
@@ -642,7 +642,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * ALTER VIEW
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async alterView (params) {
@@ -663,7 +663,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * CREATE VIEW
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async createView (params) {
@@ -696,7 +696,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * DROP TRIGGER
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async dropTrigger (params) {
@@ -707,7 +707,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * ALTER TRIGGER
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async alterTrigger (params) {
@@ -729,7 +729,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * CREATE TRIGGER
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async createTrigger (params) {
@@ -803,7 +803,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * DROP PROCEDURE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async dropRoutine (params) {
@@ -814,7 +814,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * ALTER PROCEDURE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async alterRoutine (params) {
@@ -836,7 +836,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * CREATE PROCEDURE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async createRoutine (params) {
@@ -930,7 +930,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * DROP FUNCTION
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async dropFunction (params) {
@@ -941,7 +941,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * ALTER FUNCTION
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async alterFunction (params) {
@@ -963,7 +963,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * CREATE FUNCTION
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async createFunction (params) {
@@ -1024,7 +1024,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * DROP EVENT
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async dropEvent (params) {
@@ -1035,7 +1035,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * ALTER EVENT
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async alterEvent (params) {
@@ -1061,7 +1061,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * CREATE EVENT
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async createEvent (params) {
@@ -1205,7 +1205,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * CREATE TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async createTable (params) {
@@ -1267,7 +1267,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * ALTER TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async alterTable (params) {
@@ -1402,7 +1402,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * DUPLICATE TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async duplicateTable (params) {
@@ -1413,7 +1413,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * TRUNCATE TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async truncateTable (params) {
@@ -1424,7 +1424,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * DROP TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async dropTable (params) {

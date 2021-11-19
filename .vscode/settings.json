@@ -3,7 +3,8 @@
       "UI",
       "core",
       "MySQL",
-      "PostgreSQL"
+      "PostgreSQL",
+      "SQLite"
    ],
    "svg.preview.background": "transparent"
 }

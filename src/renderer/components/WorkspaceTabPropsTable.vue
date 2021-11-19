@@ -506,6 +506,12 @@ export default {
             uid: this.connection.uid,
             schema: this.schema,
             table: this.table,
+            tableStructure: {
+               name: this.localOptions.name,
+               fields: this.localFields,
+               foreigns: this.localKeyUsage,
+               indexes: this.localIndexes
+            },
             additions,
             changes,
             deletions,

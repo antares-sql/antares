@@ -13,6 +13,7 @@
             <span class="workspace-explorebar-title">{{ connectionName }}</span>
             <span v-if="workspace.connectionStatus === 'connected'" class="workspace-explorebar-tools">
                <i
+                  v-if="customizations.schemas"
                   class="mdi mdi-18px mdi-database-plus c-hand mr-2"
                   :title="$t('message.createNewSchema')"
                   @click="showNewDBModal"
