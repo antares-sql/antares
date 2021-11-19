@@ -71,7 +71,7 @@ export class SQLiteClient extends AntaresCore {
             tablesArr.push(...tables);
          }
 
-         let { rows: triggers } = await this.raw(`SELECT * FROM "${db.name}".sqlite_master WHERE type='trigger' AND name NOT LIKE 'sqlite_%'`);
+         let { rows: triggers } = await this.raw(`SELECT * FROM "${db.name}".sqlite_master WHERE type='trigger'`);
          if (triggers.length) {
             triggers = triggers.map(trigger => {
                trigger.Db = db.name;
@@ -99,15 +99,8 @@ export class SQLiteClient extends AntaresCore {
             // TRIGGERS
             const remappedTriggers = triggersArr.filter(trigger => trigger.Db === db.name).map(trigger => {
                return {
-                  name: trigger.Trigger,
-                  statement: trigger.Statement,
-                  timing: trigger.Timing,
-                  definer: trigger.Definer,
-                  event: trigger.Event,
-                  table: trigger.Table,
-                  sqlMode: trigger.sql_mode,
-                  created: trigger.Created,
-                  charset: trigger.character_set_client
+                  name: trigger.name,
+                  table: trigger.tbl_name
                };
             });
 
@@ -310,11 +303,13 @@ export class SQLiteClient extends AntaresCore {
     */
    async alterView (params) {
       const { view } = params;
-
-      return await Promise.all([
-         this.dropView({ schema: view.schema, view: view.oldName }),
-         this.createView(view)
-      ]);
+      try {
+         await this.dropView({ schema: view.schema, view: view.oldName });
+         await this.createView(view);
+      }
+      catch (err) {
+         return Promise.reject(err);
+      }
    }
 
    /**
@@ -335,17 +330,16 @@ export class SQLiteClient extends AntaresCore {
     * @memberof SQLiteClient
     */
    async getTriggerInformations ({ schema, trigger }) {
-      const sql = `SHOW CREATE TRIGGER \`${schema}\`.\`${trigger}\``;
+      const sql = `SELECT "sql" FROM "${schema}".sqlite_master WHERE "type"='trigger' AND name='${trigger}'`;
       const results = await this.raw(sql);
 
       return results.rows.map(row => {
          return {
-            definer: row['SQL Original Statement'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
-            sql: row['SQL Original Statement'].match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
-            name: row.Trigger,
-            table: row['SQL Original Statement'].match(/(?<=ON `).*?(?=`)/gs)[0],
-            activation: row['SQL Original Statement'].match(/(BEFORE|AFTER)/gs)[0],
-            event: row['SQL Original Statement'].match(/(INSERT|UPDATE|DELETE)/gs)[0]
+            sql: row.sql.match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
+            name: trigger,
+            table: row.sql.match(/(?<=ON `).*?(?=`)/gs)[0],
+            activation: row.sql.match(/(BEFORE|AFTER)/gs)[0],
+            event: row.sql.match(/(INSERT|UPDATE|DELETE)/gs)[0]
          };
       })[0];
    }
