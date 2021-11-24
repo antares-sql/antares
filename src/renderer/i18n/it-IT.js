@@ -121,7 +121,10 @@ module.exports = {
       history: 'Cronologia',
       select: 'Seleziona',
       passphrase: 'Passphrase',
-      filter: 'Filtra'
+      filter: 'Filtra',
+      disabled: 'Disabilitato',
+      enable: 'Abilita',
+      disable: 'Disabilita'
    },
    message: {
       appWelcome: 'Benvenuto in Antares SQL Client!',
@@ -233,7 +236,22 @@ module.exports = {
       duplicateTable: 'Duplica tabella',
       noOpenTabs: 'Non ci sono tab aperte, naviga nella barra sinistra o:',
       noSchema: 'Nessuno schema',
-      restorePreviourSession: 'Ripristina sessione precedente'
+      restorePreviourSession: 'Ripristina sessione precedente',
+      runQuery: 'Esegui query',
+      thereAreNoTableFields: 'Non ci sono campi della tabella',
+      newTable: 'Nuova tabella',
+      newView: 'Nuova vista',
+      newTrigger: 'Nuovo trigger',
+      newRoutine: 'Nuova routine',
+      newFunction: 'Nuova funzione',
+      newScheduler: 'Nuovo scheduler',
+      newTriggerFunction: 'Nuova funzione di trigger',
+      thereIsNoQueriesYet: 'Non ci sono ancora query',
+      searchForQueries: 'Cerca query',
+      killProcess: 'Uccidi processo',
+      closeTab: 'Chiudi tab',
+      goToDownloadPage: 'Vai alla pagina di download',
+      readOnlyMode: 'Modalità sola lettura'
    },
    faker: {
       address: 'Indirizzo',
