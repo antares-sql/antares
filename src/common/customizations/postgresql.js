@@ -13,6 +13,7 @@ module.exports = {
    // Tools
    processesList: true,
    // Structure
+   schemas: true,
    tables: true,
    views: true,
    triggers: true,
