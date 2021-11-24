@@ -105,10 +105,19 @@ export class PostgreSQLClient extends AntaresCore {
          const client = new Client(dbConfig);
          await client.connect();
          this._connection = client;
+
+         if (this._params.readonly)
+            await this.raw('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY');
       }
       else {
          const pool = new Pool({ ...dbConfig, max: this._poolSize });
          this._connection = pool;
+
+         if (this._params.readonly) {
+            this._connection.on('connect', connection => {
+               connection.query('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY');
+            });
+         }
       }
    }
 
