@@ -256,7 +256,11 @@
                   </span>
                </a>
             </li>
-            <li slot="header" class="tab-item dropdown tools-dropdown">
+            <li
+               v-if="workspace.customizations.processesList"
+               slot="header"
+               class="tab-item dropdown tools-dropdown"
+            >
                <a
                   class="tab-link workspace-tools-link dropdown-toggle"
                   tabindex="0"
@@ -264,8 +268,8 @@
                >
                   <i class="mdi mdi-24px mdi-tools" />
                </a>
-               <ul class="menu text-left text-uppercase">
-                  <li v-if="workspace.customizations.processesList" class="menu-item">
+               <ul v-if="hasTools" class="menu text-left text-uppercase">
+                  <li class="menu-item">
                      <a class="c-hand p-vcentered" @click="showProcessesModal">
                         <i class="mdi mdi-memory mr-1 tool-icon" />
                         <span>{{ $t('message.processesList') }}</span>
@@ -569,6 +573,11 @@ export default {
             if (this.workspace.breadcrumbs[key]) return this.workspace.breadcrumbs[key];
          }
          return false;
+      },
+      hasTools () {
+         return this.workspace.customizations.processesList ||
+            this.workspace.customizations.usersManagement ||
+            this.workspace.customizations.variables;
       }
    },
    watch: {
