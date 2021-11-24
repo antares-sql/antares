@@ -54,5 +54,6 @@ module.exports = {
    triggerTableInName: true,
    triggerOnlyRename: false,
    triggerEnableDisable: true,
-   languages: ['sql', 'plpgsql', 'c', 'internal']
+   languages: ['sql', 'plpgsql', 'c', 'internal'],
+   readOnlyMode: true
 };
