@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.10](https://github.com/Fabio286/antares/compare/v0.3.9...v0.3.10) (2021-11-24)
+
+
+### Features
+
+* **MySQL:** read-only mode ([4437d44](https://github.com/Fabio286/antares/commit/4437d44486c4f20b0bec4bf89d56016b08e36e79))
+* **PostgreSQL:** read-only mode ([5d48fe0](https://github.com/Fabio286/antares/commit/5d48fe08c77755ed18b3f7a9ea834268e317e7ef))
+* **SQLite:** cell update in data tabs ([604b371](https://github.com/Fabio286/antares/commit/604b3719204f7473ce4846624f08f8be9eec8b8f))
+* **SQLite:** connection add/edit masks ([c54438d](https://github.com/Fabio286/antares/commit/c54438d6d3bad38bc76dfcd61f58929fe30279cb))
+* **SQLite:** keys support ([fd321be](https://github.com/Fabio286/antares/commit/fd321beece075d3ad23fdd8541f9beb5727045a5))
+* **SQLite:** readonly mode ([3fc227d](https://github.com/Fabio286/antares/commit/3fc227d2de53aae115226ad3c965bfb6e9f3eca6))
+* **SQLite:** table data visualization ([f2fcc98](https://github.com/Fabio286/antares/commit/f2fcc9883972402eab4d51ef2a9796638dde2d3d))
+* **SQLite:** tables management ([3efeb45](https://github.com/Fabio286/antares/commit/3efeb45c460f178b794de72367f8d542fd8ddd56))
+* **SQLite:** triggers management ([f40e9c5](https://github.com/Fabio286/antares/commit/f40e9c592eeffd204aba21a0a0767a0c523fca49))
+* **SQLite:** views management ([7671c58](https://github.com/Fabio286/antares/commit/7671c585f5f8049bd863db190d4fc60d8f0c6c66))
+
+
+### Bug Fixes
+
+* **SQLite:** hide schema creation ([98165ca](https://github.com/Fabio286/antares/commit/98165cacaa158c85ead0490d3caf579e2a17319f))
+* **UI:** hide tools menu if no tools available ([da1947e](https://github.com/Fabio286/antares/commit/da1947e4efa7f0a26d6a231fadf750be055fbdd5))
+* **UI:** notifications timeout anomalies ([cc99491](https://github.com/Fabio286/antares/commit/cc99491fe4a15812368f6c928b8c7801d7b255aa))
+
+
+### Improvements
+
+* **SQLite:** improvements in data visualization ([94c899e](https://github.com/Fabio286/antares/commit/94c899eb8288b41a5962ac3d24365227e1f9f485))
+* **SQLite:** improvements in field length detection ([93b4a70](https://github.com/Fabio286/antares/commit/93b4a7063beeb5a7001cb06a74f05b23105212f5))
+* update italian traslation ([9fe3680](https://github.com/Fabio286/antares/commit/9fe3680bbb17c192cffa85348e68794ab49beb81))
+
 ### [0.3.9](https://github.com/Fabio286/antares/compare/v0.3.8...v0.3.9) (2021-11-14)
 
 
