@@ -62,5 +62,6 @@ module.exports = {
    functionDeterministic: true,
    functionDataAccess: true,
    functionSql: 'BEGIN\r\n\r\nEND',
-   parametersLength: true
+   parametersLength: true,
+   readOnlyMode: true
 };
