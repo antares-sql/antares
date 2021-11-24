@@ -133,8 +133,12 @@ export class MySQLClient extends AntaresCore {
          }
       }
 
-      if (!this._poolSize)
+      if (!this._poolSize) {
          this._connection = await mysql.createConnection(dbConfig);
+
+         if (this._params.readonly)
+            await this.raw('SET SESSION TRANSACTION READ ONLY');
+      }
       else {
          this._connection = mysql.createPool({
             ...dbConfig,
@@ -146,6 +150,12 @@ export class MySQLClient extends AntaresCore {
                   return next();
             }
          });
+
+         if (this._params.readonly) {
+            this._connection.on('connection', connection => {
+               connection.query('SET SESSION TRANSACTION READ ONLY');
+            });
+         }
       }
    }
 
