@@ -3,6 +3,7 @@ import faker from 'faker';
 import moment from 'moment';
 import { sqlEscaper } from 'common/libs/sqlEscaper';
 import { TEXT, LONG_TEXT, ARRAY, TEXT_SEARCH, NUMBER, FLOAT, BLOB, BIT, DATE, DATETIME } from 'common/fieldTypes';
+import * as customizations from 'common/customizations';
 import fs from 'fs';
 
 export default (connections) => {
@@ -85,11 +86,12 @@ export default (connections) => {
 
    ipcMain.handle('update-table-cell', async (event, params) => {
       delete params.row._antares_id;
+      const { stringsWrapper: sw } = customizations[connections[params.uid]._client];
 
       try { // TODO: move to client classes
          let escapedParam;
          let reload = false;
-         const id = typeof params.id === 'number' ? params.id : `"${params.id}"`;
+         const id = typeof params.id === 'number' ? params.id : `${sw}${params.id}${sw}`;
 
          if ([...NUMBER, ...FLOAT].includes(params.type))
             escapedParam = params.content;
