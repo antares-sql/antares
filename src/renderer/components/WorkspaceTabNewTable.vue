@@ -5,7 +5,7 @@
             <div class="workspace-query-buttons">
                <button
                   class="btn btn-primary btn-sm"
-                  :disabled="!isChanged"
+                  :disabled="!isChanged || !isValid"
                   :class="{'loading':isSaving}"
                   title="CTRL+S"
                   @click="saveChanges"
@@ -242,6 +242,9 @@ export default {
             JSON.stringify(this.originalKeyUsage) !== JSON.stringify(this.localKeyUsage) ||
             JSON.stringify(this.originalIndexes) !== JSON.stringify(this.localIndexes) ||
             JSON.stringify(this.tableOptions) !== JSON.stringify(this.localOptions);
+      },
+      isValid () {
+         return !!this.localFields.length && !!this.localOptions.name.trim().length;
       }
    },
    watch: {
@@ -287,7 +290,7 @@ export default {
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
       async saveChanges () {
-         if (this.isSaving) return;
+         if (this.isSaving || !this.isValid) return;
          this.isSaving = true;
 
          const params = {
