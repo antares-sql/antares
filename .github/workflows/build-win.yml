@@ -19,6 +19,12 @@ jobs:
         with:
           node-version: 14
 
+      - name: Install dependencies
+        run: npm i
+          
+      - name: Run tests
+        run: npm run test
+
       - name: Build/release Electron app
         uses: samuelmeuli/action-electron-builder@v1
         with:
