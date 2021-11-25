@@ -7,8 +7,8 @@ module.exports = {
    views: true,
    triggers: true,
    // Settings
-   elementsWrapper: '',
-   stringsWrapper: '"',
+   elementsWrapper: '"',
+   stringsWrapper: '\'',
    tableAdd: true,
    viewAdd: true,
    triggerAdd: true,
