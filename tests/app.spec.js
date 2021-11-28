@@ -2,6 +2,7 @@ const { _electron: electron } = require('playwright');
 const { strict: assert } = require('assert');
 
 (async () => {
+   console.log('Starting tests');
    // Launch Electron app.
    const electronApp = await electron.launch({ args: ['dist/main.js'] });
 
@@ -45,4 +46,5 @@ const { strict: assert } = require('assert');
 
    // Close app
    await electronApp.close();
+   console.log('Tests finished');
 })();
