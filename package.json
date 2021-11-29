@@ -130,7 +130,7 @@
     "@babel/preset-env": "^7.15.8",
     "all-contributors-cli": "^6.20.0",
     "babel-loader": "^8.2.3",
-    "chalk": "^4.1.2",
+    "chalk": "^5.0.0",
     "clean-webpack-plugin": "^4.0.0",
     "cross-env": "^7.0.2",
     "css-loader": "^6.5.0",
