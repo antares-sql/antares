@@ -53,6 +53,7 @@
                            class="mdi sort-icon"
                            :class="currentSortDir === 'asc' ? 'mdi-sort-ascending':'mdi-sort-descending'"
                         />
+                        <i v-else class="mdi sort-icon mdi-minus d-invisible" />
                      </div>
                   </div>
                </div>
@@ -244,6 +245,11 @@ export default {
 
       if (this.$refs.tableWrapper)
          this.scrollElement = this.$refs.tableWrapper;
+
+      document.querySelectorAll('.column-resizable').forEach(element => {
+         if (element.clientWidth !== 0)
+            element.style.width = element.clientWidth + 'px';
+      });
    },
    mounted () {
       window.addEventListener('resize', this.resizeResults);
