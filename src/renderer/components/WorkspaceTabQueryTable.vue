@@ -5,7 +5,7 @@
       tabindex="0"
       :style="{'height': resultsSize+'px'}"
       @keyup.46="showDeleteConfirmModal"
-      @keydown.ctrl.65="selectAllRows"
+      @keydown.ctrl.65="selectAllRows($event)"
       @keydown.esc="deselectRows"
    >
       <TableContext
@@ -450,7 +450,9 @@ export default {
          else
             this.selectedRows = [row];
       },
-      selectAllRows () {
+      selectAllRows (e) {
+         if (e.target.classList.contains('editable-field')) return;
+
          this.selectedRows = this.localResults.reduce((acc, curr) => {
             acc.push(curr._antares_id);
             return acc;
