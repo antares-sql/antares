@@ -1,5 +1,9 @@
 <template>
-   <div class="tr" @click="selectRow($event, row._antares_id)">
+   <div
+      class="tr"
+      :style="{height: itemHeight+'px'}"
+      @click="selectRow($event, row._antares_id)"
+   >
       <div
          v-for="(col, cKey) in row"
          v-show="cKey !== '_antares_id'"
@@ -261,6 +265,7 @@ export default {
       row: Object,
       fields: Object,
       keyUsage: Array,
+      itemHeight: Number,
       elementType: { type: String, default: 'table' }
    },
    data () {

@@ -62,7 +62,7 @@
             v-if="resultsWithRows[resultsetIndex] && resultsWithRows[resultsetIndex].rows"
             ref="resultTable"
             :items="sortedResults"
-            :item-height="23"
+            :item-height="rowHeight"
             class="tbody"
             :visible-height="resultsSize"
             :scroll-element="scrollElement"
@@ -71,6 +71,7 @@
                <WorkspaceTabQueryTableRow
                   v-for="row in items"
                   :key="row._antares_id"
+                  :item-height="rowHeight"
                   :row="row"
                   :fields="fieldsObj"
                   :key-usage="keyUsage"
@@ -142,7 +143,8 @@ export default {
          currentSort: '',
          currentSortDir: 'asc',
          resultsetIndex: 0,
-         scrollElement: null
+         scrollElement: null,
+         rowHeight: 23
       };
    },
    computed: {
