@@ -52,7 +52,7 @@ export default connections => {
          return { status: 'success' };
       }
       catch (err) {
-         return { status: 'error', response: err };
+         return { status: 'error', response: err.toString() };
       }
    });
 
