@@ -440,7 +440,9 @@ export class MySQLClient extends AntaresCore {
             charset: field.CHARACTER_SET_NAME,
             collation: field.COLLATION_NAME,
             autoIncrement: field.EXTRA.includes('auto_increment'),
-            onUpdate: field.EXTRA.toLowerCase().includes('on update') ? field.EXTRA.replace('on update', '') : '',
+            onUpdate: field.EXTRA.toLowerCase().includes('on update')
+               ? field.EXTRA.substr(field.EXTRA.indexOf('on update') + 9, field.EXTRA.length)
+               : '',
             comment: field.COLUMN_COMMENT
          };
       });
