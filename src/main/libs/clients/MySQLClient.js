@@ -441,7 +441,7 @@ export class MySQLClient extends AntaresCore {
             collation: field.COLLATION_NAME,
             autoIncrement: field.EXTRA.includes('auto_increment'),
             onUpdate: field.EXTRA.toLowerCase().includes('on update')
-               ? field.EXTRA.substr(field.EXTRA.indexOf('on update') + 9, field.EXTRA.length)
+               ? field.EXTRA.substr(field.EXTRA.indexOf('on update') + 9, field.EXTRA.length).trim()
                : '',
             comment: field.COLUMN_COMMENT
          };
