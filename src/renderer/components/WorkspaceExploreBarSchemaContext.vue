@@ -78,17 +78,17 @@
          @confirm="deleteSchema"
          @hide="hideDeleteModal"
       >
-         <template slot="header">
+         <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-database-remove mr-1" />
                <span class="cut-text">{{ $t('message.deleteSchema') }}</span>
             </div>
          </template>
-         <div slot="body">
+         <template #body>
             <div class="mb-2">
                {{ $t('message.deleteCorfirm') }} "<b>{{ selectedSchema }}</b>"?
             </div>
-         </div>
+         </template>
       </ConfirmModal>
       <ModalEditSchema
          v-if="isEditModal"

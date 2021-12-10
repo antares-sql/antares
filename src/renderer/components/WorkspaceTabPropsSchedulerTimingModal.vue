@@ -5,13 +5,13 @@
       @confirm="confirmOptionsChange"
       @hide="$emit('hide')"
    >
-      <template :slot="'header'">
+      <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-timer mr-1" />
             <span class="cut-text">{{ $t('word.timing') }} "{{ localOptions.name }}"</span>
          </div>
       </template>
-      <div :slot="'body'">
+      <template #body>
          <form class="form-horizontal">
             <div class="form-group">
                <label class="form-label col-4">
@@ -133,7 +133,7 @@
                </div>
             </div>
          </form>
-      </div>
+      </template>
    </ConfirmModal>
 </template>
 

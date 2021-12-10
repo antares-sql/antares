@@ -22,12 +22,12 @@
          :hide-footer="true"
          @hide="hideInfoModal"
       >
-         <template :slot="'header'">
+         <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-information-outline mr-1" /> {{ $t('message.processInfo') }}
             </div>
          </template>
-         <div :slot="'body'">
+         <template #body>
             <div>
                <div>
                   <TextEditor
@@ -38,7 +38,7 @@
                   />
                </div>
             </div>
-         </div>
+         </template>
       </ConfirmModal>
    </div>
 </template>

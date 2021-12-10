@@ -40,33 +40,33 @@
          @confirm="emptyTable"
          @hide="hideEmptyModal"
       >
-         <template slot="header">
+         <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-table-off mr-1" /> <span class="cut-text">{{ $t('message.emptyTable') }}</span>
             </div>
          </template>
-         <div slot="body">
+         <template #body>
             <div class="mb-2">
                {{ $t('message.emptyCorfirm') }} "<b>{{ selectedTable.name }}</b>"?
             </div>
-         </div>
+         </template>
       </ConfirmModal>
       <ConfirmModal
          v-if="isDeleteModal"
          @confirm="deleteTable"
          @hide="hideDeleteModal"
       >
-         <template slot="header">
+         <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-table-remove mr-1" />
                <span class="cut-text">{{ selectedTable.type === 'table' ? $t('message.deleteTable') : $t('message.deleteView') }}</span>
             </div>
          </template>
-         <div slot="body">
+         <template #body>
             <div class="mb-2">
                {{ $t('message.deleteCorfirm') }} "<b>{{ selectedTable.name }}</b>"?
             </div>
-         </div>
+         </template>
       </ConfirmModal>
    </BaseContextMenu>
 </template>

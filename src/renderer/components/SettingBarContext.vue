@@ -15,16 +15,16 @@
          @confirm="confirmDeleteConnection"
          @hide="hideConfirmModal"
       >
-         <template :slot="'header'">
+         <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-server-remove mr-1" /> {{ $t('message.deleteConnection') }}
             </div>
          </template>
-         <div :slot="'body'">
+         <template #body>
             <div class="mb-2">
                {{ $t('message.deleteCorfirm') }} <b>{{ connectionName }}</b>?
             </div>
-         </div>
+         </template>
       </ConfirmModal>
    </BaseContextMenu>
 </template>

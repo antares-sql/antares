@@ -256,56 +256,59 @@
                   </span>
                </a>
             </li>
-            <li
-               v-if="workspace.customizations.processesList"
-               slot="header"
-               class="tab-item dropdown tools-dropdown"
-            >
-               <a
-                  class="tab-link workspace-tools-link dropdown-toggle"
-                  tabindex="0"
-                  :title="$t('word.tools')"
+            <template #header>
+               <li
+                  v-if="workspace.customizations.processesList"
+                  class="tab-item dropdown tools-dropdown"
                >
-                  <i class="mdi mdi-24px mdi-tools" />
-               </a>
-               <ul v-if="hasTools" class="menu text-left text-uppercase">
-                  <li class="menu-item">
-                     <a class="c-hand p-vcentered" @click="showProcessesModal">
-                        <i class="mdi mdi-memory mr-1 tool-icon" />
-                        <span>{{ $t('message.processesList') }}</span>
-                     </a>
-                  </li>
-                  <li
-                     v-if="workspace.customizations.variables"
-                     class="menu-item"
-                     title="Coming..."
+                  <a
+                     class="tab-link workspace-tools-link dropdown-toggle"
+                     tabindex="0"
+                     :title="$t('word.tools')"
                   >
-                     <a class="c-hand p-vcentered disabled">
-                        <i class="mdi mdi-shape mr-1 tool-icon" />
-                        <span>{{ $t('word.variables') }}</span>
-                     </a>
-                  </li>
-                  <li
-                     v-if="workspace.customizations.usersManagement"
-                     class="menu-item"
-                     title="Coming..."
+                     <i class="mdi mdi-24px mdi-tools" />
+                  </a>
+                  <ul v-if="hasTools" class="menu text-left text-uppercase">
+                     <li class="menu-item">
+                        <a class="c-hand p-vcentered" @click="showProcessesModal">
+                           <i class="mdi mdi-memory mr-1 tool-icon" />
+                           <span>{{ $t('message.processesList') }}</span>
+                        </a>
+                     </li>
+                     <li
+                        v-if="workspace.customizations.variables"
+                        class="menu-item"
+                        title="Coming..."
+                     >
+                        <a class="c-hand p-vcentered disabled">
+                           <i class="mdi mdi-shape mr-1 tool-icon" />
+                           <span>{{ $t('word.variables') }}</span>
+                        </a>
+                     </li>
+                     <li
+                        v-if="workspace.customizations.usersManagement"
+                        class="menu-item"
+                        title="Coming..."
+                     >
+                        <a class="c-hand p-vcentered disabled">
+                           <i class="mdi mdi-account-group mr-1 tool-icon" />
+                           <span>{{ $t('message.manageUsers') }}</span>
+                        </a>
+                     </li>
+                  </ul>
+               </li>
+            </template>
+            <template #footer>
+               <li class="tab-item">
+                  <a
+                     class="tab-add"
+                     :title="$t('message.openNewTab')"
+                     @click="addQueryTab"
                   >
-                     <a class="c-hand p-vcentered disabled">
-                        <i class="mdi mdi-account-group mr-1 tool-icon" />
-                        <span>{{ $t('message.manageUsers') }}</span>
-                     </a>
-                  </li>
-               </ul>
-            </li>
-            <li slot="footer" class="tab-item">
-               <a
-                  class="tab-add"
-                  :title="$t('message.openNewTab')"
-                  @click="addQueryTab"
-               >
-                  <i class="mdi mdi-24px mdi-plus" />
-               </a>
-            </li>
+                     <i class="mdi mdi-24px mdi-plus" />
+                  </a>
+               </li>
+            </template>
          </Draggable>
          <WorkspaceEmptyState v-if="!workspace.tabs.length" @new-tab="addQueryTab" />
          <template v-for="tab of workspace.tabs">
