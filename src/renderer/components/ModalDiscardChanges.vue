@@ -5,16 +5,16 @@
       @confirm="$emit('confirm')"
       @hide="$emit('close')"
    >
-      <template slot="header">
+      <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-content-save-alert mr-1" /> {{ $t('message.unsavedChanges') }}
          </div>
       </template>
-      <div slot="body">
+      <template #body>
          <div>
             {{ $t('message.discardUnsavedChanges') }}
          </div>
-      </div>
+      </template>
    </ConfirmModal>
 </template>
 

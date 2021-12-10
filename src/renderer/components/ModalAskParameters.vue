@@ -6,13 +6,13 @@
       @confirm="runRoutine"
       @hide="closeModal"
    >
-      <template slot="header">
+      <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-play mr-1" />
             <span class="cut-text">{{ $t('word.parameters') }}: {{ localRoutine.name }}</span>
          </div>
       </template>
-      <div slot="body">
+      <template #body>
          <div class="content">
             <form class="form-horizontal">
                <div
@@ -43,7 +43,7 @@
                </div>
             </form>
          </div>
-      </div>
+      </template>
    </ConfirmModal>
 </template>
 

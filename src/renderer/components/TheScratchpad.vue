@@ -6,12 +6,12 @@
       :hide-footer="true"
       @hide="hideScratchpad"
    >
-      <template :slot="'header'">
+      <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-notebook-edit-outline mr-1" /> {{ $t('word.scratchpad') }}
          </div>
       </template>
-      <div :slot="'body'">
+      <template #body>
          <div>
             <div>
                <TextEditor
@@ -24,7 +24,7 @@
             </div>
             <small class="text-gray">{{ $t('message.markdownSupported') }}</small>
          </div>
-      </div>
+      </template>
    </ConfirmModal>
 </template>
 

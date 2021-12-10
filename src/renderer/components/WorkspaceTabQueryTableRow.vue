@@ -76,12 +76,12 @@
          @confirm="editOFF"
          @hide="hideEditorModal"
       >
-         <template :slot="'header'">
+         <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-playlist-edit mr-1" /> <span class="cut-text">{{ $t('word.edit') }} "{{ editingField }}"</span>
             </div>
          </template>
-         <div :slot="'body'">
+         <template #body>
             <div class="mb-2">
                <div>
                   <TextEditor
@@ -132,7 +132,7 @@
                   </div>
                </div>
             </div>
-         </div>
+         </template>
       </ConfirmModal>
       <ConfirmModal
          v-if="isBlobEditor"
@@ -140,13 +140,13 @@
          @confirm="editOFF"
          @hide="hideEditorModal"
       >
-         <template :slot="'header'">
+         <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-playlist-edit mr-1" />
                <span class="cut-text">{{ $t('word.edit') }} "{{ editingField }}"</span>
             </div>
          </template>
-         <div :slot="'body'">
+         <template #body>
             <div class="mb-2">
                <transition name="jump-down">
                   <div v-if="contentInfo.size">
@@ -186,7 +186,7 @@
                   >
                </div>
             </div>
-         </div>
+         </template>
       </ConfirmModal>
    </div>
 </template>

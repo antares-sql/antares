@@ -42,17 +42,17 @@
          @confirm="deleteMisc"
          @hide="hideDeleteModal"
       >
-         <template slot="header">
+         <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-delete mr-1" />
                <span class="cut-text">{{ deleteMessage }}</span>
             </div>
          </template>
-         <div slot="body">
+         <template #body>
             <div class="mb-2">
                {{ $t('message.deleteCorfirm') }} "<b>{{ selectedMisc.name }}</b>"?
             </div>
-         </div>
+         </template>
       </ConfirmModal>
       <ModalAskParameters
          v-if="isAskingParameters"

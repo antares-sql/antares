@@ -6,13 +6,13 @@
       @confirm="confirmParametersChange"
       @hide="$emit('hide')"
    >
-      <template :slot="'header'">
+      <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-dots-horizontal mr-1" />
             <span class="cut-text">{{ $t('word.parameters') }} "{{ routine }}"</span>
          </div>
       </template>
-      <div :slot="'body'">
+      <template #body>
          <div class="columns col-gapless">
             <div class="column col-5">
                <div class="panel" :style="{ height: modalInnerHeight + 'px'}">
@@ -167,7 +167,7 @@
                </div>
             </div>
          </div>
-      </div>
+      </template>
    </ConfirmModal>
 </template>
 
