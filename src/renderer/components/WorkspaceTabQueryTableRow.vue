@@ -100,23 +100,12 @@
                         v-model="editorMode"
                         class="form-select select-sm"
                      >
-                        <option value="text">
-                           TEXT
-                        </option>
-                        <option value="html">
-                           HTML
-                        </option>
-                        <option value="xml">
-                           XML
-                        </option>
-                        <option value="json">
-                           JSON
-                        </option>
-                        <option value="svg">
-                           SVG
-                        </option>
-                        <option value="yaml">
-                           YAML
+                        <option
+                           v-for="language in availableLanguages"
+                           :key="language.slug"
+                           :value="language.slug"
+                        >
+                           {{ language.name }}
                         </option>
                      </select>
                   </div>
@@ -193,6 +182,7 @@
 
 <script>
 import moment from 'moment';
+import { ModelOperations } from '@vscode/vscode-languagedetection';
 import { mimeFromHex } from 'common/libs/mimeFromHex';
 import { formatBytes } from 'common/libs/formatBytes';
 import { bufferToBase64 } from 'common/libs/bufferToBase64';
@@ -285,7 +275,17 @@ export default {
             mime: '',
             size: null
          },
-         fileToUpload: null
+         fileToUpload: null,
+         availableLanguages: [
+            { name: 'TEXT', slug: 'text', id: 'text' },
+            { name: 'HTML', slug: 'html', id: 'html' },
+            { name: 'XML', slug: 'xml', id: 'xml' },
+            { name: 'JSON', slug: 'json', id: 'json' },
+            { name: 'SVG', slug: 'svg', id: 'svg' },
+            { name: 'INI', slug: 'ini', id: 'ini' },
+            { name: 'MARKDOWN', slug: 'markdown', id: 'md' },
+            { name: 'YAML', slug: 'yaml', id: 'yaml' }
+         ]
       };
    },
    computed: {
@@ -367,6 +367,21 @@ export default {
          Object.keys(this.fields).forEach(field => {
             this.isInlineEditor[field.name] = false;
          });
+      },
+      isTextareaEditor (val) {
+         if (val) {
+            const modelOperations = new ModelOperations();
+            (async () => {
+               const detected = await modelOperations.runModel(this.editingContent);
+               const filteredLanguages = detected.filter(dLang =>
+                  this.availableLanguages.some(aLang => aLang.id === dLang.languageId) &&
+                     dLang.confidence > 0.1
+               );
+
+               if (filteredLanguages.length)
+                  this.editorMode = this.availableLanguages.find(lang => lang.id === filteredLanguages[0].languageId).slug;
+            })();
+         }
       }
    },
    methods: {
