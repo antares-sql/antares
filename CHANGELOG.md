@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.1](https://github.com/Fabio286/antares/compare/v0.4.0...v0.4.1) (2021-12-11)
+
+
+### Features
+
+* language format detection for text fields ([a5fdcc1](https://github.com/Fabio286/antares/commit/a5fdcc1a85aa188ff1b9a15b1a768aced026f360))
+
+
+### Bug Fixes
+
+* cell disappear on edit in one column tables ([aaa5549](https://github.com/Fabio286/antares/commit/aaa5549609664665bd4513632d621cb249b379c1))
+* false positive with Windows Defender ([992a033](https://github.com/Fabio286/antares/commit/992a033cb2bede3d1eb52e19482d810f6692de1e))
+* **MySQL:** wrong datetime fields default in table filler in some cases ([8da0224](https://github.com/Fabio286/antares/commit/8da022487650039b7f34a9c86a7bd9045eba65e2))
+* **MySQL:** wrong value for fields "on update" in some conditions ([359e14a](https://github.com/Fabio286/antares/commit/359e14a9ebd48f86069ba7762fe00a7056f52d47))
+* select all rows with ctrl+a when editing a cell ([35cb7e1](https://github.com/Fabio286/antares/commit/35cb7e1dc48d3a74e9d106cb1a37f454c1b4a4d1))
+* **SQLite:** update rows with a text primary key ([d7f1aa9](https://github.com/Fabio286/antares/commit/d7f1aa97af32a4c51fc7022498bd47e15fa08430))
+
+
+### Improvements
+
+* **UI:** avoid columns size change when editing cells or scrolling results ([813aa32](https://github.com/Fabio286/antares/commit/813aa320d9ab799efea38a7110b7c0bdf7549123))
+* **UI:** disable save button in table creation when no fields are added ([e8af2d2](https://github.com/Fabio286/antares/commit/e8af2d24a869f7667c069936648808952d2062ab))
+
 ## [0.4.0](https://github.com/Fabio286/antares/compare/v0.3.9...v0.4.0) (2021-11-24)
 
 
