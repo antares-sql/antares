@@ -120,7 +120,11 @@ module.exports = {
       new: 'Mới',
       history: 'Lịch sử',
       select: 'Chọn',
-      passphrase: 'Cụm mật khẩu'
+      passphrase: 'Cụm mật khẩu',
+      filter: 'Bộ lọc',
+      disabled: 'Đã tắt',
+      enable: 'Bật',
+      disable: 'Tắt'
    },
    message: {
       appWelcome: 'Chào bạn đến với Antares SQL Client!',
@@ -244,7 +248,10 @@ module.exports = {
       newTriggerFunction: 'Chức năng kích hoạt mới',
       thereIsNoQueriesYet: 'Không có truy vấn nào',
       searchForQueries: 'Tìm kiếm truy vấn',
-      killProcess: 'Huỷ quá trình'
+      killProcess: 'Huỷ quá trình',
+      closeTab: 'Đóng tab',
+      goToDownloadPage: 'Tới trang tải về',
+      readOnlyMode: 'Chế độ chỉ đọc'
    },
    faker: {
       address: 'Địa chỉ',
