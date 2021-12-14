@@ -424,7 +424,7 @@ export class MySQLClient extends AntaresCore {
          return {
             name: field.COLUMN_NAME,
             key: field.COLUMN_KEY.toLowerCase(),
-            type: remappedFields ? remappedFields[field.COLUMN_NAME].type : field.DATA_TYPE,
+            type: (remappedFields && remappedFields[field.COLUMN_NAME]) ? remappedFields[field.COLUMN_NAME].type : field.DATA_TYPE,
             schema: field.TABLE_SCHEMA,
             table: field.TABLE_NAME,
             numPrecision: field.NUMERIC_PRECISION,
@@ -436,7 +436,7 @@ export class MySQLClient extends AntaresCore {
             unsigned: field.COLUMN_TYPE.includes('unsigned'),
             zerofill: field.COLUMN_TYPE.includes('zerofill'),
             order: field.ORDINAL_POSITION,
-            default: remappedFields ? remappedFields[field.COLUMN_NAME].default : field.COLUMN_DEFAULT,
+            default: (remappedFields && remappedFields[field.COLUMN_NAME]) ? remappedFields[field.COLUMN_NAME].default : field.COLUMN_DEFAULT,
             charset: field.CHARACTER_SET_NAME,
             collation: field.COLLATION_NAME,
             autoIncrement: field.EXTRA.includes('auto_increment'),
