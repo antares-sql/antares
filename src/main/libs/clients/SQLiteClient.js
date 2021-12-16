@@ -1,7 +1,7 @@
 'use strict';
 import sqlite from 'better-sqlite3';
 import { AntaresCore } from '../AntaresCore';
-import dataTypes from 'common/data-types/mysql';
+import dataTypes from 'common/data-types/sqlite';
 import { NUMBER, FLOAT, TIME, DATETIME } from 'common/fieldTypes';
 
 export class SQLiteClient extends AntaresCore {
@@ -732,7 +732,7 @@ export class SQLiteClient extends AntaresCore {
 
                      if ([...TIME, ...DATETIME].includes(parsedType)) {
                         const firstNotNull = queryResult.find(res => res[field.name] !== null);
-                        if (firstNotNull[field.name].includes('.'))
+                        if (firstNotNull && firstNotNull[field.name].includes('.'))
                            length = firstNotNull[field.name].split('.').pop().length;
                      }
 
