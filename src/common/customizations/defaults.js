@@ -11,6 +11,7 @@ module.exports = {
    sslConnection: false,
    sshConnection: false,
    fileConnection: false,
+   cancelQueries: false,
    // Tools
    processesList: false,
    usersManagement: false,

@@ -4,6 +4,7 @@
       class="workspace-query-tab column col-12 columns col-gapless no-outline p-0"
       tabindex="0"
       @keydown.116="runQuery(query)"
+      @keydown.75="killTabQuery"
       @keydown.ctrl.alt.87="clear"
       @keydown.ctrl.66="beautify"
       @keydown.ctrl.71="openHistoryModal"
@@ -22,16 +23,29 @@
          <div ref="resizer" class="query-area-resizer" />
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
-               <button
-                  class="btn btn-primary btn-sm"
-                  :class="{'loading':isQuering}"
-                  :disabled="!query"
-                  title="F5"
-                  @click="runQuery(query)"
-               >
-                  <i class="mdi mdi-24px mdi-play pr-1" />
-                  <span>{{ $t('word.run') }}</span>
-               </button>
+               <div @mouseenter="setCancelButtonVisibility(true)" @mouseleave="setCancelButtonVisibility(false)">
+                  <button
+                     v-if="showCancel && isQuering"
+                     class="btn btn-primary btn-sm cancellable"
+                     :disabled="!query"
+                     :title="$t('word.cancel')"
+                     @click="killTabQuery()"
+                  >
+                     <i class="mdi mdi-24px mdi-window-close" />
+                     <span class="d-invisible pr-1">{{ $t('word.run') }}</span>
+                  </button>
+                  <button
+                     v-else
+                     class="btn btn-primary btn-sm"
+                     :class="{'loading':isQuering}"
+                     :disabled="!query"
+                     title="F5"
+                     @click="runQuery(query)"
+                  >
+                     <i class="mdi mdi-24px mdi-play pr-1" />
+                     <span>{{ $t('word.run') }}</span>
+                  </button>
+               </div>
                <button
                   class="btn btn-link btn-sm mr-0"
                   :disabled="!query || isQuering"
@@ -110,7 +124,7 @@
             </div>
          </div>
       </div>
-      <WorkspaceTabQueryEmptyState v-if="!results.length && !isQuering" />
+      <WorkspaceTabQueryEmptyState v-if="!results.length && !isQuering" :customizations="workspace.customizations" />
       <div class="workspace-query-results p-relative column col-12">
          <BaseLoader v-if="isQuering" />
          <WorkspaceTabQueryTable
@@ -166,6 +180,8 @@ export default {
          query: '',
          lastQuery: '',
          isQuering: false,
+         isCancelling: false,
+         showCancel: false,
          results: [],
          selectedSchema: null,
          resultsCount: 0,
@@ -248,6 +264,7 @@ export default {
             const params = {
                uid: this.connection.uid,
                schema: this.selectedSchema,
+               tabUid: this.tab.uid,
                query
             };
 
@@ -282,6 +299,29 @@ export default {
 
          this.isQuering = false;
          this.lastQuery = query;
+      },
+      async killTabQuery () {
+         if (this.isCancelling) return;
+
+         this.isCancelling = true;
+
+         try {
+            const params = {
+               uid: this.connection.uid,
+               tabUid: this.tab.uid
+            };
+
+            await Schema.killTabQuery(params);
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         this.isCancelling = false;
+      },
+      setCancelButtonVisibility (val) {
+         if (this.workspace.customizations.cancelQueries)
+            this.showCancel = val;
       },
       reloadTable () {
          this.runQuery(this.lastQuery);

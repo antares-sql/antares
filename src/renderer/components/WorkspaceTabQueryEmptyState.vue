@@ -5,6 +5,9 @@
             <div class="mb-4">
                {{ $t('message.runQuery') }}
             </div>
+            <div v-if="customizations.cancelQueries" class="mb-4">
+               {{ $t('message.killQuery') }}
+            </div>
             <div class="mb-4">
                {{ $t('word.format') }}
             </div>
@@ -24,6 +27,9 @@
          <div class="column col-16">
             <div class="mb-4">
                <code>F5</code>
+            </div>
+            <div v-if="customizations.cancelQueries" class="mb-4">
+               <code>CTRL</code> + <code>K</code>
             </div>
             <div class="mb-4">
                <code>CTRL</code> + <code>B</code>
@@ -47,7 +53,10 @@
 
 <script>
 export default {
-   name: 'WorkspaceTabQueryEmptyState'
+   name: 'WorkspaceTabQueryEmptyState',
+   props: {
+      customizations: Object
+   }
 };
 </script>
 

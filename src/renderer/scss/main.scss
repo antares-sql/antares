@@ -59,6 +59,34 @@ option:checked {
   text-overflow: ellipsis;
 }
 
+.cancellable {
+  color: transparent !important;
+  min-height: 0.8rem;
+  position: relative;
+
+  > .mdi,
+  > .span {
+    visibility: hidden;
+  }
+
+  &::after {
+    content: "\2715";
+    color: $light-color;
+    font-weight: 700;
+    top: 36%;
+    display: block;
+    height: 0.8rem;
+    left: 50%;
+    margin-left: -0.4rem;
+    margin-top: -0.4rem;
+    opacity: 1;
+    padding: 0;
+    position: absolute;
+    width: 0.8rem;
+    z-index: 1;
+  }
+}
+
 .workspace-tabs {
   align-content: baseline;
 

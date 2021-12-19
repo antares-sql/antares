@@ -46,6 +46,10 @@ export default class {
       return ipcRenderer.invoke('kill-process', params);
    }
 
+   static killTabQuery (params) {
+      return ipcRenderer.invoke('kill-tab-query', params);
+   }
+
    static useSchema (params) {
       return ipcRenderer.invoke('use-schema', params);
    }

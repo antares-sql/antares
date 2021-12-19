@@ -9,6 +9,7 @@ export class MySQLClient extends AntaresCore {
       super(args);
 
       this._schema = null;
+      this._runningConnections = new Map();
 
       this.types = {
          0: 'DECIMAL',
@@ -1210,8 +1211,24 @@ export class MySQLClient extends AntaresCore {
       });
    }
 
+   /**
+    *
+    * @param {number} id
+    * @returns {Promise<null>}
+    */
    async killProcess (id) {
       return await this.raw(`KILL ${id}`);
+   }
+
+   /**
+    *
+    * @param {string} tabUid
+    * @returns {Promise<null>}
+    */
+   async killTabQuery (tabUid) {
+      const id = this._runningConnections.get(tabUid);
+      if (id)
+         return await this.killProcess(id);
    }
 
    /**
@@ -1535,6 +1552,9 @@ export class MySQLClient extends AntaresCore {
       const isPool = typeof this._connection.getConnection === 'function';
       const connection = isPool ? await this._connection.getConnection() : this._connection;
 
+      if (args.tabUid && isPool)
+         this._runningConnections.set(args.tabUid, connection.connection.connectionId);
+
       if (args.schema)
          await connection.query(`USE \`${args.schema}\``);
 
@@ -1595,7 +1615,10 @@ export class MySQLClient extends AntaresCore {
                            });
                         }
                         catch (err) {
-                           if (isPool) connection.release();
+                           if (isPool) {
+                              connection.release();
+                              this._runningConnections.delete(args.tabUid);
+                           }
                            reject(err);
                         }
 
@@ -1604,7 +1627,10 @@ export class MySQLClient extends AntaresCore {
                            keysArr = keysArr ? [...keysArr, ...response] : response;
                         }
                         catch (err) {
-                           if (isPool) connection.release();
+                           if (isPool) {
+                              connection.release();
+                              this._runningConnections.delete(args.tabUid);
+                           }
                            reject(err);
                         }
                      }
@@ -1619,7 +1645,10 @@ export class MySQLClient extends AntaresCore {
                   keys: keysArr
                });
             }).catch((err) => {
-               if (isPool) connection.release();
+               if (isPool) {
+                  connection.release();
+                  this._runningConnections.delete(args.tabUid);
+               }
                reject(err);
             });
          });
@@ -1627,7 +1656,10 @@ export class MySQLClient extends AntaresCore {
          resultsArr.push({ rows, report, fields, keys, duration });
       }
 
-      if (isPool) connection.release();
+      if (isPool) {
+         connection.release();
+         this._runningConnections.delete(args.tabUid);
+      }
 
       return resultsArr.length === 1 ? resultsArr[0] : resultsArr;
    }

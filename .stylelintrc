@@ -1,6 +1,7 @@
 {
   "extends": [
-    "stylelint-config-standard"
+    "stylelint-config-standard",
+    "stylelint-config-standard-scss"
   ],
   "fix": true,
   "formatter": "verbose",

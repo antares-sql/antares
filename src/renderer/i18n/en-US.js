@@ -251,7 +251,8 @@ module.exports = {
       killProcess: 'Kill process',
       closeTab: 'Close tab',
       goToDownloadPage: 'Go to download page',
-      readOnlyMode: 'Read-only mode'
+      readOnlyMode: 'Read-only mode',
+      killQuery: 'Kill query'
    },
    faker: {
       address: 'Address',
