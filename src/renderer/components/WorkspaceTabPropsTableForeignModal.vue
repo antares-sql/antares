@@ -289,7 +289,7 @@ export default {
       addForeign () {
          this.foreignProxy = [...this.foreignProxy, {
             _antares_id: uidGen(),
-            constraintName: `FK_${this.foreignProxy.length + 1}`,
+            constraintName: `FK_${uidGen()}`,
             refSchema: this.schema,
             table: this.table,
             refTable: '',
