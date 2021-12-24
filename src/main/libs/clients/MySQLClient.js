@@ -1170,7 +1170,7 @@ export class MySQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async getVersion () {
-      const sql = 'SHOW VARIABLES LIKE "%vers%"';
+      const sql = 'SHOW VARIABLES LIKE \'%vers%\'';
       const { rows } = await this.raw(sql);
 
       return rows.reduce((acc, curr) => {
