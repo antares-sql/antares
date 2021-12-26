@@ -452,9 +452,9 @@ export default {
     top: 0;
     z-index: 2;
 
-    .schema-size{
-       visibility: hidden;
-       width: 22.5px;
+    .schema-size {
+      visibility: hidden;
+      width: 22.5px;
     }
   }
 
@@ -502,8 +502,8 @@ export default {
     &:hover {
       border-radius: $border-radius;
 
-      .schema-size{
-         visibility: visible;
+      .schema-size {
+        visibility: visible;
       }
     }
   }
