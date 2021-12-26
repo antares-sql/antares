@@ -21,6 +21,7 @@ export class PostgreSQLClient extends AntaresCore {
       super(args);
 
       this._schema = null;
+      this._runningConnections = new Map();
 
       this.types = {};
       for (const key in types.builtins)
@@ -1088,8 +1089,24 @@ export class PostgreSQLClient extends AntaresCore {
       });
    }
 
+   /**
+    *
+    * @param {number} id
+    * @returns {Promise<null>}
+    */
    async killProcess (id) {
       return await this.raw(`SELECT pg_terminate_backend(${id})`);
+   }
+
+   /**
+    *
+    * @param {string} tabUid
+    * @returns {Promise<null>}
+    */
+   async killTabQuery (tabUid) {
+      const id = this._runningConnections.get(tabUid);
+      if (id)
+         return await this.raw(`SELECT pg_cancel_backend(${id})`);
    }
 
    /**
@@ -1396,6 +1413,8 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async raw (sql, args) {
+      if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
+
       args = {
          nest: false,
          details: false,
@@ -1403,9 +1422,6 @@ export class PostgreSQLClient extends AntaresCore {
          comments: true,
          ...args
       };
-
-      if (args.schema && args.schema !== 'public')
-         await this.use(args.schema);
 
       if (!args.comments)
          sql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '');// Remove comments
@@ -1418,7 +1434,14 @@ export class PostgreSQLClient extends AntaresCore {
             .map(q => q.trim())
          : [sql];
 
-      if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
+      const isPool = this._connection instanceof Pool;
+      const connection = isPool ? await this._connection.connect() : this._connection;
+
+      if (args.tabUid && isPool)
+         this._runningConnections.set(args.tabUid, connection.processID);
+
+      if (args.schema && args.schema !== 'public')
+         await this.use(args.schema);
 
       for (const query of queries) {
          if (!query) continue;
@@ -1428,15 +1451,12 @@ export class PostgreSQLClient extends AntaresCore {
          let keysArr = [];
 
          const { rows, report, fields, keys, duration } = await new Promise((resolve, reject) => {
-            this._connection.query({
-               rowMode: args.nest ? 'array' : null,
-               text: query
-            }, async (err, res) => {
-               timeStop = new Date();
+            (async () => {
+               try {
+                  const res = await connection.query({ rowMode: args.nest ? 'array' : null, text: query });
 
-               if (err)
-                  reject(err);
-               else {
+                  timeStop = new Date();
+
                   let ast;
 
                   try {
@@ -1525,6 +1545,10 @@ export class PostgreSQLClient extends AntaresCore {
                               });
                            }
                            catch (err) {
+                              if (isPool) {
+                                 connection.release();
+                                 this._runningConnections.delete(args.tabUid);
+                              }
                               reject(err);
                            }
 
@@ -1533,6 +1557,10 @@ export class PostgreSQLClient extends AntaresCore {
                               keysArr = keysArr ? [...keysArr, ...response] : response;
                            }
                            catch (err) {
+                              if (isPool) {
+                                 connection.release();
+                                 this._runningConnections.delete(args.tabUid);
+                              }
                               reject(err);
                            }
                         }
@@ -1547,10 +1575,22 @@ export class PostgreSQLClient extends AntaresCore {
                      keys: keysArr
                   });
                }
-            });
+               catch (err) {
+                  if (isPool) {
+                     connection.release();
+                     this._runningConnections.delete(args.tabUid);
+                  }
+                  reject(err);
+               }
+            })();
          });
 
          resultsArr.push({ rows, report, fields, keys, duration });
+      }
+
+      if (isPool) {
+         connection.release();
+         this._runningConnections.delete(args.tabUid);
       }
 
       return resultsArr.length === 1 ? resultsArr[0] : resultsArr;

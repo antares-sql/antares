@@ -10,6 +10,7 @@ module.exports = {
    database: true,
    sslConnection: true,
    sshConnection: true,
+   cancelQueries: true,
    // Tools
    processesList: true,
    // Structure
