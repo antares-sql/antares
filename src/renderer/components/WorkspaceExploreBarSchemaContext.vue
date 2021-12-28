@@ -66,6 +66,13 @@
          <span class="d-flex"><i class="mdi mdi-18px mdi-database-arrow-down text-light pr-1" /> {{ $t('word.export') }}</span>
       </div>
       <div
+         v-if="workspace.customizations.schemaImport"
+         class="context-element"
+         @click="initImport"
+      >
+         <span class="d-flex"><i class="mdi mdi-18px mdi-database-arrow-up text-light pr-1" /> {{ $t('word.import') }}</span>
+      </div>
+      <div
          v-if="workspace.customizations.schemaEdit"
          class="context-element"
          @click="showEditModal"
@@ -103,6 +110,12 @@
          :selected-schema="selectedSchema"
          @close="hideExportSchemaModal"
       />
+      <ModalImportSchema
+         v-if="isImportSchemaModal"
+         ref="importModalRef"
+         :selected-schema="selectedSchema"
+         @close="hideImportSchemaModal"
+      />
    </BaseContextMenu>
 </template>
 
@@ -112,7 +125,9 @@ import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import ModalEditSchema from '@/components/ModalEditSchema';
 import ModalExportSchema from '@/components/ModalExportSchema';
+import ModalImportSchema from '@/components/ModalImportSchema';
 import Schema from '@/ipc-api/Schema';
+import Application from '@/ipc-api/Application';
 
 export default {
    name: 'WorkspaceExploreBarSchemaContext',
@@ -120,7 +135,8 @@ export default {
       BaseContextMenu,
       ConfirmModal,
       ModalEditSchema,
-      ModalExportSchema
+      ModalExportSchema,
+      ModalImportSchema
    },
    props: {
       contextEvent: MouseEvent,
@@ -130,7 +146,8 @@ export default {
       return {
          isDeleteModal: false,
          isEditModal: false,
-         isExportSchemaModal: false
+         isExportSchemaModal: false,
+         isImportSchemaModal: false
       };
    },
    computed: {
@@ -186,6 +203,22 @@ export default {
       },
       hideExportSchemaModal () {
          this.isExportSchemaModal = false;
+      },
+      showImportSchemaModal () {
+         this.isImportSchemaModal = true;
+      },
+      hideImportSchemaModal () {
+         this.isImportSchemaModal = false;
+      },
+      async initImport () {
+         const result = await Application.showOpenDialog({ properties: ['openFile'], filters: [{ name: 'SQL', extensions: ['sql'] }] });
+         if (result && !result.canceled) {
+            const file = result.filePaths[0];
+            this.showImportSchemaModal();
+            this.$nextTick(() => {
+               this.$refs.importModalRef.startImport(file);
+            });
+         }
       },
       closeContext () {
          this.$emit('close-context');

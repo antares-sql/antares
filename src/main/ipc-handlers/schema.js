@@ -2,10 +2,13 @@ import { ipcMain, dialog, Notification } from 'electron';
 import path from 'path';
 import fs from 'fs';
 
+// @TODO:  need some factories
 import MysqlExporter from '../libs/exporters/sql/MysqlExporter';
+import MysqlImporter from '../libs/importers/sql/MysqlImporter';
 
 export default connections => {
    let exporter = null;
+   let importer = null;
 
    ipcMain.handle('create-schema', async (event, params) => {
       try {
@@ -258,6 +261,80 @@ export default connections => {
          if (result.response === 1) {
             willAbort = true;
             exporter.cancel();
+         }
+      }
+
+      return { status: 'success', response: { willAbort } };
+   });
+
+   ipcMain.handle('import-sql', async (event, options) => {
+      if (importer !== null) return;
+
+      switch (options.type) {
+         case 'mysql':
+         case 'maria':
+            importer = new MysqlImporter(connections[options.uid], options);
+            break;
+         default:
+            return {
+               status: 'error',
+               response: `${type} importer not aviable`
+            };
+      }
+
+      return new Promise((resolve, reject) => {
+         importer.once('error', err => {
+            reject(err);
+         });
+
+         importer.once('end', () => {
+            resolve({ cancelled: importer.isCancelled });
+         });
+
+         importer.on('progress', state => {
+            event.sender.send('import-progress', state);
+         });
+
+         importer.run();
+      })
+         .then(response => {
+            if (!response.cancelled) {
+               new Notification({
+                  title: 'Import finished',
+                  body: `Finished importing ${path.basename(options.file)}`
+               }).show();
+            }
+            return { status: 'success', response };
+         })
+         .catch(err => {
+            new Notification({
+               title: 'Import error',
+               body: err.toString()
+            }).show();
+
+            return { status: 'error', response: err.toString() };
+         })
+         .finally(() => {
+            importer.removeAllListeners();
+            importer = null;
+         });
+   });
+
+   ipcMain.handle('abort-import-sql', async event => {
+      let willAbort = false;
+
+      if (importer) {
+         const result = await dialog.showMessageBox({
+            type: 'warning',
+            message: 'Are you sure you want to abort the import',
+            buttons: ['Cancel', 'Abort'],
+            defaultId: 0,
+            cancelId: 0
+         });
+
+         if (result.response === 1) {
+            willAbort = true;
+            importer.cancel();
          }
       }
 
