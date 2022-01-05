@@ -137,8 +137,16 @@ export class MySQLClient extends AntaresCore {
       if (!this._poolSize) {
          this._connection = await mysql.createConnection(dbConfig);
 
+         // ANSI_QUOTES check
+         const res = await this.getVariable('sql_mode', 'global');
+         const sqlMode = res?.value.split(',');
+         const hasAnsiQuotes = sqlMode.includes('ANSI_QUOTES');
+
          if (this._params.readonly)
             await this.raw('SET SESSION TRANSACTION READ ONLY');
+
+         if (hasAnsiQuotes)
+            await this.raw(`SET SESSION sql_mode = "${sqlMode.filter(m => m !== 'ANSI_QUOTES').join(',')}"`);
       }
       else {
          this._connection = mysql.createPool({
@@ -152,11 +160,21 @@ export class MySQLClient extends AntaresCore {
             }
          });
 
-         if (this._params.readonly) {
-            this._connection.on('connection', connection => {
+         // ANSI_QUOTES check
+         const res = await this.getVariable('sql_mode', 'global');
+         const sqlMode = res?.value.split(',');
+         const hasAnsiQuotes = sqlMode.includes('ANSI_QUOTES');
+
+         if (hasAnsiQuotes)
+            await this._connection.query(`SET SESSION sql_mode = "${sqlMode.filter(m => m !== 'ANSI_QUOTES').join(',')}"`);
+
+         this._connection.on('connection', connection => {
+            if (this._params.readonly)
                connection.query('SET SESSION TRANSACTION READ ONLY');
-            });
-         }
+
+            if (hasAnsiQuotes)
+               connection.query(`SET SESSION sql_mode = "${sqlMode.filter(m => m !== 'ANSI_QUOTES').join(',')}"`);
+         });
       }
    }
 
@@ -1138,6 +1156,26 @@ export class MySQLClient extends AntaresCore {
             value: row.Value
          };
       });
+   }
+
+   /**
+    * SHOW VARIABLES LIKE %variable%
+    *
+    * @param {String} variable
+    * @param {'global'|'session'|null} level
+    * @returns {Object} variable
+    * @memberof MySQLClient
+    */
+   async getVariable (variable, level) {
+      const sql = `SHOW${level ? ' ' + level.toUpperCase() : ''} VARIABLES LIKE '%${variable}%'`;
+      const results = await this.raw(sql);
+
+      if (results.rows.length) {
+         return {
+            name: results.rows[0].Variable_name,
+            value: results.rows[0].Value
+         };
+      }
    }
 
    /**
