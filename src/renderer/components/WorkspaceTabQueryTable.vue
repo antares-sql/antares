@@ -410,7 +410,9 @@ export default {
             `${this.fields[0].table}.${this.selectedCell.field}`,
             `${this.fields[0].tableAlias}.${this.selectedCell.field}`
          ].includes(prop));
-         const valueToCopy = row[cellName];
+         let valueToCopy = row[cellName];
+         if (typeof valueToCopy === 'object')
+            valueToCopy = JSON.stringify(valueToCopy);
          navigator.clipboard.writeText(valueToCopy);
       },
       copyRow () {

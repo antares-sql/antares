@@ -8,7 +8,9 @@ export const TEXT = [
 export const LONG_TEXT = [
    'TEXT',
    'MEDIUMTEXT',
-   'LONGTEXT'
+   'LONGTEXT',
+   'JSON',
+   'VARBINARY'
 ];
 
 export const ARRAY = [
@@ -81,4 +83,8 @@ export const BLOB = [
 export const BIT = [
    'BIT',
    'BIT VARYING'
+];
+
+export const SPATIAL = [
+   'POINT'
 ];

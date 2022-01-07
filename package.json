@@ -105,6 +105,8 @@
   "dependencies": {
     "@electron/remote": "^2.0.1",
     "@mdi/font": "^6.1.95",
+    "@turf/centroid": "^6.5.0",
+    "@turf/helpers": "^6.5.0",
     "@vscode/vscode-languagedetection": "^1.0.21",
     "ace-builds": "^1.4.13",
     "better-sqlite3": "^7.4.4",
@@ -113,6 +115,7 @@
     "electron-updater": "^4.3.9",
     "electron-window-state": "^5.0.3",
     "faker": "^5.5.3",
+    "leaflet": "^1.7.1",
     "marked": "^4.0.0",
     "moment": "^2.29.1",
     "mysql2": "^2.3.2",
