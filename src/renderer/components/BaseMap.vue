@@ -3,8 +3,8 @@
 </template>
 <script>
 import L from 'leaflet';
-import { point } from '@turf/helpers';
-import centroid from '@turf/centroid';
+import { point, lineString, polygon } from '@turf/helpers';
+import { getArrayDepth } from 'common/libs/getArrayDepth';
 
 export default {
    name: 'BaseMap',
@@ -13,33 +13,57 @@ export default {
    },
    data () {
       return {
-         map: null
+         map: null,
+         markers: null,
+         center: null
       };
    },
    mounted () {
-      const marker = point([this.points.x, this.points.y]);
-      const mapCenter = centroid(marker).geometry.coordinates.reverse();
+      if (Array.isArray(this.points)) {
+         if (getArrayDepth(this.points) === 1)
+            this.markers = lineString(this.points.reduce((acc, curr) => [...acc, [curr.x, curr.y]], []));
+         else
+            this.markers = polygon(this.points.map(arr => arr.reduce((acc, curr) => [...acc, [curr.x, curr.y]], [])));
+      }
+      else {
+         this.center = [this.points.y, this.points.x];
+         this.markers = point([this.points.x, this.points.y]);
+      }
 
       this.map = L.map('map', {
-         center: mapCenter,
+         center: this.center || [0, 0],
          zoom: 15,
          minZoom: 1
       });
 
-      const geojsonMarkerOptions = {
-         radius: 8,
-         fillColor: '#ff7800',
-         color: '#000',
-         weight: 1,
-         opacity: 0.6,
-         fillOpacity: 0.8
-      };
-
-      L.geoJSON(marker, {
+      const geoJsonObj = L.geoJSON(this.markers, {
+         style: function () {
+            return {
+               weight: 2,
+               fillColor: '#ff7800',
+               color: '#ff7800',
+               opacity: 0.8,
+               fillOpacity: 0.4
+            };
+         },
          pointToLayer: function (feature, latlng) {
-            return L.circleMarker(latlng, geojsonMarkerOptions);
+            return L.circleMarker(latlng, {
+               radius: 7,
+               weight: 2,
+               fillColor: '#ff7800',
+               color: '#ff7800',
+               opacity: 0.8,
+               fillOpacity: 0.4
+            });
          }
       }).addTo(this.map);
+
+      const southWest = L.latLng(-90, -180);
+      const northEast = L.latLng(90, 180);
+      const bounds = L.latLngBounds(southWest, northEast);
+      this.map.setMaxBounds(bounds);
+
+      if (!this.center) this.map.fitBounds(geoJsonObj.getBounds());
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

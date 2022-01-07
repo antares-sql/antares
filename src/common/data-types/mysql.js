@@ -218,56 +218,56 @@ module.exports = [
       types: [
          {
             name: 'POINT',
-            length: true,
+            length: false,
             collation: false,
             unsigned: false,
             zerofill: false
          },
          {
             name: 'LINESTRING',
-            length: true,
+            length: false,
             collation: false,
             unsigned: false,
             zerofill: false
          },
          {
             name: 'POLYGON',
-            length: true,
+            length: false,
             collation: false,
             unsigned: false,
             zerofill: false
          },
          {
             name: 'GEOMETRY',
-            length: true,
+            length: false,
             collation: false,
             unsigned: false,
             zerofill: false
          },
          {
             name: 'MULTIPOINT',
-            length: true,
+            length: false,
             collation: false,
             unsigned: false,
             zerofill: false
          },
          {
             name: 'MULTILINESTRING',
-            length: true,
+            length: false,
             collation: false,
             unsigned: false,
             zerofill: false
          },
          {
             name: 'MULTIPOLYGON',
-            length: true,
+            length: false,
             collation: false,
             unsigned: false,
             zerofill: false
          },
          {
             name: 'GEOMETRYCOLLECTION',
-            length: true,
+            length: false,
             collation: false,
             unsigned: false,
             zerofill: false

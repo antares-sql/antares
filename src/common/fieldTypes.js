@@ -86,5 +86,8 @@ export const BIT = [
 ];
 
 export const SPATIAL = [
-   'POINT'
+   'POINT',
+   'LINESTRING',
+   'POLYGON',
+   'GEOMETRY'
 ];
