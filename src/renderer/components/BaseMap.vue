@@ -33,8 +33,11 @@ export default {
       this.map = L.map('map', {
          center: this.center || [0, 0],
          zoom: 15,
-         minZoom: 1
+         minZoom: 1,
+         attributionControl: false
       });
+
+      L.control.attribution({ prefix: '<b>Leaflet</b>' }).addTo(this.map);
 
       const geoJsonObj = L.geoJSON(this.markers, {
          style: function () {
@@ -66,7 +69,7 @@ export default {
       if (!this.center) this.map.fitBounds(geoJsonObj.getBounds());
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+         attribution: '&copy; <b>OpenStreetMap</b>'
       }).addTo(this.map);
    },
    methods: {
