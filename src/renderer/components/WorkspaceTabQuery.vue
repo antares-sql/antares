@@ -218,8 +218,13 @@ export default {
    },
    watch: {
       isSelected (val) {
-         if (val)
+         if (val) {
             this.changeBreadcrumbs({ schema: this.selectedSchema, query: `Query #${this.tab.index}` });
+            setTimeout(() => {
+               if (this.$refs.queryEditor)
+                  this.$refs.queryEditor.editor.focus();
+            }, 0);
+         }
       },
       selectedSchema () {
          this.changeBreadcrumbs({ schema: this.selectedSchema, query: `Query #${this.tab.index}` });

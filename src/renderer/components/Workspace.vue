@@ -18,7 +18,6 @@
             <li
                v-for="(tab, i) of draggableTabs"
                :key="i"
-               :ref="selectedTab === tab.uid ? 'tab-selected' : ''"
                class="tab-item tab-draggable"
                draggable="true"
                :class="{'active': selectedTab === tab.uid}"
@@ -568,7 +567,7 @@ export default {
          return this.workspace ? this.workspace.selectedTab : null;
       },
       queryTabs () {
-         return this.workspace.tabs.filter(tab => tab.type === 'query');
+         return this.workspace ? this.workspace.tabs.filter(tab => tab.type === 'query') : [];
       },
       schemaChild () {
          for (const key in this.workspace.breadcrumbs) {
@@ -584,16 +583,12 @@ export default {
       }
    },
    watch: {
-      selectedTab (newVal, oldVal) {
-         if (newVal !== oldVal) {
+      queryTabs: function (newVal, oldVal) {
+         if (newVal.length > oldVal.length) {
             setTimeout(() => {
-               const element = this.$refs['tab-selected'] ? this.$refs['tab-selected'][0] : null;
-               if (element) {
-                  element.setAttribute('tabindex', '-1');
-                  element.focus();
-                  element.removeAttribute('tabindex');
-               }
-            }, 50);
+               const scroller = this.$refs.tabWrap;
+               if (scroller) scroller.$el.scrollLeft = scroller.$el.scrollWidth;
+            }, 0);
          }
       }
    },
