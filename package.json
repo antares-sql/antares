@@ -112,7 +112,7 @@
     "electron-store": "^8.0.1",
     "electron-updater": "^4.3.9",
     "electron-window-state": "^5.0.3",
-    "faker": "^5.5.3",
+    "faker": "^6.6.6",
     "marked": "^4.0.0",
     "moment": "^2.29.1",
     "mysql2": "^2.3.2",
