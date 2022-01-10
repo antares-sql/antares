@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.2](https://github.com/Fabio286/antares/compare/v0.4.1...v0.4.2) (2022-01-10)
+
+
+### Features
+
+* **MySQL:** ability to cancel queries ([a59f77f](https://github.com/Fabio286/antares/commit/a59f77f618aea6156fc80fb832d3efcb9848411f))
+* **PostgreSQL:** ability to cancel queries ([0c00291](https://github.com/Fabio286/antares/commit/0c002918eb0226f6b3f21ed62117495f86396fb1))
+* save window state ([8f9385d](https://github.com/Fabio286/antares/commit/8f9385d50815635d091758ecd5d00884e3297ca0))
+* **UI:** textarea autofocus selecting a query tab, closes [#166](https://github.com/Fabio286/antares/issues/166) ([b4545b1](https://github.com/Fabio286/antares/commit/b4545b178f795712c781a3f4fc35eec31b5ad902))
+
+
+### Bug Fixes
+
+* **SQLite:** exception with some fields ([e7a1858](https://github.com/Fabio286/antares/commit/e7a18580915e7739bfa97948c6a0c4fc90a7e78a))
+
+
+### Improvements
+
+* hash for foreign key default names ([48c3e6a](https://github.com/Fabio286/antares/commit/48c3e6afc43c51f70a16703f1a71194f43da7a3e))
+* **MySQL:** support to ANSI_QUOTES sql_mode, closes [#158](https://github.com/Fabio286/antares/issues/158) ([d9a3eab](https://github.com/Fabio286/antares/commit/d9a3eab015302e9f23112f659658073ab3242191))
+
 ### [0.4.1](https://github.com/Fabio286/antares/compare/v0.4.0...v0.4.1) (2021-12-11)
 
 
