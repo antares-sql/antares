@@ -403,10 +403,11 @@ export default {
          };
          this.$emit('update-field', params);
       },
-      copyCell () {
+      copyCell (event) {
          const row = this.localResults.find(row => this.selectedRows.includes(row._antares_id));
          const cellName = Object.keys(row).find(prop => [
             this.selectedCell.field,
+            this.selectedCell.orgField,
             `${this.fields[0].table}.${this.selectedCell.field}`,
             `${this.fields[0].tableAlias}.${this.selectedCell.field}`
          ].includes(prop));

@@ -10,7 +10,7 @@
          :key="cKey"
          class="td p-0"
          tabindex="0"
-         @contextmenu.prevent="openContext($event, { id: row._antares_id, field: cKey })"
+         @contextmenu.prevent="openContext($event, { id: row._antares_id, orgField: cKey })"
       >
          <template v-if="cKey !== '_antares_id'">
             <span
@@ -526,7 +526,7 @@ export default {
          return this.keyUsage.find(key => key.field === keyName);
       },
       openContext (event, payload) {
-         payload.field = this.fields[payload.field].name;// Ensures field name only
+         payload.field = this.fields[payload.orgField].name;// Ensures field name only
          payload.isEditable = this.isEditable;
          this.$emit('contextmenu', event, payload);
       },
