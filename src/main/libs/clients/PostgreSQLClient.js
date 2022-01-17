@@ -131,15 +131,23 @@ export class PostgreSQLClient extends AntaresCore {
    }
 
    /**
-    * Executes an "USE" query
+    * Executes an 'SET search_path TO "${schema}"' query
     *
     * @param {String} schema
+    * @param {Object?} connection optional
     * @memberof PostgreSQLClient
     */
-   use (schema) {
+   use (schema, connection) {
       this._schema = schema;
-      if (schema)
-         return this.raw(`SET search_path TO "${schema}"`);
+
+      if (schema) {
+         const sql = `SET search_path TO "${schema}"`;
+
+         if (connection === undefined)
+            return this.raw(sql);
+         else
+            return connection.query(sql);
+      }
    }
 
    /**
@@ -1441,7 +1449,7 @@ export class PostgreSQLClient extends AntaresCore {
          this._runningConnections.set(args.tabUid, connection.processID);
 
       if (args.schema && args.schema !== 'public')
-         await this.use(args.schema);
+         await this.use(args.schema, connection);
 
       for (const query of queries) {
          if (!query) continue;
