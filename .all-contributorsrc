@@ -129,6 +129,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "goYou",
+      "name": "goYou",
+      "avatar_url": "https://avatars.githubusercontent.com/u/62732795?v=4",
+      "profile": "https://github.com/goYou",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "contributorsPerLine": 7,
