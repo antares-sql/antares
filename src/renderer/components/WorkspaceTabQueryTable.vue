@@ -280,6 +280,7 @@ export default {
       fieldLength (field) {
          if ([...BLOB, ...LONG_TEXT].includes(field.type)) return null;
          else if (TEXT.includes(field.type)) return field.charLength;
+         else if (field.numScale) return `${field.numPrecision}, ${field.numScale}`;
          return field.length;
       },
       keyName (key) {

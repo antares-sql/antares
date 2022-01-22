@@ -99,6 +99,9 @@
                <span v-if="localRow.enumValues">
                   {{ localRow.enumValues }}
                </span>
+               <span v-else-if="localRow.numScale">
+                  {{ localLength }}, {{ localRow.numScale }}
+               </span>
                <span v-else>
                   {{ localLength }}
                </span>
@@ -110,6 +113,16 @@
                type="text"
                autofocus
                class="editable-field form-input input-sm px-1"
+               @blur="editOFF"
+            >
+            <input
+               v-else-if="fieldType.scale"
+               ref="editField"
+               v-model="editingContent"
+               type="text"
+               autofocus
+               class="editable-field form-input input-sm px-1"
+               @keypress="checkLengthScale"
                @blur="editOFF"
             >
             <input
@@ -480,6 +493,10 @@ export default {
             this.editingContent = this.localRow.enumValues;
             this.originalContent = this.localRow.enumValues;
          }
+         else if (this.localRow.numScale !== null && field === 'length') {
+            this.editingContent = `${content}, ${this.localRow.numScale}`;
+            this.originalContent = `${content}, ${this.localRow.numScale}`;
+         }
          else {
             this.editingContent = content;
             this.originalContent = content;
@@ -502,10 +519,17 @@ export default {
          if (this.editingField === 'name')
             this.$emit('rename-field', { old: this.localRow[this.editingField], new: this.editingContent });
 
-         this.localRow[this.editingField] = this.editingContent;
+         if (this.editingField === 'numLength' && this.localRow.numScale !== null && this.editingContent.includes(',')) {
+            const [length, scale] = this.editingContent.split(',');
+            this.localRow.numLength = +length;
+            this.localRow.numScale = +scale;
+         }
+         else
+            this.localRow[this.editingField] = this.editingContent;
 
          if (this.editingField === 'type' && this.editingContent !== this.originalContent) {
             this.localRow.numLength = null;
+            this.localRow.numScale = null;
             this.localRow.charLength = null;
             this.localRow.datePrecision = null;
             this.localRow.enumValues = '';
@@ -559,6 +583,15 @@ export default {
          this.editingContent = null;
          this.originalContent = null;
          this.editingField = null;
+      },
+      checkLengthScale (e) {
+         e = (e) || window.event;
+         const charCode = (e.which) ? e.which : e.keyCode;
+
+         if (((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 44) || (charCode === 44 && e.target.value.includes(',')))
+            e.preventDefault();
+         else
+            return true;
       },
       hideDefaultModal () {
          this.isDefaultModal = false;

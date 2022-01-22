@@ -23,11 +23,6 @@ module.exports = [
             unsigned: true
          },
          {
-            name: 'NUMERIC',
-            length: true,
-            unsigned: true
-         },
-         {
             name: 'SMALLSERIAL',
             length: false,
             unsigned: true
@@ -51,6 +46,12 @@ module.exports = [
             name: 'REAL',
             length: false,
             unsigned: true
+         },
+         {
+            name: 'NUMERIC',
+            length: true,
+            unsigned: true,
+            scale: true
          },
          {
             name: 'DOUBLE PRECISION',

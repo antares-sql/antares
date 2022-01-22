@@ -66,6 +66,7 @@ module.exports = [
          {
             name: 'DECIMAL',
             length: true,
+            scale: true,
             collation: false,
             unsigned: false,
             zerofill: false

@@ -435,7 +435,7 @@ export class MySQLClient extends AntaresCore {
 
       return rows.map(field => {
          let numLength = field.COLUMN_TYPE.match(/int\(([^)]+)\)/);
-         numLength = numLength ? +numLength.pop() : null;
+         numLength = numLength ? +numLength.pop() : field.NUMERIC_PRECISION || null;
          const enumValues = /(enum|set)/.test(field.COLUMN_TYPE)
             ? field.COLUMN_TYPE.match(/\(([^)]+)\)/)[0].slice(1, -1)
             : null;
@@ -443,10 +443,13 @@ export class MySQLClient extends AntaresCore {
          return {
             name: field.COLUMN_NAME,
             key: field.COLUMN_KEY.toLowerCase(),
-            type: (remappedFields && remappedFields[field.COLUMN_NAME]) ? remappedFields[field.COLUMN_NAME].type : field.DATA_TYPE,
+            type: (remappedFields && remappedFields[field.COLUMN_NAME])
+               ? remappedFields[field.COLUMN_NAME].type
+               : field.DATA_TYPE.toUpperCase(),
             schema: field.TABLE_SCHEMA,
             table: field.TABLE_NAME,
             numPrecision: field.NUMERIC_PRECISION,
+            numScale: field.NUMERIC_SCALE,
             numLength,
             enumValues,
             datePrecision: field.DATETIME_PRECISION,
@@ -1295,7 +1298,7 @@ export class MySQLClient extends AntaresCore {
          const length = typeInfo.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
 
          newColumns.push(`\`${field.name}\` 
-            ${field.type.toUpperCase()}${length ? `(${length})` : ''} 
+            ${field.type.toUpperCase()}${length ? `(${length}${field.numScale !== null ? `,${field.numScale}` : ''})` : ''} 
             ${field.unsigned ? 'UNSIGNED' : ''} 
             ${field.zerofill ? 'ZEROFILL' : ''}
             ${field.nullable ? 'NULL' : 'NOT NULL'}
@@ -1364,7 +1367,7 @@ export class MySQLClient extends AntaresCore {
          const length = typeInfo.length ? addition.enumValues || addition.numLength || addition.charLength || addition.datePrecision : false;
 
          alterColumns.push(`ADD COLUMN \`${addition.name}\` 
-            ${addition.type.toUpperCase()}${length ? `(${length})` : ''} 
+            ${addition.type.toUpperCase()}${length ? `(${length}${addition.numScale !== null ? `,${addition.numScale}` : ''})` : ''} 
             ${addition.unsigned ? 'UNSIGNED' : ''} 
             ${addition.zerofill ? 'ZEROFILL' : ''}
             ${addition.nullable ? 'NULL' : 'NOT NULL'}
@@ -1402,7 +1405,7 @@ export class MySQLClient extends AntaresCore {
          const length = typeInfo.length ? change.enumValues || change.numLength || change.charLength || change.datePrecision : false;
 
          alterColumns.push(`CHANGE COLUMN \`${change.orgName}\` \`${change.name}\` 
-            ${change.type.toUpperCase()}${length ? `(${length})` : ''} 
+            ${change.type.toUpperCase()}${length ? `(${length}${change.numScale !== null ? `,${change.numScale}` : ''})` : ''} 
             ${change.unsigned ? 'UNSIGNED' : ''} 
             ${change.zerofill ? 'ZEROFILL' : ''}
             ${change.nullable ? 'NULL' : 'NOT NULL'}
