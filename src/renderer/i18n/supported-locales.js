@@ -7,5 +7,6 @@ export default {
    'pt-BR': 'Português (Brasil)',
    'de-DE': 'Deutsch (Deutschland)',
    'vi-VN': 'Tiếng Việt',
-   'ja-JP': '日本語'
+   'ja-JP': '日本語',
+   'zh-CN': '简体中文'
 };

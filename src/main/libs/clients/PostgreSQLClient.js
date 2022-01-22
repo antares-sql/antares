@@ -131,15 +131,23 @@ export class PostgreSQLClient extends AntaresCore {
    }
 
    /**
-    * Executes an "USE" query
+    * Executes an 'SET search_path TO "${schema}"' query
     *
     * @param {String} schema
+    * @param {Object?} connection optional
     * @memberof PostgreSQLClient
     */
-   use (schema) {
+   use (schema, connection) {
       this._schema = schema;
-      if (schema)
-         return this.raw(`SET search_path TO "${schema}"`);
+
+      if (schema) {
+         const sql = `SET search_path TO "${schema}"`;
+
+         if (connection === undefined)
+            return this.raw(sql);
+         else
+            return connection.query(sql);
+      }
    }
 
    /**
@@ -318,6 +326,7 @@ export class PostgreSQLClient extends AntaresCore {
             isArray,
             schema: field.table_schema,
             table: field.table_name,
+            numScale: field.numeric_scale,
             numPrecision: field.numeric_precision,
             datePrecision: field.datetime_precision,
             charLength: field.character_maximum_length,
@@ -1136,7 +1145,7 @@ export class PostgreSQLClient extends AntaresCore {
          const length = typeInfo.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
 
          newColumns.push(`"${field.name}" 
-            ${field.type.toUpperCase()}${length ? `(${length})` : ''} 
+            ${field.type.toUpperCase()}${length ? `(${length}${field.numScale !== null ? `,${field.numScale}` : ''})` : ''} 
             ${field.unsigned ? 'UNSIGNED' : ''} 
             ${field.zerofill ? 'ZEROFILL' : ''}
             ${field.nullable ? 'NULL' : 'NOT NULL'}
@@ -1200,7 +1209,7 @@ export class PostgreSQLClient extends AntaresCore {
          const length = typeInfo.length ? addition.numLength || addition.charLength || addition.datePrecision : false;
 
          alterColumns.push(`ADD COLUMN "${addition.name}" 
-            ${addition.type.toUpperCase()}${length ? `(${length})` : ''}${addition.isArray ? '[]' : ''}
+            ${addition.type.toUpperCase()}${length ? `(${length}${addition.numScale !== null ? `,${addition.numScale}` : ''})` : ''}${addition.isArray ? '[]' : ''} 
             ${addition.unsigned ? 'UNSIGNED' : ''} 
             ${addition.zerofill ? 'ZEROFILL' : ''}
             ${addition.nullable ? 'NULL' : 'NOT NULL'}
@@ -1246,7 +1255,7 @@ export class PostgreSQLClient extends AntaresCore {
                localType = change.type.toLowerCase();
          }
 
-         alterColumns.push(`ALTER COLUMN "${change.name}" TYPE ${localType}${length ? `(${length})` : ''}${change.isArray ? '[]' : ''} USING "${change.name}"::${localType}`);
+         alterColumns.push(`ALTER COLUMN "${change.name}" TYPE ${localType}${length ? `(${length}${change.numScale !== null ? `,${change.numScale}` : ''})` : ''}${change.isArray ? '[]' : ''} USING "${change.name}"::${localType}`);
          alterColumns.push(`ALTER COLUMN "${change.name}" ${change.nullable ? 'DROP NOT NULL' : 'SET NOT NULL'}`);
          alterColumns.push(`ALTER COLUMN "${change.name}" ${change.default ? `SET DEFAULT ${change.default}` : 'DROP DEFAULT'}`);
 
@@ -1441,7 +1450,7 @@ export class PostgreSQLClient extends AntaresCore {
          this._runningConnections.set(args.tabUid, connection.processID);
 
       if (args.schema && args.schema !== 'public')
-         await this.use(args.schema);
+         await this.use(args.schema, connection);
 
       for (const query of queries) {
          if (!query) continue;

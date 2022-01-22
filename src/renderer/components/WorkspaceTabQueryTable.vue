@@ -280,6 +280,7 @@ export default {
       fieldLength (field) {
          if ([...BLOB, ...LONG_TEXT].includes(field.type)) return null;
          else if (TEXT.includes(field.type)) return field.charLength;
+         else if (field.numScale) return `${field.numPrecision}, ${field.numScale}`;
          return field.length;
       },
       keyName (key) {
@@ -407,6 +408,7 @@ export default {
          const row = this.localResults.find(row => this.selectedRows.includes(row._antares_id));
          const cellName = Object.keys(row).find(prop => [
             this.selectedCell.field,
+            this.selectedCell.orgField,
             `${this.fields[0].table}.${this.selectedCell.field}`,
             `${this.fields[0].tableAlias}.${this.selectedCell.field}`
          ].includes(prop));
