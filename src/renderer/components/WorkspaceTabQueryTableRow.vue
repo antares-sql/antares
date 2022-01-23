@@ -135,7 +135,7 @@
             </div>
          </template>
          <template #body>
-            <BaseMap :points="editingContent" />
+            <BaseMap :points="editingContent" :is-multi-spatial="isMultiSpatial" />
          </template>
       </ConfirmModal>
       <ConfirmModal
@@ -216,7 +216,8 @@ import {
    BLOB,
    BIT,
    HAS_TIMEZONE,
-   SPATIAL
+   SPATIAL,
+   IS_MULTI_SPATIAL
 } from 'common/fieldTypes';
 import { VueMaskDirective } from 'v-mask';
 import ConfirmModal from '@/components/BaseConfirmModal';
@@ -299,6 +300,7 @@ export default {
          isTextareaEditor: false,
          isBlobEditor: false,
          isMapModal: false,
+         isMultiSpatial: false,
          willBeDeleted: false,
          originalContent: null,
          editingContent: null,
@@ -459,8 +461,11 @@ export default {
          }
 
          if (SPATIAL.includes(type)) {
-            this.isMapModal = true;
-            this.editingContent = this.$options.filters.typeFormat(content, type);
+            if (content) {
+               this.isMultiSpatial = IS_MULTI_SPATIAL.includes(type);
+               this.isMapModal = true;
+               this.editingContent = this.$options.filters.typeFormat(content, type);
+            }
             return;
          }
 
@@ -536,6 +541,7 @@ export default {
          this.isTextareaEditor = false;
          this.isBlobEditor = false;
          this.isMapModal = false;
+         this.isMultiSpatial = false;
       },
       downloadFile () {
          const downloadLink = document.createElement('a');

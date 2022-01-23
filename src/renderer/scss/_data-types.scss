@@ -85,6 +85,11 @@
     "linestring": $array-color,
     "polygon": $array-color,
     "geometry": $array-color,
+    "multipoint": $array-color,
+    "multilinestring": $array-color,
+    "multipolygon": $array-color,
+    "geomcollection": $array-color,
+    "geometrycollection": $array-color,
     "aclitem": $array-color,
     "unknown": $unknown-color,
   )

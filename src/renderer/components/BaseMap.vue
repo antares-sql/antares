@@ -3,31 +3,36 @@
 </template>
 <script>
 import L from 'leaflet';
-import { point, lineString, polygon } from '@turf/helpers';
+import {
+   point,
+   lineString,
+   polygon
+} from '@turf/helpers';
 import { getArrayDepth } from 'common/libs/getArrayDepth';
 
 export default {
    name: 'BaseMap',
    props: {
-      points: [Object, Array]
+      points: [Object, Array],
+      isMultiSpatial: Boolean
    },
    data () {
       return {
          map: null,
-         markers: null,
+         markers: [],
          center: null
       };
    },
    mounted () {
-      if (Array.isArray(this.points)) {
-         if (getArrayDepth(this.points) === 1)
-            this.markers = lineString(this.points.reduce((acc, curr) => [...acc, [curr.x, curr.y]], []));
-         else
-            this.markers = polygon(this.points.map(arr => arr.reduce((acc, curr) => [...acc, [curr.x, curr.y]], [])));
+      if (this.isMultiSpatial) {
+         for (const element of this.points)
+            this.markers.push(this.getMarkers(element));
       }
       else {
-         this.center = [this.points.y, this.points.x];
-         this.markers = point([this.points.x, this.points.y]);
+         this.markers = this.getMarkers(this.points);
+
+         if (!Array.isArray(this.points))
+            this.center = [this.points.y, this.points.x];
       }
 
       this.map = L.map('map', {
@@ -73,6 +78,16 @@ export default {
       }).addTo(this.map);
    },
    methods: {
+      getMarkers (points) {
+         if (Array.isArray(points)) {
+            if (getArrayDepth(points) === 1)
+               return lineString(points.reduce((acc, curr) => [...acc, [curr.x, curr.y]], []));
+            else
+               return polygon(points.map(arr => arr.reduce((acc, curr) => [...acc, [curr.x, curr.y]], [])));
+         }
+         else
+            return point([points.x, points.y]);
+      }
    }
 };
 </script>

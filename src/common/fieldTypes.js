@@ -89,5 +89,19 @@ export const SPATIAL = [
    'POINT',
    'LINESTRING',
    'POLYGON',
-   'GEOMETRY'
+   'GEOMETRY',
+   'MULTIPOINT',
+   'MULTILINESTRING',
+   'MULTIPOLYGON',
+   'GEOMCOLLECTION',
+   'GEOMETRYCOLLECTION'
+];
+
+// Used to check multi spatial fields only
+export const IS_MULTI_SPATIAL = [
+   'MULTIPOINT',
+   'MULTILINESTRING',
+   'MULTIPOLYGON',
+   'GEOMCOLLECTION',
+   'GEOMETRYCOLLECTION'
 ];

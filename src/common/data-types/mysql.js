@@ -267,7 +267,7 @@ module.exports = [
             zerofill: false
          },
          {
-            name: 'GEOMETRYCOLLECTION',
+            name: 'GEOMCOLLECTION',
             length: false,
             collation: false,
             unsigned: false,
