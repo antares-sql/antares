@@ -1255,7 +1255,7 @@ export class PostgreSQLClient extends AntaresCore {
                localType = change.type.toLowerCase();
          }
 
-         alterColumns.push(`ALTER COLUMN "${change.name}" TYPE ${localType}${length ? `(${length}${change.numScale !== null ? `,${change.numScale}` : ''})` : ''}${change.isArray ? '[]' : ''} USING "${change.name}"::${localType}`);
+         alterColumns.push(`ALTER COLUMN "${change.name}" TYPE ${localType}${length ? `(${length}${change.numScale ? `,${change.numScale}` : ''})` : ''}${change.isArray ? '[]' : ''} USING "${change.name}"::${localType}`);
          alterColumns.push(`ALTER COLUMN "${change.name}" ${change.nullable ? 'DROP NOT NULL' : 'SET NOT NULL'}`);
          alterColumns.push(`ALTER COLUMN "${change.name}" ${change.default ? `SET DEFAULT ${change.default}` : 'DROP DEFAULT'}`);
 

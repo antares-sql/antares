@@ -1298,7 +1298,7 @@ export class MySQLClient extends AntaresCore {
          const length = typeInfo.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
 
          newColumns.push(`\`${field.name}\` 
-            ${field.type.toUpperCase()}${length ? `(${length}${field.numScale !== null ? `,${field.numScale}` : ''})` : ''} 
+            ${field.type.toUpperCase()}${length ? `(${length}${field.numScale ? `,${field.numScale}` : ''})` : ''} 
             ${field.unsigned ? 'UNSIGNED' : ''} 
             ${field.zerofill ? 'ZEROFILL' : ''}
             ${field.nullable ? 'NULL' : 'NOT NULL'}
@@ -1367,7 +1367,7 @@ export class MySQLClient extends AntaresCore {
          const length = typeInfo.length ? addition.enumValues || addition.numLength || addition.charLength || addition.datePrecision : false;
 
          alterColumns.push(`ADD COLUMN \`${addition.name}\` 
-            ${addition.type.toUpperCase()}${length ? `(${length}${addition.numScale !== null ? `,${addition.numScale}` : ''})` : ''} 
+            ${addition.type.toUpperCase()}${length ? `(${length}${addition.numScale ? `,${addition.numScale}` : ''})` : ''} 
             ${addition.unsigned ? 'UNSIGNED' : ''} 
             ${addition.zerofill ? 'ZEROFILL' : ''}
             ${addition.nullable ? 'NULL' : 'NOT NULL'}
@@ -1405,7 +1405,7 @@ export class MySQLClient extends AntaresCore {
          const length = typeInfo.length ? change.enumValues || change.numLength || change.charLength || change.datePrecision : false;
 
          alterColumns.push(`CHANGE COLUMN \`${change.orgName}\` \`${change.name}\` 
-            ${change.type.toUpperCase()}${length ? `(${length}${change.numScale !== null ? `,${change.numScale}` : ''})` : ''} 
+            ${change.type.toUpperCase()}${length ? `(${length}${change.numScale ? `,${change.numScale}` : ''})` : ''} 
             ${change.unsigned ? 'UNSIGNED' : ''} 
             ${change.zerofill ? 'ZEROFILL' : ''}
             ${change.nullable ? 'NULL' : 'NOT NULL'}
