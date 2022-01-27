@@ -13,6 +13,7 @@ Store.initRenderer();
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const isMacOS = process.platform === 'darwin';
+const isWindows = process.platform === 'win32';
 const gotTheLock = app.requestSingleInstanceLock();
 
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
@@ -44,6 +45,9 @@ async function createMainWindow () {
       trafficLightPosition: isMacOS ? { x: 10, y: 8 } : undefined,
       backgroundColor: '#1d1d1d'
    });
+
+   if (isWindows) // Temporary workaround to https://github.com/electron/electron/issues/30024
+      window.minimize();
 
    mainWindowState.manage(window);
    window.on('moved', saveWindowState);
@@ -81,13 +85,6 @@ async function createMainWindow () {
       mainWindow = null;
    });
 
-   window.webContents.on('devtools-opened', () => {
-      window.focus();
-      setImmediate(() => {
-         window.focus();
-      });
-   });
-
    return window;
 }
 
@@ -119,6 +116,9 @@ else {
 
       mainWindow = await createMainWindow();
       createAppMenu();
+
+      if (isWindows) // Temporary workaround to https://github.com/electron/electron/issues/30024
+         mainWindow.focus();
 
       // if (isDevelopment)
       //    mainWindow.webContents.openDevTools();

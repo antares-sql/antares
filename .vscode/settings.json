@@ -4,7 +4,8 @@
       "core",
       "MySQL",
       "PostgreSQL",
-      "SQLite"
+      "SQLite",
+      "Windows"
    ],
    "svg.preview.background": "transparent"
 }
