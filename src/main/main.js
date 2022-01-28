@@ -33,6 +33,7 @@ async function createMainWindow () {
       minHeight: 550,
       title: 'Antares SQL',
       autoHideMenuBar: true,
+      show: !isWindows, // Temporary workaround to https://github.com/electron/electron/issues/30024
       icon: nativeImage.createFromDataURL(icon.default),
       webPreferences: {
          nodeIntegration: true,
@@ -45,9 +46,6 @@ async function createMainWindow () {
       trafficLightPosition: isMacOS ? { x: 10, y: 8 } : undefined,
       backgroundColor: '#1d1d1d'
    });
-
-   if (isWindows) // Temporary workaround to https://github.com/electron/electron/issues/30024
-      window.minimize();
 
    mainWindowState.manage(window);
    window.on('moved', saveWindowState);
@@ -118,7 +116,7 @@ else {
       createAppMenu();
 
       if (isWindows) // Temporary workaround to https://github.com/electron/electron/issues/30024
-         mainWindow.focus();
+         mainWindow.show();
 
       // if (isDevelopment)
       //    mainWindow.webContents.openDevTools();
