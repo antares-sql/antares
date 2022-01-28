@@ -616,6 +616,14 @@ export default {
       },
       removeField (uid) {
          this.localFields = this.localFields.filter(field => field._antares_id !== uid);
+         this.localKeyUsage = this.localKeyUsage.filter(fk =>// Clear foreign keys
+            this.localFields.some(field => field.name === fk.field)
+         );
+         this.localIndexes = this.localIndexes.filter(index =>// Clear indexes
+            this.localFields.some(field =>
+               index.fields.includes(field.name)
+            )
+         );
       },
       addNewIndex (payload) {
          this.localIndexes = [...this.localIndexes, {
