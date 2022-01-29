@@ -13,6 +13,7 @@ Store.initRenderer();
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const isMacOS = process.platform === 'darwin';
+const isWindows = process.platform === 'win32';
 const gotTheLock = app.requestSingleInstanceLock();
 
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
@@ -32,6 +33,7 @@ async function createMainWindow () {
       minHeight: 550,
       title: 'Antares SQL',
       autoHideMenuBar: true,
+      show: !isWindows, // Temporary workaround to https://github.com/electron/electron/issues/30024
       icon: nativeImage.createFromDataURL(icon.default),
       webPreferences: {
          nodeIntegration: true,
@@ -81,13 +83,6 @@ async function createMainWindow () {
       mainWindow = null;
    });
 
-   window.webContents.on('devtools-opened', () => {
-      window.focus();
-      setImmediate(() => {
-         window.focus();
-      });
-   });
-
    return window;
 }
 
@@ -119,6 +114,9 @@ else {
 
       mainWindow = await createMainWindow();
       createAppMenu();
+
+      if (isWindows) // Temporary workaround to https://github.com/electron/electron/issues/30024
+         mainWindow.show();
 
       // if (isDevelopment)
       //    mainWindow.webContents.openDevTools();

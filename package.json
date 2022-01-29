@@ -51,7 +51,8 @@
       "target": {
         "target": "default",
         "arch": [
-          "x64"
+          "x64",
+          "arm64"
         ]
       }
     },
@@ -111,7 +112,7 @@
     "better-sqlite3": "^7.4.4",
     "electron-log": "^4.4.1",
     "electron-store": "^8.0.1",
-    "electron-updater": "^4.3.9",
+    "electron-updater": "^4.6.1",
     "electron-window-state": "^5.0.3",
     "faker": "^5.5.3",
     "leaflet": "^1.7.1",
@@ -138,7 +139,7 @@
     "clean-webpack-plugin": "^4.0.0",
     "cross-env": "^7.0.2",
     "css-loader": "^6.5.0",
-    "electron": "^16.0.7",
+    "electron": "^16.0.8",
     "electron-builder": "^22.14.11",
     "electron-devtools-installer": "^3.2.0",
     "eslint": "^7.32.0",
@@ -151,7 +152,7 @@
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "~2.4.5",
     "node-loader": "^2.0.0",
-    "playwright": "^1.16.3",
+    "playwright": "^1.18.1",
     "progress-webpack-plugin": "^1.0.12",
     "sass": "^1.42.1",
     "sass-loader": "^12.3.0",

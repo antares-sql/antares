@@ -493,9 +493,10 @@ export default {
             this.editingContent = this.localRow.enumValues;
             this.originalContent = this.localRow.enumValues;
          }
-         else if (this.localRow.numScale !== null && field === 'length') {
-            this.editingContent = `${content}, ${this.localRow.numScale}`;
-            this.originalContent = `${content}, ${this.localRow.numScale}`;
+         else if (this.fieldType.scale && field === 'length') {
+            const scale = this.localRow.numScale !== null ? this.localRow.numScale : 0;
+            this.editingContent = `${content}, ${scale}`;
+            this.originalContent = `${content}, ${scale}`;
          }
          else {
             this.editingContent = content;
@@ -519,10 +520,10 @@ export default {
          if (this.editingField === 'name')
             this.$emit('rename-field', { old: this.localRow[this.editingField], new: this.editingContent });
 
-         if (this.editingField === 'numLength' && this.localRow.numScale !== null && this.editingContent.includes(',')) {
+         if (this.editingField === 'numLength' && this.fieldType.scale) {
             const [length, scale] = this.editingContent.split(',');
             this.localRow.numLength = +length;
-            this.localRow.numScale = +scale;
+            this.localRow.numScale = scale ? +scale : null;
          }
          else
             this.localRow[this.editingField] = this.editingContent;
