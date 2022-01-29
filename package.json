@@ -150,7 +150,7 @@
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "~2.4.5",
     "node-loader": "^2.0.0",
-    "playwright": "^1.16.3",
+    "playwright": "^1.18.1",
     "progress-webpack-plugin": "^1.0.12",
     "sass": "^1.42.1",
     "sass-loader": "^12.3.0",
