@@ -124,6 +124,21 @@
          </template>
       </ConfirmModal>
       <ConfirmModal
+         v-if="isMapModal"
+         :hide-footer="true"
+         size="medium"
+         @hide="hideEditorModal"
+      >
+         <template #header>
+            <div class="d-flex">
+               <i class="mdi mdi-24px mdi-map mr-1" /> <span class="cut-text">"{{ editingField }}"</span>
+            </div>
+         </template>
+         <template #body>
+            <BaseMap :points="editingContent" :is-multi-spatial="isMultiSpatial" />
+         </template>
+      </ConfirmModal>
+      <ConfirmModal
          v-if="isBlobEditor"
          :confirm-text="$t('word.update')"
          @confirm="editOFF"
@@ -187,10 +202,27 @@ import { mimeFromHex } from 'common/libs/mimeFromHex';
 import { formatBytes } from 'common/libs/formatBytes';
 import { bufferToBase64 } from 'common/libs/bufferToBase64';
 import hexToBinary from 'common/libs/hexToBinary';
-import { TEXT, LONG_TEXT, ARRAY, TEXT_SEARCH, NUMBER, FLOAT, BOOLEAN, DATE, TIME, DATETIME, BLOB, BIT, HAS_TIMEZONE } from 'common/fieldTypes';
+import {
+   TEXT,
+   LONG_TEXT,
+   ARRAY,
+   TEXT_SEARCH,
+   NUMBER,
+   FLOAT,
+   BOOLEAN,
+   DATE,
+   TIME,
+   DATETIME,
+   BLOB,
+   BIT,
+   HAS_TIMEZONE,
+   SPATIAL,
+   IS_MULTI_SPATIAL
+} from 'common/fieldTypes';
 import { VueMaskDirective } from 'v-mask';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import TextEditor from '@/components/BaseTextEditor';
+import BaseMap from '@/components/BaseMap';
 import ForeignKeySelect from '@/components/ForeignKeySelect';
 
 export default {
@@ -198,7 +230,8 @@ export default {
    components: {
       ConfirmModal,
       TextEditor,
-      ForeignKeySelect
+      ForeignKeySelect,
+      BaseMap
    },
    directives: {
       mask: VueMaskDirective
@@ -248,7 +281,10 @@ export default {
             return val;
          }
 
-         return val;
+         if (SPATIAL.includes(type))
+            return val;
+
+         return typeof val === 'object' ? JSON.stringify(val) : val;
       }
    },
    props: {
@@ -263,6 +299,8 @@ export default {
          isInlineEditor: {},
          isTextareaEditor: false,
          isBlobEditor: false,
+         isMapModal: false,
+         isMultiSpatial: false,
          willBeDeleted: false,
          originalContent: null,
          editingContent: null,
@@ -330,6 +368,9 @@ export default {
 
          if (BOOLEAN.includes(this.editingType))
             return { type: 'boolean', mask: false };
+
+         if (SPATIAL.includes(this.editingType))
+            return { type: 'map', mask: false };
 
          return { type: 'text', mask: false };
       },
@@ -403,7 +444,7 @@ export default {
          return bufferToBase64(val);
       },
       editON (event, content, field) {
-         if (!this.isEditable) return;
+         if (!this.isEditable || this.editingType === 'none') return;
 
          window.addEventListener('keydown', this.onKey);
 
@@ -416,6 +457,15 @@ export default {
          if ([...LONG_TEXT, ...ARRAY, ...TEXT_SEARCH].includes(type)) {
             this.isTextareaEditor = true;
             this.editingContent = this.$options.filters.typeFormat(content, type);
+            return;
+         }
+
+         if (SPATIAL.includes(type)) {
+            if (content) {
+               this.isMultiSpatial = IS_MULTI_SPATIAL.includes(type);
+               this.isMapModal = true;
+               this.editingContent = this.$options.filters.typeFormat(content, type);
+            }
             return;
          }
 
@@ -490,6 +540,8 @@ export default {
       hideEditorModal () {
          this.isTextareaEditor = false;
          this.isBlobEditor = false;
+         this.isMapModal = false;
+         this.isMultiSpatial = false;
       },
       downloadFile () {
          const downloadLink = document.createElement('a');
