@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.3](https://github.com/Fabio286/antares/compare/v0.4.2...v0.4.3) (2022-01-30)
+
+
+### Features
+
+* add Simplified Chinese translation ([6ef565c](https://github.com/Fabio286/antares/commit/6ef565cf078cb3f5b7bcdc226894cddeb6239db9))
+* **MySQL:** spatial fields support ([#165](https://github.com/Fabio286/antares/issues/165)) ([48ebf23](https://github.com/Fabio286/antares/commit/48ebf23bd1574408f429f2e1200ce878352007f6))
+
+
+### Bug Fixes
+
+* cell copy returns "undefined" in some conditions, closes [#170](https://github.com/Fabio286/antares/issues/170) ([8fb1f08](https://github.com/Fabio286/antares/commit/8fb1f0803efd9df0b66521e73bb6e1a229cf9691))
+* indexes and foreign keys not cleared after deletion of related field, closes [#182](https://github.com/Fabio286/antares/issues/182) ([9f033fb](https://github.com/Fabio286/antares/commit/9f033fb994916b4fb165e81e55e86127ca817791))
+* **PostgreSQL:** schema different than public not automatically selected, closes [#172](https://github.com/Fabio286/antares/issues/172) ([46b45c8](https://github.com/Fabio286/antares/commit/46b45c8ab64fb6837a532c4f8342167e4fd794bb))
+* scale on numeric fields that doesn't support it ([0cfd793](https://github.com/Fabio286/antares/commit/0cfd7938ee7d607dbad66ae452d0200223a6bab2))
+* **Windows:** temporary fix to Windows 7 style frame on app startup, closes [#169](https://github.com/Fabio286/antares/issues/169) ([1356011](https://github.com/Fabio286/antares/commit/1356011ba3b7dd72e12cb252a8787ce48a364fd4))
+
+
+### Improvements
+
+* support of scale in field's length setting ([eef7c1d](https://github.com/Fabio286/antares/commit/eef7c1dcecc6593ab0e69ed678187a57fe0a4fb6))
+
 ### [0.4.2](https://github.com/Fabio286/antares/compare/v0.4.1...v0.4.2) (2022-01-10)
 
 
