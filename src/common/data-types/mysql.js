@@ -121,7 +121,7 @@ module.exports = [
          {
             name: 'JSON',
             length: false,
-            collation: true,
+            collation: false,
             unsigned: false,
             zerofill: false
          }

@@ -395,7 +395,7 @@ export class MySQLClient extends AntaresCore {
                return acc;
             }, '')
             .replaceAll('\n', '')
-            .split(',')
+            .split(/,\s?(?![^(]*\))/)
             .map(f => {
                try {
                   const fieldArr = f.trim().split(' ');
@@ -440,6 +440,10 @@ export class MySQLClient extends AntaresCore {
             ? field.COLUMN_TYPE.match(/\(([^)]+)\)/)[0].slice(1, -1)
             : null;
 
+         const defaultValue = (remappedFields && remappedFields[field.COLUMN_NAME])
+            ? remappedFields[field.COLUMN_NAME].default
+            : field.COLUMN_DEFAULT;
+
          return {
             name: field.COLUMN_NAME,
             key: field.COLUMN_KEY.toLowerCase(),
@@ -458,7 +462,7 @@ export class MySQLClient extends AntaresCore {
             unsigned: field.COLUMN_TYPE.includes('unsigned'),
             zerofill: field.COLUMN_TYPE.includes('zerofill'),
             order: field.ORDINAL_POSITION,
-            default: (remappedFields && remappedFields[field.COLUMN_NAME]) ? remappedFields[field.COLUMN_NAME].default : field.COLUMN_DEFAULT,
+            default: defaultValue,
             charset: field.CHARACTER_SET_NAME,
             collation: field.COLLATION_NAME,
             autoIncrement: field.EXTRA.includes('auto_increment'),
