@@ -50,6 +50,18 @@ export default class {
       return ipcRenderer.invoke('kill-tab-query', params);
    }
 
+   static commitTab (params) {
+      return ipcRenderer.invoke('commit-tab', params);
+   }
+
+   static rollbackTab (params) {
+      return ipcRenderer.invoke('rollback-tab', params);
+   }
+
+   static destroyConnectionToCommit (params) {
+      return ipcRenderer.invoke('destroy-connection-to-commit', params);
+   }
+
    static useSchema (params) {
       return ipcRenderer.invoke('use-schema', params);
    }

@@ -47,6 +47,24 @@
                   </button>
                </div>
                <button
+                  v-if="!autocommit"
+                  class="btn btn-dark btn-sm"
+                  :class="{'loading':isQuering}"
+                  @click="commitTab()"
+               >
+                  <i class="mdi mdi-24px mdi-cube-send pr-1" />
+                  <span>{{ $t('word.commit') }}</span>
+               </button>
+               <button
+                  v-if="!autocommit"
+                  class="btn btn-dark btn-sm"
+                  :class="{'loading':isQuering}"
+                  @click="rollbackTab()"
+               >
+                  <i class="mdi mdi-24px mdi-undo-variant pr-1" />
+                  <span>{{ $t('word.rollback') }}</span>
+               </button>
+               <button
                   class="btn btn-link btn-sm mr-0"
                   :disabled="!query || isQuering"
                   title="CTRL+W"
@@ -78,7 +96,7 @@
                </button>
                <div class="dropdown table-dropdown pr-2">
                   <button
-                     :disabled="!results.length || isQuering"
+                     :disabled="!hasResults || isQuering"
                      class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
                      tabindex="0"
                   >
@@ -95,6 +113,17 @@
                      </li>
                   </ul>
                </div>
+               <div class="input-group pr-2" :title="$t('message.commitMode')">
+                  <i class="input-group-addon addon-sm mdi mdi-24px mdi-source-commit p-0" />
+                  <select v-model="autocommit" class="form-select select-sm text-bold">
+                     <option :value="true">
+                        {{ $t('message.autoCommit') }}
+                     </option>
+                     <option :value="false">
+                        {{ $t('message.manualCommit') }}
+                     </option>
+                  </select>
+               </div>
             </div>
             <div class="workspace-query-info">
                <div
@@ -104,11 +133,19 @@
                >
                   <i class="mdi mdi-timer-sand mdi-rotate-180 pr-1" /> <b>{{ durationsCount / 1000 }}s</b>
                </div>
-               <div v-if="resultsCount">
-                  {{ $t('word.results') }}: <b>{{ resultsCount.toLocaleString() }}</b>
+               <div
+                  v-if="resultsCount"
+                  class="d-flex"
+                  :title="$t('word.results')"
+               >
+                  <i class="mdi mdi-equal pr-1" /> <b>{{ resultsCount.toLocaleString() }}</b>
                </div>
-               <div v-if="affectedCount !== null">
-                  {{ $t('message.affectedRows') }}: <b>{{ affectedCount }}</b>
+               <div
+                  v-if="hasAffected"
+                  class="d-flex"
+                  :title="$t('message.affectedRows')"
+               >
+                  <i class="mdi mdi-target pr-1" /> <b>{{ affectedCount }}</b>
                </div>
                <div class="input-group" :title="$t('word.schema')">
                   <i class="input-group-addon addon-sm mdi mdi-24px mdi-database" />
@@ -182,6 +219,7 @@ export default {
          isQuering: false,
          isCancelling: false,
          showCancel: false,
+         autocommit: true,
          results: [],
          selectedSchema: null,
          resultsCount: 0,
@@ -214,6 +252,12 @@ export default {
       },
       history () {
          return this.getHistoryByWorkspace(this.connection.uid) || [];
+      },
+      hasResults () {
+         return this.results.length && this.results[0].rows;
+      },
+      hasAffected () {
+         return this.affectedCount || (!this.resultsCount && this.affectedCount !== null);
       }
    },
    watch: {
@@ -251,6 +295,11 @@ export default {
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);
+      const params = {
+         uid: this.connection.uid,
+         tabUid: this.tab.uid
+      };
+      Schema.destroyConnectionToCommit(params);
    },
    methods: {
       ...mapActions({
@@ -270,6 +319,7 @@ export default {
                uid: this.connection.uid,
                schema: this.selectedSchema,
                tabUid: this.tab.uid,
+               autocommit: this.autocommit,
                query
             };
 
@@ -391,6 +441,38 @@ export default {
       },
       downloadTable (format) {
          this.$refs.queryTable.downloadTable(format, `${this.tab.type}-${this.tab.index}`);
+      },
+      async commitTab () {
+         this.isQuering = true;
+         try {
+            const params = {
+               uid: this.connection.uid,
+               tabUid: this.tab.uid
+            };
+
+            await Schema.commitTab(params);
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         this.isQuering = false;
+      },
+      async rollbackTab () {
+         this.isQuering = true;
+         try {
+            const params = {
+               uid: this.connection.uid,
+               tabUid: this.tab.uid
+            };
+
+            await Schema.rollbackTab(params);
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         this.isQuering = false;
       }
    }
 };
@@ -419,10 +501,12 @@ export default {
 
     .workspace-query-runner-footer {
       display: flex;
+      flex-wrap: wrap;
+      row-gap: 0.4rem;
       justify-content: space-between;
       padding: 0.3rem 0.6rem 0.4rem;
       align-items: center;
-      height: 42px;
+      min-height: 42px;
 
       .workspace-query-buttons,
       .workspace-query-info {

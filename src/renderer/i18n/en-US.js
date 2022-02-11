@@ -124,7 +124,9 @@ module.exports = {
       filter: 'Filter',
       disabled: 'Disabled',
       enable: 'Enable',
-      disable: 'Disable'
+      disable: 'Disable',
+      commit: 'Commit',
+      rollback: 'Rollback'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -252,7 +254,11 @@ module.exports = {
       closeTab: 'Close tab',
       goToDownloadPage: 'Go to download page',
       readOnlyMode: 'Read-only mode',
-      killQuery: 'Kill query'
+      killQuery: 'Kill query',
+      insertRow: 'Insert row | Insert rows',
+      commitMode: 'Commit mode',
+      autoCommit: 'Auto commit',
+      manualCommit: 'Manual commit'
    },
    faker: {
       address: 'Address',

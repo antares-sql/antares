@@ -85,7 +85,7 @@
                   @click="showFakerModal"
                >
                   <i class="mdi mdi-24px mdi-playlist-plus mr-1" />
-                  <span>{{ $t('message.tableFiller') }}</span>
+                  <span>{{ $tc('message.insertRow', 2) }}</span>
                </button>
 
                <div class="dropdown table-dropdown pr-2">

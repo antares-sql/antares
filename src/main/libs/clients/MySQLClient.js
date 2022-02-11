@@ -10,6 +10,7 @@ export class MySQLClient extends AntaresCore {
 
       this._schema = null;
       this._runningConnections = new Map();
+      this._connectionsToCommit = new Map();
 
       this.types = {
          0: 'DECIMAL',
@@ -101,9 +102,10 @@ export class MySQLClient extends AntaresCore {
    }
 
    /**
-    * @memberof MySQLClient
+    *
+    * @returns dbConfig
     */
-   async connect () {
+   async getDbConfig () {
       delete this._params.application_name;
 
       const dbConfig = {
@@ -134,48 +136,17 @@ export class MySQLClient extends AntaresCore {
          }
       }
 
-      if (!this._poolSize) {
-         this._connection = await mysql.createConnection(dbConfig);
+      return dbConfig;
+   }
 
-         // ANSI_QUOTES check
-         const res = await this.getVariable('sql_mode', 'global');
-         const sqlMode = res?.value.split(',');
-         const hasAnsiQuotes = sqlMode.includes('ANSI_QUOTES');
-
-         if (this._params.readonly)
-            await this.raw('SET SESSION TRANSACTION READ ONLY');
-
-         if (hasAnsiQuotes)
-            await this.raw(`SET SESSION sql_mode = "${sqlMode.filter(m => m !== 'ANSI_QUOTES').join(',')}"`);
-      }
-      else {
-         this._connection = mysql.createPool({
-            ...dbConfig,
-            connectionLimit: this._poolSize,
-            typeCast: (field, next) => {
-               if (field.type === 'DATETIME')
-                  return field.string();
-               else
-                  return next();
-            }
-         });
-
-         // ANSI_QUOTES check
-         const res = await this.getVariable('sql_mode', 'global');
-         const sqlMode = res?.value.split(',');
-         const hasAnsiQuotes = sqlMode.includes('ANSI_QUOTES');
-
-         if (hasAnsiQuotes)
-            await this._connection.query(`SET SESSION sql_mode = "${sqlMode.filter(m => m !== 'ANSI_QUOTES').join(',')}"`);
-
-         this._connection.on('connection', connection => {
-            if (this._params.readonly)
-               connection.query('SET SESSION TRANSACTION READ ONLY');
-
-            if (hasAnsiQuotes)
-               connection.query(`SET SESSION sql_mode = "${sqlMode.filter(m => m !== 'ANSI_QUOTES').join(',')}"`);
-         });
-      }
+   /**
+    * @memberof MySQLClient
+    */
+   async connect () {
+      if (!this._poolSize)
+         this._connection = await this.getConnection();
+      else
+         this._connection = await this.getConnectionPool();
    }
 
    /**
@@ -184,6 +155,56 @@ export class MySQLClient extends AntaresCore {
    destroy () {
       this._connection.end();
       if (this._ssh) this._ssh.close();
+   }
+
+   async getConnection () {
+      const dbConfig = await this.getDbConfig();
+      const connection = await mysql.createConnection(dbConfig);
+
+      // ANSI_QUOTES check
+      const [res] = await connection.query('SHOW GLOBAL VARIABLES LIKE \'%sql_mode%\'');
+      const sqlMode = res[0]?.Variable_name?.split(',');
+      const hasAnsiQuotes = sqlMode.includes('ANSI_QUOTES');
+
+      if (this._params.readonly)
+         await connection.query('SET SESSION TRANSACTION READ ONLY');
+
+      if (hasAnsiQuotes)
+         await connection.query(`SET SESSION sql_mode = "${sqlMode.filter(m => m !== 'ANSI_QUOTES').join(',')}"`);
+
+      return connection;
+   }
+
+   async getConnectionPool () {
+      const dbConfig = await this.getDbConfig();
+      const connection = mysql.createPool({
+         ...dbConfig,
+         connectionLimit: this._poolSize,
+         typeCast: (field, next) => {
+            if (field.type === 'DATETIME')
+               return field.string();
+            else
+               return next();
+         }
+      });
+
+      // ANSI_QUOTES check
+      const [res] = await connection.query('SHOW GLOBAL VARIABLES LIKE \'%sql_mode%\'');
+      const sqlMode = res[0]?.Variable_name?.split(',');
+      const hasAnsiQuotes = sqlMode.includes('ANSI_QUOTES');
+
+      if (hasAnsiQuotes)
+         await connection.query(`SET SESSION sql_mode = "${sqlMode.filter(m => m !== 'ANSI_QUOTES').join(',')}"`);
+
+      connection.on('connection', connection => {
+         if (this._params.readonly)
+            connection.query('SET SESSION TRANSACTION READ ONLY');
+
+         if (hasAnsiQuotes)
+            connection.query(`SET SESSION sql_mode = "${sqlMode.filter(m => m !== 'ANSI_QUOTES').join(',')}"`);
+      });
+
+      return connection;
    }
 
    /**
@@ -1277,6 +1298,36 @@ export class MySQLClient extends AntaresCore {
    }
 
    /**
+    *
+    * @param {string} tabUid
+    * @returns {Promise<null>}
+    */
+   async commitTab (tabUid) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection)
+         return await connection.query('COMMIT');
+   }
+
+   /**
+    *
+    * @param {string} tabUid
+    * @returns {Promise<null>}
+    */
+   async rollbackTab (tabUid) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection)
+         return await connection.query('ROLLBACK');
+   }
+
+   destroyConnectionToCommit (tabUid) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection) {
+         connection.destroy();
+         this._connectionsToCommit.delete(tabUid);
+      }
+   }
+
+   /**
     * CREATE TABLE
     *
     * @returns {Promise<null>}
@@ -1580,6 +1631,7 @@ export class MySQLClient extends AntaresCore {
          details: false,
          split: true,
          comments: true,
+         autocommit: true,
          ...args
       };
 
@@ -1594,8 +1646,21 @@ export class MySQLClient extends AntaresCore {
             .filter(Boolean)
             .map(q => q.trim())
          : [sql];
+
+      let connection;
       const isPool = typeof this._connection.getConnection === 'function';
-      const connection = isPool ? await this._connection.getConnection() : this._connection;
+
+      if (!args.autocommit && args.tabUid) { // autocommit OFF
+         if (this._connectionsToCommit.has(args.tabUid))
+            connection = this._connectionsToCommit.get(args.tabUid);
+         else {
+            connection = await this.getConnection();
+            await connection.query('SET SESSION autocommit=0');
+            this._connectionsToCommit.set(args.tabUid, connection);
+         }
+      }
+      else// autocommit ON
+         connection = isPool ? await this._connection.getConnection() : this._connection;
 
       if (args.tabUid && isPool)
          this._runningConnections.set(args.tabUid, connection.connection.connectionId);
@@ -1660,7 +1725,7 @@ export class MySQLClient extends AntaresCore {
                            });
                         }
                         catch (err) {
-                           if (isPool) {
+                           if (isPool && args.autocommit) {
                               connection.release();
                               this._runningConnections.delete(args.tabUid);
                            }
@@ -1672,7 +1737,7 @@ export class MySQLClient extends AntaresCore {
                            keysArr = keysArr ? [...keysArr, ...response] : response;
                         }
                         catch (err) {
-                           if (isPool) {
+                           if (isPool && args.autocommit) {
                               connection.release();
                               this._runningConnections.delete(args.tabUid);
                            }
@@ -1690,7 +1755,7 @@ export class MySQLClient extends AntaresCore {
                   keys: keysArr
                });
             }).catch((err) => {
-               if (isPool) {
+               if (isPool && args.autocommit) {
                   connection.release();
                   this._runningConnections.delete(args.tabUid);
                }
@@ -1701,7 +1766,7 @@ export class MySQLClient extends AntaresCore {
          resultsArr.push({ rows, report, fields, keys, duration });
       }
 
-      if (isPool) {
+      if (isPool && args.autocommit) {
          connection.release();
          this._runningConnections.delete(args.tabUid);
       }
