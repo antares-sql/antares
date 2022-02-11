@@ -6,7 +6,7 @@
             <div class="modal-title h6">
                <div class="d-flex">
                   <i class="mdi mdi-24px mdi-playlist-plus mr-1" />
-                  <span class="cut-text">{{ $t('message.tableFiller') }}</span>
+                  <span class="cut-text">{{ $tc('message.insertRow', 2) }}</span>
                </div>
             </div>
             <a class="btn btn-clear c-hand" @click.stop="closeModal" />
