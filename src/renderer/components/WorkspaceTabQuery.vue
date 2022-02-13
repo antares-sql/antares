@@ -451,6 +451,7 @@ export default {
             };
 
             await Schema.commitTab(params);
+            this.addNotification({ status: 'success', message: this.$t('message.actionSuccessful', { action: 'COMMIT' }) });
          }
          catch (err) {
             this.addNotification({ status: 'error', message: err.stack });
@@ -467,6 +468,7 @@ export default {
             };
 
             await Schema.rollbackTab(params);
+            this.addNotification({ status: 'success', message: this.$t('message.actionSuccessful', { action: 'ROLLBACK' }) });
          }
          catch (err) {
             this.addNotification({ status: 'error', message: err.stack });

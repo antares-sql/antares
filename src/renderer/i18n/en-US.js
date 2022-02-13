@@ -258,7 +258,8 @@ module.exports = {
       insertRow: 'Insert row | Insert rows',
       commitMode: 'Commit mode',
       autoCommit: 'Auto commit',
-      manualCommit: 'Manual commit'
+      manualCommit: 'Manual commit',
+      actionSuccessful: '{action} successful'
    },
    faker: {
       address: 'Address',
