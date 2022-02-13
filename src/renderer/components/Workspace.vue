@@ -24,7 +24,11 @@
                @mousedown.left="selectTab({uid: workspace.uid, tab: tab.uid})"
                @mouseup.middle="closeTab(tab)"
             >
-               <a v-if="tab.type === 'query'" class="tab-link">
+               <a
+                  v-if="tab.type === 'query'"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+               >
                   <i class="mdi mdi-18px mdi-code-tags mr-1" />
                   <span>
                      <span>{{ tab.content || 'Query' | cutText }} #{{ tab.index }}</span>

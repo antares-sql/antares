@@ -238,6 +238,9 @@ export default {
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
+      tabUid () {
+         return this.$vnode.key;
+      },
       breadcrumbsSchema () {
          return this.workspace.breadcrumbs.schema || null;
       },
@@ -306,6 +309,7 @@ export default {
          addNotification: 'notifications/addNotification',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
          updateTabContent: 'workspaces/updateTabContent',
+         setUnsavedChanges: 'workspaces/setUnsavedChanges',
          saveHistory: 'history/saveHistory'
       }),
       async runQuery (query) {
@@ -344,6 +348,8 @@ export default {
                   content: query
                });
                this.saveHistory(params);
+               if (!this.autocommit)
+                  this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: true });
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -451,6 +457,7 @@ export default {
             };
 
             await Schema.commitTab(params);
+            this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: false });
             this.addNotification({ status: 'success', message: this.$t('message.actionSuccessful', { action: 'COMMIT' }) });
          }
          catch (err) {
@@ -468,6 +475,7 @@ export default {
             };
 
             await Schema.rollbackTab(params);
+            this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: false });
             this.addNotification({ status: 'success', message: this.$t('message.actionSuccessful', { action: 'ROLLBACK' }) });
          }
          catch (err) {
