@@ -22,6 +22,7 @@ export class PostgreSQLClient extends AntaresCore {
 
       this._schema = null;
       this._runningConnections = new Map();
+      this._connectionsToCommit = new Map();
 
       this.types = {};
       for (const key in types.builtins)
@@ -71,9 +72,11 @@ export class PostgreSQLClient extends AntaresCore {
    }
 
    /**
+    *
+    * @returns dbConfig
     * @memberof PostgreSQLClient
     */
-   async connect () {
+   async getDbConfig () {
       const dbConfig = {
          host: this._params.host,
          port: this._params.port,
@@ -102,24 +105,43 @@ export class PostgreSQLClient extends AntaresCore {
          }
       }
 
-      if (!this._poolSize) {
-         const client = new Client(dbConfig);
-         await client.connect();
-         this._connection = client;
+      return dbConfig;
+   }
 
-         if (this._params.readonly)
-            await this.raw('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY');
-      }
-      else {
-         const pool = new Pool({ ...dbConfig, max: this._poolSize });
-         this._connection = pool;
+   /**
+    * @memberof PostgreSQLClient
+    */
+   async connect () {
+      if (!this._poolSize)
+         this._connection = await this.getConnection();
+      else
+         this._connection = await this.getConnectionPool();
+   }
 
-         if (this._params.readonly) {
-            this._connection.on('connect', connection => {
-               connection.query('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY');
-            });
-         }
+   async getConnection () {
+      const dbConfig = await this.getDbConfig();
+      const client = new Client(dbConfig);
+      await client.connect();
+      const connection = client;
+
+      if (this._params.readonly)
+         await connection.query('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY');
+
+      return connection;
+   }
+
+   async getConnectionPool () {
+      const dbConfig = await this.getDbConfig();
+      const pool = new Pool({ ...dbConfig, max: this._poolSize });
+      const connection = pool;
+
+      if (this._params.readonly) {
+         connection.on('connect', conn => {
+            conn.query('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY');
+         });
       }
+
+      return connection;
    }
 
    /**
@@ -1119,6 +1141,36 @@ export class PostgreSQLClient extends AntaresCore {
    }
 
    /**
+    *
+    * @param {string} tabUid
+    * @returns {Promise<null>}
+    */
+   async commitTab (tabUid) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection)
+         return await connection.query('COMMIT');
+   }
+
+   /**
+    *
+    * @param {string} tabUid
+    * @returns {Promise<null>}
+    */
+   async rollbackTab (tabUid) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection)
+         return await connection.query('ROLLBACK');
+   }
+
+   destroyConnectionToCommit (tabUid) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection) {
+         connection.destroy();
+         this._connectionsToCommit.delete(tabUid);
+      }
+   }
+
+   /**
     * CREATE TABLE
     *
     * @returns {Promise<null>}
@@ -1429,6 +1481,7 @@ export class PostgreSQLClient extends AntaresCore {
          details: false,
          split: true,
          comments: true,
+         autocommit: true,
          ...args
       };
 
@@ -1443,8 +1496,20 @@ export class PostgreSQLClient extends AntaresCore {
             .map(q => q.trim())
          : [sql];
 
+      let connection;
       const isPool = this._connection instanceof Pool;
-      const connection = isPool ? await this._connection.connect() : this._connection;
+
+      if (!args.autocommit && args.tabUid) { // autocommit OFF
+         if (this._connectionsToCommit.has(args.tabUid))
+            connection = this._connectionsToCommit.get(args.tabUid);
+         else {
+            connection = await this.getConnection();
+            await connection.query('START TRANSACTION');
+            this._connectionsToCommit.set(args.tabUid, connection);
+         }
+      }
+      else// autocommit ON
+         connection = isPool ? await this._connection.connect() : this._connection;
 
       if (args.tabUid && isPool)
          this._runningConnections.set(args.tabUid, connection.processID);
@@ -1554,7 +1619,7 @@ export class PostgreSQLClient extends AntaresCore {
                               });
                            }
                            catch (err) {
-                              if (isPool) {
+                              if (isPool && args.autocommit) {
                                  connection.release();
                                  this._runningConnections.delete(args.tabUid);
                               }
@@ -1566,7 +1631,7 @@ export class PostgreSQLClient extends AntaresCore {
                               keysArr = keysArr ? [...keysArr, ...response] : response;
                            }
                            catch (err) {
-                              if (isPool) {
+                              if (isPool && args.autocommit) {
                                  connection.release();
                                  this._runningConnections.delete(args.tabUid);
                               }
@@ -1585,7 +1650,7 @@ export class PostgreSQLClient extends AntaresCore {
                   });
                }
                catch (err) {
-                  if (isPool) {
+                  if (isPool && args.autocommit) {
                      connection.release();
                      this._runningConnections.delete(args.tabUid);
                   }
@@ -1597,7 +1662,7 @@ export class PostgreSQLClient extends AntaresCore {
          resultsArr.push({ rows, report, fields, keys, duration });
       }
 
-      if (isPool) {
+      if (isPool && args.autocommit) {
          connection.release();
          this._runningConnections.delete(args.tabUid);
       }
