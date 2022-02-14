@@ -104,6 +104,7 @@ export class MySQLClient extends AntaresCore {
    /**
     *
     * @returns dbConfig
+    * @memberof MySQLClient
     */
    async getDbConfig () {
       delete this._params.application_name;
@@ -159,7 +160,15 @@ export class MySQLClient extends AntaresCore {
 
    async getConnection () {
       const dbConfig = await this.getDbConfig();
-      const connection = await mysql.createConnection(dbConfig);
+      const connection = await mysql.createConnection({
+         ...dbConfig,
+         typeCast: (field, next) => {
+            if (field.type === 'DATETIME')
+               return field.string();
+            else
+               return next();
+         }
+      });
 
       // ANSI_QUOTES check
       const [res] = await connection.query('SHOW GLOBAL VARIABLES LIKE \'%sql_mode%\'');
@@ -196,12 +205,12 @@ export class MySQLClient extends AntaresCore {
       if (hasAnsiQuotes)
          await connection.query(`SET SESSION sql_mode = "${sqlMode.filter(m => m !== 'ANSI_QUOTES').join(',')}"`);
 
-      connection.on('connection', connection => {
+      connection.on('connection', conn => {
          if (this._params.readonly)
-            connection.query('SET SESSION TRANSACTION READ ONLY');
+            conn.query('SET SESSION TRANSACTION READ ONLY');
 
          if (hasAnsiQuotes)
-            connection.query(`SET SESSION sql_mode = "${sqlMode.filter(m => m !== 'ANSI_QUOTES').join(',')}"`);
+            conn.query(`SET SESSION sql_mode = "${sqlMode.filter(m => m !== 'ANSI_QUOTES').join(',')}"`);
       });
 
       return connection;
