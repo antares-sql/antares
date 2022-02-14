@@ -1147,8 +1147,10 @@ export class PostgreSQLClient extends AntaresCore {
     */
    async commitTab (tabUid) {
       const connection = this._connectionsToCommit.get(tabUid);
-      if (connection)
-         return await connection.query('COMMIT');
+      if (connection) {
+         await connection.query('COMMIT');
+         return this.destroyConnectionToCommit(tabUid);
+      }
    }
 
    /**
@@ -1158,14 +1160,16 @@ export class PostgreSQLClient extends AntaresCore {
     */
    async rollbackTab (tabUid) {
       const connection = this._connectionsToCommit.get(tabUid);
-      if (connection)
-         return await connection.query('ROLLBACK');
+      if (connection) {
+         await connection.query('ROLLBACK');
+         return this.destroyConnectionToCommit(tabUid);
+      }
    }
 
    destroyConnectionToCommit (tabUid) {
       const connection = this._connectionsToCommit.get(tabUid);
       if (connection) {
-         connection.destroy();
+         connection.end();
          this._connectionsToCommit.delete(tabUid);
       }
    }
