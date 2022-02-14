@@ -9,6 +9,7 @@ export class SQLiteClient extends AntaresCore {
       super(args);
 
       this._schema = null;
+      this._connectionsToCommit = new Map();
    }
 
    _getTypeInfo (type) {
@@ -21,7 +22,11 @@ export class SQLiteClient extends AntaresCore {
     * @memberof SQLiteClient
     */
    async connect () {
-      this._connection = sqlite(this._params.databasePath, {
+      this._connection = this.getConnection();
+   }
+
+   getConnection () {
+      return sqlite(this._params.databasePath, {
          fileMustExist: true,
          readonly: this._params.readonly
       });
@@ -447,6 +452,40 @@ export class SQLiteClient extends AntaresCore {
    async killProcess () {}
 
    /**
+    *
+    * @param {string} tabUid
+    * @returns {Promise<null>}
+    */
+   async commitTab (tabUid) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection) {
+         connection.prepare('COMMIT').run();
+         return this.destroyConnectionToCommit(tabUid);
+      }
+   }
+
+   /**
+    *
+    * @param {string} tabUid
+    * @returns {Promise<null>}
+    */
+   async rollbackTab (tabUid) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection) {
+         connection.prepare('ROLLBACK').run();
+         return this.destroyConnectionToCommit(tabUid);
+      }
+   }
+
+   destroyConnectionToCommit (tabUid) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection) {
+         connection.close();
+         this._connectionsToCommit.delete(tabUid);
+      }
+   }
+
+   /**
     * CREATE TABLE
     *
     * @returns {Promise<null>}
@@ -666,6 +705,7 @@ export class SQLiteClient extends AntaresCore {
          details: false,
          split: true,
          comments: true,
+         autocommit: true,
          ...args
       };
 
@@ -679,7 +719,20 @@ export class SQLiteClient extends AntaresCore {
             .filter(Boolean)
             .map(q => q.trim())
          : [sql];
-      const connection = this._connection;
+
+      let connection;
+
+      if (!args.autocommit && args.tabUid) { // autocommit OFF
+         if (this._connectionsToCommit.has(args.tabUid))
+            connection = this._connectionsToCommit.get(args.tabUid);
+         else {
+            connection = this.getConnection();
+            connection.prepare('BEGIN TRANSACTION').run();
+            this._connectionsToCommit.set(args.tabUid, connection);
+         }
+      }
+      else// autocommit ON
+         connection = this._connection;
 
       for (const query of queries) {
          if (!query) continue;
