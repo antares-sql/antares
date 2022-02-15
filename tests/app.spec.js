@@ -1,24 +1,10 @@
 const { _electron: electron } = require('playwright');
 const { strict: assert } = require('assert');
 
-const isWindows = process.platform === 'win32';
-async function wait (ms) {
-   return new Promise(resolve => {
-      setTimeout(resolve, ms);
-   });
-}
-
 (async () => {
-   if (isWindows) {
-      console.log('Termporary skipping tests on Windows');
-      return;
-   }
-
    console.log('Starting tests');
    // Launch Electron app.
    const electronApp = await electron.launch({ args: ['dist/main.js'] });
-
-   if (isWindows) await wait(5000);
 
    /**
      * App main window state
