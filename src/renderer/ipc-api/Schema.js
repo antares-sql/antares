@@ -77,4 +77,12 @@ export default class {
    static abortExport () {
       return ipcRenderer.invoke('abort-export');
    }
+
+   static import (params) {
+      return ipcRenderer.invoke('import-sql', params);
+   }
+
+   static abortImport () {
+      return ipcRenderer.invoke('abort-import-sql');
+   }
 }

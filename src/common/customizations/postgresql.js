@@ -33,6 +33,7 @@ module.exports = {
    schemaDrop: true,
    databaseEdit: false,
    schemaExport: true,
+   schemaImport: false,
    tableSettings: true,
    viewSettings: true,
    triggerSettings: true,
