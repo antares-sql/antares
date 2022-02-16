@@ -31,10 +31,9 @@ We are actively working on it, hoping to provide new cool features, improvements
 - Query suggestions and auto complete.
 - Query history: search through the last 1000 queries.
 - SSH tunnel support.
+- Manual commit mode.
 - Dark and light theme.
 - Editor themes.
-- Scratchpad.
-- Secure password storage.
 
 ## Philosophy
 
