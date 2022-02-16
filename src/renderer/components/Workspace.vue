@@ -18,14 +18,17 @@
             <li
                v-for="(tab, i) of draggableTabs"
                :key="i"
-               :ref="selectedTab === tab.uid ? 'tab-selected' : ''"
                class="tab-item tab-draggable"
                draggable="true"
                :class="{'active': selectedTab === tab.uid}"
                @mousedown.left="selectTab({uid: workspace.uid, tab: tab.uid})"
                @mouseup.middle="closeTab(tab)"
             >
-               <a v-if="tab.type === 'query'" class="tab-link">
+               <a
+                  v-if="tab.type === 'query'"
+                  class="tab-link"
+                  :class="{'badge': tab.isChanged}"
+               >
                   <i class="mdi mdi-18px mdi-code-tags mr-1" />
                   <span>
                      <span>{{ tab.content || 'Query' | cutText }} #{{ tab.index }}</span>
@@ -256,52 +259,59 @@
                   </span>
                </a>
             </li>
-            <li slot="header" class="tab-item dropdown tools-dropdown">
-               <a
-                  class="tab-link workspace-tools-link dropdown-toggle"
-                  tabindex="0"
-                  :title="$t('word.tools')"
+            <template #header>
+               <li
+                  v-if="workspace.customizations.processesList"
+                  class="tab-item dropdown tools-dropdown"
                >
-                  <i class="mdi mdi-24px mdi-tools" />
-               </a>
-               <ul class="menu text-left text-uppercase">
-                  <li v-if="workspace.customizations.processesList" class="menu-item">
-                     <a class="c-hand p-vcentered" @click="showProcessesModal">
-                        <i class="mdi mdi-memory mr-1 tool-icon" />
-                        <span>{{ $t('message.processesList') }}</span>
-                     </a>
-                  </li>
-                  <li
-                     v-if="workspace.customizations.variables"
-                     class="menu-item"
-                     title="Coming..."
+                  <a
+                     class="tab-link workspace-tools-link dropdown-toggle"
+                     tabindex="0"
+                     :title="$t('word.tools')"
                   >
-                     <a class="c-hand p-vcentered disabled">
-                        <i class="mdi mdi-shape mr-1 tool-icon" />
-                        <span>{{ $t('word.variables') }}</span>
-                     </a>
-                  </li>
-                  <li
-                     v-if="workspace.customizations.usersManagement"
-                     class="menu-item"
-                     title="Coming..."
+                     <i class="mdi mdi-24px mdi-tools" />
+                  </a>
+                  <ul v-if="hasTools" class="menu text-left text-uppercase">
+                     <li class="menu-item">
+                        <a class="c-hand p-vcentered" @click="showProcessesModal">
+                           <i class="mdi mdi-memory mr-1 tool-icon" />
+                           <span>{{ $t('message.processesList') }}</span>
+                        </a>
+                     </li>
+                     <li
+                        v-if="workspace.customizations.variables"
+                        class="menu-item"
+                        title="Coming..."
+                     >
+                        <a class="c-hand p-vcentered disabled">
+                           <i class="mdi mdi-shape mr-1 tool-icon" />
+                           <span>{{ $t('word.variables') }}</span>
+                        </a>
+                     </li>
+                     <li
+                        v-if="workspace.customizations.usersManagement"
+                        class="menu-item"
+                        title="Coming..."
+                     >
+                        <a class="c-hand p-vcentered disabled">
+                           <i class="mdi mdi-account-group mr-1 tool-icon" />
+                           <span>{{ $t('message.manageUsers') }}</span>
+                        </a>
+                     </li>
+                  </ul>
+               </li>
+            </template>
+            <template #footer>
+               <li class="tab-item">
+                  <a
+                     class="tab-add"
+                     :title="$t('message.openNewTab')"
+                     @click="addQueryTab"
                   >
-                     <a class="c-hand p-vcentered disabled">
-                        <i class="mdi mdi-account-group mr-1 tool-icon" />
-                        <span>{{ $t('message.manageUsers') }}</span>
-                     </a>
-                  </li>
-               </ul>
-            </li>
-            <li slot="footer" class="tab-item">
-               <a
-                  class="tab-add"
-                  :title="$t('message.openNewTab')"
-                  @click="addQueryTab"
-               >
-                  <i class="mdi mdi-24px mdi-plus" />
-               </a>
-            </li>
+                     <i class="mdi mdi-24px mdi-plus" />
+                  </a>
+               </li>
+            </template>
          </Draggable>
          <WorkspaceEmptyState v-if="!workspace.tabs.length" @new-tab="addQueryTab" />
          <template v-for="tab of workspace.tabs">
@@ -561,7 +571,7 @@ export default {
          return this.workspace ? this.workspace.selectedTab : null;
       },
       queryTabs () {
-         return this.workspace.tabs.filter(tab => tab.type === 'query');
+         return this.workspace ? this.workspace.tabs.filter(tab => tab.type === 'query') : [];
       },
       schemaChild () {
          for (const key in this.workspace.breadcrumbs) {
@@ -569,19 +579,20 @@ export default {
             if (this.workspace.breadcrumbs[key]) return this.workspace.breadcrumbs[key];
          }
          return false;
+      },
+      hasTools () {
+         return this.workspace.customizations.processesList ||
+            this.workspace.customizations.usersManagement ||
+            this.workspace.customizations.variables;
       }
    },
    watch: {
-      selectedTab (newVal, oldVal) {
-         if (newVal !== oldVal) {
+      queryTabs: function (newVal, oldVal) {
+         if (newVal.length > oldVal.length) {
             setTimeout(() => {
-               const element = this.$refs['tab-selected'] ? this.$refs['tab-selected'][0] : null;
-               if (element) {
-                  element.setAttribute('tabindex', '-1');
-                  element.focus();
-                  element.removeAttribute('tabindex');
-               }
-            }, 50);
+               const scroller = this.$refs.tabWrap;
+               if (scroller) scroller.$el.scrollLeft = scroller.$el.scrollWidth;
+            }, 0);
          }
       }
    },

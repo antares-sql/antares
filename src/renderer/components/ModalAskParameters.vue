@@ -6,18 +6,18 @@
       @confirm="runRoutine"
       @hide="closeModal"
    >
-      <template slot="header">
+      <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-play mr-1" />
             <span class="cut-text">{{ $t('word.parameters') }}: {{ localRoutine.name }}</span>
          </div>
       </template>
-      <div slot="body">
+      <template #body>
          <div class="content">
             <form class="form-horizontal">
                <div
                   v-for="(parameter, i) in inParameters"
-                  :key="parameter._id"
+                  :key="parameter._antares_id"
                   class="form-group"
                >
                   <div class="col-4">
@@ -43,7 +43,7 @@
                </div>
             </form>
          </div>
-      </div>
+      </template>
    </ConfirmModal>
 </template>
 

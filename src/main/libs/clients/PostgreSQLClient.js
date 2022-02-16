@@ -9,6 +9,7 @@ function pgToString (value) {
    return value.toString();
 }
 
+types.setTypeParser(20, a => parseInt(a));// bigint string to number
 types.setTypeParser(1082, pgToString); // date
 types.setTypeParser(1083, pgToString); // time
 types.setTypeParser(1114, pgToString); // timestamp
@@ -20,6 +21,8 @@ export class PostgreSQLClient extends AntaresCore {
       super(args);
 
       this._schema = null;
+      this._runningConnections = new Map();
+      this._connectionsToCommit = new Map();
 
       this.types = {};
       for (const key in types.builtins)
@@ -69,9 +72,11 @@ export class PostgreSQLClient extends AntaresCore {
    }
 
    /**
+    *
+    * @returns dbConfig
     * @memberof PostgreSQLClient
     */
-   async connect () {
+   async getDbConfig () {
       const dbConfig = {
          host: this._params.host,
          port: this._params.port,
@@ -100,15 +105,43 @@ export class PostgreSQLClient extends AntaresCore {
          }
       }
 
-      if (!this._poolSize) {
-         const client = new Client(dbConfig);
-         await client.connect();
-         this._connection = client;
+      return dbConfig;
+   }
+
+   /**
+    * @memberof PostgreSQLClient
+    */
+   async connect () {
+      if (!this._poolSize)
+         this._connection = await this.getConnection();
+      else
+         this._connection = await this.getConnectionPool();
+   }
+
+   async getConnection () {
+      const dbConfig = await this.getDbConfig();
+      const client = new Client(dbConfig);
+      await client.connect();
+      const connection = client;
+
+      if (this._params.readonly)
+         await connection.query('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY');
+
+      return connection;
+   }
+
+   async getConnectionPool () {
+      const dbConfig = await this.getDbConfig();
+      const pool = new Pool({ ...dbConfig, max: this._poolSize });
+      const connection = pool;
+
+      if (this._params.readonly) {
+         connection.on('connect', conn => {
+            conn.query('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY');
+         });
       }
-      else {
-         const pool = new Pool({ ...dbConfig, max: this._poolSize });
-         this._connection = pool;
-      }
+
+      return connection;
    }
 
    /**
@@ -120,15 +153,23 @@ export class PostgreSQLClient extends AntaresCore {
    }
 
    /**
-    * Executes an "USE" query
+    * Executes an 'SET search_path TO "${schema}"' query
     *
     * @param {String} schema
+    * @param {Object?} connection optional
     * @memberof PostgreSQLClient
     */
-   use (schema) {
+   use (schema, connection) {
       this._schema = schema;
-      if (schema)
-         return this.raw(`SET search_path TO "${schema}"`);
+
+      if (schema) {
+         const sql = `SET search_path TO "${schema}"`;
+
+         if (connection === undefined)
+            return this.raw(sql);
+         else
+            return connection.query(sql);
+      }
    }
 
    /**
@@ -143,6 +184,7 @@ export class PostgreSQLClient extends AntaresCore {
 
       const tablesArr = [];
       const triggersArr = [];
+      let schemaSize = 0;
 
       for (const db of databases) {
          if (!schemas.has(db.database)) continue;
@@ -168,19 +210,20 @@ export class PostgreSQLClient extends AntaresCore {
          }
 
          let { rows: triggers } = await this.raw(`
-            SELECT event_object_schema AS table_schema,
-               event_object_table AS table_name,
-               trigger_schema,
-               trigger_name,
-               string_agg(event_manipulation, ',') AS event,
-               action_timing AS activation,
-               action_condition AS condition,
-               action_statement AS definition
-            FROM information_schema.triggers
+            SELECT
+               pg_class.relname AS table_name,
+               pg_trigger.tgname AS trigger_name,
+               pg_namespace.nspname AS trigger_schema,
+               (pg_trigger.tgenabled != 'D')::bool AS enabled
+            FROM pg_trigger
+            JOIN pg_class ON pg_trigger.tgrelid = pg_class.oid
+            JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace
+            JOIN information_schema.triggers ON information_schema.triggers.trigger_schema = pg_namespace.nspname 
+               AND information_schema.triggers.event_object_table = pg_class.relname
+               AND information_schema.triggers.trigger_name = pg_trigger.tgname
             WHERE trigger_schema = '${db.database}'
-            GROUP BY 1,2,3,4,6,7,8
-            ORDER BY table_schema,
-                     table_name
+            GROUP BY 1, 2, 3, 4
+            ORDER BY table_name
          `);
 
          if (triggers.length) {
@@ -196,11 +239,14 @@ export class PostgreSQLClient extends AntaresCore {
          if (schemas.has(db.database)) {
             // TABLES
             const remappedTables = tablesArr.filter(table => table.Db === db.database).map(table => {
+               const tableSize = +table.data_length + table.index_length;
+               schemaSize += tableSize;
+
                return {
                   name: table.table_name,
                   type: table.table_type === 'VIEW' ? 'view' : 'table',
                   rows: table.reltuples,
-                  size: +table.data_length + +table.index_length,
+                  size: tableSize,
                   collation: table.Collation,
                   comment: table.comment,
                   engine: ''
@@ -239,17 +285,16 @@ export class PostgreSQLClient extends AntaresCore {
                return {
                   name: `${trigger.table_name}.${trigger.trigger_name}`,
                   orgName: trigger.trigger_name,
-                  timing: trigger.activation,
                   definer: '',
-                  definition: trigger.definition,
-                  event: trigger.event,
                   table: trigger.table_name,
-                  sqlMode: ''
+                  sqlMode: '',
+                  enabled: trigger.enabled
                };
             });
 
             return {
                name: db.database,
+               size: schemaSize,
                tables: remappedTables,
                functions: remappedFunctions,
                procedures: remappedProcedures,
@@ -261,6 +306,7 @@ export class PostgreSQLClient extends AntaresCore {
          else {
             return {
                name: db.database,
+               size: 0,
                tables: [],
                functions: [],
                procedures: [],
@@ -302,6 +348,7 @@ export class PostgreSQLClient extends AntaresCore {
             isArray,
             schema: field.table_schema,
             table: field.table_name,
+            numScale: field.numeric_scale,
             numPrecision: field.numeric_precision,
             datePrecision: field.datetime_precision,
             charLength: field.character_maximum_length,
@@ -500,7 +547,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * CREATE SCHEMA
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async createSchema (params) {
@@ -510,7 +557,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * ALTER DATABASE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async alterSchema (params) {
@@ -520,7 +567,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * DROP DATABASE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async dropSchema (params) {
@@ -552,7 +599,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * DROP VIEW
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async dropView (params) {
@@ -563,7 +610,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * ALTER VIEW
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async alterView (params) {
@@ -579,7 +626,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * CREATE VIEW
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async createView (params) {
@@ -597,19 +644,25 @@ export class PostgreSQLClient extends AntaresCore {
       const [table, triggerName] = trigger.split('.');
 
       const results = await this.raw(`
-         SELECT event_object_schema AS table_schema,
-            event_object_table AS table_name,
-            trigger_schema,
-            trigger_name,
-            string_agg(event_manipulation, ',') AS event,
+         SELECT
+            information_schema.triggers.event_object_schema AS table_schema,
+            information_schema.triggers.event_object_table AS table_name,
+            information_schema.triggers.trigger_schema,
+            information_schema.triggers.trigger_name,
+            string_agg(event_manipulation, ',') AS EVENT,
             action_timing AS activation,
             action_condition AS condition,
-            action_statement AS definition
-         FROM information_schema.triggers
+            action_statement AS definition,
+            (pg_trigger.tgenabled != 'D')::bool AS enabled
+         FROM pg_trigger
+         JOIN pg_class ON pg_trigger.tgrelid = pg_class.oid
+         JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace
+         JOIN information_schema.triggers ON pg_namespace.nspname = information_schema.triggers.trigger_schema
+            AND pg_class.relname = information_schema.triggers.event_object_table
          WHERE trigger_schema = '${schema}'
          AND trigger_name = '${triggerName}'
          AND event_object_table = '${table}'
-         GROUP BY 1,2,3,4,6,7,8
+         GROUP BY 1,2,3,4,6,7,8,9
          ORDER BY table_schema,
                   table_name
       `);
@@ -619,7 +672,7 @@ export class PostgreSQLClient extends AntaresCore {
             sql: row.definition,
             name: row.trigger_name,
             table: row.table_name,
-            event: row.event.split(','),
+            event: [...new Set(row.event.split(','))],
             activation: row.activation
          };
       })[0];
@@ -628,7 +681,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * DROP TRIGGER
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async dropTrigger (params) {
@@ -640,7 +693,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * ALTER TRIGGER
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async alterTrigger (params) {
@@ -662,12 +715,24 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * CREATE TRIGGER
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async createTrigger (params) {
       const eventsString = Array.isArray(params.event) ? params.event.join(' OR ') : params.event;
       const sql = `CREATE TRIGGER "${params.name}" ${params.activation} ${eventsString} ON "${params.schema}"."${params.table}" FOR EACH ROW ${params.sql}`;
+      return await this.raw(sql, { split: false });
+   }
+
+   async enableTrigger ({ schema, trigger }) {
+      const [table, triggerName] = trigger.split('.');
+      const sql = `ALTER TABLE "${schema}"."${table}" ENABLE TRIGGER "${triggerName}"`;
+      return await this.raw(sql, { split: false });
+   }
+
+   async disableTrigger ({ schema, trigger }) {
+      const [table, triggerName] = trigger.split('.');
+      const sql = `ALTER TABLE "${schema}"."${table}" DISABLE TRIGGER "${triggerName}"`;
       return await this.raw(sql, { split: false });
    }
 
@@ -1055,14 +1120,64 @@ export class PostgreSQLClient extends AntaresCore {
       });
    }
 
+   /**
+    *
+    * @param {number} id
+    * @returns {Promise<null>}
+    */
    async killProcess (id) {
       return await this.raw(`SELECT pg_terminate_backend(${id})`);
    }
 
    /**
+    *
+    * @param {string} tabUid
+    * @returns {Promise<null>}
+    */
+   async killTabQuery (tabUid) {
+      const id = this._runningConnections.get(tabUid);
+      if (id)
+         return await this.raw(`SELECT pg_cancel_backend(${id})`);
+   }
+
+   /**
+    *
+    * @param {string} tabUid
+    * @returns {Promise<null>}
+    */
+   async commitTab (tabUid) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection) {
+         await connection.query('COMMIT');
+         return this.destroyConnectionToCommit(tabUid);
+      }
+   }
+
+   /**
+    *
+    * @param {string} tabUid
+    * @returns {Promise<null>}
+    */
+   async rollbackTab (tabUid) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection) {
+         await connection.query('ROLLBACK');
+         return this.destroyConnectionToCommit(tabUid);
+      }
+   }
+
+   destroyConnectionToCommit (tabUid) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection) {
+         connection.end();
+         this._connectionsToCommit.delete(tabUid);
+      }
+   }
+
+   /**
     * CREATE TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async createTable (params) {
@@ -1086,7 +1201,7 @@ export class PostgreSQLClient extends AntaresCore {
          const length = typeInfo.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
 
          newColumns.push(`"${field.name}" 
-            ${field.type.toUpperCase()}${length ? `(${length})` : ''} 
+            ${field.type.toUpperCase()}${length ? `(${length}${field.numScale !== null ? `,${field.numScale}` : ''})` : ''} 
             ${field.unsigned ? 'UNSIGNED' : ''} 
             ${field.zerofill ? 'ZEROFILL' : ''}
             ${field.nullable ? 'NULL' : 'NOT NULL'}
@@ -1120,7 +1235,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * ALTER TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async alterTable (params) {
@@ -1150,7 +1265,7 @@ export class PostgreSQLClient extends AntaresCore {
          const length = typeInfo.length ? addition.numLength || addition.charLength || addition.datePrecision : false;
 
          alterColumns.push(`ADD COLUMN "${addition.name}" 
-            ${addition.type.toUpperCase()}${length ? `(${length})` : ''}${addition.isArray ? '[]' : ''}
+            ${addition.type.toUpperCase()}${length ? `(${length}${addition.numScale !== null ? `,${addition.numScale}` : ''})` : ''}${addition.isArray ? '[]' : ''} 
             ${addition.unsigned ? 'UNSIGNED' : ''} 
             ${addition.zerofill ? 'ZEROFILL' : ''}
             ${addition.nullable ? 'NULL' : 'NOT NULL'}
@@ -1196,7 +1311,7 @@ export class PostgreSQLClient extends AntaresCore {
                localType = change.type.toLowerCase();
          }
 
-         alterColumns.push(`ALTER COLUMN "${change.name}" TYPE ${localType}${length ? `(${length})` : ''}${change.isArray ? '[]' : ''} USING "${change.name}"::${localType}`);
+         alterColumns.push(`ALTER COLUMN "${change.name}" TYPE ${localType}${length ? `(${length}${change.numScale ? `,${change.numScale}` : ''})` : ''}${change.isArray ? '[]' : ''} USING "${change.name}"::${localType}`);
          alterColumns.push(`ALTER COLUMN "${change.name}" ${change.nullable ? 'DROP NOT NULL' : 'SET NOT NULL'}`);
          alterColumns.push(`ALTER COLUMN "${change.name}" ${change.default ? `SET DEFAULT ${change.default}` : 'DROP DEFAULT'}`);
 
@@ -1266,7 +1381,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * DUPLICATE TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async duplicateTable (params) {
@@ -1277,7 +1392,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * TRUNCATE TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async truncateTable (params) {
@@ -1288,7 +1403,7 @@ export class PostgreSQLClient extends AntaresCore {
    /**
     * DROP TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof PostgreSQLClient
     */
    async dropTable (params) {
@@ -1363,16 +1478,16 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async raw (sql, args) {
+      if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
+
       args = {
          nest: false,
          details: false,
          split: true,
          comments: true,
+         autocommit: true,
          ...args
       };
-
-      if (args.schema && args.schema !== 'public')
-         await this.use(args.schema);
 
       if (!args.comments)
          sql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '');// Remove comments
@@ -1385,7 +1500,26 @@ export class PostgreSQLClient extends AntaresCore {
             .map(q => q.trim())
          : [sql];
 
-      if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
+      let connection;
+      const isPool = this._connection instanceof Pool;
+
+      if (!args.autocommit && args.tabUid) { // autocommit OFF
+         if (this._connectionsToCommit.has(args.tabUid))
+            connection = this._connectionsToCommit.get(args.tabUid);
+         else {
+            connection = await this.getConnection();
+            await connection.query('START TRANSACTION');
+            this._connectionsToCommit.set(args.tabUid, connection);
+         }
+      }
+      else// autocommit ON
+         connection = isPool ? await this._connection.connect() : this._connection;
+
+      if (args.tabUid && isPool)
+         this._runningConnections.set(args.tabUid, connection.processID);
+
+      if (args.schema && args.schema !== 'public')
+         await this.use(args.schema, connection);
 
       for (const query of queries) {
          if (!query) continue;
@@ -1395,15 +1529,12 @@ export class PostgreSQLClient extends AntaresCore {
          let keysArr = [];
 
          const { rows, report, fields, keys, duration } = await new Promise((resolve, reject) => {
-            this._connection.query({
-               rowMode: args.nest ? 'array' : null,
-               text: query
-            }, async (err, res) => {
-               timeStop = new Date();
+            (async () => {
+               try {
+                  const res = await connection.query({ rowMode: args.nest ? 'array' : null, text: query });
 
-               if (err)
-                  reject(err);
-               else {
+                  timeStop = new Date();
+
                   let ast;
 
                   try {
@@ -1492,6 +1623,10 @@ export class PostgreSQLClient extends AntaresCore {
                               });
                            }
                            catch (err) {
+                              if (isPool && args.autocommit) {
+                                 connection.release();
+                                 this._runningConnections.delete(args.tabUid);
+                              }
                               reject(err);
                            }
 
@@ -1500,6 +1635,10 @@ export class PostgreSQLClient extends AntaresCore {
                               keysArr = keysArr ? [...keysArr, ...response] : response;
                            }
                            catch (err) {
+                              if (isPool && args.autocommit) {
+                                 connection.release();
+                                 this._runningConnections.delete(args.tabUid);
+                              }
                               reject(err);
                            }
                         }
@@ -1514,10 +1653,22 @@ export class PostgreSQLClient extends AntaresCore {
                      keys: keysArr
                   });
                }
-            });
+               catch (err) {
+                  if (isPool && args.autocommit) {
+                     connection.release();
+                     this._runningConnections.delete(args.tabUid);
+                  }
+                  reject(err);
+               }
+            })();
          });
 
          resultsArr.push({ rows, report, fields, keys, duration });
+      }
+
+      if (isPool && args.autocommit) {
+         connection.release();
+         this._runningConnections.delete(args.tabUid);
       }
 
       return resultsArr.length === 1 ? resultsArr[0] : resultsArr;

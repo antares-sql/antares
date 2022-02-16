@@ -130,9 +130,13 @@ module.exports = {
       schedulers: 'Schedulers',
       includes: 'Includes',
       drop: 'Drop',
-      rows: 'Rows',
       completed: 'Completed',
-      aborted: 'Aborted'
+      aborted: 'Aborted',
+      disabled: 'Disabled',
+      enable: 'Enable',
+      disable: 'Disable',
+      commit: 'Commit',
+      rollback: 'Rollback'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -265,7 +269,15 @@ module.exports = {
       fechingTableExport: 'Fetching {table} data',
       writingTableExport: 'Writing {table} data',
       checkAllTables: 'Check all tables',
-      uncheckAllTables: 'Uncheck all tables'
+      uncheckAllTables: 'Uncheck all tables',
+      goToDownloadPage: 'Go to download page',
+      readOnlyMode: 'Read-only mode',
+      killQuery: 'Kill query',
+      insertRow: 'Insert row | Insert rows',
+      commitMode: 'Commit mode',
+      autoCommit: 'Auto commit',
+      manualCommit: 'Manual commit',
+      actionSuccessful: '{action} successful'
    },
    faker: {
       address: 'Address',

@@ -149,7 +149,7 @@ export default connections => {
       }
    });
 
-   ipcMain.handle('raw-query', async (event, { uid, query, schema }) => {
+   ipcMain.handle('raw-query', async (event, { uid, query, schema, tabUid, autocommit }) => {
       if (!query) return;
 
       try {
@@ -157,6 +157,8 @@ export default connections => {
             nest: true,
             details: true,
             schema,
+            tabUid,
+            autocommit,
             comments: false
          });
 
@@ -262,5 +264,52 @@ export default connections => {
       }
 
       return { status: 'success', response: { willAbort } };
+   });
+   ipcMain.handle('kill-tab-query', async (event, { uid, tabUid }) => {
+      if (!tabUid) return;
+
+      try {
+         await connections[uid].killTabQuery(tabUid);
+         return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
+   ipcMain.handle('commit-tab', async (event, { uid, tabUid }) => {
+      if (!tabUid) return;
+
+      try {
+         await connections[uid].commitTab(tabUid);
+         return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
+   ipcMain.handle('rollback-tab', async (event, { uid, tabUid }) => {
+      if (!tabUid) return;
+
+      try {
+         await connections[uid].rollbackTab(tabUid);
+         return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
+   ipcMain.handle('destroy-connection-to-commit', async (event, { uid, tabUid }) => {
+      if (!tabUid) return;
+
+      try {
+         await connections[uid].destroyConnectionToCommit(tabUid);
+         return { status: 'success' };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
    });
 };

@@ -10,6 +10,30 @@
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-play text-light pr-1" /> {{ $t('word.run') }}</span>
       </div>
+      <div
+         v-if="selectedMisc.type === 'trigger' && customizations.triggerEnableDisable"
+         class="context-element"
+         @click="toggleTrigger"
+      >
+         <span v-if="!selectedMisc.enabled" class="d-flex">
+            <i class="mdi mdi-18px mdi-play text-light pr-1" /> {{ $t('word.enable') }}
+         </span>
+         <span v-else class="d-flex">
+            <i class="mdi mdi-18px mdi-pause text-light pr-1" /> {{ $t('word.disable') }}
+         </span>
+      </div>
+      <div
+         v-if="selectedMisc.type === 'scheduler'"
+         class="context-element"
+         @click="toggleScheduler"
+      >
+         <span v-if="!selectedMisc.enabled" class="d-flex">
+            <i class="mdi mdi-18px mdi-play text-light pr-1" /> {{ $t('word.enable') }}
+         </span>
+         <span v-else class="d-flex">
+            <i class="mdi mdi-18px mdi-pause text-light pr-1" /> {{ $t('word.disable') }}
+         </span>
+      </div>
       <div class="context-element" @click="showDeleteModal">
          <span class="d-flex"><i class="mdi mdi-18px mdi-table-remove text-light pr-1" /> {{ $t('word.delete') }}</span>
       </div>
@@ -18,17 +42,17 @@
          @confirm="deleteMisc"
          @hide="hideDeleteModal"
       >
-         <template slot="header">
+         <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-delete mr-1" />
                <span class="cut-text">{{ deleteMessage }}</span>
             </div>
          </template>
-         <div slot="body">
+         <template #body>
             <div class="mb-2">
                {{ $t('message.deleteCorfirm') }} "<b>{{ selectedMisc.name }}</b>"?
             </div>
-         </div>
+         </template>
       </ConfirmModal>
       <ModalAskParameters
          v-if="isAskingParameters"
@@ -78,6 +102,9 @@ export default {
       workspace () {
          return this.getWorkspace(this.selectedWorkspace);
       },
+      customizations () {
+         return this.getWorkspace(this.selectedWorkspace).customizations;
+      },
       deleteMessage () {
          switch (this.selectedMisc.type) {
             case 'trigger':
@@ -98,6 +125,8 @@ export default {
       ...mapActions({
          addNotification: 'notifications/addNotification',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
+         addLoadingElement: 'workspaces/addLoadingElement',
+         removeLoadingElement: 'workspaces/removeLoadingElement',
          removeTabs: 'workspaces/removeTabs',
          newTab: 'workspaces/newTab'
       }),
@@ -273,6 +302,68 @@ export default {
 
          this.newTab({ uid: this.workspace.uid, content: sql, type: 'query', autorun: true });
          this.closeContext();
+      },
+      async toggleTrigger () {
+         this.addLoadingElement({
+            name: this.selectedMisc.name,
+            schema: this.selectedSchema,
+            type: 'trigger'
+         });
+
+         try {
+            const { status, response } = await Triggers.toggleTrigger({
+               uid: this.selectedWorkspace,
+               schema: this.selectedSchema,
+               trigger: this.selectedMisc.name,
+               enabled: this.selectedMisc.enabled
+            });
+
+            if (status !== 'success')
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         this.removeLoadingElement({
+            name: this.selectedMisc.name,
+            schema: this.selectedSchema,
+            type: 'trigger'
+         });
+
+         this.closeContext();
+         this.$emit('reload');
+      },
+      async toggleScheduler () {
+         this.addLoadingElement({
+            name: this.selectedMisc.name,
+            schema: this.selectedSchema,
+            type: 'scheduler'
+         });
+
+         try {
+            const { status, response } = await Schedulers.toggleScheduler({
+               uid: this.selectedWorkspace,
+               schema: this.selectedSchema,
+               scheduler: this.selectedMisc.name,
+               enabled: this.selectedMisc.enabled
+            });
+
+            if (status !== 'success')
+               this.addNotification({ status: 'error', message: response });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         this.removeLoadingElement({
+            name: this.selectedMisc.name,
+            schema: this.selectedSchema,
+            type: 'scheduler'
+         });
+
+         this.closeContext();
+         this.$emit('reload');
       }
    }
 };

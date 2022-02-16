@@ -6,13 +6,13 @@
       @confirm="confirmForeignsChange"
       @hide="$emit('hide')"
    >
-      <template :slot="'header'">
+      <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-key-link mr-1" />
             <span class="cut-text">{{ $t('word.foreignKeys') }} "{{ table }}"</span>
          </div>
       </template>
-      <div :slot="'body'">
+      <template #body>
          <div class="columns col-gapless">
             <div class="column col-5">
                <div class="panel" :style="{ height: modalInnerHeight + 'px'}">
@@ -36,10 +36,10 @@
                   <div ref="indexesPanel" class="panel-body p-0 pr-1">
                      <div
                         v-for="foreign in foreignProxy"
-                        :key="foreign._id"
+                        :key="foreign._antares_id"
                         class="tile tile-centered c-hand mb-1 p-1"
-                        :class="{'selected-element': selectedForeignID === foreign._id}"
-                        @click="selectForeign($event, foreign._id)"
+                        :class="{'selected-element': selectedForeignID === foreign._antares_id}"
+                        @click="selectForeign($event, foreign._antares_id)"
                      >
                         <div class="tile-icon">
                            <div>
@@ -68,7 +68,7 @@
                            <button
                               class="btn btn-link remove-field p-0 mr-2"
                               :title="$t('word.delete')"
-                              @click.prevent="removeIndex(foreign._id)"
+                              @click.prevent="removeIndex(foreign._antares_id)"
                            >
                               <i class="mdi mdi-close" />
                            </button>
@@ -197,7 +197,7 @@
                </div>
             </div>
          </div>
-      </div>
+      </template>
    </ConfirmModal>
 </template>
 
@@ -238,7 +238,7 @@ export default {
    },
    computed: {
       selectedForeignObj () {
-         return this.foreignProxy.find(foreign => foreign._id === this.selectedForeignID);
+         return this.foreignProxy.find(foreign => foreign._antares_id === this.selectedForeignID);
       },
       isChanged () {
          return JSON.stringify(this.localKeyUsage) !== JSON.stringify(this.foreignProxy);
@@ -288,8 +288,8 @@ export default {
       },
       addForeign () {
          this.foreignProxy = [...this.foreignProxy, {
-            _id: uidGen(),
-            constraintName: `FK_${this.foreignProxy.length + 1}`,
+            _antares_id: uidGen(),
+            constraintName: `FK_${uidGen()}`,
             refSchema: this.schema,
             table: this.table,
             refTable: '',
@@ -307,19 +307,19 @@ export default {
          }, 20);
       },
       removeIndex (id) {
-         this.foreignProxy = this.foreignProxy.filter(foreign => foreign._id !== id);
+         this.foreignProxy = this.foreignProxy.filter(foreign => foreign._antares_id !== id);
 
          if (this.selectedForeignID === id && this.foreignProxy.length)
             this.resetSelectedID();
       },
       clearChanges () {
          this.foreignProxy = JSON.parse(JSON.stringify(this.localKeyUsage));
-         if (!this.foreignProxy.some(foreign => foreign._id === this.selectedForeignID))
+         if (!this.foreignProxy.some(foreign => foreign._antares_id === this.selectedForeignID))
             this.resetSelectedID();
       },
       toggleField (field) {
          this.foreignProxy = this.foreignProxy.map(foreign => {
-            if (foreign._id === this.selectedForeignID)
+            if (foreign._antares_id === this.selectedForeignID)
                foreign.field = field;
 
             return foreign;
@@ -327,14 +327,14 @@ export default {
       },
       toggleRefField (field) {
          this.foreignProxy = this.foreignProxy.map(foreign => {
-            if (foreign._id === this.selectedForeignID)
+            if (foreign._antares_id === this.selectedForeignID)
                foreign.refField = field;
 
             return foreign;
          });
       },
       resetSelectedID () {
-         this.selectedForeignID = this.foreignProxy.length ? this.foreignProxy[0]._id : '';
+         this.selectedForeignID = this.foreignProxy.length ? this.foreignProxy[0]._antares_id : '';
       },
       async getRefFields () {
          if (!this.selectedForeignObj.refTable) return;

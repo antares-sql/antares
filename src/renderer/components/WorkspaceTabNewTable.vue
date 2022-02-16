@@ -5,7 +5,7 @@
             <div class="workspace-query-buttons">
                <button
                   class="btn btn-primary btn-sm"
-                  :disabled="!isChanged"
+                  :disabled="!isChanged || !isValid"
                   :class="{'loading':isSaving}"
                   title="CTRL+S"
                   @click="saveChanges"
@@ -242,6 +242,9 @@ export default {
             JSON.stringify(this.originalKeyUsage) !== JSON.stringify(this.localKeyUsage) ||
             JSON.stringify(this.originalIndexes) !== JSON.stringify(this.localIndexes) ||
             JSON.stringify(this.tableOptions) !== JSON.stringify(this.localOptions);
+      },
+      isValid () {
+         return !!this.localFields.length && !!this.localOptions.name.trim().length;
       }
    },
    watch: {
@@ -287,7 +290,7 @@ export default {
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
       }),
       async saveChanges () {
-         if (this.isSaving) return;
+         if (this.isSaving || !this.isValid) return;
          this.isSaving = true;
 
          const params = {
@@ -344,7 +347,7 @@ export default {
       },
       addField () {
          this.localFields.push({
-            _id: uidGen(),
+            _antares_id: uidGen(),
             name: `${this.$tc('word.field', 1)}_${++this.newFieldsCounter}`,
             key: '',
             type: this.workspace.dataTypes[0].types[0].name,
@@ -385,8 +388,8 @@ export default {
          });
       },
       duplicateField (uid) {
-         const fieldToClone = Object.assign({}, this.localFields.find(field => field._id === uid));
-         fieldToClone._id = uidGen();
+         const fieldToClone = Object.assign({}, this.localFields.find(field => field._antares_id === uid));
+         fieldToClone._antares_id = uidGen();
          fieldToClone.name = `${fieldToClone.name}_copy`;
          fieldToClone.order = this.localFields.length + 1;
          this.localFields = [...this.localFields, fieldToClone];
@@ -397,11 +400,11 @@ export default {
          }, 20);
       },
       removeField (uid) {
-         this.localFields = this.localFields.filter(field => field._id !== uid);
+         this.localFields = this.localFields.filter(field => field._antares_id !== uid);
       },
       addNewIndex (payload) {
          this.localIndexes = [...this.localIndexes, {
-            _id: uidGen(),
+            _antares_id: uidGen(),
             name: payload.index === 'PRIMARY' ? 'PRIMARY' : payload.field,
             fields: [payload.field],
             type: payload.index,
@@ -413,7 +416,7 @@ export default {
       },
       addToIndex (payload) {
          this.localIndexes = this.localIndexes.map(index => {
-            if (index._id === payload.index) index.fields.push(payload.field);
+            if (index._antares_id === payload.index) index.fields.push(payload.field);
             return index;
          });
       },

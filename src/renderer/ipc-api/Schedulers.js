@@ -17,4 +17,8 @@ export default class {
    static createScheduler (params) {
       return ipcRenderer.invoke('create-scheduler', params);
    }
+
+   static toggleScheduler (params) {
+      return ipcRenderer.invoke('toggle-scheduler', params);
+   }
 }

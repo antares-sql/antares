@@ -342,7 +342,7 @@ export default {
                         field.default = `'${field.default}'`;
                   }
 
-                  return { ...field, _id: uidGen() };
+                  return { ...field, _antares_id: uidGen() };
                });
                this.localFields = JSON.parse(JSON.stringify(this.originalFields));
             }
@@ -365,7 +365,7 @@ export default {
 
                this.originalIndexes = Object.keys(indexesObj).map(index => {
                   return {
-                     _id: uidGen(),
+                     _antares_id: uidGen(),
                      name: index,
                      fields: indexesObj[index].map(field => field.column),
                      type: indexesObj[index][0].type,
@@ -391,7 +391,7 @@ export default {
             if (status === 'success') {
                this.originalKeyUsage = response.map(foreign => {
                   return {
-                     _id: uidGen(),
+                     _antares_id: uidGen(),
                      ...foreign
                   };
                });
@@ -411,25 +411,25 @@ export default {
          this.isSaving = true;
 
          // FIELDS
-         const originalIDs = this.originalFields.reduce((acc, curr) => [...acc, curr._id], []);
-         const localIDs = this.localFields.reduce((acc, curr) => [...acc, curr._id], []);
+         const originalIDs = this.originalFields.reduce((acc, curr) => [...acc, curr._antares_id], []);
+         const localIDs = this.localFields.reduce((acc, curr) => [...acc, curr._antares_id], []);
 
          // Fields Additions
-         const additions = this.localFields.filter((field, i) => !originalIDs.includes(field._id)).map(field => {
-            const lI = this.localFields.findIndex(localField => localField._id === field._id);
+         const additions = this.localFields.filter((field, i) => !originalIDs.includes(field._antares_id)).map(field => {
+            const lI = this.localFields.findIndex(localField => localField._antares_id === field._antares_id);
             const after = lI > 0 ? this.localFields[lI - 1].name : false;
             return { ...field, after };
          });
 
          // Fields Deletions
-         const deletions = this.originalFields.filter(field => !localIDs.includes(field._id));
+         const deletions = this.originalFields.filter(field => !localIDs.includes(field._antares_id));
 
          // Fields Changes
          const changes = [];
          this.originalFields.forEach((originalField, oI) => {
-            const lI = this.localFields.findIndex(localField => localField._id === originalField._id);
-            const originalSibling = oI > 0 ? this.originalFields[oI - 1]._id : false;
-            const localSibling = lI > 0 ? this.localFields[lI - 1]._id : false;
+            const lI = this.localFields.findIndex(localField => localField._antares_id === originalField._antares_id);
+            const originalSibling = oI > 0 ? this.originalFields[oI - 1]._antares_id : false;
+            const localSibling = lI > 0 ? this.localFields[lI - 1]._antares_id : false;
             const after = lI > 0 ? this.localFields[lI - 1].name : false;
             const orgName = originalField.name;
 
@@ -450,15 +450,15 @@ export default {
             changes: [],
             deletions: []
          };
-         const originalIndexIDs = this.originalIndexes.reduce((acc, curr) => [...acc, curr._id], []);
-         const localIndexIDs = this.localIndexes.reduce((acc, curr) => [...acc, curr._id], []);
+         const originalIndexIDs = this.originalIndexes.reduce((acc, curr) => [...acc, curr._antares_id], []);
+         const localIndexIDs = this.localIndexes.reduce((acc, curr) => [...acc, curr._antares_id], []);
 
          // Index Additions
-         indexChanges.additions = this.localIndexes.filter(index => !originalIndexIDs.includes(index._id));
+         indexChanges.additions = this.localIndexes.filter(index => !originalIndexIDs.includes(index._antares_id));
 
          // Index Changes
          this.originalIndexes.forEach(originalIndex => {
-            const lI = this.localIndexes.findIndex(localIndex => localIndex._id === originalIndex._id);
+            const lI = this.localIndexes.findIndex(localIndex => localIndex._antares_id === originalIndex._antares_id);
             if (JSON.stringify(originalIndex) !== JSON.stringify(this.localIndexes[lI])) {
                if (this.localIndexes[lI]) {
                   indexChanges.changes.push({
@@ -471,7 +471,7 @@ export default {
          });
 
          // Index Deletions
-         indexChanges.deletions = this.originalIndexes.filter(index => !localIndexIDs.includes(index._id));
+         indexChanges.deletions = this.originalIndexes.filter(index => !localIndexIDs.includes(index._antares_id));
 
          // FOREIGN KEYS
          const foreignChanges = {
@@ -479,15 +479,15 @@ export default {
             changes: [],
             deletions: []
          };
-         const originalForeignIDs = this.originalKeyUsage.reduce((acc, curr) => [...acc, curr._id], []);
-         const localForeignIDs = this.localKeyUsage.reduce((acc, curr) => [...acc, curr._id], []);
+         const originalForeignIDs = this.originalKeyUsage.reduce((acc, curr) => [...acc, curr._antares_id], []);
+         const localForeignIDs = this.localKeyUsage.reduce((acc, curr) => [...acc, curr._antares_id], []);
 
          // Foreigns Additions
-         foreignChanges.additions = this.localKeyUsage.filter(foreign => !originalForeignIDs.includes(foreign._id));
+         foreignChanges.additions = this.localKeyUsage.filter(foreign => !originalForeignIDs.includes(foreign._antares_id));
 
          // Foreigns Changes
          this.originalKeyUsage.forEach(originalForeign => {
-            const lI = this.localKeyUsage.findIndex(localForeign => localForeign._id === originalForeign._id);
+            const lI = this.localKeyUsage.findIndex(localForeign => localForeign._antares_id === originalForeign._antares_id);
             if (JSON.stringify(originalForeign) !== JSON.stringify(this.localKeyUsage[lI])) {
                if (this.localKeyUsage[lI]) {
                   foreignChanges.changes.push({
@@ -499,13 +499,19 @@ export default {
          });
 
          // Foreigns Deletions
-         foreignChanges.deletions = this.originalKeyUsage.filter(foreign => !localForeignIDs.includes(foreign._id));
+         foreignChanges.deletions = this.originalKeyUsage.filter(foreign => !localForeignIDs.includes(foreign._antares_id));
 
          // ALTER
          const params = {
             uid: this.connection.uid,
             schema: this.schema,
             table: this.table,
+            tableStructure: {
+               name: this.localOptions.name,
+               fields: this.localFields,
+               foreigns: this.localKeyUsage,
+               indexes: this.localIndexes
+            },
             additions,
             changes,
             deletions,
@@ -555,7 +561,7 @@ export default {
       },
       addField () {
          this.localFields.push({
-            _id: uidGen(),
+            _antares_id: uidGen(),
             name: `${this.$tc('word.field', 1)}_${++this.newFieldsCounter}`,
             key: '',
             type: this.workspace.dataTypes[0].types[0].name,
@@ -597,8 +603,8 @@ export default {
          });
       },
       duplicateField (uid) {
-         const fieldToClone = Object.assign({}, this.localFields.find(field => field._id === uid));
-         fieldToClone._id = uidGen();
+         const fieldToClone = Object.assign({}, this.localFields.find(field => field._antares_id === uid));
+         fieldToClone._antares_id = uidGen();
          fieldToClone.name = `${fieldToClone.name}_copy`;
          fieldToClone.order = this.localFields.length + 1;
          this.localFields = [...this.localFields, fieldToClone];
@@ -609,11 +615,19 @@ export default {
          }, 20);
       },
       removeField (uid) {
-         this.localFields = this.localFields.filter(field => field._id !== uid);
+         this.localFields = this.localFields.filter(field => field._antares_id !== uid);
+         this.localKeyUsage = this.localKeyUsage.filter(fk =>// Clear foreign keys
+            this.localFields.some(field => field.name === fk.field)
+         );
+         this.localIndexes = this.localIndexes.filter(index =>// Clear indexes
+            this.localFields.some(field =>
+               index.fields.includes(field.name)
+            )
+         );
       },
       addNewIndex (payload) {
          this.localIndexes = [...this.localIndexes, {
-            _id: uidGen(),
+            _antares_id: uidGen(),
             name: payload.index === 'PRIMARY' ? 'PRIMARY' : payload.field,
             fields: [payload.field],
             type: payload.index,
@@ -625,7 +639,7 @@ export default {
       },
       addToIndex (payload) {
          this.localIndexes = this.localIndexes.map(index => {
-            if (index._id === payload.index) index.fields.push(payload.field);
+            if (index._antares_id === payload.index) index.fields.push(payload.field);
             return index;
          });
       },

@@ -40,15 +40,13 @@ export default {
       }
    },
    watch: {
-      notifications: {
-         deep: true,
-         handler: function (notification) {
-            if (notification.length) {
-               this.timeouts[notification[0].uid] = setTimeout(() => {
-                  this.removeNotification(notification[0].uid);
-                  delete this.timeouts[notification.uid];
-               }, this.notificationsTimeout * 1000);
-            }
+      'notifications.length': function (val) {
+         if (val > 0) {
+            const nUid = this.notifications[0].uid;
+            this.timeouts[nUid] = setTimeout(() => {
+               this.removeNotification(nUid);
+               delete this.timeouts[nUid];
+            }, this.notificationsTimeout * 1000);
          }
       }
    },
@@ -63,11 +61,14 @@ export default {
          }
       },
       rearmTimeouts () {
+         const delay = 50;
+         let i = this.notifications.length * delay;
          for (const notification of this.notifications) {
             this.timeouts[notification.uid] = setTimeout(() => {
                this.removeNotification(notification.uid);
                delete this.timeouts[notification.uid];
-            }, this.notificationsTimeout * 1000);
+            }, (this.notificationsTimeout * 1000) + i);
+            i = i > delay ? i - delay : 0;
          }
       }
    }

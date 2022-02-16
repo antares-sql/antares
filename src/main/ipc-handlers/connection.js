@@ -9,11 +9,15 @@ export default connections => {
          port: +conn.port,
          user: conn.user,
          password: conn.password,
-         application_name: 'Antares SQL'
+         application_name: 'Antares SQL',
+         readonly: conn.readonly
       };
 
       if (conn.database)
          params.database = conn.database;
+
+      if (conn.databasePath)
+         params.databasePath = conn.databasePath;
 
       if (conn.ssl) {
          params.ssl = {
@@ -48,7 +52,7 @@ export default connections => {
          return { status: 'success' };
       }
       catch (err) {
-         return { status: 'error', response: err };
+         return { status: 'error', response: err.toString() };
       }
    });
 
@@ -62,11 +66,15 @@ export default connections => {
          port: +conn.port,
          user: conn.user,
          password: conn.password,
-         application_name: 'Antares SQL'
+         application_name: 'Antares SQL',
+         readonly: conn.readonly
       };
 
       if (conn.database)
          params.database = conn.database;
+
+      if (conn.databasePath)
+         params.databasePath = conn.databasePath;
 
       if (conn.schema)
          params.schema = conn.schema;

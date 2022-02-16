@@ -1,5 +1,5 @@
 {
-  "projectName": "Antares",
+  "projectName": "antares",
   "projectOwner": "Fabio286",
   "repoType": "github",
   "repoHost": "https://github.com",
@@ -111,7 +111,35 @@
       "contributions": [
         "platform"
       ]
+    },
+    {
+      "login": "kilianstallz",
+      "name": "Kilian Stallinger",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5290318?v=4",
+      "profile": "https://kilianstallinger.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "wenj91",
+      "name": "文杰",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12549338?v=4",
+      "profile": "https://github.com/wenj91",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "goYou",
+      "name": "goYou",
+      "avatar_url": "https://avatars.githubusercontent.com/u/62732795?v=4",
+      "profile": "https://github.com/goYou",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
-  "contributorsPerLine": 7
+  "contributorsPerLine": 7,
+  "skipCi": true
 }

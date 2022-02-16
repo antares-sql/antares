@@ -2,6 +2,7 @@ import { ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import Store from 'electron-store';
 const persistentStore = new Store({ name: 'settings' });
+const isMacOS = process.platform === 'darwin';
 
 let mainWindow;
 autoUpdater.allowPrerelease = persistentStore.get('allow_prerelease', true);
@@ -11,6 +12,9 @@ export default () => {
       mainWindow = event;
       if (process.windowsStore || (process.platform === 'linux' && !process.env.APPIMAGE))
          mainWindow.reply('no-auto-update');
+      else if (isMacOS) { // Temporary solution on MacOS for unsigned app updates
+         autoUpdater.autoDownload = false;
+      }
       else {
          autoUpdater.checkForUpdatesAndNotify().catch(() => {
             mainWindow.reply('check-failed');
@@ -28,7 +32,10 @@ export default () => {
    });
 
    autoUpdater.on('update-available', () => {
-      mainWindow.reply('update-available');
+      if (isMacOS)
+         mainWindow.reply('link-to-download');
+      else
+         mainWindow.reply('update-available');
    });
 
    autoUpdater.on('update-not-available', () => {

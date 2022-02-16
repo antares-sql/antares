@@ -6,7 +6,7 @@
             <div class="modal-title h6">
                <div class="d-flex">
                   <i class="mdi mdi-24px mdi-playlist-plus mr-1" />
-                  <span class="cut-text">{{ $t('message.tableFiller') }}</span>
+                  <span class="cut-text">{{ $tc('message.insertRow', 2) }}</span>
                </div>
             </div>
             <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -41,7 +41,7 @@
                               <label class="form-checkbox ml-3" :title="$t('word.insert')">
                                  <input
                                     type="checkbox"
-                                    :checked="!field.autoIncrement"
+                                    :checked="!fieldsToExclude.includes(field.name)"
                                     @change.prevent="toggleFields($event, field)"
                                  ><i class="form-icon" />
                               </label>
@@ -264,7 +264,7 @@ export default {
             else if (BIT.includes(field.type))
                fieldDefault = field.default.replaceAll('\'', '').replaceAll('b', '');
             else if (DATETIME.includes(field.type)) {
-               if (field.default && ['current_timestamp', 'now()'].includes(field.default.toLowerCase())) {
+               if (field.default && ['current_timestamp', 'now()'].some(term => field.default.toLowerCase().includes(term))) {
                   let datePrecision = '';
                   for (let i = 0; i < field.datePrecision; i++)
                      datePrecision += i === 0 ? '.S' : 'S';
@@ -281,7 +281,7 @@ export default {
 
          rowObj[field.name] = { value: fieldDefault };
 
-         if (field.autoIncrement)// Disable by default auto increment fields
+         if (field.autoIncrement || !!field.onUpdate)// Disable by default auto increment or "on update" fields
             this.fieldsToExclude = [...this.fieldsToExclude, field.name];
       }
 

@@ -2,6 +2,128 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.3](https://github.com/Fabio286/antares/compare/v0.4.2...v0.4.3) (2022-01-30)
+
+
+### Features
+
+* add Simplified Chinese translation ([6ef565c](https://github.com/Fabio286/antares/commit/6ef565cf078cb3f5b7bcdc226894cddeb6239db9))
+* **MySQL:** spatial fields support ([#165](https://github.com/Fabio286/antares/issues/165)) ([48ebf23](https://github.com/Fabio286/antares/commit/48ebf23bd1574408f429f2e1200ce878352007f6))
+
+
+### Bug Fixes
+
+* cell copy returns "undefined" in some conditions, closes [#170](https://github.com/Fabio286/antares/issues/170) ([8fb1f08](https://github.com/Fabio286/antares/commit/8fb1f0803efd9df0b66521e73bb6e1a229cf9691))
+* indexes and foreign keys not cleared after deletion of related field, closes [#182](https://github.com/Fabio286/antares/issues/182) ([9f033fb](https://github.com/Fabio286/antares/commit/9f033fb994916b4fb165e81e55e86127ca817791))
+* **PostgreSQL:** schema different than public not automatically selected, closes [#172](https://github.com/Fabio286/antares/issues/172) ([46b45c8](https://github.com/Fabio286/antares/commit/46b45c8ab64fb6837a532c4f8342167e4fd794bb))
+* scale on numeric fields that doesn't support it ([0cfd793](https://github.com/Fabio286/antares/commit/0cfd7938ee7d607dbad66ae452d0200223a6bab2))
+* **Windows:** temporary fix to Windows 7 style frame on app startup, closes [#169](https://github.com/Fabio286/antares/issues/169) ([1356011](https://github.com/Fabio286/antares/commit/1356011ba3b7dd72e12cb252a8787ce48a364fd4))
+
+
+### Improvements
+
+* support of scale in field's length setting ([eef7c1d](https://github.com/Fabio286/antares/commit/eef7c1dcecc6593ab0e69ed678187a57fe0a4fb6))
+
+### [0.4.2](https://github.com/Fabio286/antares/compare/v0.4.1...v0.4.2) (2022-01-10)
+
+
+### Features
+
+* **MySQL:** ability to cancel queries ([a59f77f](https://github.com/Fabio286/antares/commit/a59f77f618aea6156fc80fb832d3efcb9848411f))
+* **PostgreSQL:** ability to cancel queries ([0c00291](https://github.com/Fabio286/antares/commit/0c002918eb0226f6b3f21ed62117495f86396fb1))
+* save window state ([8f9385d](https://github.com/Fabio286/antares/commit/8f9385d50815635d091758ecd5d00884e3297ca0))
+* **UI:** textarea autofocus selecting a query tab, closes [#166](https://github.com/Fabio286/antares/issues/166) ([b4545b1](https://github.com/Fabio286/antares/commit/b4545b178f795712c781a3f4fc35eec31b5ad902))
+
+
+### Bug Fixes
+
+* **SQLite:** exception with some fields ([e7a1858](https://github.com/Fabio286/antares/commit/e7a18580915e7739bfa97948c6a0c4fc90a7e78a))
+
+
+### Improvements
+
+* hash for foreign key default names ([48c3e6a](https://github.com/Fabio286/antares/commit/48c3e6afc43c51f70a16703f1a71194f43da7a3e))
+* **MySQL:** support to ANSI_QUOTES sql_mode, closes [#158](https://github.com/Fabio286/antares/issues/158) ([d9a3eab](https://github.com/Fabio286/antares/commit/d9a3eab015302e9f23112f659658073ab3242191))
+
+### [0.4.1](https://github.com/Fabio286/antares/compare/v0.4.0...v0.4.1) (2021-12-11)
+
+
+### Features
+
+* language format detection for text fields ([a5fdcc1](https://github.com/Fabio286/antares/commit/a5fdcc1a85aa188ff1b9a15b1a768aced026f360))
+
+
+### Bug Fixes
+
+* cell disappear on edit in one column tables ([aaa5549](https://github.com/Fabio286/antares/commit/aaa5549609664665bd4513632d621cb249b379c1))
+* false positive with Windows Defender ([992a033](https://github.com/Fabio286/antares/commit/992a033cb2bede3d1eb52e19482d810f6692de1e))
+* **MySQL:** wrong datetime fields default in table filler in some cases ([8da0224](https://github.com/Fabio286/antares/commit/8da022487650039b7f34a9c86a7bd9045eba65e2))
+* **MySQL:** wrong value for fields "on update" in some conditions ([359e14a](https://github.com/Fabio286/antares/commit/359e14a9ebd48f86069ba7762fe00a7056f52d47))
+* select all rows with ctrl+a when editing a cell ([35cb7e1](https://github.com/Fabio286/antares/commit/35cb7e1dc48d3a74e9d106cb1a37f454c1b4a4d1))
+* **SQLite:** update rows with a text primary key ([d7f1aa9](https://github.com/Fabio286/antares/commit/d7f1aa97af32a4c51fc7022498bd47e15fa08430))
+
+
+### Improvements
+
+* **UI:** avoid columns size change when editing cells or scrolling results ([813aa32](https://github.com/Fabio286/antares/commit/813aa320d9ab799efea38a7110b7c0bdf7549123))
+* **UI:** disable save button in table creation when no fields are added ([e8af2d2](https://github.com/Fabio286/antares/commit/e8af2d24a869f7667c069936648808952d2062ab))
+
+## [0.4.0](https://github.com/Fabio286/antares/compare/v0.3.9...v0.4.0) (2021-11-24)
+
+
+### Features
+
+* **MySQL:** read-only mode ([4437d44](https://github.com/Fabio286/antares/commit/4437d44486c4f20b0bec4bf89d56016b08e36e79))
+* **PostgreSQL:** read-only mode ([5d48fe0](https://github.com/Fabio286/antares/commit/5d48fe08c77755ed18b3f7a9ea834268e317e7ef))
+* **SQLite:** cell update in data tabs ([604b371](https://github.com/Fabio286/antares/commit/604b3719204f7473ce4846624f08f8be9eec8b8f))
+* **SQLite:** connection add/edit masks ([c54438d](https://github.com/Fabio286/antares/commit/c54438d6d3bad38bc76dfcd61f58929fe30279cb))
+* **SQLite:** keys support ([fd321be](https://github.com/Fabio286/antares/commit/fd321beece075d3ad23fdd8541f9beb5727045a5))
+* **SQLite:** readonly mode ([3fc227d](https://github.com/Fabio286/antares/commit/3fc227d2de53aae115226ad3c965bfb6e9f3eca6))
+* **SQLite:** table data visualization ([f2fcc98](https://github.com/Fabio286/antares/commit/f2fcc9883972402eab4d51ef2a9796638dde2d3d))
+* **SQLite:** tables management ([3efeb45](https://github.com/Fabio286/antares/commit/3efeb45c460f178b794de72367f8d542fd8ddd56))
+* **SQLite:** triggers management ([f40e9c5](https://github.com/Fabio286/antares/commit/f40e9c592eeffd204aba21a0a0767a0c523fca49))
+* **SQLite:** views management ([7671c58](https://github.com/Fabio286/antares/commit/7671c585f5f8049bd863db190d4fc60d8f0c6c66))
+
+
+### Bug Fixes
+
+* **SQLite:** hide schema creation ([98165ca](https://github.com/Fabio286/antares/commit/98165cacaa158c85ead0490d3caf579e2a17319f))
+* **UI:** hide tools menu if no tools available ([da1947e](https://github.com/Fabio286/antares/commit/da1947e4efa7f0a26d6a231fadf750be055fbdd5))
+* **UI:** notifications timeout anomalies ([cc99491](https://github.com/Fabio286/antares/commit/cc99491fe4a15812368f6c928b8c7801d7b255aa))
+
+
+### Improvements
+
+* **SQLite:** improvements in data visualization ([94c899e](https://github.com/Fabio286/antares/commit/94c899eb8288b41a5962ac3d24365227e1f9f485))
+* **SQLite:** improvements in field length detection ([93b4a70](https://github.com/Fabio286/antares/commit/93b4a7063beeb5a7001cb06a74f05b23105212f5))
+* update italian traslation ([9fe3680](https://github.com/Fabio286/antares/commit/9fe3680bbb17c192cffa85348e68794ab49beb81))
+
+### [0.3.9](https://github.com/Fabio286/antares/compare/v0.3.8...v0.3.9) (2021-11-14)
+
+
+### Features
+
+* added macos basic shortcusts and menu ([430490a](https://github.com/Fabio286/antares/commit/430490ad93f3148962ced1f13a5330c79cd86b3b))
+* **MySQL:** enable/disable schedulers from contextual menu ([5ca3a22](https://github.com/Fabio286/antares/commit/5ca3a22dc538b27a4bf6402f1288c4b9f5bc5a90))
+* **MySQL:** scheduler status indicator in explore bar ([5c66824](https://github.com/Fabio286/antares/commit/5c668249cf102cd9d601f9f7b4943c7155775217))
+* **PostgreSQL:** enable/disable triggers from contextual menu ([534659f](https://github.com/Fabio286/antares/commit/534659f9aee12eb5ac477f91bfe5d764387dc17e))
+* schema size in explore bar ([fd25f88](https://github.com/Fabio286/antares/commit/fd25f881f95779709156cbad93a41d6b391f1a45))
+* **UI:** double click on the title bar will toggle window fullscreen size ([a35566f](https://github.com/Fabio286/antares/commit/a35566f273322602abe434b8bd30817ba8885900))
+* **UI:** improved topbar look&feel on MacOS ([7657d05](https://github.com/Fabio286/antares/commit/7657d05edfbeaed6a14eb337fc562da5126e6ba0))
+
+
+### Bug Fixes
+
+* copy&paste and basic usability on macOS ([1ddf8f0](https://github.com/Fabio286/antares/commit/1ddf8f0dbe22f94d6bffddf70636706d2d142ecf))
+* **PostgreSQL:** bigint fetched as string instead of number, closes [#134](https://github.com/Fabio286/antares/issues/134) ([39b9a59](https://github.com/Fabio286/antares/commit/39b9a59143b457a96f0711a3b8588c92dd80e28d))
+* row selection problems after a deletion fail, closes [#128](https://github.com/Fabio286/antares/issues/128) ([89fdd21](https://github.com/Fabio286/antares/commit/89fdd210ca48fc9ae399b195ea796c8523619627))
+* temporary solution on MacOS for unsigned app updates ([c00fd13](https://github.com/Fabio286/antares/commit/c00fd1381f451ba7aace7047b28b904ddcaf18f0))
+
+
+### Improvements
+
+* **UI:** improved function and routine parameters modals ([d19f475](https://github.com/Fabio286/antares/commit/d19f475fc28c0367ada569cb634769fa618b48b4))
+
 ### [0.3.8](https://github.com/Fabio286/antares/compare/v0.3.7...v0.3.8) (2021-10-23)
 
 

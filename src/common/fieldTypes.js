@@ -8,7 +8,9 @@ export const TEXT = [
 export const LONG_TEXT = [
    'TEXT',
    'MEDIUMTEXT',
-   'LONGTEXT'
+   'LONGTEXT',
+   'JSON',
+   'VARBINARY'
 ];
 
 export const ARRAY = [
@@ -81,4 +83,25 @@ export const BLOB = [
 export const BIT = [
    'BIT',
    'BIT VARYING'
+];
+
+export const SPATIAL = [
+   'POINT',
+   'LINESTRING',
+   'POLYGON',
+   'GEOMETRY',
+   'MULTIPOINT',
+   'MULTILINESTRING',
+   'MULTIPOLYGON',
+   'GEOMCOLLECTION',
+   'GEOMETRYCOLLECTION'
+];
+
+// Used to check multi spatial fields only
+export const IS_MULTI_SPATIAL = [
+   'MULTIPOINT',
+   'MULTILINESTRING',
+   'MULTIPOLYGON',
+   'GEOMCOLLECTION',
+   'GEOMETRYCOLLECTION'
 ];

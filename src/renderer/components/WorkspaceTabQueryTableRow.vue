@@ -1,14 +1,18 @@
 <template>
-   <div class="tr" @click="selectRow($event, row._id)">
+   <div
+      class="tr"
+      :style="{height: itemHeight+'px'}"
+      @click="selectRow($event, row._antares_id)"
+   >
       <div
          v-for="(col, cKey) in row"
-         v-show="cKey !== '_id'"
+         v-show="cKey !== '_antares_id'"
          :key="cKey"
          class="td p-0"
          tabindex="0"
-         @contextmenu.prevent="openContext($event, { id: row._id, field: cKey })"
+         @contextmenu.prevent="openContext($event, { id: row._antares_id, orgField: cKey })"
       >
-         <template v-if="cKey !== '_id'">
+         <template v-if="cKey !== '_antares_id'">
             <span
                v-if="!isInlineEditor[cKey] && fields[cKey]"
                class="cell-content"
@@ -72,12 +76,12 @@
          @confirm="editOFF"
          @hide="hideEditorModal"
       >
-         <template :slot="'header'">
+         <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-playlist-edit mr-1" /> <span class="cut-text">{{ $t('word.edit') }} "{{ editingField }}"</span>
             </div>
          </template>
-         <div :slot="'body'">
+         <template #body>
             <div class="mb-2">
                <div>
                   <TextEditor
@@ -96,23 +100,12 @@
                         v-model="editorMode"
                         class="form-select select-sm"
                      >
-                        <option value="text">
-                           TEXT
-                        </option>
-                        <option value="html">
-                           HTML
-                        </option>
-                        <option value="xml">
-                           XML
-                        </option>
-                        <option value="json">
-                           JSON
-                        </option>
-                        <option value="svg">
-                           SVG
-                        </option>
-                        <option value="yaml">
-                           YAML
+                        <option
+                           v-for="language in availableLanguages"
+                           :key="language.slug"
+                           :value="language.slug"
+                        >
+                           {{ language.name }}
                         </option>
                      </select>
                   </div>
@@ -128,7 +121,22 @@
                   </div>
                </div>
             </div>
-         </div>
+         </template>
+      </ConfirmModal>
+      <ConfirmModal
+         v-if="isMapModal"
+         :hide-footer="true"
+         size="medium"
+         @hide="hideEditorModal"
+      >
+         <template #header>
+            <div class="d-flex">
+               <i class="mdi mdi-24px mdi-map mr-1" /> <span class="cut-text">"{{ editingField }}"</span>
+            </div>
+         </template>
+         <template #body>
+            <BaseMap :points="editingContent" :is-multi-spatial="isMultiSpatial" />
+         </template>
       </ConfirmModal>
       <ConfirmModal
          v-if="isBlobEditor"
@@ -136,13 +144,13 @@
          @confirm="editOFF"
          @hide="hideEditorModal"
       >
-         <template :slot="'header'">
+         <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-playlist-edit mr-1" />
                <span class="cut-text">{{ $t('word.edit') }} "{{ editingField }}"</span>
             </div>
          </template>
-         <div :slot="'body'">
+         <template #body>
             <div class="mb-2">
                <transition name="jump-down">
                   <div v-if="contentInfo.size">
@@ -182,21 +190,39 @@
                   >
                </div>
             </div>
-         </div>
+         </template>
       </ConfirmModal>
    </div>
 </template>
 
 <script>
 import moment from 'moment';
+import { ModelOperations } from '@vscode/vscode-languagedetection';
 import { mimeFromHex } from 'common/libs/mimeFromHex';
 import { formatBytes } from 'common/libs/formatBytes';
 import { bufferToBase64 } from 'common/libs/bufferToBase64';
 import hexToBinary from 'common/libs/hexToBinary';
-import { TEXT, LONG_TEXT, ARRAY, TEXT_SEARCH, NUMBER, FLOAT, BOOLEAN, DATE, TIME, DATETIME, BLOB, BIT, HAS_TIMEZONE } from 'common/fieldTypes';
+import {
+   TEXT,
+   LONG_TEXT,
+   ARRAY,
+   TEXT_SEARCH,
+   NUMBER,
+   FLOAT,
+   BOOLEAN,
+   DATE,
+   TIME,
+   DATETIME,
+   BLOB,
+   BIT,
+   HAS_TIMEZONE,
+   SPATIAL,
+   IS_MULTI_SPATIAL
+} from 'common/fieldTypes';
 import { VueMaskDirective } from 'v-mask';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import TextEditor from '@/components/BaseTextEditor';
+import BaseMap from '@/components/BaseMap';
 import ForeignKeySelect from '@/components/ForeignKeySelect';
 
 export default {
@@ -204,7 +230,8 @@ export default {
    components: {
       ConfirmModal,
       TextEditor,
-      ForeignKeySelect
+      ForeignKeySelect,
+      BaseMap
    },
    directives: {
       mask: VueMaskDirective
@@ -254,13 +281,17 @@ export default {
             return val;
          }
 
-         return val;
+         if (SPATIAL.includes(type))
+            return val;
+
+         return typeof val === 'object' ? JSON.stringify(val) : val;
       }
    },
    props: {
       row: Object,
       fields: Object,
       keyUsage: Array,
+      itemHeight: Number,
       elementType: { type: String, default: 'table' }
    },
    data () {
@@ -268,6 +299,8 @@ export default {
          isInlineEditor: {},
          isTextareaEditor: false,
          isBlobEditor: false,
+         isMapModal: false,
+         isMultiSpatial: false,
          willBeDeleted: false,
          originalContent: null,
          editingContent: null,
@@ -280,7 +313,17 @@ export default {
             mime: '',
             size: null
          },
-         fileToUpload: null
+         fileToUpload: null,
+         availableLanguages: [
+            { name: 'TEXT', slug: 'text', id: 'text' },
+            { name: 'HTML', slug: 'html', id: 'html' },
+            { name: 'XML', slug: 'xml', id: 'xml' },
+            { name: 'JSON', slug: 'json', id: 'json' },
+            { name: 'SVG', slug: 'svg', id: 'svg' },
+            { name: 'INI', slug: 'ini', id: 'ini' },
+            { name: 'MARKDOWN', slug: 'markdown', id: 'md' },
+            { name: 'YAML', slug: 'yaml', id: 'yaml' }
+         ]
       };
    },
    computed: {
@@ -326,6 +369,9 @@ export default {
          if (BOOLEAN.includes(this.editingType))
             return { type: 'boolean', mask: false };
 
+         if (SPATIAL.includes(this.editingType))
+            return { type: 'map', mask: false };
+
          return { type: 'text', mask: false };
       },
       isImage () {
@@ -362,6 +408,21 @@ export default {
          Object.keys(this.fields).forEach(field => {
             this.isInlineEditor[field.name] = false;
          });
+      },
+      isTextareaEditor (val) {
+         if (val) {
+            const modelOperations = new ModelOperations();
+            (async () => {
+               const detected = await modelOperations.runModel(this.editingContent);
+               const filteredLanguages = detected.filter(dLang =>
+                  this.availableLanguages.some(aLang => aLang.id === dLang.languageId) &&
+                     dLang.confidence > 0.1
+               );
+
+               if (filteredLanguages.length)
+                  this.editorMode = this.availableLanguages.find(lang => lang.id === filteredLanguages[0].languageId).slug;
+            })();
+         }
       }
    },
    methods: {
@@ -383,7 +444,7 @@ export default {
          return bufferToBase64(val);
       },
       editON (event, content, field) {
-         if (!this.isEditable) return;
+         if (!this.isEditable || this.editingType === 'none') return;
 
          window.addEventListener('keydown', this.onKey);
 
@@ -396,6 +457,15 @@ export default {
          if ([...LONG_TEXT, ...ARRAY, ...TEXT_SEARCH].includes(type)) {
             this.isTextareaEditor = true;
             this.editingContent = this.$options.filters.typeFormat(content, type);
+            return;
+         }
+
+         if (SPATIAL.includes(type)) {
+            if (content) {
+               this.isMultiSpatial = IS_MULTI_SPATIAL.includes(type);
+               this.isMapModal = true;
+               this.editingContent = this.$options.filters.typeFormat(content, type);
+            }
             return;
          }
 
@@ -470,6 +540,8 @@ export default {
       hideEditorModal () {
          this.isTextareaEditor = false;
          this.isBlobEditor = false;
+         this.isMapModal = false;
+         this.isMultiSpatial = false;
       },
       downloadFile () {
          const downloadLink = document.createElement('a');
@@ -506,7 +578,7 @@ export default {
          return this.keyUsage.find(key => key.field === keyName);
       },
       openContext (event, payload) {
-         payload.field = this.fields[payload.field].name;// Ensures field name only
+         payload.field = this.fields[payload.orgField].name;// Ensures field name only
          payload.isEditable = this.isEditable;
          this.$emit('contextmenu', event, payload);
       },

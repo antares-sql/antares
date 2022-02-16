@@ -12,7 +12,7 @@
 Antares is an SQL client based on [Electron.js](https://github.com/electron/electron) and [Vue.js](https://github.com/vuejs/vue) that aims to become a useful tool, especially for developers.  
 Our target is to support as many databases as possible, and all major operating systems, including the ARM versions.  
 
-**At the moment this application is in development state, many features will come in future updates**, and supports only MySQL/MariaDB and PostgreSQL.  
+**At the moment this application is in development state, many features will come in future updates**, and supports only MySQL/MariaDB, PostgreSQL and SQLite.  
 At the moment, however, there are all the features necessary to have a pleasant database management experience, so give it a chance and send us your feedback, we would really appreciate it.  
 We are actively working on it, hoping to provide new cool features, improvements and fixes as soon as possible.  
 
@@ -31,10 +31,9 @@ We are actively working on it, hoping to provide new cool features, improvements
 - Query suggestions and auto complete.
 - Query history: search through the last 1000 queries.
 - SSH tunnel support.
+- Manual commit mode.
 - Dark and light theme.
 - Editor themes.
-- Scratchpad.
-- Secure password storage.
 
 ## Philosophy
 
@@ -68,12 +67,12 @@ On macOS you can run `.dmg` distribution following [this guide](https://support.
 
 This is a roadmap with major features will come in near future.
 
-- Support for other databases.
 - Database tools.
 - Users management (add/edit/delete).
 - More context menu shortcuts.
 - More keyboard shortcuts.
 - Import/export and migration.
+- Support for other databases.
 - Apple Silicon distribution
 
 ## Currently supported
@@ -82,7 +81,7 @@ This is a roadmap with major features will come in near future.
 
 - [x] MySQL/MariaDB
 - [x] PostgreSQL
-- [ ] SQLite
+- [x] SQLite
 - [ ] MSSQL
 - [ ] OracleDB
 - [ ] More...
@@ -116,9 +115,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="https://fabiodistasio.it/"><img src="https://avatars.githubusercontent.com/u/31471771?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Fabio Di Stasio</b></sub></a><br /><a href="https://github.com/Fabio286/Antares/commits?author=Fabio286" title="Code">💻</a> <a href="#translation-Fabio286" title="Translation">🌍</a> <a href="https://github.com/Fabio286/Antares/commits?author=Fabio286" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://www.linkedin.com/in/giulioganci/"><img src="https://avatars.githubusercontent.com/u/4192159?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Giulio Ganci</b></sub></a><br /><a href="https://github.com/Fabio286/Antares/commits?author=toriphes" title="Code">💻</a></td>
-    <td align="center"><a href="https://christianratz.de/"><img src="https://avatars.githubusercontent.com/u/2630316?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Christian Ratz</b></sub></a><br /><a href="https://github.com/Fabio286/Antares/commits?author=digitalgopnik" title="Code">💻</a> <a href="#translation-digitalgopnik" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://fabiodistasio.it/"><img src="https://avatars.githubusercontent.com/u/31471771?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Fabio Di Stasio</b></sub></a><br /><a href="https://github.com/Fabio286/antares/commits?author=Fabio286" title="Code">💻</a> <a href="#translation-Fabio286" title="Translation">🌍</a> <a href="https://github.com/Fabio286/antares/commits?author=Fabio286" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://www.linkedin.com/in/giulioganci/"><img src="https://avatars.githubusercontent.com/u/4192159?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Giulio Ganci</b></sub></a><br /><a href="https://github.com/Fabio286/antares/commits?author=toriphes" title="Code">💻</a></td>
+    <td align="center"><a href="https://christianratz.de/"><img src="https://avatars.githubusercontent.com/u/2630316?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Christian Ratz</b></sub></a><br /><a href="https://github.com/Fabio286/antares/commits?author=digitalgopnik" title="Code">💻</a> <a href="#translation-digitalgopnik" title="Translation">🌍</a></td>
     <td align="center"><a href="https://reverb6821.github.io/"><img src="https://avatars.githubusercontent.com/u/55198803?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Giuseppe Gigliotti</b></sub></a><br /><a href="#translation-reverb6821" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/Mohd-PH"><img src="https://avatars.githubusercontent.com/u/9362157?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mohd-PH</b></sub></a><br /><a href="#translation-Mohd-PH" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/hongkfui"><img src="https://avatars.githubusercontent.com/u/37477191?v=4?s=100" width="100px;" alt=""/><br /><sub><b>hongkfui</b></sub></a><br /><a href="#translation-hongkfui" title="Translation">🌍</a></td>
@@ -129,6 +128,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://ngoquocdat.com/"><img src="https://avatars.githubusercontent.com/u/56961917?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ngô Quốc Đạt</b></sub></a><br /><a href="#translation-datlechin" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/IsamuSugi"><img src="https://avatars.githubusercontent.com/u/7746658?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Isamu Sugiura</b></sub></a><br /><a href="#translation-IsamuSugi" title="Translation">🌍</a></td>
     <td align="center"><a href="http://rsacchetto.nexxontech.it/"><img src="https://avatars.githubusercontent.com/u/18429412?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Riccardo Sacchetto</b></sub></a><br /><a href="#platform-Occhioverde" title="Packaging/porting to new platform">📦</a></td>
+    <td align="center"><a href="https://kilianstallinger.com"><img src="https://avatars.githubusercontent.com/u/5290318?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Kilian Stallinger</b></sub></a><br /><a href="https://github.com/Fabio286/antares/commits?author=kilianstallz" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/wenj91"><img src="https://avatars.githubusercontent.com/u/12549338?v=4?s=100" width="100px;" alt=""/><br /><sub><b>文杰</b></sub></a><br /><a href="https://github.com/Fabio286/antares/commits?author=wenj91" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/goYou"><img src="https://avatars.githubusercontent.com/u/62732795?v=4?s=100" width="100px;" alt=""/><br /><sub><b>goYou</b></sub></a><br /><a href="#translation-goYou" title="Translation">🌍</a></td>
   </tr>
 </table>
 

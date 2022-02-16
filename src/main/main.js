@@ -3,6 +3,7 @@
 import { app, BrowserWindow, /* session, */ nativeImage, Menu } from 'electron';
 import * as path from 'path';
 import Store from 'electron-store';
+import * as windowStateKeeper from 'electron-window-state';
 import * as remoteMain from '@electron/remote/main';
 
 import ipcHandlers from './ipc-handlers';
@@ -18,15 +19,18 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow;
+let mainWindowState;
 
 async function createMainWindow () {
    const icon = require('../renderer/images/logo-32.png');
    const window = new BrowserWindow({
-      width: 1024,
-      height: 800,
+      width: mainWindowState.width,
+      height: mainWindowState.height,
+      x: mainWindowState.x,
+      y: mainWindowState.y,
       minWidth: 900,
       minHeight: 550,
-      title: 'Antares',
+      title: 'Antares SQL',
       autoHideMenuBar: true,
       icon: nativeImage.createFromDataURL(icon.default),
       webPreferences: {
@@ -40,6 +44,9 @@ async function createMainWindow () {
       trafficLightPosition: isMacOS ? { x: 10, y: 8 } : undefined,
       backgroundColor: '#1d1d1d'
    });
+
+   mainWindowState.manage(window);
+   window.on('moved', saveWindowState);
 
    remoteMain.enable(window.webContents);
 
@@ -70,14 +77,8 @@ async function createMainWindow () {
    }
 
    window.on('closed', () => {
+      window.removeListener('moved', saveWindowState);
       mainWindow = null;
-   });
-
-   window.webContents.on('devtools-opened', () => {
-      window.focus();
-      setImmediate(() => {
-         window.focus();
-      });
    });
 
    return window;
@@ -104,17 +105,22 @@ else {
 
    // create main BrowserWindow when electron is ready
    app.on('ready', async () => {
+      mainWindowState = windowStateKeeper({
+         defaultWidth: 1024,
+         defaultHeight: 800
+      });
+
       mainWindow = await createMainWindow();
       createAppMenu();
 
-      if (isDevelopment)
-         mainWindow.webContents.openDevTools();
+      // if (isDevelopment)
+      //    mainWindow.webContents.openDevTools();
 
-      process.on('uncaughtException', (error) => {
+      process.on('uncaughtException', error => {
          mainWindow.webContents.send('unhandled-exception', error);
       });
 
-      process.on('unhandledRejection', (error) => {
+      process.on('unhandledRejection', error => {
          mainWindow.webContents.send('unhandled-exception', error);
       });
    });
@@ -159,4 +165,8 @@ function createAppMenu () {
    }
 
    Menu.setApplicationMenu(menu);
+}
+
+function saveWindowState () {
+   mainWindowState.saveState(mainWindow);
 }

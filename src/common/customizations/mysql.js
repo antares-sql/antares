@@ -10,6 +10,9 @@ module.exports = {
    connectionSchema: true,
    collations: true,
    engines: true,
+   sslConnection: true,
+   sshConnection: true,
+   cancelQueries: true,
    // Tools
    processesList: true,
    // Structure
@@ -30,6 +33,7 @@ module.exports = {
    functionAdd: true,
    schedulerAdd: true,
    schemaEdit: true,
+   schemaDrop: true,
    schemaExport: true,
    tableSettings: true,
    viewSettings: true,
@@ -60,5 +64,6 @@ module.exports = {
    functionDeterministic: true,
    functionDataAccess: true,
    functionSql: 'BEGIN\r\n\r\nEND',
-   parametersLength: true
+   parametersLength: true,
+   readOnlyMode: true
 };

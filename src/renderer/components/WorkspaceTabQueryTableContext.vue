@@ -61,8 +61,6 @@ export default {
       selectedRows: Array,
       selectedCell: Object
    },
-   computed: {
-   },
    methods: {
       showConfirmModal () {
          this.$emit('show-delete-modal');

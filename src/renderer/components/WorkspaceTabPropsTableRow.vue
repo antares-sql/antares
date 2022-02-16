@@ -1,5 +1,5 @@
 <template>
-   <div class="tr" @contextmenu.prevent="$emit('contextmenu', $event, localRow._id)">
+   <div class="tr" @contextmenu.prevent="$emit('contextmenu', $event, localRow._antares_id)">
       <div class="td p-0" tabindex="0">
          <div :class="customizations.sortableFields ? 'row-draggable' : 'text-center'">
             <i v-if="customizations.sortableFields" class="mdi mdi-drag-horizontal row-draggable-icon" />
@@ -99,6 +99,9 @@
                <span v-if="localRow.enumValues">
                   {{ localRow.enumValues }}
                </span>
+               <span v-else-if="localRow.numScale">
+                  {{ localLength }}, {{ localRow.numScale }}
+               </span>
                <span v-else>
                   {{ localLength }}
                </span>
@@ -110,6 +113,16 @@
                type="text"
                autofocus
                class="editable-field form-input input-sm px-1"
+               @blur="editOFF"
+            >
+            <input
+               v-else-if="fieldType.scale"
+               ref="editField"
+               v-model="editingContent"
+               type="text"
+               autofocus
+               class="editable-field form-input input-sm px-1"
+               @keypress="checkLengthScale"
                @blur="editOFF"
             >
             <input
@@ -230,13 +243,13 @@
          @confirm="editOFF"
          @hide="hideDefaultModal"
       >
-         <template :slot="'header'">
+         <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-playlist-edit mr-1" />
                <span class="cut-text">{{ $t('word.default') }} "{{ row.name }}"</span>
             </div>
          </template>
-         <div :slot="'body'">
+         <template #body>
             <form class="form-horizontal">
                <div class="mb-2">
                   <label class="form-radio form-inline">
@@ -324,7 +337,7 @@
                   </div>
                </div>
             </form>
-         </div>
+         </template>
       </ConfirmModal>
    </div>
 </template>
@@ -367,7 +380,8 @@ export default {
          getWorkspace: 'workspaces/getWorkspace'
       }),
       localLength () {
-         return this.localRow.numLength || this.localRow.charLength || this.localRow.datePrecision || this.localRow.numPrecision || 0;
+         const localLength = this.localRow.numLength || this.localRow.charLength || this.localRow.datePrecision || this.localRow.numPrecision || 0;
+         return localLength === true ? null : localLength;
       },
       fieldType () {
          const fieldType = this.dataTypes.reduce((acc, group) => [...acc, ...group.types], []).filter(type =>
@@ -391,7 +405,7 @@ export default {
          return this.indexes.some(index => ['PRIMARY', 'UNIQUE'].includes(index.type));
       },
       isNullable () {
-         return !this.indexes.some(index => ['PRIMARY'].includes(index.type));
+         return this.customizations.nullablePrimary || !this.indexes.some(index => ['PRIMARY'].includes(index.type));
       },
       isInDataTypes () {
          let typeNames = [];
@@ -479,6 +493,11 @@ export default {
             this.editingContent = this.localRow.enumValues;
             this.originalContent = this.localRow.enumValues;
          }
+         else if (this.fieldType.scale && field === 'length') {
+            const scale = this.localRow.numScale !== null ? this.localRow.numScale : 0;
+            this.editingContent = `${content}, ${scale}`;
+            this.originalContent = `${content}, ${scale}`;
+         }
          else {
             this.editingContent = content;
             this.originalContent = content;
@@ -501,10 +520,17 @@ export default {
          if (this.editingField === 'name')
             this.$emit('rename-field', { old: this.localRow[this.editingField], new: this.editingContent });
 
-         this.localRow[this.editingField] = this.editingContent;
+         if (this.editingField === 'numLength' && this.fieldType.scale) {
+            const [length, scale] = this.editingContent.split(',');
+            this.localRow.numLength = +length;
+            this.localRow.numScale = scale ? +scale : null;
+         }
+         else
+            this.localRow[this.editingField] = this.editingContent;
 
          if (this.editingField === 'type' && this.editingContent !== this.originalContent) {
             this.localRow.numLength = null;
+            this.localRow.numScale = null;
             this.localRow.charLength = null;
             this.localRow.datePrecision = null;
             this.localRow.enumValues = '';
@@ -558,6 +584,15 @@ export default {
          this.editingContent = null;
          this.originalContent = null;
          this.editingField = null;
+      },
+      checkLengthScale (e) {
+         e = (e) || window.event;
+         const charCode = (e.which) ? e.which : e.keyCode;
+
+         if (((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 44) || (charCode === 44 && e.target.value.includes(',')))
+            e.preventDefault();
+         else
+            return true;
       },
       hideDefaultModal () {
          this.isDefaultModal = false;

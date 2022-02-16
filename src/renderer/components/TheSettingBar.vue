@@ -92,7 +92,7 @@ export default {
          }
       },
       hasUpdates () {
-         return ['available', 'downloading', 'downloaded'].includes(this.updateStatus);
+         return ['available', 'downloading', 'downloaded', 'link'].includes(this.updateStatus);
       }
    },
    methods: {
@@ -200,7 +200,7 @@ export default {
         }
 
         &::before {
-          content: '';
+          content: "";
           height: 0;
           width: 3px;
           transition: height 0.2s;

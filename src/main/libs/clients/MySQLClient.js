@@ -9,6 +9,8 @@ export class MySQLClient extends AntaresCore {
       super(args);
 
       this._schema = null;
+      this._runningConnections = new Map();
+      this._connectionsToCommit = new Map();
 
       this.types = {
          0: 'DECIMAL',
@@ -100,9 +102,11 @@ export class MySQLClient extends AntaresCore {
    }
 
    /**
+    *
+    * @returns dbConfig
     * @memberof MySQLClient
     */
-   async connect () {
+   async getDbConfig () {
       delete this._params.application_name;
 
       const dbConfig = {
@@ -133,20 +137,17 @@ export class MySQLClient extends AntaresCore {
          }
       }
 
+      return dbConfig;
+   }
+
+   /**
+    * @memberof MySQLClient
+    */
+   async connect () {
       if (!this._poolSize)
-         this._connection = await mysql.createConnection(dbConfig);
-      else {
-         this._connection = mysql.createPool({
-            ...dbConfig,
-            connectionLimit: this._poolSize,
-            typeCast: (field, next) => {
-               if (field.type === 'DATETIME')
-                  return field.string();
-               else
-                  return next();
-            }
-         });
-      }
+         this._connection = await this.getConnection();
+      else
+         this._connection = await this.getConnectionPool();
    }
 
    /**
@@ -155,6 +156,64 @@ export class MySQLClient extends AntaresCore {
    destroy () {
       this._connection.end();
       if (this._ssh) this._ssh.close();
+   }
+
+   async getConnection () {
+      const dbConfig = await this.getDbConfig();
+      const connection = await mysql.createConnection({
+         ...dbConfig,
+         typeCast: (field, next) => {
+            if (field.type === 'DATETIME')
+               return field.string();
+            else
+               return next();
+         }
+      });
+
+      // ANSI_QUOTES check
+      const [res] = await connection.query('SHOW GLOBAL VARIABLES LIKE \'%sql_mode%\'');
+      const sqlMode = res[0]?.Variable_name?.split(',');
+      const hasAnsiQuotes = sqlMode.includes('ANSI_QUOTES');
+
+      if (this._params.readonly)
+         await connection.query('SET SESSION TRANSACTION READ ONLY');
+
+      if (hasAnsiQuotes)
+         await connection.query(`SET SESSION sql_mode = "${sqlMode.filter(m => m !== 'ANSI_QUOTES').join(',')}"`);
+
+      return connection;
+   }
+
+   async getConnectionPool () {
+      const dbConfig = await this.getDbConfig();
+      const connection = mysql.createPool({
+         ...dbConfig,
+         connectionLimit: this._poolSize,
+         typeCast: (field, next) => {
+            if (field.type === 'DATETIME')
+               return field.string();
+            else
+               return next();
+         }
+      });
+
+      // ANSI_QUOTES check
+      const [res] = await connection.query('SHOW GLOBAL VARIABLES LIKE \'%sql_mode%\'');
+      const sqlMode = res[0]?.Variable_name?.split(',');
+      const hasAnsiQuotes = sqlMode.includes('ANSI_QUOTES');
+
+      if (hasAnsiQuotes)
+         await connection.query(`SET SESSION sql_mode = "${sqlMode.filter(m => m !== 'ANSI_QUOTES').join(',')}"`);
+
+      connection.on('connection', conn => {
+         if (this._params.readonly)
+            conn.query('SET SESSION TRANSACTION READ ONLY');
+
+         if (hasAnsiQuotes)
+            conn.query(`SET SESSION sql_mode = "${sqlMode.filter(m => m !== 'ANSI_QUOTES').join(',')}"`);
+      });
+
+      return connection;
    }
 
    /**
@@ -187,6 +246,7 @@ export class MySQLClient extends AntaresCore {
 
       const tablesArr = [];
       const triggersArr = [];
+      let schemaSize = 0;
 
       for (const db of filteredDatabases) {
          if (!schemas.has(db.Database)) continue;
@@ -224,6 +284,9 @@ export class MySQLClient extends AntaresCore {
                      break;
                }
 
+               const tableSize = table.Data_length + table.Index_length;
+               schemaSize += tableSize;
+
                return {
                   name: table.Name,
                   type: tableType,
@@ -232,7 +295,7 @@ export class MySQLClient extends AntaresCore {
                   updated: table.Update_time,
                   engine: table.Engine,
                   comment: table.Comment,
-                  size: table.Data_length + table.Index_length,
+                  size: tableSize,
                   autoIncrement: table.Auto_increment,
                   collation: table.Collation
                };
@@ -276,7 +339,7 @@ export class MySQLClient extends AntaresCore {
                   body: scheduler.EVENT_BODY,
                   starts: scheduler.STARTS,
                   ends: scheduler.ENDS,
-                  status: scheduler.STATUS,
+                  enabled: scheduler.STATUS === 'ENABLED',
                   executeAt: scheduler.EXECUTE_AT,
                   intervalField: scheduler.INTERVAL_FIELD,
                   intervalValue: scheduler.INTERVAL_VALUE,
@@ -309,6 +372,7 @@ export class MySQLClient extends AntaresCore {
 
             return {
                name: db.Database,
+               size: schemaSize,
                tables: remappedTables,
                functions: remappedFunctions,
                procedures: remappedProcedures,
@@ -319,6 +383,7 @@ export class MySQLClient extends AntaresCore {
          else {
             return {
                name: db.Database,
+               size: 0,
                tables: [],
                functions: [],
                procedures: [],
@@ -360,7 +425,7 @@ export class MySQLClient extends AntaresCore {
                return acc;
             }, '')
             .replaceAll('\n', '')
-            .split(',')
+            .split(/,\s?(?![^(]*\))/)
             .map(f => {
                try {
                   const fieldArr = f.trim().split(' ');
@@ -400,18 +465,25 @@ export class MySQLClient extends AntaresCore {
 
       return rows.map(field => {
          let numLength = field.COLUMN_TYPE.match(/int\(([^)]+)\)/);
-         numLength = numLength ? +numLength.pop() : null;
+         numLength = numLength ? +numLength.pop() : field.NUMERIC_PRECISION || null;
          const enumValues = /(enum|set)/.test(field.COLUMN_TYPE)
             ? field.COLUMN_TYPE.match(/\(([^)]+)\)/)[0].slice(1, -1)
             : null;
 
+         const defaultValue = (remappedFields && remappedFields[field.COLUMN_NAME])
+            ? remappedFields[field.COLUMN_NAME].default
+            : field.COLUMN_DEFAULT;
+
          return {
             name: field.COLUMN_NAME,
             key: field.COLUMN_KEY.toLowerCase(),
-            type: remappedFields ? remappedFields[field.COLUMN_NAME].type : field.DATA_TYPE,
+            type: (remappedFields && remappedFields[field.COLUMN_NAME])
+               ? remappedFields[field.COLUMN_NAME].type
+               : field.DATA_TYPE.toUpperCase(),
             schema: field.TABLE_SCHEMA,
             table: field.TABLE_NAME,
             numPrecision: field.NUMERIC_PRECISION,
+            numScale: field.NUMERIC_SCALE,
             numLength,
             enumValues,
             datePrecision: field.DATETIME_PRECISION,
@@ -420,11 +492,13 @@ export class MySQLClient extends AntaresCore {
             unsigned: field.COLUMN_TYPE.includes('unsigned'),
             zerofill: field.COLUMN_TYPE.includes('zerofill'),
             order: field.ORDINAL_POSITION,
-            default: remappedFields ? remappedFields[field.COLUMN_NAME].default : field.COLUMN_DEFAULT,
+            default: defaultValue,
             charset: field.CHARACTER_SET_NAME,
             collation: field.COLLATION_NAME,
             autoIncrement: field.EXTRA.includes('auto_increment'),
-            onUpdate: field.EXTRA.toLowerCase().includes('on update') ? field.EXTRA.replace('on update', '') : '',
+            onUpdate: field.EXTRA.toLowerCase().includes('on update')
+               ? field.EXTRA.substr(field.EXTRA.indexOf('on update') + 9, field.EXTRA.length).trim()
+               : '',
             comment: field.COLUMN_COMMENT
          };
       });
@@ -565,7 +639,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * CREATE DATABASE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async createSchema (params) {
@@ -575,7 +649,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * ALTER DATABASE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async alterSchema (params) {
@@ -585,7 +659,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * DROP DATABASE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async dropSchema (params) {
@@ -625,7 +699,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * DROP VIEW
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async dropView (params) {
@@ -636,7 +710,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * ALTER VIEW
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async alterView (params) {
@@ -657,7 +731,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * CREATE VIEW
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async createView (params) {
@@ -690,7 +764,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * DROP TRIGGER
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async dropTrigger (params) {
@@ -701,7 +775,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * ALTER TRIGGER
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async alterTrigger (params) {
@@ -723,7 +797,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * CREATE TRIGGER
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async createTrigger (params) {
@@ -797,7 +871,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * DROP PROCEDURE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async dropRoutine (params) {
@@ -808,7 +882,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * ALTER PROCEDURE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async alterRoutine (params) {
@@ -830,7 +904,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * CREATE PROCEDURE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async createRoutine (params) {
@@ -924,7 +998,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * DROP FUNCTION
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async dropFunction (params) {
@@ -935,7 +1009,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * ALTER FUNCTION
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async alterFunction (params) {
@@ -957,7 +1031,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * CREATE FUNCTION
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async createFunction (params) {
@@ -1018,7 +1092,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * DROP EVENT
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async dropEvent (params) {
@@ -1029,7 +1103,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * ALTER EVENT
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async alterEvent (params) {
@@ -1055,7 +1129,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * CREATE EVENT
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async createEvent (params) {
@@ -1069,6 +1143,16 @@ export class MySQLClient extends AntaresCore {
       COMMENT '${params.comment}'
       DO ${params.sql}`;
 
+      return await this.raw(sql, { split: false });
+   }
+
+   async enableEvent ({ schema, scheduler }) {
+      const sql = `ALTER EVENT \`${schema}\`.\`${scheduler}\` ENABLE`;
+      return await this.raw(sql, { split: false });
+   }
+
+   async disableEvent ({ schema, scheduler }) {
+      const sql = `ALTER EVENT \`${schema}\`.\`${scheduler}\` DISABLE`;
       return await this.raw(sql, { split: false });
    }
 
@@ -1109,6 +1193,26 @@ export class MySQLClient extends AntaresCore {
             value: row.Value
          };
       });
+   }
+
+   /**
+    * SHOW VARIABLES LIKE %variable%
+    *
+    * @param {String} variable
+    * @param {'global'|'session'|null} level
+    * @returns {Object} variable
+    * @memberof MySQLClient
+    */
+   async getVariable (variable, level) {
+      const sql = `SHOW${level ? ' ' + level.toUpperCase() : ''} VARIABLES LIKE '%${variable}%'`;
+      const results = await this.raw(sql);
+
+      if (results.rows.length) {
+         return {
+            name: results.rows[0].Variable_name,
+            value: results.rows[0].Value
+         };
+      }
    }
 
    /**
@@ -1182,14 +1286,60 @@ export class MySQLClient extends AntaresCore {
       });
    }
 
+   /**
+    *
+    * @param {number} id
+    * @returns {Promise<null>}
+    */
    async killProcess (id) {
       return await this.raw(`KILL ${id}`);
    }
 
    /**
+    *
+    * @param {string} tabUid
+    * @returns {Promise<null>}
+    */
+   async killTabQuery (tabUid) {
+      const id = this._runningConnections.get(tabUid);
+      if (id)
+         return await this.killProcess(id);
+   }
+
+   /**
+    *
+    * @param {string} tabUid
+    * @returns {Promise<null>}
+    */
+   async commitTab (tabUid) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection)
+         return await connection.query('COMMIT');
+   }
+
+   /**
+    *
+    * @param {string} tabUid
+    * @returns {Promise<null>}
+    */
+   async rollbackTab (tabUid) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection)
+         return await connection.query('ROLLBACK');
+   }
+
+   destroyConnectionToCommit (tabUid) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection) {
+         connection.destroy();
+         this._connectionsToCommit.delete(tabUid);
+      }
+   }
+
+   /**
     * CREATE TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async createTable (params) {
@@ -1212,7 +1362,7 @@ export class MySQLClient extends AntaresCore {
          const length = typeInfo.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
 
          newColumns.push(`\`${field.name}\` 
-            ${field.type.toUpperCase()}${length ? `(${length})` : ''} 
+            ${field.type.toUpperCase()}${length ? `(${length}${field.numScale ? `,${field.numScale}` : ''})` : ''} 
             ${field.unsigned ? 'UNSIGNED' : ''} 
             ${field.zerofill ? 'ZEROFILL' : ''}
             ${field.nullable ? 'NULL' : 'NOT NULL'}
@@ -1251,7 +1401,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * ALTER TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async alterTable (params) {
@@ -1281,7 +1431,7 @@ export class MySQLClient extends AntaresCore {
          const length = typeInfo.length ? addition.enumValues || addition.numLength || addition.charLength || addition.datePrecision : false;
 
          alterColumns.push(`ADD COLUMN \`${addition.name}\` 
-            ${addition.type.toUpperCase()}${length ? `(${length})` : ''} 
+            ${addition.type.toUpperCase()}${length ? `(${length}${addition.numScale ? `,${addition.numScale}` : ''})` : ''} 
             ${addition.unsigned ? 'UNSIGNED' : ''} 
             ${addition.zerofill ? 'ZEROFILL' : ''}
             ${addition.nullable ? 'NULL' : 'NOT NULL'}
@@ -1319,7 +1469,7 @@ export class MySQLClient extends AntaresCore {
          const length = typeInfo.length ? change.enumValues || change.numLength || change.charLength || change.datePrecision : false;
 
          alterColumns.push(`CHANGE COLUMN \`${change.orgName}\` \`${change.name}\` 
-            ${change.type.toUpperCase()}${length ? `(${length})` : ''} 
+            ${change.type.toUpperCase()}${length ? `(${length}${change.numScale ? `,${change.numScale}` : ''})` : ''} 
             ${change.unsigned ? 'UNSIGNED' : ''} 
             ${change.zerofill ? 'ZEROFILL' : ''}
             ${change.nullable ? 'NULL' : 'NOT NULL'}
@@ -1386,7 +1536,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * DUPLICATE TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async duplicateTable (params) {
@@ -1397,7 +1547,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * TRUNCATE TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async truncateTable (params) {
@@ -1408,7 +1558,7 @@ export class MySQLClient extends AntaresCore {
    /**
     * DROP TABLE
     *
-    * @returns {Array.<Object>} parameters
+    * @returns {Promise<null>}
     * @memberof MySQLClient
     */
    async dropTable (params) {
@@ -1490,6 +1640,7 @@ export class MySQLClient extends AntaresCore {
          details: false,
          split: true,
          comments: true,
+         autocommit: true,
          ...args
       };
 
@@ -1504,8 +1655,24 @@ export class MySQLClient extends AntaresCore {
             .filter(Boolean)
             .map(q => q.trim())
          : [sql];
+
+      let connection;
       const isPool = typeof this._connection.getConnection === 'function';
-      const connection = isPool ? await this._connection.getConnection() : this._connection;
+
+      if (!args.autocommit && args.tabUid) { // autocommit OFF
+         if (this._connectionsToCommit.has(args.tabUid))
+            connection = this._connectionsToCommit.get(args.tabUid);
+         else {
+            connection = await this.getConnection();
+            await connection.query('SET SESSION autocommit=0');
+            this._connectionsToCommit.set(args.tabUid, connection);
+         }
+      }
+      else// autocommit ON
+         connection = isPool ? await this._connection.getConnection() : this._connection;
+
+      if (args.tabUid && isPool)
+         this._runningConnections.set(args.tabUid, connection.connection.connectionId);
 
       if (args.schema)
          await connection.query(`USE \`${args.schema}\``);
@@ -1567,7 +1734,10 @@ export class MySQLClient extends AntaresCore {
                            });
                         }
                         catch (err) {
-                           if (isPool) connection.release();
+                           if (isPool && args.autocommit) {
+                              connection.release();
+                              this._runningConnections.delete(args.tabUid);
+                           }
                            reject(err);
                         }
 
@@ -1576,7 +1746,10 @@ export class MySQLClient extends AntaresCore {
                            keysArr = keysArr ? [...keysArr, ...response] : response;
                         }
                         catch (err) {
-                           if (isPool) connection.release();
+                           if (isPool && args.autocommit) {
+                              connection.release();
+                              this._runningConnections.delete(args.tabUid);
+                           }
                            reject(err);
                         }
                      }
@@ -1591,7 +1764,10 @@ export class MySQLClient extends AntaresCore {
                   keys: keysArr
                });
             }).catch((err) => {
-               if (isPool) connection.release();
+               if (isPool && args.autocommit) {
+                  connection.release();
+                  this._runningConnections.delete(args.tabUid);
+               }
                reject(err);
             });
          });
@@ -1599,7 +1775,10 @@ export class MySQLClient extends AntaresCore {
          resultsArr.push({ rows, report, fields, keys, duration });
       }
 
-      if (isPool) connection.release();
+      if (isPool && args.autocommit) {
+         connection.release();
+         this._runningConnections.delete(args.tabUid);
+      }
 
       return resultsArr.length === 1 ? resultsArr[0] : resultsArr;
    }

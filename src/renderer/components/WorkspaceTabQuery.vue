@@ -4,6 +4,7 @@
       class="workspace-query-tab column col-12 columns col-gapless no-outline p-0"
       tabindex="0"
       @keydown.116="runQuery(query)"
+      @keydown.75="killTabQuery"
       @keydown.ctrl.alt.87="clear"
       @keydown.ctrl.66="beautify"
       @keydown.ctrl.71="openHistoryModal"
@@ -22,15 +23,46 @@
          <div ref="resizer" class="query-area-resizer" />
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
+               <div @mouseenter="setCancelButtonVisibility(true)" @mouseleave="setCancelButtonVisibility(false)">
+                  <button
+                     v-if="showCancel && isQuering"
+                     class="btn btn-primary btn-sm cancellable"
+                     :disabled="!query"
+                     :title="$t('word.cancel')"
+                     @click="killTabQuery()"
+                  >
+                     <i class="mdi mdi-24px mdi-window-close" />
+                     <span class="d-invisible pr-1">{{ $t('word.run') }}</span>
+                  </button>
+                  <button
+                     v-else
+                     class="btn btn-primary btn-sm"
+                     :class="{'loading':isQuering}"
+                     :disabled="!query"
+                     title="F5"
+                     @click="runQuery(query)"
+                  >
+                     <i class="mdi mdi-24px mdi-play pr-1" />
+                     <span>{{ $t('word.run') }}</span>
+                  </button>
+               </div>
                <button
-                  class="btn btn-primary btn-sm"
+                  v-if="!autocommit"
+                  class="btn btn-dark btn-sm"
                   :class="{'loading':isQuering}"
-                  :disabled="!query"
-                  title="F5"
-                  @click="runQuery(query)"
+                  @click="commitTab()"
                >
-                  <i class="mdi mdi-24px mdi-play pr-1" />
-                  <span>{{ $t('word.run') }}</span>
+                  <i class="mdi mdi-24px mdi-cube-send pr-1" />
+                  <span>{{ $t('word.commit') }}</span>
+               </button>
+               <button
+                  v-if="!autocommit"
+                  class="btn btn-dark btn-sm"
+                  :class="{'loading':isQuering}"
+                  @click="rollbackTab()"
+               >
+                  <i class="mdi mdi-24px mdi-undo-variant pr-1" />
+                  <span>{{ $t('word.rollback') }}</span>
                </button>
                <button
                   class="btn btn-link btn-sm mr-0"
@@ -64,7 +96,7 @@
                </button>
                <div class="dropdown table-dropdown pr-2">
                   <button
-                     :disabled="!results.length || isQuering"
+                     :disabled="!hasResults || isQuering"
                      class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
                      tabindex="0"
                   >
@@ -81,6 +113,17 @@
                      </li>
                   </ul>
                </div>
+               <div class="input-group pr-2" :title="$t('message.commitMode')">
+                  <i class="input-group-addon addon-sm mdi mdi-24px mdi-source-commit p-0" />
+                  <select v-model="autocommit" class="form-select select-sm text-bold">
+                     <option :value="true">
+                        {{ $t('message.autoCommit') }}
+                     </option>
+                     <option :value="false">
+                        {{ $t('message.manualCommit') }}
+                     </option>
+                  </select>
+               </div>
             </div>
             <div class="workspace-query-info">
                <div
@@ -90,11 +133,19 @@
                >
                   <i class="mdi mdi-timer-sand mdi-rotate-180 pr-1" /> <b>{{ durationsCount / 1000 }}s</b>
                </div>
-               <div v-if="resultsCount">
-                  {{ $t('word.results') }}: <b>{{ resultsCount.toLocaleString() }}</b>
+               <div
+                  v-if="resultsCount"
+                  class="d-flex"
+                  :title="$t('word.results')"
+               >
+                  <i class="mdi mdi-equal pr-1" /> <b>{{ resultsCount.toLocaleString() }}</b>
                </div>
-               <div v-if="affectedCount">
-                  {{ $t('message.affectedRows') }}: <b>{{ affectedCount }}</b>
+               <div
+                  v-if="hasAffected"
+                  class="d-flex"
+                  :title="$t('message.affectedRows')"
+               >
+                  <i class="mdi mdi-target pr-1" /> <b>{{ affectedCount }}</b>
                </div>
                <div class="input-group" :title="$t('word.schema')">
                   <i class="input-group-addon addon-sm mdi mdi-24px mdi-database" />
@@ -110,7 +161,7 @@
             </div>
          </div>
       </div>
-      <WorkspaceTabQueryEmptyState v-if="!results.length && !isQuering" />
+      <WorkspaceTabQueryEmptyState v-if="!results.length && !isQuering" :customizations="workspace.customizations" />
       <div class="workspace-query-results p-relative column col-12">
          <BaseLoader v-if="isQuering" />
          <WorkspaceTabQueryTable
@@ -166,11 +217,14 @@ export default {
          query: '',
          lastQuery: '',
          isQuering: false,
+         isCancelling: false,
+         showCancel: false,
+         autocommit: true,
          results: [],
          selectedSchema: null,
          resultsCount: 0,
          durationsCount: 0,
-         affectedCount: 0,
+         affectedCount: null,
          editorHeight: 200,
          isHistoryOpen: false
       };
@@ -183,6 +237,9 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
+      },
+      tabUid () {
+         return this.$vnode.key;
       },
       breadcrumbsSchema () {
          return this.workspace.breadcrumbs.schema || null;
@@ -198,12 +255,23 @@ export default {
       },
       history () {
          return this.getHistoryByWorkspace(this.connection.uid) || [];
+      },
+      hasResults () {
+         return this.results.length && this.results[0].rows;
+      },
+      hasAffected () {
+         return this.affectedCount || (!this.resultsCount && this.affectedCount !== null);
       }
    },
    watch: {
       isSelected (val) {
-         if (val)
+         if (val) {
             this.changeBreadcrumbs({ schema: this.selectedSchema, query: `Query #${this.tab.index}` });
+            setTimeout(() => {
+               if (this.$refs.queryEditor)
+                  this.$refs.queryEditor.editor.focus();
+            }, 0);
+         }
       },
       selectedSchema () {
          this.changeBreadcrumbs({ schema: this.selectedSchema, query: `Query #${this.tab.index}` });
@@ -230,12 +298,18 @@ export default {
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);
+      const params = {
+         uid: this.connection.uid,
+         tabUid: this.tab.uid
+      };
+      Schema.destroyConnectionToCommit(params);
    },
    methods: {
       ...mapActions({
          addNotification: 'notifications/addNotification',
          changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
          updateTabContent: 'workspaces/updateTabContent',
+         setUnsavedChanges: 'workspaces/setUnsavedChanges',
          saveHistory: 'history/saveHistory'
       }),
       async runQuery (query) {
@@ -248,6 +322,8 @@ export default {
             const params = {
                uid: this.connection.uid,
                schema: this.selectedSchema,
+               tabUid: this.tab.uid,
+               autocommit: this.autocommit,
                query
             };
 
@@ -255,9 +331,14 @@ export default {
 
             if (status === 'success') {
                this.results = Array.isArray(response) ? response : [response];
-               this.resultsCount += this.results.reduce((acc, curr) => acc + (curr.rows ? curr.rows.length : 0), 0);
-               this.durationsCount += this.results.reduce((acc, curr) => acc + curr.duration, 0);
-               this.affectedCount += this.results.reduce((acc, curr) => acc + (curr.report ? curr.report.affectedRows : 0), 0);
+               this.resultsCount = this.results.reduce((acc, curr) => acc + (curr.rows ? curr.rows.length : 0), 0);
+               this.durationsCount = this.results.reduce((acc, curr) => acc + curr.duration, 0);
+               this.affectedCount = this.results
+                  .filter(result => result.report !== null)
+                  .reduce((acc, curr) => {
+                     if (acc === null) acc = 0;
+                     return acc + (curr.report ? curr.report.affectedRows : 0);
+                  }, null);
 
                this.updateTabContent({
                   uid: this.connection.uid,
@@ -267,6 +348,8 @@ export default {
                   content: query
                });
                this.saveHistory(params);
+               if (!this.autocommit)
+                  this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: true });
             }
             else
                this.addNotification({ status: 'error', message: response });
@@ -278,6 +361,29 @@ export default {
          this.isQuering = false;
          this.lastQuery = query;
       },
+      async killTabQuery () {
+         if (this.isCancelling) return;
+
+         this.isCancelling = true;
+
+         try {
+            const params = {
+               uid: this.connection.uid,
+               tabUid: this.tab.uid
+            };
+
+            await Schema.killTabQuery(params);
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         this.isCancelling = false;
+      },
+      setCancelButtonVisibility (val) {
+         if (this.workspace.customizations.cancelQueries)
+            this.showCancel = val;
+      },
       reloadTable () {
          this.runQuery(this.lastQuery);
       },
@@ -285,7 +391,7 @@ export default {
          this.results = [];
          this.resultsCount = 0;
          this.durationsCount = 0;
-         this.affectedCount = 0;
+         this.affectedCount = null;
       },
       resize (e) {
          const el = this.$refs.queryEditor.$el;
@@ -341,6 +447,42 @@ export default {
       },
       downloadTable (format) {
          this.$refs.queryTable.downloadTable(format, `${this.tab.type}-${this.tab.index}`);
+      },
+      async commitTab () {
+         this.isQuering = true;
+         try {
+            const params = {
+               uid: this.connection.uid,
+               tabUid: this.tab.uid
+            };
+
+            await Schema.commitTab(params);
+            this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: false });
+            this.addNotification({ status: 'success', message: this.$t('message.actionSuccessful', { action: 'COMMIT' }) });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         this.isQuering = false;
+      },
+      async rollbackTab () {
+         this.isQuering = true;
+         try {
+            const params = {
+               uid: this.connection.uid,
+               tabUid: this.tab.uid
+            };
+
+            await Schema.rollbackTab(params);
+            this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: false });
+            this.addNotification({ status: 'success', message: this.$t('message.actionSuccessful', { action: 'ROLLBACK' }) });
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
+
+         this.isQuering = false;
       }
    }
 };
@@ -369,10 +511,12 @@ export default {
 
     .workspace-query-runner-footer {
       display: flex;
+      flex-wrap: wrap;
+      row-gap: 0.4rem;
       justify-content: space-between;
       padding: 0.3rem 0.6rem 0.4rem;
       align-items: center;
-      height: 42px;
+      min-height: 42px;
 
       .workspace-query-buttons,
       .workspace-query-info {

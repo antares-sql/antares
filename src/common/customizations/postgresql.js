@@ -8,9 +8,13 @@ module.exports = {
    defaultDatabase: 'postgres',
    // Core
    database: true,
+   sslConnection: true,
+   sshConnection: true,
+   cancelQueries: true,
    // Tools
    processesList: true,
    // Structure
+   schemas: true,
    tables: true,
    views: true,
    triggers: true,
@@ -26,6 +30,7 @@ module.exports = {
    triggerFunctionAdd: true,
    routineAdd: true,
    functionAdd: true,
+   schemaDrop: true,
    databaseEdit: false,
    schemaExport: true,
    tableSettings: true,
@@ -51,5 +56,7 @@ module.exports = {
    triggerMultipleEvents: true,
    triggerTableInName: true,
    triggerOnlyRename: false,
-   languages: ['sql', 'plpgsql', 'c', 'internal']
+   triggerEnableDisable: true,
+   languages: ['sql', 'plpgsql', 'c', 'internal'],
+   readOnlyMode: true
 };

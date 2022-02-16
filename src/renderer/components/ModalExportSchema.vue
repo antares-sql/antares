@@ -170,7 +170,7 @@
                               KiB
                            </option>
                            <option value="rows">
-                              {{ $t('word.rows') }}
+                              {{ $tc('word.row', 2) }}
                            </option>
                         </select>
                      </div>

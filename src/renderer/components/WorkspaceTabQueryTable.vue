@@ -5,7 +5,7 @@
       tabindex="0"
       :style="{'height': resultsSize+'px'}"
       @keyup.46="showDeleteConfirmModal"
-      @keydown.ctrl.65="selectAllRows"
+      @keydown.ctrl.65="selectAllRows($event)"
       @keydown.esc="deselectRows"
    >
       <TableContext
@@ -53,6 +53,7 @@
                            class="mdi sort-icon"
                            :class="currentSortDir === 'asc' ? 'mdi-sort-ascending':'mdi-sort-descending'"
                         />
+                        <i v-else class="mdi sort-icon mdi-minus d-invisible" />
                      </div>
                   </div>
                </div>
@@ -62,7 +63,7 @@
             v-if="resultsWithRows[resultsetIndex] && resultsWithRows[resultsetIndex].rows"
             ref="resultTable"
             :items="sortedResults"
-            :item-height="22"
+            :item-height="rowHeight"
             class="tbody"
             :visible-height="resultsSize"
             :scroll-element="scrollElement"
@@ -70,13 +71,14 @@
             <template slot-scope="{ items }">
                <WorkspaceTabQueryTableRow
                   v-for="row in items"
-                  :key="row._id"
+                  :key="row._antares_id"
+                  :item-height="rowHeight"
                   :row="row"
                   :fields="fieldsObj"
                   :key-usage="keyUsage"
                   :element-type="elementType"
-                  :class="{'selected': selectedRows.includes(row._id)}"
-                  @select-row="selectRow($event, row._id)"
+                  :class="{'selected': selectedRows.includes(row._antares_id)}"
+                  @select-row="selectRow($event, row._antares_id)"
                   @update-field="updateField($event, row)"
                   @contextmenu="contextMenu"
                />
@@ -89,17 +91,17 @@
          @confirm="deleteSelected"
          @hide="hideDeleteConfirmModal"
       >
-         <template :slot="'header'">
+         <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-delete mr-1" />
                <span class="cut-text">{{ $tc('message.deleteRows', selectedRows.length) }}</span>
             </div>
          </template>
-         <div :slot="'body'">
+         <template #body>
             <div class="mb-2">
                {{ $tc('message.confirmToDeleteRows', selectedRows.length) }}
             </div>
-         </div>
+         </template>
       </ConfirmModal>
    </div>
 </template>
@@ -142,7 +144,8 @@ export default {
          currentSort: '',
          currentSortDir: 'asc',
          resultsetIndex: 0,
-         scrollElement: null
+         scrollElement: null,
+         rowHeight: 23
       };
    },
    computed: {
@@ -196,7 +199,7 @@ export default {
          if (this.sortedResults.length) {
             const fieldsObj = {};
             for (const key in this.sortedResults[0]) {
-               if (key === '_id') continue;
+               if (key === '_antares_id') continue;
 
                const fieldObj = this.fields.find(field => {
                   let fieldNames = [
@@ -242,6 +245,11 @@ export default {
 
       if (this.$refs.tableWrapper)
          this.scrollElement = this.$refs.tableWrapper;
+
+      document.querySelectorAll('.column-resizable').forEach(element => {
+         if (element.clientWidth !== 0)
+            element.style.width = element.clientWidth + 'px';
+      });
    },
    mounted () {
       window.addEventListener('resize', this.resizeResults);
@@ -272,6 +280,7 @@ export default {
       fieldLength (field) {
          if ([...BLOB, ...LONG_TEXT].includes(field.type)) return null;
          else if (TEXT.includes(field.type)) return field.charLength;
+         else if (field.numScale) return `${field.numPrecision}, ${field.numScale}`;
          return field.length;
       },
       keyName (key) {
@@ -310,7 +319,7 @@ export default {
       setLocalResults () {
          this.localResults = this.resultsWithRows[this.resultsetIndex] && this.resultsWithRows[this.resultsetIndex].rows
             ? this.resultsWithRows[this.resultsetIndex].rows.map(item => {
-               return { ...item, _id: uidGen() };
+               return { ...item, _antares_id: uidGen() };
             })
             : [];
       },
@@ -330,7 +339,7 @@ export default {
          this.resizeResults();
       },
       updateField (payload, row) {
-         const orgRow = this.localResults.find(lr => lr._id === row._id);
+         const orgRow = this.localResults.find(lr => lr._antares_id === row._antares_id);
 
          Object.keys(orgRow).forEach(key => { // remap the row
             if (orgRow[key] instanceof Date && moment(orgRow[key]).isValid()) { // if datetime
@@ -367,8 +376,8 @@ export default {
       },
       deleteSelected () {
          this.closeContext();
-         const rows = JSON.parse(JSON.stringify(this.localResults)).filter(row => this.selectedRows.includes(row._id)).map(row => {
-            delete row._id;
+         const rows = JSON.parse(JSON.stringify(this.localResults)).filter(row => this.selectedRows.includes(row._antares_id)).map(row => {
+            delete row._antares_id;
             return row;
          });
 
@@ -381,7 +390,7 @@ export default {
          this.$emit('delete-selected', params);
       },
       setNull () {
-         const row = this.localResults.find(row => this.selectedRows.includes(row._id));
+         const row = this.localResults.find(row => this.selectedRows.includes(row._antares_id));
 
          const params = {
             primary: this.primaryField.name,
@@ -396,19 +405,22 @@ export default {
          this.$emit('update-field', params);
       },
       copyCell () {
-         const row = this.localResults.find(row => this.selectedRows.includes(row._id));
+         const row = this.localResults.find(row => this.selectedRows.includes(row._antares_id));
          const cellName = Object.keys(row).find(prop => [
             this.selectedCell.field,
+            this.selectedCell.orgField,
             `${this.fields[0].table}.${this.selectedCell.field}`,
             `${this.fields[0].tableAlias}.${this.selectedCell.field}`
          ].includes(prop));
-         const valueToCopy = row[cellName];
+         let valueToCopy = row[cellName];
+         if (typeof valueToCopy === 'object')
+            valueToCopy = JSON.stringify(valueToCopy);
          navigator.clipboard.writeText(valueToCopy);
       },
       copyRow () {
-         const row = this.localResults.find(row => this.selectedRows.includes(row._id));
+         const row = this.localResults.find(row => this.selectedRows.includes(row._antares_id));
          const rowToCopy = JSON.parse(JSON.stringify(row));
-         delete rowToCopy._id;
+         delete rowToCopy._antares_id;
          navigator.clipboard.writeText(JSON.stringify(rowToCopy));
       },
       applyUpdate (params) {
@@ -435,24 +447,26 @@ export default {
                this.selectedRows.push(row);
             else {
                const lastID = this.selectedRows.slice(-1)[0];
-               const lastIndex = this.sortedResults.findIndex(el => el._id === lastID);
-               const clickedIndex = this.sortedResults.findIndex(el => el._id === row);
+               const lastIndex = this.sortedResults.findIndex(el => el._antares_id === lastID);
+               const clickedIndex = this.sortedResults.findIndex(el => el._antares_id === row);
                if (lastIndex > clickedIndex) {
                   for (let i = clickedIndex; i < lastIndex; i++)
-                     this.selectedRows.push(this.sortedResults[i]._id);
+                     this.selectedRows.push(this.sortedResults[i]._antares_id);
                }
                else if (lastIndex < clickedIndex) {
                   for (let i = clickedIndex; i > lastIndex; i--)
-                     this.selectedRows.push(this.sortedResults[i]._id);
+                     this.selectedRows.push(this.sortedResults[i]._antares_id);
                }
             }
          }
          else
             this.selectedRows = [row];
       },
-      selectAllRows () {
+      selectAllRows (e) {
+         if (e.target.classList.contains('editable-field')) return;
+
          this.selectedRows = this.localResults.reduce((acc, curr) => {
-            acc.push(curr._id);
+            acc.push(curr._antares_id);
             return acc;
          }, []);
       },
@@ -501,7 +515,7 @@ export default {
          if (!this.sortedResults) return;
 
          const rows = JSON.parse(JSON.stringify(this.sortedResults)).map(row => {
-            delete row._id;
+            delete row._antares_id;
             return row;
          });
 

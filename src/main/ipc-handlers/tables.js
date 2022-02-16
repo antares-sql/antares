@@ -3,6 +3,7 @@ import faker from 'faker';
 import moment from 'moment';
 import { sqlEscaper } from 'common/libs/sqlEscaper';
 import { TEXT, LONG_TEXT, ARRAY, TEXT_SEARCH, NUMBER, FLOAT, BLOB, BIT, DATE, DATETIME } from 'common/fieldTypes';
+import * as customizations from 'common/customizations';
 import fs from 'fs';
 
 export default (connections) => {
@@ -84,12 +85,13 @@ export default (connections) => {
    });
 
    ipcMain.handle('update-table-cell', async (event, params) => {
-      delete params.row._id;
+      delete params.row._antares_id;
+      const { stringsWrapper: sw } = customizations[connections[params.uid]._client];
 
       try { // TODO: move to client classes
          let escapedParam;
          let reload = false;
-         const id = typeof params.id === 'number' ? params.id : `"${params.id}"`;
+         const id = typeof params.id === 'number' ? params.id : `${sw}${params.id}${sw}`;
 
          if ([...NUMBER, ...FLOAT].includes(params.type))
             escapedParam = params.content;
@@ -100,6 +102,9 @@ export default (connections) => {
                   escapedParam = `"${sqlEscaper(params.content)}"`;
                   break;
                case 'pg':
+                  escapedParam = `'${params.content.replaceAll('\'', '\'\'')}'`;
+                  break;
+               case 'sqlite':
                   escapedParam = `'${params.content.replaceAll('\'', '\'\'')}'`;
                   break;
             }
@@ -122,6 +127,10 @@ export default (connections) => {
                      fileBlob = fs.readFileSync(params.content);
                      escapedParam = `decode('${fileBlob.toString('hex')}', 'hex')`;
                      break;
+                  case 'sqlite':
+                     fileBlob = fs.readFileSync(params.content);
+                     escapedParam = `X'${fileBlob.toString('hex')}'`;
+                     break;
                }
                reload = true;
             }
@@ -133,6 +142,9 @@ export default (connections) => {
                      break;
                   case 'pg':
                      escapedParam = 'decode(\'\', \'hex\')';
+                     break;
+                  case 'sqlite':
+                     escapedParam = 'X\'\'';
                      break;
                }
             }
@@ -188,7 +200,7 @@ export default (connections) => {
             const fieldName = Object.keys(row)[0].includes('.') ? `${params.table}.${params.primary}` : params.primary;
 
             return typeof row[fieldName] === 'string'
-               ? `"${row[fieldName]}"`
+               ? `'${row[fieldName]}'`
                : row[fieldName];
          }).join(',');
 

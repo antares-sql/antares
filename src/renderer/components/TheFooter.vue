@@ -11,9 +11,9 @@
 
       <div class="footer-right-elements">
          <ul class="footer-elements">
-            <li class="footer-element footer-link" @click="openOutside('https://www.treedom.net/en/user/fabio-di-stasio/event/antares-for-the-planet')">
-               <i class="mdi mdi-18px mdi-tree mr-1" />
-               <small>{{ $t('message.plantATree') }}</small>
+            <li class="footer-element footer-link" @click="openOutside('https://www.paypal.com/paypalme/fabiodistasio')">
+               <i class="mdi mdi-18px mdi-coffee mr-1" />
+               <small>{{ $t('word.donate') }}</small>
             </li>
             <li class="footer-element footer-link" @click="openOutside('https://github.com/Fabio286/antares/issues')">
                <i class="mdi mdi-18px mdi-bug" />

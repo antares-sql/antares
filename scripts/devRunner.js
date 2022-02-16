@@ -113,14 +113,15 @@ function startRenderer (callback) {
    });
 
    const server = new WebpackDevServer(compiler, {
-      contentBase: path.join(__dirname, '../'),
       hot: true,
-      noInfo: true,
-      overlay: true,
-      clientLogLevel: 'warning'
+      port: 9080,
+      client: {
+         overlay: true,
+         logging: 'warn'
+      }
    });
 
-   server.listen(9080, '', err => {
+   server.startCallback(err => {
       if (err) console.error(chalk.red(err));
 
       callback();

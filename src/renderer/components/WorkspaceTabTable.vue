@@ -85,7 +85,7 @@
                   @click="showFakerModal"
                >
                   <i class="mdi mdi-24px mdi-playlist-plus mr-1" />
-                  <span>{{ $t('message.tableFiller') }}</span>
+                  <span>{{ $tc('message.insertRow', 2) }}</span>
                </button>
 
                <div class="dropdown table-dropdown pr-2">
@@ -120,7 +120,12 @@
                   {{ $t('word.results') }}: <b>{{ results[0].rows.length | localeString }}</b>
                </div>
                <div v-if="hasApproximately || (page > 1 && approximateCount)">
-                  {{ $t('word.total') }}: <b :title="$t('word.approximately')">≈ {{ approximateCount | localeString }}</b>
+                  {{ $t('word.total') }}: <b
+                     :title="!customizations.tableRealCount ? $t('word.approximately') : ''"
+                  >
+                     <span v-if="!customizations.tableRealCount">≈</span>
+                     {{ approximateCount | localeString }}
+                  </b>
                </div>
                <div class="d-flex" :title="$t('word.schema')">
                   <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
@@ -230,6 +235,9 @@ export default {
       }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
+      },
+      customizations () {
+         return this.workspace.customizations;
       },
       isTable () {
          return !!this.workspace.breadcrumbs.table;

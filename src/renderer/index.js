@@ -3,6 +3,7 @@
 import Vue from 'vue';
 
 import '@mdi/font/css/materialdesignicons.css';
+import 'leaflet/dist/leaflet.css';
 import '@/scss/main.scss';
 
 import App from '@/App.vue';

@@ -9,7 +9,16 @@
          <div v-if="isLoading" class="icon loading" />
          <i v-else class="icon mdi mdi-18px mdi-chevron-right" />
          <i class="database-icon mdi mdi-18px mdi-database mr-1" />
-         <span>{{ database.name }}</span>
+         <div class="">
+            <span>{{ database.name }}</span>
+            <div
+               v-if="database.size"
+               class="schema-size tooltip tooltip-left mr-1"
+               :data-tooltip="formatBytes(database.size)"
+            >
+               <i class="mdi mdi-information-outline pr-2" />
+            </div>
+         </div>
       </summary>
       <div class="accordion-body">
          <div class="database-tables">
@@ -34,7 +43,7 @@
                      <span v-html="highlightWord(table.name)" />
                   </a>
                   <div
-                     v-if="table.type === 'table'"
+                     v-if="table.type === 'table' && table.size !== false"
                      class="table-size  tooltip tooltip-left mr-1"
                      :data-tooltip="formatBytes(table.size)"
                   >
@@ -68,9 +77,17 @@
                            @contextmenu.prevent="showMiscContext($event, {...trigger, type: 'trigger'})"
                         >
                            <a class="table-name">
-                              <i class="table-icon mdi mdi-table-cog mdi-18px mr-1" />
+                              <div v-if="checkLoadingStatus(trigger.name, 'trigger')" class="icon loading mr-1" />
+                              <i v-else class="table-icon mdi mdi-table-cog mdi-18px mr-1" />
                               <span v-html="highlightWord(trigger.name)" />
                            </a>
+                           <div
+                              v-if="trigger.enabled === false"
+                              class="tooltip tooltip-left disabled-indicator"
+                              :data-tooltip="$t('word.disabled')"
+                           >
+                              <i class="table-icon mdi mdi-pause mdi-18px mr-1" />
+                           </div>
                         </li>
                      </ul>
                   </div>
@@ -204,9 +221,17 @@
                            @contextmenu.prevent="showMiscContext($event, {...scheduler, type: 'scheduler'})"
                         >
                            <a class="table-name">
-                              <i class="table-icon mdi mdi-calendar-clock mdi-18px mr-1" />
+                              <div v-if="checkLoadingStatus(scheduler.name, 'scheduler')" class="icon loading mr-1" />
+                              <i v-else class="table-icon mdi mdi-calendar-clock mdi-18px mr-1" />
                               <span v-html="highlightWord(scheduler.name)" />
                            </a>
+                           <div
+                              v-if="scheduler.enabled === false"
+                              class="tooltip tooltip-left disabled-indicator"
+                              :data-tooltip="$t('word.disabled')"
+                           >
+                              <i class="table-icon mdi mdi-pause mdi-18px mr-1" />
+                           </div>
                         </li>
                      </ul>
                   </div>
@@ -426,6 +451,11 @@ export default {
     position: sticky;
     top: 0;
     z-index: 2;
+
+    .schema-size {
+      visibility: hidden;
+      width: 22.5px;
+    }
   }
 
   .database-name,
@@ -471,6 +501,10 @@ export default {
   .misc-name {
     &:hover {
       border-radius: $border-radius;
+
+      .schema-size {
+        visibility: visible;
+      }
     }
   }
 
@@ -500,7 +534,9 @@ export default {
     }
   }
 
-  .table-size {
+  .schema-size,
+  .table-size,
+  .disabled-indicator {
     position: absolute;
     right: 0;
     top: 0;
