@@ -1,4 +1,3 @@
-import { app } from 'electron';
 import moment from 'moment';
 import { BaseExporter } from '../BaseExporter';
 
@@ -128,7 +127,7 @@ export class SqlExporter extends BaseExporter {
       const serverVersion = await this.getServerVersion();
       const header = `************************************************************
 Antares - SQL Client
-Version ${app.getVersion()}
+Version ${process.env.PACKAGE_VERSION}
 
 https://antares-sql.app/
 https://github.com/Fabio286/antares

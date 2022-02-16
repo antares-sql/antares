@@ -285,7 +285,9 @@ ${footer}
 
       const routine = routines[0];
 
-      const { sql_mode: sqlMode, 'Create Function': createProcedure } = routine;
+      const fieldName = `Create ${type === 'PROCEDURE' ? 'Procedure' : 'Function'}`;
+      const sqlMode = routine.sql_mode;
+      const createProcedure = routine[fieldName];
 
       const startOffset = createProcedure.indexOf(type);
       const procedureBody = createProcedure.substring(startOffset);
@@ -302,7 +304,7 @@ ${footer}
    }
 
    async _queryStream (sql) {
-      console.log(sql);
+      if (process.env.NODE_ENV === 'development') console.log(sql);
       const isPool = typeof this._client._connection.getConnection === 'function';
       const connection = isPool ? await this._client._connection.getConnection() : this._client._connection;
       const stream = connection.connection.query(sql).stream();
