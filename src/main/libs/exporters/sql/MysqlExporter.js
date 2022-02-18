@@ -53,9 +53,7 @@ ${footer}
       let rowCount = 0;
       let sqlStr = '';
 
-      const countResults = await this._client.raw(
-         `SELECT COUNT(1) as count FROM \`${this.schemaName}\`.\`${tableName}\``
-      );
+      const countResults = await this._client.raw(`SELECT COUNT(1) as count FROM \`${this.schemaName}\`.\`${tableName}\``);
       if (countResults.rows.length === 1) rowCount = countResults.rows[0].count;
 
       if (rowCount > 0) {

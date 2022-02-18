@@ -292,6 +292,7 @@ export default {
    },
    methods: {
       ...mapActions({
+         addNotification: 'notifications/addNotification',
          refreshSchema: 'workspaces/refreshSchema'
       }),
       async startExport () {
@@ -306,13 +307,17 @@ export default {
             ...this.options
          };
 
-         const result = await Schema.export(params);
-         if (result) {
-            if (result.status === 'success')
-               this.progressStatus = result.response.cancelled ? this.$t('word.aborted') : this.$t('word.completed');
-
-            else
-               this.progressStatus = result.response;
+         try {
+            const { status, response } = await Schema.export(params);
+            if (status === 'success')
+               this.progressStatus = response.cancelled ? this.$t('word.aborted') : this.$t('word.completed');
+            else {
+               this.progressStatus = response;
+               this.addNotification({ status: 'error', message: response });
+            }
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
          }
 
          this.isExporting = false;

@@ -13,7 +13,7 @@ const config = {
    mode: process.env.NODE_ENV,
    devtool: isDevMode ? 'eval-source-map' : false,
    entry: {
-      exporterProcess: path.join(__dirname, './src/main/workers/exporterProcess.js')
+      exporter: path.join(__dirname, './src/main/workers/exporter.js')
    },
    target: 'node',
    output: {
