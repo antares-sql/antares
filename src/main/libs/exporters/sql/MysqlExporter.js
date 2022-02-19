@@ -1,6 +1,7 @@
 import { SqlExporter } from './SqlExporter';
-import { BLOB, BIT } from 'common/fieldTypes';
+import { BLOB, BIT, DATE, DATETIME, FLOAT } from 'common/fieldTypes';
 import hexToBinary from 'common/libs/hexToBinary';
+import moment from 'moment';
 
 export default class MysqlExporter extends SqlExporter {
    async getSqlHeader () {
@@ -65,7 +66,9 @@ ${footer}
             table: tableName,
             schema: this.schemaName
          });
-         const columnNames = columns.map(col => '`' + col.name + '`');
+
+         const notGeneratedColumns = columns.filter(col => !col.generated);
+         const columnNames = notGeneratedColumns.map(col => '`' + col.name + '`');
          const insertStmt = `INSERT INTO \`${tableName}\` (${columnNames.join(
             ', '
          )}) VALUES`;
@@ -101,25 +104,44 @@ ${footer}
             else if (parseInt(rowIndex) === 0) sqlInsertString += '\n\t(';
             else sqlInsertString += ',\n\t(';
 
-            for (const i in columns) {
-               const column = columns[i];
+            for (const i in notGeneratedColumns) {
+               const column = notGeneratedColumns[i];
                const val = row[column.name];
 
                if (val === null) sqlInsertString += 'NULL';
+               else if (DATE.includes(column.type)) {
+                  sqlInsertString += moment(val).isValid()
+                     ? this.escapeAndQuote(moment(val).format('YYYY-MM-DD'))
+                     : val;
+               }
+               else if (DATETIME.includes(column.type)) {
+                  if (typeof val === 'string')
+                     sqlInsertString += this.escapeAndQuote(val);
+
+                  let datePrecision = '';
+                  for (let i = 0; i < column.precision; i++)
+                     datePrecision += i === 0 ? '.S' : 'S';
+
+                  sqlInsertString += moment(val).isValid()
+                     ? this.escapeAndQuote(moment(val).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`))
+                     : val;
+               }
                else if (BIT.includes(column.type))
                   sqlInsertString += `b'${hexToBinary(Buffer.from(val).toString('hex'))}'`;
-
                else if (BLOB.includes(column.type))
                   sqlInsertString += `X'${val.toString('hex').toUpperCase()}'`;
-
+               else if (FLOAT.includes(column.type))
+                  sqlInsertString += parseFloat(val);
                else if (val === '') sqlInsertString += '\'\'';
                else {
                   sqlInsertString += typeof val === 'string'
                      ? this.escapeAndQuote(val)
-                     : val;
+                     : typeof val === 'object'
+                        ? this.escapeAndQuote(JSON.stringify(val))
+                        : val;
                }
 
-               if (parseInt(i) !== columns.length - 1)
+               if (parseInt(i) !== notGeneratedColumns.length - 1)
                   sqlInsertString += ', ';
             }
 
@@ -302,7 +324,7 @@ ${footer}
    }
 
    async _queryStream (sql) {
-      if (process.env.NODE_ENV === 'development') console.log(sql);
+      if (process.env.NODE_ENV === 'development') console.log('EXPORTER:', sql);
       const isPool = typeof this._client._connection.getConnection === 'function';
       const connection = isPool ? await this._client._connection.getConnection() : this._client._connection;
       const stream = connection.connection.query(sql).stream();
