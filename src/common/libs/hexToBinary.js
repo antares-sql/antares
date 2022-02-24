@@ -33,7 +33,7 @@ const lookup = {
  */
 export default function hexToBinary (hex) {
    let binary = '';
-   for (let i = 0, len = hex.length; i < len; i++)
+   for (let i = 0; i < hex.length; i++)
       binary += lookup[hex[i]];
 
    return binary;

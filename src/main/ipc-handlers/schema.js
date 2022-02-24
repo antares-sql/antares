@@ -1,10 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import { fork } from 'child_process';
-import { ipcMain, dialog, Notification } from 'electron';
+import { ipcMain, dialog } from 'electron';
 
 // @TODO:  need some factories
-import MysqlImporter from '../libs/importers/sql/MysqlImporter';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 export default connections => {
@@ -265,54 +264,48 @@ export default connections => {
    ipcMain.handle('import-sql', async (event, options) => {
       if (importer !== null) return;
 
-      switch (options.type) {
-         case 'mysql':
-         case 'maria':
-            importer = new MysqlImporter(connections[options.uid], options);
-            break;
-         default:
-            return {
-               status: 'error',
-               response: `${type} importer not aviable`
-            };
-      }
-
       return new Promise((resolve, reject) => {
-         importer.once('error', err => {
-            reject(err);
-         });
+         (async () => {
+            const dbConfig = await connections[options.uid].getDbConfig();
 
-         importer.once('end', () => {
-            resolve({ cancelled: importer.isCancelled });
-         });
+            // Init importer process
+            importer = fork(isDevelopment ? './dist/importer.js' : path.resolve(__dirname, './importer.js'));
+            importer.send({
+               type: 'init',
+               dbConfig,
+               options
+            });
 
-         importer.on('progress', state => {
-            event.sender.send('import-progress', state);
-         });
+            // Importer message listener
+            importer.on('message', ({ type, payload }) => {
+               switch (type) {
+                  case 'import-progress':
+                     event.sender.send('import-progress', payload);
+                     break;
+                  case 'end':
+                     importer.kill();
+                     importer = null;
+                     resolve({ status: 'success', response: payload });
+                     break;
+                  case 'cancel':
+                     importer.kill();
+                     importer = null;
+                     resolve({ status: 'error', response: 'Operation cancelled' });
+                     break;
+                  case 'error':
+                     importer.kill();
+                     importer = null;
+                     resolve({ status: 'error', response: payload });
+                     break;
+               }
+            });
 
-         importer.run();
-      })
-         .then(response => {
-            if (!response.cancelled) {
-               new Notification({
-                  title: 'Import finished',
-                  body: `Finished importing ${path.basename(options.file)}`
-               }).show();
-            }
-            return { status: 'success', response };
-         })
-         .catch(err => {
-            new Notification({
-               title: 'Import error',
-               body: err.toString()
-            }).show();
-
-            return { status: 'error', response: err.toString() };
-         })
-         .finally(() => {
-            importer.removeAllListeners();
-            importer = null;
-         });
+            importer.on('exit', code => {
+               importer = null;
+               resolve({ status: 'error', response: `Operation ended with code: ${code}` });
+            });
+         })();
+      });
    });
 
    ipcMain.handle('abort-import-sql', async event => {
@@ -329,7 +322,7 @@ export default connections => {
 
          if (result.response === 1) {
             willAbort = true;
-            importer.cancel();
+            importer.send({ type: 'cancel' });
          }
       }
 

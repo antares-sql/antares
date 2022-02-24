@@ -86,11 +86,22 @@ export default {
          const params = {
             uid,
             type: client,
+            schema: this.selectedSchema,
             file: sqlFile
          };
 
-         const result = await Schema.import(params);
-         console.log(result);
+         try {
+            const { status, response } = await Schema.import(params);
+            if (status === 'success')
+               this.progressStatus = response.cancelled ? this.$t('word.aborted') : this.$t('word.completed');
+            else {
+               this.progressStatus = response;
+               this.addNotification({ status: 'error', message: response });
+            }
+         }
+         catch (err) {
+            this.addNotification({ status: 'error', message: err.stack });
+         }
 
          this.isImporting = false;
       },

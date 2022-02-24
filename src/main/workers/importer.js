@@ -1,32 +1,32 @@
 import { ClientsFactory } from '../libs/ClientsFactory';
-import MysqlExporter from '../libs/exporters/sql/MysqlExporter.js';
 import fs from 'fs';
-let exporter;
+import MysqlImporter from '../libs/importers/sql/MysqlImporter';
+let importer;
 
-process.on('message', async ({ type, client, tables, options }) => {
+process.on('message', async ({ type, dbConfig, options }) => {
    if (type === 'init') {
       const connection = await ClientsFactory.getConnection({
-         client: client.name,
-         params: client.config,
-         poolSize: 5
+         client: options.type,
+         params: dbConfig,
+         poolSize: 1
       });
       await connection.connect();
 
-      // TODO: exporter factory class
-      switch (client.name) {
+      // TODO: importer factory class
+      switch (options.type) {
          case 'mysql':
          case 'maria':
-            exporter = new MysqlExporter(connection, tables, options);
+            importer = new MysqlImporter(connection, options);
             break;
          default:
             process.send({
                type: 'error',
-               payload: `"${client.name}" exporter not aviable`
+               payload: `"${options.type}" importer not aviable`
             });
             return;
       }
 
-      exporter.once('error', err => {
+      importer.once('error', err => {
          console.error(err);
          process.send({
             type: 'error',
@@ -34,28 +34,28 @@ process.on('message', async ({ type, client, tables, options }) => {
          });
       });
 
-      exporter.once('end', () => {
+      importer.once('end', () => {
          process.send({
             type: 'end',
-            payload: { cancelled: exporter.isCancelled }
+            payload: { cancelled: importer.isCancelled }
          });
          connection.destroy();
       });
 
-      exporter.once('cancel', () => {
-         fs.unlinkSync(exporter.outputFile);
+      importer.once('cancel', () => {
+         fs.unlinkSync(importer.outputFile);
          process.send({ type: 'cancel' });
       });
 
-      exporter.on('progress', state => {
+      importer.on('progress', state => {
          process.send({
-            type: 'export-progress',
+            type: 'import-progress',
             payload: state
          });
       });
 
-      exporter.run();
+      importer.run();
    }
    else if (type === 'cancel')
-      exporter.cancel();
+      importer.cancel();
 });

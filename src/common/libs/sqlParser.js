@@ -1,5 +1,13 @@
 import { Duplex } from 'stream';
 
+const chars = {
+   NEWLINE: 0x0A,
+   CARRIAGE_RETURN: 0x0D,
+   DOUBLE_QUOTE: 0x22,
+   QUOTE: 0x27,
+   BACKSLASH: 0x5C
+};
+
 export default class SqlParser extends Duplex {
    constructor (opts) {
       opts = {
@@ -10,24 +18,21 @@ export default class SqlParser extends Duplex {
          ...opts
       };
       super(opts);
-      this._buffer = [];
+      this._buffer = Buffer.from([]);
       this.encoding = opts.encoding;
       this.delimiter = opts.delimiter;
 
       this.isEscape = false;
-      this.currentQuote = '';
+      this.currentQuote = null;
       this.isDelimiter = false;
    }
 
    _write (chunk, encoding, next) {
-      const str = chunk.toString(this.encoding);
-
-      for (let i = 0; i < str.length; i++) {
-         const currentChar = str[i];
+      for (const char of chunk) {
          this.checkEscape();
-         this._buffer.push(currentChar);
-         // this.checkNewDelimiter(currentChar);
-         this.checkQuote(currentChar);
+         this._buffer = Buffer.concat([this._buffer, Buffer.from([char])]);
+         this.checkNewDelimiter(char);
+         this.checkQuote(char);
          const query = this.getQuery();
 
          if (query)
@@ -39,33 +44,33 @@ export default class SqlParser extends Duplex {
 
    checkEscape () {
       if (this._buffer.length > 0) {
-         this.isEscape = this._buffer[this._buffer.length - 1] === '\\'
+         this.isEscape = this._buffer[this._buffer.length - 1] === chars.BACKSLASH
             ? !this.isEscape
             : false;
       }
    }
 
    checkNewDelimiter (char) {
-      if (this.parsedStr.toLowerCase() === 'delimiter' && this.currentQuote === '') {
+      if (this._buffer.length === 9 && this.parsedStr.toLowerCase() === 'delimiter' && this.currentQuote === null) {
          this.isDelimiter = true;
-         this._buffer = [];
+         this._buffer = Buffer.from([]);
       }
       else {
-         const isNewLine = ['\n', '\r'].includes(char);
+         const isNewLine = [chars.NEWLINE, chars.CARRIAGE_RETURN].includes(char);
          if (isNewLine && this.isDelimiter) {
             this.isDelimiter = false;
             this.delimiter = this.parsedStr;
-            this._buffer = [];
+            this._buffer = Buffer.from([]);
          }
       }
    }
 
    checkQuote (char) {
-      const isQuote = !this.isEscape && ['"', '\''].includes(char);
+      const isQuote = !this.isEscape && [chars.QUOTE, chars.DOUBLE_QUOTE].includes(char);
       if (isQuote && this.currentQuote === char)
-         this.currentQuote = '';
+         this.currentQuote = null;
 
-      else if (isQuote && this.currentQuote === '')
+      else if (isQuote && this.currentQuote === null)
          this.currentQuote = char;
    }
 
@@ -75,20 +80,20 @@ export default class SqlParser extends Duplex {
 
       let query = false;
       let demiliterFound = false;
-      if (this.currentQuote === '' && this._buffer.length >= this.delimiter.length)
-         demiliterFound = this.parsedStr.slice(-this.delimiter.length) === this.delimiter;
+      if (this.currentQuote === null && this._buffer.length >= this.delimiter.length)
+         demiliterFound = this._buffer.slice(-this.delimiter.length).toString(this.encoding) === this.delimiter;
 
       if (demiliterFound) {
-         this._buffer.splice(-this.delimiter.length, this.delimiter.length);
+         this._buffer = this._buffer.slice(0, this._buffer.length - 1);
          query = this.parsedStr;
-         this._buffer = [];
+         this._buffer = Buffer.from([]);
       }
 
       return query;
    }
 
    get parsedStr () {
-      return this._buffer.join('').trim();
+      return this._buffer.toString(this.encoding).trim();
    }
 
    _read (size) {
