@@ -328,6 +328,7 @@ export default connections => {
 
       return { status: 'success', response: { willAbort } };
    });
+  
    ipcMain.handle('kill-tab-query', async (event, { uid, tabUid }) => {
       if (!tabUid) return;
 
