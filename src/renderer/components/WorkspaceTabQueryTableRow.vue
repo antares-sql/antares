@@ -272,7 +272,8 @@ export default {
          if (BIT.includes(type)) {
             if (typeof val === 'number') val = [val];
             const hex = Buffer.from(val).toString('hex');
-            return hexToBinary(hex);
+            const bitString = hexToBinary(hex);
+            return parseInt(bitString).toString().padStart(precision, '0');
          }
 
          if (ARRAY.includes(type)) {
