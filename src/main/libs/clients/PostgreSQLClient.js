@@ -9,7 +9,6 @@ function pgToString (value) {
    return value.toString();
 }
 
-types.setTypeParser(20, a => parseInt(a));// bigint string to number
 types.setTypeParser(1082, pgToString); // date
 types.setTypeParser(1083, pgToString); // time
 types.setTypeParser(1114, pgToString); // timestamp

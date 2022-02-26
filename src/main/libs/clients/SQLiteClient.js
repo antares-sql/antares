@@ -163,7 +163,7 @@ export class SQLiteClient extends AntaresCore {
             nullable: !field.notnull,
             unsigned: null,
             zerofill: null,
-            order: field.cid + 1,
+            order: typeof field.cid === 'string' ? +field.cid + 1 : field.cid + 1,
             default: field.dflt_value,
             charset: null,
             collation: null,

@@ -7,7 +7,7 @@
       @blur="$emit('blur')"
    >
       <option v-if="!isValidDefault" :value="value">
-         {{ value }} - {{ $t('message.invalidDefault') }}
+         {{ value === null ? 'NULL' : value }}
       </option>
       <option
          v-for="row in foreignList"

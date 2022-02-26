@@ -114,7 +114,9 @@ export class MySQLClient extends AntaresCore {
          port: this._params.port,
          user: this._params.user,
          password: this._params.password,
-         ssl: null
+         ssl: null,
+         supportBigNumbers: true,
+         bigNumberStrings: true
       };
 
       if (this._params.schema?.length) dbConfig.database = this._params.schema;
