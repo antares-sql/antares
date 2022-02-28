@@ -1,4 +1,4 @@
-import { Duplex } from 'stream';
+import { Transform } from 'stream';
 
 const chars = {
    NEWLINE: 0x0A,
@@ -8,7 +8,7 @@ const chars = {
    BACKSLASH: 0x5C
 };
 
-export default class SqlParser extends Duplex {
+export default class SqlParser extends Transform {
    constructor (opts) {
       opts = {
          delimiter: ';',
@@ -27,7 +27,7 @@ export default class SqlParser extends Duplex {
       this.isDelimiter = false;
    }
 
-   _write (chunk, encoding, next) {
+   _transform (chunk, encoding, next) {
       for (const char of chunk) {
          this.checkEscape();
          this._buffer = Buffer.concat([this._buffer, Buffer.from([char])]);
@@ -66,7 +66,7 @@ export default class SqlParser extends Duplex {
    }
 
    checkQuote (char) {
-      const isQuote = !this.isEscape && [chars.QUOTE, chars.DOUBLE_QUOTE].includes(char);
+      const isQuote = !this.isEscape && (chars.QUOTE === char || chars.DOUBLE_QUOTE === char);
       if (isQuote && this.currentQuote === char)
          this.currentQuote = null;
 
@@ -84,8 +84,8 @@ export default class SqlParser extends Duplex {
          demiliterFound = this._buffer.slice(-this.delimiter.length).toString(this.encoding) === this.delimiter;
 
       if (demiliterFound) {
-         this._buffer = this._buffer.slice(0, this._buffer.length - 1);
-         query = this.parsedStr;
+         const str = this.parsedStr;
+         query = str.slice(0, str.length - this.delimiter.length);
          this._buffer = Buffer.from([]);
       }
 
@@ -94,9 +94,5 @@ export default class SqlParser extends Duplex {
 
    get parsedStr () {
       return this._buffer.toString(this.encoding).trim();
-   }
-
-   _read (size) {
-
    }
 }

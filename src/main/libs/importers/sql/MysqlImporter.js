@@ -32,7 +32,7 @@ export default class MysqlImporter extends BaseImporter {
             this._fileHandler.pipe(parser);
 
             parser.on('error', (err) => {
-               console.log(err);
+               console.log('err', err);
                reject(err);
             });
 
@@ -43,9 +43,8 @@ export default class MysqlImporter extends BaseImporter {
             });
 
             parser.on('data', async (query) => {
-               console.log('query: ', query);
                parser.pause();
-               await this._client.raw(query);
+               await this._client.raw(query).catch(_ => false);
                parser.resume();
                queryCount++;
             });
