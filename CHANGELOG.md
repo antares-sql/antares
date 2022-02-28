@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.4](https://github.com/Fabio286/antares/compare/v0.4.3...v0.4.4) (2022-02-27)
+
+
+### Features
+
+* execution notification for ROLLBACK and COMMIT ([76743e8](https://github.com/Fabio286/antares/commit/76743e8f7c02b824cb21540bfbcbe66ba43de8fa))
+* **MySQL:** manual commit mode ([4ed2f9a](https://github.com/Fabio286/antares/commit/4ed2f9a93937b4293436a64318b7d6ae3a0d93c2))
+* **PostgreSQL:** manual commit mode ([d81e091](https://github.com/Fabio286/antares/commit/d81e0911ab82fb75745ab11e67e867a00d8ac273))
+* reminder for uncommitted changes closing a tab ([5bfff64](https://github.com/Fabio286/antares/commit/5bfff649e92f6fe5aba4b16aa4c8d5a5a70b31b2))
+* **SQLite:** manual commit mode ([7dcd444](https://github.com/Fabio286/antares/commit/7dcd4441c49fafc0f47e12c2129708fe1092e1a4))
+
+
+### Bug Fixes
+
+* bigint support, closes [#197](https://github.com/Fabio286/antares/issues/197) ([b703955](https://github.com/Fabio286/antares/commit/b7039553ccaac4fd59e521530c4a053922854130))
+* **MySQL:** default value not displayed for DECIMAL fields ([fa3f3e1](https://github.com/Fabio286/antares/commit/fa3f3e1fd8101f19f18df71e90d60fd37cdddaee))
+* zero-padded bit fields beyond length ([265f28b](https://github.com/Fabio286/antares/commit/265f28b4d94cde4608a1d6d3d306824134808ec2))
+
 ### [0.4.3](https://github.com/Fabio286/antares/compare/v0.4.2...v0.4.3) (2022-01-30)
 
 

@@ -306,7 +306,7 @@ export class MySQLClient extends AntaresCore {
                      break;
                }
 
-               const tableSize = table.Data_length + table.Index_length;
+               const tableSize = Number(table.Data_length) + Number(table.Index_length);
                schemaSize += tableSize;
 
                return {

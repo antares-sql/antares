@@ -239,7 +239,7 @@ export class PostgreSQLClient extends AntaresCore {
          if (schemas.has(db.database)) {
             // TABLES
             const remappedTables = tablesArr.filter(table => table.Db === db.database).map(table => {
-               const tableSize = +table.data_length + table.index_length;
+               const tableSize = Number(table.data_length) + Number(table.index_length);
                schemaSize += tableSize;
 
                return {
