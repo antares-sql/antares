@@ -197,7 +197,9 @@ export default connections => {
             }
 
             // Init exporter process
-            exporter = fork(isDevelopment ? './dist/exporter.js' : path.resolve(__dirname, './exporter.js'));
+            exporter = fork(isDevelopment ? './dist/exporter.js' : path.resolve(__dirname, './exporter.js'), [], {
+               execArgv: isDevelopment ? ['--inspect=9224'] : undefined
+            });
             exporter.send({
                type: 'init',
                client: {
@@ -269,7 +271,9 @@ export default connections => {
             const dbConfig = await connections[options.uid].getDbConfig();
 
             // Init importer process
-            importer = fork(isDevelopment ? './dist/importer.js' : path.resolve(__dirname, './importer.js'));
+            importer = fork(isDevelopment ? './dist/importer.js' : path.resolve(__dirname, './importer.js'), [], {
+               execArgv: isDevelopment ? ['--inspect=9224'] : undefined
+            });
             importer.send({
                type: 'init',
                dbConfig,
@@ -328,7 +332,7 @@ export default connections => {
 
       return { status: 'success', response: { willAbort } };
    });
-  
+
    ipcMain.handle('kill-tab-query', async (event, { uid, tabUid }) => {
       if (!tabUid) return;
 
