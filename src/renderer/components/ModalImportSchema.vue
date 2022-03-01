@@ -76,6 +76,7 @@ export default {
    },
    methods: {
       ...mapActions({
+         addNotification: 'notifications/addNotification',
          refreshSchema: 'workspaces/refreshSchema'
       }),
       async startImport (sqlFile) {

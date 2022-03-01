@@ -205,7 +205,7 @@ ${footer}
          sqlString += 'DELIMITER ;;\n';
          sqlString += '/*!50003 CREATE*/ ';
          sqlString += `/*!50017 DEFINER=${definer}*/ `;
-         sqlString += `/*!50003 TRIGGER \`${name}\` ${timing} ${event} ON ${table} FOR EACH ROW ${statement}*/;;\n`;
+         sqlString += `/*!50003 TRIGGER \`${name}\` ${timing} ${event} ON \`${table}\` FOR EACH ROW ${statement}*/;;\n`;
          sqlString += 'DELIMITER ;\n';
          sqlString += '/*!50003 SET SQL_MODE=@OLD_SQL_MODE */;\n\n';
       }
@@ -316,7 +316,7 @@ ${footer}
       const procedureBody = createProcedure.substring(startOffset);
 
       let sqlString = 'DELIMITER ;;\n';
-      sqlString = `/*!50003 DROP ${type} IF EXISTS ${name}*/;;\n`;
+      sqlString += `/*!50003 DROP ${type} IF EXISTS ${name}*/;;\n`;
       sqlString += '/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE*/;;\n';
       sqlString += `/*!50003 SET SQL_MODE="${sqlMode}"*/;;\n`;
       sqlString += `/*!50003 CREATE*/ /*!50020 DEFINER=${definer}*/ /*!50003 ${procedureBody}*/;;\n`;
