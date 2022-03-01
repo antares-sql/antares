@@ -268,10 +268,11 @@ ${footer}
       let sqlString = '';
 
       for (const func of functions) {
+         const definer = this.getEscapedDefiner(func.Definer);
          sqlString += await this.getRoutineSyntax(
             func.Name,
             func.Type,
-            func.Definer
+            definer
          );
       }
 
@@ -286,10 +287,12 @@ ${footer}
       let sqlString = '';
 
       for (const routine of routines) {
+         const definer = this.getEscapedDefiner(routine.Definer);
+
          sqlString += await this.getRoutineSyntax(
             routine.Name,
             routine.Type,
-            routine.Definer
+            definer
          );
       }
 
