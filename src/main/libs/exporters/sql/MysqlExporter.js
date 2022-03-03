@@ -1,7 +1,9 @@
 import { SqlExporter } from './SqlExporter';
-import { BLOB, BIT, DATE, DATETIME, FLOAT } from 'common/fieldTypes';
+import { BLOB, BIT, DATE, DATETIME, FLOAT, SPATIAL } from 'common/fieldTypes';
 import hexToBinary from 'common/libs/hexToBinary';
+import { getArrayDepth } from 'common/libs/getArrayDepth';
 import moment from 'moment';
+import { lineString, point, polygon } from '@turf/helpers';
 
 export default class MysqlExporter extends SqlExporter {
    async getSqlHeader () {
@@ -132,6 +134,19 @@ ${footer}
                   sqlInsertString += `X'${val.toString('hex').toUpperCase()}'`;
                else if (FLOAT.includes(column.type))
                   sqlInsertString += parseFloat(val);
+               else if (SPATIAL.includes(column.type)) {
+                  let geoJson = '';
+                  if (Array.isArray(val)) {
+                     if (getArrayDepth(val) === 1)
+                        geoJson = lineString(val.reduce((acc, curr) => [...acc, [curr.x, curr.y]], []));
+                     else
+                        geoJson = polygon(val.map(arr => arr.reduce((acc, curr) => [...acc, [curr.x, curr.y]], [])));
+                  }
+                  else
+                     geoJson = point([val.x, val.y]);
+
+                  sqlInsertString += `ST_GeomFromGeoJSON('${JSON.stringify(geoJson)}')`;
+               }
                else if (val === '') sqlInsertString += '\'\'';
                else {
                   sqlInsertString += typeof val === 'string'
@@ -315,13 +330,14 @@ ${footer}
       const startOffset = createProcedure.indexOf(type);
       const procedureBody = createProcedure.substring(startOffset);
 
-      let sqlString = 'DELIMITER ;;\n';
+      let sqlString = '';
       sqlString += `/*!50003 DROP ${type} IF EXISTS ${name}*/;;\n`;
       sqlString += '/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE*/;;\n';
       sqlString += `/*!50003 SET SQL_MODE="${sqlMode}"*/;;\n`;
+      sqlString += 'DELIMITER ;;\n';
       sqlString += `/*!50003 CREATE*/ /*!50020 DEFINER=${definer}*/ /*!50003 ${procedureBody}*/;;\n`;
-      sqlString += '/*!50003 SET SQL_MODE=@OLD_SQL_MODE*/;;\n';
       sqlString += 'DELIMITER ;\n';
+      sqlString += '/*!50003 SET SQL_MODE=@OLD_SQL_MODE*/;\n';
 
       return sqlString;
    }
