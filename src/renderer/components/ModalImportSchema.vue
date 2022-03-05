@@ -13,12 +13,21 @@
          </div>
          <div class="modal-body pb-0">
             {{ sqlFile }}
+            <div v-if="queryErrors.length > 0" class="mt-2">
+               <label>{{ $tc('message.importQueryErrors', queryErrors.length) }}</label>
+               <textarea
+                  v-model="formattedQueryErrors"
+                  class="form-input"
+                  rows="5"
+                  readonly
+               />
+            </div>
          </div>
          <div class="modal-footer columns">
             <div class="column col modal-progress-wrapper text-left">
                <div class="import-progress">
                   <span class="progress-status">
-                     {{ progressPercentage }}% - {{ progressStatus }}
+                     {{ progressPercentage }}% - {{ progressStatus }} - {{ $tc('message.executedQueries', queryCount) }}
                   </span>
                   <progress
                      class="progress d-block"
@@ -29,7 +38,7 @@
             </div>
             <div class="column col-auto px-0">
                <button class="btn btn-link" @click.stop="closeModal">
-                  {{ $t('word.cancel') }}
+                  {{ completed ? $t('word.close') : $t('word.cancel') }}
                </button>
             </div>
          </div>
@@ -40,6 +49,7 @@
 <script>
 import { ipcRenderer } from 'electron';
 import { mapActions, mapGetters } from 'vuex';
+import moment from 'moment';
 import Schema from '@/ipc-api/Schema';
 
 export default {
@@ -53,7 +63,10 @@ export default {
          sqlFile: '',
          isImporting: false,
          progressPercentage: 0,
-         progressStatus: 'Reading'
+         queryCount: 0,
+         completed: false,
+         progressStatus: 'Reading',
+         queryErrors: []
       };
    },
    computed: {
@@ -63,16 +76,23 @@ export default {
       }),
       currentWorkspace () {
          return this.getWorkspace(this.selectedWorkspace);
+      },
+      formattedQueryErrors () {
+         return this.queryErrors.map(err =>
+            `Time: ${moment(err.time).format('HH:mm:ss.S')} (${err.time})\nError: ${err.message}`
+         ).join('\n\n');
       }
    },
    async created () {
       window.addEventListener('keydown', this.onKey);
 
       ipcRenderer.on('import-progress', this.updateProgress);
+      ipcRenderer.on('query-error', this.handleQueryError);
    },
    beforeDestroy () {
       window.removeEventListener('keydown', this.onKey);
       ipcRenderer.off('import-progress', this.updateProgress);
+      ipcRenderer.off('query-error', this.handleQueryError);
    },
    methods: {
       ...mapActions({
@@ -92,6 +112,7 @@ export default {
          };
 
          try {
+            this.completed = false;
             const { status, response } = await Schema.import(params);
             if (status === 'success')
                this.progressStatus = response.cancelled ? this.$t('word.aborted') : this.$t('word.completed');
@@ -99,6 +120,7 @@ export default {
                this.progressStatus = response;
                this.addNotification({ status: 'error', message: response });
             }
+            this.completed = true;
          }
          catch (err) {
             this.addNotification({ status: 'error', message: err.stack });
@@ -108,6 +130,10 @@ export default {
       },
       updateProgress (event, state) {
          this.progressPercentage = Number(state.percentage).toFixed(1);
+         this.queryCount = Number(state.queryCount);
+      },
+      handleQueryError (event, err) {
+         this.queryErrors.push(err);
       },
       async closeModal () {
          let willClose = true;

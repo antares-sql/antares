@@ -288,6 +288,9 @@ export default connections => {
                   case 'import-progress':
                      event.sender.send('import-progress', payload);
                      break;
+                  case 'query-error':
+                     event.sender.send('query-error', payload);
+                     break;
                   case 'end':
                      importer.kill();
                      importer = null;

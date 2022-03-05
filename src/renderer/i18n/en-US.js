@@ -279,7 +279,9 @@ module.exports = {
       commitMode: 'Commit mode',
       autoCommit: 'Auto commit',
       manualCommit: 'Manual commit',
-      actionSuccessful: '{action} successful'
+      actionSuccessful: '{action} successful',
+      importQueryErrors: 'Warning: {n} error has accurrend | Warning: {n} errors occurred',
+      executedQueries: '{n} query executed | {n} queries executed'
    },
    faker: {
       address: 'Address',

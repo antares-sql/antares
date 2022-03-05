@@ -55,6 +55,13 @@ process.on('message', async ({ type, dbConfig, options }) => {
          });
       });
 
+      importer.on('query-error', state => {
+         process.send({
+            type: 'query-error',
+            payload: state
+         });
+      });
+
       importer.run();
    }
    else if (type === 'cancel')

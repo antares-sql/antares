@@ -271,7 +271,9 @@ module.exports = {
       killProcess: 'Uccidi processo',
       closeTab: 'Chiudi tab',
       goToDownloadPage: 'Vai alla pagina di download',
-      readOnlyMode: 'Modalità sola lettura'
+      readOnlyMode: 'Modalità sola lettura',
+      importQueryErrors: 'Attenzione: si è verificato un errore | Attenzione si sono verificati {n} errori',
+      executedQueries: '{n} query eseguite | {n} query eseguite'
    },
    faker: {
       address: 'Indirizzo',
