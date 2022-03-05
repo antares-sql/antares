@@ -1,4 +1,10 @@
 'use strict';
+const queryLogger = sql => {
+   // Remove comments, newlines and multiple spaces
+   const escapedSql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '').replace(/\s\s+/g, ' ');
+   console.log(escapedSql);
+};
+
 /**
  * As Simple As Possible Query Builder Core
  *
@@ -17,7 +23,7 @@ export class AntaresCore {
       this._poolSize = args.poolSize || false;
       this._connection = null;
       this._ssh = null;
-      this._logger = args.logger || console.log;
+      this._logger = args.logger || queryLogger;
 
       this._queryDefaults = {
          schema: '',

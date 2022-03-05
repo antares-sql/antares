@@ -7,7 +7,8 @@ export class BaseImporter extends EventEmitter {
       this._options = options;
       this._isCancelled = false;
       this._fileHandler = fs.createReadStream(this._options.file, {
-         flags: 'r'
+         flags: 'r',
+         highWaterMark: 4 * 1024
       });
       this._state = {};
 

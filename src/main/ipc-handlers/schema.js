@@ -217,8 +217,10 @@ export default connections => {
                      event.sender.send('export-progress', payload);
                      break;
                   case 'end':
-                     exporter.kill();
-                     exporter = null;
+                     setTimeout(() => { // Ensures that writing process has finished
+                        exporter.kill();
+                        exporter = null;
+                     }, 2000);
                      resolve({ status: 'success', response: payload });
                      break;
                   case 'cancel':

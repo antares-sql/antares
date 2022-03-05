@@ -68,7 +68,6 @@ export class BaseExporter extends EventEmitter {
          const fileName = path.basename(this._options.outputFile);
          this.emit('error', `The file ${fileName} is not accessible`);
       }
-
       this._outputStream.write(data);
    }
 

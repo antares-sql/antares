@@ -6,9 +6,11 @@ export default class MysqlImporter extends BaseImporter {
    constructor (client, options) {
       super(options);
       this._client = client;
+      this._queries = [];
    }
 
    async import () {
+      console.time('import');
       try {
          const { size: totalFileSize } = await fs.stat(this._options.file);
          const parser = new SqlParser();
@@ -31,21 +33,21 @@ export default class MysqlImporter extends BaseImporter {
          return new Promise((resolve, reject) => {
             this._fileHandler.pipe(parser);
 
-            parser.on('error', (err) => {
-               console.log('err', err);
-               reject(err);
-            });
+            parser.on('error', reject);
 
             parser.on('finish', () => {
-               console.log('TOTAL QUERIES', queryCount);
-               console.log('import end');
-               resolve();
+               Promise.all(this._queries)
+                  .then(() => {
+                     console.timeEnd('import');
+                     console.log('TOTAL QUERIES', queryCount);
+                     console.log('import end');
+                     resolve();
+                  })
+                  .catch(reject);
             });
 
-            parser.on('data', async (query) => {
-               parser.pause();
-               await this._client.raw(query).catch(_ => false);
-               parser.resume();
+            parser.on('data', async query => {
+               this._queries.push(this._client.raw(query, { split: false }));
                queryCount++;
             });
 

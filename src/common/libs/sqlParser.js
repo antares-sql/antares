@@ -1,13 +1,5 @@
 import { Transform } from 'stream';
 
-const chars = {
-   NEWLINE: 0x0A,
-   CARRIAGE_RETURN: 0x0D,
-   DOUBLE_QUOTE: 0x22,
-   QUOTE: 0x27,
-   BACKSLASH: 0x5C
-};
-
 export default class SqlParser extends Transform {
    constructor (opts) {
       opts = {
@@ -18,7 +10,9 @@ export default class SqlParser extends Transform {
          ...opts
       };
       super(opts);
-      this._buffer = Buffer.from([]);
+      this._buffer = '';
+      this._lastChar = '';
+      this._last9Chars = '';
       this.encoding = opts.encoding;
       this.delimiter = opts.delimiter;
 
@@ -28,9 +22,15 @@ export default class SqlParser extends Transform {
    }
 
    _transform (chunk, encoding, next) {
-      for (const char of chunk) {
+      for (const char of chunk.toString(this.encoding)) {
          this.checkEscape();
-         this._buffer = Buffer.concat([this._buffer, Buffer.from([char])]);
+         this._buffer += char;
+         this._lastChar = char;
+         this._last9Chars += char.trim().toLocaleLowerCase();
+
+         if (this._last9Chars.length > 9)
+            this._last9Chars = this._last9Chars.slice(-9);
+
          this.checkNewDelimiter(char);
          this.checkQuote(char);
          const query = this.getQuery();
@@ -38,35 +38,34 @@ export default class SqlParser extends Transform {
          if (query)
             this.push(query);
       }
-
       next();
    }
 
    checkEscape () {
       if (this._buffer.length > 0) {
-         this.isEscape = this._buffer[this._buffer.length - 1] === chars.BACKSLASH
+         this.isEscape = this._lastChar === '\\'
             ? !this.isEscape
             : false;
       }
    }
 
    checkNewDelimiter (char) {
-      if (this._buffer.length === 9 && this.parsedStr.toLowerCase() === 'delimiter' && this.currentQuote === null) {
+      if (this.currentQuote === null && this._last9Chars === 'delimiter') {
          this.isDelimiter = true;
-         this._buffer = Buffer.from([]);
+         this._buffer = '';
       }
       else {
-         const isNewLine = [chars.NEWLINE, chars.CARRIAGE_RETURN].includes(char);
+         const isNewLine = char === '\n' || char === '\r';
          if (isNewLine && this.isDelimiter) {
             this.isDelimiter = false;
-            this.delimiter = this.parsedStr;
-            this._buffer = Buffer.from([]);
+            this.delimiter = this._buffer.trim();
+            this._buffer = '';
          }
       }
    }
 
    checkQuote (char) {
-      const isQuote = !this.isEscape && (chars.QUOTE === char || chars.DOUBLE_QUOTE === char);
+      const isQuote = !this.isEscape && (char === '\'' || char === '"');
       if (isQuote && this.currentQuote === char)
          this.currentQuote = null;
 
@@ -81,18 +80,14 @@ export default class SqlParser extends Transform {
       let query = false;
       let demiliterFound = false;
       if (this.currentQuote === null && this._buffer.length >= this.delimiter.length)
-         demiliterFound = this._buffer.slice(-this.delimiter.length).toString(this.encoding) === this.delimiter;
+         demiliterFound = this._last9Chars.slice(-this.delimiter.length) === this.delimiter;
 
       if (demiliterFound) {
-         const str = this.parsedStr;
-         query = str.slice(0, str.length - this.delimiter.length);
-         this._buffer = Buffer.from([]);
+         const parsedStr = this._buffer.trim();
+         query = parsedStr.slice(0, parsedStr.length - this.delimiter.length);
+         this._buffer = '';
       }
 
       return query;
-   }
-
-   get parsedStr () {
-      return this._buffer.toString(this.encoding).trim();
    }
 }

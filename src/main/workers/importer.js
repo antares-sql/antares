@@ -8,7 +8,8 @@ process.on('message', async ({ type, dbConfig, options }) => {
       const connection = await ClientsFactory.getConnection({
          client: options.type,
          params: dbConfig,
-         poolSize: 1
+         poolSize: 1,
+         logger: () => null
       });
       await connection.connect();
 
