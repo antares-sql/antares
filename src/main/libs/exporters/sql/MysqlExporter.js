@@ -1,5 +1,5 @@
 import { SqlExporter } from './SqlExporter';
-import { BLOB, BIT, DATE, DATETIME, FLOAT, SPATIAL } from 'common/fieldTypes';
+import { BLOB, BIT, DATE, DATETIME, FLOAT, SPATIAL, NUMBER } from 'common/fieldTypes';
 import hexToBinary from 'common/libs/hexToBinary';
 import { getArrayDepth } from 'common/libs/getArrayDepth';
 import moment from 'moment';
@@ -117,21 +117,20 @@ ${footer}
                      : val;
                }
                else if (DATETIME.includes(column.type)) {
-                  if (typeof val === 'string')
-                     sqlInsertString += this.escapeAndQuote(val);
-
                   let datePrecision = '';
                   for (let i = 0; i < column.precision; i++)
                      datePrecision += i === 0 ? '.S' : 'S';
 
                   sqlInsertString += moment(val).isValid()
                      ? this.escapeAndQuote(moment(val).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`))
-                     : val;
+                     : this.escapeAndQuote(val);
                }
                else if (BIT.includes(column.type))
                   sqlInsertString += `b'${hexToBinary(Buffer.from(val).toString('hex'))}'`;
                else if (BLOB.includes(column.type))
                   sqlInsertString += `X'${val.toString('hex').toUpperCase()}'`;
+               else if (NUMBER.includes(column.type))
+                  sqlInsertString += val;
                else if (FLOAT.includes(column.type))
                   sqlInsertString += parseFloat(val);
                else if (SPATIAL.includes(column.type)) {
@@ -362,8 +361,35 @@ ${footer}
          .join('@');
    }
 
-   escapeAndQuote (value) {
-      if (!value) return null;
-      return `'${value.replaceAll(/'/g, '\'\'')}'`;
+   escapeAndQuote (val) {
+      // eslint-disable-next-line no-control-regex
+      const CHARS_TO_ESCAPE = /[\0\b\t\n\r\x1a"'\\]/g;
+      const CHARS_ESCAPE_MAP = {
+         '\0': '\\0',
+         '\b': '\\b',
+         '\t': '\\t',
+         '\n': '\\n',
+         '\r': '\\r',
+         '\x1a': '\\Z',
+         '"': '\\"',
+         '\'': '\\\'',
+         '\\': '\\\\'
+      };
+      let chunkIndex = CHARS_TO_ESCAPE.lastIndex = 0;
+      let escapedVal = '';
+      let match;
+
+      while ((match = CHARS_TO_ESCAPE.exec(val))) {
+         escapedVal += val.slice(chunkIndex, match.index) + CHARS_ESCAPE_MAP[match[0]];
+         chunkIndex = CHARS_TO_ESCAPE.lastIndex;
+      }
+
+      if (chunkIndex === 0)
+         return `'${val}'`;
+
+      if (chunkIndex < val.length)
+         return `'${escapedVal + val.slice(chunkIndex)}'`;
+
+      return `'${escapedVal}'`;
    }
 }
