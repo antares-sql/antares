@@ -132,6 +132,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/wenj91"><img src="https://avatars.githubusercontent.com/u/12549338?v=4?s=100" width="100px;" alt=""/><br /><sub><b>文杰</b></sub></a><br /><a href="https://github.com/Fabio286/antares/commits?author=wenj91" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/goYou"><img src="https://avatars.githubusercontent.com/u/62732795?v=4?s=100" width="100px;" alt=""/><br /><sub><b>goYou</b></sub></a><br /><a href="#translation-goYou" title="Translation">🌍</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/raliqala"><img src="https://avatars.githubusercontent.com/u/30502407?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Topollo</b></sub></a><br /><a href="https://github.com/Fabio286/antares/commits?author=raliqala" title="Code">💻</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-restore -->
