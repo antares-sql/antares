@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -6,6 +7,11 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ProgressPlugin = require('progress-webpack-plugin');
 
 const { dependencies, devDependencies, version } = require('./package.json');
+const { contributors } = JSON.parse(fs.readFileSync('./.all-contributorsrc', 'utf-8'));
+const parsedContributors = contributors.reduce((acc, c) => {
+   acc.push(c.name);
+   return acc;
+}, []).join(',');
 
 const externals = Object.keys(dependencies).concat(Object.keys(devDependencies));
 const isDevMode = process.env.NODE_ENV === 'development';
@@ -64,7 +70,8 @@ const config = {
       new VueLoaderPlugin(),
       new webpack.DefinePlugin({
          'process.env': {
-            PACKAGE_VERSION: `"${version}"`
+            PACKAGE_VERSION: `"${version}"`,
+            APP_CONTRIBUTORS: `"${parsedContributors}"`
          }
       })
    ],
