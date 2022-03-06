@@ -45,6 +45,19 @@
                            >
                         </div>
                      </div>
+                     <div v-if="connection.client === 'pg'" class="form-group columns">
+                        <div class="column col-4 col-sm-12">
+                           <label class="form-label">{{ $t('word.connectionString') }}</label>
+                        </div>
+                        <div class="column col-8 col-sm-12">
+                           <input
+                              ref="pgString"
+                              v-model="localConnection.pgConnString"
+                              class="form-input"
+                              type="text"
+                           >
+                        </div>
+                     </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
                            <label class="form-label">{{ $t('word.client') }}</label>
