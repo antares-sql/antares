@@ -120,6 +120,7 @@ export default {
                this.progressStatus = response;
                this.addNotification({ status: 'error', message: response });
             }
+            this.refreshSchema({ uid, schema: this.selectedSchema });
             this.completed = true;
          }
          catch (err) {
