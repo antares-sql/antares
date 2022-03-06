@@ -68,8 +68,6 @@ const onlineConnectionString = (stringArgs, args) => {
 
    const port = defaultPort;
 
-   console.log(userName, password, host, dbName, port);
-
    const client = args.client ? args.client : scheme;
 
    args.client = client;
