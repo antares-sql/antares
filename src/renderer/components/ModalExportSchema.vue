@@ -76,23 +76,65 @@
                   <div class="workspace-query-results">
                      <div ref="table" class="table table-hover">
                         <div class="thead">
+                           <div class="tr text-center">
+                              <div class="th no-border" style="width: 50%;" />
+                              <div class="th no-border">
+                                 <label
+                                    class="form-checkbox m-0 px-2 form-inline"
+                                    @click.prevent="toggleAllTablesOption('includeStructure')"
+                                 >
+                                    <input
+                                       type="checkbox"
+                                       :indeterminate.prop="includeStructureStatus === 2"
+                                       :checked.prop="!!includeStructureStatus"
+                                    >
+                                    <i class="form-icon" />
+                                 </label>
+                              </div>
+                              <div class="th no-border">
+                                 <label
+                                    class="form-checkbox m-0 px-2 form-inline"
+                                    @click.prevent="toggleAllTablesOption('includeContent')"
+                                 >
+                                    <input
+                                       type="checkbox"
+                                       :indeterminate.prop="includeContentStatus === 2"
+                                       :checked.prop="!!includeContentStatus"
+                                    >
+                                    <i class="form-icon" />
+                                 </label>
+                              </div>
+                              <div class="th no-border">
+                                 <label
+                                    class="form-checkbox m-0 px-2 form-inline"
+                                    @click.prevent="toggleAllTablesOption('includeDropStatement')"
+                                 >
+                                    <input
+                                       type="checkbox"
+                                       :indeterminate.prop="includeDropStatementStatus === 2"
+                                       :checked.prop="!!includeDropStatementStatus"
+                                    >
+                                    <i class="form-icon" />
+                                 </label>
+                              </div>
+                           </div>
                            <div class="tr">
-                              <div class="th c-hand" style="width: 50%;">
+                              <div class="th" style="width: 50%;">
                                  <div class="table-column-title">
                                     <span>{{ $t('word.table') }}</span>
                                  </div>
                               </div>
-                              <div class="th c-hand text-center">
+                              <div class="th text-center">
                                  <div class="table-column-title">
                                     <span>{{ $t('word.structure') }}</span>
                                  </div>
                               </div>
-                              <div class="th c-hand text-center">
+                              <div class="th text-center">
                                  <div class="table-column-title">
                                     <span>{{ $t('word.content') }}</span>
                                  </div>
                               </div>
-                              <div class="th c-hand text-center">
+                              <div class="th text-center">
                                  <div class="table-column-title">
                                     <span>{{ $t('word.drop') }}</span>
                                  </div>
@@ -261,6 +303,21 @@ export default {
       },
       dumpFilePath () {
          return `${this.basePath}/${this.filename}`;
+      },
+      includeStructureStatus () {
+         if (this.tables.every(item => item.includeStructure)) return 1;
+         else if (this.tables.some(item => item.includeStructure)) return 2;
+         else return 0;
+      },
+      includeContentStatus () {
+         if (this.tables.every(item => item.includeContent)) return 1;
+         else if (this.tables.some(item => item.includeContent)) return 2;
+         else return 0;
+      },
+      includeDropStatementStatus () {
+         if (this.tables.every(item => item.includeDropStatement)) return 1;
+         else if (this.tables.some(item => item.includeDropStatement)) return 2;
+         else return 0;
       }
    },
    async created () {
@@ -353,10 +410,19 @@ export default {
             this.closeModal();
       },
       checkAllTables () {
-         this.tables = this.tables.map(item => ({ table: item.table, includeStructure: true, includeContent: true, includeDropStatement: true }));
+         this.tables = this.tables.map(item => ({ ...item, includeStructure: true, includeContent: true, includeDropStatement: true }));
       },
       uncheckAllTables () {
-         this.tables = this.tables.map(item => ({ table: item.table, includeStructure: false, includeContent: false, includeDropStatement: false }));
+         this.tables = this.tables.map(item => ({ ...item, includeStructure: false, includeContent: false, includeDropStatement: false }));
+      },
+      toggleAllTablesOption (option) {
+         const options = ['includeStructure', 'includeContent', 'includeDropStatement'];
+         if (!options.includes(option)) return;
+
+         if (this[`${option}Status`] !== 1)
+            this.tables = this.tables.map(item => ({ ...item, [option]: true }));
+         else
+            this.tables = this.tables.map(item => ({ ...item, [option]: false }));
       },
       async refresh () {
          this.isRefreshing = true;
