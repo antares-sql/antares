@@ -282,12 +282,18 @@
                   <div class="text-center">
                      <img src="../images/logo.svg" width="128">
                      <h4>{{ appName }}</h4>
-                     <p>
+                     <p class="mb-2">
                         {{ $t('word.version') }} {{ appVersion }}<br>
                         <a class="c-hand" @click="openOutside('https://github.com/Fabio286/antares')"><i class="mdi mdi-github d-inline" /> GitHub</a> • <a class="c-hand" @click="openOutside('https://twitter.com/AntaresSQL')"><i class="mdi mdi-twitter d-inline" /> Twitter</a> • <a class="c-hand" @click="openOutside('https://antares-sql.app/')"><i class="mdi mdi-web d-inline" /> Website</a><br>
-                        <small>{{ $t('word.author') }} <a class="c-hand" @click="openOutside('https://github.com/Fabio286')">Fabio Di Stasio</a></small><br>
-                        <small>{{ $t('message.madeWithJS') }}</small>
+                        <small>{{ $t('word.author') }} <a class="c-hand" @click="openOutside('https://github.com/Fabio286')">{{ appAuthor }}</a></small><br>
                      </p>
+                     <div class="mb-2">
+                        <small class="d-block text-uppercase">{{ $t('word.contributors') }}:</small>
+                        <div class="d-block py-1">
+                           <small v-for="(contributor, i) in otherContributors" :key="i">{{ i !== 0 ? ', ' : '' }}{{ contributor }}</small>
+                        </div>
+                        <small>{{ $t('message.madeWithJS') }}</small>
+                     </div>
                   </div>
                </div>
             </div>
@@ -313,6 +319,7 @@ export default {
    },
    data () {
       return {
+         appAuthor: 'Fabio Di Stasio',
          localLocale: null,
          localPageSize: null,
          localTimeout: null,
@@ -367,7 +374,8 @@ export default {
                   { code: 'vibrant_ink', name: 'Vibrant Ink' }
                ]
             }
-         ]
+         ],
+         contributors: process.env.APP_CONTRIBUTORS
       };
    },
    computed: {
@@ -417,6 +425,12 @@ GROUP BY
 ORDER BY
     employee.id ASC;
 `;
+      },
+      otherContributors () {
+         return this.contributors
+            .split(',')
+            .filter(c => !c.includes(this.appAuthor))
+            .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
       }
    },
    created () {

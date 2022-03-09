@@ -175,8 +175,10 @@ export default {
          if (this.currentSort && !this.isHardSort) {
             return [...this.localResults].sort((a, b) => {
                let modifier = 1;
-               const valA = typeof a[this.currentSort] === 'string' ? a[this.currentSort].toLowerCase() : a[this.currentSort];
-               const valB = typeof b[this.currentSort] === 'string' ? b[this.currentSort].toLowerCase() : b[this.currentSort];
+               let valA = typeof a[this.currentSort] === 'string' ? a[this.currentSort].toLowerCase() : a[this.currentSort];
+               if (!isNaN(valA)) valA = Number(valA);
+               let valB = typeof b[this.currentSort] === 'string' ? b[this.currentSort].toLowerCase() : b[this.currentSort];
+               if (!isNaN(valB)) valB = Number(valB);
                if (this.currentSortDir === 'desc') modifier = -1;
                if (valA < valB) return -1 * modifier;
                if (valA > valB) return 1 * modifier;

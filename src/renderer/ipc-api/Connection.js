@@ -14,6 +14,10 @@ export default class {
       return ipcRenderer.invoke('connect', params);
    }
 
+   static checkConnection (uid) {
+      return ipcRenderer.invoke('check-connection', uid);
+   }
+
    static disconnect (uid) {
       return ipcRenderer.invoke('disconnect', uid);
    }

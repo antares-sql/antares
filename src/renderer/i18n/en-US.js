@@ -127,7 +127,8 @@ module.exports = {
       disable: 'Disable',
       commit: 'Commit',
       rollback: 'Rollback',
-      connectionString: 'Connection string'
+      connectionString: 'Connection string',
+      contributors: 'Contributors'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
