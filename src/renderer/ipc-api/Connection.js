@@ -1,16 +1,16 @@
 'use strict';
 import { ipcRenderer } from 'electron';
 
-import connString from '../libs/testStringDecode';
+import connStringConstruct from '../libs/connStringDecode';
 
 export default class {
    static makeTest (params) {
-      params = connString(params);
+      params = connStringConstruct(params);
       return ipcRenderer.invoke('test-connection', params);
    }
 
    static connect (params) {
-      params = connString(params);
+      params = connStringConstruct(params);
       return ipcRenderer.invoke('connect', params);
    }
 

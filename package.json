@@ -142,6 +142,7 @@
     "electron": "^17.0.1",
     "electron-builder": "^22.14.11",
     "electron-devtools-installer": "^3.2.0",
+    "electron-rebuild": "^3.2.7",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.24.2",

@@ -1,110 +1,48 @@
+import formatter from 'pg-connection-string'; // parses a connection string
 
-const getUrlScheme = pgString => {
-   const scheme = pgString ? pgString.split('://')[0] : '';
-
-   return scheme === 'postgresql' ? 'postgres' : scheme;
+const formatHost = host => {
+   const results = host === 'localhost' ? '127.0.0.1' : host;
+   return results;
 };
 
-const passAndHost = part => {
-   const host = part.split('@')[1] === 'localhost' ? '127.0.0.1' : part.split('@')[1];
-   return [part.split('@')[0], host];
+const checkForSSl = conn => {
+   return conn.includes('ssl=true');
 };
 
-const portAndDb = part => {
-   return part.split('/');
-};
-
-const pass = (part) => {
-   return part.split('@');
-};
-
-const hostAndDb = (part) => {
-   return part.split('/');
-};
-
-const localConnectionString = (stringArgs, args) => {
-   let scheme = '';
-   if (getUrlScheme(stringArgs) === 'postgres' || getUrlScheme(stringArgs) === 'postgresql')
-      scheme = 'pg';
-
-   const values = stringArgs.split('://')[1];
-   const parts = values.split(':');
-
-   const userName = parts[0];
-
-   const password = passAndHost(parts[1])[0];
-   const host = passAndHost(parts[1])[1];
-
-   const port = portAndDb(parts[2])[0];
-   const dbName = portAndDb(parts[2])[1];
-
-   const client = args.client ? args.client : scheme;
-
-   args.client = client;
-   args.host = host;
-   args.database = dbName;
-   args.port = port;
-   args.user = userName;
-   args.password = password;
-
-   return args;
-};
-
-const onlineConnectionString = (stringArgs, args) => {
-   let scheme = '';
-   const defaultPort = '5432';
-   if (getUrlScheme(stringArgs) === 'postgres' || getUrlScheme(stringArgs) === 'postgresql')
-      scheme = 'pg';
-
-   const values = stringArgs.split('://')[1];
-   const parts = values.split(':');
-
-   const userName = parts[0];
-
-   const password = pass(parts[1])[0];
-
-   const host = hostAndDb(pass(parts[1])[1])[0];
-   const dbName = hostAndDb(pass(parts[1])[1])[1];
-
-   const port = defaultPort;
-
-   const client = args.client ? args.client : scheme;
-
-   args.client = client;
-   args.host = host;
-   args.database = dbName;
-   args.port = port;
-   args.user = userName;
-   args.password = password;
-
-   return args;
-};
-
-const connectionType = part => {
-   return part.split('=')[1];
-};
-
-const connStringConstruct = args => {
+const connStringConstruct = (args) => {
    if (!args.pgConnString)
       return args;
 
-   const pgConnString = args.pgConnString;
+   if (typeof args.pgConnString !== 'string')
+      return args;
 
-   if (!pgConnString.includes('?'))
-      return localConnectionString(pgConnString, args);
+   const stringArgs = formatter.parse(args.pgConnString);
 
-   const pgConnStringPrepared = pgConnString.split('?')[0];
+   const client = args.client || 'pg';
 
-   switch (connectionType(pgConnString.split('?')[1])) {
-      case 'local':
-         return localConnectionString(pgConnStringPrepared, args);
+   args.client = client;
+   args.host = formatHost(stringArgs.host);
+   args.database = stringArgs.database;
+   args.port = stringArgs.port || '5432';
+   args.user = stringArgs.user;
+   args.password = stringArgs.password;
 
-      case 'server':
-         return onlineConnectionString(pgConnStringPrepared, args);
+   // ssh
+   args.ssh = stringArgs.ssh || args.ssh;
+   args.sshHost = stringArgs.sshHost;
+   args.sshUser = stringArgs.sshUser;
+   args.sshPass = stringArgs.sshPass;
+   args.sshKey = stringArgs.sshKey;
+   args.sshPort = stringArgs.sshPort;
 
-      default:
-         return args;
-   };
+   // ssl mode
+   args.ssl = checkForSSl(args.pgConnString);
+   args.cert = stringArgs.sslcert;
+   args.key = stringArgs.sslkey;
+   args.ca = stringArgs.sslrootcert;
+   args.ciphers = stringArgs.ciphers;
+
+   return args;
 };
 
 export default connStringConstruct;
