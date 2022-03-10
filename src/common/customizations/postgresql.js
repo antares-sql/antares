@@ -32,7 +32,7 @@ module.exports = {
    functionAdd: true,
    schemaDrop: true,
    databaseEdit: false,
-   schemaExport: true,
+   schemaExport: false,
    schemaImport: false,
    tableSettings: true,
    viewSettings: true,
