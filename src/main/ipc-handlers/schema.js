@@ -292,8 +292,10 @@ export default connections => {
                      event.sender.send('query-error', payload);
                      break;
                   case 'end':
-                     importer.kill();
-                     importer = null;
+                     setTimeout(() => { // Ensures that writing process has finished
+                        importer?.kill();
+                        importer = null;
+                     }, 2000);
                      resolve({ status: 'success', response: payload });
                      break;
                   case 'cancel':
@@ -307,11 +309,6 @@ export default connections => {
                      resolve({ status: 'error', response: payload });
                      break;
                }
-            });
-
-            importer.on('exit', code => {
-               importer = null;
-               resolve({ status: 'error', response: `Operation ended with code: ${code}` });
             });
          })();
       });

@@ -6,3 +6,4 @@ thumbs.db
 NOTES.md
 *.txt
 package-lock.json
+*.heapsnapshot

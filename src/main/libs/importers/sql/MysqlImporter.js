@@ -1,5 +1,4 @@
 import fs from 'fs/promises';
-import { queue } from 'async';
 import SqlParser from '../../../../common/libs/sqlParser';
 import { BaseImporter } from '../BaseImporter';
 
@@ -10,17 +9,11 @@ export default class MysqlImporter extends BaseImporter {
    }
 
    async import () {
-      console.time('import');
       try {
          const { size: totalFileSize } = await fs.stat(this._options.file);
          const parser = new SqlParser();
          let readPosition = 0;
          let queryCount = 0;
-         const q = queue(async (query) => await this._client.raw(query));
-
-         q.error((error, query) => {
-            this.emit('query-error', { sql: query, message: error.sqlMessage, sqlSnippet: error.sql, time: new Date().getTime() });
-         });
 
          this.emitUpdate({
             fileSize: totalFileSize,
@@ -28,8 +21,6 @@ export default class MysqlImporter extends BaseImporter {
             percentage: 0,
             queryCount: 0
          });
-
-         await this._client.use(this._options.schema);
 
          // 1. detect file encoding
          // 2. set fh encoding
@@ -41,25 +32,44 @@ export default class MysqlImporter extends BaseImporter {
 
             parser.on('error', reject);
 
-            parser.on('finish', async () => {
+            parser.on('close', async () => {
                console.log('TOTAL QUERIES', queryCount);
                console.log('import end');
-               await q.drain(); // not sure of this
                resolve();
             });
 
             parser.on('data', async (query) => {
-               q.push(query);
                queryCount++;
-            });
+               parser.pause();
 
-            this._fileHandler.on('data', (chunk) => {
-               readPosition += chunk.length;
+               try {
+                  await this._client.query(query);
+               }
+               catch (error) {
+                  this.emit('query-error', {
+                     sql: query,
+                     message: error.sqlMessage,
+                     sqlSnippet: error.sql,
+                     time: new Date().getTime()
+                  });
+               }
+
                this.emitUpdate({
                   queryCount,
                   readPosition,
                   percentage: readPosition / totalFileSize * 100
                });
+               this._fileHandler.pipe(parser);
+               parser.resume();
+            });
+
+            parser.on('pause', () => {
+               this._fileHandler.unpipe(parser);
+               this._fileHandler.readableFlowing = false;
+            });
+
+            this._fileHandler.on('data', (chunk) => {
+               readPosition += chunk.length;
             });
 
             this._fileHandler.on('error', (err) => {

@@ -1,5 +1,4 @@
 import { ClientsFactory } from '../libs/ClientsFactory';
-import fs from 'fs';
 import MysqlImporter from '../libs/importers/sql/MysqlImporter';
 let importer;
 
@@ -7,17 +6,20 @@ process.on('message', async ({ type, dbConfig, options }) => {
    if (type === 'init') {
       const connection = await ClientsFactory.getConnection({
          client: options.type,
-         params: dbConfig,
-         poolSize: 1,
-         logger: () => null
+         params: {
+            ...dbConfig,
+            schema: options.schema
+         },
+         poolSize: 1
       });
-      await connection.connect();
+
+      const pool = await connection.getConnectionPool();
 
       // TODO: importer factory class
       switch (options.type) {
          case 'mysql':
          case 'maria':
-            importer = new MysqlImporter(connection, options);
+            importer = new MysqlImporter(pool, options);
             break;
          default:
             process.send({
@@ -40,11 +42,9 @@ process.on('message', async ({ type, dbConfig, options }) => {
             type: 'end',
             payload: { cancelled: importer.isCancelled }
          });
-         connection.destroy();
       });
 
       importer.once('cancel', () => {
-         fs.unlinkSync(importer.outputFile);
          process.send({ type: 'cancel' });
       });
 
