@@ -207,12 +207,14 @@ export default {
       },
       hideExportSchemaModal () {
          this.isExportSchemaModal = false;
+         this.closeContext();
       },
       showImportSchemaModal () {
          this.isImportSchemaModal = true;
       },
       hideImportSchemaModal () {
          this.isImportSchemaModal = false;
+         this.closeContext();
       },
       async initImport () {
          const result = await Application.showOpenDialog({ properties: ['openFile'], filters: [{ name: 'SQL', extensions: ['sql'] }] });

@@ -329,18 +329,20 @@ ${footer}
       const fieldName = `Create ${type === 'PROCEDURE' ? 'Procedure' : 'Function'}`;
       const sqlMode = routine.sql_mode;
       const createProcedure = routine[fieldName];
-
-      const startOffset = createProcedure.indexOf(type);
-      const procedureBody = createProcedure.substring(startOffset);
-
       let sqlString = '';
-      sqlString += `/*!50003 DROP ${type} IF EXISTS ${name}*/;;\n`;
-      sqlString += '/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE*/;;\n';
-      sqlString += `/*!50003 SET SQL_MODE="${sqlMode}"*/;;\n`;
-      sqlString += 'DELIMITER ;;\n';
-      sqlString += `/*!50003 CREATE*/ /*!50020 DEFINER=${definer}*/ /*!50003 ${procedureBody}*/;;\n`;
-      sqlString += 'DELIMITER ;\n';
-      sqlString += '/*!50003 SET SQL_MODE=@OLD_SQL_MODE*/;\n';
+
+      if (createProcedure) { // If procedure body not empty
+         const startOffset = createProcedure.indexOf(type);
+         const procedureBody = createProcedure.substring(startOffset);
+
+         sqlString += `/*!50003 DROP ${type} IF EXISTS ${name}*/;;\n`;
+         sqlString += '/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE*/;;\n';
+         sqlString += `/*!50003 SET SQL_MODE="${sqlMode}"*/;;\n`;
+         sqlString += 'DELIMITER ;;\n';
+         sqlString += `/*!50003 CREATE*/ /*!50020 DEFINER=${definer}*/ /*!50003 ${procedureBody}*/;;\n`;
+         sqlString += 'DELIMITER ;\n';
+         sqlString += '/*!50003 SET SQL_MODE=@OLD_SQL_MODE*/;\n';
+      }
 
       return sqlString;
    }
