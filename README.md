@@ -32,6 +32,7 @@ We are actively working on it, hoping to provide new cool features, improvements
 - Query history: search through the last 1000 queries.
 - SSH tunnel support.
 - Manual commit mode.
+- Import and export database dumps.
 - Dark and light theme.
 - Editor themes.
 
@@ -71,7 +72,6 @@ This is a roadmap with major features will come in near future.
 - Users management (add/edit/delete).
 - More context menu shortcuts.
 - More keyboard shortcuts.
-- Import/export and migration.
 - Support for other databases.
 - Apple Silicon distribution
 
