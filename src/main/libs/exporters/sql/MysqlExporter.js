@@ -1,5 +1,5 @@
 import { SqlExporter } from './SqlExporter';
-import { BLOB, BIT, DATE, DATETIME, FLOAT, SPATIAL, NUMBER } from 'common/fieldTypes';
+import { BLOB, BIT, DATE, DATETIME, FLOAT, SPATIAL, IS_MULTI_SPATIAL, NUMBER } from 'common/fieldTypes';
 import hexToBinary from 'common/libs/hexToBinary';
 import { getArrayDepth } from 'common/libs/getArrayDepth';
 import moment from 'moment';
@@ -134,15 +134,19 @@ ${footer}
                else if (FLOAT.includes(column.type))
                   sqlInsertString += parseFloat(val);
                else if (SPATIAL.includes(column.type)) {
-                  let geoJson = '';
-                  if (Array.isArray(val)) {
-                     if (getArrayDepth(val) === 1)
-                        geoJson = lineString(val.reduce((acc, curr) => [...acc, [curr.x, curr.y]], []));
-                     else
-                        geoJson = polygon(val.map(arr => arr.reduce((acc, curr) => [...acc, [curr.x, curr.y]], [])));
+                  let geoJson;
+                  if (IS_MULTI_SPATIAL.includes(column.type)) {
+                     const features = [];
+                     for (const element of val)
+                        features.push(this.getMarkers(element));
+
+                     geoJson = {
+                        type: 'FeatureCollection',
+                        features
+                     };
                   }
                   else
-                     geoJson = point([val.x, val.y]);
+                     geoJson = this._getGeoJSON(val);
 
                   sqlInsertString += `ST_GeomFromGeoJSON('${JSON.stringify(geoJson)}')`;
                }
@@ -391,5 +395,16 @@ ${footer}
          return `'${escapedVal + val.slice(chunkIndex)}'`;
 
       return `'${escapedVal}'`;
+   }
+
+   _getGeoJSON (val) {
+      if (Array.isArray(val)) {
+         if (getArrayDepth(val) === 1)
+            return lineString(val.reduce((acc, curr) => [...acc, [curr.x, curr.y]], []));
+         else
+            return polygon(val.map(arr => arr.reduce((acc, curr) => [...acc, [curr.x, curr.y]], [])));
+      }
+      else
+         return point([val.x, val.y]);
    }
 }
