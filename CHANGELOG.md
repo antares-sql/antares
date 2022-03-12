@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.5.0](https://github.com/Fabio286/antares/compare/v0.4.4...v0.5.0) (2022-03-12)
+
+
+### Features
+
+* delete dump file when the export is canceled ([d25c62b](https://github.com/Fabio286/antares/commit/d25c62b4da9480e040d0bfac8b76732a4c69a5f1))
+* initial db export implementation ([0de2321](https://github.com/Fabio286/antares/commit/0de232192076d1de827424c593ac9dff63903531))
+* initial mysql import support ([4e9f8d1](https://github.com/Fabio286/antares/commit/4e9f8d16ee3c204d5f0c2bed081206f8b38207a6))
+* mysql export for trigger, views, schedulers, functions and routines ([b2a5b40](https://github.com/Fabio286/antares/commit/b2a5b40c03d56bced5a7968c3454f36060e56dd0))
+* **MySQL:** enhance export characters escaping ([3be826d](https://github.com/Fabio286/antares/commit/3be826df4b02ff0df0aa922d96755b31b7155784))
+* **MySQL:** support to multi spatial fields export ([4be55f3](https://github.com/Fabio286/antares/commit/4be55f3fe9bb48324b780734762f2ff6da2ccb61))
+* **PostgreSQL:** :sparkles: Postgress connection string feature for local and server connection string ([6305752](https://github.com/Fabio286/antares/commit/6305752ad117cc29c04bce3ce3df321f743cdc44))
+* **PostgreSQL:** :sparkles: Postgress connection string feature for local and server connection string ([f4a63ea](https://github.com/Fabio286/antares/commit/f4a63eae2aca2a84647a5027137614950aef1eac))
+* **UI:** auto-refresh schema at the end of the import process ([abf2b92](https://github.com/Fabio286/antares/commit/abf2b92e6e66b6668e698c5addf4e3c00ae5157b))
+* **UI:** better real-time import stats ([a6f5645](https://github.com/Fabio286/antares/commit/a6f5645a226454cc2c415311ac321ba3d4db4454))
+* **UI:** toggle tables checkbox by column on export modal ([1c4d5b0](https://github.com/Fabio286/antares/commit/1c4d5b05b3f94b3e7bef930aa7f89bdaa596c0b9))
+
+
+### Bug Fixes
+
+* **MySQL:** exception exporting empty procedures/functions ([ee415da](https://github.com/Fabio286/antares/commit/ee415da127d6d0de95aac901a2a01af863736344))
+* **MySQL:** export crash with large databases ([8cf738b](https://github.com/Fabio286/antares/commit/8cf738bac85698fddd0504eef7844279e8c11f44))
+* **MySQL:** missing functions and procedures definer escapes on exporter ([f0351e5](https://github.com/Fabio286/antares/commit/f0351e5b94830f9f52256096c2601b0ca9cd811d))
+* **MySQL:** missing initial delimiter for exported procedures ([1a9fc37](https://github.com/Fabio286/antares/commit/1a9fc3728580f789727256d7893ca4bb90c16a50))
+* **MySQL:** procedures exportation ([4276586](https://github.com/Fabio286/antares/commit/4276586e1141500401ff1ab570b29e485f459987))
+* sql parser hangs during import ([7a6bd8b](https://github.com/Fabio286/antares/commit/7a6bd8bdbd69e3b5fe265d0bb0be844699dd77c2))
+* wrong schema and table size on explore bar ([4479a96](https://github.com/Fabio286/antares/commit/4479a9600b5e59ef1bcf9135d661b4d7900a4bde))
+* wrong soft sort algorithm for numeric fields, closes [#199](https://github.com/Fabio286/antares/issues/199) ([763be85](https://github.com/Fabio286/antares/commit/763be8532d2b61d0b4d45e72343f6a2e5fee1db9))
+
+
+### Improvements
+
+* avoid to load schema elements if already loaded in export modal ([d9d3bf2](https://github.com/Fabio286/antares/commit/d9d3bf2bc9d39ce8eec5dffbecbf767fbcf47782))
+* **MySQL:** import performance improvement ([f444746](https://github.com/Fabio286/antares/commit/f444746f465ed0e8bd2e4c007faf17e167814278))
+* **MySQL:** import tasks managed with async queue ([bbe13f2](https://github.com/Fabio286/antares/commit/bbe13f27dc29f997898f8c13f36b5d582770b21d))
+* **MySQL:** improved several field types support on exporter ([1990d9a](https://github.com/Fabio286/antares/commit/1990d9a3d441f0e2075ac7e893d5b166275c48c0))
+* **MySQL:** prevent memory leak on large dump import ([f3759b6](https://github.com/Fabio286/antares/commit/f3759b65411a40d92b98208176cdf8e6dd8230ce))
+* **PostgreSQL:** :zap: Postgres connection update, better error handling and connection string accommodation. ([330a80f](https://github.com/Fabio286/antares/commit/330a80fe70b81f466f5e883029f42087b4b5c411))
+* split the export select query to avoid running out of memory ([409ed54](https://github.com/Fabio286/antares/commit/409ed54608ad402b63fcc26a6e724bc447ba89d2))
+* use fork() for the export process ([748d449](https://github.com/Fabio286/antares/commit/748d44977e76c6c8d6344df52e8e3ccfab84f670))
+* use fork() for the import process ([573ac6d](https://github.com/Fabio286/antares/commit/573ac6d42ef833f250d102e5b30ae6cf5877f330))
+
 ### [0.4.4](https://github.com/Fabio286/antares/compare/v0.4.3...v0.4.4) (2022-02-27)
 
 
