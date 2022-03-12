@@ -5,14 +5,13 @@ let exporter;
 
 process.on('message', async ({ type, client, tables, options }) => {
    if (type === 'init') {
-      const connection = await ClientsFactory.getConnection({
+      const connection = await ClientsFactory.getClient({
          client: client.name,
          params: client.config,
          poolSize: 5
       });
       await connection.connect();
 
-      // TODO: exporter factory class
       switch (client.name) {
          case 'mysql':
          case 'maria':

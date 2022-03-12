@@ -4,7 +4,7 @@ let importer;
 
 process.on('message', async ({ type, dbConfig, options }) => {
    if (type === 'init') {
-      const connection = await ClientsFactory.getConnection({
+      const connection = await ClientsFactory.getClient({
          client: options.type,
          params: {
             ...dbConfig,
@@ -15,7 +15,6 @@ process.on('message', async ({ type, dbConfig, options }) => {
 
       const pool = await connection.getConnectionPool();
 
-      // TODO: importer factory class
       switch (options.type) {
          case 'mysql':
          case 'maria':

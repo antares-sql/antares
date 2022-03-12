@@ -22,7 +22,7 @@ export class ClientsFactory {
     * @returns Database Connection
     * @memberof ClientsFactory
     */
-   static getConnection (args) {
+   static getClient (args) {
       switch (args.client) {
          case 'mysql':
          case 'maria':
