@@ -12,7 +12,7 @@ const { spawn } = require('child_process');
 
 const mainConfig = require('../webpack.main.config');
 const rendererConfig = require('../webpack.renderer.config');
-// const workersConfig = require('../webpack.workers.config');
+const workersConfig = require('../webpack.workers.config');
 
 let electronProcess = null;
 let manualRestart = null;
@@ -64,7 +64,7 @@ async function restartElectron () {
 }
 
 function startMain () {
-   const webpackSetup = webpack(mainConfig);
+   const webpackSetup = webpack([mainConfig, workersConfig]);
 
    webpackSetup.compilers.forEach((compiler) => {
       const { name } = compiler;

@@ -149,7 +149,7 @@ export default (connections) => {
                }
             }
          }
-         else if ([...BIT].includes(params.type)) {
+         else if (BIT.includes(params.type)) {
             escapedParam = `b'${sqlEscaper(params.content)}'`;
             reload = true;
          }

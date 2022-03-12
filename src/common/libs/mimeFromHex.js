@@ -23,7 +23,7 @@ export function mimeFromHex (hex) {
             case '425A68':
                return { ext: 'bz2', mime: 'application/x-bzip2' };
             default:
-               switch (hex) { // 4 bites
+               switch (hex) { // 4 bytes
                   case '89504E47':
                      return { ext: 'png', mime: 'image/png' };
                   case '47494638':

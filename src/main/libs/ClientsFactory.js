@@ -2,13 +2,6 @@
 import { MySQLClient } from './clients/MySQLClient';
 import { PostgreSQLClient } from './clients/PostgreSQLClient';
 import { SQLiteClient } from './clients/SQLiteClient';
-
-const queryLogger = sql => {
-   // Remove comments, newlines and multiple spaces
-   const escapedSql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '').replace(/\s\s+/g, ' ');
-   console.log(escapedSql);
-};
-
 export class ClientsFactory {
    /**
     * Returns a database connection based on received args.
@@ -29,9 +22,7 @@ export class ClientsFactory {
     * @returns Database Connection
     * @memberof ClientsFactory
     */
-   static getConnection (args) {
-      args.logger = queryLogger;
-
+   static getClient (args) {
       switch (args.client) {
          case 'mysql':
          case 'maria':

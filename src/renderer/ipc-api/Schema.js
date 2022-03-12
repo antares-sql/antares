@@ -69,4 +69,20 @@ export default class {
    static rawQuery (params) {
       return ipcRenderer.invoke('raw-query', params);
    }
+
+   static export (params) {
+      return ipcRenderer.invoke('export', params);
+   }
+
+   static abortExport () {
+      return ipcRenderer.invoke('abort-export');
+   }
+
+   static import (params) {
+      return ipcRenderer.invoke('import-sql', params);
+   }
+
+   static abortImport () {
+      return ipcRenderer.invoke('abort-import-sql');
+   }
 }

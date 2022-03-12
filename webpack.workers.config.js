@@ -8,14 +8,15 @@ const externals = Object.keys(dependencies).concat(Object.keys(devDependencies))
 const isDevMode = process.env.NODE_ENV === 'development';
 const whiteListedModules = [];
 
-module.exports = { // Main
-   name: 'main',
+const config = {
+   name: 'workers',
    mode: process.env.NODE_ENV,
    devtool: isDevMode ? 'eval-source-map' : false,
    entry: {
-      main: path.join(__dirname, './src/main/main.js')
+      exporter: path.join(__dirname, './src/main/workers/exporter.js'),
+      importer: path.join(__dirname, './src/main/workers/importer.js')
    },
-   target: 'electron-main',
+   target: 'node',
    output: {
       libraryTarget: 'commonjs2',
       path: path.join(__dirname, 'dist'),
@@ -27,6 +28,19 @@ module.exports = { // Main
       __filename: isDevMode
    },
    externals: externals.filter((d) => !whiteListedModules.includes(d)),
+   module: {
+      rules: [
+         {
+            test: /\.js$/,
+            use: 'babel-loader',
+            exclude: /node_modules/
+         },
+         {
+            test: /\.node$/,
+            use: 'node-loader'
+         }
+      ]
+   },
    resolve: {
       extensions: ['.js', '.json'],
       alias: {
@@ -46,27 +60,22 @@ module.exports = { // Main
             PACKAGE_VERSION: `"${version}"`
          }
       })
-   ],
-   module: {
-      rules: [
-         {
-            test: /\.node$/,
-            loader: 'node-loader',
-            options: {
-               name: '[path][name].[ext]'
-            }
-         },
-         {
-            test: /\.js$/,
-            exclude: /node_modules/,
-            loader: 'babel-loader'
-         },
-         {
-            test: /\.(png|jpg|gif)$/,
-            use: [{
-               loader: 'file-loader'
-            }]
-         }
-      ]
-   }
+   ]
 };
+
+/**
+ * Adjust rendererConfig for production settings
+ */
+if (isDevMode) {
+   // any dev only config
+   config.plugins.push(new webpack.HotModuleReplacementPlugin());
+}
+else {
+   config.plugins.push(
+      new webpack.LoaderOptionsPlugin({
+         minimize: true
+      })
+   );
+}
+
+module.exports = config;

@@ -101,6 +101,26 @@ export class MySQLClient extends AntaresCore {
          .filter(_type => _type.name === type.toUpperCase())[0];
    }
 
+   _reducer (acc, curr) {
+      const type = typeof curr;
+
+      switch (type) {
+         case 'number':
+         case 'string':
+            return [...acc, curr];
+         case 'object':
+            if (Array.isArray(curr))
+               return [...acc, ...curr];
+            else {
+               const clausoles = [];
+               for (const key in curr)
+                  clausoles.push(`\`${key}\` ${curr[key]}`);
+
+               return clausoles;
+            }
+      }
+   }
+
    /**
     *
     * @returns dbConfig
@@ -498,6 +518,7 @@ export class MySQLClient extends AntaresCore {
             charset: field.CHARACTER_SET_NAME,
             collation: field.COLLATION_NAME,
             autoIncrement: field.EXTRA.includes('auto_increment'),
+            generated: field.EXTRA.toLowerCase().includes('generated'),
             onUpdate: field.EXTRA.toLowerCase().includes('on update')
                ? field.EXTRA.substr(field.EXTRA.indexOf('on update') + 9, field.EXTRA.length).trim()
                : '',
@@ -1602,7 +1623,7 @@ export class MySQLClient extends AntaresCore {
       let insertRaw = '';
 
       if (this._query.insert.length) {
-         const fieldsList = Object.keys(this._query.insert[0]);
+         const fieldsList = Object.keys(this._query.insert[0]).map(col => '`' + col + '`');
          const rowsList = this._query.insert.map(el => `(${Object.values(el).join(', ')})`);
 
          insertRaw = `(${fieldsList.join(', ')}) VALUES ${rowsList.join(', ')} `;

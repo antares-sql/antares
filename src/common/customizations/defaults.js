@@ -38,6 +38,8 @@ module.exports = {
    databaseEdit: false,
    schemaEdit: false,
    schemaDrop: false,
+   schemaExport: false,
+   schemaImport: false,
    tableSettings: false,
    tableOptions: false,
    tableArray: false,

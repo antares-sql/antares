@@ -110,5 +110,4 @@ export default {
 .modal.modal-sm .modal-container {
   padding: 0;
 }
-
 </style>

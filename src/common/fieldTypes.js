@@ -41,6 +41,7 @@ export const NUMBER = [
 
 export const FLOAT = [
    'FLOAT',
+   'DECIMAL',
    'DOUBLE',
    'REAL',
    'DOUBLE PRECISION',

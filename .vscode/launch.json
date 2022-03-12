@@ -2,8 +2,8 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "cwd": "${workspaceFolder}",
       "name": "Electron: Main",
+      "cwd": "${workspaceFolder}",
       "port": 9222,
       "protocol": "inspector",
       "request": "attach",
@@ -18,7 +18,17 @@
       "sourceMaps": true,
       "type": "chrome",
       "webRoot": "${workspaceFolder}"
-    }
+    },
+    {
+      "name": "Electron: Worker",
+      "cwd": "${workspaceFolder}",
+      "port": 9224,
+      "protocol": "inspector",
+      "request": "attach",
+      "sourceMaps": true,
+      "type": "node",
+      "timeout": 1000000
+    },
   ],
   "compounds": [
       {

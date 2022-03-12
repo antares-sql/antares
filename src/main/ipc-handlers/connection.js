@@ -40,7 +40,7 @@ export default connections => {
       }
 
       try {
-         const connection = await ClientsFactory.getConnection({
+         const connection = await ClientsFactory.getClient({
             client: conn.client,
             params
          });
@@ -100,7 +100,7 @@ export default connections => {
       }
 
       try {
-         const connection = ClientsFactory.getConnection({
+         const connection = ClientsFactory.getClient({
             client: conn.client,
             params,
             poolSize: 5
