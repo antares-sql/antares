@@ -26,13 +26,14 @@ If applicable, add screenshots to help explain your problem.
 
 **Application (please complete the following information):**
 
+- Client [e.g. MySQL]
 - Version [e.g. 0.14.0]
 - Distribution: [e.g. exe, Linux Store, AppImage, dmg]
 
 **Desktop (please complete the following information):**
 
-- OS: [e.g. iOS]
-- Version [e.g. 22]
+- OS: [e.g. Windows 11]
+- Version [e.g. 21H2]
 
 **Additional context**
 Add any other context about the problem here.
