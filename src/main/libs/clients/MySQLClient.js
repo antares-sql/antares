@@ -505,7 +505,7 @@ export class MySQLClient extends AntaresCore {
             schema: field.TABLE_SCHEMA,
             table: field.TABLE_NAME,
             numPrecision: field.NUMERIC_PRECISION,
-            numScale: field.NUMERIC_SCALE,
+            numScale: Number(field.NUMERIC_SCALE),
             numLength,
             enumValues,
             datePrecision: field.DATETIME_PRECISION,
