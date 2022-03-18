@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { createGzip } from 'zlib';
 import path from 'path';
 import EventEmitter from 'events';
 
@@ -8,12 +9,19 @@ export class BaseExporter extends EventEmitter {
       this._tables = tables;
       this._options = options;
       this._isCancelled = false;
-      this._outputStream = fs.createWriteStream(this._options.outputFile, {
-         flags: 'w'
-      });
+      this._outputFileStream = fs.createWriteStream(this._options.outputFile, { flags: 'w' });
+      this._processedStream = null;
       this._state = {};
 
-      this._outputStream.once('error', err => {
+      if (this._options.outputFormat === 'sql.zip') {
+         const outputZipStream = createGzip();
+         outputZipStream.pipe(this._outputFileStream);
+         this._processedStream = outputZipStream;
+      }
+      else
+         this._processedStream = this._outputFileStream;
+
+      this._processedStream.once('error', err => {
          this._isCancelled = true;
          this.emit('error', err);
       });
@@ -29,7 +37,7 @@ export class BaseExporter extends EventEmitter {
          throw err;
       }
       finally {
-         this._outputStream.end();
+         this._processedStream.end();
          this.emit('end');
       }
    }
@@ -68,7 +76,7 @@ export class BaseExporter extends EventEmitter {
          const fileName = path.basename(this._options.outputFile);
          this.emit('error', `The file ${fileName} is not accessible`);
       }
-      this._outputStream.write(data);
+      this._processedStream.write(data);
    }
 
    dump () {

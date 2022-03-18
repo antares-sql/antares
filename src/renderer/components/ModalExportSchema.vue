@@ -181,11 +181,10 @@
                   </div>
                </div>
                <div class="column col-4">
-                  <h4>
+                  <h5 class="h5">
                      {{ $t('word.options') }}
-                  </h4>
-                  <span>{{ $t('word.includes') }}:</span>
-
+                  </h5>
+                  <span class="h6">{{ $t('word.includes') }}:</span>
                   <label
                      v-for="(_, key) in options.includes"
                      :key="key"
@@ -194,7 +193,7 @@
                      <input v-model="options.includes[key]" type="checkbox"><i class="form-icon" /> {{ $t(`word.${key}`) }}
                   </label>
 
-                  <div class="mt-4 mb-2">
+                  <div class="h6 mt-4 mb-2">
                      {{ $t('message.newInserStmtEvery') }}:
                   </div>
                   <div class="columns">
@@ -213,6 +212,22 @@
                            </option>
                            <option value="rows">
                               {{ $tc('word.row', 2) }}
+                           </option>
+                        </select>
+                     </div>
+                  </div>
+
+                  <div class="h6 mb-2 mt-4">
+                     {{ $t('message.ourputFormat') }}:
+                  </div>
+                  <div class="columns">
+                     <div class="column h5 mb-4">
+                        <select v-model="options.outputFormat" class="form-select">
+                           <option value="sql">
+                              {{ $t('message.singleFile', {ext: '.sql'}) }}
+                           </option>
+                           <option value="sql.zip">
+                              {{ $t('message.zipCompressedFile', {ext: '.sql'}) }}
                            </option>
                         </select>
                      </div>
@@ -275,6 +290,7 @@ export default {
          tables: [],
          options: {
             includes: {},
+            outputFormat: 'sql',
             sqlInsertAfter: 250,
             sqlInsertDivider: 'bytes'
          },
@@ -299,7 +315,7 @@ export default {
       },
       filename () {
          const date = moment().format('YYYY-MM-DD');
-         return `${this.selectedSchema}_${date}.sql`;
+         return `${this.selectedSchema}_${date}.${this.options.outputFormat}`;
       },
       dumpFilePath () {
          return `${this.basePath}/${this.filename}`;

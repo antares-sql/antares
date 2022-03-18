@@ -283,7 +283,10 @@ module.exports = {
       manualCommit: 'Manual commit',
       actionSuccessful: '{action} successful',
       importQueryErrors: 'Warning: {n} error has accurrend | Warning: {n} errors occurred',
-      executedQueries: '{n} query executed | {n} queries executed'
+      executedQueries: '{n} query executed | {n} queries executed',
+      ourputFormat: 'Output format',
+      singleFile: 'Single {ext} file',
+      zipCompressedFile: 'ZIP compressed {ext} file'
    },
    faker: {
       address: 'Address',
