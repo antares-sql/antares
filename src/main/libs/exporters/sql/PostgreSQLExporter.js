@@ -1,0 +1,486 @@
+import { SqlExporter } from './SqlExporter';
+import { BLOB, BIT, DATE, DATETIME, FLOAT, SPATIAL, IS_MULTI_SPATIAL, NUMBER } from 'common/fieldTypes';
+import hexToBinary from 'common/libs/hexToBinary';
+import { getArrayDepth } from 'common/libs/getArrayDepth';
+import moment from 'moment';
+import { lineString, point, polygon } from '@turf/helpers';
+import QueryStream from 'pg-query-stream';
+
+export default class PostgreSQLExporter extends SqlExporter {
+   async getSqlHeader () {
+      let dump = await super.getSqlHeader();
+      dump += `
+
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;`;
+
+      return dump;
+   }
+
+   async getCreateTable (tableName) {
+      let createSql = '';
+      const sequences = [];
+      const columnsSql = [];
+
+      // Table columns
+      const { rows } = await this._client
+         .select('*')
+         .schema('information_schema')
+         .from('columns')
+         .where({ table_schema: `= '${this.schemaName}'`, table_name: `= '${tableName}'` })
+         .orderBy({ ordinal_position: 'ASC' })
+         .run();
+
+      if (!rows.length) return '';
+
+      for (const column of rows) {
+         const columnArr = [
+            `"${column.column_name}"`,
+            `${column.data_type}${column.character_maximum_length ? `(${column.character_maximum_length})` : ''}`
+         ];
+
+         if (column.column_default) {
+            columnArr.push(`DEFAULT ${column.column_default}`);
+            if (column.column_default.includes('nextval')) {
+               let sequenceName = column.column_default.split('\'')[1];
+               if (sequenceName.includes('.')) sequenceName = sequenceName.split('.')[1];
+               sequences.push(sequenceName);
+            }
+         }
+         if (column.is_nullable === 'NO') columnArr.push('NOT NULL');
+
+         columnsSql.push(columnArr.join(' '));
+      }
+
+      // Table sequences
+      for (const sequence of sequences) {
+         const { rows } = await this._client
+            .select('*')
+            .schema('information_schema')
+            .from('sequences')
+            .where({ sequence_schema: `= '${this.schemaName}'`, sequence_name: `= '${sequence}'` })
+            .run();
+
+         if (rows.length) {
+            createSql += `CREATE SEQUENCE "${this.schemaName}"."${sequence}"
+   START WITH ${rows[0].start_value}
+   INCREMENT BY ${rows[0].increment}
+   MINVALUE ${rows[0].minimum_value}
+   MAXVALUE ${rows[0].maximum_value}
+   CACHE 1;\n`;
+
+            createSql += `\nALTER TABLE "${this.schemaName}"."${sequence}" OWNER TO ${this._client._params.user};\n\n`;
+         }
+      }
+
+      // Table create
+      createSql += `CREATE TABLE "${this.schemaName}"."${tableName}"(
+   ${columnsSql.join(',\n   ')}
+);\n`;
+
+      createSql += `\nALTER TABLE "${this.schemaName}"."${tableName}" OWNER TO ${this._client._params.user};\n\n`;
+
+      // Table indexes
+      const { rows: indexes } = await this._client
+         .select('*')
+         .schema('pg_catalog')
+         .from('pg_indexes')
+         .where({ schemaname: `= '${this.schemaName}'`, tablename: `= '${tableName}'` })
+         .run();
+
+      for (const index of indexes)
+         createSql += `${index.indexdef};\n`;
+
+      // Table foreigns
+      const { rows: foreigns } = await this._client.raw(`
+         SELECT 
+            tc.table_schema, 
+            tc.constraint_name, 
+            tc.table_name, 
+            kcu.column_name, 
+            ccu.table_schema AS foreign_table_schema,
+            ccu.table_name AS foreign_table_name,
+            ccu.column_name AS foreign_column_name,
+            rc.update_rule,
+            rc.delete_rule
+         FROM information_schema.table_constraints AS tc 
+         JOIN information_schema.key_column_usage AS kcu
+            ON tc.constraint_name = kcu.constraint_name
+            AND tc.table_schema = kcu.table_schema
+         JOIN information_schema.constraint_column_usage AS ccu
+            ON ccu.constraint_name = tc.constraint_name
+            AND ccu.table_schema = tc.table_schema
+         JOIN information_schema.referential_constraints AS rc 
+            ON rc.constraint_name = kcu.constraint_name
+         WHERE tc.constraint_type = 'FOREIGN KEY' AND tc.table_schema = '${this.schemaName}'
+         AND tc.table_name = '${tableName}'
+      `);
+
+      for (const foreign of foreigns) {
+         createSql += `\nALTER TABLE ONLY "${this.schemaName}"."${tableName}"
+   ADD CONSTRAINT "${foreign.constraint_name}" FOREIGN KEY ("${foreign.column_name}") REFERENCES "${foreign.table_schema}"."${foreign.table_name}" ("${foreign.foreign_column_name}") ON UPDATE ${foreign.update_rule} ON DELETE ${foreign.delete_rule};\n`;
+      }
+
+      return createSql;
+   }
+
+   getDropTable (tableName) {
+      return `DROP TABLE IF EXISTS "${tableName}";`;
+   }
+
+   async * getTableInsert (tableName) {
+      let rowCount = 0;
+      let sqlStr = '';
+
+      const countResults = await this._client.raw(`SELECT COUNT(1) as count FROM "${this.schemaName}"."${tableName}"`);
+      if (countResults.rows.length === 1) rowCount = countResults.rows[0].count;
+
+      if (rowCount > 0) {
+         let queryLength = 0;
+         let rowsWritten = 0;
+         const { sqlInsertDivider, sqlInsertAfter } = this._options;
+         const columns = await this._client.getTableColumns({
+            table: tableName,
+            schema: this.schemaName
+         });
+
+         const notGeneratedColumns = columns.filter(col => !col.generated);
+         const columnNames = notGeneratedColumns.map(col => '"' + col.name + '"').join(', ');
+
+         yield sqlStr;
+
+         const stream = await this._queryStream(
+            `SELECT ${columnNames} FROM "${this.schemaName}"."${tableName}"`
+         );
+
+         for await (const row of stream) {
+            if (this.isCancelled) {
+               stream.destroy();
+               yield null;
+               return;
+            }
+
+            let sqlInsertString = `\nINSERT INTO "${tableName}" (${columnNames}) VALUES`;
+
+            if (
+               (sqlInsertDivider === 'bytes' && queryLength >= sqlInsertAfter * 1024) ||
+               (sqlInsertDivider === 'rows' && rowsWritten === sqlInsertAfter)
+            ) {
+               queryLength = 0;
+               rowsWritten = 0;
+            }
+
+            sqlInsertString += ' (';
+
+            for (const i in notGeneratedColumns) {
+               const column = notGeneratedColumns[i];
+               const val = row[column.name];
+
+               if (val === null) sqlInsertString += 'NULL';
+               else if (DATE.includes(column.type)) {
+                  sqlInsertString += moment(val).isValid()
+                     ? this.escapeAndQuote(moment(val).format('YYYY-MM-DD'))
+                     : val;
+               }
+               else if (DATETIME.includes(column.type)) {
+                  let datePrecision = '';
+                  for (let i = 0; i < column.precision; i++)
+                     datePrecision += i === 0 ? '.S' : 'S';
+
+                  sqlInsertString += moment(val).isValid()
+                     ? this.escapeAndQuote(moment(val).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`))
+                     : this.escapeAndQuote(val);
+               }
+               else if (BIT.includes(column.type))
+                  sqlInsertString += `b'${hexToBinary(Buffer.from(val).toString('hex'))}'`;
+               else if (BLOB.includes(column.type))
+                  sqlInsertString += `X'${val.toString('hex').toUpperCase()}'`;
+               else if (NUMBER.includes(column.type))
+                  sqlInsertString += val;
+               else if (FLOAT.includes(column.type))
+                  sqlInsertString += parseFloat(val);
+               else if (SPATIAL.includes(column.type)) {
+                  let geoJson;
+                  if (IS_MULTI_SPATIAL.includes(column.type)) {
+                     const features = [];
+                     for (const element of val)
+                        features.push(this.getMarkers(element));
+
+                     geoJson = {
+                        type: 'FeatureCollection',
+                        features
+                     };
+                  }
+                  else
+                     geoJson = this._getGeoJSON(val);
+
+                  sqlInsertString += `ST_GeomFromGeoJSON('${JSON.stringify(geoJson)}')`;
+               }
+               else if (val === '') sqlInsertString += '\'\'';
+               else {
+                  sqlInsertString += typeof val === 'string'
+                     ? this.escapeAndQuote(val)
+                     : typeof val === 'object'
+                        ? this.escapeAndQuote(JSON.stringify(val))
+                        : val;
+               }
+
+               if (parseInt(i) !== notGeneratedColumns.length - 1)
+                  sqlInsertString += ', ';
+            }
+
+            sqlInsertString += ');';
+
+            queryLength += sqlInsertString.length;
+            rowsWritten++;
+            yield sqlInsertString;
+         }
+
+         sqlStr = ';\n\n';
+
+         yield sqlStr;
+      }
+   }
+
+   async getViews () {
+      const { rows: views } = await this._client.raw(
+         `SHOW TABLE STATUS FROM \`${this.schemaName}\` WHERE Comment = 'VIEW'`
+      );
+      let sqlString = '';
+
+      for (const view of views) {
+         sqlString += `DROP VIEW IF EXISTS \`${view.Name}\`;\n`;
+         const viewSyntax = await this.getCreateTable(view.Name);
+         sqlString += viewSyntax.replaceAll('`' + this.schemaName + '`.', '');
+         sqlString += '\n';
+      }
+
+      return sqlString;
+   }
+
+   async getTriggers () {
+      const { rows: triggers } = await this._client.raw(
+         `SHOW TRIGGERS FROM \`${this.schemaName}\``
+      );
+      const generatedTables = this._tables
+         .filter(t => t.includeStructure)
+         .map(t => t.table);
+
+      let sqlString = '';
+
+      for (const trigger of triggers) {
+         const {
+            Trigger: name,
+            Timing: timing,
+            Event: event,
+            Table: table,
+            Statement: statement,
+            sql_mode: sqlMode
+         } = trigger;
+
+         if (!generatedTables.includes(table)) continue;
+
+         const definer = this.getEscapedDefiner(trigger.Definer);
+         sqlString += '/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE*/;;\n';
+         sqlString += `/*!50003 SET SQL_MODE="${sqlMode}" */;\n`;
+         sqlString += 'DELIMITER ;;\n';
+         sqlString += '/*!50003 CREATE*/ ';
+         sqlString += `/*!50017 DEFINER=${definer}*/ `;
+         sqlString += `/*!50003 TRIGGER \`${name}\` ${timing} ${event} ON \`${table}\` FOR EACH ROW ${statement}*/;;\n`;
+         sqlString += 'DELIMITER ;\n';
+         sqlString += '/*!50003 SET SQL_MODE=@OLD_SQL_MODE */;\n\n';
+      }
+
+      return sqlString;
+   }
+
+   async getSchedulers () {
+      const { rows: schedulers } = await this._client.raw(
+         `SELECT *, EVENT_SCHEMA AS \`Db\`, EVENT_NAME AS \`Name\` FROM information_schema.\`EVENTS\` WHERE EVENT_SCHEMA = '${this.schemaName}'`
+      );
+      let sqlString = '';
+
+      for (const scheduler of schedulers) {
+         const {
+            EVENT_NAME: name,
+            SQL_MODE: sqlMode,
+            EVENT_TYPE: type,
+            INTERVAL_VALUE: intervalValue,
+            INTERVAL_FIELD: intervalField,
+            STARTS: starts,
+            ENDS: ends,
+            EXECUTE_AT: at,
+            ON_COMPLETION: onCompletion,
+            STATUS: status,
+            EVENT_DEFINITION: definition
+         } = scheduler;
+
+         const definer = this.getEscapedDefiner(scheduler.DEFINER);
+         const comment = this.escapeAndQuote(scheduler.EVENT_COMMENT);
+
+         sqlString += `/*!50106 DROP EVENT IF EXISTS \`${name}\` */;\n`;
+         sqlString += '/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE*/;;\n';
+         sqlString += `/*!50003 SET SQL_MODE='${sqlMode}' */;\n`;
+         sqlString += 'DELIMITER ;;\n';
+         sqlString += '/*!50106 CREATE*/ ';
+         sqlString += `/*!50117 DEFINER=${definer}*/ `;
+         sqlString += `/*!50106 EVENT \`${name}\` ON SCHEDULE `;
+         if (type === 'RECURRING') {
+            sqlString += `EVERY ${intervalValue} ${intervalField} STARTS '${starts}' `;
+
+            if (ends) sqlString += `ENDS '${ends}' `;
+         }
+         else sqlString += `AT '${at}' `;
+         sqlString += `ON COMPLETION ${onCompletion} ${
+            status === 'disabled' ? 'DISABLE' : 'ENABLE'
+         } COMMENT ${comment || '\'\''} DO ${definition}*/;;\n`;
+         sqlString += 'DELIMITER ;\n';
+         sqlString += '/*!50003 SET SQL_MODE=@OLD_SQL_MODE*/;;\n';
+      }
+
+      return sqlString;
+   }
+
+   async getFunctions () {
+      const { rows: functions } = await this._client.raw(
+         `SHOW FUNCTION STATUS WHERE \`Db\` = '${this.schemaName}';`
+      );
+
+      let sqlString = '';
+
+      for (const func of functions) {
+         const definer = this.getEscapedDefiner(func.Definer);
+         sqlString += await this.getRoutineSyntax(
+            func.Name,
+            func.Type,
+            definer
+         );
+      }
+
+      return sqlString;
+   }
+
+   async getRoutines () {
+      const { rows: routines } = await this._client.raw(
+         `SHOW PROCEDURE STATUS WHERE \`Db\` = '${this.schemaName}';`
+      );
+
+      let sqlString = '';
+
+      for (const routine of routines) {
+         const definer = this.getEscapedDefiner(routine.Definer);
+
+         sqlString += await this.getRoutineSyntax(
+            routine.Name,
+            routine.Type,
+            definer
+         );
+      }
+
+      return sqlString;
+   }
+
+   async getRoutineSyntax (name, type, definer) {
+      const { rows: routines } = await this._client.raw(
+         `SHOW CREATE ${type} \`${this.schemaName}\`.\`${name}\``
+      );
+
+      if (routines.length === 0) return '';
+
+      const routine = routines[0];
+
+      const fieldName = `Create ${type === 'PROCEDURE' ? 'Procedure' : 'Function'}`;
+      const sqlMode = routine.sql_mode;
+      const createProcedure = routine[fieldName];
+      let sqlString = '';
+
+      if (createProcedure) { // If procedure body not empty
+         const startOffset = createProcedure.indexOf(type);
+         const procedureBody = createProcedure.substring(startOffset);
+
+         sqlString += `/*!50003 DROP ${type} IF EXISTS ${name}*/;;\n`;
+         sqlString += '/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE*/;;\n';
+         sqlString += `/*!50003 SET SQL_MODE="${sqlMode}"*/;;\n`;
+         sqlString += 'DELIMITER ;;\n';
+         sqlString += `/*!50003 CREATE*/ /*!50020 DEFINER=${definer}*/ /*!50003 ${procedureBody}*/;;\n`;
+         sqlString += 'DELIMITER ;\n';
+         sqlString += '/*!50003 SET SQL_MODE=@OLD_SQL_MODE*/;\n';
+      }
+
+      return sqlString;
+   }
+
+   async getCreateType () {}
+
+   async _queryStream (sql) {
+      if (process.env.NODE_ENV === 'development') console.log('EXPORTER:', sql);
+      const connection = await this._client.getConnection();
+      const query = new QueryStream(sql, null);
+      const stream = connection.query(query);
+      const dispose = () => connection.end();
+
+      stream.on('end', dispose);
+      stream.on('error', dispose);
+      stream.on('close', dispose);
+      return stream;
+   }
+
+   getEscapedDefiner (definer) {
+      return definer
+         .split('@')
+         .map(part => '`' + part + '`')
+         .join('@');
+   }
+
+   escapeAndQuote (val) {
+      // eslint-disable-next-line no-control-regex
+      const CHARS_TO_ESCAPE = /[\0\b\t\n\r\x1a"'\\]/g;
+      const CHARS_ESCAPE_MAP = {
+         '\0': '\\0',
+         '\b': '\\b',
+         '\t': '\\t',
+         '\n': '\\n',
+         '\r': '\\r',
+         '\x1a': '\\Z',
+         '"': '\\"',
+         '\'': '\\\'',
+         '\\': '\\\\'
+      };
+      let chunkIndex = CHARS_TO_ESCAPE.lastIndex = 0;
+      let escapedVal = '';
+      let match;
+
+      while ((match = CHARS_TO_ESCAPE.exec(val))) {
+         escapedVal += val.slice(chunkIndex, match.index) + CHARS_ESCAPE_MAP[match[0]];
+         chunkIndex = CHARS_TO_ESCAPE.lastIndex;
+      }
+
+      if (chunkIndex === 0)
+         return `'${val}'`;
+
+      if (chunkIndex < val.length)
+         return `'${escapedVal + val.slice(chunkIndex)}'`;
+
+      return `'${escapedVal}'`;
+   }
+
+   _getGeoJSON (val) {
+      if (Array.isArray(val)) {
+         if (getArrayDepth(val) === 1)
+            return lineString(val.reduce((acc, curr) => [...acc, [curr.x, curr.y]], []));
+         else
+            return polygon(val.map(arr => arr.reduce((acc, curr) => [...acc, [curr.x, curr.y]], [])));
+      }
+      else
+         return point([val.x, val.y]);
+   }
+}

@@ -190,7 +190,7 @@
                      :key="key"
                      class="form-checkbox"
                   >
-                     <input v-model="options.includes[key]" type="checkbox"><i class="form-icon" /> {{ $t(`word.${key}`) }}
+                     <input v-model="options.includes[key]" type="checkbox"><i class="form-icon" /> {{ $tc(`word.${key}`, 2) }}
                   </label>
 
                   <div class="h6 mt-4 mb-2">
@@ -353,8 +353,10 @@ export default {
 
       structure.forEach(feat => {
          const val = customizations[this.currentWorkspace.client][feat];
-         if (val)
+         if (val) {
+            if (feat === 'triggerFunctions') feat = 'triggerFunction';// TODO: remove after l18n refactor
             this.$set(this.options.includes, feat, true);
+         }
       });
 
       ipcRenderer.on('export-progress', this.updateProgress);
