@@ -117,6 +117,19 @@
                                  </label>
                               </div>
                            </div>
+                           <div class="form-group mb-0">
+                              <div class="col-7 col-sm-12">
+                                 <label class="form-label">
+                                    {{ $t('message.disableBlur') }}
+                                 </label>
+                              </div>
+                              <div class="col-5 col-sm-12">
+                                 <label class="form-switch d-inline-block" @click.prevent="toggleDisableBlur">
+                                    <input type="checkbox" :checked="disableBlur">
+                                    <i class="form-icon" />
+                                 </label>
+                              </div>
+                           </div>
                            <div class="form-group">
                               <div class="col-7 col-sm-12">
                                  <label class="form-label">
@@ -389,6 +402,7 @@ export default {
          selectedLineWrap: 'settings/getLineWrap',
          notificationsTimeout: 'settings/getNotificationsTimeout',
          restoreTabs: 'settings/getRestoreTabs',
+         disableBlur: 'settings/getDisableBlur',
          applicationTheme: 'settings/getApplicationTheme',
          editorTheme: 'settings/getEditorTheme',
          editorFontSize: 'settings/getEditorFontSize',
@@ -450,6 +464,7 @@ ORDER BY
          changeLocale: 'settings/changeLocale',
          changePageSize: 'settings/changePageSize',
          changeRestoreTabs: 'settings/changeRestoreTabs',
+         changeDisableBlur: 'settings/changeDisableBlur',
          changeAutoComplete: 'settings/changeAutoComplete',
          changeLineWrap: 'settings/changeLineWrap',
          changeApplicationTheme: 'settings/changeApplicationTheme',
@@ -476,6 +491,9 @@ ORDER BY
       },
       toggleRestoreSession () {
          this.changeRestoreTabs(!this.restoreTabs);
+      },
+      toggleDisableBlur () {
+         this.changeDisableBlur(!this.disableBlur);
       },
       toggleAutoComplete () {
          this.changeAutoComplete(!this.selectedAutoComplete);

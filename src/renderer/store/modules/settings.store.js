@@ -20,7 +20,8 @@ export default {
       application_theme: persistentStore.get('application_theme', defaultAppTheme),
       editor_theme: persistentStore.get('editor_theme', defaultEditorTheme),
       editor_font_size: persistentStore.get('editor_font_size', 'medium'),
-      restore_tabs: persistentStore.get('restore_tabs', true)
+      restore_tabs: persistentStore.get('restore_tabs', true),
+      disable_blur: persistentStore.get('disable_blur', false)
    },
    getters: {
       getLocale: state => state.locale,
@@ -33,7 +34,8 @@ export default {
       getApplicationTheme: state => state.application_theme,
       getEditorTheme: state => state.editor_theme,
       getEditorFontSize: state => state.editor_font_size,
-      getRestoreTabs: state => state.restore_tabs
+      getRestoreTabs: state => state.restore_tabs,
+      getDisableBlur: state => state.disable_blur
    },
    mutations: {
       SET_LOCALE (state, locale) {
@@ -80,6 +82,10 @@ export default {
       SET_RESTORE_TABS (state, val) {
          state.restore_tabs = val;
          persistentStore.set('restore_tabs', state.restore_tabs);
+      },
+      SET_DISABLE_BLUR (state, val) {
+         state.disable_blur = val;
+         persistentStore.set('disable_blur', state.disable_blur);
       }
    },
    actions: {
@@ -115,6 +121,9 @@ export default {
       },
       changeRestoreTabs ({ commit }, size) {
          commit('SET_RESTORE_TABS', size);
+      },
+      changeDisableBlur ({ commit }, val) {
+         commit('SET_DISABLE_BLUR', val);
       }
    }
 };

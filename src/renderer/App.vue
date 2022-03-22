@@ -1,5 +1,5 @@
 <template>
-   <div id="wrapper" :class="`theme-${applicationTheme}`">
+   <div id="wrapper" :class="[`theme-${applicationTheme}`, !disableBlur || 'no-blur']">
       <TheTitleBar />
       <div id="window-content">
          <TheSettingBar />
@@ -51,6 +51,7 @@ export default {
          isScratchpad: 'application/isScratchpad',
          connections: 'connections/getConnections',
          applicationTheme: 'settings/getApplicationTheme',
+         disableBlur: 'settings/getDisableBlur',
          isUnsavedDiscardModal: 'workspaces/isUnsavedDiscardModal'
       })
    },

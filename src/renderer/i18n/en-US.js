@@ -286,7 +286,8 @@ module.exports = {
       executedQueries: '{n} query executed | {n} queries executed',
       ourputFormat: 'Output format',
       singleFile: 'Single {ext} file',
-      zipCompressedFile: 'ZIP compressed {ext} file'
+      zipCompressedFile: 'ZIP compressed {ext} file',
+      disableBlur: 'Disable blur'
    },
    faker: {
       address: 'Address',
