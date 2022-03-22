@@ -17,11 +17,13 @@ SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
+-- SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
-SET row_security = off;`;
+SET row_security = off;\n\n\n`;
+
+      dump += await this.getTypes();
 
       return dump;
    }
@@ -30,6 +32,15 @@ SET row_security = off;`;
       let createSql = '';
       const sequences = [];
       const columnsSql = [];
+      const arrayTypes = {
+         _int2: 'smallint',
+         _int4: 'integer',
+         _int8: 'bigint',
+         _float4: 'real',
+         _float8: 'double precision',
+         _char: '"char"',
+         _varchar: 'character varying'
+      };
 
       // Table columns
       const { rows } = await this._client
@@ -43,9 +54,18 @@ SET row_security = off;`;
       if (!rows.length) return '';
 
       for (const column of rows) {
+         let fieldType = column.data_type;
+         if (fieldType === 'USER-DEFINED') fieldType = column.udt_name;
+         else if (fieldType === 'ARRAY') {
+            if (Object.keys(arrayTypes).includes(fieldType))
+               fieldType = arrayTypes[type] + '[]';
+            else
+               fieldType = column.udt_name.replaceAll('_', '') + '[]';
+         }
+
          const columnArr = [
             `"${column.column_name}"`,
-            `${column.data_type}${column.character_maximum_length ? `(${column.character_maximum_length})` : ''}`
+            `${fieldType}${column.character_maximum_length ? `(${column.character_maximum_length})` : ''}`
          ];
 
          if (column.column_default) {
@@ -71,25 +91,26 @@ SET row_security = off;`;
             .run();
 
          if (rows.length) {
-            createSql += `CREATE SEQUENCE "${this.schemaName}"."${sequence}"
+            createSql += `CREATE SEQUENCE "${sequence}"
    START WITH ${rows[0].start_value}
    INCREMENT BY ${rows[0].increment}
    MINVALUE ${rows[0].minimum_value}
    MAXVALUE ${rows[0].maximum_value}
    CACHE 1;\n`;
 
-            createSql += `\nALTER TABLE "${this.schemaName}"."${sequence}" OWNER TO ${this._client._params.user};\n\n`;
+            // createSql += `\nALTER TABLE "${sequence}" OWNER TO ${this._client._params.user};\n\n`;
          }
       }
 
       // Table create
-      createSql += `CREATE TABLE "${this.schemaName}"."${tableName}"(
+      createSql += `\nCREATE TABLE "${tableName}"(
    ${columnsSql.join(',\n   ')}
 );\n`;
 
-      createSql += `\nALTER TABLE "${this.schemaName}"."${tableName}" OWNER TO ${this._client._params.user};\n\n`;
+      // createSql += `\nALTER TABLE "${tableName}" OWNER TO ${this._client._params.user};\n\n`;
 
       // Table indexes
+      createSql += '\n';
       const { rows: indexes } = await this._client
          .select('*')
          .schema('pg_catalog')
@@ -126,7 +147,7 @@ SET row_security = off;`;
       `);
 
       for (const foreign of foreigns) {
-         createSql += `\nALTER TABLE ONLY "${this.schemaName}"."${tableName}"
+         createSql += `\nALTER TABLE ONLY "${tableName}"
    ADD CONSTRAINT "${foreign.constraint_name}" FOREIGN KEY ("${foreign.column_name}") REFERENCES "${foreign.table_schema}"."${foreign.table_name}" ("${foreign.foreign_column_name}") ON UPDATE ${foreign.update_rule} ON DELETE ${foreign.delete_rule};\n`;
       }
 
@@ -141,7 +162,7 @@ SET row_security = off;`;
       let rowCount = 0;
       let sqlStr = '';
 
-      const countResults = await this._client.raw(`SELECT COUNT(1) as count FROM "${this.schemaName}"."${tableName}"`);
+      const countResults = await this._client.raw(`SELECT COUNT(1) as count FROM "${tableName}"`);
       if (countResults.rows.length === 1) rowCount = countResults.rows[0].count;
 
       if (rowCount > 0) {
@@ -159,7 +180,7 @@ SET row_security = off;`;
          yield sqlStr;
 
          const stream = await this._queryStream(
-            `SELECT ${columnNames} FROM "${this.schemaName}"."${tableName}"`
+            `SELECT ${columnNames} FROM "${tableName}"`
          );
 
          for await (const row of stream) {
@@ -169,7 +190,7 @@ SET row_security = off;`;
                return;
             }
 
-            let sqlInsertString = `\nINSERT INTO "${tableName}" (${columnNames}) VALUES`;
+            let sqlInsertString = `INSERT INTO "${tableName}" (${columnNames}) VALUES`;
 
             if (
                (sqlInsertDivider === 'bytes' && queryLength >= sqlInsertAfter * 1024) ||
@@ -238,7 +259,7 @@ SET row_security = off;`;
                   sqlInsertString += ', ';
             }
 
-            sqlInsertString += ');';
+            sqlInsertString += ');\n';
 
             queryLength += sqlInsertString.length;
             rowsWritten++;
@@ -251,15 +272,49 @@ SET row_security = off;`;
       }
    }
 
+   async getTypes () {
+      let sqlString = '';
+      const { rows: types } = await this._client.raw(`
+         SELECT pg_type.typname, pg_enum.enumlabel 
+         FROM pg_type 
+         JOIN pg_enum ON pg_enum.enumtypid = pg_type.oid;
+      `);
+
+      if (types.length) { // TODO: refactor
+         sqlString += this.buildComment('Dump of types\n------------------------------------------------------------') + '\n\n';
+
+         const typesArr = types.reduce((arr, type) => {
+            if (arr.every(el => el.name !== type.typname))
+               arr.push({ name: type.typname, enums: [this.escapeAndQuote(type.enumlabel)] });
+            else {
+               const i = arr.findIndex(el => el.name === type.typname);
+               arr[i].enums.push(this.escapeAndQuote(type.enumlabel));
+            }
+
+            return arr;
+         }, []);
+
+         for (const type of typesArr) {
+            sqlString += `CREATE TYPE "${type.name}" AS ENUM (
+   ${type.enums.join(',\n\t')}
+);`;
+         }
+
+         // sqlString += `\nALTER TYPE "${tableName}" OWNER TO ${this._client._params.user};\n`
+      }
+
+      return sqlString;
+   }
+
    async getViews () {
       const { rows: views } = await this._client.raw(
-         `SHOW TABLE STATUS FROM \`${this.schemaName}\` WHERE Comment = 'VIEW'`
+         `SELECT * FROM "pg_views" WHERE "schemaname"='${this.schemaName}'`
       );
       let sqlString = '';
 
       for (const view of views) {
-         sqlString += `DROP VIEW IF EXISTS \`${view.Name}\`;\n`;
-         const viewSyntax = await this.getCreateTable(view.Name);
+         sqlString += `DROP VIEW IF EXISTS '${view.viewname}';\n`;
+         const viewSyntax = await this.getCreateTable(view.viewname);
          sqlString += viewSyntax.replaceAll('`' + this.schemaName + '`.', '');
          sqlString += '\n';
       }

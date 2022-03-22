@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { ClientsFactory } from '../libs/ClientsFactory';
 import MysqlExporter from '../libs/exporters/sql/MysqlExporter.js';
-import PostgreSQLExporter from '../libs/exporters/sql/PostgresqlExporter';
+import PostgreSQLExporter from '../libs/exporters/sql/PostgreSQLExporter';
 let exporter;
 
 process.on('message', async ({ type, client, tables, options }) => {
