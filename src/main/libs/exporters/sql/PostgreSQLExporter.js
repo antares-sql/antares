@@ -160,7 +160,7 @@ SET row_security = off;\n\n\n`;
 
    async * getTableInsert (tableName) {
       let rowCount = 0;
-      let sqlStr = '';
+      const sqlStr = '';
 
       const countResults = await this._client.raw(`SELECT COUNT(1) as count FROM "${tableName}"`);
       if (countResults.rows.length === 1) rowCount = countResults.rows[0].count;
@@ -266,8 +266,6 @@ SET row_security = off;\n\n\n`;
             yield sqlInsertString;
          }
 
-         sqlStr = ';\n\n';
-
          yield sqlStr;
       }
    }
@@ -313,10 +311,8 @@ SET row_security = off;\n\n\n`;
       let sqlString = '';
 
       for (const view of views) {
-         sqlString += `DROP VIEW IF EXISTS '${view.viewname}';\n`;
-         const viewSyntax = await this.getCreateTable(view.viewname);
-         sqlString += viewSyntax.replaceAll('`' + this.schemaName + '`.', '');
-         sqlString += '\n';
+         sqlString += `\nDROP VIEW IF EXISTS '${view.viewname}';\n`;
+         sqlString += `\nCREATE VIEW "${view.viewname}" AS \n${view.definition}\n`;
       }
 
       return sqlString;
