@@ -305,9 +305,7 @@ SET row_security = off;\n\n\n`;
    }
 
    async getViews () {
-      const { rows: views } = await this._client.raw(
-         `SELECT * FROM "pg_views" WHERE "schemaname"='${this.schemaName}'`
-      );
+      const { rows: views } = await this._client.raw(`SELECT * FROM "pg_views" WHERE "schemaname"='${this.schemaName}'`);
       let sqlString = '';
 
       for (const view of views) {
@@ -320,83 +318,24 @@ SET row_security = off;\n\n\n`;
 
    async getTriggers () {
       const { rows: triggers } = await this._client.raw(
-         `SHOW TRIGGERS FROM \`${this.schemaName}\``
+         `SELECT * FROM "information_schema"."triggers" WHERE "trigger_schema"='${this.schemaName}'`
       );
-      const generatedTables = this._tables
-         .filter(t => t.includeStructure)
-         .map(t => t.table);
 
       let sqlString = '';
-
-      for (const trigger of triggers) {
-         const {
-            Trigger: name,
-            Timing: timing,
-            Event: event,
-            Table: table,
-            Statement: statement,
-            sql_mode: sqlMode
-         } = trigger;
-
-         if (!generatedTables.includes(table)) continue;
-
-         const definer = this.getEscapedDefiner(trigger.Definer);
-         sqlString += '/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE*/;;\n';
-         sqlString += `/*!50003 SET SQL_MODE="${sqlMode}" */;\n`;
-         sqlString += 'DELIMITER ;;\n';
-         sqlString += '/*!50003 CREATE*/ ';
-         sqlString += `/*!50017 DEFINER=${definer}*/ `;
-         sqlString += `/*!50003 TRIGGER \`${name}\` ${timing} ${event} ON \`${table}\` FOR EACH ROW ${statement}*/;;\n`;
-         sqlString += 'DELIMITER ;\n';
-         sqlString += '/*!50003 SET SQL_MODE=@OLD_SQL_MODE */;\n\n';
-      }
-
-      return sqlString;
-   }
-
-   async getSchedulers () {
-      const { rows: schedulers } = await this._client.raw(
-         `SELECT *, EVENT_SCHEMA AS \`Db\`, EVENT_NAME AS \`Name\` FROM information_schema.\`EVENTS\` WHERE EVENT_SCHEMA = '${this.schemaName}'`
-      );
-      let sqlString = '';
-
-      for (const scheduler of schedulers) {
-         const {
-            EVENT_NAME: name,
-            SQL_MODE: sqlMode,
-            EVENT_TYPE: type,
-            INTERVAL_VALUE: intervalValue,
-            INTERVAL_FIELD: intervalField,
-            STARTS: starts,
-            ENDS: ends,
-            EXECUTE_AT: at,
-            ON_COMPLETION: onCompletion,
-            STATUS: status,
-            EVENT_DEFINITION: definition
-         } = scheduler;
-
-         const definer = this.getEscapedDefiner(scheduler.DEFINER);
-         const comment = this.escapeAndQuote(scheduler.EVENT_COMMENT);
-
-         sqlString += `/*!50106 DROP EVENT IF EXISTS \`${name}\` */;\n`;
-         sqlString += '/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE*/;;\n';
-         sqlString += `/*!50003 SET SQL_MODE='${sqlMode}' */;\n`;
-         sqlString += 'DELIMITER ;;\n';
-         sqlString += '/*!50106 CREATE*/ ';
-         sqlString += `/*!50117 DEFINER=${definer}*/ `;
-         sqlString += `/*!50106 EVENT \`${name}\` ON SCHEDULE `;
-         if (type === 'RECURRING') {
-            sqlString += `EVERY ${intervalValue} ${intervalField} STARTS '${starts}' `;
-
-            if (ends) sqlString += `ENDS '${ends}' `;
+      const remappedTriggers = triggers.reduce((acc, trigger) => {
+         const i = acc.findIndex(t => t.trigger_name === trigger.trigger_name && t.event_object_table === trigger.event_object_table);
+         if (i === -1) {
+            trigger.events = [trigger.event_manipulation];
+            acc.push(trigger);
          }
-         else sqlString += `AT '${at}' `;
-         sqlString += `ON COMPLETION ${onCompletion} ${
-            status === 'disabled' ? 'DISABLE' : 'ENABLE'
-         } COMMENT ${comment || '\'\''} DO ${definition}*/;;\n`;
-         sqlString += 'DELIMITER ;\n';
-         sqlString += '/*!50003 SET SQL_MODE=@OLD_SQL_MODE*/;;\n';
-      }
+         else
+            acc[i].events.push(trigger.event_manipulation);
+
+         return acc;
+      }, []);
+
+      for (const trigger of remappedTriggers)
+         sqlString += `\nCREATE TRIGGER "${trigger.trigger_name}" ${trigger.action_timing} ${trigger.events.join(' OR ')} ON "${trigger.event_object_table}" FOR EACH ${trigger.action_orientation} ${trigger.action_statement};\n`;
 
       return sqlString;
    }
