@@ -349,14 +349,12 @@ export default {
          includeDropStatement: true
       }));
 
-      const structure = ['views', 'triggers', 'routines', 'functions', 'schedulers', 'triggerFunctions'];
+      const structure = ['views', 'triggers', 'routines', 'functions', 'schedulers'];
 
       structure.forEach(feat => {
          const val = customizations[this.currentWorkspace.client][feat];
-         if (val) {
-            if (feat === 'triggerFunctions') feat = 'triggerFunction';// TODO: remove after l18n refactor
+         if (val)
             this.$set(this.options.includes, feat, true);
-         }
       });
 
       ipcRenderer.on('export-progress', this.updateProgress);

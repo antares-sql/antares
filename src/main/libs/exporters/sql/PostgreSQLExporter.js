@@ -23,7 +23,7 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;\n\n\n`;
 
-      dump += await this.getTypes();
+      dump += await this.getCreateTypes();
 
       return dump;
    }
@@ -162,7 +162,7 @@ SET row_security = off;\n\n\n`;
       let rowCount = 0;
       const sqlStr = '';
 
-      const countResults = await this._client.raw(`SELECT COUNT(1) as count FROM "${tableName}"`);
+      const countResults = await this._client.raw(`SELECT COUNT(1) as count FROM "${this.schemaName}"."${tableName}"`);
       if (countResults.rows.length === 1) rowCount = countResults.rows[0].count;
 
       if (rowCount > 0) {
@@ -180,7 +180,7 @@ SET row_security = off;\n\n\n`;
          yield sqlStr;
 
          const stream = await this._queryStream(
-            `SELECT ${columnNames} FROM "${tableName}"`
+            `SELECT ${columnNames} FROM "${this.schemaName}"."${tableName}"`
          );
 
          for await (const row of stream) {
@@ -270,7 +270,7 @@ SET row_security = off;\n\n\n`;
       }
    }
 
-   async getTypes () {
+   async getCreateTypes () {
       let sqlString = '';
       const { rows: types } = await this._client.raw(`
          SELECT pg_type.typname, pg_enum.enumlabel 
@@ -337,79 +337,52 @@ SET row_security = off;\n\n\n`;
       for (const trigger of remappedTriggers)
          sqlString += `\nCREATE TRIGGER "${trigger.trigger_name}" ${trigger.action_timing} ${trigger.events.join(' OR ')} ON "${trigger.event_object_table}" FOR EACH ${trigger.action_orientation} ${trigger.action_statement};\n`;
 
+      // Trigger functions
+      const { rows: triggerFunctions } = await this._client.raw(
+         `SELECT DISTINCT routine_name AS name FROM information_schema.routines WHERE routine_type = 'FUNCTION' AND routine_schema = '${this.schemaName}' AND data_type = 'trigger'`
+      );
+
+      for (const func of triggerFunctions) {
+         const { rows: functionDef } = await this._client.raw(
+            `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${func.name}')) AS definition`
+         );
+         sqlString += `\n${functionDef[0].definition};\n`;
+      }
+
       return sqlString;
    }
 
    async getFunctions () {
+      let sqlString = '';
       const { rows: functions } = await this._client.raw(
-         `SHOW FUNCTION STATUS WHERE \`Db\` = '${this.schemaName}';`
+         `SELECT DISTINCT routine_name AS name FROM information_schema.routines WHERE routine_type = 'FUNCTION' AND routine_schema = '${this.schemaName}' AND data_type != 'trigger'`
       );
 
-      let sqlString = '';
-
       for (const func of functions) {
-         const definer = this.getEscapedDefiner(func.Definer);
-         sqlString += await this.getRoutineSyntax(
-            func.Name,
-            func.Type,
-            definer
+         const { rows: functionDef } = await this._client.raw(
+            `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${func.name}')) AS definition`
          );
+         sqlString += `\n${functionDef[0].definition};\n`;
       }
 
       return sqlString;
    }
 
    async getRoutines () {
-      const { rows: routines } = await this._client.raw(
-         `SHOW PROCEDURE STATUS WHERE \`Db\` = '${this.schemaName}';`
+      let sqlString = '';
+      const { rows: functions } = await this._client.raw(
+         `SELECT DISTINCT routine_name AS name FROM information_schema.routines WHERE routine_type = 'PROCEDURE' AND routine_schema = '${this.schemaName}'`
       );
 
-      let sqlString = '';
-
-      for (const routine of routines) {
-         const definer = this.getEscapedDefiner(routine.Definer);
-
-         sqlString += await this.getRoutineSyntax(
-            routine.Name,
-            routine.Type,
-            definer
+      for (const func of functions) {
+         const { rows: functionDef } = await this._client.raw(
+            `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${func.name}')) AS definition`
          );
+         sqlString += `\n${functionDef[0].definition};\n`;
       }
 
       return sqlString;
    }
-
-   async getRoutineSyntax (name, type, definer) {
-      const { rows: routines } = await this._client.raw(
-         `SHOW CREATE ${type} \`${this.schemaName}\`.\`${name}\``
-      );
-
-      if (routines.length === 0) return '';
-
-      const routine = routines[0];
-
-      const fieldName = `Create ${type === 'PROCEDURE' ? 'Procedure' : 'Function'}`;
-      const sqlMode = routine.sql_mode;
-      const createProcedure = routine[fieldName];
-      let sqlString = '';
-
-      if (createProcedure) { // If procedure body not empty
-         const startOffset = createProcedure.indexOf(type);
-         const procedureBody = createProcedure.substring(startOffset);
-
-         sqlString += `/*!50003 DROP ${type} IF EXISTS ${name}*/;;\n`;
-         sqlString += '/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE*/;;\n';
-         sqlString += `/*!50003 SET SQL_MODE="${sqlMode}"*/;;\n`;
-         sqlString += 'DELIMITER ;;\n';
-         sqlString += `/*!50003 CREATE*/ /*!50020 DEFINER=${definer}*/ /*!50003 ${procedureBody}*/;;\n`;
-         sqlString += 'DELIMITER ;\n';
-         sqlString += '/*!50003 SET SQL_MODE=@OLD_SQL_MODE*/;\n';
-      }
-
-      return sqlString;
-   }
-
-   async getCreateType () {}
 
    async _queryStream (sql) {
       if (process.env.NODE_ENV === 'development') console.log('EXPORTER:', sql);
