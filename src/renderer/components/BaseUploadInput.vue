@@ -78,6 +78,7 @@ export default {
 
   .file-uploader-message {
     display: flex;
+    word-break: keep-all;
     border-radius: $border-radius 0 0 $border-radius;
   }
 

@@ -10,7 +10,9 @@
                   :key="connection.uid"
                   :connection="connection"
                />
-               <WorkspaceAddConnectionPanel v-if="selectedWorkspace === 'NEW'" />
+               <div class="connection-panel-wrapper">
+                  <WorkspaceAddConnectionPanel v-if="selectedWorkspace === 'NEW'" />
+               </div>
             </div>
             <TheFooter />
             <TheNotificationsBoard />
@@ -131,5 +133,15 @@ export default {
     > .columns {
       height: calc(100vh - #{$footer-height});
     }
+
+   .connection-panel-wrapper{
+      height: calc(100vh - #{$excluding-size});
+      width: 100%;
+      padding-top: 15vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      overflow: auto;
+   }
   }
 </style>

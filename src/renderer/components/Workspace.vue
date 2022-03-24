@@ -450,7 +450,9 @@
             />
          </template>
       </div>
-      <WorkspaceEditConnectionPanel v-else :connection="connection" />
+      <div v-else class="connection-panel-wrapper">
+         <WorkspaceEditConnectionPanel :connection="connection" />
+      </div>
       <ModalProcessesList
          v-if="isProcessesModal"
          :connection="connection"

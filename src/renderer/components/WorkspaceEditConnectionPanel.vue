@@ -34,7 +34,7 @@
                   <fieldset class="m-0" :disabled="isBusy">
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.connectionName') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.connectionName') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -47,7 +47,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.client') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.client') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <select v-model="localConnection.client" class="form-select">
@@ -63,7 +63,7 @@
                      </div>
                      <div v-if="connection.client === 'pg'" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.connectionString') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.connectionString') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -76,7 +76,7 @@
                      </div>
                      <div v-if="!customizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.hostName') }}/IP</label>
+                           <label class="form-label cut-text">{{ $t('word.hostName') }}/IP</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -88,7 +88,7 @@
                      </div>
                      <div v-if="customizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.database') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.database') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
@@ -101,7 +101,7 @@
                      </div>
                      <div v-if="!customizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.port') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.port') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -115,7 +115,7 @@
                      </div>
                      <div v-if="customizations.database" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.database') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.database') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -127,7 +127,7 @@
                      </div>
                      <div v-if="!customizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.user') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.user') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -140,7 +140,7 @@
                      </div>
                      <div v-if="!customizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.password') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.password') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -153,7 +153,7 @@
                      </div>
                      <div v-if="customizations.connectionSchema" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.schema') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.schema') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -189,7 +189,7 @@
                <form class="form-horizontal">
                   <div class="form-group columns">
                      <div class="column col-4 col-sm-12">
-                        <label class="form-label">
+                        <label class="form-label cut-text">
                            {{ $t('message.enableSsl') }}
                         </label>
                      </div>
@@ -203,7 +203,7 @@
                   <fieldset class="m-0" :disabled="isBusy || !localConnection.ssl">
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.privateKey') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.privateKey') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
@@ -216,7 +216,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.certificate') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.certificate') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
@@ -229,7 +229,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.caCertificate') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.caCertificate') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
@@ -242,7 +242,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.ciphers') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.ciphers') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -262,7 +262,7 @@
                <form class="form-horizontal">
                   <div class="form-group columns">
                      <div class="column col-4 col-sm-12">
-                        <label class="form-label">
+                        <label class="form-label cut-text">
                            {{ $t('message.enableSsh') }}
                         </label>
                      </div>
@@ -276,7 +276,7 @@
                   <fieldset class="m-0" :disabled="isBusy || !localConnection.ssh">
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.hostName') }}/IP</label>
+                           <label class="form-label cut-text">{{ $t('word.hostName') }}/IP</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -288,7 +288,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.user') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.user') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -300,7 +300,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.password') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.password') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -312,7 +312,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.port') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.port') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -326,7 +326,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.privateKey') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.privateKey') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
@@ -339,7 +339,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label">{{ $t('word.passphrase') }}</label>
+                           <label class="form-label cut-text">{{ $t('word.passphrase') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -532,12 +532,12 @@ export default {
 
 <style lang="scss" scoped>
 .connection-panel {
-  margin-top: 15vh;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 1rem;
 
   .panel {
-    width: 450px;
+    min-width: 450px;
     border-radius: $border-radius;
 
     .panel-body {
