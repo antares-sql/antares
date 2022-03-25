@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.1](https://github.com/Fabio286/antares/compare/v0.5.0...v0.5.1) (2022-03-25)
+
+
+### Features
+
+* export database as zip sql file ([8f3efab](https://github.com/Fabio286/antares/commit/8f3efabb6962c55c23a43c8da1433185dbc3fb41))
+* **UI:** option to disable blur effects, closes [#209](https://github.com/Fabio286/antares/issues/209) ([e9079ad](https://github.com/Fabio286/antares/commit/e9079adb25ec28e9546acd54bc2565b8d6e28120))
+
+
+### Bug Fixes
+
+* numeric scale displayed on non decimal fields ([db628f7](https://github.com/Fabio286/antares/commit/db628f77226b161c3df31b7450b92a6e58754ab7))
+* **UI:** connection buttons out of screen on small displays, closes [#213](https://github.com/Fabio286/antares/issues/213) ([f12e6a9](https://github.com/Fabio286/antares/commit/f12e6a96dd66140b06c55eda775af48a666627dd))
+
 ## [0.5.0](https://github.com/Fabio286/antares/compare/v0.4.4...v0.5.0) (2022-03-12)
 
 
