@@ -119,7 +119,7 @@ SET row_security = off;\n\n\n`;
          .run();
 
       for (const index of indexes)
-         createSql += `${index.indexdef};\n`;
+         createSql += `${index.indexdef.replaceAll(`${this.schemaName}.`, '')};\n`;
 
       // Table foreigns
       const { rows: foreigns } = await this._client.raw(`
@@ -147,8 +147,8 @@ SET row_security = off;\n\n\n`;
       `);
 
       for (const foreign of foreigns) {
-         createSql += `\nALTER TABLE ONLY "${tableName}"
-   ADD CONSTRAINT "${foreign.constraint_name}" FOREIGN KEY ("${foreign.column_name}") REFERENCES "${foreign.table_schema}"."${foreign.table_name}" ("${foreign.foreign_column_name}") ON UPDATE ${foreign.update_rule} ON DELETE ${foreign.delete_rule};\n`;
+         this._postTablesSql += `\nALTER TABLE ONLY "${tableName}"
+   ADD CONSTRAINT "${foreign.constraint_name}" FOREIGN KEY ("${foreign.column_name}") REFERENCES "${foreign.foreign_table_name}" ("${foreign.foreign_column_name}") ON UPDATE ${foreign.update_rule} ON DELETE ${foreign.delete_rule};\n`;
       }
 
       return createSql;
@@ -304,12 +304,54 @@ SET row_security = off;\n\n\n`;
       return sqlString;
    }
 
+   async getCreateAggregates () {
+      let sqlString = '';
+
+      const { rows: aggregates } = await this._client.raw(`
+         SELECT proname
+         FROM   pg_proc
+         WHERE  prokind = 'a'
+         AND pronamespace::regnamespace::text = '${this.schemaName}'
+         ORDER BY 1;
+      `);
+
+      if (aggregates.length) {
+         for (const aggregate of aggregates) {
+            const { rows: aggregateDef } = await this._client.raw(
+               `SELECT 
+                  format(
+                     E'CREATE AGGREGATE %s (\n%s\n);'
+                     , (pg_identify_object('pg_proc'::regclass, aggfnoid, 0)).identity
+                     , array_to_string(
+                        ARRAY[
+                     format(E'\tSFUNC = %s', aggtransfn::regproc)
+                     , format(E'\tSTYPE = %s', format_type(aggtranstype, NULL))
+                     , CASE aggfinalfn WHEN '-'::regproc THEN NULL ELSE format(E'\tFINALFUNC = %s',aggfinalfn::text) END
+                     , CASE aggsortop WHEN 0 THEN NULL ELSE format(E'\tSORTOP = %s', oprname) END
+                     , CASE WHEN agginitval IS NULL THEN NULL ELSE format(E'\tINITCOND = %s', agginitval) END
+                        ]
+                        , E',\n'
+                     )
+                  )
+               FROM pg_aggregate
+               LEFT JOIN pg_operator ON pg_operator.oid = aggsortop
+               WHERE aggfnoid = '${this.schemaName}.${aggregate.proname}'::regproc;`
+            );
+
+            if (aggregateDef.length)
+               sqlString += '\n\n' + aggregateDef[0].format.replaceAll(`${this.schemaName}.`, '');
+         }
+      }
+
+      return sqlString + '\n\n\n';
+   }
+
    async getViews () {
       const { rows: views } = await this._client.raw(`SELECT * FROM "pg_views" WHERE "schemaname"='${this.schemaName}'`);
       let sqlString = '';
 
       for (const view of views) {
-         sqlString += `\nDROP VIEW IF EXISTS '${view.viewname}';\n`;
+         sqlString += `\nDROP VIEW IF EXISTS "${view.viewname}";\n`;
          sqlString += `\nCREATE VIEW "${view.viewname}" AS \n${view.definition}\n`;
       }
 
@@ -317,11 +359,24 @@ SET row_security = off;\n\n\n`;
    }
 
    async getTriggers () {
+      let sqlString = '';
+
+      // Trigger functions
+      const { rows: triggerFunctions } = await this._client.raw(
+         `SELECT DISTINCT routine_name AS name FROM information_schema.routines WHERE routine_type = 'FUNCTION' AND routine_schema = '${this.schemaName}' AND data_type = 'trigger'`
+      );
+
+      for (const func of triggerFunctions) {
+         const { rows: functionDef } = await this._client.raw(
+            `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${func.name}')) AS definition`
+         );
+         sqlString += `\n${functionDef[0].definition.replaceAll(`${this.schemaName}.`, '')};\n`;
+      }
+
       const { rows: triggers } = await this._client.raw(
          `SELECT * FROM "information_schema"."triggers" WHERE "trigger_schema"='${this.schemaName}'`
       );
 
-      let sqlString = '';
       const remappedTriggers = triggers.reduce((acc, trigger) => {
          const i = acc.findIndex(t => t.trigger_name === trigger.trigger_name && t.event_object_table === trigger.event_object_table);
          if (i === -1) {
@@ -337,18 +392,6 @@ SET row_security = off;\n\n\n`;
       for (const trigger of remappedTriggers)
          sqlString += `\nCREATE TRIGGER "${trigger.trigger_name}" ${trigger.action_timing} ${trigger.events.join(' OR ')} ON "${trigger.event_object_table}" FOR EACH ${trigger.action_orientation} ${trigger.action_statement};\n`;
 
-      // Trigger functions
-      const { rows: triggerFunctions } = await this._client.raw(
-         `SELECT DISTINCT routine_name AS name FROM information_schema.routines WHERE routine_type = 'FUNCTION' AND routine_schema = '${this.schemaName}' AND data_type = 'trigger'`
-      );
-
-      for (const func of triggerFunctions) {
-         const { rows: functionDef } = await this._client.raw(
-            `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${func.name}')) AS definition`
-         );
-         sqlString += `\n${functionDef[0].definition};\n`;
-      }
-
       return sqlString;
    }
 
@@ -362,8 +405,10 @@ SET row_security = off;\n\n\n`;
          const { rows: functionDef } = await this._client.raw(
             `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${func.name}')) AS definition`
          );
-         sqlString += `\n${functionDef[0].definition};\n`;
+         sqlString += `\n${functionDef[0].definition.replaceAll(`${this.schemaName}.`, '')};\n`;
       }
+
+      sqlString += await this.getCreateAggregates();
 
       return sqlString;
    }
@@ -378,7 +423,7 @@ SET row_security = off;\n\n\n`;
          const { rows: functionDef } = await this._client.raw(
             `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${func.name}')) AS definition`
          );
-         sqlString += `\n${functionDef[0].definition};\n`;
+         sqlString += `\n${functionDef[0].definition.replaceAll(`${this.schemaName}.`, '')};\n`;
       }
 
       return sqlString;

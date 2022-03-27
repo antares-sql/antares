@@ -349,7 +349,7 @@ export default {
          includeDropStatement: true
       }));
 
-      const structure = ['views', 'triggers', 'routines', 'functions', 'schedulers'];
+      const structure = ['functions', 'views', 'triggers', 'routines', 'schedulers'];
 
       structure.forEach(feat => {
          const val = customizations[this.currentWorkspace.client][feat];
