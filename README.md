@@ -104,7 +104,7 @@ This is a roadmap with major features will come in near future.
 
 - 🌍 [Translate Antares](https://github.com/Fabio286/antares/wiki/Translate-Antares)
 - 📖 [Contributors Guide](https://github.com/Fabio286/antares/wiki/Contributors-Guide)
-- 🚧 [Project Board](https://github.com/users/Fabio286/projects/1)
+- 🚧 [Project Board](https://github.com/antares-sql/antares/projects/1)
 
 ## Contributors ✨
 
