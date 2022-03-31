@@ -4,7 +4,7 @@
   "version": "0.5.1",
   "description": "A modern, fast and productivity driven SQL client with a focus in UX.",
   "license": "MIT",
-  "repository": "https://github.com/Fabio286/antares.git",
+  "repository": "https://github.com/antares-sql/antares.git",
   "scripts": {
     "debug": "npm run rebuild:electron && npm run debug-runner",
     "debug-runner": "node scripts/devRunner.js --remote-debug",

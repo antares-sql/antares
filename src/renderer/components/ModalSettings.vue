@@ -297,7 +297,7 @@
                      <h4>{{ appName }}</h4>
                      <p class="mb-2">
                         {{ $t('word.version') }} {{ appVersion }}<br>
-                        <a class="c-hand" @click="openOutside('https://github.com/Fabio286/antares')"><i class="mdi mdi-github d-inline" /> GitHub</a> • <a class="c-hand" @click="openOutside('https://twitter.com/AntaresSQL')"><i class="mdi mdi-twitter d-inline" /> Twitter</a> • <a class="c-hand" @click="openOutside('https://antares-sql.app/')"><i class="mdi mdi-web d-inline" /> Website</a><br>
+                        <a class="c-hand" @click="openOutside('https://github.com/antares-sql/antares')"><i class="mdi mdi-github d-inline" /> GitHub</a> • <a class="c-hand" @click="openOutside('https://twitter.com/AntaresSQL')"><i class="mdi mdi-twitter d-inline" /> Twitter</a> • <a class="c-hand" @click="openOutside('https://antares-sql.app/')"><i class="mdi mdi-web d-inline" /> Website</a><br>
                         <small>{{ $t('word.author') }} <a class="c-hand" @click="openOutside('https://github.com/Fabio286')">{{ appAuthor }}</a></small><br>
                      </p>
                      <div class="mb-2">

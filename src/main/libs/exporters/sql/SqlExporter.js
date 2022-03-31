@@ -130,7 +130,7 @@ Antares - SQL Client
 Version ${process.env.PACKAGE_VERSION}
 
 https://antares-sql.app/
-https://github.com/Fabio286/antares
+https://github.com/antares-sql/antares
 
 Host: ${this.host} (${serverVersion})
 Database: ${this.schemaName}

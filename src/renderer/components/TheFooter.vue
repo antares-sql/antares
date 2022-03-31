@@ -15,7 +15,7 @@
                <i class="mdi mdi-18px mdi-coffee mr-1" />
                <small>{{ $t('word.donate') }}</small>
             </li>
-            <li class="footer-element footer-link" @click="openOutside('https://github.com/Fabio286/antares/issues')">
+            <li class="footer-element footer-link" @click="openOutside('https://github.com/antares-sql/antares/issues')">
                <i class="mdi mdi-18px mdi-bug" />
             </li>
             <li class="footer-element footer-link" @click="showSettingModal('about')">
