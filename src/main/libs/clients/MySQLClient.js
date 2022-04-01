@@ -151,6 +151,8 @@ export class MySQLClient extends AntaresCore {
                remoteAddr: this._params.host,
                remotePort: this._params.port
             });
+
+            dbConfig.host = this._ssh.config.host;
             dbConfig.port = tunnel.localPort;
          }
          catch (err) {
