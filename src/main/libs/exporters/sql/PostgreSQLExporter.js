@@ -352,7 +352,26 @@ SET row_security = off;\n\n\n`;
 
       for (const view of views) {
          sqlString += `\nDROP VIEW IF EXISTS "${view.viewname}";\n`;
-         sqlString += `\nCREATE VIEW "${view.viewname}" AS \n${view.definition}\n`;
+
+         const { rows: columns } = await this._client
+            .select('*')
+            .schema('information_schema')
+            .from('columns')
+            .where({ table_schema: `= '${this.schemaName}'`, table_name: `= '${view.viewname}'` })
+            .orderBy({ ordinal_position: 'ASC' })
+            .run();
+
+         sqlString += `
+CREATE VIEW "${view.viewname}" AS
+SELECT   
+   ${columns.reduce((acc, curr) => {
+      const fieldType = curr.data_type === 'USER-DEFINED' ? curr.udt_name : curr.data_type;
+      acc.push(`NULL::${fieldType}${curr.character_maximum_length ? `(${curr.character_maximum_length})` : ''} AS "${curr.column_name}"`);
+      return acc;
+   }, []).join(',\n   ')};
+`;
+
+         sqlString += `\nCREATE OR REPLACE VIEW "${view.viewname}" AS \n${view.definition}\n`;
       }
 
       return sqlString;
