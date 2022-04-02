@@ -39,6 +39,7 @@ module.exports = {
    schemaEdit: false,
    schemaDrop: false,
    schemaExport: false,
+   exportByChunks: false,
    schemaImport: false,
    tableSettings: false,
    tableOptions: false,

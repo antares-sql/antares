@@ -1,5 +1,5 @@
 import { SqlExporter } from './SqlExporter';
-import { BLOB, BIT, DATE, DATETIME, FLOAT, SPATIAL, IS_MULTI_SPATIAL, NUMBER } from 'common/fieldTypes';
+import { BLOB, BIT, DATE, DATETIME, FLOAT, NUMBER, TEXT_SEARCH } from 'common/fieldTypes';
 import hexToBinary from 'common/libs/hexToBinary';
 import { getArrayDepth } from 'common/libs/getArrayDepth';
 import moment from 'moment';
@@ -17,11 +17,13 @@ SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
--- SELECT pg_catalog.set_config('search_path', '', false);
+SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;\n\n\n`;
+
+      if (this.schemaName !== 'public') dump += `CREATE SCHEMA "${this.schemaName}";\n\n`;
 
       dump += await this.getCreateTypes();
 
@@ -43,19 +45,19 @@ SET row_security = off;\n\n\n`;
       };
 
       // Table columns
-      const { rows } = await this._client
-         .select('*')
-         .schema('information_schema')
-         .from('columns')
-         .where({ table_schema: `= '${this.schemaName}'`, table_name: `= '${tableName}'` })
-         .orderBy({ ordinal_position: 'ASC' })
-         .run();
+      const { rows } = await this._client.raw(`
+         SELECT * 
+         FROM "information_schema"."columns" 
+         WHERE "table_schema" = '${this.schemaName}' 
+         AND "table_name" = '${tableName}' 
+         ORDER BY "ordinal_position" ASC
+      `, { schema: 'information_schema' });
 
       if (!rows.length) return '';
 
       for (const column of rows) {
          let fieldType = column.data_type;
-         if (fieldType === 'USER-DEFINED') fieldType = column.udt_name;
+         if (fieldType === 'USER-DEFINED') fieldType = `"${this.schemaName}".${column.udt_name}`;
          else if (fieldType === 'ARRAY') {
             if (Object.keys(arrayTypes).includes(fieldType))
                fieldType = arrayTypes[type] + '[]';
@@ -71,8 +73,7 @@ SET row_security = off;\n\n\n`;
          if (column.column_default) {
             columnArr.push(`DEFAULT ${column.column_default}`);
             if (column.column_default.includes('nextval')) {
-               let sequenceName = column.column_default.split('\'')[1];
-               if (sequenceName.includes('.')) sequenceName = sequenceName.split('.')[1];
+               const sequenceName = column.column_default.split('\'')[1];
                sequences.push(sequenceName);
             }
          }
@@ -82,7 +83,9 @@ SET row_security = off;\n\n\n`;
       }
 
       // Table sequences
-      for (const sequence of sequences) {
+      for (let sequence of sequences) {
+         if (sequence.includes('.')) sequence = sequence.split('.')[1];
+
          const { rows } = await this._client
             .select('*')
             .schema('information_schema')
@@ -91,7 +94,7 @@ SET row_security = off;\n\n\n`;
             .run();
 
          if (rows.length) {
-            createSql += `CREATE SEQUENCE "${sequence}"
+            createSql += `CREATE SEQUENCE "${this.schemaName}"."${sequence}"
    START WITH ${rows[0].start_value}
    INCREMENT BY ${rows[0].increment}
    MINVALUE ${rows[0].minimum_value}
@@ -103,7 +106,7 @@ SET row_security = off;\n\n\n`;
       }
 
       // Table create
-      createSql += `\nCREATE TABLE "${tableName}"(
+      createSql += `\nCREATE TABLE "${this.schemaName}"."${tableName}"(
    ${columnsSql.join(',\n   ')}
 );\n`;
 
@@ -119,7 +122,7 @@ SET row_security = off;\n\n\n`;
          .run();
 
       for (const index of indexes)
-         createSql += `${index.indexdef.replaceAll(`${this.schemaName}.`, '')};\n`;
+         createSql += `${index.indexdef};\n`;
 
       // Table foreigns
       const { rows: foreigns } = await this._client.raw(`
@@ -147,15 +150,15 @@ SET row_security = off;\n\n\n`;
       `);
 
       for (const foreign of foreigns) {
-         this._postTablesSql += `\nALTER TABLE ONLY "${tableName}"
-   ADD CONSTRAINT "${foreign.constraint_name}" FOREIGN KEY ("${foreign.column_name}") REFERENCES "${foreign.foreign_table_name}" ("${foreign.foreign_column_name}") ON UPDATE ${foreign.update_rule} ON DELETE ${foreign.delete_rule};\n`;
+         this._postTablesSql += `\nALTER TABLE ONLY "${this.schemaName}"."${tableName}"
+   ADD CONSTRAINT "${foreign.constraint_name}" FOREIGN KEY ("${foreign.column_name}") REFERENCES "${this.schemaName}"."${foreign.foreign_table_name}" ("${foreign.foreign_column_name}") ON UPDATE ${foreign.update_rule} ON DELETE ${foreign.delete_rule};\n`;
       }
 
       return createSql;
    }
 
    getDropTable (tableName) {
-      return `DROP TABLE IF EXISTS "${tableName}";`;
+      return `DROP TABLE IF EXISTS "${this.schemaName}"."${tableName}";`;
    }
 
    async * getTableInsert (tableName) {
@@ -166,16 +169,12 @@ SET row_security = off;\n\n\n`;
       if (countResults.rows.length === 1) rowCount = countResults.rows[0].count;
 
       if (rowCount > 0) {
-         let queryLength = 0;
-         let rowsWritten = 0;
-         const { sqlInsertDivider, sqlInsertAfter } = this._options;
          const columns = await this._client.getTableColumns({
             table: tableName,
             schema: this.schemaName
          });
 
-         const notGeneratedColumns = columns.filter(col => !col.generated);
-         const columnNames = notGeneratedColumns.map(col => '"' + col.name + '"').join(', ');
+         const columnNames = columns.map(col => '"' + col.name + '"').join(', ');
 
          yield sqlStr;
 
@@ -190,20 +189,12 @@ SET row_security = off;\n\n\n`;
                return;
             }
 
-            let sqlInsertString = `INSERT INTO "${tableName}" (${columnNames}) VALUES`;
-
-            if (
-               (sqlInsertDivider === 'bytes' && queryLength >= sqlInsertAfter * 1024) ||
-               (sqlInsertDivider === 'rows' && rowsWritten === sqlInsertAfter)
-            ) {
-               queryLength = 0;
-               rowsWritten = 0;
-            }
+            let sqlInsertString = `INSERT INTO "${this.schemaName}"."${tableName}" (${columnNames}) VALUES`;
 
             sqlInsertString += ' (';
 
-            for (const i in notGeneratedColumns) {
-               const column = notGeneratedColumns[i];
+            for (const i in columns) {
+               const column = columns[i];
                const val = row[column.name];
 
                if (val === null) sqlInsertString += 'NULL';
@@ -221,31 +212,24 @@ SET row_security = off;\n\n\n`;
                      ? this.escapeAndQuote(moment(val).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`))
                      : this.escapeAndQuote(val);
                }
+               else if (column.isArray) {
+                  let parsedVal;
+                  if (Array.isArray(val))
+                     parsedVal = JSON.stringify(val).replaceAll('[', '{').replaceAll(']', '}');
+                  else
+                     parsedVal = typeof val === 'string' ? val.replaceAll('[', '{').replaceAll(']', '}') : '';
+                  sqlInsertString += `'${parsedVal}'`;
+               }
+               else if (TEXT_SEARCH.includes(column.type))
+                  sqlInsertString += `'${val.replaceAll('\'', '\'\'')}'`;
                else if (BIT.includes(column.type))
                   sqlInsertString += `b'${hexToBinary(Buffer.from(val).toString('hex'))}'`;
                else if (BLOB.includes(column.type))
-                  sqlInsertString += `X'${val.toString('hex').toUpperCase()}'`;
+                  sqlInsertString += `decode('${val.toString('hex').toUpperCase()}', 'hex')`;
                else if (NUMBER.includes(column.type))
                   sqlInsertString += val;
                else if (FLOAT.includes(column.type))
                   sqlInsertString += parseFloat(val);
-               else if (SPATIAL.includes(column.type)) {
-                  let geoJson;
-                  if (IS_MULTI_SPATIAL.includes(column.type)) {
-                     const features = [];
-                     for (const element of val)
-                        features.push(this.getMarkers(element));
-
-                     geoJson = {
-                        type: 'FeatureCollection',
-                        features
-                     };
-                  }
-                  else
-                     geoJson = this._getGeoJSON(val);
-
-                  sqlInsertString += `ST_GeomFromGeoJSON('${JSON.stringify(geoJson)}')`;
-               }
                else if (val === '') sqlInsertString += '\'\'';
                else {
                   sqlInsertString += typeof val === 'string'
@@ -255,14 +239,12 @@ SET row_security = off;\n\n\n`;
                         : val;
                }
 
-               if (parseInt(i) !== notGeneratedColumns.length - 1)
+               if (parseInt(i) !== columns.length - 1)
                   sqlInsertString += ', ';
             }
 
             sqlInsertString += ');\n';
 
-            queryLength += sqlInsertString.length;
-            rowsWritten++;
             yield sqlInsertString;
          }
 
@@ -293,7 +275,7 @@ SET row_security = off;\n\n\n`;
          }, []);
 
          for (const type of typesArr) {
-            sqlString += `CREATE TYPE "${type.name}" AS ENUM (
+            sqlString += `CREATE TYPE "${this.schemaName}"."${type.name}" AS ENUM (
    ${type.enums.join(',\n\t')}
 );`;
          }
@@ -339,7 +321,7 @@ SET row_security = off;\n\n\n`;
             );
 
             if (aggregateDef.length)
-               sqlString += '\n\n' + aggregateDef[0].format.replaceAll(`${this.schemaName}.`, '');
+               sqlString += '\n\n' + aggregateDef[0].format;
          }
       }
 
@@ -353,25 +335,25 @@ SET row_security = off;\n\n\n`;
       for (const view of views) {
          sqlString += `\nDROP VIEW IF EXISTS "${view.viewname}";\n`;
 
-         const { rows: columns } = await this._client
-            .select('*')
-            .schema('information_schema')
-            .from('columns')
-            .where({ table_schema: `= '${this.schemaName}'`, table_name: `= '${view.viewname}'` })
-            .orderBy({ ordinal_position: 'ASC' })
-            .run();
+         //          const { rows: columns } = await this._client
+         //             .select('*')
+         //             .schema('information_schema')
+         //             .from('columns')
+         //             .where({ table_schema: `= '${this.schemaName}'`, table_name: `= '${view.viewname}'` })
+         //             .orderBy({ ordinal_position: 'ASC' })
+         //             .run();
 
-         sqlString += `
-CREATE VIEW "${view.viewname}" AS
-SELECT   
-   ${columns.reduce((acc, curr) => {
-      const fieldType = curr.data_type === 'USER-DEFINED' ? curr.udt_name : curr.data_type;
-      acc.push(`NULL::${fieldType}${curr.character_maximum_length ? `(${curr.character_maximum_length})` : ''} AS "${curr.column_name}"`);
-      return acc;
-   }, []).join(',\n   ')};
-`;
+         //          sqlString += `
+         // CREATE VIEW "${this.schemaName}"."${view.viewname}" AS
+         // SELECT
+         //    ${columns.reduce((acc, curr) => {
+         //       const fieldType = curr.data_type === 'USER-DEFINED' ? curr.udt_name : curr.data_type;
+         //       acc.push(`NULL::${fieldType}${curr.character_maximum_length ? `(${curr.character_maximum_length})` : ''} AS "${curr.column_name}"`);
+         //       return acc;
+         //    }, []).join(',\n   ')};
+         // `;
 
-         sqlString += `\nCREATE OR REPLACE VIEW "${view.viewname}" AS \n${view.definition}\n`;
+         sqlString += `\nCREATE OR REPLACE VIEW "${this.schemaName}"."${view.viewname}" AS \n${view.definition}\n`;
       }
 
       return sqlString;
@@ -389,7 +371,7 @@ SELECT
          const { rows: functionDef } = await this._client.raw(
             `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${func.name}')) AS definition`
          );
-         sqlString += `\n${functionDef[0].definition.replaceAll(`${this.schemaName}.`, '')};\n`;
+         sqlString += `\n${functionDef[0].definition};\n`;
       }
 
       const { rows: triggers } = await this._client.raw(
@@ -409,7 +391,7 @@ SELECT
       }, []);
 
       for (const trigger of remappedTriggers)
-         sqlString += `\nCREATE TRIGGER "${trigger.trigger_name}" ${trigger.action_timing} ${trigger.events.join(' OR ')} ON "${trigger.event_object_table}" FOR EACH ${trigger.action_orientation} ${trigger.action_statement};\n`;
+         sqlString += `\nCREATE TRIGGER "${trigger.trigger_name}" ${trigger.action_timing} ${trigger.events.join(' OR ')} ON "${this.schemaName}"."${trigger.event_object_table}" FOR EACH ${trigger.action_orientation} ${trigger.action_statement};\n`;
 
       return sqlString;
    }
@@ -424,7 +406,7 @@ SELECT
          const { rows: functionDef } = await this._client.raw(
             `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${func.name}')) AS definition`
          );
-         sqlString += `\n${functionDef[0].definition.replaceAll(`${this.schemaName}.`, '')};\n`;
+         sqlString += `\n${functionDef[0].definition};\n`;
       }
 
       sqlString += await this.getCreateAggregates();
@@ -442,7 +424,7 @@ SELECT
          const { rows: functionDef } = await this._client.raw(
             `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${func.name}')) AS definition`
          );
-         sqlString += `\n${functionDef[0].definition.replaceAll(`${this.schemaName}.`, '')};\n`;
+         sqlString += `\n${functionDef[0].definition};\n`;
       }
 
       return sqlString;

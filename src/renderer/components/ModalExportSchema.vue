@@ -192,28 +192,29 @@
                   >
                      <input v-model="options.includes[key]" type="checkbox"><i class="form-icon" /> {{ $tc(`word.${key}`, 2) }}
                   </label>
-
-                  <div class="h6 mt-4 mb-2">
-                     {{ $t('message.newInserStmtEvery') }}:
-                  </div>
-                  <div class="columns">
-                     <div class="column col-6">
-                        <input
-                           v-model.number="options.sqlInsertAfter"
-                           type="number"
-                           class="form-input"
-                           value="250"
-                        >
+                  <div v-if="customizations.exportByChunks">
+                     <div class="h6 mt-4 mb-2">
+                        {{ $t('message.newInserStmtEvery') }}:
                      </div>
-                     <div class="column col-6">
-                        <select v-model="options.sqlInsertDivider" class="form-select">
-                           <option value="bytes">
-                              KiB
-                           </option>
-                           <option value="rows">
-                              {{ $tc('word.row', 2) }}
-                           </option>
-                        </select>
+                     <div class="columns">
+                        <div class="column col-6">
+                           <input
+                              v-model.number="options.sqlInsertAfter"
+                              type="number"
+                              class="form-input"
+                              value="250"
+                           >
+                        </div>
+                        <div class="column col-6">
+                           <select v-model="options.sqlInsertDivider" class="form-select">
+                              <option value="bytes">
+                                 KiB
+                              </option>
+                              <option value="rows">
+                                 {{ $tc('word.row', 2) }}
+                              </option>
+                           </select>
+                        </div>
                      </div>
                   </div>
 
@@ -305,6 +306,9 @@ export default {
       }),
       currentWorkspace () {
          return this.getWorkspace(this.selectedWorkspace);
+      },
+      customizations () {
+         return this.currentWorkspace.customizations;
       },
       schemaItems () {
          const db = this.currentWorkspace.structure.find(db => db.name === this.selectedSchema);
