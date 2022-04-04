@@ -1,6 +1,6 @@
 {
   "projectName": "antares",
-  "projectOwner": "Fabio286",
+  "projectOwner": "antares-sql",
   "repoType": "github",
   "repoHost": "https://github.com",
   "files": [
@@ -153,6 +153,15 @@
       "name": "Cleverson",
       "avatar_url": "https://avatars.githubusercontent.com/u/5851851?v=4",
       "profile": "https://github.com/SmileYzn",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "fredatgithub",
+      "name": "fred",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6720055?v=4",
+      "profile": "https://github.com/fredatgithub",
       "contributions": [
         "translation"
       ]
