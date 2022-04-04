@@ -120,7 +120,7 @@
     "moment": "^2.29.1",
     "mysql2": "^2.3.2",
     "pg": "^8.7.1",
-    "pgsql-ast-parser": "^7.2.1",
+    "pgsql-ast-parser": "^10.0.0",
     "source-map-support": "^0.5.20",
     "spectre.css": "^0.5.9",
     "sql-formatter": "^4.0.2",
