@@ -39,7 +39,7 @@ We are actively working on it, hoping to provide new cool features, improvements
 ## Philosophy
 
 Why are we developing an SQL client when there are a lot of them on the market?  
-The main goal is to develop a totally free, full featured, cross platform and open source alternative, empowered by JavaScript's ecosystem.  
+The main goal is to develop a **forever 100% free (without paid premium feature)**, full featured, as possible community driven, cross platform and open source alternative, empowered by JavaScript ecosystem.  
 A modern application created with minimalism and semplicity in mind, with features in the right places, not hundreds of tiny buttons, nested tabs or submenu; productivity comes first.  
 
 ## Installation
