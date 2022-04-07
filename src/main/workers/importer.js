@@ -1,5 +1,6 @@
 import { ClientsFactory } from '../libs/ClientsFactory';
-import MysqlImporter from '../libs/importers/sql/MysqlImporter';
+import MySQLImporter from '../libs/importers/sql/MysqlImporter';
+import PostgreSQLImporter from '../libs/importers/sql/PostgreSQLImporter';
 let importer;
 
 process.on('message', async ({ type, dbConfig, options }) => {
@@ -18,7 +19,10 @@ process.on('message', async ({ type, dbConfig, options }) => {
       switch (options.type) {
          case 'mysql':
          case 'maria':
-            importer = new MysqlImporter(pool, options);
+            importer = new MySQLImporter(pool, options);
+            break;
+         case 'pg':
+            importer = new PostgreSQLImporter(pool, options);
             break;
          default:
             process.send({

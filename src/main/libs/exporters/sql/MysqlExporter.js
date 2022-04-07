@@ -6,6 +6,12 @@ import moment from 'moment';
 import { lineString, point, polygon } from '@turf/helpers';
 
 export default class MysqlExporter extends SqlExporter {
+   constructor (...args) {
+      super(...args);
+
+      this._commentChar = '#';
+   }
+
    async getSqlHeader () {
       let dump = await super.getSqlHeader();
       dump += `

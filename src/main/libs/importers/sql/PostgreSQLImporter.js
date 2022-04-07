@@ -1,8 +1,8 @@
 import fs from 'fs/promises';
-import MySQLParser from '../../parsers/MySQLParser';
+import PostgreSQLParser from '../../parsers/PostgreSQLParser';
 import { BaseImporter } from '../BaseImporter';
 
-export default class MySQLImporter extends BaseImporter {
+export default class PostgreSQLImporter extends BaseImporter {
    constructor (client, options) {
       super(options);
       this._client = client;
@@ -11,7 +11,7 @@ export default class MySQLImporter extends BaseImporter {
    async import () {
       try {
          const { size: totalFileSize } = await fs.stat(this._options.file);
-         const parser = new MySQLParser();
+         const parser = new PostgreSQLParser();
          let readPosition = 0;
          let queryCount = 0;
 
@@ -43,7 +43,7 @@ export default class MySQLImporter extends BaseImporter {
                catch (error) {
                   this.emit('query-error', {
                      sql: query,
-                     message: error.sqlMessage,
+                     message: error.hint || error.toString(),
                      sqlSnippet: error.sql,
                      time: new Date().getTime()
                   });

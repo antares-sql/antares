@@ -1,6 +1,6 @@
 import { Transform } from 'stream';
 
-export default class SqlParser extends Transform {
+export default class MySQLParser extends Transform {
    constructor (opts) {
       opts = {
          delimiter: ';',
