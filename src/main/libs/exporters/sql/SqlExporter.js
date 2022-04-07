@@ -5,7 +5,8 @@ export class SqlExporter extends BaseExporter {
    constructor (client, tables, options) {
       super(tables, options);
       this._client = client;
-      this._commentChar = '#';
+      this._commentChar = '--';
+      this._postTablesSql = '';
    }
 
    get schemaName () {
@@ -87,6 +88,12 @@ export class SqlExporter extends BaseExporter {
             this.writeString('\n\n');
          }
 
+         this.writeString('\n\n');
+      }
+
+      // SQL to execute after tables creation
+      if (this._postTablesSql) {
+         this.writeString(this._postTablesSql);
          this.writeString('\n\n');
       }
 

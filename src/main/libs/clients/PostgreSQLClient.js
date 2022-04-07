@@ -572,7 +572,7 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof MySQLClient
     */
    async dropSchema (params) {
-      return await this.raw(`DROP SCHEMA "${params.database}"`);
+      return await this.raw(`DROP SCHEMA "${params.database}" CASCADE`);
    }
 
    /**

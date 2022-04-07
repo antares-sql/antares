@@ -1,6 +1,7 @@
+import fs from 'fs';
 import { ClientsFactory } from '../libs/ClientsFactory';
 import MysqlExporter from '../libs/exporters/sql/MysqlExporter.js';
-import fs from 'fs';
+import PostgreSQLExporter from '../libs/exporters/sql/PostgreSQLExporter';
 let exporter;
 
 process.on('message', async ({ type, client, tables, options }) => {
@@ -16,6 +17,9 @@ process.on('message', async ({ type, client, tables, options }) => {
          case 'mysql':
          case 'maria':
             exporter = new MysqlExporter(connection, tables, options);
+            break;
+         case 'pg':
+            exporter = new PostgreSQLExporter(connection, tables, options);
             break;
          default:
             process.send({
