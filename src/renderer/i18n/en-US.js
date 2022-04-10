@@ -287,7 +287,8 @@ module.exports = {
       ourputFormat: 'Output format',
       singleFile: 'Single {ext} file',
       zipCompressedFile: 'ZIP compressed {ext} file',
-      disableBlur: 'Disable blur'
+      disableBlur: 'Disable blur',
+      untrustedConnection: 'Untrusted connection'
    },
    faker: {
       address: 'Address',

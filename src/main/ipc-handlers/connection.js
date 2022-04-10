@@ -24,7 +24,8 @@ export default connections => {
             key: conn.key ? fs.readFileSync(conn.key) : null,
             cert: conn.cert ? fs.readFileSync(conn.cert) : null,
             ca: conn.ca ? fs.readFileSync(conn.ca) : null,
-            ciphers: conn.ciphers
+            ciphers: conn.ciphers,
+            rejectUnauthorized: !conn.untrustedConnection
          };
       }
 
@@ -84,7 +85,8 @@ export default connections => {
             key: conn.key ? fs.readFileSync(conn.key) : null,
             cert: conn.cert ? fs.readFileSync(conn.cert) : null,
             ca: conn.ca ? fs.readFileSync(conn.ca) : null,
-            ciphers: conn.ciphers
+            ciphers: conn.ciphers,
+            rejectUnauthorized: !conn.untrustedConnection
          };
       }
 
