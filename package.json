@@ -139,7 +139,7 @@
     "chalk": "^4.1.2",
     "cross-env": "^7.0.2",
     "css-loader": "^6.5.0",
-    "electron": "^17.0.1",
+    "electron": "^18.0.3",
     "electron-builder": "^22.14.11",
     "electron-devtools-installer": "^3.2.0",
     "eslint": "^7.32.0",
