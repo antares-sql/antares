@@ -1,5 +1,10 @@
-'use strict';
-const queryLogger = sql => {
+// import BetterSqlite3 from 'better-sqlite3';
+import * as antares from 'common/interfaces/antares';
+import mysql from 'mysql2/promise';
+import * as pg from 'pg';
+import SSH2Promise from 'ssh2-promise';
+
+const queryLogger = (sql: string) => {
    // Remove comments, newlines and multiple spaces
    const escapedSql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '').replace(/\s\s+/g, ' ');
    console.log(escapedSql);
@@ -7,22 +12,21 @@ const queryLogger = sql => {
 
 /**
  * As Simple As Possible Query Builder Core
- *
- * @class AntaresCore
  */
 export class AntaresCore {
-   /**
-    * Creates an instance of AntaresCore.
-    *
-    * @param {Object} args connection params
-    * @memberof AntaresCore
-    */
-   constructor (args) {
+   protected _client: string;
+   protected _params: mysql.ConnectionOptions | pg.ClientConfig | { databasePath: string; readonly: boolean};
+   protected _poolSize: number;
+   // protected _connection?: mysql.Connection | mysql.Pool | pg.Connection | BetterSqlite3.Database
+   protected _ssh?: SSH2Promise;
+   protected _logger: (sql: string) => void;
+   protected _queryDefaults: antares.QueryBuilderObject;
+   protected _query: antares.QueryBuilderObject;
+
+   constructor (args: antares.ClientParams) {
       this._client = args.client;
       this._params = args.params;
-      this._poolSize = args.poolSize || false;
-      this._connection = null;
-      this._ssh = null;
+      this._poolSize = args.poolSize || undefined;
       this._logger = args.logger || queryLogger;
 
       this._queryDefaults = {
@@ -42,7 +46,8 @@ export class AntaresCore {
       this._query = Object.assign({}, this._queryDefaults);
    }
 
-   _reducer (acc, curr) {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   protected _reducer (acc: string[], curr: any) {
       const type = typeof curr;
 
       switch (type) {
@@ -62,94 +67,87 @@ export class AntaresCore {
       }
    }
 
-   /**
-    * Resets the query object after a query
-    *
-    * @memberof AntaresCore
-    */
-   _resetQuery () {
+   private _resetQuery () {
       this._query = Object.assign({}, this._queryDefaults);
    }
 
-   schema (schema) {
+   schema (schema: string) {
       this._query.schema = schema;
       return this;
    }
 
-   select (...args) {
+   select (...args: string[]) {
       this._query.select = [...this._query.select, ...args];
       return this;
    }
 
-   from (table) {
+   from (table: string) {
       this._query.from = table;
       return this;
    }
 
-   into (table) {
+   into (table: string) {
       this._query.from = table;
       return this;
    }
 
-   delete (table) {
+   delete (table: string) {
       this._query.delete = true;
       this.from(table);
       return this;
    }
 
-   where (...args) {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   where (...args: any) {
       this._query.where = [...this._query.where, ...args];
       return this;
    }
 
-   groupBy (...args) {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   groupBy (...args: any) {
       this._query.groupBy = [...this._query.groupBy, ...args];
       return this;
    }
 
-   orderBy (...args) {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   orderBy (...args: any) {
       this._query.orderBy = [...this._query.orderBy, ...args];
       return this;
    }
 
-   limit (...args) {
+   limit (...args: string[]) {
       this._query.limit = args;
       return this;
    }
 
-   offset (...args) {
+   offset (...args: string[]) {
       this._query.offset = args;
       return this;
    }
 
-   /**
-    * @param {String | Array} args field = value
-    * @returns
-    * @memberof AntaresCore
-    */
-   update (...args) {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   update (...args: any) {
       this._query.update = [...this._query.update, ...args];
       return this;
    }
 
-   /**
-    * @param {Array} arr Array of row objects
-    * @returns
-    * @memberof AntaresCore
-    */
-   insert (arr) {
+   insert (arr: string[]) {
       this._query.insert = [...this._query.insert, ...arr];
       return this;
    }
 
-   /**
-    * @param {Object} args
-    * @returns {Promise}
-    * @memberof AntaresCore
-    */
-   run (args) {
+   getSQL (): string {
+      throw new Error('Client must implement the "getSQL" method');
+   }
+
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   raw<T = antares.QueryResult> (_sql: string, _args?: antares.QueryParams): Promise<T> {
+      throw new Error('Client must implement the "raw" method');
+   }
+
+   run<RowType> (args?: antares.QueryParams) {
       const rawQuery = this.getSQL();
       this._resetQuery();
-      return this.raw(rawQuery, args);
+      return this.raw<antares.QueryResult<RowType>>(rawQuery, args);
    }
 }

@@ -1,3 +1,5 @@
+import * as antares from 'common/interfaces/antares';
+
 import connection from './connection';
 import tables from './tables';
 import views from './views';
@@ -10,7 +12,7 @@ import application from './application';
 import schema from './schema';
 import users from './users';
 
-const connections = {};
+const connections: {[key: string]: antares.Client} = {};
 
 export default () => {
    connection(connections);

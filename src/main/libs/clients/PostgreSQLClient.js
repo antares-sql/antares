@@ -76,6 +76,8 @@ export class PostgreSQLClient extends AntaresCore {
     * @memberof PostgreSQLClient
     */
    async getDbConfig () {
+      this._params.application_name = 'Antares SQL';
+
       const dbConfig = {
          host: this._params.host,
          port: this._params.port,

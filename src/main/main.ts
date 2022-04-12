@@ -1,5 +1,3 @@
-'use strict';
-
 import { app, BrowserWindow, /* session, */ nativeImage, Menu } from 'electron';
 import * as path from 'path';
 import Store from 'electron-store';
@@ -8,7 +6,6 @@ import * as remoteMain from '@electron/remote/main';
 
 import ipcHandlers from './ipc-handlers';
 
-// remoteMain.initialize();
 Store.initRenderer();
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -18,8 +15,8 @@ const gotTheLock = app.requestSingleInstanceLock();
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
-let mainWindow;
-let mainWindowState;
+let mainWindow: BrowserWindow;
+let mainWindowState: windowStateKeeper.State;
 
 async function createMainWindow () {
    const icon = require('../renderer/images/logo-32.png');
@@ -36,7 +33,6 @@ async function createMainWindow () {
       webPreferences: {
          nodeIntegration: true,
          contextIsolation: false,
-         'web-security': false,
          spellcheck: false
       },
       frame: false,
@@ -127,7 +123,7 @@ else {
 }
 
 function createAppMenu () {
-   let menu = null;
+   let menu: Electron.Menu = null;
 
    if (isMacOS) {
       menu = Menu.buildFromTemplate([
