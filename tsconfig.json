@@ -1,0 +1,19 @@
+{
+  "include": ["./src/main/**/*", "src/common/interfaces/antares.ts"],
+  "compilerOptions": {
+    "baseUrl": "./",
+    "target": "es2021",
+    "allowJs": true,
+    "moduleResolution": "node12",
+    "noImplicitAny": true,
+    "types": [
+      "node"
+    ],
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "removeComments": true,
+    "paths": {
+      "common/*": ["./src/common/*"]
+    }
+  }
+}

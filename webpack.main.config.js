@@ -13,7 +13,7 @@ module.exports = { // Main
    mode: process.env.NODE_ENV,
    devtool: isDevMode ? 'eval-source-map' : false,
    entry: {
-      main: path.join(__dirname, './src/main/main.js')
+      main: path.join(__dirname, './src/main/main.ts')
    },
    target: 'electron-main',
    output: {
@@ -28,7 +28,7 @@ module.exports = { // Main
    },
    externals: externals.filter((d) => !whiteListedModules.includes(d)),
    resolve: {
-      extensions: ['.js', '.json'],
+      extensions: ['.js', '.json', '.ts'],
       alias: {
          src: path.join(__dirname, 'src/'),
          common: path.resolve(__dirname, 'src/common')
@@ -55,6 +55,11 @@ module.exports = { // Main
             options: {
                name: '[path][name].[ext]'
             }
+         },
+         {
+            test: /\.ts$/,
+            exclude: /node_modules/,
+            loader: 'ts-loader'
          },
          {
             test: /\.js$/,
