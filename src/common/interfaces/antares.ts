@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise';
+import * as mysql from 'mysql2/promise';
 import * as pg from 'pg';
 import SSHConfig from 'ssh2-promise/lib/sshConfig';
 import { MySQLClient } from '../../main/libs/clients/MySQLClient';

@@ -1,7 +1,7 @@
 import * as antares from 'common/interfaces/antares';
-import mysql from 'mysql2/promise';
+import * as mysql from 'mysql2/promise';
 import { AntaresCore } from '../AntaresCore';
-import dataTypes from 'common/data-types/mysql';
+import * as dataTypes from 'common/data-types/mysql';
 import SSH2Promise from 'ssh2-promise';
 import SSHConfig from 'ssh2-promise/lib/sshConfig';
 

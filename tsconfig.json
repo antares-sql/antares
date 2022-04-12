@@ -4,7 +4,7 @@
     "baseUrl": "./",
     "target": "es2021",
     "allowJs": true,
-    "moduleResolution": "node12",
+    "module": "CommonJS",
     "noImplicitAny": true,
     "types": [
       "node"
