@@ -1,6 +1,6 @@
 import { app, BrowserWindow, /* session, */ nativeImage, Menu } from 'electron';
 import * as path from 'path';
-import Store from 'electron-store';
+import * as Store from 'electron-store';
 import * as windowStateKeeper from 'electron-window-state';
 import * as remoteMain from '@electron/remote/main';
 

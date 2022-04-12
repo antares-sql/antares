@@ -31,6 +31,11 @@ const config = {
    module: {
       rules: [
          {
+            test: /\.ts$/,
+            exclude: /node_modules/,
+            loader: 'ts-loader'
+         },
+         {
             test: /\.js$/,
             use: 'babel-loader',
             exclude: /node_modules/
@@ -42,7 +47,7 @@ const config = {
       ]
    },
    resolve: {
-      extensions: ['.js', '.json'],
+      extensions: ['.js', '.json', '.ts'],
       alias: {
          src: path.join(__dirname, 'src/'),
          common: path.resolve(__dirname, 'src/common')
