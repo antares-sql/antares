@@ -1,16 +1,29 @@
+import * as antares from 'common/interfaces/antares';
 import fs from 'fs';
 import { ipcMain } from 'electron';
 import { ClientsFactory } from '../libs/ClientsFactory';
+import { SslOptions } from 'mysql2';
 
-export default connections => {
-   ipcMain.handle('test-connection', async (event, conn) => {
+export default (connections: {[key: string]: antares.Client}) => {
+   ipcMain.handle('test-connection', async (event, conn: antares.ConnectionParams) => {
       const params = {
          host: conn.host,
          port: +conn.port,
          user: conn.user,
          password: conn.password,
-         application_name: 'Antares SQL',
-         readonly: conn.readonly
+         readonly: conn.readonly,
+         database: '',
+         schema: '',
+         databasePath: '',
+         ssl: undefined as SslOptions,
+         ssh: undefined as {
+            host: string;
+            username: string;
+            password: string;
+            port: number;
+            privateKey: string;
+            passphrase: string;
+         }
       };
 
       if (conn.database)
@@ -21,9 +34,9 @@ export default connections => {
 
       if (conn.ssl) {
          params.ssl = {
-            key: conn.key ? fs.readFileSync(conn.key) : null,
-            cert: conn.cert ? fs.readFileSync(conn.cert) : null,
-            ca: conn.ca ? fs.readFileSync(conn.ca) : null,
+            key: conn.key ? fs.readFileSync(conn.key).toString() : null,
+            cert: conn.cert ? fs.readFileSync(conn.cert).toString() : null,
+            ca: conn.ca ? fs.readFileSync(conn.ca).toString() : null,
             ciphers: conn.ciphers,
             rejectUnauthorized: !conn.untrustedConnection
          };
@@ -35,7 +48,7 @@ export default connections => {
             username: conn.sshUser,
             password: conn.sshPass,
             port: conn.sshPort ? conn.sshPort : 22,
-            privateKey: conn.sshKey ? fs.readFileSync(conn.sshKey) : null,
+            privateKey: conn.sshKey ? fs.readFileSync(conn.sshKey).toString() : null,
             passphrase: conn.sshPassphrase
          };
       }
@@ -61,14 +74,26 @@ export default connections => {
       return uid in connections;
    });
 
-   ipcMain.handle('connect', async (event, conn) => {
+   ipcMain.handle('connect', async (event, conn: antares.ConnectionParams) => {
       const params = {
          host: conn.host,
          port: +conn.port,
          user: conn.user,
          password: conn.password,
          application_name: 'Antares SQL',
-         readonly: conn.readonly
+         readonly: conn.readonly,
+         database: '',
+         schema: '',
+         databasePath: '',
+         ssl: undefined as SslOptions,
+         ssh: undefined as {
+            host: string;
+            username: string;
+            password: string;
+            port: number;
+            privateKey: string;
+            passphrase: string;
+         }
       };
 
       if (conn.database)
@@ -82,9 +107,9 @@ export default connections => {
 
       if (conn.ssl) {
          params.ssl = {
-            key: conn.key ? fs.readFileSync(conn.key) : null,
-            cert: conn.cert ? fs.readFileSync(conn.cert) : null,
-            ca: conn.ca ? fs.readFileSync(conn.ca) : null,
+            key: conn.key ? fs.readFileSync(conn.key).toString() : null,
+            cert: conn.cert ? fs.readFileSync(conn.cert).toString() : null,
+            ca: conn.ca ? fs.readFileSync(conn.ca).toString() : null,
             ciphers: conn.ciphers,
             rejectUnauthorized: !conn.untrustedConnection
          };
@@ -96,7 +121,7 @@ export default connections => {
             username: conn.sshUser,
             password: conn.sshPass,
             port: conn.sshPort ? conn.sshPort : 22,
-            privateKey: conn.sshKey ? fs.readFileSync(conn.sshKey) : null,
+            privateKey: conn.sshKey ? fs.readFileSync(conn.sshKey).toString() : null,
             passphrase: conn.sshPassphrase
          };
       }
@@ -110,6 +135,9 @@ export default connections => {
 
          await connection.connect();
 
+         // TODO: temporary
+         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+         // @ts-ignore
          const structure = await connection.getStructure(new Set());
 
          connections[conn.uid] = connection;
