@@ -1,26 +1,28 @@
-'use strict';
-import sqlite from 'better-sqlite3';
+import * as antares from 'common/interfaces/antares';
+import * as sqlite from 'better-sqlite3';
 import { AntaresCore } from '../AntaresCore';
-import dataTypes from 'common/data-types/sqlite';
+import * as dataTypes from 'common/data-types/sqlite';
 import { NUMBER, FLOAT, TIME, DATETIME } from 'common/fieldTypes';
 
 export class SQLiteClient extends AntaresCore {
-   constructor (args) {
+   private _schema?: string;
+   private _connectionsToCommit: Map<string, sqlite.Database>;
+   protected _connection?: sqlite.Database;
+   protected _params: { databasePath: string; readonly: boolean};
+
+   constructor (args: antares.ClientParams) {
       super(args);
 
       this._schema = null;
       this._connectionsToCommit = new Map();
    }
 
-   _getTypeInfo (type) {
+   _getTypeInfo (type: string) {
       return dataTypes
          .reduce((acc, group) => [...acc, ...group.types], [])
          .filter(_type => _type.name === type.toUpperCase())[0];
    }
 
-   /**
-    * @memberof SQLiteClient
-    */
    async connect () {
       this._connection = this.getConnection();
    }
@@ -32,36 +34,40 @@ export class SQLiteClient extends AntaresCore {
       });
    }
 
-   /**
-    * @memberof SQLiteClient
-    */
-   destroy () {}
+   destroy (): void {
+      return null;
+   }
 
-   /**
-    * Executes an USE query
-    *
-    * @memberof SQLiteClient
-    */
-   use () {}
+   use (): void {
+      return null;
+   }
 
-   /**
-    * @param {Array} schemas list
-    * @returns {Array.<Object>} databases scructure
-    * @memberof SQLiteClient
-    */
-   async getStructure (schemas) {
-      const { rows: databases } = await this.raw('SELECT * FROM pragma_database_list');
+   async getStructure (schemas: Set<string>) {
+      /* eslint-disable camelcase */
+      interface ShowTableResult {
+         Db?: string;
+         type: string;
+         name: string;
+         tbl_name: string;
+         rootpage:4;
+         sql: string;
+      }
+
+      type ShowTriggersResult = ShowTableResult
+      /* eslint-enable camelcase */
+
+      const { rows: databases } = await this.raw<antares.QueryResult<{ name: string}>>('SELECT * FROM pragma_database_list');
 
       const filteredDatabases = databases;
 
-      const tablesArr = [];
-      const triggersArr = [];
+      const tablesArr: ShowTableResult[] = [];
+      const triggersArr: ShowTriggersResult[] = [];
       let schemaSize = 0;
 
       for (const db of filteredDatabases) {
          if (!schemas.has(db.name)) continue;
 
-         let { rows: tables } = await this.raw(`
+         let { rows: tables } = await this.raw<antares.QueryResult<ShowTableResult>>(`
             SELECT * 
             FROM "${db.name}".sqlite_master 
             WHERE type IN ('table', 'view') 
@@ -76,7 +82,7 @@ export class SQLiteClient extends AntaresCore {
             tablesArr.push(...tables);
          }
 
-         let { rows: triggers } = await this.raw(`SELECT * FROM "${db.name}".sqlite_master WHERE type='trigger'`);
+         let { rows: triggers } = await this.raw<antares.QueryResult<ShowTriggersResult>>(`SELECT * FROM "${db.name}".sqlite_master WHERE type='trigger'`);
          if (triggers.length) {
             triggers = triggers.map(trigger => {
                trigger.Db = db.name;
@@ -133,22 +139,24 @@ export class SQLiteClient extends AntaresCore {
       });
    }
 
-   /**
-    * @param {Object} params
-    * @param {String} params.schema
-    * @param {String} params.table
-    * @returns {Object} table scructure
-    * @memberof SQLiteClient
-    */
-   async getTableColumns ({ schema, table }) {
-      const { rows: fields } = await this.raw(`SELECT * FROM "${schema}".pragma_table_info('${table}')`);
+   async getTableColumns ({ schema, table }: { schema: string; table: string }) {
+      interface TableColumnsResult {
+         cid: number;
+         name: string;
+         type: string;
+         notnull: 0 | 1;
+         // eslint-disable-next-line camelcase
+         dflt_value: string;
+         pk: 0 | 1;
+      }
+      const { rows: fields } = await this.raw<antares.QueryResult<TableColumnsResult>>(`SELECT * FROM "${schema}".pragma_table_info('${table}')`);
 
       return fields.map(field => {
-         const [type, length] = field.type.includes('(')
-            ? field.type.replace(')', '').split('(').map(el => {
-               if (!isNaN(el)) el = +el;
+         const [type, length]: [string, number?] = field.type.includes('(')
+            ? field.type.replace(')', '').split('(').map((el: string | number) => {
+               if (!isNaN(Number(el))) el = Number(el);
                return el;
-            })
+            }) as [string, number?]
             : [field.type, null];
 
          return {
@@ -174,54 +182,50 @@ export class SQLiteClient extends AntaresCore {
       });
    }
 
-   /**
-    * @param {Object} params
-    * @param {String} params.schema
-    * @param {String} params.table
-    * @returns {Object} table row count
-    * @memberof SQLiteClient
-    */
-   async getTableApproximateCount ({ schema, table }) {
+   async getTableApproximateCount ({ schema, table }: { schema: string; table: string }): Promise<number> {
       const { rows } = await this.raw(`SELECT COUNT(*) AS count FROM "${schema}"."${table}"`);
 
       return rows.length ? rows[0].count : 0;
    }
 
-   /**
-    * @param {Object} params
-    * @param {String} params.schema
-    * @param {String} params.table
-    * @returns {Object} table options
-    * @memberof SQLiteClient
-    */
-   async getTableOptions ({ schema, table }) {
+   async getTableOptions ({ table }: { table: string }) {
       return { name: table };
    }
 
-   /**
-    * @param {Object} params
-    * @param {String} params.schema
-    * @param {String} params.table
-    * @returns {Object} table indexes
-    * @memberof SQLiteClient
-    */
-   async getTableIndexes ({ schema, table }) {
+   async getTableIndexes ({ schema, table }: { schema: string; table: string }) {
+      interface TableColumnsResult {
+         type: string;
+         name: string;
+         // eslint-disable-next-line camelcase
+         tbl_name: string;
+         rootpage:4;
+         sql: string;
+      }
+
+      interface ShowIndexesResult {
+         seq: number;
+         name: string;
+         unique: 0 | 1;
+         origin: string;
+         partial: 0 | 1;
+      }
+
       const remappedIndexes = [];
-      const { rows: primaryKeys } = await this.raw(`SELECT * FROM "${schema}".pragma_table_info('${table}') WHERE pk != 0`);
+      const { rows: primaryKeys } = await this.raw<antares.QueryResult<TableColumnsResult>>(`SELECT * FROM "${schema}".pragma_table_info('${table}') WHERE pk != 0`);
 
       for (const key of primaryKeys) {
          remappedIndexes.push({
             name: 'PRIMARY',
             column: key.name,
-            indexType: null,
+            indexType: null as never,
             type: 'PRIMARY',
-            cardinality: null,
+            cardinality: null as never,
             comment: '',
             indexComment: ''
          });
       }
 
-      const { rows: indexes } = await this.raw(`SELECT * FROM "${schema}".pragma_index_list('${table}');`);
+      const { rows: indexes } = await this.raw<antares.QueryResult<ShowIndexesResult>>(`SELECT * FROM "${schema}".pragma_index_list('${table}');`);
 
       for (const index of indexes) {
          const { rows: details } = await this.raw(`SELECT * FROM "${schema}".pragma_index_info('${index.name}');`);
@@ -230,9 +234,9 @@ export class SQLiteClient extends AntaresCore {
             remappedIndexes.push({
                name: index.name,
                column: detail.name,
-               indexType: null,
+               indexType: null as never,
                type: index.unique === 1 ? 'UNIQUE' : 'INDEX',
-               cardinality: null,
+               cardinality: null as never,
                comment: '',
                indexComment: ''
             });
@@ -242,15 +246,19 @@ export class SQLiteClient extends AntaresCore {
       return remappedIndexes;
    }
 
-   /**
-    * @param {Object} params
-    * @param {String} params.schema
-    * @param {String} params.table
-    * @returns {Object} table key usage
-    * @memberof SQLiteClient
-    */
-   async getKeyUsage ({ schema, table }) {
-      const { rows } = await this.raw(`SELECT * FROM "${schema}".pragma_foreign_key_list('${table}');`);
+   async getKeyUsage ({ schema, table }: { schema: string; table: string }) {
+      /* eslint-disable camelcase */
+      interface KeyResult {
+         from: string;
+         id: number;
+         table: string;
+         to: string;
+         on_update: string;
+         on_delete: string;
+      }
+      /* eslint-enable camelcase */
+
+      const { rows } = await this.raw<antares.QueryResult<KeyResult>>(`SELECT * FROM "${schema}".pragma_foreign_key_list('${table}');`);
 
       return rows.map(field => {
          return {
@@ -269,229 +277,11 @@ export class SQLiteClient extends AntaresCore {
       });
    }
 
-   async getUsers () {}
-
-   /**
-    * SHOW CREATE VIEW
-    *
-    * @returns {Array.<Object>} view informations
-    * @memberof SQLiteClient
-    */
-   async getViewInformations ({ schema, view }) {
-      const sql = `SELECT "sql" FROM "${schema}".sqlite_master WHERE "type"='view' AND name='${view}'`;
-      const results = await this.raw(sql);
-
-      return results.rows.map(row => {
-         return {
-            sql: row.sql.match(/(?<=AS ).*?$/gs)[0],
-            name: view
-         };
-      })[0];
+   async getUsers (): Promise<void> {
+      return null;
    }
 
-   /**
-    * DROP VIEW
-    *
-    * @returns {Array.<Object>} parameters
-    * @memberof SQLiteClient
-    */
-   async dropView (params) {
-      const sql = `DROP VIEW "${params.schema}"."${params.view}"`;
-      return await this.raw(sql);
-   }
-
-   /**
-    * ALTER VIEW
-    *
-    * @returns {Array.<Object>} parameters
-    * @memberof SQLiteClient
-    */
-   async alterView (params) {
-      const { view } = params;
-      try {
-         await this.dropView({ schema: view.schema, view: view.oldName });
-         await this.createView(view);
-      }
-      catch (err) {
-         return Promise.reject(err);
-      }
-   }
-
-   /**
-    * CREATE VIEW
-    *
-    * @returns {Array.<Object>} parameters
-    * @memberof SQLiteClient
-    */
-   async createView (params) {
-      const sql = `CREATE VIEW "${params.schema}"."${params.name}" AS ${params.sql}`;
-      return await this.raw(sql);
-   }
-
-   /**
-    * SHOW CREATE TRIGGER
-    *
-    * @returns {Array.<Object>} view informations
-    * @memberof SQLiteClient
-    */
-   async getTriggerInformations ({ schema, trigger }) {
-      const sql = `SELECT "sql" FROM "${schema}".sqlite_master WHERE "type"='trigger' AND name='${trigger}'`;
-      const results = await this.raw(sql);
-
-      return results.rows.map(row => {
-         return {
-            sql: row.sql.match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
-            name: trigger,
-            table: row.sql.match(/(?<=ON `).*?(?=`)/gs)[0],
-            activation: row.sql.match(/(BEFORE|AFTER)/gs)[0],
-            event: row.sql.match(/(INSERT|UPDATE|DELETE)/gs)[0]
-         };
-      })[0];
-   }
-
-   /**
-    * DROP TRIGGER
-    *
-    * @returns {Array.<Object>} parameters
-    * @memberof SQLiteClient
-    */
-   async dropTrigger (params) {
-      const sql = `DROP TRIGGER \`${params.schema}\`.\`${params.trigger}\``;
-      return await this.raw(sql);
-   }
-
-   /**
-    * ALTER TRIGGER
-    *
-    * @returns {Array.<Object>} parameters
-    * @memberof SQLiteClient
-    */
-   async alterTrigger (params) {
-      const { trigger } = params;
-      const tempTrigger = Object.assign({}, trigger);
-      tempTrigger.name = `Antares_${tempTrigger.name}_tmp`;
-
-      try {
-         await this.createTrigger(tempTrigger);
-         await this.dropTrigger({ schema: trigger.schema, trigger: tempTrigger.name });
-         await this.dropTrigger({ schema: trigger.schema, trigger: trigger.oldName });
-         await this.createTrigger(trigger);
-      }
-      catch (err) {
-         return Promise.reject(err);
-      }
-   }
-
-   /**
-    * CREATE TRIGGER
-    *
-    * @returns {Array.<Object>} parameters
-    * @memberof SQLiteClient
-    */
-   async createTrigger (params) {
-      const sql = `CREATE ${params.definer ? `DEFINER=${params.definer} ` : ''}TRIGGER \`${params.schema}\`.\`${params.name}\` ${params.activation} ${params.event} ON \`${params.table}\` FOR EACH ROW ${params.sql}`;
-      return await this.raw(sql, { split: false });
-   }
-
-   /**
-    * SHOW COLLATION
-    *
-    * @returns {Array.<Object>} collations list
-    * @memberof SQLiteClient
-    */
-   async getCollations () {
-      return [];
-   }
-
-   /**
-    * SHOW VARIABLES
-    *
-    * @returns {Array.<Object>} variables list
-    * @memberof SQLiteClient
-    */
-   async getVariables () {
-      return [];
-   }
-
-   /**
-    * SHOW ENGINES
-    *
-    * @returns {Array.<Object>} engines list
-    * @memberof SQLiteClient
-    */
-   async getEngines () {
-      return {
-         name: 'SQLite',
-         support: 'YES',
-         comment: '',
-         isDefault: true
-      };
-   }
-
-   /**
-    * SHOW VARIABLES LIKE '%vers%'
-    *
-    * @returns {Array.<Object>} version parameters
-    * @memberof SQLiteClient
-    */
-   async getVersion () {
-      const os = require('os');
-      const sql = 'SELECT sqlite_version() AS version';
-      const { rows } = await this.raw(sql);
-
-      return {
-         number: rows[0].version,
-         name: 'SQLite',
-         arch: process.arch,
-         os: `${os.type()} ${os.release()}`
-      };
-   }
-
-   async getProcesses () {}
-
-   async killProcess () {}
-
-   /**
-    *
-    * @param {string} tabUid
-    * @returns {Promise<null>}
-    */
-   async commitTab (tabUid) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         connection.prepare('COMMIT').run();
-         return this.destroyConnectionToCommit(tabUid);
-      }
-   }
-
-   /**
-    *
-    * @param {string} tabUid
-    * @returns {Promise<null>}
-    */
-   async rollbackTab (tabUid) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         connection.prepare('ROLLBACK').run();
-         return this.destroyConnectionToCommit(tabUid);
-      }
-   }
-
-   destroyConnectionToCommit (tabUid) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         connection.close();
-         this._connectionsToCommit.delete(tabUid);
-      }
-   }
-
-   /**
-    * CREATE TABLE
-    *
-    * @returns {Promise<null>}
-    * @memberof SQLiteClient
-    */
-   async createTable (params) {
+   async createTable (params: antares.CreateTableParams) {
       const {
          schema,
          fields,
@@ -499,10 +289,10 @@ export class SQLiteClient extends AntaresCore {
          indexes,
          options
       } = params;
-      const newColumns = [];
-      const newIndexes = [];
-      const manageIndexes = [];
-      const newForeigns = [];
+      const newColumns: string[] = [];
+      const newIndexes: string[] = [];
+      const manageIndexes: string[] = [];
+      const newForeigns: string[] = [];
 
       let sql = `CREATE TABLE "${schema}"."${options.name}"`;
 
@@ -512,7 +302,7 @@ export class SQLiteClient extends AntaresCore {
          const length = typeInfo?.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
 
          newColumns.push(`"${field.name}" 
-            ${field.type.toUpperCase()}${length && length !== true ? `(${length})` : ''} 
+            ${field.type.toUpperCase()}${length ? `(${length})` : ''} 
             ${field.unsigned ? 'UNSIGNED' : ''} 
             ${field.nullable ? 'NULL' : 'NOT NULL'}
             ${field.autoIncrement ? 'AUTO_INCREMENT' : ''}
@@ -542,34 +332,37 @@ export class SQLiteClient extends AntaresCore {
       return await this.raw(sql);
    }
 
-   /**
-    * ALTER TABLE
-    *
-    * @returns {Promise<null>}
-    * @memberof SQLiteClient
-    */
-   async alterTable (params) {
+   async alterTable (params: antares.AlterTableParams) {
+      const {
+         table,
+         schema,
+         additions,
+         deletions,
+         changes,
+         tableStructure
+      } = params;
+
       try {
          await this.raw('BEGIN TRANSACTION');
          await this.raw('PRAGMA foreign_keys = 0');
 
-         const tmpName = `Antares_${params.table}_tmp`;
-         await this.raw(`CREATE TABLE "${tmpName}" AS SELECT * FROM "${params.table}"`);
+         const tmpName = `Antares_${table}_tmp`;
+         await this.raw(`CREATE TABLE "${tmpName}" AS SELECT * FROM "${table}"`);
          await this.dropTable(params);
 
          const createTableParams = {
-            schema: params.schema,
-            fields: params.tableStructure.fields,
-            foreigns: params.tableStructure.foreigns,
-            indexes: params.tableStructure.indexes.filter(index => !index.name.includes('sqlite_autoindex')),
-            options: { name: params.tableStructure.name }
+            schema: schema,
+            fields: tableStructure.fields,
+            foreigns: tableStructure.foreigns,
+            indexes: tableStructure.indexes.filter(index => !index.name.includes('sqlite_autoindex')),
+            options: { name: tableStructure.name }
          };
          await this.createTable(createTableParams);
          const insertFields = createTableParams.fields
             .filter(field => {
                return (
-                  params.additions.every(add => add.name !== field.name) &&
-                  params.deletions.every(del => del.name !== field.name)
+                  additions.every(add => add.name !== field.name) &&
+                  deletions.every(del => del.name !== field.name)
                );
             })
             .reduce((acc, curr) => {
@@ -578,7 +371,7 @@ export class SQLiteClient extends AntaresCore {
             }, []);
 
          const selectFields = insertFields.map(field => {
-            const renamedField = params.changes.find(change => `"${change.name}"` === field);
+            const renamedField = changes.find(change => `"${change.name}"` === field);
             if (renamedField)
                return `"${renamedField.orgName}"`;
             return field;
@@ -586,7 +379,7 @@ export class SQLiteClient extends AntaresCore {
 
          await this.raw(`INSERT INTO "${createTableParams.options.name}" (${insertFields.join(',')}) SELECT ${selectFields.join(',')} FROM "${tmpName}"`);
 
-         await this.dropTable({ schema: params.schema, table: tmpName });
+         await this.dropTable({ schema: schema, table: tmpName });
          await this.raw('PRAGMA foreign_keys = 1');
          await this.raw('COMMIT');
       }
@@ -596,43 +389,155 @@ export class SQLiteClient extends AntaresCore {
       }
    }
 
-   /**
-    * DUPLICATE TABLE
-    *
-    * @returns {Promise<null>}
-    * @memberof SQLiteClient
-    */
-   async duplicateTable (params) { // TODO: retrive table informations and create a copy
+   async duplicateTable (params: { schema: string; table: string }) { // TODO: retrive table informations and create a copy
       const sql = `CREATE TABLE "${params.schema}"."${params.table}_copy" AS SELECT * FROM "${params.schema}"."${params.table}"`;
       return await this.raw(sql);
    }
 
-   /**
-    * TRUNCATE TABLE
-    *
-    * @returns {Promise<null>}
-    * @memberof SQLiteClient
-    */
-   async truncateTable (params) {
+   async truncateTable (params: { schema: string; table: string }) {
       const sql = `DELETE FROM "${params.schema}"."${params.table}"`;
       return await this.raw(sql);
    }
 
-   /**
-    * DROP TABLE
-    *
-    * @returns {Promise<null>}
-    * @memberof SQLiteClient
-    */
-   async dropTable (params) {
+   async dropTable (params: { schema: string; table: string }) {
       const sql = `DROP TABLE "${params.schema}"."${params.table}"`;
       return await this.raw(sql);
    }
 
-   /**
-    * @returns {String} SQL string
-    * @memberof SQLiteClient
-    */
+   async getViewInformations ({ schema, view }: { schema: string; view: string }) {
+      const sql = `SELECT "sql" FROM "${schema}".sqlite_master WHERE "type"='view' AND name='${view}'`;
+      const results = await this.raw(sql);
+
+      return results.rows.map(row => {
+         return {
+            sql: row.sql.match(/(?<=AS ).*?$/gs)[0],
+            name: view
+         };
+      })[0];
+   }
+
+   async dropView (params: { schema: string; view: string }) {
+      const sql = `DROP VIEW "${params.schema}"."${params.view}"`;
+      return await this.raw(sql);
+   }
+
+   async alterView ({ view }: { view: antares.AlterViewParams }) {
+      try {
+         await this.dropView({ schema: view.schema, view: view.oldName });
+         await this.createView(view);
+      }
+      catch (err) {
+         return Promise.reject(err);
+      }
+   }
+
+   async createView (params: antares.CreateViewParams) {
+      const sql = `CREATE VIEW "${params.schema}"."${params.name}" AS ${params.sql}`;
+      return await this.raw(sql);
+   }
+
+   async getTriggerInformations ({ schema, trigger }: { schema: string; trigger: string }) {
+      const sql = `SELECT "sql" FROM "${schema}".sqlite_master WHERE "type"='trigger' AND name='${trigger}'`;
+      const results = await this.raw(sql);
+
+      return results.rows.map(row => {
+         return {
+            sql: row.sql.match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
+            name: trigger,
+            table: row.sql.match(/(?<=ON `).*?(?=`)/gs)[0],
+            activation: row.sql.match(/(BEFORE|AFTER)/gs)[0],
+            event: row.sql.match(/(INSERT|UPDATE|DELETE)/gs)[0]
+         };
+      })[0];
+   }
+
+   async dropTrigger (params: { schema: string; trigger: string }) {
+      const sql = `DROP TRIGGER \`${params.schema}\`.\`${params.trigger}\``;
+      return await this.raw(sql);
+   }
+
+   async alterTrigger ({ trigger } : {trigger: antares.AlterTriggerParams}) {
+      const tempTrigger = Object.assign({}, trigger);
+      tempTrigger.name = `Antares_${tempTrigger.name}_tmp`;
+
+      try {
+         await this.createTrigger(tempTrigger);
+         await this.dropTrigger({ schema: trigger.schema, trigger: tempTrigger.name });
+         await this.dropTrigger({ schema: trigger.schema, trigger: trigger.oldName });
+         await this.createTrigger(trigger);
+      }
+      catch (err) {
+         return Promise.reject(err);
+      }
+   }
+
+   async createTrigger (params: antares.CreateTriggerParams) {
+      const sql = `CREATE ${params.definer ? `DEFINER=${params.definer} ` : ''}TRIGGER \`${params.schema}\`.\`${params.name}\` ${params.activation} ${params.event} ON \`${params.table}\` FOR EACH ROW ${params.sql}`;
+      return await this.raw(sql, { split: false });
+   }
+
+   async getCollations (): Promise<undefined[]> {
+      return [];
+   }
+
+   async getVariables (): Promise<undefined[]> {
+      return [];
+   }
+
+   async getEngines () {
+      return {
+         name: 'SQLite',
+         support: 'YES',
+         comment: '',
+         isDefault: true
+      };
+   }
+
+   async getVersion () {
+      const os = require('os');
+      const sql = 'SELECT sqlite_version() AS version';
+      const { rows } = await this.raw(sql);
+
+      return {
+         number: rows[0].version,
+         name: 'SQLite',
+         arch: process.arch,
+         os: `${os.type()} ${os.release()}`
+      };
+   }
+
+   async getProcesses (): Promise<void> {
+      return null;
+   }
+
+   async killProcess (): Promise<void> {
+      return null;
+   }
+
+   async commitTab (tabUid: string) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection) {
+         connection.prepare('COMMIT').run();
+         return this.destroyConnectionToCommit(tabUid);
+      }
+   }
+
+   async rollbackTab (tabUid: string) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection) {
+         connection.prepare('ROLLBACK').run();
+         return this.destroyConnectionToCommit(tabUid);
+      }
+   }
+
+   destroyConnectionToCommit (tabUid: string) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection) {
+         connection.close();
+         this._connectionsToCommit.delete(tabUid);
+      }
+   }
+
    getSQL () {
       // SELECT
       const selectArray = this._query.select.reduce(this._reducer, []);
@@ -688,16 +593,7 @@ export class SQLiteClient extends AntaresCore {
       return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}${offsetRaw}${insertRaw}`;
    }
 
-   /**
-    * @param {string} sql raw SQL query
-    * @param {object} args
-    * @param {boolean} args.nest
-    * @param {boolean} args.details
-    * @param {boolean} args.split
-    * @returns {Promise}
-    * @memberof SQLiteClient
-    */
-   async raw (sql, args) {
+   async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {
       if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
 
       args = {
@@ -720,7 +616,7 @@ export class SQLiteClient extends AntaresCore {
             .map(q => q.trim())
          : [sql];
 
-      let connection;
+      let connection: sqlite.Database;
 
       if (!args.autocommit && args.tabUid) { // autocommit OFF
          if (this._connectionsToCommit.has(args.tabUid))
@@ -738,31 +634,33 @@ export class SQLiteClient extends AntaresCore {
          if (!query) continue;
          const timeStart = new Date();
          let timeStop;
-         const keysArr = [];
+         const keysArr: antares.QueryForeign[] = [];
 
          const { rows, report, fields, keys, duration } = await new Promise((resolve, reject) => {
             (async () => {
-               let queryResult;
+               let queryRunResult: sqlite.RunResult;
+               // eslint-disable-next-line @typescript-eslint/no-explicit-any
+               let queryAllResult: any[];
                let affectedRows;
                let fields;
-               const detectedTypes = {};
+               const detectedTypes: {[key: string]: string} = {};
 
                try {
                   const stmt = connection.prepare(query);
 
                   if (stmt.reader) {
-                     queryResult = stmt.all();
+                     queryAllResult = stmt.all();
                      fields = stmt.columns();
 
-                     if (queryResult.length) {
+                     if (queryAllResult.length) {
                         fields.forEach(field => {
-                           detectedTypes[field.name] = typeof queryResult[0][field.name];
+                           detectedTypes[field.name] = typeof queryAllResult[0][field.name];
                         });
                      }
                   }
                   else {
-                     const info = queryResult = stmt.run();
-                     affectedRows = info.changes;
+                     queryRunResult = stmt.run();
+                     affectedRows = queryRunResult.changes;
                   }
                }
                catch (err) {
@@ -773,18 +671,18 @@ export class SQLiteClient extends AntaresCore {
 
                let remappedFields = fields
                   ? fields.map(field => {
-                     let [parsedType, length] = field.type?.includes('(')
-                        ? field.type.replace(')', '').split('(').map(el => {
-                           if (!isNaN(el))
-                              el = +el;
+                     let [parsedType, length]: [string, number?] = field.type?.includes('(')
+                        ? field.type.replace(')', '').split('(').map((el: string | number) => {
+                           if (!isNaN(Number(el)))
+                              el = Number(el);
                            else
-                              el = el.trim();
+                              el = (el as string).trim();
                            return el;
-                        })
+                        }) as [string, number?]
                         : [field.type, null];
 
                      if ([...TIME, ...DATETIME].includes(parsedType)) {
-                        const firstNotNull = queryResult.find(res => res[field.name] !== null);
+                        const firstNotNull = queryAllResult.find(res => res[field.name] !== null);
                         if (firstNotNull && firstNotNull[field.name].includes('.'))
                            length = firstNotNull[field.name].split('.').pop().length;
                      }
@@ -798,7 +696,8 @@ export class SQLiteClient extends AntaresCore {
                         tableAlias: field.table,
                         orgTable: field.table,
                         type: field.type !== null ? parsedType : detectedTypes[field.name],
-                        length
+                        length,
+                        key: undefined as string
                      };
                   }).filter(Boolean)
                   : [];
@@ -818,18 +717,12 @@ export class SQLiteClient extends AntaresCore {
                         const indexes = await this.getTableIndexes(paramObj);
 
                         remappedFields = remappedFields.map(field => {
-                        // const detailedField = columns.find(f => f.name === field.name);
                            const fieldIndex = indexes.find(i => i.column === field.name);
                            if (field.table === paramObj.table && field.schema === paramObj.schema) {
-                           // if (detailedField) {
-                           //    const length = detailedField.numPrecision || detailedField.charLength || detailedField.datePrecision || null;
-                           //    field = { ...field, ...detailedField, length };
-                           // }
-
                               if (fieldIndex) {
                                  const key = fieldIndex.type === 'PRIMARY' ? 'pri' : fieldIndex.type === 'UNIQUE' ? 'uni' : 'mul';
                                  field = { ...field, key };
-                              };
+                              }
                            }
 
                            return field;
@@ -842,8 +735,8 @@ export class SQLiteClient extends AntaresCore {
                }
 
                resolve({
-                  duration: timeStop - timeStart,
-                  rows: Array.isArray(queryResult) ? queryResult.some(el => Array.isArray(el)) ? [] : queryResult : false,
+                  duration: timeStop.getTime() - timeStart.getTime(),
+                  rows: Array.isArray(queryAllResult) ? queryAllResult.some(el => Array.isArray(el)) ? [] : queryAllResult : false,
                   report: affectedRows !== undefined ? { affectedRows } : null,
                   fields: remappedFields,
                   keys: keysArr
@@ -854,6 +747,8 @@ export class SQLiteClient extends AntaresCore {
          resultsArr.push({ rows, report, fields, keys, duration });
       }
 
-      return resultsArr.length === 1 ? resultsArr[0] : resultsArr;
+      const result = resultsArr.length === 1 ? resultsArr[0] : resultsArr;
+
+      return result as unknown as T;
    }
 }
