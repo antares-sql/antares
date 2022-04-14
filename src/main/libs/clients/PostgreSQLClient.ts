@@ -1,7 +1,7 @@
 import * as antares from 'common/interfaces/antares';
 import * as mysql from 'mysql2';
 import { builtinsTypes } from 'pg-types';
-import * as pg /* { Pool, Client, types } */ from 'pg';
+import * as pg from 'pg';
 import * as pgAst from 'pgsql-ast-parser';
 import { AntaresCore } from '../AntaresCore';
 import * as dataTypes from 'common/data-types/postgresql';

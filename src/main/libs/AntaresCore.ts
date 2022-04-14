@@ -1,4 +1,3 @@
-// import BetterSqlite3 from 'better-sqlite3';
 import * as antares from 'common/interfaces/antares';
 import mysql from 'mysql2/promise';
 import * as pg from 'pg';
@@ -17,7 +16,6 @@ export class AntaresCore {
    protected _client: string;
    protected _params: mysql.ConnectionOptions | pg.ClientConfig | { databasePath: string; readonly: boolean};
    protected _poolSize: number;
-   // protected _connection?: mysql.Connection | mysql.Pool | pg.Connection | BetterSqlite3.Database
    protected _ssh?: SSH2Promise;
    protected _logger: (sql: string) => void;
    protected _queryDefaults: antares.QueryBuilderObject;

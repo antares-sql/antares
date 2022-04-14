@@ -105,7 +105,7 @@ export interface TableForeign {
 
 export interface TableOptions {
    name: string;
-   type: 'table' | 'view';
+   type?: 'table' | 'view';
    engine?: string;
    comment?: string;
    collation?: string;
@@ -114,7 +114,7 @@ export interface TableOptions {
 
 export interface CreateTableParams {
    /** Connection UID */
-   uid: string;
+   uid?: string;
    schema: string;
    fields: TableField[];
    foreigns: TableForeign[];
@@ -124,12 +124,18 @@ export interface CreateTableParams {
 
 export interface AlterTableParams {
    /** Connection UID */
-   uid: string;
+   uid?: string;
    schema: string;
    table: string;
    additions: TableField[];
    changes: TableField[];
    deletions: TableField[];
+   tableStructure: {
+      name: string;
+      fields: TableField[];
+      foreigns: TableForeign[];
+      indexes: TableIndex[];
+   };
    indexChanges: {
       additions: TableIndex[];
       changes: TableIndex[];
