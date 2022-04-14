@@ -8,7 +8,7 @@ import SSHConfig from 'ssh2-promise/lib/sshConfig';
 export class MySQLClient extends AntaresCore {
    private _schema?: string;
    private _runningConnections: Map<string, number>;
-   private _connectionsToCommit: Map<string, mysql.Connection | mysql.Pool>;
+   private _connectionsToCommit: Map<string, mysql.Connection | mysql.PoolConnection>;
    protected _connection?: mysql.Connection | mysql.Pool;
    protected _params: mysql.ConnectionOptions & {schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean};
 
@@ -564,14 +564,29 @@ export class MySQLClient extends AntaresCore {
       });
    }
 
-   async getTableApproximateCount ({ schema, table }: { schema: string; table: string }) {
+   async getTableApproximateCount ({ schema, table }: { schema: string; table: string }): Promise<number> {
       const { rows } = await this.raw(`SELECT table_rows "count" FROM information_schema.tables WHERE table_name = "${table}" AND table_schema = "${schema}"`);
 
       return rows.length ? rows[0].count : 0;
    }
 
    async getTableOptions ({ schema, table }: { schema: string; table: string }) {
-      const { rows } = await this.raw(`SHOW TABLE STATUS FROM \`${schema}\` WHERE Name = '${table}'`);
+      /* eslint-disable camelcase */
+      interface TableOptionsResult {
+         Name: string;
+         Rows: string;
+         Create_time: string;
+         Update_time: string;
+         Engine: string;
+         Data_length: number;
+         Index_length: number;
+         Auto_increment: string;
+         Collation: string;
+         Comment: string;
+      }
+      /* eslint-enable camelcase */
+
+      const { rows } = await this.raw<antares.QueryResult<TableOptionsResult>>(`SHOW TABLE STATUS FROM \`${schema}\` WHERE Name = '${table}'`);
 
       if (rows.length) {
          let tableType;
@@ -601,7 +616,19 @@ export class MySQLClient extends AntaresCore {
    }
 
    async getTableIndexes ({ schema, table }: { schema: string; table: string }) {
-      const { rows } = await this.raw(`SHOW INDEXES FROM \`${table}\` FROM \`${schema}\``);
+      /* eslint-disable camelcase */
+      interface ShowIntexesResult {
+         Non_unique: number;
+         Column_name: string;
+         Index_type: string;
+         Key_name: string;
+         Cardinality: number;
+         Comment: string;
+         Index_comment: string;
+      }
+      /* eslint-enable camelcase */
+
+      const { rows } = await this.raw<antares.QueryResult<ShowIntexesResult>>(`SHOW INDEXES FROM \`${table}\` FROM \`${schema}\``);
 
       return rows.map(row => {
          return {
@@ -676,7 +703,7 @@ export class MySQLClient extends AntaresCore {
             name: row.user,
             host: row.host,
             password: row.password
-         };
+         } as {name: string; host: string; password: string};
       });
    }
 
@@ -765,7 +792,7 @@ export class MySQLClient extends AntaresCore {
       } = params;
 
       let sql = `ALTER TABLE \`${schema}\`.\`${table}\` `;
-      const alterColumns = [];
+      const alterColumns: string[] = [];
 
       // OPTIONS
       if ('comment' in options) alterColumns.push(`COMMENT='${options.comment}'`);
@@ -917,16 +944,16 @@ export class MySQLClient extends AntaresCore {
       return await this.raw(sql);
    }
 
-   async alterView (params: antares.AlterViewParams) {
+   async alterView ({ view }: { view: antares.AlterViewParams }) {
       let sql = `
-         USE \`${params.schema}\`; 
-         ALTER ALGORITHM = ${params.algorithm}${params.definer ? ` DEFINER=${params.definer}` : ''} 
-         SQL SECURITY ${params.security} 
-         params \`${params.schema}\`.\`${params.oldName}\` AS ${params.sql} ${params.updateOption ? `WITH ${params.updateOption} CHECK OPTION` : ''}
+         USE \`${view.schema}\`; 
+         ALTER ALGORITHM = ${view.algorithm}${view.definer ? ` DEFINER=${view.definer}` : ''} 
+         SQL SECURITY ${view.security} 
+         params \`${view.schema}\`.\`${view.oldName}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}
       `;
 
-      if (params.name !== params.oldName)
-         sql += `; RENAME TABLE \`${params.schema}\`.\`${params.oldName}\` TO \`${params.schema}\`.\`${params.name}\``;
+      if (view.name !== view.oldName)
+         sql += `; RENAME TABLE \`${view.schema}\`.\`${view.oldName}\` TO \`${view.schema}\`.\`${view.name}\``;
 
       return await this.raw(sql);
    }
@@ -1410,11 +1437,6 @@ export class MySQLClient extends AntaresCore {
          await connection.query('COMMIT');
    }
 
-   /**
-    *
-    * @param {string} tabUid
-    * @returns {Promise<null>}
-    */
    async rollbackTab (tabUid: string) {
       const connection = this._connectionsToCommit.get(tabUid);
       if (connection)
@@ -1506,7 +1528,7 @@ export class MySQLClient extends AntaresCore {
             .map(q => q.trim())
          : [sql];
 
-      let connection: mysql.Connection | mysql.Pool;
+      let connection: mysql.Connection | mysql.Pool | mysql.PoolConnection;
       const isPool = 'getConnection' in this._connection;
 
       if (!args.autocommit && args.tabUid) { // autocommit OFF
@@ -1587,8 +1609,7 @@ export class MySQLClient extends AntaresCore {
                         }
                         catch (err) {
                            if (isPool && args.autocommit) {
-                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                              (connection as any).release();
+                              (connection as mysql.PoolConnection).release();
                               this._runningConnections.delete(args.tabUid);
                            }
                            reject(err);
@@ -1600,8 +1621,7 @@ export class MySQLClient extends AntaresCore {
                         }
                         catch (err) {
                            if (isPool && args.autocommit) {
-                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                              (connection as any).release();
+                              (connection as mysql.PoolConnection).release();
                               this._runningConnections.delete(args.tabUid);
                            }
                            reject(err);
@@ -1619,8 +1639,7 @@ export class MySQLClient extends AntaresCore {
                });
             }).catch((err) => {
                if (isPool && args.autocommit) {
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  (connection as any).release();
+                  (connection as mysql.PoolConnection).release();
                   this._runningConnections.delete(args.tabUid);
                }
                reject(err);
@@ -1637,8 +1656,7 @@ export class MySQLClient extends AntaresCore {
       }
 
       if (isPool && args.autocommit) {
-         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-         (connection as any).release();
+         (connection as mysql.PoolConnection).release();
          this._runningConnections.delete(args.tabUid);
       }
 
