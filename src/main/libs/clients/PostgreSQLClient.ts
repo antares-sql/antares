@@ -1,44 +1,56 @@
-'use strict';
-import { Pool, Client, types } from 'pg';
-import { parse } from 'pgsql-ast-parser';
+import * as antares from 'common/interfaces/antares';
+import * as mysql from 'mysql2';
+import { builtinsTypes } from 'pg-types';
+import * as pg /* { Pool, Client, types } */ from 'pg';
+import * as pgAst from 'pgsql-ast-parser';
 import { AntaresCore } from '../AntaresCore';
-import dataTypes from 'common/data-types/postgresql';
-import * as SSH2Promise from 'ssh2-promise';
+import * as dataTypes from 'common/data-types/postgresql';
+import SSH2Promise from 'ssh2-promise';
+import SSHConfig from 'ssh2-promise/lib/sshConfig';
 
-function pgToString (value) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function pgToString (value: any) {
    return value.toString();
 }
 
-types.setTypeParser(1082, pgToString); // date
-types.setTypeParser(1083, pgToString); // time
-types.setTypeParser(1114, pgToString); // timestamp
-types.setTypeParser(1184, pgToString); // timestamptz
-types.setTypeParser(1266, pgToString); // timetz
+pg.types.setTypeParser(1082, pgToString); // date
+pg.types.setTypeParser(1083, pgToString); // time
+pg.types.setTypeParser(1114, pgToString); // timestamp
+pg.types.setTypeParser(1184, pgToString); // timestamptz
+pg.types.setTypeParser(1266, pgToString); // timetz
 
 export class PostgreSQLClient extends AntaresCore {
-   constructor (args) {
+   private _schema?: string;
+   private _runningConnections: Map<string, number>;
+   private _connectionsToCommit: Map<string, pg.Client | pg.PoolClient>;
+   protected _connection?: pg.Client | pg.Pool;
+   protected _params: pg.ClientConfig & {schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean};
+   private types: {[key: string]: string} = {};
+   private _arrayTypes: {[key: string]: string} = {
+      _int2: 'SMALLINT',
+      _int4: 'INTEGER',
+      _int8: 'BIGINT',
+      _float4: 'REAL',
+      _float8: 'DOUBLE PRECISION',
+      _char: '"CHAR"',
+      _varchar: 'CHARACTER VARYING'
+   }
+
+   constructor (args: antares.ClientParams) {
       super(args);
 
       this._schema = null;
       this._runningConnections = new Map();
       this._connectionsToCommit = new Map();
 
-      this.types = {};
-      for (const key in types.builtins)
-         this.types[types.builtins[key]] = key;
-
-      this._arrayTypes = {
-         _int2: 'SMALLINT',
-         _int4: 'INTEGER',
-         _int8: 'BIGINT',
-         _float4: 'REAL',
-         _float8: 'DOUBLE PRECISION',
-         _char: '"CHAR"',
-         _varchar: 'CHARACTER VARYING'
-      };
+      for (const key in pg.types.builtins) {
+         const builtinKey = key as builtinsTypes;
+         this.types[pg.types.builtins[builtinKey]] = key;
+      }
    }
 
-   _reducer (acc, curr) {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   _reducer (acc: string[], curr: any) {
       const type = typeof curr;
 
       switch (type) {
@@ -58,13 +70,13 @@ export class PostgreSQLClient extends AntaresCore {
       }
    }
 
-   _getTypeInfo (type) {
+   _getTypeInfo (type: string) {
       return dataTypes
          .reduce((acc, group) => [...acc, ...group.types], [])
          .filter(_type => _type.name === type.toUpperCase())[0];
    }
 
-   _getArrayType (type) {
+   _getArrayType (type: string) {
       if (Object.keys(this._arrayTypes).includes(type))
          return this._arrayTypes[type];
       return type.replace('_', '');
@@ -82,13 +94,14 @@ export class PostgreSQLClient extends AntaresCore {
          host: this._params.host,
          port: this._params.port,
          user: this._params.user,
+         database: undefined as string | undefined,
          password: this._params.password,
-         ssl: null
+         ssl: null as mysql.SslOptions
       };
 
       if (this._params.database?.length) dbConfig.database = this._params.database;
 
-      if (this._params.ssl) dbConfig.ssl = { ...this._params.ssl };
+      if (this._params.ssl) dbConfig.ssl = this._params.ssl;
 
       if (this._params.ssh) {
          try {
@@ -99,7 +112,7 @@ export class PostgreSQLClient extends AntaresCore {
                remotePort: this._params.port
             });
 
-            dbConfig.host = this._ssh.config.host;
+            dbConfig.host = (this._ssh.config as SSHConfig[] & { host: string }).host;
             dbConfig.port = tunnel.localPort;
          }
          catch (err) {
@@ -123,7 +136,7 @@ export class PostgreSQLClient extends AntaresCore {
 
    async getConnection () {
       const dbConfig = await this.getDbConfig();
-      const client = new Client(dbConfig);
+      const client = new pg.Client(dbConfig);
       await client.connect();
       const connection = client;
 
@@ -135,7 +148,7 @@ export class PostgreSQLClient extends AntaresCore {
 
    async getConnectionPool () {
       const dbConfig = await this.getDbConfig();
-      const pool = new Pool({ ...dbConfig, max: this._poolSize });
+      const pool = new pg.Pool({ ...dbConfig, max: this._poolSize });
       const connection = pool;
 
       if (this._params.readonly) {
@@ -147,22 +160,12 @@ export class PostgreSQLClient extends AntaresCore {
       return connection;
    }
 
-   /**
-    * @memberof PostgreSQLClient
-    */
    destroy () {
       this._connection.end();
       if (this._ssh) this._ssh.close();
    }
 
-   /**
-    * Executes an 'SET search_path TO "${schema}"' query
-    *
-    * @param {String} schema
-    * @param {Object?} connection optional
-    * @memberof PostgreSQLClient
-    */
-   use (schema, connection) {
+   use (schema: string, connection?: pg.Client | pg.PoolClient) {
       this._schema = schema;
 
       if (schema) {
@@ -175,24 +178,39 @@ export class PostgreSQLClient extends AntaresCore {
       }
    }
 
-   /**
-    * @param {Array} schemas list
-    * @returns {Array.<Object>} databases scructure
-    * @memberof PostgreSQLClient
-    */
-   async getStructure (schemas) {
-      const { rows: databases } = await this.raw('SELECT schema_name AS database FROM information_schema.schemata ORDER BY schema_name');
+   async getStructure (schemas: Set<string>) {
+      /* eslint-disable camelcase */
+      interface ShowTableResult {
+         Db?: string;
+         data_length: number;
+         index_length: number;
+         table_name: string;
+         table_type: string;
+         reltuples: number;
+         Collation: string;
+         comment: string;
+      }
+
+      interface ShowTriggersResult {
+         Db?: string;
+         table_name: string;
+         trigger_name: string;
+         enabled: boolean;
+      }
+      /* eslint-enable camelcase */
+
+      const { rows: databases } = await this.raw<antares.QueryResult<{ database: string}>>('SELECT schema_name AS database FROM information_schema.schemata ORDER BY schema_name');
       const { rows: functions } = await this.raw('SELECT * FROM information_schema.routines WHERE routine_type = \'FUNCTION\'');
       const { rows: procedures } = await this.raw('SELECT * FROM information_schema.routines WHERE routine_type = \'PROCEDURE\'');
 
-      const tablesArr = [];
-      const triggersArr = [];
+      const tablesArr: ShowTableResult[] = [];
+      const triggersArr: ShowTriggersResult[] = [];
       let schemaSize = 0;
 
       for (const db of databases) {
          if (!schemas.has(db.database)) continue;
 
-         let { rows: tables } = await this.raw(`
+         let { rows: tables } = await this.raw<antares.QueryResult<ShowTableResult>>(`
             SELECT *, 
                pg_table_size(QUOTE_IDENT(t.TABLE_SCHEMA) || '.' || QUOTE_IDENT(t.TABLE_NAME))::bigint AS data_length, 
                pg_relation_size(QUOTE_IDENT(t.TABLE_SCHEMA) || '.' || QUOTE_IDENT(t.TABLE_NAME))::bigint AS index_length, 
@@ -212,7 +230,7 @@ export class PostgreSQLClient extends AntaresCore {
             tablesArr.push(...tables);
          }
 
-         let { rows: triggers } = await this.raw(`
+         let { rows: triggers } = await this.raw<antares.QueryResult<ShowTriggersResult>>(`
             SELECT
                pg_class.relname AS table_name,
                pg_trigger.tgname AS trigger_name,
@@ -321,21 +339,33 @@ export class PostgreSQLClient extends AntaresCore {
       });
    }
 
-   /**
-    * @param {Object} params
-    * @param {String} params.schema
-    * @param {String} params.table
-    * @returns {Object} table scructure
-    * @memberof PostgreSQLClient
-    */
-   async getTableColumns ({ schema, table }, arrayRemap = true) {
+   async getTableColumns ({ schema, table }: { schema: string; table: string }, arrayRemap = true) {
+      /* eslint-disable camelcase */
+      interface TableColumnsResult {
+         data_type: string;
+         udt_name: string;
+         column_name: string;
+         table_schema: string;
+         table_name: string;
+         numeric_scale: number;
+         numeric_precision: number;
+         datetime_precision: number;
+         character_maximum_length: number;
+         is_nullable: string;
+         ordinal_position: number;
+         column_default: string;
+         character_set_name: string;
+         collation_name: string;
+      }
+      /* eslint-enable camelcase */
+
       const { rows } = await this
          .select('*')
          .schema('information_schema')
          .from('columns')
          .where({ table_schema: `= '${schema}'`, table_name: `= '${table}'` })
          .orderBy({ ordinal_position: 'ASC' })
-         .run();
+         .run<TableColumnsResult>();
 
       return rows.map(field => {
          let type = field.data_type;
@@ -369,28 +399,26 @@ export class PostgreSQLClient extends AntaresCore {
       });
    }
 
-   /**
-    * @param {Object} params
-    * @param {String} params.schema
-    * @param {String} params.table
-    * @returns {Object} table row count
-    * @memberof PostgreSQLClient
-    */
-   async getTableApproximateCount ({ schema, table }) {
+   async getTableApproximateCount ({ table }: { table: string }): Promise<number> {
       const { rows } = await this.raw(`SELECT reltuples AS count FROM pg_class WHERE relname = '${table}'`);
 
       return rows.length ? rows[0].count : 0;
    }
 
-   /**
-    * @param {Object} params
-    * @param {String} params.schema
-    * @param {String} params.table
-    * @returns {Object} table options
-    * @memberof MySQLClient
-    */
-   async getTableOptions ({ schema, table }) {
-      const { rows } = await this.raw(`
+   async getTableOptions ({ schema, table }: { schema: string; table: string }) {
+      /* eslint-disable camelcase */
+      interface TableOptionsResult {
+         table_name: string;
+         table_type: string;
+         reltuples: string;
+         data_length: number;
+         index_length: number;
+         Collation: string;
+         comment: string;
+      }
+      /* eslint-enable camelcase */
+
+      const { rows } = await this.raw<antares.QueryResult<TableOptionsResult>>(`
          SELECT *, 
             pg_table_size(QUOTE_IDENT(t.TABLE_SCHEMA) || '.' || QUOTE_IDENT(t.TABLE_NAME))::bigint AS data_length, 
             pg_relation_size(QUOTE_IDENT(t.TABLE_SCHEMA) || '.' || QUOTE_IDENT(t.TABLE_NAME))::bigint AS index_length, 
@@ -412,22 +440,23 @@ export class PostgreSQLClient extends AntaresCore {
             comment: rows[0].comment,
             engine: ''
          };
-      };
+      }
       return {};
    }
 
-   /**
-    * @param {Object} params
-    * @param {String} params.schema
-    * @param {String} params.table
-    * @returns {Object} table indexes
-    * @memberof PostgreSQLClient
-    */
-   async getTableIndexes ({ schema, table }) {
+   async getTableIndexes ({ schema, table }: { schema: string; table: string }) {
+      /* eslint-disable camelcase */
+      interface ShowIntexesResult {
+         constraint_name: string;
+         column_name: string;
+         constraint_type: string;
+      }
+      /* eslint-enable camelcase */
+
       if (schema !== 'public')
          await this.use(schema);
 
-      const { rows } = await this.raw(`WITH ndx_list AS (
+      const { rows } = await this.raw<antares.QueryResult<ShowIntexesResult>>(`WITH ndx_list AS (
          SELECT pg_index.indexrelid, pg_class.oid
          FROM pg_index, pg_class
          WHERE pg_class.relname = '${table}' AND pg_class.oid = pg_index.indrelid), ndx_cols AS (
@@ -446,24 +475,19 @@ export class PostgreSQLClient extends AntaresCore {
          return {
             name: row.constraint_name,
             column: row.column_name,
-            indexType: null,
+            indexType: null as null,
             type: row.constraint_type,
-            cardinality: null,
+            cardinality: null as null,
             comment: '',
             indexComment: ''
          };
       });
    }
 
-   /**
-    *
-    * @param {Number} id
-    * @returns {Array}
-    */
-   async getTableByIDs (ids) {
+   async getTableByIDs (ids: string) {
       if (!ids) return;
 
-      const { rows } = await this.raw(`
+      const { rows } = await this.raw<antares.QueryResult<{tableid: number; relname: string; schemaname: string}>>(`
          SELECT relid AS tableid, relname, schemaname FROM pg_statio_all_tables WHERE relid IN (${ids}) 
          UNION
          SELECT pg_class.oid AS tableid,relname, nspname AS schemaname FROM pg_class JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace WHERE pg_class.oid IN (${ids})
@@ -475,18 +499,27 @@ export class PostgreSQLClient extends AntaresCore {
             schema: curr.schemaname
          };
          return acc;
-      }, {});
+      }, {} as {table: string; schema: string}[]);
    }
 
-   /**
-    * @param {Object} params
-    * @param {String} params.schema
-    * @param {String} params.table
-    * @returns {Object} table key usage
-    * @memberof PostgreSQLClient
-    */
-   async getKeyUsage ({ schema, table }) {
-      const { rows } = await this.raw(`
+   async getKeyUsage ({ schema, table }: { schema: string; table: string }) {
+      /* eslint-disable camelcase */
+      interface KeyResult {
+         table_schema: string;
+         table_name: string;
+         column_name: string;
+         ordinal_position: number;
+         position_in_unique_constraint: number;
+         constraint_name: string;
+         foreign_table_schema: string;
+         foreign_table_name: string;
+         foreign_column_name: string;
+         update_rule: string;
+         delete_rule: string;
+      }
+      /* eslint-enable camelcase */
+
+      const { rows } = await this.raw<antares.QueryResult<KeyResult>>(`
          SELECT 
             tc.table_schema, 
             tc.constraint_name, 
@@ -529,12 +562,6 @@ export class PostgreSQLClient extends AntaresCore {
       });
    }
 
-   /**
-    * SELECT *  FROM pg_catalog.pg_user
-    *
-    * @returns {Array.<Object>} users list
-    * @memberof PostgreSQLClient
-    */
    async getUsers () {
       const { rows } = await this.raw('SELECT *  FROM pg_catalog.pg_user');
 
@@ -543,647 +570,24 @@ export class PostgreSQLClient extends AntaresCore {
             name: row.username,
             host: row.host,
             password: row.passwd
-         };
+         } as {name: string; host: string; password: string};
       });
    }
 
-   /**
-    * CREATE SCHEMA
-    *
-    * @returns {Promise<null>}
-    * @memberof MySQLClient
-    */
-   async createSchema (params) {
+   async createSchema (params: {name: string}) {
       return await this.raw(`CREATE SCHEMA "${params.name}"`);
    }
 
-   /**
-    * ALTER DATABASE
-    *
-    * @returns {Promise<null>}
-    * @memberof MySQLClient
-    */
-   async alterSchema (params) {
-      return await this.raw(`ALTER SCHEMA "${params.name}"`);
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   async alterSchema (params: {name: string}): Promise<void> {
+      return null;
    }
 
-   /**
-    * DROP DATABASE
-    *
-    * @returns {Promise<null>}
-    * @memberof MySQLClient
-    */
-   async dropSchema (params) {
+   async dropSchema (params: { database: string }) {
       return await this.raw(`DROP SCHEMA "${params.database}" CASCADE`);
    }
 
-   /**
-    * SHOW CREATE VIEW
-    *
-    * @returns {Array.<Object>} view informations
-    * @memberof PostgreSQLClient
-    */
-   async getViewInformations ({ schema, view }) {
-      const sql = `SELECT "definition" FROM "pg_views" WHERE "viewname"='${view}' AND "schemaname"='${schema}'`;
-      const results = await this.raw(sql);
-
-      return results.rows.map(row => {
-         return {
-            algorithm: '',
-            definer: '',
-            security: '',
-            updateOption: '',
-            sql: row.definition,
-            name: view
-         };
-      })[0];
-   }
-
-   /**
-    * DROP VIEW
-    *
-    * @returns {Promise<null>}
-    * @memberof PostgreSQLClient
-    */
-   async dropView (params) {
-      const sql = `DROP VIEW "${params.schema}"."${params.view}"`;
-      return await this.raw(sql);
-   }
-
-   /**
-    * ALTER VIEW
-    *
-    * @returns {Promise<null>}
-    * @memberof PostgreSQLClient
-    */
-   async alterView (params) {
-      const { view } = params;
-      let sql = `CREATE OR REPLACE VIEW "${view.schema}"."${view.oldName}" AS ${view.sql}`;
-
-      if (view.name !== view.oldName)
-         sql += `; ALTER VIEW "${view.schema}"."${view.oldName}" RENAME TO "${view.name}"`;
-
-      return await this.raw(sql);
-   }
-
-   /**
-    * CREATE VIEW
-    *
-    * @returns {Promise<null>}
-    * @memberof PostgreSQLClient
-    */
-   async createView (params) {
-      const sql = `CREATE VIEW "${params.schema}"."${params.name}" AS ${params.sql}`;
-      return await this.raw(sql);
-   }
-
-   /**
-    * SHOW CREATE TRIGGER
-    *
-    * @returns {Array.<Object>} view informations
-    * @memberof PostgreSQLClient
-    */
-   async getTriggerInformations ({ schema, trigger }) {
-      const [table, triggerName] = trigger.split('.');
-
-      const results = await this.raw(`
-         SELECT
-            information_schema.triggers.event_object_schema AS table_schema,
-            information_schema.triggers.event_object_table AS table_name,
-            information_schema.triggers.trigger_schema,
-            information_schema.triggers.trigger_name,
-            string_agg(event_manipulation, ',') AS EVENT,
-            action_timing AS activation,
-            action_condition AS condition,
-            action_statement AS definition,
-            (pg_trigger.tgenabled != 'D')::bool AS enabled
-         FROM pg_trigger
-         JOIN pg_class ON pg_trigger.tgrelid = pg_class.oid
-         JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace
-         JOIN information_schema.triggers ON pg_namespace.nspname = information_schema.triggers.trigger_schema
-            AND pg_class.relname = information_schema.triggers.event_object_table
-         WHERE trigger_schema = '${schema}'
-         AND trigger_name = '${triggerName}'
-         AND event_object_table = '${table}'
-         GROUP BY 1,2,3,4,6,7,8,9
-         ORDER BY table_schema,
-                  table_name
-      `);
-
-      return results.rows.map(row => {
-         return {
-            sql: row.definition,
-            name: row.trigger_name,
-            table: row.table_name,
-            event: [...new Set(row.event.split(','))],
-            activation: row.activation
-         };
-      })[0];
-   }
-
-   /**
-    * DROP TRIGGER
-    *
-    * @returns {Promise<null>}
-    * @memberof PostgreSQLClient
-    */
-   async dropTrigger (params) {
-      const triggerParts = params.trigger.split('.');
-      const sql = `DROP TRIGGER "${triggerParts[1]}" ON "${params.schema}"."${triggerParts[0]}"`;
-      return await this.raw(sql);
-   }
-
-   /**
-    * ALTER TRIGGER
-    *
-    * @returns {Promise<null>}
-    * @memberof PostgreSQLClient
-    */
-   async alterTrigger (params) {
-      const { trigger } = params;
-      const tempTrigger = Object.assign({}, trigger);
-      tempTrigger.name = `Antares_${tempTrigger.name}_tmp`;
-
-      try {
-         await this.createTrigger(tempTrigger);
-         await this.dropTrigger({ schema: trigger.schema, trigger: `${tempTrigger.table}.${tempTrigger.name}` });
-         await this.dropTrigger({ schema: trigger.schema, trigger: `${trigger.table}.${trigger.oldName}` });
-         await this.createTrigger(trigger);
-      }
-      catch (err) {
-         return Promise.reject(err);
-      }
-   }
-
-   /**
-    * CREATE TRIGGER
-    *
-    * @returns {Promise<null>}
-    * @memberof PostgreSQLClient
-    */
-   async createTrigger (params) {
-      const eventsString = Array.isArray(params.event) ? params.event.join(' OR ') : params.event;
-      const sql = `CREATE TRIGGER "${params.name}" ${params.activation} ${eventsString} ON "${params.schema}"."${params.table}" FOR EACH ROW ${params.sql}`;
-      return await this.raw(sql, { split: false });
-   }
-
-   async enableTrigger ({ schema, trigger }) {
-      const [table, triggerName] = trigger.split('.');
-      const sql = `ALTER TABLE "${schema}"."${table}" ENABLE TRIGGER "${triggerName}"`;
-      return await this.raw(sql, { split: false });
-   }
-
-   async disableTrigger ({ schema, trigger }) {
-      const [table, triggerName] = trigger.split('.');
-      const sql = `ALTER TABLE "${schema}"."${table}" DISABLE TRIGGER "${triggerName}"`;
-      return await this.raw(sql, { split: false });
-   }
-
-   /**
-    * SHOW CREATE PROCEDURE
-    *
-    * @returns {Array.<Object>} view informations
-    * @memberof PostgreSQLClient
-    */
-   async getRoutineInformations ({ schema, routine }) {
-      const sql = `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${routine}'));`;
-      const results = await this.raw(sql);
-
-      return results.rows.map(async row => {
-         if (!row.pg_get_functiondef) {
-            return {
-               definer: null,
-               sql: '',
-               parameters: [],
-               name: routine,
-               comment: '',
-               security: 'DEFINER',
-               deterministic: false,
-               dataAccess: 'CONTAINS SQL'
-            };
-         }
-
-         const sql = `SELECT proc.specific_schema AS procedure_schema,
-            proc.specific_name,
-            proc.routine_name AS procedure_name,
-            proc.external_language,
-            args.parameter_name,
-            args.parameter_mode,
-            args.data_type
-         FROM information_schema.routines proc
-         LEFT JOIN information_schema.parameters args
-            ON proc.specific_schema = args.specific_schema
-            AND proc.specific_name = args.specific_name
-         WHERE proc.routine_schema not in ('pg_catalog', 'information_schema')
-            AND proc.routine_type = 'PROCEDURE'
-            AND proc.routine_name = '${routine}'
-            AND proc.specific_schema = '${schema}'
-            AND args.data_type != NULL
-         ORDER BY procedure_schema,
-            specific_name,
-            procedure_name,
-            args.ordinal_position
-         `;
-
-         const results = await this.raw(sql);
-
-         const parameters = results.rows.map(row => {
-            return {
-               name: row.parameter_name,
-               type: row.data_type ? row.data_type.toUpperCase() : '',
-               length: '',
-               context: row.parameter_mode
-            };
-         });
-
-         return {
-            definer: '',
-            sql: row.pg_get_functiondef.match(/(\$(.*)\$)(.*)(\$(.*)\$)/gs)[0],
-            parameters: parameters || [],
-            name: routine,
-            comment: '',
-            security: row.pg_get_functiondef.includes('SECURITY DEFINER') ? 'DEFINER' : 'INVOKER',
-            deterministic: null,
-            dataAccess: null,
-            language: row.pg_get_functiondef.match(/(?<=LANGUAGE )(.*)(?<=[\S+\n\r\s])/gm)[0]
-         };
-      })[0];
-   }
-
-   /**
-    * DROP PROCEDURE
-    *
-    * @returns {Array.<Object>} parameters
-    * @memberof PostgreSQLClient
-    */
-   async dropRoutine (params) {
-      const sql = `DROP PROCEDURE "${params.schema}"."${params.routine}"`;
-      return await this.raw(sql);
-   }
-
-   /**
-    * ALTER PROCEDURE
-    *
-    * @returns {Array.<Object>} parameters
-    * @memberof PostgreSQLClient
-    */
-   async alterRoutine (params) {
-      const { routine } = params;
-      const tempProcedure = Object.assign({}, routine);
-      tempProcedure.name = `Antares_${tempProcedure.name}_tmp`;
-
-      try {
-         await this.createRoutine(tempProcedure);
-         await this.dropRoutine({ schema: routine.schema, routine: tempProcedure.name });
-         await this.dropRoutine({ schema: routine.schema, routine: routine.oldName });
-         await this.createRoutine(routine);
-      }
-      catch (err) {
-         return Promise.reject(err);
-      }
-   }
-
-   /**
-    * CREATE PROCEDURE
-    *
-    * @returns {Array.<Object>} parameters
-    * @memberof PostgreSQLClient
-    */
-   async createRoutine (routine) {
-      const parameters = 'parameters' in routine
-         ? routine.parameters.reduce((acc, curr) => {
-            acc.push(`${curr.context} ${curr.name} ${curr.type}`);
-            return acc;
-         }, []).join(',')
-         : '';
-
-      if (routine.schema !== 'public')
-         await this.use(routine.schema);
-
-      const sql = `CREATE PROCEDURE "${routine.schema}"."${routine.name}"(${parameters})
-         LANGUAGE ${routine.language}
-         SECURITY ${routine.security}
-         AS ${routine.sql}`;
-
-      return await this.raw(sql, { split: false });
-   }
-
-   /**
-    * SHOW CREATE FUNCTION
-    *
-    * @returns {Array.<Object>} view informations
-    * @memberof PostgreSQLClient
-    */
-   async getFunctionInformations ({ schema, func }) {
-      const sql = `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${func}'));`;
-      const results = await this.raw(sql);
-
-      return results.rows.map(async row => {
-         if (!row.pg_get_functiondef) {
-            return {
-               definer: null,
-               sql: '',
-               parameters: [],
-               name: func,
-               comment: '',
-               security: 'DEFINER',
-               deterministic: false,
-               dataAccess: 'CONTAINS SQL'
-            };
-         }
-
-         const sql = `SELECT proc.specific_schema AS procedure_schema,
-            proc.specific_name,
-            proc.routine_name AS procedure_name,
-            proc.external_language,
-            args.parameter_name,
-            args.parameter_mode,
-            args.data_type
-         FROM information_schema.routines proc
-         LEFT JOIN information_schema.parameters args
-            ON proc.specific_schema = args.specific_schema
-            AND proc.specific_name = args.specific_name
-         WHERE proc.routine_schema not in ('pg_catalog', 'information_schema')
-            AND proc.routine_type = 'FUNCTION'
-            AND proc.routine_name = '${func}'
-            AND proc.specific_schema = '${schema}'
-         ORDER BY procedure_schema,
-            specific_name,
-            procedure_name,
-            args.ordinal_position
-         `;
-
-         const results = await this.raw(sql);
-
-         const parameters = results.rows.filter(row => row.parameter_mode).map(row => {
-            return {
-               name: row.parameter_name,
-               type: row.data_type.toUpperCase(),
-               length: '',
-               context: row.parameter_mode
-            };
-         });
-
-         return {
-            definer: '',
-            sql: row.pg_get_functiondef.match(/(\$(.*)\$)(.*)(\$(.*)\$)/gs)[0],
-            parameters: parameters || [],
-            name: func,
-            comment: '',
-            security: row.pg_get_functiondef.includes('SECURITY DEFINER') ? 'DEFINER' : 'INVOKER',
-            deterministic: null,
-            dataAccess: null,
-            language: row.pg_get_functiondef.match(/(?<=LANGUAGE )(.*)(?<=[\S+\n\r\s])/gm)[0],
-            returns: row.pg_get_functiondef.match(/(?<=RETURNS )(.*)(?<=[\S+\n\r\s])/gm)[0].replace('SETOF ', '').toUpperCase()
-         };
-      })[0];
-   }
-
-   /**
-    * DROP FUNCTION
-    *
-    * @returns {Array.<Object>} parameters
-    * @memberof PostgreSQLClient
-    */
-   async dropFunction (params) {
-      const sql = `DROP FUNCTION "${params.schema}"."${params.func}"`;
-      return await this.raw(sql);
-   }
-
-   /**
-    * ALTER FUNCTION
-    *
-    * @returns {Array.<Object>} parameters
-    * @memberof PostgreSQLClient
-    */
-   async alterFunction (params) {
-      const { func } = params;
-      const tempProcedure = Object.assign({}, func);
-      tempProcedure.name = `Antares_${tempProcedure.name}_tmp`;
-
-      try {
-         await this.createFunction(tempProcedure);
-         await this.dropFunction({ schema: func.schema, func: tempProcedure.name });
-         await this.dropFunction({ schema: func.schema, func: func.oldName });
-         await this.createFunction(func);
-      }
-      catch (err) {
-         return Promise.reject(err);
-      }
-   }
-
-   /**
-    * CREATE FUNCTION
-    *
-    * @returns {Array.<Object>} parameters
-    * @memberof PostgreSQLClient
-    */
-   async createFunction (func) {
-      const parameters = 'parameters' in func
-         ? func.parameters.reduce((acc, curr) => {
-            acc.push(`${curr.context} ${curr.name || ''} ${curr.type}`);
-            return acc;
-         }, []).join(',')
-         : '';
-
-      if (func.schema !== 'public')
-         await this.use(func.schema);
-
-      const body = func.returns ? func.sql : '$function$\n$function$';
-
-      const sql = `CREATE FUNCTION "${func.schema}"."${func.name}" (${parameters})
-         RETURNS ${func.returns || 'void'}
-         LANGUAGE ${func.language}
-         SECURITY ${func.security}
-         AS ${body}`;
-
-      return await this.raw(sql, { split: false });
-   }
-
-   /**
-    * ALTER TRIGGER FUNCTION
-    *
-    * @returns {Array.<Object>} parameters
-    * @memberof PostgreSQLClient
-    */
-   async alterTriggerFunction (params) {
-      const { func } = params;
-
-      if (func.schema !== 'public')
-         await this.use(func.schema);
-
-      const body = func.returns ? func.sql : '$function$\n$function$';
-
-      const sql = `CREATE OR REPLACE FUNCTION "${func.schema}"."${func.name}" ()
-         RETURNS TRIGGER
-         LANGUAGE ${func.language}
-         AS ${body}`;
-
-      return await this.raw(sql, { split: false });
-   }
-
-   /**
-    * CREATE TRIGGER FUNCTION
-    *
-    * @returns {Array.<Object>} parameters
-    * @memberof PostgreSQLClient
-    */
-   async createTriggerFunction (func) {
-      if (func.schema !== 'public')
-         await this.use(func.schema);
-
-      const body = func.returns ? func.sql : '$function$\r\nBEGIN\r\n\r\nEND\r\n$function$';
-
-      const sql = `CREATE FUNCTION "${func.schema}"."${func.name}" ()
-         RETURNS TRIGGER
-         LANGUAGE ${func.language}
-         AS ${body}`;
-
-      return await this.raw(sql, { split: false });
-   }
-
-   /**
-    * SELECT * FROM pg_collation
-    *
-    * @returns {Array.<Object>} collations list
-    * @memberof PostgreSQLClient
-    */
-   async getCollations () {
-      return [];
-   }
-
-   /**
-    * SHOW ALL
-    *
-    * @returns {Array.<Object>} variables list
-    * @memberof PostgreSQLClient
-    */
-   async getVariables () {
-      const sql = 'SHOW ALL';
-      const results = await this.raw(sql);
-
-      return results.rows.map(row => {
-         return {
-            name: row.name,
-            value: row.setting
-         };
-      });
-   }
-
-   /**
-    * SHOW ENGINES
-    *
-    * @returns {Array.<Object>} engines list
-    * @memberof PostgreSQLClient
-    */
-   async getEngines () {
-      return {
-         name: 'PostgreSQL',
-         support: 'YES',
-         comment: '',
-         isDefault: true
-      };
-   }
-
-   /**
-    * SHOW VARIABLES LIKE '%vers%'
-    *
-    * @returns {Array.<Object>} version parameters
-    * @memberof PostgreSQLClient
-    */
-   async getVersion () {
-      const sql = 'SELECT version()';
-      const { rows } = await this.raw(sql);
-      const infos = rows[0].version.split(',');
-
-      return {
-         number: infos[0].split(' ')[1],
-         name: infos[0].split(' ')[0],
-         arch: infos[1],
-         os: infos[2]
-      };
-   }
-
-   async getProcesses () {
-      const sql = 'SELECT "pid", "usename", "client_addr", "datname", application_name , EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - "query_start")::INTEGER, "state", "query" FROM "pg_stat_activity"';
-
-      const { rows } = await this.raw(sql);
-
-      return rows.map(row => {
-         return {
-            id: row.pid,
-            user: row.usename,
-            host: row.client_addr,
-            database: row.datname,
-            application: row.application_name,
-            time: row.date_part,
-            state: row.state,
-            info: row.query
-         };
-      });
-   }
-
-   /**
-    *
-    * @param {number} id
-    * @returns {Promise<null>}
-    */
-   async killProcess (id) {
-      return await this.raw(`SELECT pg_terminate_backend(${id})`);
-   }
-
-   /**
-    *
-    * @param {string} tabUid
-    * @returns {Promise<null>}
-    */
-   async killTabQuery (tabUid) {
-      const id = this._runningConnections.get(tabUid);
-      if (id)
-         return await this.raw(`SELECT pg_cancel_backend(${id})`);
-   }
-
-   /**
-    *
-    * @param {string} tabUid
-    * @returns {Promise<null>}
-    */
-   async commitTab (tabUid) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         await connection.query('COMMIT');
-         return this.destroyConnectionToCommit(tabUid);
-      }
-   }
-
-   /**
-    *
-    * @param {string} tabUid
-    * @returns {Promise<null>}
-    */
-   async rollbackTab (tabUid) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         await connection.query('ROLLBACK');
-         return this.destroyConnectionToCommit(tabUid);
-      }
-   }
-
-   destroyConnectionToCommit (tabUid) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         connection.end();
-         this._connectionsToCommit.delete(tabUid);
-      }
-   }
-
-   /**
-    * CREATE TABLE
-    *
-    * @returns {Promise<null>}
-    * @memberof PostgreSQLClient
-    */
-   async createTable (params) {
+   async createTable (params: antares.CreateTableParams) {
       const {
          schema,
          fields,
@@ -1191,10 +595,10 @@ export class PostgreSQLClient extends AntaresCore {
          indexes,
          options
       } = params;
-      const newColumns = [];
-      const newIndexes = [];
-      const manageIndexes = [];
-      const newForeigns = [];
+      const newColumns: string[] = [];
+      const newIndexes: string[] = [];
+      const manageIndexes: string[] = [];
+      const newForeigns: string[] = [];
 
       let sql = `CREATE TABLE "${schema}"."${options.name}"`;
 
@@ -1232,16 +636,11 @@ export class PostgreSQLClient extends AntaresCore {
 
       sql = `${sql} (${[...newColumns, ...newIndexes, ...newForeigns].join(', ')})`;
       if (manageIndexes.length) sql = `${sql}; ${manageIndexes.join(';')}`;
+
       return await this.raw(sql);
    }
 
-   /**
-    * ALTER TABLE
-    *
-    * @returns {Promise<null>}
-    * @memberof PostgreSQLClient
-    */
-   async alterTable (params) {
+   async alterTable (params: antares.AlterTableParams) {
       const {
          table,
          schema,
@@ -1257,10 +656,10 @@ export class PostgreSQLClient extends AntaresCore {
          await this.use(schema);
 
       let sql = '';
-      const alterColumns = [];
-      const renameColumns = [];
-      const createSequences = [];
-      const manageIndexes = [];
+      const alterColumns: string[] = [];
+      const renameColumns: string[] = [];
+      const createSequences: string[] = [];
+      const manageIndexes: string[] = [];
 
       // ADD FIELDS
       additions.forEach(addition => {
@@ -1381,43 +780,486 @@ export class PostgreSQLClient extends AntaresCore {
       return await this.raw(sql);
    }
 
-   /**
-    * DUPLICATE TABLE
-    *
-    * @returns {Promise<null>}
-    * @memberof PostgreSQLClient
-    */
-   async duplicateTable (params) {
+   async duplicateTable (params: { schema: string; table: string }) {
       const sql = `CREATE TABLE "${params.schema}"."${params.table}_copy" (LIKE "${params.schema}"."${params.table}" INCLUDING ALL)`;
       return await this.raw(sql);
    }
 
-   /**
-    * TRUNCATE TABLE
-    *
-    * @returns {Promise<null>}
-    * @memberof PostgreSQLClient
-    */
-   async truncateTable (params) {
+   async truncateTable (params: { schema: string; table: string }) {
       const sql = `TRUNCATE TABLE "${params.schema}"."${params.table}"`;
       return await this.raw(sql);
    }
 
-   /**
-    * DROP TABLE
-    *
-    * @returns {Promise<null>}
-    * @memberof PostgreSQLClient
-    */
-   async dropTable (params) {
+   async dropTable (params: { schema: string; table: string }) {
       const sql = `DROP TABLE "${params.schema}"."${params.table}"`;
       return await this.raw(sql);
    }
 
+   async getViewInformations ({ schema, view }: { schema: string; view: string }) {
+      const sql = `SELECT "definition" FROM "pg_views" WHERE "viewname"='${view}' AND "schemaname"='${schema}'`;
+      const results = await this.raw(sql);
+
+      return results.rows.map(row => {
+         return {
+            algorithm: '',
+            definer: '',
+            security: '',
+            updateOption: '',
+            sql: row.definition,
+            name: view
+         };
+      })[0];
+   }
+
+   async dropView (params: { schema: string; view: string }) {
+      const sql = `DROP VIEW "${params.schema}"."${params.view}"`;
+      return await this.raw(sql);
+   }
+
+   async alterView ({ view }: { view: antares.AlterViewParams }) {
+      let sql = `CREATE OR REPLACE VIEW "${view.schema}"."${view.oldName}" AS ${view.sql}`;
+
+      if (view.name !== view.oldName)
+         sql += `; ALTER VIEW "${view.schema}"."${view.oldName}" RENAME TO "${view.name}"`;
+
+      return await this.raw(sql);
+   }
+
+   async createView (params: antares.CreateViewParams) {
+      const sql = `CREATE VIEW "${params.schema}"."${params.name}" AS ${params.sql}`;
+      return await this.raw(sql);
+   }
+
+   async getTriggerInformations ({ schema, trigger }: { schema: string; trigger: string }) {
+      const [table, triggerName] = trigger.split('.');
+
+      const results = await this.raw(`
+         SELECT
+            information_schema.triggers.event_object_schema AS table_schema,
+            information_schema.triggers.event_object_table AS table_name,
+            information_schema.triggers.trigger_schema,
+            information_schema.triggers.trigger_name,
+            string_agg(event_manipulation, ',') AS EVENT,
+            action_timing AS activation,
+            action_condition AS condition,
+            action_statement AS definition,
+            (pg_trigger.tgenabled != 'D')::bool AS enabled
+         FROM pg_trigger
+         JOIN pg_class ON pg_trigger.tgrelid = pg_class.oid
+         JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace
+         JOIN information_schema.triggers ON pg_namespace.nspname = information_schema.triggers.trigger_schema
+            AND pg_class.relname = information_schema.triggers.event_object_table
+         WHERE trigger_schema = '${schema}'
+         AND trigger_name = '${triggerName}'
+         AND event_object_table = '${table}'
+         GROUP BY 1,2,3,4,6,7,8,9
+         ORDER BY table_schema,
+                  table_name
+      `);
+
+      return results.rows.map(row => {
+         return {
+            sql: row.definition,
+            name: row.trigger_name,
+            table: row.table_name,
+            event: [...new Set(row.event.split(','))],
+            activation: row.activation
+         };
+      })[0];
+   }
+
+   async dropTrigger (params: { schema: string; trigger: string }) {
+      const triggerParts = params.trigger.split('.');
+      const sql = `DROP TRIGGER "${triggerParts[1]}" ON "${params.schema}"."${triggerParts[0]}"`;
+      return await this.raw(sql);
+   }
+
+   async alterTrigger ({ trigger } : {trigger: antares.AlterTriggerParams}) {
+      const tempTrigger = Object.assign({}, trigger);
+      tempTrigger.name = `Antares_${tempTrigger.name}_tmp`;
+
+      try {
+         await this.createTrigger(tempTrigger);
+         await this.dropTrigger({ schema: trigger.schema, trigger: `${tempTrigger.table}.${tempTrigger.name}` });
+         await this.dropTrigger({ schema: trigger.schema, trigger: `${trigger.table}.${trigger.oldName}` });
+         await this.createTrigger(trigger);
+      }
+      catch (err) {
+         return Promise.reject(err);
+      }
+   }
+
+   async createTrigger (params: antares.CreateTriggerParams) {
+      const eventsString = Array.isArray(params.event) ? params.event.join(' OR ') : params.event;
+      const sql = `CREATE TRIGGER "${params.name}" ${params.activation} ${eventsString} ON "${params.schema}"."${params.table}" FOR EACH ROW ${params.sql}`;
+      return await this.raw(sql, { split: false });
+   }
+
+   async enableTrigger ({ schema, trigger }: { schema: string; trigger: string }) {
+      const [table, triggerName] = trigger.split('.');
+      const sql = `ALTER TABLE "${schema}"."${table}" ENABLE TRIGGER "${triggerName}"`;
+      return await this.raw(sql, { split: false });
+   }
+
+   async disableTrigger ({ schema, trigger }: { schema: string; trigger: string }) {
+      const [table, triggerName] = trigger.split('.');
+      const sql = `ALTER TABLE "${schema}"."${table}" DISABLE TRIGGER "${triggerName}"`;
+      return await this.raw(sql, { split: false });
+   }
+
+   async getRoutineInformations ({ schema, routine }: { schema: string; routine: string }) {
+      const sql = `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${routine}'));`;
+      const results = await this.raw(sql);
+
+      return results.rows.map(async row => {
+         if (!row.pg_get_functiondef) {
+            return {
+               definer: null,
+               sql: '',
+               parameters: [],
+               name: routine,
+               comment: '',
+               security: 'DEFINER',
+               deterministic: false,
+               dataAccess: 'CONTAINS SQL'
+            };
+         }
+
+         const sql = `SELECT proc.specific_schema AS procedure_schema,
+            proc.specific_name,
+            proc.routine_name AS procedure_name,
+            proc.external_language,
+            args.parameter_name,
+            args.parameter_mode,
+            args.data_type
+         FROM information_schema.routines proc
+         LEFT JOIN information_schema.parameters args
+            ON proc.specific_schema = args.specific_schema
+            AND proc.specific_name = args.specific_name
+         WHERE proc.routine_schema not in ('pg_catalog', 'information_schema')
+            AND proc.routine_type = 'PROCEDURE'
+            AND proc.routine_name = '${routine}'
+            AND proc.specific_schema = '${schema}'
+            AND args.data_type != NULL
+         ORDER BY procedure_schema,
+            specific_name,
+            procedure_name,
+            args.ordinal_position
+         `;
+
+         const results = await this.raw(sql);
+
+         const parameters = results.rows.map(row => {
+            return {
+               name: row.parameter_name,
+               type: row.data_type ? row.data_type.toUpperCase() : '',
+               length: '',
+               context: row.parameter_mode
+            };
+         });
+
+         return {
+            definer: '',
+            sql: row.pg_get_functiondef.match(/(\$(.*)\$)(.*)(\$(.*)\$)/gs)[0],
+            parameters: parameters || [],
+            name: routine,
+            comment: '',
+            security: row.pg_get_functiondef.includes('SECURITY DEFINER') ? 'DEFINER' : 'INVOKER',
+            deterministic: null,
+            dataAccess: null,
+            language: row.pg_get_functiondef.match(/(?<=LANGUAGE )(.*)(?<=[\S+\n\r\s])/gm)[0]
+         };
+      })[0];
+   }
+
+   async dropRoutine (params: { schema: string; routine: string }) {
+      const sql = `DROP PROCEDURE "${params.schema}"."${params.routine}"`;
+      return await this.raw(sql);
+   }
+
+   async alterRoutine ({ routine }: {routine: antares.AlterRoutineParams}) {
+      const tempProcedure = Object.assign({}, routine);
+      tempProcedure.name = `Antares_${tempProcedure.name}_tmp`;
+
+      try {
+         await this.createRoutine(tempProcedure);
+         await this.dropRoutine({ schema: routine.schema, routine: tempProcedure.name });
+         await this.dropRoutine({ schema: routine.schema, routine: routine.oldName });
+         await this.createRoutine(routine);
+      }
+      catch (err) {
+         return Promise.reject(err);
+      }
+   }
+
+   async createRoutine (routine: antares.CreateRoutineParams) {
+      const parameters = 'parameters' in routine
+         ? routine.parameters.reduce((acc, curr) => {
+            acc.push(`${curr.context} ${curr.name} ${curr.type}`);
+            return acc;
+         }, []).join(',')
+         : '';
+
+      if (routine.schema !== 'public')
+         await this.use(routine.schema);
+
+      const sql = `CREATE PROCEDURE "${routine.schema}"."${routine.name}"(${parameters})
+         LANGUAGE ${routine.language}
+         SECURITY ${routine.security}
+         AS ${routine.sql}`;
+
+      return await this.raw(sql, { split: false });
+   }
+
+   async getFunctionInformations ({ schema, func }: { schema: string; func: string }) {
+      /* eslint-disable camelcase */
+      interface CreateFunctionResult {
+         pg_get_functiondef: string;
+      }
+
+      interface FunctionParamsResult {
+         parameter_mode: string;
+         parameter_name: string;
+         data_type: string;
+      }
+      /* eslint-enable camelcase */
+
+      const sql = `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${func}'));`;
+      const results = await this.raw<antares.QueryResult<CreateFunctionResult>>(sql);
+
+      return results.rows.map(async row => {
+         if (!row.pg_get_functiondef) {
+            return {
+               definer: null,
+               sql: '',
+               parameters: [],
+               name: func,
+               comment: '',
+               security: 'DEFINER',
+               deterministic: false,
+               dataAccess: 'CONTAINS SQL'
+            };
+         }
+
+         const sql = `SELECT proc.specific_schema AS procedure_schema,
+            proc.specific_name,
+            proc.routine_name AS procedure_name,
+            proc.external_language,
+            args.parameter_name,
+            args.parameter_mode,
+            args.data_type
+         FROM information_schema.routines proc
+         LEFT JOIN information_schema.parameters args
+            ON proc.specific_schema = args.specific_schema
+            AND proc.specific_name = args.specific_name
+         WHERE proc.routine_schema not in ('pg_catalog', 'information_schema')
+            AND proc.routine_type = 'FUNCTION'
+            AND proc.routine_name = '${func}'
+            AND proc.specific_schema = '${schema}'
+         ORDER BY procedure_schema,
+            specific_name,
+            procedure_name,
+            args.ordinal_position
+         `;
+
+         const results = await this.raw<antares.QueryResult<FunctionParamsResult>>(sql);
+
+         const parameters = results.rows.filter(row => row.parameter_mode).map(row => {
+            return {
+               name: row.parameter_name,
+               type: row.data_type.toUpperCase(),
+               length: '',
+               context: row.parameter_mode
+            };
+         });
+
+         return {
+            definer: '',
+            sql: row.pg_get_functiondef.match(/(\$(.*)\$)(.*)(\$(.*)\$)/gs)[0],
+            parameters: parameters || [],
+            name: func,
+            comment: '',
+            security: row.pg_get_functiondef.includes('SECURITY DEFINER') ? 'DEFINER' : 'INVOKER',
+            deterministic: null,
+            dataAccess: null,
+            language: row.pg_get_functiondef.match(/(?<=LANGUAGE )(.*)(?<=[\S+\n\r\s])/gm)[0],
+            returns: row.pg_get_functiondef.match(/(?<=RETURNS )(.*)(?<=[\S+\n\r\s])/gm)[0].replace('SETOF ', '').toUpperCase()
+         };
+      })[0];
+   }
+
+   async dropFunction (params: { schema: string; func: string }) {
+      const sql = `DROP FUNCTION "${params.schema}"."${params.func}"`;
+      return await this.raw(sql);
+   }
+
    /**
-    * @returns {String} SQL string
+    * ALTER FUNCTION
+    *
+    * @returns {Array.<Object>} parameters
     * @memberof PostgreSQLClient
     */
+   async alterFunction ({ func }: { func: antares.AlterFunctionParams }) {
+      const tempProcedure = Object.assign({}, func);
+      tempProcedure.name = `Antares_${tempProcedure.name}_tmp`;
+
+      try {
+         await this.createFunction(tempProcedure);
+         await this.dropFunction({ schema: func.schema, func: tempProcedure.name });
+         await this.dropFunction({ schema: func.schema, func: func.oldName });
+         await this.createFunction(func);
+      }
+      catch (err) {
+         return Promise.reject(err);
+      }
+   }
+
+   async createFunction (func: antares.CreateFunctionParams) {
+      const parameters = 'parameters' in func
+         ? func.parameters.reduce((acc, curr) => {
+            acc.push(`${curr.context} ${curr.name || ''} ${curr.type}`);
+            return acc;
+         }, []).join(',')
+         : '';
+
+      if (func.schema !== 'public')
+         await this.use(func.schema);
+
+      const body = func.returns ? func.sql : '$function$\n$function$';
+
+      const sql = `CREATE FUNCTION "${func.schema}"."${func.name}" (${parameters})
+         RETURNS ${func.returns || 'void'}
+         LANGUAGE ${func.language}
+         SECURITY ${func.security}
+         AS ${body}`;
+
+      return await this.raw(sql, { split: false });
+   }
+
+   async alterTriggerFunction ({ func }: { func: antares.CreateFunctionParams}) {
+      if (func.schema !== 'public')
+         await this.use(func.schema);
+
+      const body = func.returns ? func.sql : '$function$\n$function$';
+
+      const sql = `CREATE OR REPLACE FUNCTION "${func.schema}"."${func.name}" ()
+         RETURNS TRIGGER
+         LANGUAGE ${func.language}
+         AS ${body}`;
+
+      return await this.raw(sql, { split: false });
+   }
+
+   async createTriggerFunction (func: antares.CreateFunctionParams) {
+      if (func.schema !== 'public')
+         await this.use(func.schema);
+
+      const body = func.returns ? func.sql : '$function$\r\nBEGIN\r\n\r\nEND\r\n$function$';
+
+      const sql = `CREATE FUNCTION "${func.schema}"."${func.name}" ()
+         RETURNS TRIGGER
+         LANGUAGE ${func.language}
+         AS ${body}`;
+
+      return await this.raw(sql, { split: false });
+   }
+
+   async getCollations (): Promise<null[]> {
+      return [];
+   }
+
+   async getVariables () {
+      interface ShowVariablesResult {
+         name: string;
+         setting: string;
+      }
+
+      const sql = 'SHOW ALL';
+      const results = await this.raw<antares.QueryResult<ShowVariablesResult>>(sql);
+
+      return results.rows.map(row => {
+         return {
+            name: row.name,
+            value: row.setting
+         };
+      });
+   }
+
+   async getEngines () {
+      return {
+         name: 'PostgreSQL',
+         support: 'YES',
+         comment: '',
+         isDefault: true
+      };
+   }
+
+   async getVersion () {
+      const sql = 'SELECT version()';
+      const { rows } = await this.raw(sql);
+      const infos = rows[0].version.split(',');
+
+      return {
+         number: infos[0].split(' ')[1],
+         name: infos[0].split(' ')[0],
+         arch: infos[1],
+         os: infos[2]
+      };
+   }
+
+   async getProcesses () {
+      const sql = 'SELECT "pid", "usename", "client_addr", "datname", application_name , EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - "query_start")::INTEGER, "state", "query" FROM "pg_stat_activity"';
+
+      const { rows } = await this.raw(sql);
+
+      return rows.map(row => {
+         return {
+            id: row.pid,
+            user: row.usename,
+            host: row.client_addr,
+            database: row.datname,
+            application: row.application_name,
+            time: row.date_part,
+            state: row.state,
+            info: row.query
+         };
+      });
+   }
+
+   async killProcess (id: number) {
+      return await this.raw(`SELECT pg_terminate_backend(${id})`);
+   }
+
+   async killTabQuery (tabUid: string) {
+      const id = this._runningConnections.get(tabUid);
+      if (id)
+         return await this.raw(`SELECT pg_cancel_backend(${id})`);
+   }
+
+   async commitTab (tabUid: string) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection) {
+         await connection.query('COMMIT');
+         return this.destroyConnectionToCommit(tabUid);
+      }
+   }
+
+   async rollbackTab (tabUid: string) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection) {
+         await connection.query('ROLLBACK');
+         return this.destroyConnectionToCommit(tabUid);
+      }
+   }
+
+   destroyConnectionToCommit (tabUid: string) {
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection) {
+         (connection as pg.Client).end();
+         this._connectionsToCommit.delete(tabUid);
+      }
+   }
+
    getSQL () {
       // SELECT
       const selectArray = this._query.select.reduce(this._reducer, []);
@@ -1471,17 +1313,8 @@ export class PostgreSQLClient extends AntaresCore {
       return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}${offsetRaw}${insertRaw}`;
    }
 
-   /**
-    * @param {string} sql raw SQL query
-    * @param {object} args
-    * @param {boolean} args.nest
-    * @param {boolean} args.details
-    * @param {boolean} args.split
-    * @returns {Promise}
-    * @memberof PostgreSQLClient
-    */
-   async raw (sql, args) {
-      if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
+   async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {
+      if (process.env.NODE_ENV === 'development') this._logger(sql);
 
       args = {
          nest: false,
@@ -1495,7 +1328,7 @@ export class PostgreSQLClient extends AntaresCore {
       if (!args.comments)
          sql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '');// Remove comments
 
-      const resultsArr = [];
+      const resultsArr: antares.QueryResult[] = [];
       let paramsArr = [];
       const queries = args.split
          ? sql.split(/(?!\B'[^']*);(?![^']*'\B)/gm)
@@ -1503,8 +1336,8 @@ export class PostgreSQLClient extends AntaresCore {
             .map(q => q.trim())
          : [sql];
 
-      let connection;
-      const isPool = this._connection instanceof Pool;
+      let connection: pg.Client | pg.PoolClient;
+      const isPool = this._connection instanceof pg.Pool;
 
       if (!args.autocommit && args.tabUid) { // autocommit OFF
          if (this._connectionsToCommit.has(args.tabUid))
@@ -1515,11 +1348,12 @@ export class PostgreSQLClient extends AntaresCore {
             this._connectionsToCommit.set(args.tabUid, connection);
          }
       }
-      else// autocommit ON
-         connection = isPool ? await this._connection.connect() : this._connection;
+      else { // autocommit ON
+         connection = isPool ? await this._connection.connect() as pg.PoolClient : this._connection as pg.Client;
+      }
 
       if (args.tabUid && isPool)
-         this._runningConnections.set(args.tabUid, connection.processID);
+         this._runningConnections.set(args.tabUid, (connection as pg.PoolClient & { processID: number }).processID);
 
       if (args.schema && args.schema !== 'public')
          await this.use(args.schema, connection);
@@ -1528,8 +1362,8 @@ export class PostgreSQLClient extends AntaresCore {
          if (!query) continue;
 
          const timeStart = new Date();
-         let timeStop;
-         let keysArr = [];
+         let timeStop: Date;
+         let keysArr: antares.QueryForeign[] = [];
 
          const { rows, report, fields, keys, duration } = await new Promise((resolve, reject) => {
             (async () => {
@@ -1538,16 +1372,17 @@ export class PostgreSQLClient extends AntaresCore {
 
                   timeStop = new Date();
 
-                  let ast;
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  let ast: any;
 
                   try {
-                     [ast] = parse(query);
+                     [ast] = pgAst.parse(query);// TODO: maybe refactor
                   }
                   catch (err) {}
 
                   const { rows, fields } = res;
                   let queryResult;
-                  let tablesInfo;
+                  let tablesInfo: { table: string; schema: string }[];
 
                   if (args.nest) {
                      const tablesID = [...new Set(fields.map(field => field.tableID))].toString();
@@ -1567,10 +1402,10 @@ export class PostgreSQLClient extends AntaresCore {
                   let remappedFields = fields
                      ? fields.map(field => {
                         if (!field || Array.isArray(field))
-                           return false;
+                           return undefined;
 
-                        let schema = ast && ast.from && 'schema' in ast.from[0] ? ast.from[0].schema : this._schema;
-                        let table = ast && ast.from ? ast.from[0].name : null;
+                        let schema: string = ast && ast.from && 'schema' in ast.from[0] ? ast.from[0].schema : this._schema;
+                        let table: string = ast && ast.from ? ast.from[0].name : null;
 
                         if (args.nest) {
                            schema = tablesInfo[field.tableID] ? tablesInfo[field.tableID].schema : this._schema;
@@ -1586,7 +1421,9 @@ export class PostgreSQLClient extends AntaresCore {
                            // TODO: pick ast.from index if multiple
                            tableAlias: ast && ast.from ? ast.from[0].as : null,
                            orgTable: ast && ast.from ? ast.from[0].name : null,
-                           type: this.types[field.dataTypeID] || field.format
+                           type: this.types[field.dataTypeID] || field.format,
+                           length: undefined as number,
+                           key: undefined as string
                         };
                      }).filter(Boolean)
                      : [];
@@ -1619,7 +1456,7 @@ export class PostgreSQLClient extends AntaresCore {
                                     if (fieldIndex) {
                                        const key = fieldIndex.type === 'PRIMARY' ? 'pri' : fieldIndex.type === 'UNIQUE' ? 'uni' : 'mul';
                                        field = { ...field, key };
-                                    };
+                                    }
                                  }
 
                                  return field;
@@ -1627,7 +1464,7 @@ export class PostgreSQLClient extends AntaresCore {
                            }
                            catch (err) {
                               if (isPool && args.autocommit) {
-                                 connection.release();
+                                 (connection as pg.PoolClient).release();
                                  this._runningConnections.delete(args.tabUid);
                               }
                               reject(err);
@@ -1639,7 +1476,7 @@ export class PostgreSQLClient extends AntaresCore {
                            }
                            catch (err) {
                               if (isPool && args.autocommit) {
-                                 connection.release();
+                                 (connection as pg.PoolClient).release();
                                  this._runningConnections.delete(args.tabUid);
                               }
                               reject(err);
@@ -1649,7 +1486,7 @@ export class PostgreSQLClient extends AntaresCore {
                   }
 
                   resolve({
-                     duration: timeStop - timeStart,
+                     duration: timeStop.getTime() - timeStart.getTime(),
                      rows: Array.isArray(queryResult) ? queryResult.some(el => Array.isArray(el)) ? [] : queryResult : false,
                      report: !Array.isArray(queryResult) ? queryResult : false,
                      fields: remappedFields,
@@ -1658,7 +1495,7 @@ export class PostgreSQLClient extends AntaresCore {
                }
                catch (err) {
                   if (isPool && args.autocommit) {
-                     connection.release();
+                     (connection as pg.PoolClient).release();
                      this._runningConnections.delete(args.tabUid);
                   }
                   reject(err);
@@ -1670,10 +1507,12 @@ export class PostgreSQLClient extends AntaresCore {
       }
 
       if (isPool && args.autocommit) {
-         connection.release();
+         (connection as pg.PoolClient).release();
          this._runningConnections.delete(args.tabUid);
       }
 
-      return resultsArr.length === 1 ? resultsArr[0] : resultsArr;
+      const result = resultsArr.length === 1 ? resultsArr[0] : resultsArr;
+
+      return result as unknown as T;
    }
 }

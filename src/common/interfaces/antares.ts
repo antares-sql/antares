@@ -72,6 +72,7 @@ export interface TableField {
    charset?: string;
    collation?: string;
    autoIncrement?: boolean;
+   isArray?: boolean;
    onUpdate?: string;
    comment?: string;
    after?: string;
@@ -189,6 +190,7 @@ export interface CreateRoutineParams {
    dataAccess: string;
    security: string;
    comment?: string;
+   language?: string;
    sql: string;
 }
 
@@ -208,6 +210,7 @@ export interface CreateFunctionParams {
    sql: string;
    returns: string;
    returnsLength: number;
+   language?: string;
 }
 
 export interface AlterFunctionParams extends CreateFunctionParams {
