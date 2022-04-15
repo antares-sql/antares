@@ -1,14 +1,20 @@
+import * as exporter from 'common/interfaces/exporter';
+import * as mysql from 'mysql2/promise';
 import { SqlExporter } from './SqlExporter';
 import { BLOB, BIT, DATE, DATETIME, FLOAT, SPATIAL, IS_MULTI_SPATIAL, NUMBER } from 'common/fieldTypes';
 import hexToBinary from 'common/libs/hexToBinary';
 import { getArrayDepth } from 'common/libs/getArrayDepth';
-import moment from 'moment';
+import * as moment from 'moment';
 import { lineString, point, polygon } from '@turf/helpers';
+import { MySQLClient } from '../../clients/MySQLClient';
 
 export default class MysqlExporter extends SqlExporter {
-   constructor (...args) {
-      super(...args);
+   protected _client: MySQLClient;
 
+   constructor (client: MySQLClient, tables: exporter.TableParams[], options: exporter.ExportOptions) {
+      super(tables, options);
+
+      this._client = client;
       this._commentChar = '#';
    }
 
@@ -42,7 +48,7 @@ ${footer}
 `;
    }
 
-   async getCreateTable (tableName) {
+   async getCreateTable (tableName: string) {
       const { rows } = await this._client.raw(
          `SHOW CREATE TABLE \`${this.schemaName}\`.\`${tableName}\``
       );
@@ -54,11 +60,11 @@ ${footer}
       return rows[0][col] + ';';
    }
 
-   getDropTable (tableName) {
+   getDropTable (tableName: string) {
       return `DROP TABLE IF EXISTS \`${tableName}\`;`;
    }
 
-   async * getTableInsert (tableName) {
+   async * getTableInsert (tableName: string) {
       let rowCount = 0;
       let sqlStr = '';
 
@@ -109,7 +115,7 @@ ${footer}
                queryLength = 0;
                rowsWritten = 0;
             }
-            else if (parseInt(rowIndex) === 0) sqlInsertString += '\n\t(';
+            else if (rowIndex === 0) sqlInsertString += '\n\t(';
             else sqlInsertString += ',\n\t(';
 
             for (const i in notGeneratedColumns) {
@@ -124,7 +130,7 @@ ${footer}
                }
                else if (DATETIME.includes(column.type)) {
                   let datePrecision = '';
-                  for (let i = 0; i < column.precision; i++)
+                  for (let i = 0; i < column.datePrecision; i++)
                      datePrecision += i === 0 ? '.S' : 'S';
 
                   sqlInsertString += moment(val).isValid()
@@ -144,7 +150,7 @@ ${footer}
                   if (IS_MULTI_SPATIAL.includes(column.type)) {
                      const features = [];
                      for (const element of val)
-                        features.push(this.getMarkers(element));
+                        features.push(this._getGeoJSON(element));
 
                      geoJson = {
                         type: 'FeatureCollection',
@@ -323,7 +329,7 @@ ${footer}
       return sqlString;
    }
 
-   async getRoutineSyntax (name, type, definer) {
+   async getRoutineSyntax (name: string, type: string, definer: string) {
       const { rows: routines } = await this._client.raw(
          `SHOW CREATE ${type} \`${this.schemaName}\`.\`${name}\``
       );
@@ -353,12 +359,13 @@ ${footer}
       return sqlString;
    }
 
-   async _queryStream (sql) {
+   async _queryStream (sql: string) {
       if (process.env.NODE_ENV === 'development') console.log('EXPORTER:', sql);
-      const isPool = typeof this._client._connection.getConnection === 'function';
-      const connection = isPool ? await this._client._connection.getConnection() : this._client._connection;
-      const stream = connection.connection.query(sql).stream();
-      const dispose = () => connection.destroy();
+      const isPool = 'getConnection' in this._client._connection;
+      const connection = isPool ? await (this._client._connection as mysql.Pool).getConnection() : this._client._connection;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const stream = (connection as any).connection.query(sql).stream();
+      const dispose = () => (connection as mysql.PoolConnection).release();
 
       stream.on('end', dispose);
       stream.on('error', dispose);
@@ -366,17 +373,17 @@ ${footer}
       return stream;
    }
 
-   getEscapedDefiner (definer) {
+   getEscapedDefiner (definer: string) {
       return definer
          .split('@')
          .map(part => '`' + part + '`')
          .join('@');
    }
 
-   escapeAndQuote (val) {
+   escapeAndQuote (val: string) {
       // eslint-disable-next-line no-control-regex
       const CHARS_TO_ESCAPE = /[\0\b\t\n\r\x1a"'\\]/g;
-      const CHARS_ESCAPE_MAP = {
+      const CHARS_ESCAPE_MAP: {[key: string]: string} = {
          '\0': '\\0',
          '\b': '\\b',
          '\t': '\\t',
@@ -405,14 +412,16 @@ ${footer}
       return `'${escapedVal}'`;
    }
 
-   _getGeoJSON (val) {
+   /* eslint-disable @typescript-eslint/no-explicit-any */
+   _getGeoJSON (val: any) {
       if (Array.isArray(val)) {
          if (getArrayDepth(val) === 1)
             return lineString(val.reduce((acc, curr) => [...acc, [curr.x, curr.y]], []));
          else
-            return polygon(val.map(arr => arr.reduce((acc, curr) => [...acc, [curr.x, curr.y]], [])));
+            return polygon(val.map(arr => arr.reduce((acc: any, curr: any) => [...acc, [curr.x, curr.y]], [])));
       }
       else
          return point([val.x, val.y]);
    }
+   /* eslint-enable @typescript-eslint/no-explicit-any */
 }

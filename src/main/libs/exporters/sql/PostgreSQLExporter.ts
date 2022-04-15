@@ -1,12 +1,21 @@
+import * as antares from 'common/interfaces/antares';
+import * as exporter from 'common/interfaces/exporter';
 import { SqlExporter } from './SqlExporter';
 import { BLOB, BIT, DATE, DATETIME, FLOAT, NUMBER, TEXT_SEARCH } from 'common/fieldTypes';
 import hexToBinary from 'common/libs/hexToBinary';
-import { getArrayDepth } from 'common/libs/getArrayDepth';
-import moment from 'moment';
-import { lineString, point, polygon } from '@turf/helpers';
-import QueryStream from 'pg-query-stream';
+import * as moment from 'moment';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import * as QueryStream from 'pg-query-stream';
+import { PostgreSQLClient } from '../../clients/PostgreSQLClient';
 
 export default class PostgreSQLExporter extends SqlExporter {
+   constructor (client: PostgreSQLClient, tables: exporter.TableParams[], options: exporter.ExportOptions) {
+      super(tables, options);
+
+      this._client = client;
+   }
+
    async getSqlHeader () {
       let dump = await super.getSqlHeader();
       dump += `
@@ -30,11 +39,28 @@ SET row_security = off;\n\n\n`;
       return dump;
    }
 
-   async getCreateTable (tableName) {
+   async getCreateTable (tableName: string) {
+      /* eslint-disable camelcase */
+      interface SequenceRecord {
+         sequence_catalog: string;
+         sequence_schema: string;
+         sequence_name: string;
+         data_type: string;
+         numeric_precision: number;
+         numeric_precision_radix: number;
+         numeric_scale: number;
+         start_value: string;
+         minimum_value: string;
+         maximum_value: string;
+         increment: string;
+         cycle_option: string;
+      }
+      /* eslint-enable camelcase */
+
       let createSql = '';
       const sequences = [];
       const columnsSql = [];
-      const arrayTypes = {
+      const arrayTypes: {[key: string]: string} = {
          _int2: 'smallint',
          _int4: 'integer',
          _int8: 'bigint',
@@ -60,7 +86,7 @@ SET row_security = off;\n\n\n`;
          if (fieldType === 'USER-DEFINED') fieldType = `"${this.schemaName}".${column.udt_name}`;
          else if (fieldType === 'ARRAY') {
             if (Object.keys(arrayTypes).includes(fieldType))
-               fieldType = arrayTypes[type] + '[]';
+               fieldType = arrayTypes[column.udt_name] + '[]';
             else
                fieldType = column.udt_name.replaceAll('_', '') + '[]';
          }
@@ -91,7 +117,7 @@ SET row_security = off;\n\n\n`;
             .schema('information_schema')
             .from('sequences')
             .where({ sequence_schema: `= '${this.schemaName}'`, sequence_name: `= '${sequence}'` })
-            .run();
+            .run<SequenceRecord>();
 
          if (rows.length) {
             createSql += `CREATE SEQUENCE "${this.schemaName}"."${sequence}"
@@ -119,7 +145,7 @@ SET row_security = off;\n\n\n`;
          .schema('pg_catalog')
          .from('pg_indexes')
          .where({ schemaname: `= '${this.schemaName}'`, tablename: `= '${tableName}'` })
-         .run();
+         .run<{indexdef: string}>();
 
       for (const index of indexes)
          createSql += `${index.indexdef};\n`;
@@ -157,11 +183,11 @@ SET row_security = off;\n\n\n`;
       return createSql;
    }
 
-   getDropTable (tableName) {
+   getDropTable (tableName: string) {
       return `DROP TABLE IF EXISTS "${this.schemaName}"."${tableName}";`;
    }
 
-   async * getTableInsert (tableName) {
+   async * getTableInsert (tableName: string) {
       let rowCount = 0;
       const sqlStr = '';
 
@@ -205,14 +231,14 @@ SET row_security = off;\n\n\n`;
                }
                else if (DATETIME.includes(column.type)) {
                   let datePrecision = '';
-                  for (let i = 0; i < column.precision; i++)
+                  for (let i = 0; i < column.datePrecision; i++)
                      datePrecision += i === 0 ? '.S' : 'S';
 
                   sqlInsertString += moment(val).isValid()
                      ? this.escapeAndQuote(moment(val).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`))
                      : this.escapeAndQuote(val);
                }
-               else if (column.isArray) {
+               else if ('isArray' in column) {
                   let parsedVal;
                   if (Array.isArray(val))
                      parsedVal = JSON.stringify(val).replaceAll('[', '{').replaceAll(']', '}');
@@ -254,7 +280,7 @@ SET row_security = off;\n\n\n`;
 
    async getCreateTypes () {
       let sqlString = '';
-      const { rows: types } = await this._client.raw(`
+      const { rows: types } = await this._client.raw<antares.QueryResult<{typname: string; enumlabel: string}>>(`
          SELECT pg_type.typname, pg_enum.enumlabel 
          FROM pg_type 
          JOIN pg_enum ON pg_enum.enumtypid = pg_type.oid;
@@ -360,6 +386,15 @@ SET row_security = off;\n\n\n`;
    }
 
    async getTriggers () {
+      /* eslint-disable camelcase */
+      interface TriggersResult {
+         event_object_table: string;
+         table_name: string;
+         trigger_name: string;
+         events: string[];
+         event_manipulation: string;
+      }
+      /* eslint-enable camelcase */
       let sqlString = '';
 
       // Trigger functions
@@ -374,7 +409,7 @@ SET row_security = off;\n\n\n`;
          sqlString += `\n${functionDef[0].definition};\n`;
       }
 
-      const { rows: triggers } = await this._client.raw(
+      const { rows: triggers } = await this._client.raw<antares.QueryResult<TriggersResult>>(
          `SELECT * FROM "information_schema"."triggers" WHERE "trigger_schema"='${this.schemaName}'`
       );
 
@@ -430,11 +465,12 @@ SET row_security = off;\n\n\n`;
       return sqlString;
    }
 
-   async _queryStream (sql) {
+   async _queryStream (sql: string) {
       if (process.env.NODE_ENV === 'development') console.log('EXPORTER:', sql);
       const connection = await this._client.getConnection();
       const query = new QueryStream(sql, null);
-      const stream = connection.query(query);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const stream = (connection as any).query(query);
       const dispose = () => connection.end();
 
       stream.on('end', dispose);
@@ -443,17 +479,10 @@ SET row_security = off;\n\n\n`;
       return stream;
    }
 
-   getEscapedDefiner (definer) {
-      return definer
-         .split('@')
-         .map(part => '`' + part + '`')
-         .join('@');
-   }
-
-   escapeAndQuote (val) {
+   escapeAndQuote (val: string) {
       // eslint-disable-next-line no-control-regex
       const CHARS_TO_ESCAPE = /[\0\b\t\n\r\x1a"'\\]/g;
-      const CHARS_ESCAPE_MAP = {
+      const CHARS_ESCAPE_MAP: {[key: string]: string} = {
          '\0': '\\0',
          '\b': '\\b',
          '\t': '\\t',
@@ -480,16 +509,5 @@ SET row_security = off;\n\n\n`;
          return `'${escapedVal + val.slice(chunkIndex)}'`;
 
       return `'${escapedVal}'`;
-   }
-
-   _getGeoJSON (val) {
-      if (Array.isArray(val)) {
-         if (getArrayDepth(val) === 1)
-            return lineString(val.reduce((acc, curr) => [...acc, [curr.x, curr.y]], []));
-         else
-            return polygon(val.map(arr => arr.reduce((acc, curr) => [...acc, [curr.x, curr.y]], [])));
-      }
-      else
-         return point([val.x, val.y]);
    }
 }

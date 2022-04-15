@@ -24,7 +24,6 @@ export class PostgreSQLClient extends AntaresCore {
    private _runningConnections: Map<string, number>;
    private _connectionsToCommit: Map<string, pg.Client | pg.PoolClient>;
    protected _connection?: pg.Client | pg.Pool;
-   protected _params: pg.ClientConfig & {schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean};
    private types: {[key: string]: string} = {};
    private _arrayTypes: {[key: string]: string} = {
       _int2: 'SMALLINT',
@@ -35,6 +34,8 @@ export class PostgreSQLClient extends AntaresCore {
       _char: '"CHAR"',
       _varchar: 'CHARACTER VARYING'
    }
+
+   _params: pg.ClientConfig & {schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean};
 
    constructor (args: antares.ClientParams) {
       super(args);
@@ -171,6 +172,10 @@ export class PostgreSQLClient extends AntaresCore {
          else
             return connection.query(sql);
       }
+   }
+
+   getCollations (): null[] {
+      return [];
    }
 
    async getStructure (schemas: Set<string>) {
