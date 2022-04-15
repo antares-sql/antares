@@ -151,17 +151,20 @@ Generation time: ${moment().format()}
       return this.buildComment(`Dump completed on ${moment().format()}`);
    }
 
-   getCreateTable (tableName) {
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   getCreateTable (_tableName) {
       throw new Error(
          'Sql Exporter must implement the "getCreateTable" method'
       );
    }
 
-   getDropTable (tableName) {
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   getDropTable (_tableName) {
       throw new Error('Sql Exporter must implement the "getDropTable" method');
    }
 
-   getTableInsert (tableName) {
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   getTableInsert (_tableName) {
       throw new Error(
          'Sql Exporter must implement the "getTableInsert" method'
       );

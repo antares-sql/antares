@@ -251,11 +251,12 @@ export interface QueryBuilderObject {
    where: string[];
    groupBy: string[];
    orderBy: string[];
-   limit: string[];
-   offset: string[];
+   limit: number;
+   offset: number;
    join: string[];
    update: string[];
-   insert: string[];
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   insert: {[key: string]: any}[];
    delete: boolean;
 }
 

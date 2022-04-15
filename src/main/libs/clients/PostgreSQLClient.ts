@@ -82,11 +82,6 @@ export class PostgreSQLClient extends AntaresCore {
       return type.replace('_', '');
    }
 
-   /**
-    *
-    * @returns dbConfig
-    * @memberof PostgreSQLClient
-    */
    async getDbConfig () {
       this._params.application_name = 'Antares SQL';
 
@@ -1164,10 +1159,6 @@ export class PostgreSQLClient extends AntaresCore {
       return await this.raw(sql, { split: false });
    }
 
-   async getCollations (): Promise<null[]> {
-      return [];
-   }
-
    async getVariables () {
       interface ShowVariablesResult {
          name: string;
@@ -1305,10 +1296,10 @@ export class PostgreSQLClient extends AntaresCore {
       const orderByRaw = orderByArray.length ? `ORDER BY ${orderByArray.join(', ')} ` : '';
 
       // LIMIT
-      const limitRaw = selectArray.length && this._query.limit.length ? `LIMIT ${this._query.limit.join(', ')} ` : '';
+      const limitRaw = selectArray.length && this._query.limit ? `LIMIT ${this._query.limit} ` : '';
 
       // OFFSET
-      const offsetRaw = selectArray.length && this._query.offset.length ? `OFFSET ${this._query.offset.join(', ')} ` : '';
+      const offsetRaw = selectArray.length && this._query.offset ? `OFFSET ${this._query.offset} ` : '';
 
       return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}${offsetRaw}${insertRaw}`;
    }
