@@ -8,7 +8,7 @@ export class SQLiteClient extends AntaresCore {
    private _schema?: string;
    private _connectionsToCommit: Map<string, sqlite.Database>;
    protected _connection?: sqlite.Database;
-   protected _params: { databasePath: string; readonly: boolean};
+   _params: { databasePath: string; readonly: boolean};
 
    constructor (args: antares.ClientParams) {
       super(args);

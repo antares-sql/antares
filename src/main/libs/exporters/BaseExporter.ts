@@ -1,10 +1,18 @@
-import fs from 'fs';
-import { createGzip } from 'zlib';
-import path from 'path';
-import EventEmitter from 'events';
+import * as exporter from 'common/interfaces/exporter';
+import * as fs from 'fs';
+import { createGzip, Gzip } from 'zlib';
+import * as path from 'path';
+import * as EventEmitter from 'events';
 
 export class BaseExporter extends EventEmitter {
-   constructor (tables, options) {
+   protected _tables;
+   protected _options;
+   protected _isCancelled;
+   protected _outputFileStream: fs.WriteStream;
+   protected _processedStream: fs.WriteStream | Gzip;
+   protected _state;
+
+   constructor (tables: exporter.TableParams[], options: exporter.ExportOptions) {
       super();
       this._tables = tables;
       this._options = options;
@@ -60,11 +68,11 @@ export class BaseExporter extends EventEmitter {
       this.emitUpdate({ op: 'cancelling' });
    }
 
-   emitUpdate (state) {
+   emitUpdate (state: exporter.ExportState) {
       this.emit('progress', { ...this._state, ...state });
    }
 
-   writeString (data) {
+   writeString (data: string) {
       if (this._isCancelled) return;
 
       try {

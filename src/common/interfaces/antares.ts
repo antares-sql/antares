@@ -1,5 +1,9 @@
 import * as mysql from 'mysql2/promise';
 import * as pg from 'pg';
+import MysqlExporter from 'src/main/libs/exporters/sql/MysqlExporter';
+import PostgreSQLExporter from 'src/main/libs/exporters/sql/PostgreSQLExporter';
+import MySQLImporter from 'src/main/libs/importers/sql/MysqlImporter';
+import PostgreSQLImporter from 'src/main/libs/importers/sql/PostgreSQLImporter';
 import SSHConfig from 'ssh2-promise/lib/sshConfig';
 import { MySQLClient } from '../../main/libs/clients/MySQLClient';
 import { PostgreSQLClient } from '../../main/libs/clients/PostgreSQLClient';
@@ -7,6 +11,8 @@ import { SQLiteClient } from '../../main/libs/clients/SQLiteClient';
 
 export type Client = MySQLClient | PostgreSQLClient | SQLiteClient
 export type ClientCode = 'mysql' | 'maria' | 'pg' | 'sqlite'
+export type Exporter = MysqlExporter | PostgreSQLExporter
+export type Importer = MySQLImporter | PostgreSQLImporter
 
 /**
  * Pasameters needed to create a new Antares connection to a database

@@ -9,8 +9,8 @@ export class MySQLClient extends AntaresCore {
    private _schema?: string;
    private _runningConnections: Map<string, number>;
    private _connectionsToCommit: Map<string, mysql.Connection | mysql.PoolConnection>;
-   protected _connection?: mysql.Connection | mysql.Pool;
-   protected _params: mysql.ConnectionOptions & {schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean};
+   _connection?: mysql.Connection | mysql.Pool;
+   _params: mysql.ConnectionOptions & {schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean};
 
    private types: {[key: number]: string} = {
       0: 'DECIMAL',
@@ -445,18 +445,18 @@ export class MySQLClient extends AntaresCore {
    async getTableColumns ({ schema, table }: { schema: string; table: string }) {
       interface TableColumnsResult {
          COLUMN_TYPE: string;
-         NUMERIC_PRECISION: string;
+         NUMERIC_PRECISION: number;
          COLUMN_NAME: string;
          COLUMN_DEFAULT: string;
          COLUMN_KEY: string;
          DATA_TYPE: string;
          TABLE_SCHEMA: string;
          TABLE_NAME: string;
-         NUMERIC_SCALE: string;
-         DATETIME_PRECISION: string;
-         CHARACTER_MAXIMUM_LENGTH: string;
+         NUMERIC_SCALE: number;
+         DATETIME_PRECISION: number;
+         CHARACTER_MAXIMUM_LENGTH: number;
          IS_NULLABLE: string;
-         ORDINAL_POSITION: string;
+         ORDINAL_POSITION: number;
          CHARACTER_SET_NAME: string;
          COLLATION_NAME: string;
          EXTRA: string;
