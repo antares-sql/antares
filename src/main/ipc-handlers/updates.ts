@@ -4,8 +4,8 @@ import Store from 'electron-store';
 const persistentStore = new Store({ name: 'settings' });
 const isMacOS = process.platform === 'darwin';
 
-let mainWindow;
-autoUpdater.allowPrerelease = persistentStore.get('allow_prerelease', true);
+let mainWindow: Electron.IpcMainEvent;
+autoUpdater.allowPrerelease = persistentStore.get('allow_prerelease', true) as boolean;
 
 export default () => {
    ipcMain.on('check-for-updates', event => {
@@ -50,7 +50,7 @@ export default () => {
       mainWindow.reply('update-downloaded');
    });
 
-   autoUpdater.logger = require('electron-log');
-   autoUpdater.logger.transports.console.format = '{h}:{i}:{s} {text}';
-   autoUpdater.logger.transports.file.level = 'info';
+   // autoUpdater.logger = require('electron-log');
+   // autoUpdater.logger.transports.console.format = '{h}:{i}:{s} {text}';
+   // autoUpdater.logger.transports.file.level = 'info';
 };

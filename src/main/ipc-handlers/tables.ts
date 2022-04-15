@@ -1,12 +1,14 @@
+import * as antares from 'common/interfaces/antares';
+import { InsertRowsParams } from 'common/interfaces/tableApis';
 import { ipcMain } from 'electron';
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 import moment from 'moment';
 import { sqlEscaper } from 'common/libs/sqlEscaper';
 import { TEXT, LONG_TEXT, ARRAY, TEXT_SEARCH, NUMBER, FLOAT, BLOB, BIT, DATE, DATETIME } from 'common/fieldTypes';
 import * as customizations from 'common/customizations';
 import fs from 'fs';
 
-export default (connections) => {
+export default (connections: {[key: string]: antares.Client}) => {
    ipcMain.handle('get-table-columns', async (event, params) => {
       try {
          const result = await connections[params.uid].getTableColumns(params);
@@ -196,7 +198,8 @@ export default (connections) => {
 
    ipcMain.handle('delete-table-rows', async (event, params) => {
       if (params.primary) {
-         const idString = params.rows.map(row => {
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         const idString = params.rows.map((row: {[key: string]: any}) => {
             const fieldName = Object.keys(row)[0].includes('.') ? `${params.table}.${params.primary}` : params.primary;
 
             return typeof row[fieldName] === 'string'
@@ -245,7 +248,8 @@ export default (connections) => {
 
    ipcMain.handle('insert-table-rows', async (event, params) => {
       try { // TODO: move to client classes
-         const insertObj = {};
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         const insertObj: {[key: string]: any} = {};
          for (const key in params.row) {
             const type = params.fields[key];
             let escapedParam;
@@ -312,12 +316,14 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('insert-table-fake-rows', async (event, params) => {
+   ipcMain.handle('insert-table-fake-rows', async (event, params: InsertRowsParams) => {
       try { // TODO: move to client classes
-         const rows = [];
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         const rows: {[key: string]: any}[] = [];
 
          for (let i = 0; i < +params.repeat; i++) {
-            const insertObj = {};
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const insertObj: {[key: string]: any} = {};
 
             for (const key in params.row) {
                const type = params.fields[key];
@@ -375,7 +381,8 @@ export default (connections) => {
                   insertObj[key] = escapedParam;
                }
                else { // Faker value
-                  const parsedParams = {};
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const parsedParams: {[key: string]: any} = {};
                   let fakeValue;
 
                   if (params.locale)
@@ -386,10 +393,12 @@ export default (connections) => {
                         if (!isNaN(params.row[key].params[param]))
                            parsedParams[param] = +params.row[key].params[param];
                      });
-                     fakeValue = faker[params.row[key].group][params.row[key].method](parsedParams);
+                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                     fakeValue = (faker as any)[params.row[key].group][params.row[key].method](parsedParams);
                   }
                   else
-                     fakeValue = faker[params.row[key].group][params.row[key].method]();
+                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                     fakeValue = (faker as any)[params.row[key].group][params.row[key].method]();
 
                   if (typeof fakeValue === 'string') {
                      if (params.row[key].length)

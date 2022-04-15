@@ -1,6 +1,7 @@
+import * as antares from 'common/interfaces/antares';
 import { ipcMain } from 'electron';
 
-export default (connections) => {
+export default (connections: {[key: string]: antares.Client}) => {
    ipcMain.handle('get-users', async (event, uid) => {
       try {
          const result = await connections[uid].getUsers();

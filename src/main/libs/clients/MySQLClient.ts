@@ -720,7 +720,13 @@ export class MySQLClient extends AntaresCore {
    }
 
    async getDatabaseCollation (params: { database: string }) {
-      return await this.raw(`SELECT \`DEFAULT_COLLATION_NAME\` FROM \`information_schema\`.\`SCHEMATA\` WHERE \`SCHEMA_NAME\`='${params.database}'`);
+      let collation: string;
+      const { rows: collaitons } = await this.raw<antares.QueryResult<{DEFAULT_COLLATION_NAME: string}>>(`SELECT \`DEFAULT_COLLATION_NAME\` FROM \`information_schema\`.\`SCHEMATA\` WHERE \`SCHEMA_NAME\`='${params.database}'`);
+
+      if (collaitons.length)
+         collation = collaitons[0].DEFAULT_COLLATION_NAME;
+
+      return collation;
    }
 
    async createTable (params: antares.CreateTableParams) {
@@ -1496,10 +1502,10 @@ export class MySQLClient extends AntaresCore {
       const orderByRaw = orderByArray.length ? `ORDER BY ${orderByArray.join(', ')} ` : '';
 
       // LIMIT
-      const limitRaw = this._query.limit.length ? `LIMIT ${this._query.limit.join(', ')} ` : '';
+      const limitRaw = this._query.limit ? `LIMIT ${this._query.limit} ` : '';
 
       // OFFSET
-      const offsetRaw = this._query.offset.length ? `OFFSET ${this._query.offset.join(', ')} ` : '';
+      const offsetRaw = this._query.offset ? `OFFSET ${this._query.offset} ` : '';
 
       return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}${offsetRaw}${insertRaw}`;
    }

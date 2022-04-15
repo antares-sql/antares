@@ -476,14 +476,6 @@ export class SQLiteClient extends AntaresCore {
       return await this.raw(sql, { split: false });
    }
 
-   async getCollations (): Promise<undefined[]> {
-      return [];
-   }
-
-   async getVariables (): Promise<undefined[]> {
-      return [];
-   }
-
    async getEngines () {
       return {
          name: 'SQLite',
@@ -585,10 +577,10 @@ export class SQLiteClient extends AntaresCore {
       const orderByRaw = orderByArray.length ? `ORDER BY ${orderByArray.join(', ')} ` : '';
 
       // LIMIT
-      const limitRaw = this._query.limit.length ? `LIMIT ${this._query.limit.join(', ')} ` : '';
+      const limitRaw = this._query.limit ? `LIMIT ${this._query.limit} ` : '';
 
       // OFFSET
-      const offsetRaw = this._query.offset.length ? `OFFSET ${this._query.offset.join(', ')} ` : '';
+      const offsetRaw = this._query.offset ? `OFFSET ${this._query.offset} ` : '';
 
       return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}${offsetRaw}${insertRaw}`;
    }

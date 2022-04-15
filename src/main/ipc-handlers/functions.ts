@@ -1,6 +1,7 @@
+import * as antares from 'common/interfaces/antares';
 import { ipcMain } from 'electron';
 
-export default (connections) => {
+export default (connections: {[key: string]: antares.Client}) => {
    ipcMain.handle('get-function-informations', async (event, params) => {
       try {
          const result = await connections[params.uid].getFunctionInformations(params);

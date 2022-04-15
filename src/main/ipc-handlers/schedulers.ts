@@ -1,9 +1,10 @@
+import * as antares from 'common/interfaces/antares';
 import { ipcMain } from 'electron';
 
-export default (connections) => {
-   ipcMain.handle('get-trigger-informations', async (event, params) => {
+export default (connections: {[key: string]: antares.Client}) => {
+   ipcMain.handle('get-scheduler-informations', async (event, params) => {
       try {
-         const result = await connections[params.uid].getTriggerInformations(params);
+         const result = await connections[params.uid].getEventInformations(params);
          return { status: 'success', response: result };
       }
       catch (err) {
@@ -11,9 +12,9 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('drop-trigger', async (event, params) => {
+   ipcMain.handle('drop-scheduler', async (event, params) => {
       try {
-         await connections[params.uid].dropTrigger(params);
+         await connections[params.uid].dropEvent(params);
          return { status: 'success' };
       }
       catch (err) {
@@ -21,9 +22,9 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('alter-trigger', async (event, params) => {
+   ipcMain.handle('alter-scheduler', async (event, params) => {
       try {
-         await connections[params.uid].alterTrigger(params);
+         await connections[params.uid].alterEvent(params);
          return { status: 'success' };
       }
       catch (err) {
@@ -31,9 +32,9 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('create-trigger', async (event, params) => {
+   ipcMain.handle('create-scheduler', async (event, params) => {
       try {
-         await connections[params.uid].createTrigger(params);
+         await connections[params.uid].createEvent(params);
          return { status: 'success' };
       }
       catch (err) {
@@ -41,12 +42,12 @@ export default (connections) => {
       }
    });
 
-   ipcMain.handle('toggle-trigger', async (event, params) => {
+   ipcMain.handle('toggle-scheduler', async (event, params) => {
       try {
          if (!params.enabled)
-            await connections[params.uid].enableTrigger(params);
+            await connections[params.uid].enableEvent({ ...params });
          else
-            await connections[params.uid].disableTrigger(params);
+            await connections[params.uid].disableEvent({ ...params });
          return { status: 'success' };
       }
       catch (err) {

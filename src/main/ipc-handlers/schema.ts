@@ -1,14 +1,15 @@
+import * as antares from 'common/interfaces/antares';
+import * as workers from 'common/interfaces/workers';
 import fs from 'fs';
 import path from 'path';
-import { fork } from 'child_process';
+import { ChildProcess, fork } from 'child_process';
 import { ipcMain, dialog } from 'electron';
 
-// @TODO:  need some factories
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
-export default connections => {
-   let exporter = null;
-   let importer = null;
+export default (connections: {[key: string]: antares.Client}) => {
+   let exporter: ChildProcess = null;
+   let importer: ChildProcess = null;
 
    ipcMain.handle('create-schema', async (event, params) => {
       try {
@@ -51,9 +52,7 @@ export default connections => {
 
          return {
             status: 'success',
-            response: collation.rows.length
-               ? collation.rows[0].DEFAULT_COLLATION_NAME
-               : ''
+            response: collation
          };
       }
       catch (err) {
@@ -175,7 +174,7 @@ export default connections => {
    ipcMain.handle('export', (event, { uid, type, tables, ...rest }) => {
       if (exporter !== null) return;
 
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve/*, reject */) => {
          (async () => {
             if (fs.existsSync(rest.outputFile)) { // If file exists ask for replace
                const result = await dialog.showMessageBox({
@@ -211,7 +210,7 @@ export default connections => {
             });
 
             // Exporter message listener
-            exporter.on('message', ({ type, payload }) => {
+            exporter.on('message', ({ type, payload }: workers.WorkerIpcMessage) => {
                switch (type) {
                   case 'export-progress':
                      event.sender.send('export-progress', payload);
@@ -244,7 +243,7 @@ export default connections => {
       });
    });
 
-   ipcMain.handle('abort-export', async event => {
+   ipcMain.handle('abort-export', async () => {
       let willAbort = false;
 
       if (exporter) {
@@ -268,7 +267,7 @@ export default connections => {
    ipcMain.handle('import-sql', async (event, options) => {
       if (importer !== null) return;
 
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve/*, reject */) => {
          (async () => {
             const dbConfig = await connections[options.uid].getDbConfig();
 
@@ -283,7 +282,7 @@ export default connections => {
             });
 
             // Importer message listener
-            importer.on('message', ({ type, payload }) => {
+            importer.on('message', ({ type, payload }: workers.WorkerIpcMessage) => {
                switch (type) {
                   case 'import-progress':
                      event.sender.send('import-progress', payload);
@@ -314,7 +313,7 @@ export default connections => {
       });
    });
 
-   ipcMain.handle('abort-import-sql', async event => {
+   ipcMain.handle('abort-import-sql', async () => {
       let willAbort = false;
 
       if (importer) {
