@@ -14,7 +14,7 @@ const config = {
    devtool: isDevMode ? 'eval-source-map' : false,
    entry: {
       exporter: path.join(__dirname, './src/main/workers/exporter.ts'),
-      importer: path.join(__dirname, './src/main/workers/importer.js')
+      importer: path.join(__dirname, './src/main/workers/importer.ts')
    },
    target: 'node',
    output: {
