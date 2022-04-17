@@ -1,7 +1,7 @@
 import * as antares from 'common/interfaces/antares';
 import * as workers from 'common/interfaces/workers';
 import * as fs from 'fs';
-import path from 'path';
+import * as path from 'path';
 import { ChildProcess, fork } from 'child_process';
 import { ipcMain, dialog } from 'electron';
 
