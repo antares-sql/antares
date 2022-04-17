@@ -1,17 +1,21 @@
+import * as pg from 'pg';
+import * as importer from 'common/interfaces/importer';
 import fs from 'fs/promises';
-import MySQLParser from '../../parsers/MySQLParser';
+import PostgreSQLParser from '../../parsers/PostgreSQLParser';
 import { BaseImporter } from '../BaseImporter';
 
-export default class MySQLImporter extends BaseImporter {
-   constructor (client, options) {
+export default class PostgreSQLImporter extends BaseImporter {
+   protected _client: pg.PoolClient;
+
+   constructor (client: pg.PoolClient, options: importer.ImportOptions) {
       super(options);
       this._client = client;
    }
 
-   async import () {
+   async import (): Promise<void> {
       try {
          const { size: totalFileSize } = await fs.stat(this._options.file);
-         const parser = new MySQLParser();
+         const parser = new PostgreSQLParser();
          let readPosition = 0;
          let queryCount = 0;
 
@@ -43,7 +47,7 @@ export default class MySQLImporter extends BaseImporter {
                catch (error) {
                   this.emit('query-error', {
                      sql: query,
-                     message: error.sqlMessage,
+                     message: error.hint || error.toString(),
                      sqlSnippet: error.sql,
                      time: new Date().getTime()
                   });
@@ -60,7 +64,8 @@ export default class MySQLImporter extends BaseImporter {
 
             parser.on('pause', () => {
                this._fileHandler.unpipe(parser);
-               this._fileHandler.readableFlowing = false;
+               // eslint-disable-next-line @typescript-eslint/no-explicit-any
+               (this._fileHandler as any).readableFlowing = false;
             });
 
             this._fileHandler.on('data', (chunk) => {

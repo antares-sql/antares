@@ -1,7 +1,17 @@
-import { Transform } from 'stream';
+import { Transform, TransformCallback, TransformOptions } from 'stream';
 
 export default class MySQLParser extends Transform {
-   constructor (opts) {
+   private _buffer: string;
+   private _lastChar: string;
+   private _last9Chars: string;
+
+   encoding: BufferEncoding;
+   delimiter: string;
+   isEscape: boolean;
+   currentQuote: string;
+   isDelimiter: boolean;
+
+   constructor (opts?: TransformOptions & { delimiter: string }) {
       opts = {
          delimiter: ';',
          encoding: 'utf8',
@@ -21,7 +31,7 @@ export default class MySQLParser extends Transform {
       this.isDelimiter = false;
    }
 
-   _transform (chunk, encoding, next) {
+   _transform (chunk: Buffer, encoding: BufferEncoding, next: TransformCallback) {
       for (const char of chunk.toString(this.encoding)) {
          this.checkEscape();
          this._buffer += char;
@@ -49,7 +59,7 @@ export default class MySQLParser extends Transform {
       }
    }
 
-   checkNewDelimiter (char) {
+   checkNewDelimiter (char: string) {
       if (this.currentQuote === null && this._last9Chars === 'delimiter') {
          this.isDelimiter = true;
          this._buffer = '';
@@ -64,7 +74,7 @@ export default class MySQLParser extends Transform {
       }
    }
 
-   checkQuote (char) {
+   checkQuote (char: string) {
       const isQuote = !this.isEscape && (char === '\'' || char === '"');
       if (isQuote && this.currentQuote === char)
          this.currentQuote = null;
@@ -77,7 +87,7 @@ export default class MySQLParser extends Transform {
       if (this.isDelimiter)
          return false;
 
-      let query = false;
+      let query: false | string = false;
       let demiliterFound = false;
       if (this.currentQuote === null && this._buffer.length >= this.delimiter.length)
          demiliterFound = this._last9Chars.slice(-this.delimiter.length) === this.delimiter;

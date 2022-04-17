@@ -1,7 +1,12 @@
+import * as antares from 'common/interfaces/antares';
+import * as pg from 'pg';
+import * as mysql from 'mysql2';
+import { MySQLClient } from '../libs/clients/MySQLClient';
+import { PostgreSQLClient } from '../libs/clients/PostgreSQLClient';
 import { ClientsFactory } from '../libs/ClientsFactory';
-import MySQLImporter from '../libs/importers/sql/MysqlImporter';
+import MySQLImporter from '../libs/importers/sql/MySQLlImporter';
 import PostgreSQLImporter from '../libs/importers/sql/PostgreSQLImporter';
-let importer;
+let importer: antares.Importer;
 
 process.on('message', async ({ type, dbConfig, options }) => {
    if (type === 'init') {
@@ -12,17 +17,17 @@ process.on('message', async ({ type, dbConfig, options }) => {
             schema: options.schema
          },
          poolSize: 1
-      });
+      }) as MySQLClient | PostgreSQLClient;
 
       const pool = await connection.getConnectionPool();
 
       switch (options.type) {
          case 'mysql':
          case 'maria':
-            importer = new MySQLImporter(pool, options);
+            importer = new MySQLImporter(pool as unknown as mysql.Pool, options);
             break;
          case 'pg':
-            importer = new PostgreSQLImporter(pool, options);
+            importer = new PostgreSQLImporter(pool as unknown as pg.PoolClient, options);
             break;
          default:
             process.send({
