@@ -1,7 +1,23 @@
-import { Transform } from 'stream';
+import { Transform, TransformCallback, TransformOptions } from 'stream';
 
 export default class PostgreSQLParser extends Transform {
-   constructor (opts) {
+   private _buffer: string;
+   private _lastChar: string;
+   private _lastChars: string;
+   private _bodyWrapper: string;
+   private _bodyWrapperBuffer: string;
+   private _firstDollarFound: boolean;
+   private _isBody: boolean;
+   private _isSingleLineComment: boolean;
+   private _isMultiLineComment: boolean;
+
+   encoding: BufferEncoding;
+   delimiter: string;
+   isEscape: boolean;
+   currentQuote: string;
+   isDelimiter: boolean;
+
+   constructor (opts?: TransformOptions & { delimiter: string }) {
       opts = {
          delimiter: ';',
          encoding: 'utf8',
@@ -30,7 +46,7 @@ export default class PostgreSQLParser extends Transform {
       return this._isSingleLineComment || this._isMultiLineComment;
    }
 
-   _transform (chunk, encoding, next) {
+   _transform (chunk: Buffer, encoding: BufferEncoding, next: TransformCallback) {
       for (const char of chunk.toString(this.encoding)) {
          this.checkEscape();
          this._buffer += char;
@@ -82,7 +98,7 @@ export default class PostgreSQLParser extends Transform {
       }
    }
 
-   checkBodyWrapper (char) {
+   checkBodyWrapper (char: string) {
       if (this._isBody)
          this._isBody = this._lastChars !== this._bodyWrapper;
 
@@ -111,7 +127,7 @@ export default class PostgreSQLParser extends Transform {
       }
    }
 
-   checkQuote (char) {
+   checkQuote (char: string) {
       const isQuote = !this.isEscape && (char === '\'' || char === '"');
       if (isQuote && this.currentQuote === char)
          this.currentQuote = null;
@@ -124,7 +140,7 @@ export default class PostgreSQLParser extends Transform {
       if (this._isBody || this._isComment)
          return false;
 
-      let query = false;
+      let query: false | string = false;
       let demiliterFound = false;
 
       if (this.currentQuote === null && this._buffer.length >= this.delimiter.length)

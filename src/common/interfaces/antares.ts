@@ -2,7 +2,7 @@ import * as mysql from 'mysql2/promise';
 import * as pg from 'pg';
 import MysqlExporter from 'src/main/libs/exporters/sql/MysqlExporter';
 import PostgreSQLExporter from 'src/main/libs/exporters/sql/PostgreSQLExporter';
-import MySQLImporter from 'src/main/libs/importers/sql/MysqlImporter';
+import MySQLImporter from 'src/main/libs/importers/sql/MySQLlImporter';
 import PostgreSQLImporter from 'src/main/libs/importers/sql/PostgreSQLImporter';
 import SSHConfig from 'ssh2-promise/lib/sshConfig';
 import { MySQLClient } from '../../main/libs/clients/MySQLClient';

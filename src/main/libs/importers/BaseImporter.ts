@@ -1,8 +1,14 @@
-import fs from 'fs';
-import EventEmitter from 'events';
+import * as importer from 'common/interfaces/importer';
+import * as fs from 'fs';
+import * as EventEmitter from 'events';
 
 export class BaseImporter extends EventEmitter {
-   constructor (options) {
+   protected _options;
+   protected _isCancelled;
+   protected _fileHandler;
+   protected _state;
+
+   constructor (options: importer.ImportOptions) {
       super();
       this._options = options;
       this._isCancelled = false;
@@ -43,7 +49,7 @@ export class BaseImporter extends EventEmitter {
       this.emitUpdate({ op: 'cancelling' });
    }
 
-   emitUpdate (state) {
+   emitUpdate (state: importer.ImportState) {
       this.emit('progress', { ...this._state, ...state });
    }
 
