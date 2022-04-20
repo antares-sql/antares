@@ -163,7 +163,7 @@ module.exports = {
       restartToInstall: 'Reinicie o Antares para instalar',
       unableEditFieldWithoutPrimary: 'Indisponível a edição de um campo sem a chave primária na tabela de resultados',
       editCell: 'Editar celula',
-      deleteRows: 'Apgar linha | Apagar {count} linhas',
+      deleteRows: 'Apagar linha | Apagar {count} linhas',
       confirmToDeleteRows: 'Você confirma a exclusão de uma linha? | Você confirma a exclusão de {count} linhas?',
       notificationsTimeout: 'Notificações de timeout',
       uploadFile: 'Upload de arquivo',
