@@ -154,7 +154,7 @@
             v-show="isSelected"
             :key="`${routine}-${_uid}`"
             ref="queryEditor"
-            :value.sync="localRoutine.sql"
+            v-model="localRoutine.sql"
             :workspace="workspace"
             :schema="schema"
             :height="editorHeight"
@@ -284,10 +284,10 @@ export default {
    mounted () {
       window.addEventListener('resize', this.resizeQueryEditor);
    },
-   destroyed () {
+   unmounted () {
       window.removeEventListener('resize', this.resizeQueryEditor);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {

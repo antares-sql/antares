@@ -124,7 +124,7 @@ export default {
          this.$refs.firstInput.focus();
       }, 20);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {

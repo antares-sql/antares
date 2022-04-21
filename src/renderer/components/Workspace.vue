@@ -1,264 +1,265 @@
 <template>
    <div v-show="isSelected" class="workspace column columns col-gapless">
       <WorkspaceExploreBar
-         v-if="workspace.connectionStatus === 'connected'"
+         v-if="workspace?.connectionStatus === 'connected'"
          :connection="connection"
          :is-selected="isSelected"
       />
-      <div v-if="workspace.connectionStatus === 'connected'" class="workspace-tabs column columns col-gapless">
+      <div v-if="workspace?.connectionStatus === 'connected'" class="workspace-tabs column columns col-gapless">
          <Draggable
             ref="tabWrap"
             v-model="draggableTabs"
             tag="ul"
+            :item-key="uid"
             group="tabs"
             class="tab tab-block column col-12"
             draggable=".tab-draggable"
-            @mouseover.native="addWheelEvent"
+            @mouseover="addWheelEvent"
          >
-            <li
-               v-for="(tab, i) of draggableTabs"
-               :key="i"
-               class="tab-item tab-draggable"
-               draggable="true"
-               :class="{'active': selectedTab === tab.uid}"
-               @mousedown.left="selectTab({uid: workspace.uid, tab: tab.uid})"
-               @mouseup.middle="closeTab(tab)"
-            >
-               <a
-                  v-if="tab.type === 'query'"
-                  class="tab-link"
-                  :class="{'badge': tab.isChanged}"
+            <template #item="{element}">
+               <li
+                  class="tab-item tab-draggable"
+                  :draggable="true"
+                  :class="{'active': selectedTab === element.uid}"
+                  @mousedown.left="selectTab({uid: workspace.uid, tab: element.uid})"
+                  @mouseup.middle="closeTab(element)"
                >
-                  <i class="mdi mdi-18px mdi-code-tags mr-1" />
-                  <span>
-                     <span>{{ tab.content || 'Query' | cutText }} #{{ tab.index }}</span>
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @mousedown.left.stop
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
+                  <a
+                     v-if="element.type === 'query'"
+                     class="tab-link"
+                     :class="{'badge': element.isChanged}"
+                  >
+                     <i class="mdi mdi-18px mdi-code-tags mr-1" />
+                     <span>
+                        <span>{{ cutText(element.content || 'Query') }} #{{ element.index }}</span>
+                        <span
+                           class="btn btn-clear"
+                           :title="$t('word.close')"
+                           @mousedown.left.stop
+                           @click.stop="closeTab(element)"
+                        />
+                     </span>
+                  </a>
 
-               <a
-                  v-else-if="tab.type === 'temp-data'"
-                  class="tab-link"
-                  @dblclick="openAsPermanentTab(tab)"
-               >
-                  <i class="mdi mdi-18px mr-1" :class="tab.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
-                  <span :title="`${$t('word.data').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     <span class=" text-italic">{{ tab.elementName | cutText }}</span>
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @mousedown.left.stop
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
+                  <a
+                     v-else-if="element.type === 'temp-data'"
+                     class="tab-link"
+                     @dblclick="openAsPermanentTab(element)"
+                  >
+                     <i class="mdi mdi-18px mr-1" :class="element.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
+                     <span :title="`${$t('word.data').toUpperCase()}: ${$tc(`word.${element.elementType}`)}`">
+                        <span class=" text-italic">{{ cutText(element.elementName) }}</span>
+                        <span
+                           class="btn btn-clear"
+                           :title="$t('word.close')"
+                           @mousedown.left.stop
+                           @click.stop="closeTab(element)"
+                        />
+                     </span>
+                  </a>
 
-               <a v-else-if="tab.type === 'data'" class="tab-link">
-                  <i class="mdi mdi-18px mr-1" :class="tab.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
-                  <span :title="`${$t('word.data').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     {{ tab.elementName | cutText }}
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @mousedown.left.stop
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
+                  <a v-else-if="element.type === 'data'" class="tab-link">
+                     <i class="mdi mdi-18px mr-1" :class="element.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
+                     <span :title="`${$t('word.data').toUpperCase()}: ${$tc(`word.${element.elementType}`)}`">
+                        {{ cutText(element.elementName) }}
+                        <span
+                           class="btn btn-clear"
+                           :title="$t('word.close')"
+                           @mousedown.left.stop
+                           @click.stop="closeTab(element)"
+                        />
+                     </span>
+                  </a>
 
-               <a
-                  v-else-if="tab.type === 'new-table'"
-                  class="tab-link"
-                  :class="{'badge': tab.isChanged}"
-               >
-                  <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
-                  <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     {{ $t('message.newTable') }}
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @mousedown.left.stop
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
+                  <a
+                     v-else-if="element.type === 'new-table'"
+                     class="tab-link"
+                     :class="{'badge': element.isChanged}"
+                  >
+                     <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                     <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${element.elementType}`)}`">
+                        {{ $t('message.newTable') }}
+                        <span
+                           class="btn btn-clear"
+                           :title="$t('word.close')"
+                           @mousedown.left.stop
+                           @click.stop="closeTab(element)"
+                        />
+                     </span>
+                  </a>
 
-               <a
-                  v-else-if="tab.type === 'table-props'"
-                  class="tab-link"
-                  :class="{'badge': tab.isChanged}"
-               >
-                  <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
-                  <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     {{ tab.elementName | cutText }}
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @mousedown.left.stop
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
+                  <a
+                     v-else-if="element.type === 'table-props'"
+                     class="tab-link"
+                     :class="{'badge': element.isChanged}"
+                  >
+                     <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
+                     <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${element.elementType}`)}`">
+                        {{ cutText(element.elementName) }}
+                        <span
+                           class="btn btn-clear"
+                           :title="$t('word.close')"
+                           @mousedown.left.stop
+                           @click.stop="closeTab(element)"
+                        />
+                     </span>
+                  </a>
 
-               <a
-                  v-else-if="tab.type === 'view-props'"
-                  class="tab-link"
-                  :class="{'badge': tab.isChanged}"
-               >
-                  <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
-                  <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.view`)}`">
-                     {{ tab.elementName | cutText }}
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @mousedown.left.stop
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
+                  <a
+                     v-else-if="element.type === 'view-props'"
+                     class="tab-link"
+                     :class="{'badge': element.isChanged}"
+                  >
+                     <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
+                     <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.view`)}`">
+                        {{ cutText(element.elementName) }}
+                        <span
+                           class="btn btn-clear"
+                           :title="$t('word.close')"
+                           @mousedown.left.stop
+                           @click.stop="closeTab(element)"
+                        />
+                     </span>
+                  </a>
 
-               <a
-                  v-else-if="tab.type === 'new-view'"
-                  class="tab-link"
-                  :class="{'badge': tab.isChanged}"
-               >
-                  <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
-                  <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     {{ $t('message.newView') }}
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @mousedown.left.stop
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
+                  <a
+                     v-else-if="element.type === 'new-view'"
+                     class="tab-link"
+                     :class="{'badge': element.isChanged}"
+                  >
+                     <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                     <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${element.elementType}`)}`">
+                        {{ $t('message.newView') }}
+                        <span
+                           class="btn btn-clear"
+                           :title="$t('word.close')"
+                           @mousedown.left.stop
+                           @click.stop="closeTab(element)"
+                        />
+                     </span>
+                  </a>
 
-               <a
-                  v-else-if="tab.type === 'new-trigger'"
-                  class="tab-link"
-                  :class="{'badge': tab.isChanged}"
-               >
-                  <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
-                  <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     {{ $t('message.newTrigger') }}
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @mousedown.left.stop
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
+                  <a
+                     v-else-if="element.type === 'new-trigger'"
+                     class="tab-link"
+                     :class="{'badge': element.isChanged}"
+                  >
+                     <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                     <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${element.elementType}`)}`">
+                        {{ $t('message.newTrigger') }}
+                        <span
+                           class="btn btn-clear"
+                           :title="$t('word.close')"
+                           @mousedown.left.stop
+                           @click.stop="closeTab(element)"
+                        />
+                     </span>
+                  </a>
 
-               <a
-                  v-else-if="tab.type === 'new-routine'"
-                  class="tab-link"
-                  :class="{'badge': tab.isChanged}"
-               >
-                  <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
-                  <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     {{ $t('message.newRoutine') }}
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @mousedown.left.stop
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
+                  <a
+                     v-else-if="element.type === 'new-routine'"
+                     class="tab-link"
+                     :class="{'badge': element.isChanged}"
+                  >
+                     <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                     <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${element.elementType}`)}`">
+                        {{ $t('message.newRoutine') }}
+                        <span
+                           class="btn btn-clear"
+                           :title="$t('word.close')"
+                           @mousedown.left.stop
+                           @click.stop="closeTab(element)"
+                        />
+                     </span>
+                  </a>
 
-               <a
-                  v-else-if="tab.type === 'new-function'"
-                  class="tab-link"
-                  :class="{'badge': tab.isChanged}"
-               >
-                  <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
-                  <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     {{ $t('message.newFunction') }}
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @mousedown.left.stop
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
+                  <a
+                     v-else-if="element.type === 'new-function'"
+                     class="tab-link"
+                     :class="{'badge': element.isChanged}"
+                  >
+                     <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                     <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${element.elementType}`)}`">
+                        {{ $t('message.newFunction') }}
+                        <span
+                           class="btn btn-clear"
+                           :title="$t('word.close')"
+                           @mousedown.left.stop
+                           @click.stop="closeTab(element)"
+                        />
+                     </span>
+                  </a>
 
-               <a
-                  v-else-if="tab.type === 'new-trigger-function'"
-                  class="tab-link"
-                  :class="{'badge': tab.isChanged}"
-               >
-                  <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
-                  <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     {{ $t('message.newTriggerFunction') }}
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @mousedown.left.stop
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
+                  <a
+                     v-else-if="element.type === 'new-trigger-function'"
+                     class="tab-link"
+                     :class="{'badge': element.isChanged}"
+                  >
+                     <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                     <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${element.elementType}`)}`">
+                        {{ $t('message.newTriggerFunction') }}
+                        <span
+                           class="btn btn-clear"
+                           :title="$t('word.close')"
+                           @mousedown.left.stop
+                           @click.stop="closeTab(element)"
+                        />
+                     </span>
+                  </a>
 
-               <a
-                  v-else-if="tab.type === 'new-scheduler'"
-                  class="tab-link"
-                  :class="{'badge': tab.isChanged}"
-               >
-                  <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
-                  <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     {{ $t('message.newScheduler') }}
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @mousedown.left.stop
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
+                  <a
+                     v-else-if="element.type === 'new-scheduler'"
+                     class="tab-link"
+                     :class="{'badge': element.isChanged}"
+                  >
+                     <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                     <span :title="`${$t('word.new').toUpperCase()}: ${$tc(`word.${element.elementType}`)}`">
+                        {{ $t('message.newScheduler') }}
+                        <span
+                           class="btn btn-clear"
+                           :title="$t('word.close')"
+                           @mousedown.left.stop
+                           @click.stop="closeTab(element)"
+                        />
+                     </span>
+                  </a>
 
-               <a
-                  v-else-if="tab.type.includes('temp-')"
-                  class="tab-link"
-                  :class="{'badge': tab.isChanged}"
-                  @dblclick="openAsPermanentTab(tab)"
-               >
-                  <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
-                  <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     <span class=" text-italic">{{ tab.elementName | cutText }}</span>
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @mousedown.left.stop
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
+                  <a
+                     v-else-if="element.type.includes('temp-')"
+                     class="tab-link"
+                     :class="{'badge': element.isChanged}"
+                     @dblclick="openAsPermanentTab(element)"
+                  >
+                     <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
+                     <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${element.elementType}`)}`">
+                        <span class=" text-italic">{{ cutText(element.elementName) }}</span>
+                        <span
+                           class="btn btn-clear"
+                           :title="$t('word.close')"
+                           @mousedown.left.stop
+                           @click.stop="closeTab(element)"
+                        />
+                     </span>
+                  </a>
 
-               <a
-                  v-else
-                  class="tab-link"
-                  :class="{'badge': tab.isChanged}"
-               >
-                  <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
-                  <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${tab.elementType}`)}`">
-                     {{ tab.elementName | cutText }}
-                     <span
-                        class="btn btn-clear"
-                        :title="$t('word.close')"
-                        @mousedown.left.stop
-                        @click.stop="closeTab(tab)"
-                     />
-                  </span>
-               </a>
-            </li>
+                  <a
+                     v-else
+                     class="tab-link"
+                     :class="{'badge': element.isChanged}"
+                  >
+                     <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
+                     <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${element.elementType}`)}`">
+                        {{ cutText(element.elementName) }}
+                        <span
+                           class="btn btn-clear"
+                           :title="$t('word.close')"
+                           @mousedown.left.stop
+                           @click.stop="closeTab(element)"
+                        />
+                     </span>
+                  </a>
+               </li>
+            </template>
             <template #header>
                <li
                   v-if="workspace.customizations.processesList"
@@ -521,15 +522,6 @@ export default {
       ModalProcessesList,
       ModalDiscardChanges
    },
-   filters: {
-      cutText (string) {
-         const limit = 20;
-         const escapedString = string.replace(/\s{2,}/g, ' ');
-         if (escapedString.length > limit)
-            return `${escapedString.substr(0, limit)}...`;
-         return escapedString;
-      }
-   },
    props: {
       connection: Object
    },
@@ -589,13 +581,16 @@ export default {
       }
    },
    watch: {
-      queryTabs: function (newVal, oldVal) {
-         if (newVal.length > oldVal.length) {
-            setTimeout(() => {
-               const scroller = this.$refs.tabWrap;
-               if (scroller) scroller.$el.scrollLeft = scroller.$el.scrollWidth;
-            }, 0);
-         }
+      queryTabs: {
+         handler (newVal, oldVal) {
+            if (newVal.length > oldVal.length) {
+               setTimeout(() => {
+                  const scroller = this.$refs.tabWrap;
+                  if (scroller) scroller.$el.scrollLeft = scroller.$el.scrollWidth;
+               }, 0);
+            }
+         },
+         deep: true
       }
    },
    async created () {
@@ -605,7 +600,7 @@ export default {
       if (isInitiated)
          this.connectWorkspace(this.connection);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
@@ -683,6 +678,13 @@ export default {
             });
             this.hasWheelEvent = true;
          }
+      },
+      cutText (string) {
+         const limit = 20;
+         const escapedString = string.replace(/\s{2,}/g, ' ');
+         if (escapedString.length > limit)
+            return `${escapedString.substr(0, limit)}...`;
+         return escapedString;
       }
    }
 };

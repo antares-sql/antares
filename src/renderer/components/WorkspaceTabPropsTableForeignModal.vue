@@ -259,7 +259,7 @@ export default {
       this.getModalInnerHeight();
       window.addEventListener('resize', this.getModalInnerHeight);
    },
-   destroyed () {
+   unmounted () {
       window.removeEventListener('resize', this.getModalInnerHeight);
    },
    methods: {

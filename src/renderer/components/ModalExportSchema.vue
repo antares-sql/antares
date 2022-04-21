@@ -85,8 +85,8 @@
                                  >
                                     <input
                                        type="checkbox"
-                                       :indeterminate.prop="includeStructureStatus === 2"
-                                       :checked.prop="!!includeStructureStatus"
+                                       :indeterminate="includeStructureStatus === 2"
+                                       :checked="!!includeStructureStatus"
                                     >
                                     <i class="form-icon" />
                                  </label>
@@ -98,8 +98,8 @@
                                  >
                                     <input
                                        type="checkbox"
-                                       :indeterminate.prop="includeContentStatus === 2"
-                                       :checked.prop="!!includeContentStatus"
+                                       :indeterminate="includeContentStatus === 2"
+                                       :checked="!!includeContentStatus"
                                     >
                                     <i class="form-icon" />
                                  </label>
@@ -111,8 +111,8 @@
                                  >
                                     <input
                                        type="checkbox"
-                                       :indeterminate.prop="includeDropStatementStatus === 2"
-                                       :checked.prop="!!includeDropStatementStatus"
+                                       :indeterminate="includeDropStatementStatus === 2"
+                                       :checked="!!includeDropStatementStatus"
                                     >
                                     <i class="form-icon" />
                                  </label>
@@ -202,7 +202,6 @@
                               v-model.number="options.sqlInsertAfter"
                               type="number"
                               class="form-input"
-                              value="250"
                            >
                         </div>
                         <div class="column col-6">
@@ -363,7 +362,7 @@ export default {
 
       ipcRenderer.on('export-progress', this.updateProgress);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
       ipcRenderer.off('export-progress', this.updateProgress);
    },

@@ -4,8 +4,8 @@
       class="vscroll no-outline"
       tabindex="0"
       :style="{'height': resultsSize+'px'}"
-      @keyup.46="showDeleteConfirmModal"
-      @keydown.ctrl.65="selectAllRows($event)"
+      @keyup.delete="showDeleteConfirmModal"
+      @keydown.ctrl.a="selectAllRows($event)"
       @keydown.esc="deselectRows"
    >
       <TableContext
@@ -68,7 +68,7 @@
             :visible-height="resultsSize"
             :scroll-element="scrollElement"
          >
-            <template slot-scope="{ items }">
+            <template #default="{ items }">
                <WorkspaceTabQueryTableRow
                   v-for="row in items"
                   :key="row._antares_id"
@@ -256,7 +256,7 @@ export default {
    mounted () {
       window.addEventListener('resize', this.resizeResults);
    },
-   destroyed () {
+   unmounted () {
       window.removeEventListener('resize', this.resizeResults);
    },
    methods: {

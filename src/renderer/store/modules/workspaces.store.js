@@ -268,7 +268,7 @@ export default {
 
          persistentStore.set(uid, state.workspaces.find(workspace => workspace.uid === uid).tabs);
       },
-      RENAME_TABS (state, { uid, schema, elementName, elementType, elementNewName }) {
+      RENAME_TABS (state, { uid, schema, elementName, elementNewName }) {
          state.workspaces = state.workspaces.map(workspace => {
             if (workspace.uid === uid) {
                return {
@@ -386,7 +386,7 @@ export default {
       selectWorkspace ({ commit }, uid) {
          commit('SELECT_WORKSPACE', uid);
       },
-      async connectWorkspace ({ dispatch, commit, getters, rootGetters }, connection) {
+      async connectWorkspace ({ dispatch, commit, rootGetters }, connection) {
          commit('SET_CONNECTING', connection.uid);
 
          try {
@@ -536,7 +536,7 @@ export default {
          commit('SET_DISCONNECTED', uid);
          commit('SELECT_TAB', { uid, tab: 0 });
       },
-      addWorkspace ({ commit }, uid) {
+      async addWorkspace ({ commit }, uid) {
          const workspace = {
             uid,
             connectionStatus: 'disconnected',
@@ -552,7 +552,7 @@ export default {
             loadedSchemas: new Set()
          };
 
-         commit('ADD_WORKSPACE', workspace);
+         await commit('ADD_WORKSPACE', workspace);
       },
       changeBreadcrumbs ({ commit, getters }, payload) {
          const breadcrumbsObj = {

@@ -14,7 +14,7 @@ const parsedContributors = contributors.reduce((acc, c) => {
 }, []).join(',');
 
 const externals = Object.keys(dependencies).concat(Object.keys(devDependencies));
-const isDevMode = process.env.NODE_ENV === 'development';
+const isDevMode = process.env.NODE_ENV !== 'production';
 const whiteListedModules = ['vue'];
 
 const config = {
@@ -39,9 +39,9 @@ const config = {
    externals: externals.filter((d) => !whiteListedModules.includes(d)),
    resolve: {
       alias: {
-         vue$: 'vue/dist/vue.common.js',
-         common: path.resolve(__dirname, 'src/common'),
-         '@': path.resolve(__dirname, 'src/renderer')
+         // vue$: 'vue/dist/vue.common.js',
+         '@': path.resolve(__dirname, 'src/renderer'),
+         common: path.resolve(__dirname, 'src/common')
       },
       extensions: ['', '.js', '.vue', '.json'],
       fallback: {

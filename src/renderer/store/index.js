@@ -1,7 +1,7 @@
 'use strict';
-
-import Vue from 'vue';
-import Vuex from 'vuex';
+import { createStore } from 'vuex/dist/vuex.esm-bundler';
+// import Vue from 'vue';
+// import Vuex from 'vuex';
 
 import application from './modules/application.store';
 import settings from './modules/settings.store';
@@ -15,9 +15,9 @@ import ipcUpdates from './plugins/ipcUpdates';
 import ipcExceptions from './plugins/ipcExceptions';
 import ipcShortcuts from './plugins/ipcShortcuts';
 
-Vue.use(Vuex);
+// Vue.use(Vuex);
 
-export default new Vuex.Store({
+export const store = createStore({
    strict: true,
    modules: {
       application,

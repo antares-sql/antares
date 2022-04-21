@@ -15,7 +15,7 @@
          <div>
             <div>
                <TextEditor
-                  :value.sync="localNotes"
+                  v-model="localNotes"
                   editor-class="textarea-editor"
                   mode="markdown"
                   :auto-focus="true"

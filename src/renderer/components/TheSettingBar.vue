@@ -10,22 +10,23 @@
          <ul class="settingbar-elements">
             <Draggable
                v-model="connections"
+               :item-key="uid"
                @start="isDragging = true"
                @end="dragStop"
             >
-               <li
-                  v-for="connection in connections"
-                  :key="connection.uid"
-                  draggable="true"
-                  class="settingbar-element btn btn-link ex-tooltip"
-                  :class="{'selected': connection.uid === selectedWorkspace}"
-                  @click.stop="selectWorkspace(connection.uid)"
-                  @contextmenu.prevent="contextMenu($event, connection)"
-                  @mouseover.self="tooltipPosition"
-               >
-                  <i class="settingbar-element-icon dbi" :class="`dbi-${connection.client} ${getStatusBadge(connection.uid)}`" />
-                  <span v-if="!isDragging" class="ex-tooltip-content">{{ getConnectionName(connection.uid) }}</span>
-               </li>
+               <template #item="{element}">
+                  <li
+                     :draggable="true"
+                     class="settingbar-element btn btn-link ex-tooltip"
+                     :class="{'selected': element.uid === selectedWorkspace}"
+                     @click.stop="selectWorkspace(element.uid)"
+                     @contextmenu.prevent="contextMenu($event, element)"
+                     @mouseover.self="tooltipPosition"
+                  >
+                     <i class="settingbar-element-icon dbi" :class="`dbi-${element.client} ${getStatusBadge(element.uid)}`" />
+                     <span v-if="!isDragging" class="ex-tooltip-content">{{ getConnectionName(element.uid) }}</span>
+                  </li>
+               </template>
             </Draggable>
             <li
                class="settingbar-element btn btn-link ex-tooltip"

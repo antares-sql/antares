@@ -4,7 +4,7 @@
          <i class="mdi mdi-folder-open mr-1" />{{ message }}
       </span>
       <span class="text-ellipsis file-uploader-value">
-         {{ value | lastPart }}
+         {{ lastPart(value) }}
       </span>
       <i
          v-if="value.length"
@@ -25,16 +25,6 @@
 <script>
 export default {
    name: 'BaseUploadInput',
-   filters: {
-      lastPart (string) {
-         if (!string) return '';
-
-         string = string.split(/[/\\]+/).pop();
-         if (string.length >= 19)
-            string = `...${string.slice(-19)}`;
-         return string;
-      }
-   },
    props: {
       message: {
          default: 'Browse',
@@ -56,6 +46,14 @@ export default {
    methods: {
       clear () {
          this.$emit('clear');
+      },
+      lastPart (string) {
+         if (!string) return '';
+
+         string = string.split(/[/\\]+/).pop();
+         if (string.length >= 19)
+            string = `...${string.slice(-19)}`;
+         return string;
       }
    }
 };

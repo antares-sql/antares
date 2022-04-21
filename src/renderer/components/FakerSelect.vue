@@ -36,8 +36,8 @@
       <ForeignKeySelect
          v-else-if="foreignKeys.includes(field.name)"
          ref="formInput"
+         v-model="selectedValue"
          class="form-select"
-         :value.sync="selectedValue"
          :key-usage="getKeyUsage(field.name)"
          :disabled="!isChecked"
       />

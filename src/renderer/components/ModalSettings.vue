@@ -455,7 +455,7 @@ ORDER BY
       this.selectedTab = this.selectedSettingTab;
       window.addEventListener('keydown', this.onKey);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {

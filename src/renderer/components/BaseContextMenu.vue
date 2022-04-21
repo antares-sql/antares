@@ -61,7 +61,7 @@ export default {
       if (this.$refs.contextContent)
          this.contextSize = this.$refs.contextContent.getBoundingClientRect();
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {

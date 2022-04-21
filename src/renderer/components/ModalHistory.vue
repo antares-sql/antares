@@ -44,7 +44,7 @@
                      :visible-height="resultsSize"
                      :scroll-element="scrollElement"
                   >
-                     <template slot-scope="{ items }">
+                     <template #default="{ items }">
                         <div
                            v-for="query in items"
                            :key="query.uid"
@@ -156,7 +156,7 @@ export default {
       this.resizeResults();
       window.addEventListener('resize', this.resizeResults);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey, { capture: true });
       window.removeEventListener('resize', this.resizeResults);
       clearInterval(this.refreshInterval);

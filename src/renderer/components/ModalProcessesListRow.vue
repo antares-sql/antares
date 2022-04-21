@@ -12,7 +12,7 @@
             class="cell-content"
             :class="`${isNull(col)} type-${typeof col === 'number' ? 'int' : 'varchar'}`"
             @dblclick="dblClick(cKey)"
-         >{{ col | cutText }}</span>
+         >{{ cutText(col) }}</span>
       </div>
       <ConfirmModal
          v-if="isInfoModal"
@@ -53,12 +53,6 @@ export default {
       ConfirmModal,
       TextEditor
    },
-   filters: {
-      cutText (val) {
-         if (typeof val !== 'string') return val;
-         return val.length > 250 ? `${val.substring(0, 250)}[...]` : val;
-      }
-   },
    props: {
       row: Object
    },
@@ -95,6 +89,10 @@ export default {
             this.editingField = null;
             window.removeEventListener('keydown', this.onKey);
          }
+      },
+      cutText (val) {
+         if (typeof val !== 'string') return val;
+         return val.length > 250 ? `${val.substring(0, 250)}[...]` : val;
       }
    }
 };

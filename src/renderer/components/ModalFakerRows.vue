@@ -25,6 +25,7 @@
                         </div>
                         <div class="column columns col-sm-12">
                            <FakerSelect
+                              v-model="localRow[field.name]"
                               :type="field.type"
                               class="column columns pr-0"
                               :is-checked="!fieldsToExclude.includes(field.name)"
@@ -33,10 +34,9 @@
                               :field="field"
                               :field-length="fieldLength(field)"
                               :field-obj="localRow[field.name]"
-                              :value.sync="localRow[field.name]"
                            >
                               <span class="input-group-addon field-type" :class="typeClass(field.type)">
-                                 {{ field.type }} {{ fieldLength(field) | wrapNumber }}
+                                 {{ field.type }} {{ wrapNumber(fieldLength(field)) }}
                               </span>
                               <label class="form-checkbox ml-3" :title="$t('word.insert')">
                                  <input
@@ -195,12 +195,6 @@ export default {
    components: {
       FakerSelect
    },
-   filters: {
-      wrapNumber (num) {
-         if (!num) return '';
-         return `(${num})`;
-      }
-   },
    props: {
       tabUid: [String, Number],
       fields: Array,
@@ -287,7 +281,7 @@ export default {
 
       this.localRow = { ...rowObj };
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
@@ -367,6 +361,10 @@ export default {
          e.stopPropagation();
          if (e.key === 'Escape')
             this.closeModal();
+      },
+      wrapNumber (num) {
+         if (!num) return '';
+         return `(${num})`;
       }
    }
 };

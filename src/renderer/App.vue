@@ -25,25 +25,24 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { ipcRenderer } from 'electron';
 import { Menu, getCurrentWindow } from '@electron/remote';
+import TheSettingBar from '@/components/TheSettingBar';
 
 export default {
    name: 'App',
    components: {
-      TheTitleBar: () => import(/* webpackChunkName: "TheTitleBar" */'@/components/TheTitleBar'),
-      TheSettingBar: () => import(/* webpackChunkName: "TheSettingBar" */'@/components/TheSettingBar'),
-      TheFooter: () => import(/* webpackChunkName: "TheFooter" */'@/components/TheFooter'),
-      TheNotificationsBoard: () => import(/* webpackChunkName: "TheNotificationsBoard" */'@/components/TheNotificationsBoard'),
-      Workspace: () => import(/* webpackChunkName: "Workspace" */'@/components/Workspace'),
-      WorkspaceAddConnectionPanel: () => import(/* webpackChunkName: "WorkspaceAddConnectionPanel" */'@/components/WorkspaceAddConnectionPanel'),
-      ModalSettings: () => import(/* webpackChunkName: "ModalSettings" */'@/components/ModalSettings'),
-      TheScratchpad: () => import(/* webpackChunkName: "TheScratchpad" */'@/components/TheScratchpad'),
-      BaseTextEditor: () => import(/* webpackChunkName: "BaseTextEditor" */'@/components/BaseTextEditor')
-   },
-   data () {
-      return {};
+      TheTitleBar: defineAsyncComponent(() => import(/* webpackChunkName: "TheTitleBar" */'@/components/TheTitleBar')),
+      TheSettingBar,
+      TheFooter: defineAsyncComponent(() => import(/* webpackChunkName: "TheFooter" */'@/components/TheFooter')),
+      TheNotificationsBoard: defineAsyncComponent(() => import(/* webpackChunkName: "TheNotificationsBoard" */'@/components/TheNotificationsBoard')),
+      Workspace: defineAsyncComponent(() => import(/* webpackChunkName: "Workspace" */'@/components/Workspace')),
+      WorkspaceAddConnectionPanel: defineAsyncComponent(() => import(/* webpackChunkName: "WorkspaceAddConnectionPanel" */'@/components/WorkspaceAddConnectionPanel')),
+      ModalSettings: defineAsyncComponent(() => import(/* webpackChunkName: "ModalSettings" */'@/components/ModalSettings')),
+      TheScratchpad: defineAsyncComponent(() => import(/* webpackChunkName: "TheScratchpad" */'@/components/TheScratchpad')),
+      BaseTextEditor: defineAsyncComponent(() => import(/* webpackChunkName: "BaseTextEditor" */'@/components/BaseTextEditor'))
    },
    computed: {
       ...mapGetters({

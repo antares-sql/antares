@@ -15,7 +15,7 @@
          :value="row.foreign_column"
          :selected="row.foreign_column === value"
       >
-         {{ row.foreign_column }} {{ 'foreign_description' in row ? ` - ${row.foreign_description}` : '' | cutText }}
+         {{ row.foreign_column }} {{ cutText('foreign_description' in row ? ` - ${row.foreign_description}` : '') }}
       </option>
    </select>
 </template>
@@ -26,12 +26,6 @@ import { mapGetters, mapActions } from 'vuex';
 import { TEXT, LONG_TEXT } from 'common/fieldTypes';
 export default {
    name: 'ForeignKeySelect',
-   filters: {
-      cutText (val) {
-         if (typeof val !== 'string') return val;
-         return val.length > 15 ? `${val.substring(0, 15)}...` : val;
-      }
-   },
    props: {
       value: [String, Number],
       keyUsage: Object,
@@ -98,6 +92,10 @@ export default {
       }),
       onChange () {
          this.$emit('update:value', this.$refs.editField.value);
+      },
+      cutText (val) {
+         if (typeof val !== 'string') return val;
+         return val.length > 15 ? `${val.substring(0, 15)}...` : val;
       }
    }
 };

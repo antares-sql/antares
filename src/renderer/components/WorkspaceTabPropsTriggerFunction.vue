@@ -85,7 +85,7 @@
          <QueryEditor
             v-show="isSelected"
             ref="queryEditor"
-            :value.sync="localFunction.sql"
+            v-model="localFunction.sql"
             :workspace="workspace"
             :schema="schema"
             :height="editorHeight"
@@ -204,10 +204,10 @@ export default {
    mounted () {
       window.addEventListener('resize', this.resizeQueryEditor);
    },
-   destroyed () {
+   unmounted () {
       window.removeEventListener('resize', this.resizeQueryEditor);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {

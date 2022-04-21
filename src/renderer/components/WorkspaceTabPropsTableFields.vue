@@ -105,19 +105,20 @@
             ref="resultTable"
             :list="fields"
             class="tbody"
+            :item-key="_antares_id"
             handle=".row-draggable"
          >
-            <TableRow
-               v-for="row in fields"
-               :key="row._antares_id"
-               :row="row"
-               :indexes="getIndexes(row.name)"
-               :foreigns="getForeigns(row.name)"
-               :data-types="dataTypes"
-               :customizations="customizations"
-               @contextmenu="contextMenu"
-               @rename-field="$emit('rename-field', $event)"
-            />
+            <template #item="{element}">
+               <TableRow
+                  :row="element"
+                  :indexes="getIndexes(element.name)"
+                  :foreigns="getForeigns(element.name)"
+                  :data-types="dataTypes"
+                  :customizations="customizations"
+                  @contextmenu="contextMenu"
+                  @rename-field="$emit('rename-field', $event)"
+               />
+            </template>
          </Draggable>
       </div>
    </div>
@@ -195,7 +196,7 @@ export default {
    mounted () {
       window.addEventListener('resize', this.resizeResults);
    },
-   destroyed () {
+   unmounted () {
       window.removeEventListener('resize', this.resizeResults);
    },
    methods: {

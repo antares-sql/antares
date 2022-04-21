@@ -228,7 +228,7 @@ export default {
          return this.getWorkspace(this.connection.uid);
       },
       tabUid () {
-         return this.$vnode.key;
+         return this.$vnode?.key;
       },
       defaultEngine () {
          const engine = this.getDatabaseVariable(this.connection.uid, 'default_storage_engine');
@@ -277,7 +277,7 @@ export default {
       this.getFieldsData();
       window.addEventListener('keydown', this.onKey);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
@@ -415,7 +415,7 @@ export default {
          const localIDs = this.localFields.reduce((acc, curr) => [...acc, curr._antares_id], []);
 
          // Fields Additions
-         const additions = this.localFields.filter((field, i) => !originalIDs.includes(field._antares_id)).map(field => {
+         const additions = this.localFields.filter(field => !originalIDs.includes(field._antares_id)).map(field => {
             const lI = this.localFields.findIndex(localField => localField._antares_id === field._antares_id);
             const after = lI > 0 ? this.localFields[lI - 1].name : false;
             return { ...field, after };

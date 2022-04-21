@@ -27,8 +27,8 @@
                            <ForeignKeySelect
                               v-if="foreignKeys.includes(field.name)"
                               ref="formInput"
+                              v-model="localRow[field.name]"
                               class="form-select"
-                              :value.sync="localRow[field.name]"
                               :key-usage="getKeyUsage(field.name)"
                               :disabled="fieldsToExclude.includes(field.name)"
                            />
@@ -71,7 +71,7 @@
                               :tabindex="key+1"
                            >
                            <span class="input-group-addon" :class="typeCLass(field.type)">
-                              {{ field.type }} {{ fieldLength(field) | wrapNumber }}
+                              {{ field.type }} {{ wrapNumber(fieldLength(field)) }}
                            </span>
                            <label class="form-checkbox ml-3" :title="$t('word.insert')">
                               <input
@@ -131,12 +131,6 @@ export default {
    },
    directives: {
       mask: VueMaskDirective
-   },
-   filters: {
-      wrapNumber (num) {
-         if (!num) return '';
-         return `(${num})`;
-      }
    },
    props: {
       tabUid: [String, Number],
@@ -216,7 +210,7 @@ export default {
          firstSelectableInput.focus();
       }, 20);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
@@ -331,6 +325,10 @@ export default {
          e.stopPropagation();
          if (e.key === 'Escape')
             this.closeModal();
+      },
+      wrapNumber (num) {
+         if (!num) return '';
+         return `(${num})`;
       }
    }
 };

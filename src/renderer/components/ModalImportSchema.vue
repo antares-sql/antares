@@ -89,7 +89,7 @@ export default {
       ipcRenderer.on('import-progress', this.updateProgress);
       ipcRenderer.on('query-error', this.handleQueryError);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
       ipcRenderer.off('import-progress', this.updateProgress);
       ipcRenderer.off('query-error', this.handleQueryError);

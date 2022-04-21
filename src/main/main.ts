@@ -109,8 +109,8 @@ else {
       mainWindow = await createMainWindow();
       createAppMenu();
 
-      // if (isDevelopment)
-      //    mainWindow.webContents.openDevTools();
+      if (isDevelopment)
+         mainWindow.webContents.openDevTools();
 
       process.on('uncaughtException', error => {
          mainWindow.webContents.send('unhandled-exception', error);

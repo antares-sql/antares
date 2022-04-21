@@ -3,18 +3,18 @@
       v-show="isSelected"
       class="workspace-query-tab column col-12 columns col-gapless no-outline p-0"
       tabindex="0"
-      @keydown.116="runQuery(query)"
-      @keydown.75="killTabQuery"
-      @keydown.ctrl.alt.87="clear"
-      @keydown.ctrl.66="beautify"
-      @keydown.ctrl.71="openHistoryModal"
+      @keydown.f5="runQuery(query)"
+      @keydown.k="killTabQuery"
+      @keydown.ctrl.alt.w="clear"
+      @keydown.ctrl.b="beautify"
+      @keydown.ctrl.g="openHistoryModal"
    >
       <div class="workspace-query-runner column col-12">
          <QueryEditor
             v-show="isSelected"
             ref="queryEditor"
+            v-model="query"
             :auto-focus="true"
-            :value.sync="query"
             :workspace="workspace"
             :schema="breadcrumbsSchema"
             :is-selected="isSelected"
@@ -296,7 +296,7 @@ export default {
       if (this.tab.autorun)
          this.runQuery(this.query);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
       const params = {
          uid: this.connection.uid,

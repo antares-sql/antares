@@ -19,7 +19,7 @@ let manualRestart = null;
 const remoteDebugging = process.argv.includes('--remote-debug');
 
 if (remoteDebugging) {
-   // disable dvtools open in electron
+   // disable devtools open in electron
    process.env.RENDERER_REMOTE_DEBUGGING = true;
 }
 

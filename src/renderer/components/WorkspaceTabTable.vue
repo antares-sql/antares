@@ -117,14 +117,14 @@
                   <i class="mdi mdi-timer-sand mdi-rotate-180 pr-1" /> <b>{{ results[0].duration / 1000 }}s</b>
                </div>
                <div v-if="results.length && results[0].rows">
-                  {{ $t('word.results') }}: <b>{{ results[0].rows.length | localeString }}</b>
+                  {{ $t('word.results') }}: <b>{{ localeString(results[0].rows.length) }}</b>
                </div>
                <div v-if="hasApproximately || (page > 1 && approximateCount)">
                   {{ $t('word.total') }}: <b
                      :title="!customizations.tableRealCount ? $t('word.approximately') : ''"
                   >
                      <span v-if="!customizations.tableRealCount">≈</span>
-                     {{ approximateCount | localeString }}
+                     {{ localeString(approximateCount) }}
                   </b>
                </div>
                <div class="d-flex" :title="$t('word.schema')">
@@ -193,12 +193,6 @@ export default {
       WorkspaceTabTableFilters,
       ModalNewTableRow,
       ModalFakerRows
-   },
-   filters: {
-      localeString (val) {
-         if (val !== null)
-            return val.toLocaleString();
-      }
    },
    mixins: [tableTabs],
    props: {
@@ -310,7 +304,7 @@ export default {
       this.getTableData();
       window.addEventListener('keydown', this.onKey);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
       clearInterval(this.refreshInterval);
    },
@@ -335,8 +329,8 @@ export default {
             table: this.table,
             limit: this.limit,
             page: this.page,
-            sortParams: this.sortParams,
-            where: this.filters || []
+            sortParams: { ...this.sortParams },
+            where: [...this.filters] || []
          };
 
          try { // Table data
@@ -458,6 +452,10 @@ export default {
       updateFilters (clausoles) {
          this.filters = clausoles;
          this.getTableData();
+      },
+      localeString (val) {
+         if (val !== null)
+            return val.toLocaleString();
       }
    }
 };

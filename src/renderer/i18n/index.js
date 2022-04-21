@@ -1,9 +1,7 @@
-import Vue from 'vue';
-import VueI18n from 'vue-i18n';
+import { createI18n } from 'vue-i18n/dist/vue-i18n.esm-bundler.js';// NOTES: temporary fix to compile error
 
-Vue.use(VueI18n);
-
-const i18n = new VueI18n({
+const i18n = locale => createI18n({
+   locale,
    messages: {
       'en-US': require('./en-US'),
       'it-IT': require('./it-IT'),
