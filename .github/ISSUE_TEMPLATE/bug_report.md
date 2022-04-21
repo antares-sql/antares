@@ -26,14 +26,16 @@ If applicable, add screenshots to help explain your problem.
 
 **Application (please complete the following information):**
 
-- Client [e.g. MySQL]
-- Version [e.g. 0.14.0]
-- Distribution: [e.g. exe, Linux Store, AppImage, dmg]
+- App client [e.g. MySQL]
+- App version [e.g. 0.5.2]
+- Installation source: [e.g. exe, Linux Store, AppImage, dmg]
 
-**Desktop (please complete the following information):**
+**Environment (please complete the following information):**
 
-- OS: [e.g. Windows 11]
-- Version [e.g. 21H2]
+- OS name: [e.g. Windows 11]
+- OS version [e.g. 21H2]
+- DB name  [e.g. MariaDB]
+- DB version [e.g. 10.3.34]
 
 **Additional context**
 Add any other context about the problem here.

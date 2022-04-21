@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.2](https://github.com/antares-sql/antares/compare/v0.5.1...v0.5.2) (2022-04-10)
+
+
+### Features
+
+* **core:** option to allow untrusted SSL connections ([6cc098c](https://github.com/antares-sql/antares/commit/6cc098c6f02fb52cc71c0141431ab75f12744a1c))
+* french translation updated, closes [#222](https://github.com/antares-sql/antares/issues/222) ([796f61b](https://github.com/antares-sql/antares/commit/796f61bf2feab0da515901e2137dc7bf04371d7d))
+* **PostgreSQL:** export functions and procedures ([a8ca8f2](https://github.com/antares-sql/antares/commit/a8ca8f2f76ab36c4afe84d602709386315f4b7d1))
+* **PostgreSQL:** export tables ([a67071e](https://github.com/antares-sql/antares/commit/a67071e28470bcbd0ec26780bb86f3c65750ded8))
+* **PostgreSQL:** export triggers ([42376b4](https://github.com/antares-sql/antares/commit/42376b4bc6dd8b630402d09b026d9fbc0b8646bb))
+* **PostgreSQL:** export user-defined types before tables ([bb02479](https://github.com/antares-sql/antares/commit/bb02479b71bf75a6e69e28af57c5fe213d3f30bc))
+* **PostgreSQL:** export views ([86f011f](https://github.com/antares-sql/antares/commit/86f011f34fec9d6829bce324493fea888a863ffc))
+* **PostgreSQL:** sql dump importer ([6086ca4](https://github.com/antares-sql/antares/commit/6086ca4a80b9ad6a07086446253d781f052d3abc))
+
+
+### Bug Fixes
+
+* **PostgreSQL:** wrong values exporting table content ([0f9c991](https://github.com/antares-sql/antares/commit/0f9c991f539560913fa0e9361a16e6448a066a27))
+* ssh tunnel not properly working, closes [#220](https://github.com/antares-sql/antares/issues/220) ([026d74c](https://github.com/antares-sql/antares/commit/026d74c8c88c605a3c8c963c211078f5b3dcfda1))
+
+
+### Improvements
+
+* **PostgreSQL:** improved dump file ([408dded](https://github.com/antares-sql/antares/commit/408ddeda5634ab6bf41eff760271669170b60eb6))
+* **PostgreSQL:** improved views exportation ([638a88a](https://github.com/antares-sql/antares/commit/638a88a1fb35c048ff4c6d120aaaef831c846f58))
+
 ### [0.5.1](https://github.com/Fabio286/antares/compare/v0.5.0...v0.5.1) (2022-03-25)
 
 
