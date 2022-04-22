@@ -40,7 +40,7 @@ export default {
    mutations: {
       SET_LOCALE (state, locale) {
          state.locale = locale;
-         i18n.locale = locale;
+         i18n.global.locale = locale;
          persistentStore.set('locale', state.locale);
       },
       SET_DATA_TAB_LIMIT (state, limit) {

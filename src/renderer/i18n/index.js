@@ -1,7 +1,7 @@
-import { createI18n } from 'vue-i18n/dist/vue-i18n.esm-bundler.js';// NOTES: temporary fix to compile error
+import { createI18n } from 'vue-i18n/dist/vue-i18n.esm-bundler';
 
-const i18n = locale => createI18n({
-   locale,
+const i18n = createI18n({
+   fallbackLocale: 'en-US',
    messages: {
       'en-US': require('./en-US'),
       'it-IT': require('./it-IT'),

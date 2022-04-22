@@ -1,7 +1,5 @@
 'use strict';
 import { createStore } from 'vuex/dist/vuex.esm-bundler';
-// import Vue from 'vue';
-// import Vuex from 'vuex';
 
 import application from './modules/application.store';
 import settings from './modules/settings.store';
