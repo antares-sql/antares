@@ -1,9 +1,9 @@
 'use strict';
 import { ipcRenderer } from 'electron';
-import { unproxify } from 'common/libs/unproxify';
+import { toRaw } from 'vue';
 
 export default class {
    static getUsers (params) {
-      return ipcRenderer.invoke('get-users', unproxify(params));
+      return ipcRenderer.invoke('get-users', toRaw(params));
    }
 }
