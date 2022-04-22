@@ -21,6 +21,7 @@ export default {
    props: {
       contextEvent: MouseEvent
    },
+   emits: ['close-context'],
    data () {
       return {
          contextSize: null,

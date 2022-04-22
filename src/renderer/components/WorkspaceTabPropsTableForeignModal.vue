@@ -221,6 +221,7 @@ export default {
       fields: Array,
       workspace: Object
    },
+   emits: ['foreigns-update', 'hide'],
    data () {
       return {
          foreignProxy: [],

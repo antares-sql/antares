@@ -45,6 +45,7 @@ export default {
       contextEvent: MouseEvent,
       contextConnection: Object
    },
+   emits: ['close-context'],
    data () {
       return {
          isConfirmModal: false,

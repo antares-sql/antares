@@ -149,6 +149,7 @@ export default {
    props: {
       connection: Object
    },
+   emits: ['close'],
    data () {
       return {
          resultsSize: 1000,

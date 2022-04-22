@@ -108,6 +108,7 @@ export default {
    props: {
       connection: Object
    },
+   emits: ['select-query', 'close'],
    data () {
       return {
          resultsSize: 1000,

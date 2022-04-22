@@ -153,6 +153,7 @@ export default {
       workspace: Object,
       indexTypes: Array
    },
+   emits: ['hide', 'indexes-update'],
    data () {
       return {
          indexesProxy: [],

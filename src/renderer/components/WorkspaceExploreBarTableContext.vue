@@ -88,6 +88,7 @@ export default {
       selectedTable: Object,
       selectedSchema: String
    },
+   emits: ['close-context', 'duplicate-table', 'reload', 'delete-table'],
    data () {
       return {
          isDeleteModal: false,

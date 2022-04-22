@@ -71,6 +71,7 @@ import Schema from '@/ipc-api/Schema';
 
 export default {
    name: 'ModalNewSchema',
+   emits: ['reload', 'close'],
    data () {
       return {
          isLoading: false,

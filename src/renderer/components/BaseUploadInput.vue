@@ -35,6 +35,7 @@ export default {
          type: String
       }
    },
+   emits: ['change', 'clear'],
    data () {
       return {
          id: null

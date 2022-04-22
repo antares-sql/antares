@@ -55,6 +55,7 @@ export default {
       selectedMisc: String,
       selectedSchema: String
    },
+   emits: ['open-create-trigger-tab', 'open-create-routine-tab', 'open-create-function-tab', 'open-create-trigger-function-tab', 'open-create-scheduler-tab', 'close-context'],
    data () {
       return {
          localElement: {}

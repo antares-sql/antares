@@ -129,6 +129,7 @@ export default {
       fieldLength: Number,
       fieldObj: Object
    },
+   emits: ['update:value'],
    data () {
       return {
          localType: null,

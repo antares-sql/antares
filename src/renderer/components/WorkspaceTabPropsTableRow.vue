@@ -358,6 +358,7 @@ export default {
       foreigns: Array,
       customizations: Object
    },
+   emits: ['contextmenu', 'rename-field'],
    data () {
       return {
          localRow: {},

@@ -154,6 +154,7 @@ export default {
       localOptions: Object,
       workspace: Object
    },
+   emits: ['hide', 'options-update'],
    data () {
       return {
          optionsProxy: {},

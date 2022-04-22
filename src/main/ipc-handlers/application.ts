@@ -10,7 +10,7 @@ export default () => {
       event.returnValue = key;
    });
 
-   ipcMain.handle('showOpenDialog', (event, options) => {
+   ipcMain.handle('show-open-dialog', (event, options) => {
       return dialog.showOpenDialog(options);
    });
 

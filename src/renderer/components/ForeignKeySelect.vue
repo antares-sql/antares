@@ -34,6 +34,7 @@ export default {
          default: ''
       }
    },
+   emits: ['update:value', 'blur'],
    data () {
       return {
          foreignList: []

@@ -17,7 +17,7 @@ import { mapGetters } from 'vuex';
 export default {
    name: 'BaseTextEditor',
    props: {
-      value: String,
+      modelValue: String,
       mode: { type: String, default: 'text' },
       editorClass: { type: String, default: '' },
       autoFocus: { type: Boolean, default: false },
@@ -25,6 +25,7 @@ export default {
       showLineNumbers: { type: Boolean, default: true },
       height: { type: Number, default: 200 }
    },
+   emits: ['update:modelValue'],
    data () {
       return {
          editor: null,
@@ -83,7 +84,7 @@ export default {
       this.editor = ace.edit(`editor-${this.id}`, {
          mode: `ace/mode/${this.mode}`,
          theme: `ace/theme/${this.editorTheme}`,
-         value: this.value || '',
+         value: this.modelValue || '',
          fontSize: '14px',
          printMargin: false,
          readOnly: this.readOnly,
@@ -100,7 +101,7 @@ export default {
 
       this.editor.session.on('change', () => {
          const content = this.editor.getValue();
-         this.$emit('update:value', content);
+         this.$emit('update:modelValue', content);
       });
 
       if (this.autoFocus) {

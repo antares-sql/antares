@@ -56,6 +56,7 @@
 <script>
 export default {
    name: 'ModalAskCredentials',
+   emits: ['close-asking', 'credentials'],
    data () {
       return {
          credentials: {

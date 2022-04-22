@@ -58,6 +58,7 @@ export default {
       confirmText: String,
       cancelText: String
    },
+   emits: ['confirm', 'hide'],
    computed: {
       hasHeader () {
          return !!this.$slots.header;

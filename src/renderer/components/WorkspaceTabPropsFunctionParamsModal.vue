@@ -185,6 +185,7 @@ export default {
       func: String,
       workspace: Object
    },
+   emits: ['hide', 'parameters-update'],
    data () {
       return {
          parametersProxy: [],

@@ -58,6 +58,7 @@ export default {
    props: {
       selectedSchema: String
    },
+   emits: ['close'],
    data () {
       return {
          sqlFile: '',

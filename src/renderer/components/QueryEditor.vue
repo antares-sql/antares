@@ -26,6 +26,7 @@ export default {
       readOnly: { type: Boolean, default: false },
       height: { type: Number, default: 200 }
    },
+   emits: ['update:value'],
    data () {
       return {
          editor: null,

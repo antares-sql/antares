@@ -200,6 +200,7 @@ export default {
       fields: Array,
       keyUsage: Array
    },
+   emits: ['reload', 'hide'],
    data () {
       return {
          localRow: {},

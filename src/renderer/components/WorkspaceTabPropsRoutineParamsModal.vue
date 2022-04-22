@@ -185,6 +185,7 @@ export default {
       routine: String,
       workspace: Object
    },
+   emits: ['parameters-update', 'hide'],
    data () {
       return {
          parametersProxy: [],

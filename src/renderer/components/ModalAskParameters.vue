@@ -60,6 +60,7 @@ export default {
       localRoutine: Object,
       client: String
    },
+   emits: ['confirm', 'close'],
    data () {
       return {
          values: {}

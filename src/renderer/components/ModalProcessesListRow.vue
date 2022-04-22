@@ -56,6 +56,7 @@ export default {
    props: {
       row: Object
    },
+   emits: ['select-row', 'contextmenu', 'stop-refresh'],
    data () {
       return {
          isInlineEditor: {},

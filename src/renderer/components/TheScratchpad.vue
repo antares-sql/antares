@@ -39,6 +39,7 @@ export default {
       ConfirmModal,
       TextEditor
    },
+   emits: ['hide'],
    data () {
       return {
          localNotes: '',

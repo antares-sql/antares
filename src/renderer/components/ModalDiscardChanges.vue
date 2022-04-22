@@ -26,6 +26,7 @@ export default {
    components: {
       ConfirmModal
    },
+   emits: ['confirm', 'close'],
    created () {
       window.addEventListener('keydown', this.onKey);
    },

@@ -61,6 +61,7 @@ export default {
       selectedRows: Array,
       selectedCell: Object
    },
+   emits: ['show-delete-modal', 'close-context', 'set-null', 'copy-cell', 'copy-row'],
    methods: {
       showConfirmModal () {
          this.$emit('show-delete-modal');

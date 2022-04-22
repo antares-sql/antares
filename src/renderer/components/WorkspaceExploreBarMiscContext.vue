@@ -86,6 +86,7 @@ export default {
       selectedMisc: Object,
       selectedSchema: String
    },
+   emits: ['close-context', 'reload'],
    data () {
       return {
          isDeleteModal: false,

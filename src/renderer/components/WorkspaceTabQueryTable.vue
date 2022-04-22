@@ -132,6 +132,7 @@ export default {
       isSelected: Boolean,
       elementType: { type: String, default: 'table' }
    },
+   emits: ['update-field', 'delete-selected', 'hard-sort'],
    data () {
       return {
          resultsSize: 0,

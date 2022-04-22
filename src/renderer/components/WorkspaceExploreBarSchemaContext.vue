@@ -146,6 +146,17 @@ export default {
       contextEvent: MouseEvent,
       selectedSchema: String
    },
+   emits: [
+      'open-create-table-tab',
+      'open-create-view-tab',
+      'open-create-trigger-tab',
+      'open-create-routine-tab',
+      'open-create-function-tab',
+      'open-create-trigger-function-tab',
+      'open-create-scheduler-tab',
+      'close-context',
+      'reload'
+   ],
    data () {
       return {
          isDeleteModal: false,

@@ -252,6 +252,7 @@ export default {
       database: Object,
       connection: Object
    },
+   emits: ['show-schema-context', 'show-table-context', 'show-misc-context', 'show-misc-folder-context'],
    data () {
       return {
          isLoading: false

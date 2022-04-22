@@ -148,6 +148,7 @@ export default {
       schema: String,
       mode: String
    },
+   emits: ['add-new-index', 'add-to-index', 'rename-field', 'duplicate-field', 'remove-field'],
    data () {
       return {
          resultsSize: 1000,

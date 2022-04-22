@@ -52,6 +52,7 @@ export default {
       selectedRow: Number,
       selectedCell: Object
    },
+   emits: ['close-context', 'copy-cell', 'copy-row', 'kill-process'],
    computed: {
    },
    methods: {

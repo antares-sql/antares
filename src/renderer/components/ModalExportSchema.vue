@@ -281,6 +281,7 @@ export default {
    props: {
       selectedSchema: String
    },
+   emits: ['close'],
    data () {
       return {
          isExporting: false,

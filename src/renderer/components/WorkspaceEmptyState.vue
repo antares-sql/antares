@@ -28,6 +28,7 @@
 import { mapGetters, mapActions } from 'vuex';
 export default {
    name: 'WorkspaceEmptyState',
+   emits: ['new-tab'],
    computed: {
       ...mapGetters({
          applicationTheme: 'settings/getApplicationTheme',

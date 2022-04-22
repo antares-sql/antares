@@ -243,6 +243,7 @@ export default {
       itemHeight: Number,
       elementType: { type: String, default: 'table' }
    },
+   emits: ['update-field', 'select-row', 'contextmenu'],
    data () {
       return {
          isInlineEditor: {},

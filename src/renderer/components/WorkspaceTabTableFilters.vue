@@ -79,6 +79,7 @@ export default {
       fields: Array,
       connClient: String
    },
+   emits: ['filter-change', 'filter'],
    data () {
       return {
          rows: [],
