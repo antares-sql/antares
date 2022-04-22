@@ -1,25 +1,26 @@
 'use strict';
 import { ipcRenderer } from 'electron';
+import { unproxify } from 'common/libs/unproxify';
 
 export default class {
    static createSchema (params) {
-      return ipcRenderer.invoke('create-schema', { ...params });
+      return ipcRenderer.invoke('create-schema', unproxify(params));
    }
 
    static updateSchema (params) {
-      return ipcRenderer.invoke('update-schema', { ...params });
+      return ipcRenderer.invoke('update-schema', unproxify(params));
    }
 
    static getDatabaseCollation (params) {
-      return ipcRenderer.invoke('get-schema-collation', { ...params });
+      return ipcRenderer.invoke('get-schema-collation', unproxify(params));
    }
 
    static deleteSchema (params) {
-      return ipcRenderer.invoke('delete-schema', { ...params });
+      return ipcRenderer.invoke('delete-schema', unproxify(params));
    }
 
    static getStructure (params) {
-      return ipcRenderer.invoke('get-structure', { ...params });
+      return ipcRenderer.invoke('get-structure', unproxify(params, false));
    }
 
    static getCollations (uid) {
@@ -43,35 +44,35 @@ export default class {
    }
 
    static killProcess (params) {
-      return ipcRenderer.invoke('kill-process', { ...params });
+      return ipcRenderer.invoke('kill-process', unproxify(params));
    }
 
    static killTabQuery (params) {
-      return ipcRenderer.invoke('kill-tab-query', { ...params });
+      return ipcRenderer.invoke('kill-tab-query', unproxify(params));
    }
 
    static commitTab (params) {
-      return ipcRenderer.invoke('commit-tab', { ...params });
+      return ipcRenderer.invoke('commit-tab', unproxify(params));
    }
 
    static rollbackTab (params) {
-      return ipcRenderer.invoke('rollback-tab', { ...params });
+      return ipcRenderer.invoke('rollback-tab', unproxify(params));
    }
 
    static destroyConnectionToCommit (params) {
-      return ipcRenderer.invoke('destroy-connection-to-commit', { ...params });
+      return ipcRenderer.invoke('destroy-connection-to-commit', unproxify(params));
    }
 
    static useSchema (params) {
-      return ipcRenderer.invoke('use-schema', { ...params });
+      return ipcRenderer.invoke('use-schema', unproxify(params));
    }
 
    static rawQuery (params) {
-      return ipcRenderer.invoke('raw-query', { ...params });
+      return ipcRenderer.invoke('raw-query', unproxify(params));
    }
 
    static export (params) {
-      return ipcRenderer.invoke('export', { ...params });
+      return ipcRenderer.invoke('export', unproxify(params));
    }
 
    static abortExport () {
@@ -79,7 +80,7 @@ export default class {
    }
 
    static import (params) {
-      return ipcRenderer.invoke('import-sql', { ...params });
+      return ipcRenderer.invoke('import-sql', unproxify(params));
    }
 
    static abortImport () {
