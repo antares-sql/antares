@@ -218,7 +218,7 @@ export default {
          return this.getWorkspace(this.connection.uid);
       },
       tabUid () {
-         return this.$vnode.key;
+         return this.$vnode?.key;
       },
       defaultCollation () {
          if (this.workspace.customizations.collations)

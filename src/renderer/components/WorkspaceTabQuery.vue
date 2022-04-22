@@ -239,7 +239,7 @@ export default {
          return this.getWorkspace(this.connection.uid);
       },
       tabUid () {
-         return this.$vnode.key;
+         return this.$vnode?.key;
       },
       breadcrumbsSchema () {
          return this.workspace.breadcrumbs.schema || null;

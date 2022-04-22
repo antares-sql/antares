@@ -169,7 +169,7 @@ export default {
          return this.getWorkspace(this.connection.uid);
       },
       tabUid () {
-         return this.$vnode.key;
+         return this.$vnode?.key;
       },
       customizations () {
          return this.workspace.customizations;

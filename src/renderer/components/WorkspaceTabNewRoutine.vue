@@ -206,7 +206,7 @@ export default {
          return this.workspace.customizations;
       },
       tabUid () {
-         return this.$vnode.key;
+         return this.$vnode?.key;
       },
       isChanged () {
          return JSON.stringify(this.originalRoutine) !== JSON.stringify(this.localRoutine);

@@ -10,7 +10,7 @@
             ref="tabWrap"
             v-model="draggableTabs"
             tag="ul"
-            :item-key="uid"
+            item-key="uid"
             group="tabs"
             class="tab tab-block column col-12"
             draggable=".tab-draggable"

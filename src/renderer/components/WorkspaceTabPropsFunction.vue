@@ -269,7 +269,7 @@ export default {
          return this.workspace.customizations;
       },
       tabUid () {
-         return this.$vnode.key;
+         return this.$vnode?.key;
       },
       isChanged () {
          return JSON.stringify(this.originalFunction) !== JSON.stringify(this.localFunction);

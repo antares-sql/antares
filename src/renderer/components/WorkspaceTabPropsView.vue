@@ -157,7 +157,7 @@ export default {
          return this.getWorkspace(this.connection.uid);
       },
       tabUid () {
-         return this.$vnode.key;
+         return this.$vnode?.key;
       },
       isChanged () {
          return JSON.stringify(this.originalView) !== JSON.stringify(this.localView);

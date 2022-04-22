@@ -105,7 +105,7 @@
             ref="resultTable"
             :list="fields"
             class="tbody"
-            :item-key="_antares_id"
+            item-key="_antares_id"
             handle=".row-draggable"
          >
             <template #item="{element}">
