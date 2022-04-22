@@ -71,7 +71,7 @@ export class SQLiteClient extends AntaresCore {
             SELECT * 
             FROM "${db.name}".sqlite_master 
             WHERE type IN ('table', 'view') 
-            AND name NOT LIKE 'sqlite_%' 
+            AND name NOT LIKE 'sqlite\\_%' ESCAPE '\\'
             ORDER BY name
          `);
          if (tables.length) {
@@ -742,5 +742,13 @@ export class SQLiteClient extends AntaresCore {
       const result = resultsArr.length === 1 ? resultsArr[0] : resultsArr;
 
       return result as unknown as T;
+   }
+
+   getVariables (): null[] {
+      return [];
+   }
+
+   getCollations (): null[] {
+      return [];
    }
 }
