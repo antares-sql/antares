@@ -116,6 +116,7 @@
     "electron-store": "^8.0.1",
     "electron-updater": "^4.6.1",
     "electron-window-state": "^5.0.3",
+    "encoding": "^0.1.13",
     "leaflet": "^1.7.1",
     "marked": "^4.0.0",
     "moment": "^2.29.1",

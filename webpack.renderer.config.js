@@ -6,42 +6,45 @@ const { VueLoaderPlugin } = require('vue-loader');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ProgressPlugin = require('progress-webpack-plugin');
 
-const { dependencies, devDependencies, version } = require('./package.json');
+const { version } = require('./package.json');
 const { contributors } = JSON.parse(fs.readFileSync('./.all-contributorsrc', 'utf-8'));
 const parsedContributors = contributors.reduce((acc, c) => {
    acc.push(c.name);
    return acc;
 }, []).join(',');
 
-const externals = Object.keys(dependencies).concat(Object.keys(devDependencies));
 const isDevMode = process.env.NODE_ENV !== 'production';
-const whiteListedModules = ['vue'];
+const whiteListedModules = ['.bin', 'vue', '@vue'];
+const externals = {};
+
+fs.readdirSync('node_modules')
+   .filter(x => whiteListedModules.indexOf(x) === -1)
+   .forEach(mod => {
+      externals[mod] = `commonjs ${mod}`;
+   });
 
 const config = {
    name: 'renderer',
    mode: process.env.NODE_ENV,
-   devtool: isDevMode ? 'eval-source-map' : false,
-   entry: {
-      renderer: path.join(__dirname, './src/renderer/index.js')
-   },
+   devtool: isDevMode ? 'eval-cheap-module-source-map' : false,
+   entry: path.join(__dirname, './src/renderer/index.js'),
    target: 'electron-renderer',
    output: {
-      libraryTarget: 'commonjs2',
       path: path.resolve(__dirname, 'dist'),
-      filename: '[name].js',
-      publicPath: ''
+      filename: 'renderer.js'
    },
    node: {
       global: true,
       __dirname: isDevMode,
       __filename: isDevMode
    },
-   externals: externals.filter((d) => !whiteListedModules.includes(d)),
+   externals: externals,
    resolve: {
       alias: {
-         // vue$: 'vue/dist/vue.common.js',
          '@': path.resolve(__dirname, 'src/renderer'),
-         common: path.resolve(__dirname, 'src/common')
+         common: path.resolve(__dirname, 'src/common'),
+         // @TODO: remove after migrating from vue2 -> vue3
+         vue: '@vue/compat'
       },
       extensions: ['', '.js', '.vue', '.json'],
       fallback: {
