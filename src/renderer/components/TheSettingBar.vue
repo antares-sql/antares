@@ -10,7 +10,7 @@
          <ul class="settingbar-elements">
             <Draggable
                v-model="connections"
-               item-key="uid"
+               :item-key="'uid'"
                @start="isDragging = true"
                @end="dragStop"
             >
