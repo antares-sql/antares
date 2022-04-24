@@ -273,7 +273,7 @@
                         </div>
                         <div class="column col-12">
                            <BaseTextEditor
-                              :value="exampleQuery"
+                              :model-value="exampleQuery"
                               mode="sql"
                               :workspace="workspace"
                               :read-only="true"
@@ -316,12 +316,12 @@
 </template>
 
 <script>
+import { shell } from 'electron';
 import { mapActions, mapGetters } from 'vuex';
 import localesNames from '@/i18n/supported-locales';
 import ModalSettingsUpdate from '@/components/ModalSettingsUpdate';
 import ModalSettingsChangelog from '@/components/ModalSettingsChangelog';
 import BaseTextEditor from '@/components/BaseTextEditor';
-const { shell } = require('electron');
 
 export default {
    name: 'ModalSettings',

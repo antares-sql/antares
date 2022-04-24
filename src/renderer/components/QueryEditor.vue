@@ -18,7 +18,7 @@ import Tables from '@/ipc-api/Tables';
 export default {
    name: 'QueryEditor',
    props: {
-      value: String,
+      modelValue: String,
       workspace: Object,
       isSelected: Boolean,
       schema: { type: String, default: '' },
@@ -26,7 +26,7 @@ export default {
       readOnly: { type: Boolean, default: false },
       height: { type: Number, default: 200 }
    },
-   emits: ['update:value'],
+   emits: ['update:modelValue'],
    data () {
       return {
          editor: null,
@@ -132,7 +132,7 @@ export default {
          return this.editor.session.doc.positionToIndex(this.editor.getCursorPosition());
       },
       lastWord () {
-         const charsBefore = this.value.slice(0, this.cursorPosition);
+         const charsBefore = this.modelValue.slice(0, this.cursorPosition);
          const words = charsBefore.replaceAll('\n', ' ').split(' ').filter(Boolean);
          return words.pop();
       },
@@ -213,7 +213,7 @@ export default {
       this.editor = ace.edit(`editor-${this.id}`, {
          mode: `ace/mode/${this.mode}`,
          theme: `ace/theme/${this.editorTheme}`,
-         value: this.value,
+         value: this.modelValue,
          fontSize: '14px',
          printMargin: false,
          readOnly: this.readOnly
@@ -264,7 +264,7 @@ export default {
 
       this.editor.session.on('change', () => {
          const content = this.editor.getValue();
-         this.$emit('update:value', content);
+         this.$emit('update:modelValue', content);
       });
 
       this.editor.on('guttermousedown', e => {

@@ -27,14 +27,14 @@ import { TEXT, LONG_TEXT } from 'common/fieldTypes';
 export default {
    name: 'ForeignKeySelect',
    props: {
-      value: [String, Number],
+      modelValue: [String, Number],
       keyUsage: Object,
       size: {
          type: String,
          default: ''
       }
    },
-   emits: ['update:value', 'blur'],
+   emits: ['update:modelValue', 'blur'],
    data () {
       return {
          foreignList: []
@@ -46,7 +46,7 @@ export default {
       }),
       isValidDefault () {
          if (!this.foreignList.length) return true;
-         if (this.value === null) return false;
+         if (this.modelValue === null) return false;
          return this.foreignList.some(foreign => foreign.foreign_column.toString() === this.value.toString());
       }
    },
@@ -92,7 +92,7 @@ export default {
          addNotification: 'notifications/addNotification'
       }),
       onChange () {
-         this.$emit('update:value', this.$refs.editField.value);
+         this.$emit('update:modelValue', this.$refs.editField.value);
       },
       cutText (val) {
          if (typeof val !== 'string') return val;

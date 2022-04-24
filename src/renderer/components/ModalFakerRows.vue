@@ -340,8 +340,8 @@ export default {
       },
       fieldLength (field) {
          if ([...BLOB, ...LONG_TEXT].includes(field.type)) return null;
-         else if (TEXT.includes(field.type)) return field.charLength;
-         return field.length;
+         else if (TEXT.includes(field.type)) return Number(field.charLength);
+         return Number(field.length);
       },
       toggleFields (event, field) {
          if (event.target.checked)

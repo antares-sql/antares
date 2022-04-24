@@ -129,7 +129,7 @@ export default {
       fieldLength: Number,
       fieldObj: Object
    },
-   emits: ['update:value'],
+   emits: ['update:modelValue'],
    data () {
       return {
          localType: null,
@@ -245,7 +245,7 @@ export default {
          this.selectedValue = '';
       },
       onChange () {
-         this.$emit('update:value', {
+         this.$emit('update:modelValue', {
             group: this.selectedGroup,
             method: this.selectedMethod,
             params: this.methodParams,
