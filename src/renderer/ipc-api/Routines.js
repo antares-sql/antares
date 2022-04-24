@@ -1,21 +1,21 @@
 'use strict';
 import { ipcRenderer } from 'electron';
-import { toRaw } from 'vue';
+import { unproxify } from '../libs/unproxify';
 
 export default class {
    static getRoutineInformations (params) {
-      return ipcRenderer.invoke('get-routine-informations', toRaw(params));
+      return ipcRenderer.invoke('get-routine-informations', unproxify(params));
    }
 
    static dropRoutine (params) {
-      return ipcRenderer.invoke('drop-routine', toRaw(params));
+      return ipcRenderer.invoke('drop-routine', unproxify(params));
    }
 
    static alterRoutine (params) {
-      return ipcRenderer.invoke('alter-routine', toRaw(params));
+      return ipcRenderer.invoke('alter-routine', unproxify(params));
    }
 
    static createRoutine (params) {
-      return ipcRenderer.invoke('create-routine', toRaw(params));
+      return ipcRenderer.invoke('create-routine', unproxify(params));
    }
 }

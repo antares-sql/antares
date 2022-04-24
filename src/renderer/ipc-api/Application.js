@@ -1,14 +1,14 @@
 'use strict';
 import { ipcRenderer } from 'electron';
-import { toRaw } from 'vue';
+import { unproxify } from '../libs/unproxify';
 
 export default class {
    static getKey (params) {
-      return ipcRenderer.sendSync('get-key', toRaw(params));
+      return ipcRenderer.sendSync('get-key', unproxify(params));
    }
 
    static showOpenDialog (options) {
-      return ipcRenderer.invoke('show-open-dialog', toRaw(options));
+      return ipcRenderer.invoke('show-open-dialog', unproxify(options));
    }
 
    static getDownloadPathDirectory () {
