@@ -16,9 +16,9 @@ export default {
    },
    getters: {
       getSelected: state => {
+         if (!state.workspaces.length) return 'NEW';
          if (state.selected_workspace) return state.selected_workspace;
-         if (state.workspaces.length) return state.workspaces[0].uid;
-         return 'NEW';
+         return state.workspaces[0].uid;
       },
       getWorkspace: state => uid => {
          return state.workspaces.find(workspace => workspace.uid === uid);

@@ -355,6 +355,7 @@
          </div>
          <div class="panel-footer">
             <button
+               id="connection-test"
                class="btn btn-gray mr-2 d-flex"
                :class="{'loading': isTesting}"
                :disabled="isBusy"
@@ -364,6 +365,7 @@
                {{ $t('message.testConnection') }}
             </button>
             <button
+               id="connection-save"
                class="btn btn-primary mr-2 d-flex"
                :disabled="isBusy || !hasChanges"
                @click="saveConnection"
@@ -372,6 +374,7 @@
                {{ $t('word.save') }}
             </button>
             <button
+               id="connection-connect"
                class="btn btn-success d-flex"
                :class="{'loading': isConnecting}"
                :disabled="isBusy"

@@ -50,7 +50,11 @@
                            <label class="form-label cut-text">{{ $t('word.client') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
-                           <select v-model="connection.client" class="form-select">
+                           <select
+                              id="connection-client"
+                              v-model="connection.client"
+                              class="form-select"
+                           >
                               <option
                                  v-for="client in clients"
                                  :key="client.slug"
@@ -363,6 +367,7 @@
          </div>
          <div class="panel-footer">
             <button
+               id="connection-test"
                class="btn btn-gray mr-2 d-flex"
                :class="{'loading': isTesting}"
                :disabled="isBusy"
@@ -372,6 +377,7 @@
                {{ $t('message.testConnection') }}
             </button>
             <button
+               id="connection-save"
                class="btn btn-primary mr-2 d-flex"
                :disabled="isBusy"
                @click="saveConnection"
