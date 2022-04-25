@@ -360,7 +360,7 @@ export default {
       structure.forEach(feat => {
          const val = customizations[this.currentWorkspace.client][feat];
          if (val)
-            this.$set(this.options.includes, feat, true);
+            this.options.includes[feat] = true;
       });
 
       ipcRenderer.on('export-progress', this.updateProgress);
