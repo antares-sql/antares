@@ -26,9 +26,9 @@ export default {
          const connection = state.connections.filter(connection => connection.uid === uid)[0];
          let connectionName = '';
 
-         if (connection.name)
+         if (connection?.name)
             connectionName = connection.name;
-         else if (connection.ask)
+         else if (connection?.ask)
             connectionName = `${connection.host}:${connection.port}`;
          else if (connection.databasePath) {
             let string = connection.databasePath.split(/[/\\]+/).pop();
@@ -38,8 +38,14 @@ export default {
 
             connectionName = string;
          }
-         else
-            connectionName = `${connection.user + '@'}${connection.host}:${connection.port}`;
+         else {
+            if (connection.user) connectionName += `${connection.user}@`;
+
+            if (connection.host) {
+               connectionName += connection.host;
+               if (connection.port) connectionName += `:${connection.port}`;
+            }
+         }
 
          return connectionName;
       }
