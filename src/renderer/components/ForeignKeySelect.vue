@@ -6,14 +6,14 @@
       @change="onChange"
       @blur="$emit('blur')"
    >
-      <option v-if="!isValidDefault" :value="value">
-         {{ value === null ? 'NULL' : value }}
+      <option v-if="!isValidDefault" :value="modelValue">
+         {{ modelValue === null ? 'NULL' : modelValue }}
       </option>
       <option
          v-for="row in foreignList"
          :key="row.foreign_column"
          :value="row.foreign_column"
-         :selected="row.foreign_column === value"
+         :selected="row.foreign_column === modelValue"
       >
          {{ row.foreign_column }} {{ cutText('foreign_description' in row ? ` - ${row.foreign_description}` : '') }}
       </option>
@@ -47,7 +47,7 @@ export default {
       isValidDefault () {
          if (!this.foreignList.length) return true;
          if (this.modelValue === null) return false;
-         return this.foreignList.some(foreign => foreign.foreign_column.toString() === this.value.toString());
+         return this.foreignList.some(foreign => foreign.foreign_column.toString() === this.modelValue.toString());
       }
    },
    async created () {
