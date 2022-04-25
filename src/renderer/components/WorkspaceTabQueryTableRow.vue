@@ -152,7 +152,7 @@
          </template>
          <template #body>
             <div class="mb-2">
-               <transition name="jump-down">
+               <Transition name="jump-down">
                   <div v-if="contentInfo.size">
                      <img
                         v-if="isImage"
@@ -173,7 +173,7 @@
                         </button>
                      </div>
                   </div>
-               </transition>
+               </Transition>
                <div class="editor-field-info">
                   <div>
                      <b>{{ $t('word.size') }}</b>: {{ formatBytes(editingContent.length) }}<br>

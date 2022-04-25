@@ -1,186 +1,188 @@
 <template>
-   <div class="modal active">
-      <a class="modal-overlay" @click.stop="closeModal" />
-      <div class="modal-container p-0">
-         <div class="modal-header pl-2">
-            <div class="modal-title h6">
-               <div class="d-flex">
-                  <i class="mdi mdi-24px mdi-playlist-plus mr-1" />
-                  <span class="cut-text">{{ $tc('message.insertRow', 2) }}</span>
+   <Teleport to="#window-content">
+      <div class="modal active">
+         <a class="modal-overlay" @click.stop="closeModal" />
+         <div class="modal-container p-0">
+            <div class="modal-header pl-2">
+               <div class="modal-title h6">
+                  <div class="d-flex">
+                     <i class="mdi mdi-24px mdi-playlist-plus mr-1" />
+                     <span class="cut-text">{{ $tc('message.insertRow', 2) }}</span>
+                  </div>
+               </div>
+               <a class="btn btn-clear c-hand" @click.stop="closeModal" />
+            </div>
+            <div class="modal-body pb-0">
+               <div class="content">
+                  <form class="form-horizontal">
+                     <fieldset :disabled="isInserting">
+                        <div
+                           v-for="field in fields"
+                           :key="field.name"
+                           class="form-group"
+                        >
+                           <div class="col-3 col-sm-12">
+                              <label class="form-label" :title="field.name">{{ field.name }}</label>
+                           </div>
+                           <div class="column columns col-sm-12">
+                              <FakerSelect
+                                 v-model="localRow[field.name]"
+                                 :type="field.type"
+                                 class="column columns pr-0"
+                                 :is-checked="!fieldsToExclude.includes(field.name)"
+                                 :foreign-keys="foreignKeys"
+                                 :key-usage="keyUsage"
+                                 :field="field"
+                                 :field-length="fieldLength(field)"
+                                 :field-obj="localRow[field.name]"
+                              >
+                                 <span class="input-group-addon field-type" :class="typeClass(field.type)">
+                                    {{ field.type }} {{ wrapNumber(fieldLength(field)) }}
+                                 </span>
+                                 <label class="form-checkbox ml-3" :title="$t('word.insert')">
+                                    <input
+                                       type="checkbox"
+                                       :checked="!fieldsToExclude.includes(field.name)"
+                                       @change.prevent="toggleFields($event, field)"
+                                    ><i class="form-icon" />
+                                 </label>
+                              </FakerSelect>
+                           </div>
+                        </div>
+                     </fieldset>
+                  </form>
                </div>
             </div>
-            <a class="btn btn-clear c-hand" @click.stop="closeModal" />
-         </div>
-         <div class="modal-body pb-0">
-            <div class="content">
-               <form class="form-horizontal">
-                  <fieldset :disabled="isInserting">
-                     <div
-                        v-for="field in fields"
-                        :key="field.name"
-                        class="form-group"
+            <div class="modal-footer columns">
+               <div class="column d-flex" :class="hasFakes ? 'col-4' : 'col-2'">
+                  <div class="input-group tooltip tooltip-right" :data-tooltip="$t('message.numberOfInserts')">
+                     <input
+                        v-model="nInserts"
+                        type="number"
+                        class="form-input"
+                        min="1"
+                        :disabled="isInserting"
                      >
-                        <div class="col-3 col-sm-12">
-                           <label class="form-label" :title="field.name">{{ field.name }}</label>
-                        </div>
-                        <div class="column columns col-sm-12">
-                           <FakerSelect
-                              v-model="localRow[field.name]"
-                              :type="field.type"
-                              class="column columns pr-0"
-                              :is-checked="!fieldsToExclude.includes(field.name)"
-                              :foreign-keys="foreignKeys"
-                              :key-usage="keyUsage"
-                              :field="field"
-                              :field-length="fieldLength(field)"
-                              :field-obj="localRow[field.name]"
-                           >
-                              <span class="input-group-addon field-type" :class="typeClass(field.type)">
-                                 {{ field.type }} {{ wrapNumber(fieldLength(field)) }}
-                              </span>
-                              <label class="form-checkbox ml-3" :title="$t('word.insert')">
-                                 <input
-                                    type="checkbox"
-                                    :checked="!fieldsToExclude.includes(field.name)"
-                                    @change.prevent="toggleFields($event, field)"
-                                 ><i class="form-icon" />
-                              </label>
-                           </FakerSelect>
-                        </div>
-                     </div>
-                  </fieldset>
-               </form>
-            </div>
-         </div>
-         <div class="modal-footer columns">
-            <div class="column d-flex" :class="hasFakes ? 'col-4' : 'col-2'">
-               <div class="input-group tooltip tooltip-right" :data-tooltip="$t('message.numberOfInserts')">
-                  <input
-                     v-model="nInserts"
-                     type="number"
-                     class="form-input"
-                     min="1"
-                     :disabled="isInserting"
+                     <span class="input-group-addon">
+                        <i class="mdi mdi-24px mdi-repeat" />
+                     </span>
+                  </div>
+                  <div
+                     v-if="hasFakes"
+                     class="tooltip tooltip-right ml-2"
+                     :data-tooltip="$t('message.fakeDataLanguage')"
                   >
-                  <span class="input-group-addon">
-                     <i class="mdi mdi-24px mdi-repeat" />
-                  </span>
+                     <select v-model="fakerLocale" class="form-select">
+                        <option value="ar">
+                           Arabic
+                        </option><option value="az">
+                           Azerbaijani
+                        </option><option value="zh_CN">
+                           Chinese
+                        </option><option value="zh_TW">
+                           Chinese (Taiwan)
+                        </option><option value="cz">
+                           Czech
+                        </option><option value="nl">
+                           Dutch
+                        </option><option value="nl_BE">
+                           Dutch (Belgium)
+                        </option><option value="en">
+                           English
+                        </option><option value="en_AU_ocker">
+                           English (Australia Ocker)
+                        </option><option value="en_AU">
+                           English (Australia)
+                        </option><option value="en_BORK">
+                           English (Bork)
+                        </option><option value="en_CA">
+                           English (Canada)
+                        </option><option value="en_GB">
+                           English (Great Britain)
+                        </option><option value="en_IND">
+                           English (India)
+                        </option><option value="en_IE">
+                           English (Ireland)
+                        </option><option value="en_ZA">
+                           English (South Africa)
+                        </option><option value="en_US">
+                           English (United States)
+                        </option><option value="fa">
+                           Farsi
+                        </option><option value="fi">
+                           Finnish
+                        </option><option value="fr">
+                           French
+                        </option><option value="fr_CA">
+                           French (Canada)
+                        </option><option value="fr_CH">
+                           French (Switzerland)
+                        </option><option value="ge">
+                           Georgian
+                        </option><option value="de">
+                           German
+                        </option><option value="de_AT">
+                           German (Austria)
+                        </option><option value="de_CH">
+                           German (Switzerland)
+                        </option><option value="hr">
+                           Hrvatski
+                        </option><option value="id_ID">
+                           Indonesia
+                        </option><option value="it">
+                           Italian
+                        </option><option value="ja">
+                           Japanese
+                        </option><option value="ko">
+                           Korean
+                        </option><option value="nep">
+                           Nepalese
+                        </option><option value="nb_NO">
+                           Norwegian
+                        </option><option value="pl">
+                           Polish
+                        </option><option value="pt_BR">
+                           Portuguese (Brazil)
+                        </option><option value="pt_PT">
+                           Portuguese (Portugal)
+                        </option><option value="ro">
+                           Romanian
+                        </option><option value="ru">
+                           Russian
+                        </option><option value="sk">
+                           Slovakian
+                        </option><option value="es">
+                           Spanish
+                        </option><option value="es_MX">
+                           Spanish (Mexico)
+                        </option><option value="sv">
+                           Swedish
+                        </option><option value="tr">
+                           Turkish
+                        </option><option value="uk">
+                           Ukrainian
+                        </option><option value="vi">
+                           Vietnamese
+                        </option>
+                     </select>
+                  </div>
                </div>
-               <div
-                  v-if="hasFakes"
-                  class="tooltip tooltip-right ml-2"
-                  :data-tooltip="$t('message.fakeDataLanguage')"
-               >
-                  <select v-model="fakerLocale" class="form-select">
-                     <option value="ar">
-                        Arabic
-                     </option><option value="az">
-                        Azerbaijani
-                     </option><option value="zh_CN">
-                        Chinese
-                     </option><option value="zh_TW">
-                        Chinese (Taiwan)
-                     </option><option value="cz">
-                        Czech
-                     </option><option value="nl">
-                        Dutch
-                     </option><option value="nl_BE">
-                        Dutch (Belgium)
-                     </option><option value="en">
-                        English
-                     </option><option value="en_AU_ocker">
-                        English (Australia Ocker)
-                     </option><option value="en_AU">
-                        English (Australia)
-                     </option><option value="en_BORK">
-                        English (Bork)
-                     </option><option value="en_CA">
-                        English (Canada)
-                     </option><option value="en_GB">
-                        English (Great Britain)
-                     </option><option value="en_IND">
-                        English (India)
-                     </option><option value="en_IE">
-                        English (Ireland)
-                     </option><option value="en_ZA">
-                        English (South Africa)
-                     </option><option value="en_US">
-                        English (United States)
-                     </option><option value="fa">
-                        Farsi
-                     </option><option value="fi">
-                        Finnish
-                     </option><option value="fr">
-                        French
-                     </option><option value="fr_CA">
-                        French (Canada)
-                     </option><option value="fr_CH">
-                        French (Switzerland)
-                     </option><option value="ge">
-                        Georgian
-                     </option><option value="de">
-                        German
-                     </option><option value="de_AT">
-                        German (Austria)
-                     </option><option value="de_CH">
-                        German (Switzerland)
-                     </option><option value="hr">
-                        Hrvatski
-                     </option><option value="id_ID">
-                        Indonesia
-                     </option><option value="it">
-                        Italian
-                     </option><option value="ja">
-                        Japanese
-                     </option><option value="ko">
-                        Korean
-                     </option><option value="nep">
-                        Nepalese
-                     </option><option value="nb_NO">
-                        Norwegian
-                     </option><option value="pl">
-                        Polish
-                     </option><option value="pt_BR">
-                        Portuguese (Brazil)
-                     </option><option value="pt_PT">
-                        Portuguese (Portugal)
-                     </option><option value="ro">
-                        Romanian
-                     </option><option value="ru">
-                        Russian
-                     </option><option value="sk">
-                        Slovakian
-                     </option><option value="es">
-                        Spanish
-                     </option><option value="es_MX">
-                        Spanish (Mexico)
-                     </option><option value="sv">
-                        Swedish
-                     </option><option value="tr">
-                        Turkish
-                     </option><option value="uk">
-                        Ukrainian
-                     </option><option value="vi">
-                        Vietnamese
-                     </option>
-                  </select>
+               <div class="column col-auto">
+                  <button
+                     class="btn btn-primary mr-2"
+                     :class="{'loading': isInserting}"
+                     @click.stop="insertRows"
+                  >
+                     {{ $t('word.insert') }}
+                  </button>
+                  <button class="btn btn-link" @click.stop="closeModal">
+                     {{ $t('word.close') }}
+                  </button>
                </div>
-            </div>
-            <div class="column col-auto">
-               <button
-                  class="btn btn-primary mr-2"
-                  :class="{'loading': isInserting}"
-                  @click.stop="insertRows"
-               >
-                  {{ $t('word.insert') }}
-               </button>
-               <button class="btn btn-link" @click.stop="closeModal">
-                  {{ $t('word.close') }}
-               </button>
             </div>
          </div>
       </div>
-   </div>
+   </Teleport>
 </template>
 
 <script>

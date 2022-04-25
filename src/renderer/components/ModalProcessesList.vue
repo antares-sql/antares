@@ -1,134 +1,136 @@
 <template>
-   <div class="modal active">
-      <ModalProcessesListContext
-         v-if="isContext"
-         :context-event="contextEvent"
-         :selected-row="selectedRow"
-         :selected-cell="selectedCell"
-         @copy-cell="copyCell"
-         @copy-row="copyRow"
-         @kill-process="killProcess"
-         @close-context="closeContext"
-      />
-      <a class="modal-overlay" @click.stop="closeModal" />
-      <div class="modal-container p-0 pb-4">
-         <div class="modal-header pl-2">
-            <div class="modal-title h6">
-               <div class="d-flex">
-                  <i class="mdi mdi-24px mdi-memory mr-1" />
-                  <span class="cut-text">{{ $t('message.processesList') }}: {{ connectionName }}</span>
-               </div>
-            </div>
-            <a class="btn btn-clear c-hand" @click.stop="closeModal" />
-         </div>
-         <div class="processes-toolbar py-2 px-4">
-            <div class="workspace-query-buttons">
-               <div class="dropdown pr-1">
-                  <div class="btn-group">
-                     <button
-                        class="btn btn-dark btn-sm mr-0 pr-1 d-flex"
-                        :class="{'loading':isQuering}"
-                        :title="`${$t('word.refresh')} (F5)`"
-                        @click="getProcessesList"
-                     >
-                        <i v-if="!+autorefreshTimer" class="mdi mdi-24px mdi-refresh mr-1" />
-                        <i v-else class="mdi mdi-24px mdi-history mdi-flip-h mr-1" />
-                     </button>
-                     <div class="btn btn-dark btn-sm dropdown-toggle pl-0 pr-0" tabindex="0">
-                        <i class="mdi mdi-24px mdi-menu-down" />
-                     </div>
-                     <div class="menu px-3">
-                        <span>{{ $t('word.autoRefresh') }}: <b>{{ +autorefreshTimer ? `${autorefreshTimer}s` : 'OFF' }}</b></span>
-                        <input
-                           v-model="autorefreshTimer"
-                           class="slider no-border"
-                           type="range"
-                           min="0"
-                           max="15"
-                           step="0.5"
-                           @change="setRefreshInterval"
-                        >
-                     </div>
+   <Teleport to="#window-content">
+      <div class="modal active">
+         <ModalProcessesListContext
+            v-if="isContext"
+            :context-event="contextEvent"
+            :selected-row="selectedRow"
+            :selected-cell="selectedCell"
+            @copy-cell="copyCell"
+            @copy-row="copyRow"
+            @kill-process="killProcess"
+            @close-context="closeContext"
+         />
+         <a class="modal-overlay" @click.stop="closeModal" />
+         <div class="modal-container p-0 pb-4">
+            <div class="modal-header pl-2">
+               <div class="modal-title h6">
+                  <div class="d-flex">
+                     <i class="mdi mdi-24px mdi-memory mr-1" />
+                     <span class="cut-text">{{ $t('message.processesList') }}: {{ connectionName }}</span>
                   </div>
                </div>
-               <div class="dropdown table-dropdown">
-                  <button
-                     :disabled="isQuering"
-                     class="btn btn-dark btn-sm dropdown-toggle d-flex mr-0 pr-0"
-                     tabindex="0"
-                  >
-                     <i class="mdi mdi-24px mdi-file-export mr-1" />
-                     <span>{{ $t('word.export') }}</span>
-                     <i class="mdi mdi-24px mdi-menu-down" />
-                  </button>
-                  <ul class="menu text-left">
-                     <li class="menu-item">
-                        <a class="c-hand" @click="downloadTable('json')">JSON</a>
-                     </li>
-                     <li class="menu-item">
-                        <a class="c-hand" @click="downloadTable('csv')">CSV</a>
-                     </li>
-                  </ul>
-               </div>
+               <a class="btn btn-clear c-hand" @click.stop="closeModal" />
             </div>
-            <div class="workspace-query-info">
-               <div v-if="sortedResults.length">
-                  {{ $t('word.processes') }}: <b>{{ sortedResults.length.toLocaleString() }}</b>
-               </div>
-            </div>
-         </div>
-         <div class="modal-body py-0 workspace-query-results">
-            <div
-               ref="tableWrapper"
-               class="vscroll"
-               :style="{'height': resultsSize+'px'}"
-            >
-               <div ref="table" class="table table-hover">
-                  <div class="thead">
-                     <div class="tr">
-                        <div
-                           v-for="(field, index) in fields"
-                           :key="index"
-                           class="th c-hand"
+            <div class="processes-toolbar py-2 px-4">
+               <div class="workspace-query-buttons">
+                  <div class="dropdown pr-1">
+                     <div class="btn-group">
+                        <button
+                           class="btn btn-dark btn-sm mr-0 pr-1 d-flex"
+                           :class="{'loading':isQuering}"
+                           :title="`${$t('word.refresh')} (F5)`"
+                           @click="getProcessesList"
                         >
-                           <div ref="columnResize" class="column-resizable">
-                              <div class="table-column-title" @click="sort(field)">
-                                 <span>{{ field.toUpperCase() }}</span>
-                                 <i
-                                    v-if="currentSort === field"
-                                    class="mdi sort-icon"
-                                    :class="currentSortDir === 'asc' ? 'mdi-sort-ascending':'mdi-sort-descending'"
-                                 />
+                           <i v-if="!+autorefreshTimer" class="mdi mdi-24px mdi-refresh mr-1" />
+                           <i v-else class="mdi mdi-24px mdi-history mdi-flip-h mr-1" />
+                        </button>
+                        <div class="btn btn-dark btn-sm dropdown-toggle pl-0 pr-0" tabindex="0">
+                           <i class="mdi mdi-24px mdi-menu-down" />
+                        </div>
+                        <div class="menu px-3">
+                           <span>{{ $t('word.autoRefresh') }}: <b>{{ +autorefreshTimer ? `${autorefreshTimer}s` : 'OFF' }}</b></span>
+                           <input
+                              v-model="autorefreshTimer"
+                              class="slider no-border"
+                              type="range"
+                              min="0"
+                              max="15"
+                              step="0.5"
+                              @change="setRefreshInterval"
+                           >
+                        </div>
+                     </div>
+                  </div>
+                  <div class="dropdown table-dropdown">
+                     <button
+                        :disabled="isQuering"
+                        class="btn btn-dark btn-sm dropdown-toggle d-flex mr-0 pr-0"
+                        tabindex="0"
+                     >
+                        <i class="mdi mdi-24px mdi-file-export mr-1" />
+                        <span>{{ $t('word.export') }}</span>
+                        <i class="mdi mdi-24px mdi-menu-down" />
+                     </button>
+                     <ul class="menu text-left">
+                        <li class="menu-item">
+                           <a class="c-hand" @click="downloadTable('json')">JSON</a>
+                        </li>
+                        <li class="menu-item">
+                           <a class="c-hand" @click="downloadTable('csv')">CSV</a>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="workspace-query-info">
+                  <div v-if="sortedResults.length">
+                     {{ $t('word.processes') }}: <b>{{ sortedResults.length.toLocaleString() }}</b>
+                  </div>
+               </div>
+            </div>
+            <div class="modal-body py-0 workspace-query-results">
+               <div
+                  ref="tableWrapper"
+                  class="vscroll"
+                  :style="{'height': resultsSize+'px'}"
+               >
+                  <div ref="table" class="table table-hover">
+                     <div class="thead">
+                        <div class="tr">
+                           <div
+                              v-for="(field, index) in fields"
+                              :key="index"
+                              class="th c-hand"
+                           >
+                              <div ref="columnResize" class="column-resizable">
+                                 <div class="table-column-title" @click="sort(field)">
+                                    <span>{{ field.toUpperCase() }}</span>
+                                    <i
+                                       v-if="currentSort === field"
+                                       class="mdi sort-icon"
+                                       :class="currentSortDir === 'asc' ? 'mdi-sort-ascending':'mdi-sort-descending'"
+                                    />
+                                 </div>
                               </div>
                            </div>
                         </div>
                      </div>
+                     <BaseVirtualScroll
+                        ref="resultTable"
+                        :items="sortedResults"
+                        :item-height="22"
+                        class="tbody"
+                        :visible-height="resultsSize"
+                        :scroll-element="scrollElement"
+                     >
+                        <template #default="{ items }">
+                           <ModalProcessesListRow
+                              v-for="row in items"
+                              :key="row.id"
+                              class="process-row"
+                              :row="row"
+                              @select-row="selectRow(row.id)"
+                              @contextmenu="contextMenu"
+                              @stop-refresh="stopRefresh"
+                           />
+                        </template>
+                     </BaseVirtualScroll>
                   </div>
-                  <BaseVirtualScroll
-                     ref="resultTable"
-                     :items="sortedResults"
-                     :item-height="22"
-                     class="tbody"
-                     :visible-height="resultsSize"
-                     :scroll-element="scrollElement"
-                  >
-                     <template #default="{ items }">
-                        <ModalProcessesListRow
-                           v-for="row in items"
-                           :key="row.id"
-                           class="process-row"
-                           :row="row"
-                           @select-row="selectRow(row.id)"
-                           @contextmenu="contextMenu"
-                           @stop-refresh="stopRefresh"
-                        />
-                     </template>
-                  </BaseVirtualScroll>
                </div>
             </div>
          </div>
       </div>
-   </div>
+   </Teleport>
 </template>
 
 <script>

@@ -811,48 +811,5 @@ export default {
       }
     }
   }
-
-  .workspace-query-results {
-    overflow: auto;
-    white-space: nowrap;
-
-    .table {
-      width: auto;
-      border-collapse: separate;
-
-      .th {
-        position: sticky;
-        top: 0;
-        border: 2px solid;
-        border-left: none;
-        border-bottom-width: 2px;
-        padding: 0;
-        font-weight: 700;
-        font-size: 0.7rem;
-        z-index: 1;
-
-        > div {
-          padding: 0.1rem 0.2rem;
-          min-width: -webkit-fill-available;
-        }
-      }
-
-      .td {
-        border-right: 2px solid;
-        border-bottom: 2px solid;
-        padding: 0 0.2rem;
-        text-overflow: ellipsis;
-        max-width: 200px;
-        white-space: nowrap;
-        overflow: hidden;
-        font-size: 0.7rem;
-        position: relative;
-
-        &:focus {
-          outline: none;
-        }
-      }
-    }
-  }
 }
 </style>

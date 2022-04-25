@@ -4,7 +4,7 @@
       @mouseenter="clearTimeouts"
       @mouseleave="rearmTimeouts"
    >
-      <transition-group tag="div" name="slide-fade">
+      <TransitionGroup tag="div" name="slide-fade">
          <BaseNotification
             v-for="notification in latestNotifications"
             :key="notification.uid"
@@ -12,7 +12,7 @@
             :status="notification.status"
             @close="removeNotification(notification.uid)"
          />
-      </transition-group>
+      </TransitionGroup>
    </div>
 </template>
 

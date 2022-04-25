@@ -181,37 +181,6 @@
       }
     }
 
-    .workspace-query-results {
-      .table {
-        .th {
-          border-color: darken($bg-color-light-gray, 80%);
-          background-color: $body-bg-dark;
-        }
-
-        .tr {
-          background-color: darken($bg-color-light-gray, 80%);
-
-          .td:first-child {
-            border-left: 2px solid $body-bg-dark;
-          }
-
-          .td {
-            border-color: $body-bg-dark;
-
-            &:focus {
-              box-shadow: inset 0 0 0 2px darken($body-font-color-dark, 40%);
-              background-color: rgba($color: #000, $alpha: 0.3);
-            }
-
-            .editable-field {
-              box-shadow: inset 0 0 0 2px darken($body-font-color-dark, 40%);
-              background-color: rgba($color: #000, $alpha: 0.3);
-            }
-          }
-        }
-      }
-    }
-
     .workspace-tabs {
       .tab-block {
         background: $bg-color-light-dark;
@@ -233,6 +202,37 @@
     }
   }
 
+  .workspace-query-results {
+    .table {
+      .th {
+        border-color: darken($bg-color-light-gray, 80%);
+        background-color: $body-bg-dark;
+      }
+
+      .tr {
+        background-color: darken($bg-color-light-gray, 80%);
+
+        .td:first-child {
+          border-left: 2px solid $body-bg-dark;
+        }
+
+        .td {
+          border-color: $body-bg-dark;
+
+          &:focus {
+            box-shadow: inset 0 0 0 2px darken($body-font-color-dark, 40%);
+            background-color: rgba($color: #000, $alpha: 0.3);
+          }
+
+          .editable-field {
+            box-shadow: inset 0 0 0 2px darken($body-font-color-dark, 40%);
+            background-color: rgba($color: #000, $alpha: 0.3);
+          }
+        }
+      }
+    }
+  }
+  
   .connection-panel {
     .panel {
       background: rgba($bg-color-light-dark, 50%);

@@ -1,98 +1,100 @@
 <template>
-   <div class="modal active">
-      <a class="modal-overlay" @click.stop="closeModal" />
-      <div class="modal-container p-0 pb-4">
-         <div class="modal-header pl-2">
-            <div class="modal-title h6">
-               <div class="d-flex">
-                  <i class="mdi mdi-24px mdi-history mr-1" />
-                  <span class="cut-text">{{ $t('word.history') }}: {{ connectionName }}</span>
+   <Teleport to="#window-content">
+      <div class="modal active">
+         <a class="modal-overlay" @click.stop="closeModal" />
+         <div class="modal-container p-0 pb-4">
+            <div class="modal-header pl-2">
+               <div class="modal-title h6">
+                  <div class="d-flex">
+                     <i class="mdi mdi-24px mdi-history mr-1" />
+                     <span class="cut-text">{{ $t('word.history') }}: {{ connectionName }}</span>
+                  </div>
                </div>
+               <a class="btn btn-clear c-hand" @click.stop="closeModal" />
             </div>
-            <a class="btn btn-clear c-hand" @click.stop="closeModal" />
-         </div>
-         <div class="modal-body p-0 workspace-query-results">
-            <div
-               v-if="history.length"
-               ref="searchForm"
-               class="form-group has-icon-right p-2 m-0"
-            >
-               <input
-                  v-model="searchTerm"
-                  class="form-input"
-                  type="text"
-                  :placeholder="$t('message.searchForQueries')"
+            <div class="modal-body p-0 workspace-query-results">
+               <div
+                  v-if="history.length"
+                  ref="searchForm"
+                  class="form-group has-icon-right p-2 m-0"
                >
-               <i v-if="!searchTerm" class="form-icon mdi mdi-magnify mdi-18px pr-4" />
-               <i
-                  v-else
-                  class="form-icon c-hand mdi mdi-backspace mdi-18px pr-4"
-                  @click="searchTerm = ''"
-               />
-            </div>
-            <div
-               v-if="history.length"
-               ref="tableWrapper"
-               class="vscroll px-1 "
-               :style="{'height': resultsSize+'px'}"
-            >
-               <div ref="table">
-                  <BaseVirtualScroll
-                     ref="resultTable"
-                     :items="filteredHistory"
-                     :item-height="66"
-                     :visible-height="resultsSize"
-                     :scroll-element="scrollElement"
+                  <input
+                     v-model="searchTerm"
+                     class="form-input"
+                     type="text"
+                     :placeholder="$t('message.searchForQueries')"
                   >
-                     <template #default="{ items }">
-                        <div
-                           v-for="query in items"
-                           :key="query.uid"
-                           class="tile my-2"
-                           tabindex="0"
-                        >
-                           <div class="tile-icon">
-                              <i class="mdi mdi-code-tags pr-1" />
-                           </div>
-                           <div class="tile-content">
-                              <div class="tile-title">
-                                 <code
-                                    class="cut-text"
-                                    :title="query.sql"
-                                    v-html="highlightWord(query.sql)"
-                                 />
+                  <i v-if="!searchTerm" class="form-icon mdi mdi-magnify mdi-18px pr-4" />
+                  <i
+                     v-else
+                     class="form-icon c-hand mdi mdi-backspace mdi-18px pr-4"
+                     @click="searchTerm = ''"
+                  />
+               </div>
+               <div
+                  v-if="history.length"
+                  ref="tableWrapper"
+                  class="vscroll px-1 "
+                  :style="{'height': resultsSize+'px'}"
+               >
+                  <div ref="table">
+                     <BaseVirtualScroll
+                        ref="resultTable"
+                        :items="filteredHistory"
+                        :item-height="66"
+                        :visible-height="resultsSize"
+                        :scroll-element="scrollElement"
+                     >
+                        <template #default="{ items }">
+                           <div
+                              v-for="query in items"
+                              :key="query.uid"
+                              class="tile my-2"
+                              tabindex="0"
+                           >
+                              <div class="tile-icon">
+                                 <i class="mdi mdi-code-tags pr-1" />
                               </div>
-                              <div class="tile-bottom-content">
-                                 <small class="tile-subtitle">{{ query.schema }} · {{ formatDate(query.date) }}</small>
-                                 <div class="tile-history-buttons">
-                                    <button class="btn btn-link pl-1" @click.stop="$emit('select-query', query.sql)">
-                                       <i class="mdi mdi-open-in-app pr-1" /> {{ $t('word.select') }}
-                                    </button>
-                                    <button class="btn btn-link pl-1" @click="copyQuery(query.sql)">
-                                       <i class="mdi mdi-content-copy pr-1" /> {{ $t('word.copy') }}
-                                    </button>
-                                    <button class="btn btn-link pl-1" @click="deleteQuery(query)">
-                                       <i class="mdi mdi-delete-forever pr-1" /> {{ $t('word.delete') }}
-                                    </button>
+                              <div class="tile-content">
+                                 <div class="tile-title">
+                                    <code
+                                       class="cut-text"
+                                       :title="query.sql"
+                                       v-html="highlightWord(query.sql)"
+                                    />
+                                 </div>
+                                 <div class="tile-bottom-content">
+                                    <small class="tile-subtitle">{{ query.schema }} · {{ formatDate(query.date) }}</small>
+                                    <div class="tile-history-buttons">
+                                       <button class="btn btn-link pl-1" @click.stop="$emit('select-query', query.sql)">
+                                          <i class="mdi mdi-open-in-app pr-1" /> {{ $t('word.select') }}
+                                       </button>
+                                       <button class="btn btn-link pl-1" @click="copyQuery(query.sql)">
+                                          <i class="mdi mdi-content-copy pr-1" /> {{ $t('word.copy') }}
+                                       </button>
+                                       <button class="btn btn-link pl-1" @click="deleteQuery(query)">
+                                          <i class="mdi mdi-delete-forever pr-1" /> {{ $t('word.delete') }}
+                                       </button>
+                                    </div>
                                  </div>
                               </div>
                            </div>
-                        </div>
-                     </template>
-                  </BaseVirtualScroll>
+                        </template>
+                     </BaseVirtualScroll>
+                  </div>
                </div>
-            </div>
-            <div v-else class="empty">
-               <div class="empty-icon">
-                  <i class="mdi mdi-history mdi-48px" />
+               <div v-else class="empty">
+                  <div class="empty-icon">
+                     <i class="mdi mdi-history mdi-48px" />
+                  </div>
+                  <p class="empty-title h5">
+                     {{ $t('message.thereIsNoQueriesYet') }}
+                  </p>
                </div>
-               <p class="empty-title h5">
-                  {{ $t('message.thereIsNoQueriesYet') }}
-               </p>
             </div>
          </div>
       </div>
-   </div>
+   </Teleport>
 </template>
 
 <script>
