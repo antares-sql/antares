@@ -16,7 +16,7 @@
                   </div>
                   <a class="btn btn-clear float-right" @click="hideModal" />
                </div>
-               <div v-if="hasBody" class="modal-body">
+               <div v-if="hasBody" class="modal-body pb-0">
                   <a
                      v-if="!hasHeader && !hasDefault"
                      class="btn btn-clear float-right"
@@ -26,7 +26,7 @@
                      <slot name="body" />
                   </div>
                </div>
-               <div v-if="!hideFooter" class="modal-footer pt-0">
+               <div v-if="!hideFooter" class="modal-footer">
                   <button
                      class="btn btn-primary mr-2"
                      @click.stop="confirmModal"

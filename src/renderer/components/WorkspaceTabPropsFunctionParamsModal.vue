@@ -181,7 +181,10 @@ export default {
       ConfirmModal
    },
    props: {
-      localParameters: Array,
+      localParameters: {
+         type: Array,
+         default: () => []
+      },
       func: String,
       workspace: Object
    },
