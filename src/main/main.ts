@@ -47,22 +47,8 @@ async function createMainWindow () {
    remoteMain.enable(window.webContents);
 
    try {
-      if (isDevelopment) {
-         const { default: installExtension, VUEJS3_DEVTOOLS } = require('electron-devtools-installer');
-         const options = {
-            loadExtensionOptions: { allowFileAccess: true }
-         };
-
-         try {
-            const name = await installExtension(VUEJS3_DEVTOOLS, options);
-            console.log(`Added Extension: ${name}`);
-         }
-         catch (err) {
-            console.log('An error occurred: ', err);
-         }
-
+      if (isDevelopment)
          await window.loadURL('http://localhost:9080');
-      }
       else {
          const indexPath = path.resolve(__dirname, 'index.html');
          await window.loadFile(indexPath);
