@@ -1,4 +1,4 @@
-import { createI18n } from 'vue-i18n/dist/vue-i18n.esm-bundler';
+import { createI18n } from 'vue-i18n';
 
 const i18n = createI18n({
    fallbackLocale: 'en-US',

@@ -320,6 +320,8 @@
 <script>
 import { shell } from 'electron';
 import { mapActions, mapGetters } from 'vuex';
+import { storeToRefs } from 'pinia';
+import { useApplicationStore } from '@/stores/application';
 import localesNames from '@/i18n/supported-locales';
 import ModalSettingsUpdate from '@/components/ModalSettingsUpdate';
 import ModalSettingsChangelog from '@/components/ModalSettingsChangelog';
@@ -331,6 +333,27 @@ export default {
       ModalSettingsUpdate,
       ModalSettingsChangelog,
       BaseTextEditor
+   },
+   setup () {
+      const applicationStore = useApplicationStore();
+      const {
+         selectedSettingTab,
+         updateStatus
+      } = storeToRefs(applicationStore);
+
+      const {
+         hideSettingModal,
+         appName,
+         appVersion
+      } = applicationStore;
+
+      return {
+         appName,
+         appVersion,
+         selectedSettingTab,
+         updateStatus,
+         closeModal: hideSettingModal
+      };
    },
    data () {
       return {
@@ -395,9 +418,6 @@ export default {
    },
    computed: {
       ...mapGetters({
-         appName: 'application/appName',
-         appVersion: 'application/appVersion',
-         selectedSettingTab: 'application/selectedSettingTab',
          selectedLocale: 'settings/getLocale',
          pageSize: 'settings/getDataTabLimit',
          selectedAutoComplete: 'settings/getAutoComplete',
@@ -408,7 +428,6 @@ export default {
          applicationTheme: 'settings/getApplicationTheme',
          editorTheme: 'settings/getEditorTheme',
          editorFontSize: 'settings/getEditorFontSize',
-         updateStatus: 'application/getUpdateStatus',
          selectedWorkspace: 'workspaces/getSelected',
          getWorkspace: 'workspaces/getWorkspace'
       }),
@@ -462,7 +481,6 @@ ORDER BY
    },
    methods: {
       ...mapActions({
-         closeModal: 'application/hideSettingModal',
          changeLocale: 'settings/changeLocale',
          changePageSize: 'settings/changePageSize',
          changeRestoreTabs: 'settings/changeRestoreTabs',

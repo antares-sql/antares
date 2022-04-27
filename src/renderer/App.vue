@@ -26,9 +26,11 @@
 
 <script>
 import { defineAsyncComponent } from 'vue';
-import { mapActions, mapGetters } from 'vuex';
+import { mapGetters } from 'vuex';
+import { storeToRefs } from 'pinia';
 import { ipcRenderer } from 'electron';
 import { Menu, getCurrentWindow } from '@electron/remote';
+import { useApplicationStore } from '@/stores/application';
 import TheSettingBar from '@/components/TheSettingBar';
 
 export default {
@@ -44,16 +46,30 @@ export default {
       TheScratchpad: defineAsyncComponent(() => import(/* webpackChunkName: "TheScratchpad" */'@/components/TheScratchpad')),
       BaseTextEditor: defineAsyncComponent(() => import(/* webpackChunkName: "BaseTextEditor" */'@/components/BaseTextEditor'))
    },
+   setup () {
+      const applicationStore = useApplicationStore();
+      const {
+         isLoading,
+         isSettingModal,
+         isScratchpad
+      } = storeToRefs(applicationStore);
+
+      const { checkVersionUpdate } = applicationStore;
+
+      return {
+         applicationStore,
+         isLoading,
+         isSettingModal,
+         isScratchpad,
+         checkVersionUpdate
+      };
+   },
    computed: {
       ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         isLoading: 'application/isLoading',
-         isSettingModal: 'application/isSettingModal',
-         isScratchpad: 'application/isScratchpad',
          connections: 'connections/getConnections',
          applicationTheme: 'settings/getApplicationTheme',
          disableBlur: 'settings/getDisableBlur',
-         isUnsavedDiscardModal: 'workspaces/isUnsavedDiscardModal'
+         selectedWorkspace: 'workspaces/getSelected'
       })
    },
    mounted () {
@@ -96,12 +112,6 @@ export default {
             node = node.parentNode;
          }
       });
-   },
-   methods: {
-      ...mapActions({
-         showNewConnModal: 'application/showNewConnModal',
-         checkVersionUpdate: 'application/checkVersionUpdate'
-      })
    }
 };
 </script>

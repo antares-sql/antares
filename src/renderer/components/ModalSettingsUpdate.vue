@@ -53,15 +53,27 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
 import { ipcRenderer, shell } from 'electron';
+import { mapGetters, mapActions } from 'vuex';
+import { storeToRefs } from 'pinia';
+import { useApplicationStore } from '@/stores/application';
 
 export default {
    name: 'ModalSettingsUpdate',
+   setup () {
+      const applicationStore = useApplicationStore();
+      const {
+         updateStatus,
+         getDownloadProgress
+      } = storeToRefs(applicationStore);
+
+      return {
+         updateStatus,
+         downloadPercentage: getDownloadProgress
+      };
+   },
    computed: {
       ...mapGetters({
-         updateStatus: 'application/getUpdateStatus',
-         downloadPercentage: 'application/getDownloadProgress',
          allowPrerelease: 'settings/getAllowPrerelease'
       }),
       updateMessage () {

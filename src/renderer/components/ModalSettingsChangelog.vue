@@ -15,14 +15,18 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
 import { marked } from 'marked';
 import BaseLoader from '@/components/BaseLoader';
+import { useApplicationStore } from '@/stores/application';
 
 export default {
    name: 'ModalSettingsChangelog',
    components: {
       BaseLoader
+   },
+   setup () {
+      const { appVersion } = useApplicationStore();
+      return { appVersion };
    },
    data () {
       return {
@@ -31,9 +35,6 @@ export default {
          error: '',
          isError: false
       };
-   },
-   computed: {
-      ...mapGetters({ appVersion: 'application/appVersion' })
    },
    created () {
       this.getChangelog();

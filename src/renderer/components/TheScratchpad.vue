@@ -30,6 +30,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { useApplicationStore } from '@/stores/application';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import TextEditor from '@/components/BaseTextEditor';
 
@@ -40,6 +41,11 @@ export default {
       TextEditor
    },
    emits: ['hide'],
+   setup () {
+      const applicationStore = useApplicationStore();
+
+      return { hideScratchpad: applicationStore.hideScratchpad };
+   },
    data () {
       return {
          localNotes: '',
@@ -65,7 +71,6 @@ export default {
    },
    methods: {
       ...mapActions({
-         hideScratchpad: 'application/hideScratchpad',
          changeNotes: 'scratchpad/changeNotes'
       }),
       hideModal () {

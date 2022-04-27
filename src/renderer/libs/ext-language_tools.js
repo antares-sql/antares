@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable no-labels */
 /* eslint-disable no-return-assign */
 /* eslint-disable no-cond-assign */

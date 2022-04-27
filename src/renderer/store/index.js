@@ -13,8 +13,6 @@ import ipcUpdates from './plugins/ipcUpdates';
 import ipcExceptions from './plugins/ipcExceptions';
 import ipcShortcuts from './plugins/ipcShortcuts';
 
-// Vue.use(Vuex);
-
 export const store = createStore({
    strict: true,
    modules: {

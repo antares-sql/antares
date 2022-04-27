@@ -27,16 +27,26 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapGetters } from 'vuex';
+import { useApplicationStore } from '@/stores/application';
 const { shell } = require('electron');
 
 export default {
    name: 'TheFooter',
+   setup () {
+      const applicationStore = useApplicationStore();
+
+      const { appVersion, showSettingModal } = applicationStore;
+
+      return {
+         appVersion,
+         showSettingModal
+      };
+   },
    computed: {
       ...mapGetters({
          workspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace',
-         appVersion: 'application/appVersion'
+         getWorkspace: 'workspaces/getWorkspace'
       }),
       version () {
          return this.getWorkspace(this.workspace) ? this.getWorkspace(this.workspace).version : null;
@@ -48,9 +58,6 @@ export default {
       }
    },
    methods: {
-      ...mapActions({
-         showSettingModal: 'application/showSettingModal'
-      }),
       openOutside (link) {
          shell.openExternal(link);
       }

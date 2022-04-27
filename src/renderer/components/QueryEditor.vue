@@ -12,7 +12,9 @@
 import * as ace from 'ace-builds';
 import 'ace-builds/webpack-resolver';
 import '../libs/ext-language_tools';
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters } from 'vuex';
+import { storeToRefs } from 'pinia';
+import { useApplicationStore } from '@/stores/application';
 import Tables from '@/ipc-api/Tables';
 
 export default {
@@ -27,6 +29,16 @@ export default {
       height: { type: Number, default: 200 }
    },
    emits: ['update:modelValue'],
+   setup () {
+      const applicationStore = useApplicationStore();
+      const { setBaseCompleters } = applicationStore;
+      const { baseCompleter } = storeToRefs(applicationStore);
+
+      return {
+         baseCompleter,
+         setBaseCompleters
+      };
+   },
    data () {
       return {
          editor: null,
@@ -41,8 +53,7 @@ export default {
          editorTheme: 'settings/getEditorTheme',
          editorFontSize: 'settings/getEditorFontSize',
          autoComplete: 'settings/getAutoComplete',
-         lineWrap: 'settings/getLineWrap',
-         baseCompleter: 'application/getBaseCompleter'
+         lineWrap: 'settings/getLineWrap'
       }),
       tables () {
          return this.workspace
@@ -295,9 +306,6 @@ export default {
       }, 20);
    },
    methods: {
-      ...mapActions({
-         setBaseCompleters: 'application/setBaseCompleter'
-      }),
       setCustomCompleter () {
          this.editor.completers.push({
             getCompletions: (editor, session, pos, prefix, callback) => {

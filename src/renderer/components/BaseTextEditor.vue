@@ -13,6 +13,7 @@
 import * as ace from 'ace-builds';
 import 'ace-builds/webpack-resolver';
 import { mapGetters } from 'vuex';
+import { uidGen } from 'common/libs/uidGen';
 
 export default {
    name: 'BaseTextEditor',
@@ -78,7 +79,7 @@ export default {
       }
    },
    created () {
-      this.id = this._uid;
+      this.id = uidGen('E');
    },
    mounted () {
       this.editor = ace.edit(`editor-${this.id}`, {

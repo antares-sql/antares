@@ -57,6 +57,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { storeToRefs } from 'pinia';
+import { useApplicationStore } from '@/stores/application';
 import Draggable from 'vuedraggable';
 import SettingBarContext from '@/components/SettingBarContext';
 
@@ -65,6 +67,18 @@ export default {
    components: {
       Draggable,
       SettingBarContext
+   },
+   setup () {
+      const applicationStore = useApplicationStore();
+      const { updateStatus } = storeToRefs(applicationStore);
+      const { showSettingModal, showScratchpad } = applicationStore;
+
+      return {
+         applicationStore,
+         updateStatus,
+         showSettingModal,
+         showScratchpad
+      };
    },
    data () {
       return {
@@ -81,8 +95,7 @@ export default {
          getConnections: 'connections/getConnections',
          getConnectionName: 'connections/getConnectionName',
          getWorkspace: 'workspaces/getWorkspace',
-         selectedWorkspace: 'workspaces/getSelected',
-         updateStatus: 'application/getUpdateStatus'
+         selectedWorkspace: 'workspaces/getSelected'
       }),
       connections: {
          get () {
@@ -99,8 +112,6 @@ export default {
    methods: {
       ...mapActions({
          updateConnections: 'connections/updateConnections',
-         showSettingModal: 'application/showSettingModal',
-         showScratchpad: 'application/showScratchpad',
          selectWorkspace: 'workspaces/selectWorkspace'
       }),
       contextMenu (event, connection) {
