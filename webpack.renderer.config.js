@@ -26,7 +26,7 @@ fs.readdirSync('node_modules')
 const config = {
    name: 'renderer',
    mode: process.env.NODE_ENV,
-   devtool: isDevMode ? 'eval-cheap-module-source-map' : false,
+   devtool: isDevMode ? 'eval-source-map' : false,
    entry: path.join(__dirname, './src/renderer/index.js'),
    target: 'electron-renderer',
    output: {
