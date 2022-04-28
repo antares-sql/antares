@@ -106,6 +106,14 @@ else {
          mainWindow.webContents.send('unhandled-exception', error);
       });
    });
+
+   app.on('browser-window-created', (event, window) => {
+      if (isDevelopment) {
+         const { antares } = require('../../package.json');
+         const extensionPath = path.resolve(__dirname, `../../misc/${antares.devtoolsId}`);
+         window.webContents.session.loadExtension(extensionPath, { allowFileAccess: true }).catch(console.error);
+      }
+   });
 }
 
 function createAppMenu () {

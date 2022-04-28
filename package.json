@@ -8,7 +8,6 @@
   "scripts": {
     "debug": "npm run rebuild:electron && npm run debug-runner",
     "debug-runner": "node scripts/devRunner.js --remote-debug",
-    "devtools": "npx vue-devtools",
     "compile": "npm run compile:main && npm run compile:workers && npm run compile:renderer",
     "compile:main": "webpack --mode=production --config webpack.main.config.js",
     "compile:workers": "webpack --mode=production --config webpack.workers.config.js",
@@ -19,7 +18,8 @@
     "rebuild:electron": "rimraf ./dist &&  npm run postinstall",
     "release": "standard-version",
     "release:pre": "npm run release -- --prerelease alpha",
-    "postinstall": "electron-builder install-app-deps",
+    "devtools:install": "node scripts/devtoolsInstaller",
+    "postinstall": "electron-builder install-app-deps && npm run devtools:install",
     "test": "npm run compile && npm run test:dry",
     "test:dry": "xvfb-maybe -- playwright test",
     "lint": "eslint . --ext .js,.vue && stylelint \"./src/**/*.{css,scss,sass,vue}\"",
@@ -29,6 +29,9 @@
   },
   "author": "Fabio Di Stasio <fabio286@gmail.com>",
   "main": "./dist/main.js",
+  "antares": {
+    "devtoolsId": "nhdogjmejiglipccpnnnanhbledajbpd"
+  },
   "build": {
     "appId": "com.fabio286.antares",
     "artifactName": "${productName}-${version}-${os}_${arch}.${ext}",
@@ -148,7 +151,6 @@
     "@typescript-eslint/eslint-plugin": "^5.18.0",
     "@typescript-eslint/parser": "^5.18.0",
     "@vue/compiler-sfc": "^3.2.33",
-    "@vue/devtools": "^6.1.4",
     "all-contributors-cli": "^6.20.0",
     "babel-loader": "^8.2.3",
     "chalk": "^4.1.2",
@@ -180,6 +182,7 @@
     "tree-kill": "^1.2.2",
     "ts-loader": "^9.2.8",
     "typescript": "^4.6.3",
+    "unzip-crx-3": "^0.2.0",
     "vue-eslint-parser": "^8.3.0",
     "vue-loader": "^16.8.3",
     "webpack": "^5.60.0",

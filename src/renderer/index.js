@@ -1,6 +1,5 @@
 'use strict';
 
-import devtools from '@vue/devtools';
 import { createApp, configureCompat } from 'vue';
 import '@mdi/font/css/materialdesignicons.css';
 import 'leaflet/dist/leaflet.css';
@@ -23,6 +22,3 @@ createApp(App)
    .use(pinia)
    .use(i18n)
    .mount('#app');
-
-if (process.env.NODE_ENV === 'development')
-   devtools.connect();

@@ -28,7 +28,7 @@
       "sourceMaps": true,
       "type": "node",
       "timeout": 1000000
-    },
+    }
   ],
   "compounds": [
       {
