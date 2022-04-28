@@ -30,18 +30,21 @@ export default {
    },
    emits: ['update:modelValue'],
    setup () {
+      const editor = null;
       const applicationStore = useApplicationStore();
       const { setBaseCompleters } = applicationStore;
       const { baseCompleter } = storeToRefs(applicationStore);
 
       return {
+         editor,
+
          baseCompleter,
          setBaseCompleters
       };
    },
    data () {
       return {
-         editor: null,
+         cursorPosition: 0,
          fields: [],
          customCompleter: [],
          id: null,
@@ -139,9 +142,6 @@ export default {
                return 'sql';
          }
       },
-      cursorPosition () {
-         return this.editor.session.doc.positionToIndex(this.editor.getCursorPosition());
-      },
       lastWord () {
          const charsBefore = this.modelValue.slice(0, this.cursorPosition);
          const words = charsBefore.replaceAll('\n', ' ').split(' ').filter(Boolean);
@@ -167,6 +167,9 @@ export default {
       }
    },
    watch: {
+      modelValue () {
+         this.cursorPosition = this.editor.session.doc.positionToIndex(this.editor.getCursorPosition());
+      },
       editorTheme () {
          if (this.editor)
             this.editor.setTheme(`ace/theme/${this.editorTheme}`);
