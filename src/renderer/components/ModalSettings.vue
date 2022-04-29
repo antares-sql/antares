@@ -319,9 +319,10 @@
 
 <script>
 import { shell } from 'electron';
-import { mapActions, mapGetters } from 'vuex';
 import { storeToRefs } from 'pinia';
 import { useApplicationStore } from '@/stores/application';
+import { useSettingsStore } from '@/stores/settings';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import localesNames from '@/i18n/supported-locales';
 import ModalSettingsUpdate from '@/components/ModalSettingsUpdate';
 import ModalSettingsChangelog from '@/components/ModalSettingsChangelog';
@@ -336,23 +337,75 @@ export default {
    },
    setup () {
       const applicationStore = useApplicationStore();
+      const settingsStore = useSettingsStore();
+      const workspacesStore = useWorkspacesStore();
+
       const {
          selectedSettingTab,
          updateStatus
       } = storeToRefs(applicationStore);
+      const {
+         locale: selectedLocale,
+         dataTabLimit: pageSize,
+         autoComplete: selectedAutoComplete,
+         lineWrap: selectedLineWrap,
+         notificationsTimeout,
+         restoreTabs,
+         disableBlur,
+         applicationTheme,
+         editorTheme,
+         editorFontSize
+      } = storeToRefs(settingsStore);
 
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         changeLocale,
+         changePageSize,
+         changeRestoreTabs,
+         changeDisableBlur,
+         changeAutoComplete,
+         changeLineWrap,
+         changeApplicationTheme,
+         changeEditorTheme,
+         changeEditorFontSize,
+         updateNotificationsTimeout
+      } = settingsStore;
       const {
          hideSettingModal,
          appName,
          appVersion
       } = applicationStore;
+      const { getWorkspace } = workspacesStore;
 
       return {
          appName,
          appVersion,
          selectedSettingTab,
          updateStatus,
-         closeModal: hideSettingModal
+         closeModal: hideSettingModal,
+         selectedLocale,
+         pageSize,
+         selectedAutoComplete,
+         selectedLineWrap,
+         notificationsTimeout,
+         restoreTabs,
+         disableBlur,
+         applicationTheme,
+         editorTheme,
+         editorFontSize,
+         changeLocale,
+         changePageSize,
+         changeRestoreTabs,
+         changeDisableBlur,
+         changeAutoComplete,
+         changeLineWrap,
+         changeApplicationTheme,
+         changeEditorTheme,
+         changeEditorFontSize,
+         updateNotificationsTimeout,
+         selectedWorkspace,
+         getWorkspace
       };
    },
    data () {
@@ -417,20 +470,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedLocale: 'settings/getLocale',
-         pageSize: 'settings/getDataTabLimit',
-         selectedAutoComplete: 'settings/getAutoComplete',
-         selectedLineWrap: 'settings/getLineWrap',
-         notificationsTimeout: 'settings/getNotificationsTimeout',
-         restoreTabs: 'settings/getRestoreTabs',
-         disableBlur: 'settings/getDisableBlur',
-         applicationTheme: 'settings/getApplicationTheme',
-         editorTheme: 'settings/getEditorTheme',
-         editorFontSize: 'settings/getEditorFontSize',
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       locales () {
          const locales = [];
          for (const locale of this.$i18n.availableLocales)
@@ -480,18 +519,6 @@ ORDER BY
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
-      ...mapActions({
-         changeLocale: 'settings/changeLocale',
-         changePageSize: 'settings/changePageSize',
-         changeRestoreTabs: 'settings/changeRestoreTabs',
-         changeDisableBlur: 'settings/changeDisableBlur',
-         changeAutoComplete: 'settings/changeAutoComplete',
-         changeLineWrap: 'settings/changeLineWrap',
-         changeApplicationTheme: 'settings/changeApplicationTheme',
-         changeEditorTheme: 'settings/changeEditorTheme',
-         changeEditorFontSize: 'settings/changeEditorFontSize',
-         updateNotificationsTimeout: 'settings/updateNotificationsTimeout'
-      }),
       selectTab (tab) {
          this.selectedTab = tab;
       },

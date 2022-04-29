@@ -396,10 +396,12 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
 import customizations from 'common/customizations';
 import Connection from '@/ipc-api/Connection';
 import { uidGen } from 'common/libs/uidGen';
+import { useConnectionsStore } from '@/stores/connections';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import ModalAskCredentials from '@/components/ModalAskCredentials';
 import BaseUploadInput from '@/components/BaseUploadInput';
 
@@ -408,6 +410,20 @@ export default {
    components: {
       ModalAskCredentials,
       BaseUploadInput
+   },
+   setup () {
+      const { addConnection } = useConnectionsStore();
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { connectWorkspace, selectWorkspace } = workspacesStore;
+
+      return {
+         addConnection,
+         addNotification,
+         connectWorkspace,
+         selectWorkspace
+      };
    },
    data () {
       return {
@@ -472,12 +488,6 @@ export default {
       }, 20);
    },
    methods: {
-      ...mapActions({
-         addConnection: 'connections/addConnection',
-         connectWorkspace: 'workspaces/connectWorkspace',
-         addNotification: 'notifications/addNotification',
-         selectWorkspace: 'workspaces/selectWorkspace'
-      }),
       setDefaults () {
          this.connection.user = this.customizations.defaultUser;
          this.connection.port = this.customizations.defaultPort;

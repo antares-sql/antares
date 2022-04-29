@@ -343,8 +343,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import ConfirmModal from '@/components/BaseConfirmModal';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabPropsTableRow',
@@ -359,6 +360,20 @@ export default {
       customizations: Object
    },
    emits: ['contextmenu', 'rename-field'],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const { getWorkspace } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace
+      };
+   },
    data () {
       return {
          localRow: {},
@@ -376,10 +391,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       localLength () {
          const localLength = this.localRow.numLength || this.localRow.charLength || this.localRow.datePrecision || this.localRow.numPrecision || 0;
          return localLength === true ? null : localLength;

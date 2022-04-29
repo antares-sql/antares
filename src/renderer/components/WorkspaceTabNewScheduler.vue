@@ -142,7 +142,8 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
 import WorkspaceTabPropsSchedulerTimingModal from '@/components/WorkspaceTabPropsSchedulerTimingModal';
@@ -161,6 +162,34 @@ export default {
       isSelected: Boolean,
       schema: String
    },
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         getWorkspace,
+         refreshStructure,
+         changeBreadcrumbs,
+         setUnsavedChanges,
+         newTab,
+         removeTab,
+         renameTabs
+      } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace,
+         refreshStructure,
+         changeBreadcrumbs,
+         setUnsavedChanges,
+         newTab,
+         removeTab,
+         renameTabs
+      };
+   },
    data () {
       return {
          isLoading: false,
@@ -174,10 +203,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
@@ -244,15 +269,6 @@ export default {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         refreshStructure: 'workspaces/refreshStructure',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges',
-         newTab: 'workspaces/newTab',
-         removeTab: 'workspaces/removeTab',
-         renameTabs: 'workspaces/renameTabs'
-      }),
       async saveChanges () {
          if (this.isSaving) return;
          this.isSaving = true;

@@ -219,7 +219,6 @@ import {
    SPATIAL,
    IS_MULTI_SPATIAL
 } from 'common/fieldTypes';
-import { VueMaskDirective } from 'v-mask';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import TextEditor from '@/components/BaseTextEditor';
 import BaseMap from '@/components/BaseMap';
@@ -232,9 +231,6 @@ export default {
       TextEditor,
       ForeignKeySelect,
       BaseMap
-   },
-   directives: {
-      mask: VueMaskDirective
    },
    props: {
       row: Object,

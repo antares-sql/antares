@@ -51,9 +51,11 @@
 
 <script>
 import { ipcRenderer } from 'electron';
-import { mapActions, mapGetters } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import moment from 'moment';
 import Schema from '@/ipc-api/Schema';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'ModalImportSchema',
@@ -62,6 +64,21 @@ export default {
       selectedSchema: String
    },
    emits: ['close'],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const { getWorkspace, refreshSchema } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace,
+         refreshSchema
+      };
+   },
    data () {
       return {
          sqlFile: '',
@@ -74,10 +91,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       currentWorkspace () {
          return this.getWorkspace(this.selectedWorkspace);
       },
@@ -99,10 +112,6 @@ export default {
       ipcRenderer.off('query-error', this.handleQueryError);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         refreshSchema: 'workspaces/refreshSchema'
-      }),
       async startImport (sqlFile) {
          this.isImporting = true;
          this.sqlFile = sqlFile;

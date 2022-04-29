@@ -99,7 +99,9 @@
 
 <script>
 import moment from 'moment';
-import { mapGetters, mapActions } from 'vuex';
+import { useHistoryStore } from '@/stores/history';
+import { useConnectionsStore } from '@/stores/connections';
+import { useNotificationsStore } from '@/stores/notifications';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
 
 export default {
@@ -111,6 +113,18 @@ export default {
       connection: Object
    },
    emits: ['select-query', 'close'],
+   setup () {
+      const { getHistoryByWorkspace, deleteQueryFromHistory } = useHistoryStore();
+      const { getConnectionName } = useConnectionsStore();
+      const { addNotification } = useNotificationsStore();
+
+      return {
+         getHistoryByWorkspace,
+         deleteQueryFromHistory,
+         getConnectionName,
+         addNotification
+      };
+   },
    data () {
       return {
          resultsSize: 1000,
@@ -122,10 +136,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getConnectionName: 'connections/getConnectionName',
-         getHistoryByWorkspace: 'history/getHistoryByWorkspace'
-      }),
       connectionName () {
          return this.getConnectionName(this.connection.uid);
       },
@@ -165,10 +175,6 @@ export default {
       clearInterval(this.refreshInterval);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         deleteQueryFromHistory: 'history/deleteQueryFromHistory'
-      }),
       copyQuery (sql) {
          navigator.clipboard.writeText(sql);
       },

@@ -65,7 +65,8 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import ModalAskParameters from '@/components/ModalAskParameters';
@@ -73,6 +74,7 @@ import Triggers from '@/ipc-api/Triggers';
 import Routines from '@/ipc-api/Routines';
 import Functions from '@/ipc-api/Functions';
 import Schedulers from '@/ipc-api/Schedulers';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceExploreBarMiscContext',
@@ -87,6 +89,32 @@ export default {
       selectedSchema: String
    },
    emits: ['close-context', 'reload'],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         getWorkspace,
+         changeBreadcrumbs,
+         addLoadingElement,
+         removeLoadingElement,
+         removeTabs,
+         newTab
+      } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace,
+         changeBreadcrumbs,
+         addLoadingElement,
+         removeLoadingElement,
+         removeTabs,
+         newTab
+      };
+   },
    data () {
       return {
          isDeleteModal: false,
@@ -96,10 +124,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       workspace () {
          return this.getWorkspace(this.selectedWorkspace);
       },
@@ -123,14 +147,6 @@ export default {
       }
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
-         addLoadingElement: 'workspaces/addLoadingElement',
-         removeLoadingElement: 'workspaces/removeLoadingElement',
-         removeTabs: 'workspaces/removeTabs',
-         newTab: 'workspaces/newTab'
-      }),
       showDeleteModal () {
          this.isDeleteModal = true;
       },

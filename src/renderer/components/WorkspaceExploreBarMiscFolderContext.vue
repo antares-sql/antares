@@ -42,8 +42,10 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseContextMenu from '@/components/BaseContextMenu';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceExploreBarMiscContext',
@@ -55,26 +57,40 @@ export default {
       selectedMisc: String,
       selectedSchema: String
    },
-   emits: ['open-create-trigger-tab', 'open-create-routine-tab', 'open-create-function-tab', 'open-create-trigger-function-tab', 'open-create-scheduler-tab', 'close-context'],
+   emits: [
+      'open-create-trigger-tab',
+      'open-create-routine-tab',
+      'open-create-function-tab',
+      'open-create-trigger-function-tab',
+      'open-create-scheduler-tab',
+      'close-context'
+   ],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const { getWorkspace, changeBreadcrumbs } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace,
+         changeBreadcrumbs
+      };
+   },
    data () {
       return {
          localElement: {}
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       workspace () {
          return this.getWorkspace(this.selectedWorkspace);
       }
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
-      }),
       showDeleteModal () {
          this.isDeleteModal = true;
       },

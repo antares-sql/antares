@@ -12,9 +12,9 @@
 import * as ace from 'ace-builds';
 import 'ace-builds/webpack-resolver';
 import '../libs/ext-language_tools';
-import { mapGetters } from 'vuex';
 import { storeToRefs } from 'pinia';
 import { useApplicationStore } from '@/stores/application';
+import { useSettingsStore } from '@/stores/settings';
 import Tables from '@/ipc-api/Tables';
 
 export default {
@@ -32,14 +32,26 @@ export default {
    setup () {
       const editor = null;
       const applicationStore = useApplicationStore();
+      const settingsStore = useSettingsStore();
+
       const { setBaseCompleters } = applicationStore;
+
       const { baseCompleter } = storeToRefs(applicationStore);
+      const {
+         editorTheme,
+         editorFontSize,
+         autoComplete,
+         lineWrap
+      } = storeToRefs(settingsStore);
 
       return {
          editor,
-
          baseCompleter,
-         setBaseCompleters
+         setBaseCompleters,
+         editorTheme,
+         editorFontSize,
+         autoComplete,
+         lineWrap
       };
    },
    data () {
@@ -52,12 +64,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         editorTheme: 'settings/getEditorTheme',
-         editorFontSize: 'settings/getEditorFontSize',
-         autoComplete: 'settings/getAutoComplete',
-         lineWrap: 'settings/getLineWrap'
-      }),
       tables () {
          return this.workspace
             ? this.workspace.structure.filter(schema => schema.name === this.schema)

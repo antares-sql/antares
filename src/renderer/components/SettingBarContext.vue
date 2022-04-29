@@ -30,10 +30,12 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
 import { uidGen } from 'common/libs/uidGen';
+import { useConnectionsStore } from '@/stores/connections';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'SettingBarContext',
@@ -46,6 +48,25 @@ export default {
       contextConnection: Object
    },
    emits: ['close-context'],
+   setup () {
+      const {
+         getConnectionName,
+         addConnection,
+         deleteConnection
+      } = useConnectionsStore();
+      const workspacesStore = useWorkspacesStore();
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const { selectWorkspace } = workspacesStore;
+
+      return {
+         getConnectionName,
+         addConnection,
+         deleteConnection,
+         selectedWorkspace,
+         selectWorkspace
+      };
+   },
    data () {
       return {
          isConfirmModal: false,
@@ -53,20 +74,11 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getConnectionName: 'connections/getConnectionName',
-         selectedWorkspace: 'workspaces/getSelected'
-      }),
       connectionName () {
          return this.getConnectionName(this.contextConnection.uid);
       }
    },
    methods: {
-      ...mapActions({
-         addConnection: 'connections/addConnection',
-         deleteConnection: 'connections/deleteConnection',
-         selectWorkspace: 'workspaces/selectWorkspace'
-      }),
       confirmDeleteConnection () {
          if (this.selectedWorkspace === this.contextConnection.uid)
             this.selectWorkspace();
@@ -78,7 +90,7 @@ export default {
          connectionCopy = {
             ...connectionCopy,
             uid: uidGen('C'),
-            name: connectionCopy.name ? `${connectionCopy.name}_copy` : ''
+            name: connectionCopy.name ? `${connectionCopy?.name}_copy` : ''
          };
 
          this.addConnection(connectionCopy);

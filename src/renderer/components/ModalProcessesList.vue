@@ -134,9 +134,10 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
 import arrayToFile from '../libs/arrayToFile';
+import { useNotificationsStore } from '@/stores/notifications';
 import Schema from '@/ipc-api/Schema';
+import { useConnectionsStore } from '@/stores/connections';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
 import ModalProcessesListRow from '@/components/ModalProcessesListRow';
 import ModalProcessesListContext from '@/components/ModalProcessesListContext';
@@ -152,6 +153,12 @@ export default {
       connection: Object
    },
    emits: ['close'],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const { getConnectionName } = useConnectionsStore();
+
+      return { addNotification, getConnectionName };
+   },
    data () {
       return {
          resultsSize: 1000,
@@ -170,9 +177,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getConnectionName: 'connections/getConnectionName'
-      }),
       connectionName () {
          return this.getConnectionName(this.connection.uid);
       },
@@ -212,9 +216,6 @@ export default {
       clearInterval(this.refreshInterval);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification'
-      }),
       async getProcessesList () {
          this.isQuering = true;
 

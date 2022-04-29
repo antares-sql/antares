@@ -29,10 +29,11 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { storeToRefs } from 'pinia';
 import { useApplicationStore } from '@/stores/application';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import TextEditor from '@/components/BaseTextEditor';
+import { useScratchpadStore } from '@/stores/scratchpad';
 
 export default {
    name: 'TheScratchpad',
@@ -43,19 +44,22 @@ export default {
    emits: ['hide'],
    setup () {
       const applicationStore = useApplicationStore();
+      const scratchpadStore = useScratchpadStore();
 
-      return { hideScratchpad: applicationStore.hideScratchpad };
+      const { notes } = storeToRefs(scratchpadStore);
+      const { changeNotes } = scratchpadStore;
+
+      return {
+         notes,
+         hideScratchpad: applicationStore.hideScratchpad,
+         changeNotes
+      };
    },
    data () {
       return {
          localNotes: '',
          debounceTimeout: null
       };
-   },
-   computed: {
-      ...mapGetters({
-         notes: 'scratchpad/getNotes'
-      })
    },
    watch: {
       localNotes () {
@@ -70,9 +74,6 @@ export default {
       this.localNotes = this.notes;
    },
    methods: {
-      ...mapActions({
-         changeNotes: 'scratchpad/changeNotes'
-      }),
       hideModal () {
          this.$emit('hide');
       }

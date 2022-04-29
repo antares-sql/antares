@@ -102,12 +102,14 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import { uidGen } from 'common/libs/uidGen';
 import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
 import ModalAskParameters from '@/components/ModalAskParameters';
 import Functions from '@/ipc-api/Functions';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabPropsTriggerFunction',
@@ -121,6 +123,32 @@ export default {
       function: String,
       isSelected: Boolean,
       schema: String
+   },
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         getWorkspace,
+         refreshStructure,
+         renameTabs,
+         newTab,
+         changeBreadcrumbs,
+         setUnsavedChanges
+      } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace,
+         refreshStructure,
+         renameTabs,
+         newTab,
+         changeBreadcrumbs,
+         setUnsavedChanges
+      };
    },
    data () {
       return {
@@ -136,10 +164,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
@@ -211,14 +235,6 @@ export default {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         refreshStructure: 'workspaces/refreshStructure',
-         renameTabs: 'workspaces/renameTabs',
-         newTab: 'workspaces/newTab',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges'
-      }),
       async getFunctionData () {
          if (!this.function) return;
 

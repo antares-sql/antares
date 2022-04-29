@@ -56,9 +56,10 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
 import { storeToRefs } from 'pinia';
 import { useApplicationStore } from '@/stores/application';
+import { useConnectionsStore } from '@/stores/connections';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import Draggable from 'vuedraggable';
 import SettingBarContext from '@/components/SettingBarContext';
 
@@ -70,14 +71,28 @@ export default {
    },
    setup () {
       const applicationStore = useApplicationStore();
+      const connectionsStore = useConnectionsStore();
+      const workspacesStore = useWorkspacesStore();
+
       const { updateStatus } = storeToRefs(applicationStore);
+      const { connections: getConnections } = storeToRefs(connectionsStore);
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
       const { showSettingModal, showScratchpad } = applicationStore;
+      const { getConnectionName, updateConnections } = connectionsStore;
+      const { getWorkspace, selectWorkspace } = workspacesStore;
 
       return {
          applicationStore,
          updateStatus,
          showSettingModal,
-         showScratchpad
+         showScratchpad,
+         getConnections,
+         getConnectionName,
+         updateConnections,
+         selectedWorkspace,
+         getWorkspace,
+         selectWorkspace
       };
    },
    data () {
@@ -91,12 +106,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getConnections: 'connections/getConnections',
-         getConnectionName: 'connections/getConnectionName',
-         getWorkspace: 'workspaces/getWorkspace',
-         selectedWorkspace: 'workspaces/getSelected'
-      }),
       connections: {
          get () {
             return this.getConnections;
@@ -110,10 +119,6 @@ export default {
       }
    },
    methods: {
-      ...mapActions({
-         updateConnections: 'connections/updateConnections',
-         selectWorkspace: 'workspaces/selectWorkspace'
-      }),
       contextMenu (event, connection) {
          this.contextEvent = event;
          this.contextConnection = connection;

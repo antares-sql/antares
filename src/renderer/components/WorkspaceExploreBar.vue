@@ -115,7 +115,10 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { useConnectionsStore } from '@/stores/connections';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useSettingsStore } from '@/stores/settings';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 import Tables from '@/ipc-api/Tables';
 import Views from '@/ipc-api/Views';
@@ -128,6 +131,7 @@ import TableContext from '@/components/WorkspaceExploreBarTableContext';
 import MiscContext from '@/components/WorkspaceExploreBarMiscContext';
 import MiscFolderContext from '@/components/WorkspaceExploreBarMiscFolderContext';
 import ModalNewSchema from '@/components/ModalNewSchema';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceExploreBar',
@@ -142,6 +146,45 @@ export default {
    props: {
       connection: Object,
       isSelected: Boolean
+   },
+   setup () {
+      const { getConnectionName } = useConnectionsStore();
+      const { addNotification } = useNotificationsStore();
+      const settingsStore = useSettingsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { explorebarSize } = storeToRefs(settingsStore);
+
+      const { changeExplorebarSize } = settingsStore;
+      const {
+         getWorkspace,
+         disconnectWorkspace,
+         refreshStructure,
+         changeBreadcrumbs,
+         selectTab,
+         newTab,
+         removeTabs,
+         setSearchTerm,
+         addLoadingElement,
+         removeLoadingElement
+      } = workspacesStore;
+
+      return {
+         getConnectionName,
+         addNotification,
+         explorebarSize,
+         changeExplorebarSize,
+         getWorkspace,
+         disconnectWorkspace,
+         refreshStructure,
+         changeBreadcrumbs,
+         selectTab,
+         newTab,
+         removeTabs,
+         setSearchTerm,
+         addLoadingElement,
+         removeLoadingElement
+      };
    },
    data () {
       return {
@@ -174,11 +217,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getWorkspace: 'workspaces/getWorkspace',
-         explorebarSize: 'settings/getExplorebarSize',
-         getConnectionName: 'connections/getConnectionName'
-      }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
@@ -222,19 +260,6 @@ export default {
       });
    },
    methods: {
-      ...mapActions({
-         disconnectWorkspace: 'workspaces/removeConnected',
-         refreshStructure: 'workspaces/refreshStructure',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
-         selectTab: 'workspaces/selectTab',
-         newTab: 'workspaces/newTab',
-         removeTabs: 'workspaces/removeTabs',
-         setSearchTerm: 'workspaces/setSearchTerm',
-         addNotification: 'notifications/addNotification',
-         changeExplorebarSize: 'settings/changeExplorebarSize',
-         addLoadingElement: 'workspaces/addLoadingElement',
-         removeLoadingElement: 'workspaces/removeLoadingElement'
-      }),
       async refresh () {
          if (!this.isRefreshing) {
             this.isRefreshing = true;

@@ -165,7 +165,8 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import { uidGen } from 'common/libs/uidGen';
 import Tables from '@/ipc-api/Tables';
 import BaseLoader from '@/components/BaseLoader';
@@ -173,6 +174,7 @@ import WorkspaceTabPropsTableFields from '@/components/WorkspaceTabPropsTableFie
 import WorkspaceTabPropsTableIndexesModal from '@/components/WorkspaceTabPropsTableIndexesModal';
 import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTableForeignModal';
 import WorkspaceTabNewTableEmptyState from '@/components/WorkspaceTabNewTableEmptyState';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabNewTable',
@@ -188,6 +190,36 @@ export default {
       tab: Object,
       isSelected: Boolean,
       schema: String
+   },
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         getWorkspace,
+         getDatabaseVariable,
+         refreshStructure,
+         setUnsavedChanges,
+         newTab,
+         renameTabs,
+         removeTab,
+         changeBreadcrumbs
+      } = workspacesStore;
+
+      return {
+         addNotification,
+         getWorkspace,
+         getDatabaseVariable,
+         refreshStructure,
+         setUnsavedChanges,
+         newTab,
+         renameTabs,
+         removeTab,
+         changeBreadcrumbs,
+         selectedWorkspace
+      };
    },
    data () {
       return {
@@ -209,11 +241,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getWorkspace: 'workspaces/getWorkspace',
-         selectedWorkspace: 'workspaces/getSelected',
-         getDatabaseVariable: 'workspaces/getDatabaseVariable'
-      }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
@@ -280,15 +307,6 @@ export default {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         refreshStructure: 'workspaces/refreshStructure',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges',
-         newTab: 'workspaces/newTab',
-         renameTabs: 'workspaces/renameTabs',
-         removeTab: 'workspaces/removeTab',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
-      }),
       async saveChanges () {
          if (this.isSaving || !this.isValid) return;
          this.isSaving = true;

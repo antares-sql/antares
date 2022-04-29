@@ -22,8 +22,10 @@
 
 <script>
 import Tables from '@/ipc-api/Tables';
-import { mapGetters, mapActions } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import { TEXT, LONG_TEXT } from 'common/fieldTypes';
+import { storeToRefs } from 'pinia';
 export default {
    name: 'ForeignKeySelect',
    props: {
@@ -35,15 +37,20 @@ export default {
       }
    },
    emits: ['update:modelValue', 'blur'],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      return { addNotification, selectedWorkspace };
+   },
    data () {
       return {
          foreignList: []
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected'
-      }),
       isValidDefault () {
          if (!this.foreignList.length) return true;
          if (this.modelValue === null) return false;
@@ -88,9 +95,6 @@ export default {
       }
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification'
-      }),
       onChange () {
          this.$emit('update:modelValue', this.$refs.editField.value);
       },

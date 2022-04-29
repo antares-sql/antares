@@ -188,7 +188,8 @@
 <script>
 import moment from 'moment';
 import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
-import { mapGetters, mapActions } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import Tables from '@/ipc-api/Tables';
 import FakerSelect from '@/components/FakerSelect';
 
@@ -203,6 +204,21 @@ export default {
       keyUsage: Array
    },
    emits: ['reload', 'hide'],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const { getWorkspace, getWorkspaceTab } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace,
+         getWorkspaceTab
+      };
+   },
    data () {
       return {
          localRow: {},
@@ -213,11 +229,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace',
-         getWorkspaceTab: 'workspaces/getWorkspaceTab'
-      }),
       workspace () {
          return this.getWorkspace(this.selectedWorkspace);
       },
@@ -288,9 +299,6 @@ export default {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification'
-      }),
       typeClass (type) {
          if (type)
             return `type-${type.toLowerCase().replaceAll(' ', '_').replaceAll('"', '')}`;

@@ -4,10 +4,10 @@
          <i class="mdi mdi-folder-open mr-1" />{{ message }}
       </span>
       <span class="text-ellipsis file-uploader-value">
-         {{ lastPart(value) }}
+         {{ lastPart(modelValue) }}
       </span>
       <i
-         v-if="value.length"
+         v-if="modelValue.length"
          class="file-uploader-reset mdi mdi-close"
          @click.prevent="clear"
       />
@@ -30,7 +30,7 @@ export default {
          default: 'Browse',
          type: String
       },
-      value: {
+      modelValue: {
          default: '',
          type: String
       }

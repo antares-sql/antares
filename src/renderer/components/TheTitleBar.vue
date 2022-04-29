@@ -55,10 +55,26 @@
 <script>
 import { ipcRenderer } from 'electron';
 import { getCurrentWindow } from '@electron/remote';
-import { mapGetters } from 'vuex';
+import { useConnectionsStore } from '@/stores/connections';
+import { useWorkspacesStore } from '@/stores/workspaces';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'TheTitleBar',
+   setup () {
+      const { getConnectionName } = useConnectionsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const { getWorkspace } = workspacesStore;
+
+      return {
+         getConnectionName,
+         selectedWorkspace,
+         getWorkspace
+      };
+   },
    data () {
       return {
          w: getCurrentWindow(),
@@ -68,11 +84,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getConnectionName: 'connections/getConnectionName',
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       windowTitle () {
          if (!this.selectedWorkspace) return '';
          if (this.selectedWorkspace === 'NEW') return this.$t('message.createNewConnection');

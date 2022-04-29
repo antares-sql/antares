@@ -26,11 +26,13 @@
 
 <script>
 import { defineAsyncComponent } from 'vue';
-import { mapGetters } from 'vuex';
 import { storeToRefs } from 'pinia';
 import { ipcRenderer } from 'electron';
 import { Menu, getCurrentWindow } from '@electron/remote';
 import { useApplicationStore } from '@/stores/application';
+import { useConnectionsStore } from '@/stores/connections';
+import { useSettingsStore } from '@/stores/settings';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import TheSettingBar from '@/components/TheSettingBar';
 
 export default {
@@ -48,29 +50,31 @@ export default {
    },
    setup () {
       const applicationStore = useApplicationStore();
+      const connectionsStore = useConnectionsStore();
+      const settingsStore = useSettingsStore();
+      const workspacesStore = useWorkspacesStore();
+
       const {
          isLoading,
          isSettingModal,
          isScratchpad
       } = storeToRefs(applicationStore);
+      const { connections } = storeToRefs(connectionsStore);
+      const { applicationTheme, disableBlur } = storeToRefs(settingsStore);
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
       const { checkVersionUpdate } = applicationStore;
 
       return {
-         applicationStore,
          isLoading,
          isSettingModal,
          isScratchpad,
-         checkVersionUpdate
+         checkVersionUpdate,
+         connections,
+         applicationTheme,
+         disableBlur,
+         selectedWorkspace
       };
-   },
-   computed: {
-      ...mapGetters({
-         connections: 'connections/getConnections',
-         applicationTheme: 'settings/getApplicationTheme',
-         disableBlur: 'settings/getDisableBlur',
-         selectedWorkspace: 'workspaces/getSelected'
-      })
    },
    mounted () {
       ipcRenderer.send('check-for-updates');

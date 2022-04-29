@@ -177,13 +177,15 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import { uidGen } from 'common/libs/uidGen';
 import Tables from '@/ipc-api/Tables';
 import BaseLoader from '@/components/BaseLoader';
 import WorkspaceTabPropsTableFields from '@/components/WorkspaceTabPropsTableFields';
 import WorkspaceTabPropsTableIndexesModal from '@/components/WorkspaceTabPropsTableIndexesModal';
 import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTableForeignModal';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabPropsTable',
@@ -198,6 +200,32 @@ export default {
       isSelected: Boolean,
       table: String,
       schema: String
+   },
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         getWorkspace,
+         getDatabaseVariable,
+         refreshStructure,
+         renameTabs,
+         changeBreadcrumbs,
+         setUnsavedChanges
+      } = workspacesStore;
+
+      return {
+         addNotification,
+         getDatabaseVariable,
+         getWorkspace,
+         selectedWorkspace,
+         refreshStructure,
+         setUnsavedChanges,
+         renameTabs,
+         changeBreadcrumbs
+      };
    },
    data () {
       return {
@@ -219,11 +247,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getWorkspace: 'workspaces/getWorkspace',
-         selectedWorkspace: 'workspaces/getSelected',
-         getDatabaseVariable: 'workspaces/getDatabaseVariable'
-      }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
@@ -281,13 +304,6 @@ export default {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         refreshStructure: 'workspaces/refreshStructure',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges',
-         renameTabs: 'workspaces/renameTabs',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
-      }),
       async getTableOptions (params) {
          const db = this.workspace.structure.find(db => db.name === this.schema);
 

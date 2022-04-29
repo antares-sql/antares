@@ -469,9 +469,11 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { storeToRefs } from 'pinia';
 import Draggable from 'vuedraggable';
 import Connection from '@/ipc-api/Connection';
+import { useWorkspacesStore } from '@/stores/workspaces';
+
 import WorkspaceEmptyState from '@/components/WorkspaceEmptyState';
 import WorkspaceExploreBar from '@/components/WorkspaceExploreBar';
 import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPanel';
@@ -525,6 +527,34 @@ export default {
    props: {
       connection: Object
    },
+   setup () {
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         getWorkspace,
+         addWorkspace,
+         connectWorkspace,
+         removeConnected,
+         selectTab,
+         newTab,
+         removeTab,
+         updateTabs
+      } = workspacesStore;
+
+      return {
+         selectedWorkspace,
+         getWorkspace,
+         addWorkspace,
+         connectWorkspace,
+         removeConnected,
+         selectTab,
+         newTab,
+         removeTab,
+         updateTabs
+      };
+   },
    data () {
       return {
          hasWheelEvent: false,
@@ -533,10 +563,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
@@ -604,15 +630,6 @@ export default {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
-      ...mapActions({
-         addWorkspace: 'workspaces/addWorkspace',
-         connectWorkspace: 'workspaces/connectWorkspace',
-         removeConnected: 'workspaces/removeConnected',
-         selectTab: 'workspaces/selectTab',
-         newTab: 'workspaces/newTab',
-         removeTab: 'workspaces/removeTab',
-         updateTabs: 'workspaces/updateTabs'
-      }),
       addQueryTab () {
          this.newTab({ uid: this.connection.uid, type: 'query' });
       },

@@ -271,7 +271,8 @@
 
 <script>
 import { ipcRenderer } from 'electron';
-import { mapActions, mapGetters } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import moment from 'moment';
 import customizations from 'common/customizations';
 import Application from '@/ipc-api/Application';
@@ -279,11 +280,30 @@ import Schema from '@/ipc-api/Schema';
 
 export default {
    name: 'ModalExportSchema',
-
    props: {
       selectedSchema: String
    },
    emits: ['close'],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         getWorkspace,
+         getDatabaseVariable,
+         refreshSchema
+      } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace,
+         getDatabaseVariable,
+         refreshSchema
+      };
+   },
    data () {
       return {
          isExporting: false,
@@ -301,11 +321,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace',
-         getDatabaseVariable: 'workspaces/getDatabaseVariable'
-      }),
       currentWorkspace () {
          return this.getWorkspace(this.selectedWorkspace);
       },
@@ -370,10 +385,6 @@ export default {
       ipcRenderer.off('export-progress', this.updateProgress);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         refreshSchema: 'workspaces/refreshSchema'
-      }),
       async startExport () {
          this.isExporting = true;
          const { uid, client } = this.currentWorkspace;

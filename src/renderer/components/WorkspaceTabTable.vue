@@ -177,13 +177,16 @@
 
 <script>
 import Tables from '@/ipc-api/Tables';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useSettingsStore } from '@/stores/settings';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseLoader from '@/components/BaseLoader';
 import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable';
 import WorkspaceTabTableFilters from '@/components/WorkspaceTabTableFilters';
 import ModalNewTableRow from '@/components/ModalNewTableRow';
 import ModalFakerRows from '@/components/ModalFakerRows';
-import { mapGetters, mapActions } from 'vuex';
 import tableTabs from '@/mixins/tableTabs';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabTable',
@@ -201,6 +204,24 @@ export default {
       table: String,
       schema: String,
       elementType: String
+   },
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const settingsStore = useSettingsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { dataTabLimit: limit } = storeToRefs(settingsStore);
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const { changeBreadcrumbs, getWorkspace } = workspacesStore;
+
+      return {
+         addNotification,
+         limit,
+         selectedWorkspace,
+         changeBreadcrumbs,
+         getWorkspace
+      };
    },
    data () {
       return {
@@ -222,11 +243,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getWorkspace: 'workspaces/getWorkspace',
-         selectedWorkspace: 'workspaces/getSelected',
-         limit: 'settings/getDataTabLimit'
-      }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
@@ -309,10 +325,6 @@ export default {
       clearInterval(this.refreshInterval);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
-      }),
       async getTableData () {
          if (!this.table || !this.isSelected) return;
          this.isQuering = true;

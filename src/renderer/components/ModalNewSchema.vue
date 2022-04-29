@@ -68,12 +68,29 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import Schema from '@/ipc-api/Schema';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'ModalNewSchema',
    emits: ['reload', 'close'],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const { getWorkspace, getDatabaseVariable } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace,
+         getDatabaseVariable
+      };
+   },
    data () {
       return {
          isLoading: false,
@@ -84,11 +101,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace',
-         getDatabaseVariable: 'workspaces/getDatabaseVariable'
-      }),
       collations () {
          return this.getWorkspace(this.selectedWorkspace).collations;
       },
@@ -110,9 +122,6 @@ export default {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification'
-      }),
       async createSchema () {
          this.isLoading = true;
          try {

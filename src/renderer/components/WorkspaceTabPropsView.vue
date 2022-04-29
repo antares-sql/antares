@@ -120,10 +120,12 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
 import Views from '@/ipc-api/Views';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabPropsView',
@@ -137,6 +139,30 @@ export default {
       schema: String,
       view: String
    },
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         getWorkspace,
+         refreshStructure,
+         renameTabs,
+         changeBreadcrumbs,
+         setUnsavedChanges
+      } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace,
+         refreshStructure,
+         renameTabs,
+         changeBreadcrumbs,
+         setUnsavedChanges
+      };
+   },
    data () {
       return {
          isLoading: false,
@@ -149,10 +175,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
@@ -212,13 +234,6 @@ export default {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         refreshStructure: 'workspaces/refreshStructure',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
-         renameTabs: 'workspaces/renameTabs'
-      }),
       async getViewData () {
          if (!this.view) return;
          this.isLoading = true;

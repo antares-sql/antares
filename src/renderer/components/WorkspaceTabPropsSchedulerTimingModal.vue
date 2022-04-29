@@ -139,16 +139,12 @@
 
 <script>
 import ConfirmModal from '@/components/BaseConfirmModal';
-import { VueMaskDirective } from 'v-mask';
 import moment from 'moment';
 
 export default {
    name: 'WorkspaceTabPropsSchedulerTimingModal',
    components: {
       ConfirmModal
-   },
-   directives: {
-      mask: VueMaskDirective
    },
    props: {
       localOptions: Object,

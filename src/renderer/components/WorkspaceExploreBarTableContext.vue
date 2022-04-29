@@ -72,10 +72,12 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import Tables from '@/ipc-api/Tables';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceExploreBarTableContext',
@@ -89,6 +91,32 @@ export default {
       selectedSchema: String
    },
    emits: ['close-context', 'duplicate-table', 'reload', 'delete-table'],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         getWorkspace,
+         newTab,
+         removeTabs,
+         addLoadingElement,
+         removeLoadingElement,
+         changeBreadcrumbs
+      } = workspacesStore;
+
+      return {
+         addNotification,
+         getWorkspace,
+         newTab,
+         removeTabs,
+         addLoadingElement,
+         removeLoadingElement,
+         changeBreadcrumbs,
+         selectedWorkspace
+      };
+   },
    data () {
       return {
          isDeleteModal: false,
@@ -96,10 +124,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       workspace () {
          return this.getWorkspace(this.selectedWorkspace);
       },
@@ -108,14 +132,6 @@ export default {
       }
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         newTab: 'workspaces/newTab',
-         removeTabs: 'workspaces/removeTabs',
-         addLoadingElement: 'workspaces/addLoadingElement',
-         removeLoadingElement: 'workspaces/removeLoadingElement',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
-      }),
       showDeleteModal () {
          this.isDeleteModal = true;
       },

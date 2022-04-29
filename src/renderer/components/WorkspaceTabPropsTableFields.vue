@@ -125,10 +125,12 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import Draggable from 'vuedraggable';
 import TableRow from '@/components/WorkspaceTabPropsTableRow';
 import TableContext from '@/components/WorkspaceTabPropsTableContext';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabPropsTableFields',
@@ -149,6 +151,20 @@ export default {
       mode: String
    },
    emits: ['add-new-index', 'add-to-index', 'rename-field', 'duplicate-field', 'remove-field'],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const { getWorkspace } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace
+      };
+   },
    data () {
       return {
          resultsSize: 1000,
@@ -159,10 +175,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getWorkspaceTab: 'workspaces/getWorkspaceTab',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       workspaceSchema () {
          return this.getWorkspace(this.connUid).breadcrumbs.schema;
       },
@@ -201,9 +213,6 @@ export default {
       window.removeEventListener('resize', this.resizeResults);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification'
-      }),
       resizeResults () {
          if (this.$refs.resultTable) {
             const el = this.$refs.tableWrapper;

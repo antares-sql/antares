@@ -12,7 +12,8 @@
 <script>
 import * as ace from 'ace-builds';
 import 'ace-builds/webpack-resolver';
-import { mapGetters } from 'vuex';
+import { storeToRefs } from 'pinia';
+import { useSettingsStore } from '@/stores/settings';
 import { uidGen } from 'common/libs/uidGen';
 
 export default {
@@ -27,19 +28,28 @@ export default {
       height: { type: Number, default: 200 }
    },
    emits: ['update:modelValue'],
+   setup () {
+      const settingsStore = useSettingsStore();
+
+      const {
+         editorTheme,
+         editorFontSize,
+         autoComplete,
+         lineWrap
+      } = storeToRefs(settingsStore);
+
+      return {
+         editorTheme,
+         editorFontSize,
+         autoComplete,
+         lineWrap
+      };
+   },
    data () {
       return {
          editor: null,
-         id: null
+         id: uidGen()
       };
-   },
-   computed: {
-      ...mapGetters({
-         editorTheme: 'settings/getEditorTheme',
-         editorFontSize: 'settings/getEditorFontSize',
-         autoComplete: 'settings/getAutoComplete',
-         lineWrap: 'settings/getLineWrap'
-      })
    },
    watch: {
       mode () {
@@ -77,9 +87,6 @@ export default {
             });
          }
       }
-   },
-   created () {
-      this.id = uidGen('E');
    },
    mounted () {
       this.editor = ace.edit(`editor-${this.id}`, {

@@ -188,7 +188,9 @@
 
 <script>
 import { format } from 'sql-formatter';
-import { mapGetters, mapActions } from 'vuex';
+import { useHistoryStore } from '@/stores/history';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import Schema from '@/ipc-api/Schema';
 import QueryEditor from '@/components/QueryEditor';
 import BaseLoader from '@/components/BaseLoader';
@@ -196,6 +198,7 @@ import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable';
 import WorkspaceTabQueryEmptyState from '@/components/WorkspaceTabQueryEmptyState';
 import ModalHistory from '@/components/ModalHistory';
 import tableTabs from '@/mixins/tableTabs';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabQuery',
@@ -211,6 +214,31 @@ export default {
       connection: Object,
       tab: Object,
       isSelected: Boolean
+   },
+   setup () {
+      const { getHistoryByWorkspace, saveHistory } = useHistoryStore();
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         getWorkspace,
+         changeBreadcrumbs,
+         updateTabContent,
+         setUnsavedChanges
+      } = workspacesStore;
+
+      return {
+         getHistoryByWorkspace,
+         saveHistory,
+         addNotification,
+         selectedWorkspace,
+         getWorkspace,
+         changeBreadcrumbs,
+         updateTabContent,
+         setUnsavedChanges
+      };
    },
    data () {
       return {
@@ -230,11 +258,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getWorkspace: 'workspaces/getWorkspace',
-         selectedWorkspace: 'workspaces/getSelected',
-         getHistoryByWorkspace: 'history/getHistoryByWorkspace'
-      }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
@@ -305,13 +328,6 @@ export default {
       Schema.destroyConnectionToCommit(params);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
-         updateTabContent: 'workspaces/updateTabContent',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges',
-         saveHistory: 'history/saveHistory'
-      }),
       async runQuery (query) {
          if (!query || this.isQuering) return;
          this.isQuering = true;

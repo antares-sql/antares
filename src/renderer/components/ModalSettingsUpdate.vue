@@ -54,28 +54,32 @@
 
 <script>
 import { ipcRenderer, shell } from 'electron';
-import { mapGetters, mapActions } from 'vuex';
 import { storeToRefs } from 'pinia';
 import { useApplicationStore } from '@/stores/application';
+import { useSettingsStore } from '@/stores/settings';
 
 export default {
    name: 'ModalSettingsUpdate',
    setup () {
       const applicationStore = useApplicationStore();
+      const settingsStore = useSettingsStore();
+
       const {
          updateStatus,
          getDownloadProgress
       } = storeToRefs(applicationStore);
+      const { allowPrerelease } = storeToRefs(settingsStore);
+
+      const { changeAllowPrerelease } = settingsStore;
 
       return {
          updateStatus,
-         downloadPercentage: getDownloadProgress
+         downloadPercentage: getDownloadProgress,
+         allowPrerelease,
+         changeAllowPrerelease
       };
    },
    computed: {
-      ...mapGetters({
-         allowPrerelease: 'settings/getAllowPrerelease'
-      }),
       updateMessage () {
          switch (this.updateStatus) {
             case 'noupdate':
@@ -98,9 +102,6 @@ export default {
       }
    },
    methods: {
-      ...mapActions({
-         changeAllowPrerelease: 'settings/changeAllowPrerelease'
-      }),
       openOutside (link) {
          shell.openExternal(link);
       },
