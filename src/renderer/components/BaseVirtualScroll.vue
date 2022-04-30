@@ -49,7 +49,7 @@ export default {
    mounted () {
       this.setScrollElement();
    },
-   beforeDestroy () {
+   beforeUnmount () {
       this.localScrollElement.removeEventListener('scroll', this.checkScrollPosition);
    },
    methods: {

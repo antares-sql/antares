@@ -47,22 +47,8 @@ async function createMainWindow () {
    remoteMain.enable(window.webContents);
 
    try {
-      if (isDevelopment) {
-         const { default: installExtension, VUEJS3_DEVTOOLS } = require('electron-devtools-installer');
-         const options = {
-            loadExtensionOptions: { allowFileAccess: true }
-         };
-
-         try {
-            const name = await installExtension(VUEJS3_DEVTOOLS, options);
-            console.log(`Added Extension: ${name}`);
-         }
-         catch (err) {
-            console.log('An error occurred: ', err);
-         }
-
+      if (isDevelopment)
          await window.loadURL('http://localhost:9080');
-      }
       else {
          const indexPath = path.resolve(__dirname, 'index.html');
          await window.loadFile(indexPath);
@@ -109,8 +95,8 @@ else {
       mainWindow = await createMainWindow();
       createAppMenu();
 
-      // if (isDevelopment)
-      //    mainWindow.webContents.openDevTools();
+      if (isDevelopment)
+         mainWindow.webContents.openDevTools();
 
       process.on('uncaughtException', error => {
          mainWindow.webContents.send('unhandled-exception', error);
@@ -119,6 +105,14 @@ else {
       process.on('unhandledRejection', error => {
          mainWindow.webContents.send('unhandled-exception', error);
       });
+   });
+
+   app.on('browser-window-created', (event, window) => {
+      if (isDevelopment) {
+         const { antares } = require('../../package.json');
+         const extensionPath = path.resolve(__dirname, `../../misc/${antares.devtoolsId}`);
+         window.webContents.session.loadExtension(extensionPath, { allowFileAccess: true }).catch(console.error);
+      }
    });
 }
 

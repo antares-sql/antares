@@ -21,6 +21,7 @@ export default {
    props: {
       contextEvent: MouseEvent
    },
+   emits: ['close-context'],
    data () {
       return {
          contextSize: null,
@@ -61,7 +62,7 @@ export default {
       if (this.$refs.contextContent)
          this.contextSize = this.$refs.contextContent.getBoundingClientRect();
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {

@@ -1,6 +1,8 @@
 .DS_Store
 dist
 build
+misc/*
+!misc/.gitkeep
 node_modules
 thumbs.db
 NOTES.md

@@ -2,7 +2,7 @@
 
 Antares SQL is an application based on [Electron.js](https://www.electronjs.org/) that uses [Vue.js](https://vuejs.org/) and [Spectre.css](https://picturepan2.github.io/spectre/) as frontend frameworks.  
 For the build process it takes advantage of [electron-builder](https://www.electron.build/).  
-This application uses [Vuex](https://vuex.vuejs.org/) as application state manager and [electron-store](https://github.com/sindresorhus/electron-store) to save the various settings on disc.  
+This application uses [Pinia🍍](https://pinia.vuejs.org/) as application state manager and [electron-store](https://github.com/sindresorhus/electron-store) to save the various settings on disc.  
 This guide aims to provide useful information and guidelines to everyone wants to contribute with this open-source project.
 For every other question related to this project please [contact me](https://github.com/Fabio286).
 
@@ -14,7 +14,7 @@ The main files of the application are located inside `src` folder and are groupp
 
 This folder contains small libraries, classes and objects. The purpose of `common` folder is to group together utilities used by **renderer** and **main** processes.  
 Noteworthy is the `customizations` folder that contains clients related customizations. Those settings are merged with `default.js` that lists every option.  
-Client related customizations are stored on Vuex and can be accessed by `customizations` property of current workspace object, or importing `common/customizations`.  
+Client related customizations are stored on Pinia and can be accessed by `customizations` property of current workspace object, or importing `common/customizations`.  
 
 An use case of customizations object can be the following:
 
@@ -61,12 +61,6 @@ The command to build Antares SQL locally is `npm run build:local`.
 - [Tightly coupled component names](https://vuejs.org/v2/style-guide/#Tightly-coupled-component-names-strongly-recommended).
 - [Order of words in component names](https://vuejs.org/v2/style-guide/#Order-of-words-in-component-names-strongly-recommended).
 - **kebab-case** in templates for property and event names.
-
-### Vuex
-
-- **snake_case** for state names.
-- **camelCase** for getter and action names.
-- **SNAKE_CASE (all caps)** for mutation names.
 
 ### Code Style
 

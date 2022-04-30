@@ -56,6 +56,7 @@ export default {
       indexTypes: Array,
       selectedField: Object
    },
+   emits: ['close-context', 'duplicate-selected', 'delete-selected', 'add-new-index', 'add-to-index'],
    computed: {
       hasPrimary () {
          return this.indexes.some(index => index.type === 'PRIMARY');

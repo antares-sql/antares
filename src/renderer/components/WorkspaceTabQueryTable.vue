@@ -4,8 +4,8 @@
       class="vscroll no-outline"
       tabindex="0"
       :style="{'height': resultsSize+'px'}"
-      @keyup.46="showDeleteConfirmModal"
-      @keydown.ctrl.65="selectAllRows($event)"
+      @keyup.delete="showDeleteConfirmModal"
+      @keydown.ctrl.a="selectAllRows($event)"
       @keydown.esc="deselectRows"
    >
       <TableContext
@@ -68,7 +68,7 @@
             :visible-height="resultsSize"
             :scroll-element="scrollElement"
          >
-            <template slot-scope="{ items }">
+            <template #default="{ items }">
                <WorkspaceTabQueryTableRow
                   v-for="row in items"
                   :key="row._antares_id"
@@ -107,14 +107,17 @@
 </template>
 
 <script>
+import { storeToRefs } from 'pinia';
 import { uidGen } from 'common/libs/uidGen';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useSettingsStore } from '@/stores/settings';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import arrayToFile from '../libs/arrayToFile';
 import { TEXT, LONG_TEXT, BLOB } from 'common/fieldTypes';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
 import WorkspaceTabQueryTableRow from '@/components/WorkspaceTabQueryTableRow';
 import TableContext from '@/components/WorkspaceTabQueryTableContext';
 import ConfirmModal from '@/components/BaseConfirmModal';
-import { mapActions, mapGetters } from 'vuex';
 import moment from 'moment';
 
 export default {
@@ -131,6 +134,20 @@ export default {
       mode: String,
       isSelected: Boolean,
       elementType: { type: String, default: 'table' }
+   },
+   emits: ['update-field', 'delete-selected', 'hard-sort'],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const settingsStore = useSettingsStore();
+      const { getWorkspace } = useWorkspacesStore();
+
+      const { dataTabLimit: pageSize } = storeToRefs(settingsStore);
+
+      return {
+         addNotification,
+         pageSize,
+         getWorkspace
+      };
    },
    data () {
       return {
@@ -149,10 +166,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getWorkspace: 'workspaces/getWorkspace',
-         pageSize: 'settings/getDataTabLimit'
-      }),
       workspaceSchema () {
          return this.getWorkspace(this.connUid).breadcrumbs.schema;
       },
@@ -256,13 +269,10 @@ export default {
    mounted () {
       window.addEventListener('resize', this.resizeResults);
    },
-   destroyed () {
+   unmounted () {
       window.removeEventListener('resize', this.resizeResults);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification'
-      }),
       fieldType (cKey) {
          let type = 'unknown';
          const field = this.fields.filter(field => field.name === cKey)[0];

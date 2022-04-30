@@ -197,7 +197,7 @@
          <QueryEditor
             v-show="isSelected"
             ref="queryEditor"
-            :value.sync="localFunction.sql"
+            v-model="localFunction.sql"
             :workspace="workspace"
             :schema="schema"
             :height="editorHeight"
@@ -222,7 +222,9 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { storeToRefs } from 'pinia';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import { uidGen } from 'common/libs/uidGen';
 import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
@@ -239,10 +241,37 @@ export default {
       ModalAskParameters
    },
    props: {
+      tabUid: String,
       connection: Object,
       function: String,
       isSelected: Boolean,
       schema: String
+   },
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         getWorkspace,
+         refreshStructure,
+         renameTabs,
+         newTab,
+         changeBreadcrumbs,
+         setUnsavedChanges
+      } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace,
+         refreshStructure,
+         renameTabs,
+         newTab,
+         changeBreadcrumbs,
+         setUnsavedChanges
+      };
    },
    data () {
       return {
@@ -258,18 +287,11 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
       customizations () {
          return this.workspace.customizations;
-      },
-      tabUid () {
-         return this.$vnode.key;
       },
       isChanged () {
          return JSON.stringify(this.originalFunction) !== JSON.stringify(this.localFunction);
@@ -339,21 +361,13 @@ export default {
    mounted () {
       window.addEventListener('resize', this.resizeQueryEditor);
    },
-   destroyed () {
+   unmounted () {
       window.removeEventListener('resize', this.resizeQueryEditor);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         refreshStructure: 'workspaces/refreshStructure',
-         renameTabs: 'workspaces/renameTabs',
-         newTab: 'workspaces/newTab',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges'
-      }),
       async getFunctionData () {
          if (!this.function) return;
 

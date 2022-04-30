@@ -145,7 +145,7 @@
             v-show="isSelected"
             :key="`new-${_uid}`"
             ref="queryEditor"
-            :value.sync="localRoutine.sql"
+            v-model="localRoutine.sql"
             :workspace="workspace"
             :schema="schema"
             :height="editorHeight"
@@ -163,11 +163,13 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import QueryEditor from '@/components/QueryEditor';
 import BaseLoader from '@/components/BaseLoader';
 import WorkspaceTabPropsRoutineParamsModal from '@/components/WorkspaceTabPropsRoutineParamsModal';
 import Routines from '@/ipc-api/Routines';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabNewRoutine',
@@ -177,10 +179,39 @@ export default {
       WorkspaceTabPropsRoutineParamsModal
    },
    props: {
+      tabUid: String,
       connection: Object,
       tab: Object,
       isSelected: Boolean,
       schema: String
+   },
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         getWorkspace,
+         refreshStructure,
+         changeBreadcrumbs,
+         setUnsavedChanges,
+         newTab,
+         removeTab,
+         renameTabs
+      } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace,
+         refreshStructure,
+         changeBreadcrumbs,
+         setUnsavedChanges,
+         newTab,
+         removeTab,
+         renameTabs
+      };
    },
    data () {
       return {
@@ -195,18 +226,11 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
       customizations () {
          return this.workspace.customizations;
-      },
-      tabUid () {
-         return this.$vnode.key;
       },
       isChanged () {
          return JSON.stringify(this.originalRoutine) !== JSON.stringify(this.localRoutine);
@@ -261,22 +285,13 @@ export default {
 
       window.addEventListener('resize', this.resizeQueryEditor);
    },
-   destroyed () {
+   unmounted () {
       window.removeEventListener('resize', this.resizeQueryEditor);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         refreshStructure: 'workspaces/refreshStructure',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges',
-         newTab: 'workspaces/newTab',
-         removeTab: 'workspaces/removeTab',
-         renameTabs: 'workspaces/renameTabs'
-      }),
       async saveChanges () {
          if (this.isSaving) return;
          this.isSaving = true;

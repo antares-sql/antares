@@ -177,7 +177,9 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { storeToRefs } from 'pinia';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import { uidGen } from 'common/libs/uidGen';
 import Tables from '@/ipc-api/Tables';
 import BaseLoader from '@/components/BaseLoader';
@@ -194,10 +196,37 @@ export default {
       WorkspaceTabPropsTableForeignModal
    },
    props: {
+      tabUid: String,
       connection: Object,
       isSelected: Boolean,
       table: String,
       schema: String
+   },
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         getWorkspace,
+         getDatabaseVariable,
+         refreshStructure,
+         renameTabs,
+         changeBreadcrumbs,
+         setUnsavedChanges
+      } = workspacesStore;
+
+      return {
+         addNotification,
+         getDatabaseVariable,
+         getWorkspace,
+         selectedWorkspace,
+         refreshStructure,
+         setUnsavedChanges,
+         renameTabs,
+         changeBreadcrumbs
+      };
    },
    data () {
       return {
@@ -219,16 +248,8 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getWorkspace: 'workspaces/getWorkspace',
-         selectedWorkspace: 'workspaces/getSelected',
-         getDatabaseVariable: 'workspaces/getDatabaseVariable'
-      }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
-      },
-      tabUid () {
-         return this.$vnode.key;
       },
       defaultEngine () {
          const engine = this.getDatabaseVariable(this.connection.uid, 'default_storage_engine');
@@ -277,17 +298,10 @@ export default {
       this.getFieldsData();
       window.addEventListener('keydown', this.onKey);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         refreshStructure: 'workspaces/refreshStructure',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges',
-         renameTabs: 'workspaces/renameTabs',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
-      }),
       async getTableOptions (params) {
          const db = this.workspace.structure.find(db => db.name === this.schema);
 
@@ -415,7 +429,7 @@ export default {
          const localIDs = this.localFields.reduce((acc, curr) => [...acc, curr._antares_id], []);
 
          // Fields Additions
-         const additions = this.localFields.filter((field, i) => !originalIDs.includes(field._antares_id)).map(field => {
+         const additions = this.localFields.filter(field => !originalIDs.includes(field._antares_id)).map(field => {
             const lI = this.localFields.findIndex(localField => localField._antares_id === field._antares_id);
             const after = lI > 0 ? this.localFields[lI - 1].name : false;
             return { ...field, after };

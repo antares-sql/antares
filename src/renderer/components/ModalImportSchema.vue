@@ -1,62 +1,83 @@
 <template>
-   <div class="modal active">
-      <a class="modal-overlay" @click.stop="closeModal" />
-      <div class="modal-container p-0">
-         <div class="modal-header pl-2">
-            <div class="modal-title h6">
-               <div class="d-flex">
-                  <i class="mdi mdi-24px mdi-database-arrow-up mr-1" />
-                  <span class="cut-text">{{ $t('message.importSchema') }}</span>
+   <Teleport to="#window-content">
+      <div class="modal active">
+         <a class="modal-overlay" @click.stop="closeModal" />
+         <div class="modal-container p-0">
+            <div class="modal-header pl-2">
+               <div class="modal-title h6">
+                  <div class="d-flex">
+                     <i class="mdi mdi-24px mdi-database-arrow-up mr-1" />
+                     <span class="cut-text">{{ $t('message.importSchema') }}</span>
+                  </div>
                </div>
+               <a class="btn btn-clear c-hand" @click.stop="closeModal" />
             </div>
-            <a class="btn btn-clear c-hand" @click.stop="closeModal" />
-         </div>
-         <div class="modal-body pb-0">
-            {{ sqlFile }}
-            <div v-if="queryErrors.length > 0" class="mt-2">
-               <label>{{ $tc('message.importQueryErrors', queryErrors.length) }}</label>
-               <textarea
-                  v-model="formattedQueryErrors"
-                  class="form-input"
-                  rows="5"
-                  readonly
-               />
-            </div>
-         </div>
-         <div class="modal-footer columns">
-            <div class="column col modal-progress-wrapper text-left">
-               <div class="import-progress">
-                  <span class="progress-status">
-                     {{ progressPercentage }}% - {{ progressStatus }} - {{ $tc('message.executedQueries', queryCount) }}
-                  </span>
-                  <progress
-                     class="progress d-block"
-                     :value="progressPercentage"
-                     max="100"
+            <div class="modal-body pb-0">
+               {{ sqlFile }}
+               <div v-if="queryErrors.length > 0" class="mt-2">
+                  <label>{{ $tc('message.importQueryErrors', queryErrors.length) }}</label>
+                  <textarea
+                     v-model="formattedQueryErrors"
+                     class="form-input"
+                     rows="5"
+                     readonly
                   />
                </div>
             </div>
-            <div class="column col-auto px-0">
-               <button class="btn btn-link" @click.stop="closeModal">
-                  {{ completed ? $t('word.close') : $t('word.cancel') }}
-               </button>
+            <div class="modal-footer columns">
+               <div class="column col modal-progress-wrapper text-left">
+                  <div class="import-progress">
+                     <span class="progress-status">
+                        {{ progressPercentage }}% - {{ progressStatus }} - {{ $tc('message.executedQueries', queryCount) }}
+                     </span>
+                     <progress
+                        class="progress d-block"
+                        :value="progressPercentage"
+                        max="100"
+                     />
+                  </div>
+               </div>
+               <div class="column col-auto px-0">
+                  <button class="btn btn-link" @click.stop="closeModal">
+                     {{ completed ? $t('word.close') : $t('word.cancel') }}
+                  </button>
+               </div>
             </div>
          </div>
       </div>
-   </div>
+      <Teleport to="#window-content" />
+   </teleport>
 </template>
 
 <script>
 import { ipcRenderer } from 'electron';
-import { mapActions, mapGetters } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import moment from 'moment';
 import Schema from '@/ipc-api/Schema';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'ModalImportSchema',
 
    props: {
       selectedSchema: String
+   },
+   emits: ['close'],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const { getWorkspace, refreshSchema } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace,
+         refreshSchema
+      };
    },
    data () {
       return {
@@ -70,10 +91,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       currentWorkspace () {
          return this.getWorkspace(this.selectedWorkspace);
       },
@@ -89,16 +106,12 @@ export default {
       ipcRenderer.on('import-progress', this.updateProgress);
       ipcRenderer.on('query-error', this.handleQueryError);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
       ipcRenderer.off('import-progress', this.updateProgress);
       ipcRenderer.off('query-error', this.handleQueryError);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         refreshSchema: 'workspaces/refreshSchema'
-      }),
       async startImport (sqlFile) {
          this.isImporting = true;
          this.sqlFile = sqlFile;

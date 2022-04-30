@@ -105,26 +105,29 @@
             ref="resultTable"
             :list="fields"
             class="tbody"
+            item-key="_antares_id"
             handle=".row-draggable"
          >
-            <TableRow
-               v-for="row in fields"
-               :key="row._antares_id"
-               :row="row"
-               :indexes="getIndexes(row.name)"
-               :foreigns="getForeigns(row.name)"
-               :data-types="dataTypes"
-               :customizations="customizations"
-               @contextmenu="contextMenu"
-               @rename-field="$emit('rename-field', $event)"
-            />
+            <template #item="{element}">
+               <TableRow
+                  :row="element"
+                  :indexes="getIndexes(element.name)"
+                  :foreigns="getForeigns(element.name)"
+                  :data-types="dataTypes"
+                  :customizations="customizations"
+                  @contextmenu="contextMenu"
+                  @rename-field="$emit('rename-field', $event)"
+               />
+            </template>
          </Draggable>
       </div>
    </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { storeToRefs } from 'pinia';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import Draggable from 'vuedraggable';
 import TableRow from '@/components/WorkspaceTabPropsTableRow';
 import TableContext from '@/components/WorkspaceTabPropsTableContext';
@@ -147,6 +150,21 @@ export default {
       schema: String,
       mode: String
    },
+   emits: ['add-new-index', 'add-to-index', 'rename-field', 'duplicate-field', 'remove-field'],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const { getWorkspace } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace
+      };
+   },
    data () {
       return {
          resultsSize: 1000,
@@ -157,10 +175,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getWorkspaceTab: 'workspaces/getWorkspaceTab',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       workspaceSchema () {
          return this.getWorkspace(this.connUid).breadcrumbs.schema;
       },
@@ -195,13 +209,10 @@ export default {
    mounted () {
       window.addEventListener('resize', this.resizeResults);
    },
-   destroyed () {
+   unmounted () {
       window.removeEventListener('resize', this.resizeResults);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification'
-      }),
       resizeResults () {
          if (this.$refs.resultTable) {
             const el = this.$refs.tableWrapper;

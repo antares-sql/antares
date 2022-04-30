@@ -117,14 +117,14 @@
                   <i class="mdi mdi-timer-sand mdi-rotate-180 pr-1" /> <b>{{ results[0].duration / 1000 }}s</b>
                </div>
                <div v-if="results.length && results[0].rows">
-                  {{ $t('word.results') }}: <b>{{ results[0].rows.length | localeString }}</b>
+                  {{ $t('word.results') }}: <b>{{ localeString(results[0].rows.length) }}</b>
                </div>
                <div v-if="hasApproximately || (page > 1 && approximateCount)">
                   {{ $t('word.total') }}: <b
                      :title="!customizations.tableRealCount ? $t('word.approximately') : ''"
                   >
                      <span v-if="!customizations.tableRealCount">≈</span>
-                     {{ approximateCount | localeString }}
+                     {{ localeString(approximateCount) }}
                   </b>
                </div>
                <div class="d-flex" :title="$t('word.schema')">
@@ -176,13 +176,16 @@
 </template>
 
 <script>
+import { storeToRefs } from 'pinia';
 import Tables from '@/ipc-api/Tables';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useSettingsStore } from '@/stores/settings';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseLoader from '@/components/BaseLoader';
 import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable';
 import WorkspaceTabTableFilters from '@/components/WorkspaceTabTableFilters';
 import ModalNewTableRow from '@/components/ModalNewTableRow';
 import ModalFakerRows from '@/components/ModalFakerRows';
-import { mapGetters, mapActions } from 'vuex';
 import tableTabs from '@/mixins/tableTabs';
 
 export default {
@@ -194,12 +197,6 @@ export default {
       ModalNewTableRow,
       ModalFakerRows
    },
-   filters: {
-      localeString (val) {
-         if (val !== null)
-            return val.toLocaleString();
-      }
-   },
    mixins: [tableTabs],
    props: {
       connection: Object,
@@ -207,6 +204,24 @@ export default {
       table: String,
       schema: String,
       elementType: String
+   },
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const settingsStore = useSettingsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { dataTabLimit: limit } = storeToRefs(settingsStore);
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const { changeBreadcrumbs, getWorkspace } = workspacesStore;
+
+      return {
+         addNotification,
+         limit,
+         selectedWorkspace,
+         changeBreadcrumbs,
+         getWorkspace
+      };
    },
    data () {
       return {
@@ -228,11 +243,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getWorkspace: 'workspaces/getWorkspace',
-         selectedWorkspace: 'workspaces/getSelected',
-         limit: 'settings/getDataTabLimit'
-      }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
@@ -310,15 +320,11 @@ export default {
       this.getTableData();
       window.addEventListener('keydown', this.onKey);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
       clearInterval(this.refreshInterval);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
-      }),
       async getTableData () {
          if (!this.table || !this.isSelected) return;
          this.isQuering = true;
@@ -335,8 +341,8 @@ export default {
             table: this.table,
             limit: this.limit,
             page: this.page,
-            sortParams: this.sortParams,
-            where: this.filters || []
+            sortParams: { ...this.sortParams },
+            where: [...this.filters] || []
          };
 
          try { // Table data
@@ -458,6 +464,10 @@ export default {
       updateFilters (clausoles) {
          this.filters = clausoles;
          this.getTableData();
+      },
+      localeString (val) {
+         if (val !== null)
+            return val.toLocaleString();
       }
    }
 };

@@ -165,7 +165,9 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { storeToRefs } from 'pinia';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import { uidGen } from 'common/libs/uidGen';
 import Tables from '@/ipc-api/Tables';
 import BaseLoader from '@/components/BaseLoader';
@@ -184,10 +186,41 @@ export default {
       WorkspaceTabNewTableEmptyState
    },
    props: {
+      tabUid: String,
       connection: Object,
       tab: Object,
       isSelected: Boolean,
       schema: String
+   },
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         getWorkspace,
+         getDatabaseVariable,
+         refreshStructure,
+         setUnsavedChanges,
+         newTab,
+         renameTabs,
+         removeTab,
+         changeBreadcrumbs
+      } = workspacesStore;
+
+      return {
+         addNotification,
+         getWorkspace,
+         getDatabaseVariable,
+         refreshStructure,
+         setUnsavedChanges,
+         newTab,
+         renameTabs,
+         removeTab,
+         changeBreadcrumbs,
+         selectedWorkspace
+      };
    },
    data () {
       return {
@@ -209,16 +242,8 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getWorkspace: 'workspaces/getWorkspace',
-         selectedWorkspace: 'workspaces/getSelected',
-         getDatabaseVariable: 'workspaces/getDatabaseVariable'
-      }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
-      },
-      tabUid () {
-         return this.$vnode.key;
       },
       defaultCollation () {
          if (this.workspace.customizations.collations)
@@ -276,19 +301,10 @@ export default {
          this.$refs.firstInput.focus();
       }, 100);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         refreshStructure: 'workspaces/refreshStructure',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges',
-         newTab: 'workspaces/newTab',
-         renameTabs: 'workspaces/renameTabs',
-         removeTab: 'workspaces/removeTab',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
-      }),
       async saveChanges () {
          if (this.isSaving || !this.isValid) return;
          this.isSaving = true;

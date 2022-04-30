@@ -343,7 +343,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { storeToRefs } from 'pinia';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
@@ -357,6 +359,21 @@ export default {
       indexes: Array,
       foreigns: Array,
       customizations: Object
+   },
+   emits: ['contextmenu', 'rename-field'],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const { getWorkspace } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace
+      };
    },
    data () {
       return {
@@ -375,10 +392,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       localLength () {
          const localLength = this.localRow.numLength || this.localRow.charLength || this.localRow.datePrecision || this.localRow.numPrecision || 0;
          return localLength === true ? null : localLength;

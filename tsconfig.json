@@ -1,5 +1,9 @@
 {
-  "include": ["./src/main/**/*", "src/common/interfaces/antares.ts"],
+  "include": [
+    "./tests/**/*", 
+    "./src/main/**/*", 
+    "./src/common/interfaces/antares.ts"
+  ],
   "compilerOptions": {
     "baseUrl": "./",
     "target": "es2021",

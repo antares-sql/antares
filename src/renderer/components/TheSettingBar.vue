@@ -10,22 +10,23 @@
          <ul class="settingbar-elements">
             <Draggable
                v-model="connections"
+               :item-key="'uid'"
                @start="isDragging = true"
                @end="dragStop"
             >
-               <li
-                  v-for="connection in connections"
-                  :key="connection.uid"
-                  draggable="true"
-                  class="settingbar-element btn btn-link ex-tooltip"
-                  :class="{'selected': connection.uid === selectedWorkspace}"
-                  @click.stop="selectWorkspace(connection.uid)"
-                  @contextmenu.prevent="contextMenu($event, connection)"
-                  @mouseover.self="tooltipPosition"
-               >
-                  <i class="settingbar-element-icon dbi" :class="`dbi-${connection.client} ${getStatusBadge(connection.uid)}`" />
-                  <span v-if="!isDragging" class="ex-tooltip-content">{{ getConnectionName(connection.uid) }}</span>
-               </li>
+               <template #item="{element}">
+                  <li
+                     :draggable="true"
+                     class="settingbar-element btn btn-link ex-tooltip"
+                     :class="{'selected': element.uid === selectedWorkspace}"
+                     @click.stop="selectWorkspace(element.uid)"
+                     @contextmenu.prevent="contextMenu($event, element)"
+                     @mouseover.self="tooltipPosition"
+                  >
+                     <i class="settingbar-element-icon dbi" :class="`dbi-${element.client} ${getStatusBadge(element.uid)}`" />
+                     <span v-if="!isDragging" class="ex-tooltip-content">{{ getConnectionName(element.uid) }}</span>
+                  </li>
+               </template>
             </Draggable>
             <li
                class="settingbar-element btn btn-link ex-tooltip"
@@ -55,7 +56,10 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { storeToRefs } from 'pinia';
+import { useApplicationStore } from '@/stores/application';
+import { useConnectionsStore } from '@/stores/connections';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import Draggable from 'vuedraggable';
 import SettingBarContext from '@/components/SettingBarContext';
 
@@ -64,6 +68,32 @@ export default {
    components: {
       Draggable,
       SettingBarContext
+   },
+   setup () {
+      const applicationStore = useApplicationStore();
+      const connectionsStore = useConnectionsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { updateStatus } = storeToRefs(applicationStore);
+      const { connections: getConnections } = storeToRefs(connectionsStore);
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const { showSettingModal, showScratchpad } = applicationStore;
+      const { getConnectionName, updateConnections } = connectionsStore;
+      const { getWorkspace, selectWorkspace } = workspacesStore;
+
+      return {
+         applicationStore,
+         updateStatus,
+         showSettingModal,
+         showScratchpad,
+         getConnections,
+         getConnectionName,
+         updateConnections,
+         selectedWorkspace,
+         getWorkspace,
+         selectWorkspace
+      };
    },
    data () {
       return {
@@ -76,13 +106,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getConnections: 'connections/getConnections',
-         getConnectionName: 'connections/getConnectionName',
-         getWorkspace: 'workspaces/getWorkspace',
-         selectedWorkspace: 'workspaces/getSelected',
-         updateStatus: 'application/getUpdateStatus'
-      }),
       connections: {
          get () {
             return this.getConnections;
@@ -96,12 +119,6 @@ export default {
       }
    },
    methods: {
-      ...mapActions({
-         updateConnections: 'connections/updateConnections',
-         showSettingModal: 'application/showSettingModal',
-         showScratchpad: 'application/showScratchpad',
-         selectWorkspace: 'workspaces/selectWorkspace'
-      }),
       contextMenu (event, connection) {
          this.contextEvent = event;
          this.contextConnection = connection;

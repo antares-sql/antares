@@ -355,6 +355,7 @@
          </div>
          <div class="panel-footer">
             <button
+               id="connection-test"
                class="btn btn-gray mr-2 d-flex"
                :class="{'loading': isTesting}"
                :disabled="isBusy"
@@ -364,6 +365,7 @@
                {{ $t('message.testConnection') }}
             </button>
             <button
+               id="connection-save"
                class="btn btn-primary mr-2 d-flex"
                :disabled="isBusy || !hasChanges"
                @click="saveConnection"
@@ -372,6 +374,7 @@
                {{ $t('word.save') }}
             </button>
             <button
+               id="connection-connect"
                class="btn btn-success d-flex"
                :class="{'loading': isConnecting}"
                :disabled="isBusy"
@@ -391,8 +394,10 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
 import customizations from 'common/customizations';
+import { useConnectionsStore } from '@/stores/connections';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import Connection from '@/ipc-api/Connection';
 import ModalAskCredentials from '@/components/ModalAskCredentials';
 import BaseUploadInput from '@/components/BaseUploadInput';
@@ -405,6 +410,17 @@ export default {
    },
    props: {
       connection: Object
+   },
+   setup () {
+      const { editConnection } = useConnectionsStore();
+      const { addNotification } = useNotificationsStore();
+      const { connectWorkspace } = useWorkspacesStore();
+
+      return {
+         editConnection,
+         addNotification,
+         connectWorkspace
+      };
    },
    data () {
       return {
@@ -441,11 +457,6 @@ export default {
       this.localConnection = JSON.parse(JSON.stringify(this.connection));
    },
    methods: {
-      ...mapActions({
-         editConnection: 'connections/editConnection',
-         connectWorkspace: 'workspaces/connectWorkspace',
-         addNotification: 'notifications/addNotification'
-      }),
       async startConnection () {
          await this.saveConnection();
          this.isConnecting = true;

@@ -181,10 +181,14 @@ export default {
       ConfirmModal
    },
    props: {
-      localParameters: Array,
+      localParameters: {
+         type: Array,
+         default: () => []
+      },
       routine: String,
       workspace: Object
    },
+   emits: ['parameters-update', 'hide'],
    data () {
       return {
          parametersProxy: [],
@@ -215,7 +219,7 @@ export default {
       this.getModalInnerHeight();
       window.addEventListener('resize', this.getModalInnerHeight);
    },
-   destroyed () {
+   unmounted () {
       window.removeEventListener('resize', this.getModalInnerHeight);
    },
    methods: {

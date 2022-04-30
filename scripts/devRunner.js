@@ -1,5 +1,6 @@
 process.env.NODE_ENV = 'development';
 // process.env.ELECTRON_ENABLE_LOGGING = true
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = false;
 
 const chalk = require('chalk');
 const electron = require('electron');
@@ -19,7 +20,7 @@ let manualRestart = null;
 const remoteDebugging = process.argv.includes('--remote-debug');
 
 if (remoteDebugging) {
-   // disable dvtools open in electron
+   // disable devtools open in electron
    process.env.RENDERER_REMOTE_DEBUGGING = true;
 }
 

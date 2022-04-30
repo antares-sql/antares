@@ -25,26 +25,35 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { useSettingsStore } from '@/stores/settings';
+import { useWorkspacesStore } from '@/stores/workspaces';
+import { storeToRefs } from 'pinia';
 export default {
    name: 'WorkspaceEmptyState',
+   emits: ['new-tab'],
+   setup () {
+      const settingsStore = useSettingsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { applicationTheme } = storeToRefs(settingsStore);
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const { getWorkspace, changeBreadcrumbs } = workspacesStore;
+
+      return {
+         applicationTheme,
+         selectedWorkspace,
+         getWorkspace,
+         changeBreadcrumbs
+      };
+   },
    computed: {
-      ...mapGetters({
-         applicationTheme: 'settings/getApplicationTheme',
-         getWorkspace: 'workspaces/getWorkspace',
-         selectedWorkspace: 'workspaces/getSelected'
-      }),
       workspace () {
          return this.getWorkspace(this.selectedWorkspace);
       }
    },
    created () {
       this.changeBreadcrumbs({ schema: this.workspace.breadcrumbs.schema });
-   },
-   methods: {
-      ...mapActions({
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
-      })
    }
 };
 </script>

@@ -11,13 +11,15 @@
 
 <script>
 import * as ace from 'ace-builds';
+import { storeToRefs } from 'pinia';
 import 'ace-builds/webpack-resolver';
-import { mapGetters } from 'vuex';
+import { useSettingsStore } from '@/stores/settings';
+import { uidGen } from 'common/libs/uidGen';
 
 export default {
    name: 'BaseTextEditor',
    props: {
-      value: String,
+      modelValue: String,
       mode: { type: String, default: 'text' },
       editorClass: { type: String, default: '' },
       autoFocus: { type: Boolean, default: false },
@@ -25,19 +27,29 @@ export default {
       showLineNumbers: { type: Boolean, default: true },
       height: { type: Number, default: 200 }
    },
+   emits: ['update:modelValue'],
+   setup () {
+      const settingsStore = useSettingsStore();
+
+      const {
+         editorTheme,
+         editorFontSize,
+         autoComplete,
+         lineWrap
+      } = storeToRefs(settingsStore);
+
+      return {
+         editorTheme,
+         editorFontSize,
+         autoComplete,
+         lineWrap
+      };
+   },
    data () {
       return {
          editor: null,
-         id: null
+         id: uidGen()
       };
-   },
-   computed: {
-      ...mapGetters({
-         editorTheme: 'settings/getEditorTheme',
-         editorFontSize: 'settings/getEditorFontSize',
-         autoComplete: 'settings/getAutoComplete',
-         lineWrap: 'settings/getLineWrap'
-      })
    },
    watch: {
       mode () {
@@ -76,14 +88,11 @@ export default {
          }
       }
    },
-   created () {
-      this.id = this._uid;
-   },
    mounted () {
       this.editor = ace.edit(`editor-${this.id}`, {
          mode: `ace/mode/${this.mode}`,
          theme: `ace/theme/${this.editorTheme}`,
-         value: this.value || '',
+         value: this.modelValue || '',
          fontSize: '14px',
          printMargin: false,
          readOnly: this.readOnly,
@@ -100,7 +109,7 @@ export default {
 
       this.editor.session.on('change', () => {
          const content = this.editor.getValue();
-         this.$emit('update:value', content);
+         this.$emit('update:modelValue', content);
       });
 
       if (this.autoFocus) {

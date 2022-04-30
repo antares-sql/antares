@@ -36,7 +36,7 @@
                            class="input-group-addon field-type cut-text"
                            :class="typeClass(parameter.type)"
                         >
-                           {{ parameter.type }} {{ parameter.length | wrapNumber }}
+                           {{ parameter.type }} {{ wrapNumber(parameter.length) }}
                         </span>
                      </div>
                   </div>
@@ -56,16 +56,11 @@ export default {
    components: {
       ConfirmModal
    },
-   filters: {
-      wrapNumber (num) {
-         if (!num) return '';
-         return `(${num})`;
-      }
-   },
    props: {
       localRoutine: Object,
       client: String
    },
+   emits: ['confirm', 'close'],
    data () {
       return {
          values: {}
@@ -83,7 +78,7 @@ export default {
          this.$refs.firstInput[0].focus();
       }, 20);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
@@ -122,6 +117,10 @@ export default {
          e.stopPropagation();
          if (e.key === 'Escape')
             this.closeModal();
+      },
+      wrapNumber (num) {
+         if (!num) return '';
+         return `(${num})`;
       }
    }
 };

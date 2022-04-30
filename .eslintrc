@@ -7,7 +7,7 @@
     "extends": [
         "standard",
         "plugin:@typescript-eslint/recommended",
-        "plugin:vue/recommended"
+        "plugin:vue/vue3-recommended"
     ],
     "parser": "vue-eslint-parser",
     "parserOptions": {
@@ -17,6 +17,7 @@
         "requireConfigFile": false
     },
     "plugins": [
+        "vue",
         "@typescript-eslint"
     ],
     "rules": {

@@ -243,8 +243,10 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { useSettingsStore } from '@/stores/settings';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import { formatBytes } from 'common/libs/formatBytes';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceExploreBarSchema',
@@ -252,18 +254,45 @@ export default {
       database: Object,
       connection: Object
    },
+   emits: [
+      'show-schema-context',
+      'show-table-context',
+      'show-misc-context',
+      'show-misc-folder-context'
+   ],
+   setup () {
+      const settingsStore = useSettingsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { applicationTheme } = storeToRefs(settingsStore);
+
+      const {
+         getLoadedSchemas,
+         getWorkspace,
+         getSearchTerm,
+         changeBreadcrumbs,
+         addLoadedSchema,
+         newTab,
+         refreshSchema
+      } = workspacesStore;
+
+      return {
+         applicationTheme,
+         getLoadedSchemas,
+         getWorkspace,
+         getSearchTerm,
+         changeBreadcrumbs,
+         addLoadedSchema,
+         newTab,
+         refreshSchema
+      };
+   },
    data () {
       return {
          isLoading: false
       };
    },
    computed: {
-      ...mapGetters({
-         getLoadedSchemas: 'workspaces/getLoadedSchemas',
-         getWorkspace: 'workspaces/getWorkspace',
-         getSearchTerm: 'workspaces/getSearchTerm',
-         applicationTheme: 'settings/getApplicationTheme'
-      }),
       searchTerm () {
          return this.getSearchTerm(this.connection.uid);
       },
@@ -331,12 +360,6 @@ export default {
       }
    },
    methods: {
-      ...mapActions({
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
-         addLoadedSchema: 'workspaces/addLoadedSchema',
-         newTab: 'workspaces/newTab',
-         refreshSchema: 'workspaces/refreshSchema'
-      }),
       formatBytes,
       async selectSchema (schema) {
          if (!this.loadedSchemas.has(schema) && !this.isLoading) {

@@ -217,33 +217,33 @@
         }
       }
     }
+  }
 
-    .workspace-query-results {
-      .table {
-        .th {
-          background: $body-bg;
-          border-color: lighten($bg-color-light-gray, 2%);
+  .workspace-query-results {
+    .table {
+      .th {
+        background: $body-bg;
+        border-color: lighten($bg-color-light-gray, 2%);
+      }
+
+      .tr {
+        background-color: lighten($bg-color-light-gray, 2%);
+
+        .td:first-child {
+          border-left: 2px solid $body-bg;
         }
 
-        .tr {
-          background-color: lighten($bg-color-light-gray, 2%);
+        .td {
+          border-color: $body-bg;
 
-          .td:first-child {
-            border-left: 2px solid $body-bg;
+          &:focus {
+            box-shadow: inset 0 0 0 2px lighten($body-font-color, 10%);
+            background-color: $body-font-color-dark;
           }
 
-          .td {
-            border-color: $body-bg;
-
-            &:focus {
-              box-shadow: inset 0 0 0 2px lighten($body-font-color, 10%);
-              background-color: $body-font-color-dark;
-            }
-
-            .editable-field {
-              box-shadow: inset 0 0 0 2px lighten($body-font-color, 10%);
-              background-color: $body-font-color-dark;
-            }
+          .editable-field {
+            box-shadow: inset 0 0 0 2px lighten($body-font-color, 10%);
+            background-color: $body-font-color-dark;
           }
         }
       }

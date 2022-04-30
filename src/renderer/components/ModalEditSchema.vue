@@ -1,78 +1,98 @@
 <template>
-   <div class="modal active">
-      <a class="modal-overlay" @click.stop="closeModal" />
-      <div class="modal-container p-0">
-         <div class="modal-header pl-2">
-            <div class="modal-title h6">
-               <div class="d-flex">
-                  <i class="mdi mdi-24px mdi-database-edit mr-1" />
-                  <span class="cut-text">{{ $t('message.editSchema') }}</span>
+   <Teleport to="#window-content">
+      <div class="modal active">
+         <a class="modal-overlay" @click.stop="closeModal" />
+         <div class="modal-container p-0">
+            <div class="modal-header pl-2">
+               <div class="modal-title h6">
+                  <div class="d-flex">
+                     <i class="mdi mdi-24px mdi-database-edit mr-1" />
+                     <span class="cut-text">{{ $t('message.editSchema') }}</span>
+                  </div>
+               </div>
+               <a class="btn btn-clear c-hand" @click.stop="closeModal" />
+            </div>
+            <div class="modal-body pb-0">
+               <div class="content">
+                  <form class="form-horizontal">
+                     <div class="form-group">
+                        <div class="col-3">
+                           <label class="form-label">{{ $t('word.name') }}</label>
+                        </div>
+                        <div class="col-9">
+                           <input
+                              v-model="database.name"
+                              class="form-input"
+                              type="text"
+                              required
+                              :placeholder="$t('message.schemaName')"
+                              readonly
+                           >
+                        </div>
+                     </div>
+                     <div class="form-group">
+                        <div class="col-3">
+                           <label class="form-label">{{ $t('word.collation') }}</label>
+                        </div>
+                        <div class="col-9">
+                           <select
+                              ref="firstInput"
+                              v-model="database.collation"
+                              class="form-select"
+                           >
+                              <option
+                                 v-for="collation in collations"
+                                 :key="collation.id"
+                                 :value="collation.collation"
+                              >
+                                 {{ collation.collation }}
+                              </option>
+                           </select>
+                           <small>{{ $t('message.serverDefault') }}: {{ defaultCollation }}</small>
+                        </div>
+                     </div>
+                  </form>
                </div>
             </div>
-            <a class="btn btn-clear c-hand" @click.stop="closeModal" />
-         </div>
-         <div class="modal-body pb-0">
-            <div class="content">
-               <form class="form-horizontal">
-                  <div class="form-group">
-                     <div class="col-3">
-                        <label class="form-label">{{ $t('word.name') }}</label>
-                     </div>
-                     <div class="col-9">
-                        <input
-                           v-model="database.name"
-                           class="form-input"
-                           type="text"
-                           required
-                           :placeholder="$t('message.schemaName')"
-                           readonly
-                        >
-                     </div>
-                  </div>
-                  <div class="form-group">
-                     <div class="col-3">
-                        <label class="form-label">{{ $t('word.collation') }}</label>
-                     </div>
-                     <div class="col-9">
-                        <select
-                           ref="firstInput"
-                           v-model="database.collation"
-                           class="form-select"
-                        >
-                           <option
-                              v-for="collation in collations"
-                              :key="collation.id"
-                              :value="collation.collation"
-                           >
-                              {{ collation.collation }}
-                           </option>
-                        </select>
-                        <small>{{ $t('message.serverDefault') }}: {{ defaultCollation }}</small>
-                     </div>
-                  </div>
-               </form>
+            <div class="modal-footer">
+               <button class="btn btn-primary mr-2" @click.stop="updateSchema">
+                  {{ $t('word.update') }}
+               </button>
+               <button class="btn btn-link" @click.stop="closeModal">
+                  {{ $t('word.close') }}
+               </button>
             </div>
          </div>
-         <div class="modal-footer">
-            <button class="btn btn-primary mr-2" @click.stop="updateSchema">
-               {{ $t('word.update') }}
-            </button>
-            <button class="btn btn-link" @click.stop="closeModal">
-               {{ $t('word.close') }}
-            </button>
-         </div>
       </div>
-   </div>
+   </Teleport>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { storeToRefs } from 'pinia';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import Schema from '@/ipc-api/Schema';
 
 export default {
    name: 'ModalEditSchema',
    props: {
       selectedSchema: String
+   },
+   emits: ['close'],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const { getWorkspace, getDatabaseVariable } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace,
+         getDatabaseVariable
+      };
    },
    data () {
       return {
@@ -84,11 +104,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace',
-         getDatabaseVariable: 'workspaces/getDatabaseVariable'
-      }),
       collations () {
          return this.getWorkspace(this.selectedWorkspace).collations;
       },
@@ -124,13 +139,10 @@ export default {
          this.$refs.firstInput.focus();
       }, 20);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification'
-      }),
       async updateSchema () {
          if (this.database.collation !== this.database.prevCollation) {
             try {

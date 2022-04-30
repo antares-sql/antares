@@ -4,7 +4,7 @@
       @mouseenter="clearTimeouts"
       @mouseleave="rearmTimeouts"
    >
-      <transition-group name="slide-fade">
+      <TransitionGroup tag="div" name="slide-fade">
          <BaseNotification
             v-for="notification in latestNotifications"
             :key="notification.uid"
@@ -12,18 +12,35 @@
             :status="notification.status"
             @close="removeNotification(notification.uid)"
          />
-      </transition-group>
+      </TransitionGroup>
    </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useSettingsStore } from '@/stores/settings';
 import BaseNotification from '@/components/BaseNotification';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'TheNotificationsBoard',
    components: {
       BaseNotification
+   },
+   setup () {
+      const notificationsStore = useNotificationsStore();
+      const settingsStore = useSettingsStore();
+
+      const { removeNotification } = notificationsStore;
+
+      const { notifications } = storeToRefs(notificationsStore);
+      const { notificationsTimeout } = storeToRefs(settingsStore);
+
+      return {
+         removeNotification,
+         notifications,
+         notificationsTimeout
+      };
    },
    data () {
       return {
@@ -31,10 +48,6 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         notifications: 'notifications/getNotifications',
-         notificationsTimeout: 'settings/getNotificationsTimeout'
-      }),
       latestNotifications () {
          return this.notifications.slice(0, 10);
       }
@@ -51,9 +64,6 @@ export default {
       }
    },
    methods: {
-      ...mapActions({
-         removeNotification: 'notifications/removeNotification'
-      }),
       clearTimeouts () {
          for (const uid in this.timeouts) {
             clearTimeout(this.timeouts[uid]);

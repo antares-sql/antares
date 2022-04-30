@@ -12,13 +12,16 @@
 import * as ace from 'ace-builds';
 import 'ace-builds/webpack-resolver';
 import '../libs/ext-language_tools';
-import { mapGetters, mapActions } from 'vuex';
+import { storeToRefs } from 'pinia';
+import { uidGen } from 'common/libs/uidGen';
+import { useApplicationStore } from '@/stores/application';
+import { useSettingsStore } from '@/stores/settings';
 import Tables from '@/ipc-api/Tables';
 
 export default {
    name: 'QueryEditor',
    props: {
-      value: String,
+      modelValue: String,
       workspace: Object,
       isSelected: Boolean,
       schema: { type: String, default: '' },
@@ -26,23 +29,42 @@ export default {
       readOnly: { type: Boolean, default: false },
       height: { type: Number, default: 200 }
    },
+   emits: ['update:modelValue'],
+   setup () {
+      const editor = null;
+      const applicationStore = useApplicationStore();
+      const settingsStore = useSettingsStore();
+
+      const { setBaseCompleters } = applicationStore;
+
+      const { baseCompleter } = storeToRefs(applicationStore);
+      const {
+         editorTheme,
+         editorFontSize,
+         autoComplete,
+         lineWrap
+      } = storeToRefs(settingsStore);
+
+      return {
+         editor,
+         baseCompleter,
+         setBaseCompleters,
+         editorTheme,
+         editorFontSize,
+         autoComplete,
+         lineWrap
+      };
+   },
    data () {
       return {
-         editor: null,
+         cursorPosition: 0,
          fields: [],
          customCompleter: [],
-         id: null,
+         id: uidGen(),
          lastSchema: null
       };
    },
    computed: {
-      ...mapGetters({
-         editorTheme: 'settings/getEditorTheme',
-         editorFontSize: 'settings/getEditorFontSize',
-         autoComplete: 'settings/getAutoComplete',
-         lineWrap: 'settings/getLineWrap',
-         baseCompleter: 'application/getBaseCompleter'
-      }),
       tables () {
          return this.workspace
             ? this.workspace.structure.filter(schema => schema.name === this.schema)
@@ -127,11 +149,8 @@ export default {
                return 'sql';
          }
       },
-      cursorPosition () {
-         return this.editor.session.doc.positionToIndex(this.editor.getCursorPosition());
-      },
       lastWord () {
-         const charsBefore = this.value.slice(0, this.cursorPosition);
+         const charsBefore = this.modelValue.slice(0, this.cursorPosition);
          const words = charsBefore.replaceAll('\n', ' ').split(' ').filter(Boolean);
          return words.pop();
       },
@@ -155,6 +174,9 @@ export default {
       }
    },
    watch: {
+      modelValue () {
+         this.cursorPosition = this.editor.session.doc.positionToIndex(this.editor.getCursorPosition());
+      },
       editorTheme () {
          if (this.editor)
             this.editor.setTheme(`ace/theme/${this.editorTheme}`);
@@ -205,14 +227,13 @@ export default {
       }
    },
    created () {
-      this.id = this._uid;
       this.lastSchema = this.schema;
    },
    mounted () {
       this.editor = ace.edit(`editor-${this.id}`, {
          mode: `ace/mode/${this.mode}`,
          theme: `ace/theme/${this.editorTheme}`,
-         value: this.value,
+         value: this.modelValue,
          fontSize: '14px',
          printMargin: false,
          readOnly: this.readOnly
@@ -263,7 +284,7 @@ export default {
 
       this.editor.session.on('change', () => {
          const content = this.editor.getValue();
-         this.$emit('update:value', content);
+         this.$emit('update:modelValue', content);
       });
 
       this.editor.on('guttermousedown', e => {
@@ -294,9 +315,6 @@ export default {
       }, 20);
    },
    methods: {
-      ...mapActions({
-         setBaseCompleters: 'application/setBaseCompleter'
-      }),
       setCustomCompleter () {
          this.editor.completers.push({
             getCompletions: (editor, session, pos, prefix, callback) => {

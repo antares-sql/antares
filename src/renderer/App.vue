@@ -25,37 +25,56 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { defineAsyncComponent } from 'vue';
+import { storeToRefs } from 'pinia';
 import { ipcRenderer } from 'electron';
 import { Menu, getCurrentWindow } from '@electron/remote';
+import { useApplicationStore } from '@/stores/application';
+import { useConnectionsStore } from '@/stores/connections';
+import { useSettingsStore } from '@/stores/settings';
+import { useWorkspacesStore } from '@/stores/workspaces';
+import TheSettingBar from '@/components/TheSettingBar';
 
 export default {
    name: 'App',
    components: {
-      TheTitleBar: () => import(/* webpackChunkName: "TheTitleBar" */'@/components/TheTitleBar'),
-      TheSettingBar: () => import(/* webpackChunkName: "TheSettingBar" */'@/components/TheSettingBar'),
-      TheFooter: () => import(/* webpackChunkName: "TheFooter" */'@/components/TheFooter'),
-      TheNotificationsBoard: () => import(/* webpackChunkName: "TheNotificationsBoard" */'@/components/TheNotificationsBoard'),
-      Workspace: () => import(/* webpackChunkName: "Workspace" */'@/components/Workspace'),
-      WorkspaceAddConnectionPanel: () => import(/* webpackChunkName: "WorkspaceAddConnectionPanel" */'@/components/WorkspaceAddConnectionPanel'),
-      ModalSettings: () => import(/* webpackChunkName: "ModalSettings" */'@/components/ModalSettings'),
-      TheScratchpad: () => import(/* webpackChunkName: "TheScratchpad" */'@/components/TheScratchpad'),
-      BaseTextEditor: () => import(/* webpackChunkName: "BaseTextEditor" */'@/components/BaseTextEditor')
+      TheTitleBar: defineAsyncComponent(() => import(/* webpackChunkName: "TheTitleBar" */'@/components/TheTitleBar')),
+      TheSettingBar,
+      TheFooter: defineAsyncComponent(() => import(/* webpackChunkName: "TheFooter" */'@/components/TheFooter')),
+      TheNotificationsBoard: defineAsyncComponent(() => import(/* webpackChunkName: "TheNotificationsBoard" */'@/components/TheNotificationsBoard')),
+      Workspace: defineAsyncComponent(() => import(/* webpackChunkName: "Workspace" */'@/components/Workspace')),
+      WorkspaceAddConnectionPanel: defineAsyncComponent(() => import(/* webpackChunkName: "WorkspaceAddConnectionPanel" */'@/components/WorkspaceAddConnectionPanel')),
+      ModalSettings: defineAsyncComponent(() => import(/* webpackChunkName: "ModalSettings" */'@/components/ModalSettings')),
+      TheScratchpad: defineAsyncComponent(() => import(/* webpackChunkName: "TheScratchpad" */'@/components/TheScratchpad')),
+      BaseTextEditor: defineAsyncComponent(() => import(/* webpackChunkName: "BaseTextEditor" */'@/components/BaseTextEditor'))
    },
-   data () {
-      return {};
-   },
-   computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         isLoading: 'application/isLoading',
-         isSettingModal: 'application/isSettingModal',
-         isScratchpad: 'application/isScratchpad',
-         connections: 'connections/getConnections',
-         applicationTheme: 'settings/getApplicationTheme',
-         disableBlur: 'settings/getDisableBlur',
-         isUnsavedDiscardModal: 'workspaces/isUnsavedDiscardModal'
-      })
+   setup () {
+      const applicationStore = useApplicationStore();
+      const connectionsStore = useConnectionsStore();
+      const settingsStore = useSettingsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const {
+         isLoading,
+         isSettingModal,
+         isScratchpad
+      } = storeToRefs(applicationStore);
+      const { connections } = storeToRefs(connectionsStore);
+      const { applicationTheme, disableBlur } = storeToRefs(settingsStore);
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const { checkVersionUpdate } = applicationStore;
+
+      return {
+         isLoading,
+         isSettingModal,
+         isScratchpad,
+         checkVersionUpdate,
+         connections,
+         applicationTheme,
+         disableBlur,
+         selectedWorkspace
+      };
    },
    mounted () {
       ipcRenderer.send('check-for-updates');
@@ -97,12 +116,6 @@ export default {
             node = node.parentNode;
          }
       });
-   },
-   methods: {
-      ...mapActions({
-         showNewConnModal: 'application/showNewConnModal',
-         checkVersionUpdate: 'application/checkVersionUpdate'
-      })
    }
 };
 </script>

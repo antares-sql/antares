@@ -124,7 +124,8 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseContextMenu from '@/components/BaseContextMenu';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import ModalEditSchema from '@/components/ModalEditSchema';
@@ -132,6 +133,7 @@ import ModalExportSchema from '@/components/ModalExportSchema';
 import ModalImportSchema from '@/components/ModalImportSchema';
 import Schema from '@/ipc-api/Schema';
 import Application from '@/ipc-api/Application';
+import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceExploreBarSchemaContext',
@@ -146,6 +148,35 @@ export default {
       contextEvent: MouseEvent,
       selectedSchema: String
    },
+   emits: [
+      'open-create-table-tab',
+      'open-create-view-tab',
+      'open-create-trigger-tab',
+      'open-create-routine-tab',
+      'open-create-function-tab',
+      'open-create-trigger-function-tab',
+      'open-create-scheduler-tab',
+      'close-context',
+      'reload'
+   ],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         getWorkspace,
+         changeBreadcrumbs
+      } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace,
+         changeBreadcrumbs
+      };
+   },
    data () {
       return {
          isDeleteModal: false,
@@ -155,19 +186,11 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       workspace () {
          return this.getWorkspace(this.selectedWorkspace);
       }
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs'
-      }),
       openCreateTableTab () {
          this.$emit('open-create-table-tab');
       },

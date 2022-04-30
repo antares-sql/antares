@@ -111,7 +111,7 @@
          <QueryEditor
             v-show="isSelected"
             ref="queryEditor"
-            :value.sync="localView.sql"
+            v-model="localView.sql"
             :workspace="workspace"
             :schema="schema"
             :height="editorHeight"
@@ -121,7 +121,9 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { storeToRefs } from 'pinia';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
 import Views from '@/ipc-api/Views';
@@ -133,10 +135,39 @@ export default {
       QueryEditor
    },
    props: {
+      tabUid: String,
       connection: Object,
       tab: Object,
       isSelected: Boolean,
       schema: String
+   },
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         getWorkspace,
+         refreshStructure,
+         setUnsavedChanges,
+         changeBreadcrumbs,
+         newTab,
+         removeTab,
+         renameTabs
+      } = workspacesStore;
+
+      return {
+         addNotification,
+         selectedWorkspace,
+         getWorkspace,
+         refreshStructure,
+         setUnsavedChanges,
+         changeBreadcrumbs,
+         newTab,
+         removeTab,
+         renameTabs
+      };
    },
    data () {
       return {
@@ -150,15 +181,8 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace'
-      }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
-      },
-      tabUid () {
-         return this.$vnode.key;
       },
       isChanged () {
          return JSON.stringify(this.originalView) !== JSON.stringify(this.localView);
@@ -209,22 +233,13 @@ export default {
 
       window.addEventListener('resize', this.resizeQueryEditor);
    },
-   destroyed () {
+   unmounted () {
       window.removeEventListener('resize', this.resizeQueryEditor);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         refreshStructure: 'workspaces/refreshStructure',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
-         newTab: 'workspaces/newTab',
-         removeTab: 'workspaces/removeTab',
-         renameTabs: 'workspaces/renameTabs'
-      }),
       async saveChanges () {
          if (this.isSaving) return;
          this.isSaving = true;

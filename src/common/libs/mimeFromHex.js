@@ -43,4 +43,4 @@ export function mimeFromHex (hex) {
                }
          }
    }
-};
+}

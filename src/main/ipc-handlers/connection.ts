@@ -135,9 +135,6 @@ export default (connections: {[key: string]: antares.Client}) => {
 
          await connection.connect();
 
-         // TODO: temporary
-         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-         // @ts-ignore
          const structure = await connection.getStructure(new Set());
 
          connections[conn.uid] = connection;

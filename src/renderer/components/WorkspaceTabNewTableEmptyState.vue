@@ -14,7 +14,8 @@
 
 <script>
 export default {
-   name: 'WorkspaceTabNewTableEmptyState'
+   name: 'WorkspaceTabNewTableEmptyState',
+   emits: ['new-field']
 };
 </script>
 

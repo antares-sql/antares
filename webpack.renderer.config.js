@@ -6,42 +6,43 @@ const { VueLoaderPlugin } = require('vue-loader');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ProgressPlugin = require('progress-webpack-plugin');
 
-const { dependencies, devDependencies, version } = require('./package.json');
+const { version } = require('./package.json');
 const { contributors } = JSON.parse(fs.readFileSync('./.all-contributorsrc', 'utf-8'));
 const parsedContributors = contributors.reduce((acc, c) => {
    acc.push(c.name);
    return acc;
 }, []).join(',');
 
-const externals = Object.keys(dependencies).concat(Object.keys(devDependencies));
-const isDevMode = process.env.NODE_ENV === 'development';
-const whiteListedModules = ['vue'];
+const isDevMode = process.env.NODE_ENV !== 'production';
+const whiteListedModules = ['.bin', 'vue', '@vue', 'pinia', 'vue-i18n'];
+const externals = {};
+
+fs.readdirSync('node_modules')
+   .filter(x => whiteListedModules.indexOf(x) === -1)
+   .forEach(mod => {
+      externals[mod] = `commonjs ${mod}`;
+   });
 
 const config = {
    name: 'renderer',
    mode: process.env.NODE_ENV,
    devtool: isDevMode ? 'eval-source-map' : false,
-   entry: {
-      renderer: path.join(__dirname, './src/renderer/index.js')
-   },
+   entry: path.join(__dirname, './src/renderer/index.js'),
    target: 'electron-renderer',
    output: {
-      libraryTarget: 'commonjs2',
       path: path.resolve(__dirname, 'dist'),
-      filename: '[name].js',
-      publicPath: ''
+      filename: 'renderer.js'
    },
    node: {
       global: true,
       __dirname: isDevMode,
       __filename: isDevMode
    },
-   externals: externals.filter((d) => !whiteListedModules.includes(d)),
+   externals: externals,
    resolve: {
       alias: {
-         vue$: 'vue/dist/vue.common.js',
-         common: path.resolve(__dirname, 'src/common'),
-         '@': path.resolve(__dirname, 'src/renderer')
+         '@': path.resolve(__dirname, 'src/renderer'),
+         common: path.resolve(__dirname, 'src/common')
       },
       extensions: ['', '.js', '.vue', '.json'],
       fallback: {
@@ -69,6 +70,11 @@ const config = {
       }),
       new VueLoaderPlugin(),
       new webpack.DefinePlugin({
+         __VUE_OPTIONS_API__: true,
+         __VUE_PROD_DEVTOOLS__: isDevMode,
+         __VUE_I18N_LEGACY_API__: true,
+         __VUE_I18N_FULL_INSTALL__: true,
+         __INTLIFY_PROD_DEVTOOLS__: isDevMode,
          'process.env': {
             PACKAGE_VERSION: `"${version}"`,
             APP_CONTRIBUTORS: `"${parsedContributors}"`

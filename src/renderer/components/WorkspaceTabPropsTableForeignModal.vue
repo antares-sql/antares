@@ -202,7 +202,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
 import { uidGen } from 'common/libs/uidGen';
 import Tables from '@/ipc-api/Tables';
 import ConfirmModal from '@/components/BaseConfirmModal';
@@ -220,6 +220,12 @@ export default {
       schemaTables: Array,
       fields: Array,
       workspace: Object
+   },
+   emits: ['foreigns-update', 'hide'],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+
+      return { addNotification };
    },
    data () {
       return {
@@ -259,13 +265,10 @@ export default {
       this.getModalInnerHeight();
       window.addEventListener('resize', this.getModalInnerHeight);
    },
-   destroyed () {
+   unmounted () {
       window.removeEventListener('resize', this.getModalInnerHeight);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification'
-      }),
       confirmForeignsChange () {
          this.foreignProxy = this.foreignProxy.filter(foreign =>
             foreign.field &&

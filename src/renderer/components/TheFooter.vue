@@ -27,17 +27,30 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { useApplicationStore } from '@/stores/application';
+import { useWorkspacesStore } from '@/stores/workspaces';
+import { storeToRefs } from 'pinia';
 const { shell } = require('electron');
 
 export default {
    name: 'TheFooter',
+   setup () {
+      const applicationStore = useApplicationStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: workspace } = storeToRefs(workspacesStore);
+
+      const { appVersion, showSettingModal } = applicationStore;
+      const { getWorkspace } = workspacesStore;
+
+      return {
+         appVersion,
+         showSettingModal,
+         workspace,
+         getWorkspace
+      };
+   },
    computed: {
-      ...mapGetters({
-         workspace: 'workspaces/getSelected',
-         getWorkspace: 'workspaces/getWorkspace',
-         appVersion: 'application/appVersion'
-      }),
       version () {
          return this.getWorkspace(this.workspace) ? this.getWorkspace(this.workspace).version : null;
       },
@@ -48,9 +61,6 @@ export default {
       }
    },
    methods: {
-      ...mapActions({
-         showSettingModal: 'application/showSettingModal'
-      }),
       openOutside (link) {
          shell.openExternal(link);
       }

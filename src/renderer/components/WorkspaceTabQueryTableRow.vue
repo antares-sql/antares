@@ -18,11 +18,11 @@
                class="cell-content"
                :class="`${isNull(col)} ${typeClass(fields[cKey].type)}`"
                @dblclick="editON($event, col, cKey)"
-            >{{ col | typeFormat(fields[cKey].type.toLowerCase(), fields[cKey].length) | cutText }}</span>
+            >{{ cutText(typeFormat(col, fields[cKey].type.toLowerCase(), fields[cKey].length)) }}</span>
             <ForeignKeySelect
                v-else-if="isForeignKey(cKey)"
+               v-model="editingContent"
                class="editable-field"
-               :value.sync="editingContent"
                :key-usage="getKeyUsage(cKey)"
                size="small"
                @blur="editOFF"
@@ -85,7 +85,7 @@
             <div class="mb-2">
                <div>
                   <TextEditor
-                     :value.sync="editingContent"
+                     v-model="editingContent"
                      editor-class="textarea-editor"
                      :mode="editorMode"
                   />
@@ -152,7 +152,7 @@
          </template>
          <template #body>
             <div class="mb-2">
-               <transition name="jump-down">
+               <Transition name="jump-down">
                   <div v-if="contentInfo.size">
                      <img
                         v-if="isImage"
@@ -173,10 +173,10 @@
                         </button>
                      </div>
                   </div>
-               </transition>
+               </Transition>
                <div class="editor-field-info">
                   <div>
-                     <b>{{ $t('word.size') }}</b>: {{ editingContent.length | formatBytes }}<br>
+                     <b>{{ $t('word.size') }}</b>: {{ formatBytes(editingContent.length) }}<br>
                      <b>{{ $t('word.mimeType') }}</b>: {{ contentInfo.mime }}
                   </div>
                   <div><b>{{ $t('word.type') }}</b>: {{ editingType.toUpperCase() }}</div>
@@ -219,7 +219,6 @@ import {
    SPATIAL,
    IS_MULTI_SPATIAL
 } from 'common/fieldTypes';
-import { VueMaskDirective } from 'v-mask';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import TextEditor from '@/components/BaseTextEditor';
 import BaseMap from '@/components/BaseMap';
@@ -233,61 +232,6 @@ export default {
       ForeignKeySelect,
       BaseMap
    },
-   directives: {
-      mask: VueMaskDirective
-   },
-   filters: {
-      formatBytes,
-      cutText (val) {
-         if (typeof val !== 'string') return val;
-         return val.length > 128 ? `${val.substring(0, 128)}[...]` : val;
-      },
-      typeFormat (val, type, precision) {
-         if (!val) return val;
-
-         type = type.toUpperCase();
-
-         if (DATE.includes(type))
-            return moment(val).isValid() ? moment(val).format('YYYY-MM-DD') : val;
-
-         if (DATETIME.includes(type)) {
-            if (typeof val === 'string')
-               return val;
-
-            let datePrecision = '';
-            for (let i = 0; i < precision; i++)
-               datePrecision += i === 0 ? '.S' : 'S';
-
-            return moment(val).isValid() ? moment(val).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`) : val;
-         }
-
-         if (BLOB.includes(type)) {
-            const buff = Buffer.from(val);
-            if (!buff.length) return '';
-
-            const hex = buff.toString('hex').substring(0, 8).toUpperCase();
-            return `${mimeFromHex(hex).mime} (${formatBytes(buff.length)})`;
-         }
-
-         if (BIT.includes(type)) {
-            if (typeof val === 'number') val = [val];
-            const hex = Buffer.from(val).toString('hex');
-            const bitString = hexToBinary(hex);
-            return parseInt(bitString).toString().padStart(precision, '0');
-         }
-
-         if (ARRAY.includes(type)) {
-            if (Array.isArray(val))
-               return JSON.stringify(val).replaceAll('[', '{').replaceAll(']', '}');
-            return val;
-         }
-
-         if (SPATIAL.includes(type))
-            return val;
-
-         return typeof val === 'object' ? JSON.stringify(val) : val;
-      }
-   },
    props: {
       row: Object,
       fields: Object,
@@ -295,6 +239,7 @@ export default {
       itemHeight: Number,
       elementType: { type: String, default: 'table' }
    },
+   emits: ['update-field', 'select-row', 'contextmenu'],
    data () {
       return {
          isInlineEditor: {},
@@ -449,15 +394,15 @@ export default {
 
          window.addEventListener('keydown', this.onKey);
 
-         const type = this.fields[field].type.toUpperCase(); ;
-         this.originalContent = this.$options.filters.typeFormat(content, type, this.fields[field].length);
+         const type = this.fields[field].type.toUpperCase();
+         this.originalContent = this.typeFormat(content, type, this.fields[field].length);
          this.editingType = type;
          this.editingField = field;
          this.editingLength = this.fields[field].length;
 
          if ([...LONG_TEXT, ...ARRAY, ...TEXT_SEARCH].includes(type)) {
             this.isTextareaEditor = true;
-            this.editingContent = this.$options.filters.typeFormat(content, type);
+            this.editingContent = this.typeFormat(content, type);
             return;
          }
 
@@ -465,7 +410,7 @@ export default {
             if (content) {
                this.isMultiSpatial = IS_MULTI_SPATIAL.includes(type);
                this.isMapModal = true;
-               this.editingContent = this.$options.filters.typeFormat(content, type);
+               this.editingContent = this.typeFormat(content, type);
             }
             return;
          }
@@ -513,7 +458,7 @@ export default {
                   this.editingContent = this.editingContent.slice(0, -1);
             }
 
-            if (this.editingContent === this.$options.filters.typeFormat(this.originalContent, this.editingType, this.editingLength)) return;// If not changed
+            if (this.editingContent === this.typeFormat(this.originalContent, this.editingType, this.editingLength)) return;// If not changed
 
             content = this.editingContent;
          }
@@ -590,6 +535,56 @@ export default {
             this.editingField = null;
             window.removeEventListener('keydown', this.onKey);
          }
+      },
+      formatBytes,
+      cutText (val) {
+         if (typeof val !== 'string') return val;
+         return val.length > 128 ? `${val.substring(0, 128)}[...]` : val;
+      },
+      typeFormat (val, type, precision) {
+         if (!val) return val;
+
+         type = type.toUpperCase();
+
+         if (DATE.includes(type))
+            return moment(val).isValid() ? moment(val).format('YYYY-MM-DD') : val;
+
+         if (DATETIME.includes(type)) {
+            if (typeof val === 'string')
+               return val;
+
+            let datePrecision = '';
+            for (let i = 0; i < precision; i++)
+               datePrecision += i === 0 ? '.S' : 'S';
+
+            return moment(val).isValid() ? moment(val).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`) : val;
+         }
+
+         if (BLOB.includes(type)) {
+            const buff = Buffer.from(val);
+            if (!buff.length) return '';
+
+            const hex = buff.toString('hex').substring(0, 8).toUpperCase();
+            return `${mimeFromHex(hex).mime} (${formatBytes(buff.length)})`;
+         }
+
+         if (BIT.includes(type)) {
+            if (typeof val === 'number') val = [val];
+            const hex = Buffer.from(val).toString('hex');
+            const bitString = hexToBinary(hex);
+            return parseInt(bitString).toString().padStart(precision, '0');
+         }
+
+         if (ARRAY.includes(type)) {
+            if (Array.isArray(val))
+               return JSON.stringify(val).replaceAll('[', '{').replaceAll(']', '}');
+            return val;
+         }
+
+         if (SPATIAL.includes(type))
+            return val;
+
+         return typeof val === 'object' ? JSON.stringify(val) : val;
       }
    }
 };

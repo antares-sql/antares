@@ -3,18 +3,18 @@
       v-show="isSelected"
       class="workspace-query-tab column col-12 columns col-gapless no-outline p-0"
       tabindex="0"
-      @keydown.116="runQuery(query)"
-      @keydown.75="killTabQuery"
-      @keydown.ctrl.alt.87="clear"
-      @keydown.ctrl.66="beautify"
-      @keydown.ctrl.71="openHistoryModal"
+      @keydown.f5="runQuery(query)"
+      @keydown.k="killTabQuery"
+      @keydown.ctrl.alt.w="clear"
+      @keydown.ctrl.b="beautify"
+      @keydown.ctrl.g="openHistoryModal"
    >
       <div class="workspace-query-runner column col-12">
          <QueryEditor
             v-show="isSelected"
             ref="queryEditor"
+            v-model="query"
             :auto-focus="true"
-            :value.sync="query"
             :workspace="workspace"
             :schema="breadcrumbsSchema"
             :is-selected="isSelected"
@@ -187,8 +187,11 @@
 </template>
 
 <script>
+import { storeToRefs } from 'pinia';
 import { format } from 'sql-formatter';
-import { mapGetters, mapActions } from 'vuex';
+import { useHistoryStore } from '@/stores/history';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import Schema from '@/ipc-api/Schema';
 import QueryEditor from '@/components/QueryEditor';
 import BaseLoader from '@/components/BaseLoader';
@@ -208,9 +211,35 @@ export default {
    },
    mixins: [tableTabs],
    props: {
+      tabUid: String,
       connection: Object,
       tab: Object,
       isSelected: Boolean
+   },
+   setup () {
+      const { getHistoryByWorkspace, saveHistory } = useHistoryStore();
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      const {
+         getWorkspace,
+         changeBreadcrumbs,
+         updateTabContent,
+         setUnsavedChanges
+      } = workspacesStore;
+
+      return {
+         getHistoryByWorkspace,
+         saveHistory,
+         addNotification,
+         selectedWorkspace,
+         getWorkspace,
+         changeBreadcrumbs,
+         updateTabContent,
+         setUnsavedChanges
+      };
    },
    data () {
       return {
@@ -230,16 +259,8 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         getWorkspace: 'workspaces/getWorkspace',
-         selectedWorkspace: 'workspaces/getSelected',
-         getHistoryByWorkspace: 'history/getHistoryByWorkspace'
-      }),
       workspace () {
          return this.getWorkspace(this.connection.uid);
-      },
-      tabUid () {
-         return this.$vnode.key;
       },
       breadcrumbsSchema () {
          return this.workspace.breadcrumbs.schema || null;
@@ -296,7 +317,7 @@ export default {
       if (this.tab.autorun)
          this.runQuery(this.query);
    },
-   beforeDestroy () {
+   beforeUnmount () {
       window.removeEventListener('keydown', this.onKey);
       const params = {
          uid: this.connection.uid,
@@ -305,13 +326,6 @@ export default {
       Schema.destroyConnectionToCommit(params);
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification',
-         changeBreadcrumbs: 'workspaces/changeBreadcrumbs',
-         updateTabContent: 'workspaces/updateTabContent',
-         setUnsavedChanges: 'workspaces/setUnsavedChanges',
-         saveHistory: 'history/saveHistory'
-      }),
       async runQuery (query) {
          if (!query || this.isQuering) return;
          this.isQuering = true;

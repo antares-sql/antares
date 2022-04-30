@@ -6,39 +6,44 @@
       @change="onChange"
       @blur="$emit('blur')"
    >
-      <option v-if="!isValidDefault" :value="value">
-         {{ value === null ? 'NULL' : value }}
+      <option v-if="!isValidDefault" :value="modelValue">
+         {{ modelValue === null ? 'NULL' : modelValue }}
       </option>
       <option
          v-for="row in foreignList"
          :key="row.foreign_column"
          :value="row.foreign_column"
-         :selected="row.foreign_column === value"
+         :selected="row.foreign_column === modelValue"
       >
-         {{ row.foreign_column }} {{ 'foreign_description' in row ? ` - ${row.foreign_description}` : '' | cutText }}
+         {{ row.foreign_column }} {{ cutText('foreign_description' in row ? ` - ${row.foreign_description}` : '') }}
       </option>
    </select>
 </template>
 
 <script>
+import { storeToRefs } from 'pinia';
 import Tables from '@/ipc-api/Tables';
-import { mapGetters, mapActions } from 'vuex';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 import { TEXT, LONG_TEXT } from 'common/fieldTypes';
 export default {
    name: 'ForeignKeySelect',
-   filters: {
-      cutText (val) {
-         if (typeof val !== 'string') return val;
-         return val.length > 15 ? `${val.substring(0, 15)}...` : val;
-      }
-   },
    props: {
-      value: [String, Number],
+      modelValue: [String, Number],
       keyUsage: Object,
       size: {
          type: String,
          default: ''
       }
+   },
+   emits: ['update:modelValue', 'blur'],
+   setup () {
+      const { addNotification } = useNotificationsStore();
+      const workspacesStore = useWorkspacesStore();
+
+      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+      return { addNotification, selectedWorkspace };
    },
    data () {
       return {
@@ -46,13 +51,10 @@ export default {
       };
    },
    computed: {
-      ...mapGetters({
-         selectedWorkspace: 'workspaces/getSelected'
-      }),
       isValidDefault () {
          if (!this.foreignList.length) return true;
-         if (this.value === null) return false;
-         return this.foreignList.some(foreign => foreign.foreign_column.toString() === this.value.toString());
+         if (this.modelValue === null) return false;
+         return this.foreignList.some(foreign => foreign.foreign_column.toString() === this.modelValue.toString());
       }
    },
    async created () {
@@ -93,11 +95,12 @@ export default {
       }
    },
    methods: {
-      ...mapActions({
-         addNotification: 'notifications/addNotification'
-      }),
       onChange () {
-         this.$emit('update:value', this.$refs.editField.value);
+         this.$emit('update:modelValue', this.$refs.editField.value);
+      },
+      cutText (val) {
+         if (typeof val !== 'string') return val;
+         return val.length > 15 ? `${val.substring(0, 15)}...` : val;
       }
    }
 };

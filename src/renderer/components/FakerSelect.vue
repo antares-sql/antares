@@ -36,8 +36,8 @@
       <ForeignKeySelect
          v-else-if="foreignKeys.includes(field.name)"
          ref="formInput"
+         v-model="selectedValue"
          class="form-select"
-         :value.sync="selectedValue"
          :key-usage="getKeyUsage(field.name)"
          :disabled="!isChecked"
       />
@@ -105,7 +105,6 @@
 </template>
 
 <script>
-import { VueMaskDirective } from 'v-mask';
 import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
 import BaseUploadInput from '@/components/BaseUploadInput';
 import ForeignKeySelect from '@/components/ForeignKeySelect';
@@ -117,9 +116,6 @@ export default {
       ForeignKeySelect,
       BaseUploadInput
    },
-   directives: {
-      mask: VueMaskDirective
-   },
    props: {
       type: String,
       field: Object,
@@ -129,6 +125,7 @@ export default {
       fieldLength: Number,
       fieldObj: Object
    },
+   emits: ['update:modelValue'],
    data () {
       return {
          localType: null,
@@ -244,7 +241,7 @@ export default {
          this.selectedValue = '';
       },
       onChange () {
-         this.$emit('update:value', {
+         this.$emit('update:modelValue', {
             group: this.selectedGroup,
             method: this.selectedMethod,
             params: this.methodParams,
