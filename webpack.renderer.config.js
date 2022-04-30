@@ -42,9 +42,7 @@ const config = {
    resolve: {
       alias: {
          '@': path.resolve(__dirname, 'src/renderer'),
-         common: path.resolve(__dirname, 'src/common'),
-         // @TODO: remove after migrating from vue2 -> vue3
-         vue: '@vue/compat'
+         common: path.resolve(__dirname, 'src/common')
       },
       extensions: ['', '.js', '.vue', '.json'],
       fallback: {

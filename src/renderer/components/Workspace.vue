@@ -601,9 +601,12 @@ export default {
          return false;
       },
       hasTools () {
-         return this.workspace.customizations.processesList ||
+         if (!this.workspace.customizations) return false;
+         else {
+            return this.workspace.customizations.processesList ||
             this.workspace.customizations.usersManagement ||
             this.workspace.customizations.variables;
+         }
       }
    },
    watch: {

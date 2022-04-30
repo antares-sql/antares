@@ -115,6 +115,8 @@
 </template>
 
 <script>
+import { storeToRefs } from 'pinia';
+
 import { useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
@@ -131,7 +133,6 @@ import TableContext from '@/components/WorkspaceExploreBarTableContext';
 import MiscContext from '@/components/WorkspaceExploreBarMiscContext';
 import MiscFolderContext from '@/components/WorkspaceExploreBarMiscFolderContext';
 import ModalNewSchema from '@/components/ModalNewSchema';
-import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceExploreBar',
