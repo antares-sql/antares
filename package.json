@@ -155,7 +155,7 @@
     "cross-env": "^7.0.2",
     "css-loader": "^6.5.0",
     "electron": "^17.0.1",
-    "electron-builder": "^22.14.11",
+    "electron-builder": "^23.0.3",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.24.2",
