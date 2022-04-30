@@ -343,9 +343,9 @@
 </template>
 
 <script>
+import { storeToRefs } from 'pinia';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import ConfirmModal from '@/components/BaseConfirmModal';
-import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabPropsTableRow',

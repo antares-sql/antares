@@ -176,6 +176,7 @@
 </template>
 
 <script>
+import { storeToRefs } from 'pinia';
 import Tables from '@/ipc-api/Tables';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
@@ -186,7 +187,6 @@ import WorkspaceTabTableFilters from '@/components/WorkspaceTabTableFilters';
 import ModalNewTableRow from '@/components/ModalNewTableRow';
 import ModalFakerRows from '@/components/ModalFakerRows';
 import tableTabs from '@/mixins/tableTabs';
-import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabTable',

@@ -68,10 +68,10 @@
 </template>
 
 <script>
+import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import Schema from '@/ipc-api/Schema';
-import { storeToRefs } from 'pinia';
 
 export default {
    name: 'ModalEditSchema',

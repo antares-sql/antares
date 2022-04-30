@@ -179,6 +179,7 @@
 </template>
 
 <script>
+import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import { uidGen } from 'common/libs/uidGen';
@@ -187,7 +188,6 @@ import BaseLoader from '@/components/BaseLoader';
 import WorkspaceTabPropsRoutineParamsModal from '@/components/WorkspaceTabPropsRoutineParamsModal';
 import ModalAskParameters from '@/components/ModalAskParameters';
 import Routines from '@/ipc-api/Routines';
-import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabPropsRoutine',

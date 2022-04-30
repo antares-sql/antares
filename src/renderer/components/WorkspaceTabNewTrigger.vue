@@ -132,12 +132,12 @@
 </template>
 
 <script>
+import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import QueryEditor from '@/components/QueryEditor';
 import BaseLoader from '@/components/BaseLoader';
 import Triggers from '@/ipc-api/Triggers';
-import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabNewTrigger',

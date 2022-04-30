@@ -187,6 +187,7 @@
 </template>
 
 <script>
+import { storeToRefs } from 'pinia';
 import { format } from 'sql-formatter';
 import { useHistoryStore } from '@/stores/history';
 import { useNotificationsStore } from '@/stores/notifications';
@@ -198,7 +199,6 @@ import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable';
 import WorkspaceTabQueryEmptyState from '@/components/WorkspaceTabQueryEmptyState';
 import ModalHistory from '@/components/ModalHistory';
 import tableTabs from '@/mixins/tableTabs';
-import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabQuery',

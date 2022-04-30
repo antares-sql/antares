@@ -21,11 +21,11 @@
 </template>
 
 <script>
+import { storeToRefs } from 'pinia';
 import Tables from '@/ipc-api/Tables';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import { TEXT, LONG_TEXT } from 'common/fieldTypes';
-import { storeToRefs } from 'pinia';
 export default {
    name: 'ForeignKeySelect',
    props: {

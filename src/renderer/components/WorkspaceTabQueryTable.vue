@@ -107,6 +107,7 @@
 </template>
 
 <script>
+import { storeToRefs } from 'pinia';
 import { uidGen } from 'common/libs/uidGen';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
@@ -118,7 +119,6 @@ import WorkspaceTabQueryTableRow from '@/components/WorkspaceTabQueryTableRow';
 import TableContext from '@/components/WorkspaceTabQueryTableContext';
 import ConfirmModal from '@/components/BaseConfirmModal';
 import moment from 'moment';
-import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabQueryTable',

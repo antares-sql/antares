@@ -125,12 +125,12 @@
 </template>
 
 <script>
+import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import Draggable from 'vuedraggable';
 import TableRow from '@/components/WorkspaceTabPropsTableRow';
 import TableContext from '@/components/WorkspaceTabPropsTableContext';
-import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabPropsTableFields',

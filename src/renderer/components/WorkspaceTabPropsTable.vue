@@ -177,6 +177,7 @@
 </template>
 
 <script>
+import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import { uidGen } from 'common/libs/uidGen';
@@ -185,7 +186,6 @@ import BaseLoader from '@/components/BaseLoader';
 import WorkspaceTabPropsTableFields from '@/components/WorkspaceTabPropsTableFields';
 import WorkspaceTabPropsTableIndexesModal from '@/components/WorkspaceTabPropsTableIndexesModal';
 import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTableForeignModal';
-import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabPropsTable',

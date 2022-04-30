@@ -222,6 +222,7 @@
 </template>
 
 <script>
+import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import { uidGen } from 'common/libs/uidGen';
@@ -230,7 +231,6 @@ import QueryEditor from '@/components/QueryEditor';
 import WorkspaceTabPropsFunctionParamsModal from '@/components/WorkspaceTabPropsFunctionParamsModal';
 import ModalAskParameters from '@/components/ModalAskParameters';
 import Functions from '@/ipc-api/Functions';
-import { storeToRefs } from 'pinia';
 
 export default {
    name: 'WorkspaceTabPropsFunction',

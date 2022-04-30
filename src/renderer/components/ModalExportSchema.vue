@@ -270,10 +270,11 @@
 </template>
 
 <script>
+import moment from 'moment';
 import { ipcRenderer } from 'electron';
+import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import moment from 'moment';
 import customizations from 'common/customizations';
 import Application from '@/ipc-api/Application';
 import Schema from '@/ipc-api/Schema';

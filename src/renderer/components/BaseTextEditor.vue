@@ -11,8 +11,8 @@
 
 <script>
 import * as ace from 'ace-builds';
-import 'ace-builds/webpack-resolver';
 import { storeToRefs } from 'pinia';
+import 'ace-builds/webpack-resolver';
 import { useSettingsStore } from '@/stores/settings';
 import { uidGen } from 'common/libs/uidGen';
 

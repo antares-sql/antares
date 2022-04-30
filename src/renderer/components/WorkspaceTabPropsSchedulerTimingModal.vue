@@ -138,8 +138,8 @@
 </template>
 
 <script>
-import ConfirmModal from '@/components/BaseConfirmModal';
 import moment from 'moment';
+import ConfirmModal from '@/components/BaseConfirmModal';
 
 export default {
    name: 'WorkspaceTabPropsSchedulerTimingModal',
