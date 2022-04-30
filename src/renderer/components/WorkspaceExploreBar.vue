@@ -158,7 +158,7 @@ export default {
       const { changeExplorebarSize } = settingsStore;
       const {
          getWorkspace,
-         disconnectWorkspace,
+         removeConnected: disconnectWorkspace,
          refreshStructure,
          changeBreadcrumbs,
          selectTab,
