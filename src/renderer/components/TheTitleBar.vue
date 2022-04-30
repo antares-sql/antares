@@ -90,7 +90,7 @@ export default {
 
          const connectionName = this.getConnectionName(this.selectedWorkspace);
          const workspace = this.getWorkspace(this.selectedWorkspace);
-         const breadcrumbs = Object.values(workspace.breadcrumbs).filter(breadcrumb => breadcrumb);
+         const breadcrumbs = Object.values(workspace.breadcrumbs).filter(breadcrumb => breadcrumb) || [workspace.client];
 
          return [connectionName, ...breadcrumbs].join(' • ');
       }
