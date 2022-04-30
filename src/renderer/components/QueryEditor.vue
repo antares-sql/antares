@@ -13,6 +13,7 @@ import * as ace from 'ace-builds';
 import 'ace-builds/webpack-resolver';
 import '../libs/ext-language_tools';
 import { storeToRefs } from 'pinia';
+import { uidGen } from 'common/libs/uidGen';
 import { useApplicationStore } from '@/stores/application';
 import { useSettingsStore } from '@/stores/settings';
 import Tables from '@/ipc-api/Tables';
@@ -59,7 +60,7 @@ export default {
          cursorPosition: 0,
          fields: [],
          customCompleter: [],
-         id: null,
+         id: uidGen(),
          lastSchema: null
       };
    },
@@ -226,7 +227,6 @@ export default {
       }
    },
    created () {
-      this.id = this._uid;
       this.lastSchema = this.schema;
    },
    mounted () {

@@ -319,6 +319,7 @@
             <WorkspaceTabQuery
                v-if="tab.type==='query'"
                :key="tab.uid"
+               :tab-uid="tab.uid"
                :tab="tab"
                :is-selected="selectedTab === tab.uid"
                :connection="connection"
@@ -326,6 +327,7 @@
             <WorkspaceTabTable
                v-else-if="['temp-data', 'data'].includes(tab.type)"
                :key="tab.uid"
+               :tab-uid="tab.uid"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
                :table="tab.elementName"
@@ -335,6 +337,7 @@
             <WorkspaceTabNewTable
                v-else-if="tab.type === 'new-table'"
                :key="tab.uid"
+               :tab-uid="tab.uid"
                :tab="tab"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
@@ -343,6 +346,7 @@
             <WorkspaceTabPropsTable
                v-else-if="tab.type === 'table-props'"
                :key="tab.uid"
+               :tab-uid="tab.uid"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
                :table="tab.elementName"
@@ -351,6 +355,7 @@
             <WorkspaceTabNewView
                v-else-if="tab.type === 'new-view'"
                :key="tab.uid"
+               :tab-uid="tab.uid"
                :tab="tab"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
@@ -359,6 +364,7 @@
             <WorkspaceTabPropsView
                v-else-if="tab.type === 'view-props'"
                :key="tab.uid"
+               :tab-uid="tab.uid"
                :is-selected="selectedTab === tab.uid"
                :connection="connection"
                :view="tab.elementName"
@@ -367,6 +373,7 @@
             <WorkspaceTabNewTrigger
                v-else-if="tab.type === 'new-trigger'"
                :key="tab.uid"
+               :tab-uid="tab.uid"
                :tab="tab"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
@@ -376,6 +383,7 @@
             <WorkspaceTabPropsTrigger
                v-else-if="['temp-trigger-props', 'trigger-props'].includes(tab.type)"
                :key="tab.uid"
+               :tab-uid="tab.uid"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
                :trigger="tab.elementName"
@@ -384,6 +392,7 @@
             <WorkspaceTabNewTriggerFunction
                v-else-if="tab.type === 'new-trigger-function'"
                :key="tab.uid"
+               :tab-uid="tab.uid"
                :tab="tab"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
@@ -393,6 +402,7 @@
             <WorkspaceTabPropsTriggerFunction
                v-else-if="['temp-trigger-function-props', 'trigger-function-props'].includes(tab.type)"
                :key="tab.uid"
+               :tab-uid="tab.uid"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
                :function="tab.elementName"
@@ -401,6 +411,7 @@
             <WorkspaceTabNewRoutine
                v-else-if="tab.type === 'new-routine'"
                :key="tab.uid"
+               :tab-uid="tab.uid"
                :tab="tab"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
@@ -410,6 +421,7 @@
             <WorkspaceTabPropsRoutine
                v-else-if="['temp-routine-props', 'routine-props'].includes(tab.type)"
                :key="tab.uid"
+               :tab-uid="tab.uid"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
                :routine="tab.elementName"
@@ -418,6 +430,7 @@
             <WorkspaceTabNewFunction
                v-else-if="tab.type === 'new-function'"
                :key="tab.uid"
+               :tab-uid="tab.uid"
                :tab="tab"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
@@ -427,6 +440,7 @@
             <WorkspaceTabPropsFunction
                v-else-if="['temp-function-props', 'function-props'].includes(tab.type)"
                :key="tab.uid"
+               :tab-uid="tab.uid"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
                :function="tab.elementName"
@@ -435,6 +449,7 @@
             <WorkspaceTabNewScheduler
                v-else-if="tab.type === 'new-scheduler'"
                :key="tab.uid"
+               :tab-uid="tab.uid"
                :tab="tab"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
@@ -444,6 +459,7 @@
             <WorkspaceTabPropsScheduler
                v-else-if="['temp-scheduler-props', 'scheduler-props'].includes(tab.type)"
                :key="tab.uid"
+               :tab-uid="tab.uid"
                :connection="connection"
                :is-selected="selectedTab === tab.uid"
                :scheduler="tab.elementName"

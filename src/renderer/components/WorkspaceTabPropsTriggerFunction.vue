@@ -119,6 +119,7 @@ export default {
       ModalAskParameters
    },
    props: {
+      tabUid: String,
       connection: Object,
       function: String,
       isSelected: Boolean,
@@ -169,9 +170,6 @@ export default {
       },
       customizations () {
          return this.workspace.customizations;
-      },
-      tabUid () {
-         return this.$vnode?.key;
       },
       isChanged () {
          return JSON.stringify(this.originalFunction) !== JSON.stringify(this.localFunction);

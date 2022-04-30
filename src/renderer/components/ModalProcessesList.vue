@@ -295,7 +295,7 @@ export default {
          this.stopRefresh();
 
          this.selectedCell = cell;
-         this.selectedRow = cell.id;
+         this.selectedRow = Number(cell.id);
          this.contextEvent = event;
          this.isContext = true;
       },

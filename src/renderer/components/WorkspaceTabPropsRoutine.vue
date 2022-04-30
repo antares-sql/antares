@@ -152,7 +152,6 @@
          <label class="form-label ml-2">{{ $t('message.routineBody') }}</label>
          <QueryEditor
             v-show="isSelected"
-            :key="`${routine}-${_uid}`"
             ref="queryEditor"
             v-model="localRoutine.sql"
             :workspace="workspace"
@@ -198,6 +197,7 @@ export default {
       ModalAskParameters
    },
    props: {
+      tabUid: String,
       connection: Object,
       routine: String,
       isSelected: Boolean,
@@ -248,9 +248,6 @@ export default {
       },
       customizations () {
          return this.workspace.customizations;
-      },
-      tabUid () {
-         return this.$vnode?.key;
       },
       isChanged () {
          return JSON.stringify(this.originalRoutine) !== JSON.stringify(this.localRoutine);

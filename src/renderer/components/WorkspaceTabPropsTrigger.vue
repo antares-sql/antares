@@ -145,6 +145,7 @@ export default {
       QueryEditor
    },
    props: {
+      tabUid: String,
       connection: Object,
       trigger: String,
       isSelected: Boolean,
@@ -191,9 +192,6 @@ export default {
    computed: {
       workspace () {
          return this.getWorkspace(this.connection.uid);
-      },
-      tabUid () {
-         return this.$vnode?.key;
       },
       customizations () {
          return this.workspace.customizations;

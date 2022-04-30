@@ -157,6 +157,7 @@ export default {
       WorkspaceTabPropsSchedulerTimingModal
    },
    props: {
+      tabUid: String,
       connection: Object,
       scheduler: String,
       isSelected: Boolean,
@@ -203,9 +204,6 @@ export default {
    computed: {
       workspace () {
          return this.getWorkspace(this.connection.uid);
-      },
-      tabUid () {
-         return this.$vnode?.key;
       },
       isChanged () {
          return JSON.stringify(this.originalScheduler) !== JSON.stringify(this.localScheduler);

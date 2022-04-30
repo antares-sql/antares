@@ -196,6 +196,7 @@ export default {
       WorkspaceTabPropsTableForeignModal
    },
    props: {
+      tabUid: String,
       connection: Object,
       isSelected: Boolean,
       table: String,
@@ -249,9 +250,6 @@ export default {
    computed: {
       workspace () {
          return this.getWorkspace(this.connection.uid);
-      },
-      tabUid () {
-         return this.$vnode?.key;
       },
       defaultEngine () {
          const engine = this.getDatabaseVariable(this.connection.uid, 'default_storage_engine');

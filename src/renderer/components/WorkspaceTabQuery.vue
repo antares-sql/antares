@@ -211,6 +211,7 @@ export default {
    },
    mixins: [tableTabs],
    props: {
+      tabUid: String,
       connection: Object,
       tab: Object,
       isSelected: Boolean
@@ -260,9 +261,6 @@ export default {
    computed: {
       workspace () {
          return this.getWorkspace(this.connection.uid);
-      },
-      tabUid () {
-         return this.$vnode?.key;
       },
       breadcrumbsSchema () {
          return this.workspace.breadcrumbs.schema || null;

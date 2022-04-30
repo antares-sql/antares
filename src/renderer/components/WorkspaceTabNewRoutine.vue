@@ -179,6 +179,7 @@ export default {
       WorkspaceTabPropsRoutineParamsModal
    },
    props: {
+      tabUid: String,
       connection: Object,
       tab: Object,
       isSelected: Boolean,
@@ -230,9 +231,6 @@ export default {
       },
       customizations () {
          return this.workspace.customizations;
-      },
-      tabUid () {
-         return this.$vnode?.key;
       },
       isChanged () {
          return JSON.stringify(this.originalRoutine) !== JSON.stringify(this.localRoutine);

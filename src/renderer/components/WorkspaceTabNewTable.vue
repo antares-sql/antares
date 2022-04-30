@@ -186,6 +186,7 @@ export default {
       WorkspaceTabNewTableEmptyState
    },
    props: {
+      tabUid: String,
       connection: Object,
       tab: Object,
       isSelected: Boolean,
@@ -243,9 +244,6 @@ export default {
    computed: {
       workspace () {
          return this.getWorkspace(this.connection.uid);
-      },
-      tabUid () {
-         return this.$vnode?.key;
       },
       defaultCollation () {
          if (this.workspace.customizations.collations)
