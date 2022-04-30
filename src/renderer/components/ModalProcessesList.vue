@@ -288,7 +288,7 @@ export default {
          this.clearRefresh();
       },
       selectRow (row) {
-         this.selectedRow = row;
+         this.selectedRow = Number(row);
       },
       contextMenu (event, cell) {
          if (event.target.localName === 'input') return;
