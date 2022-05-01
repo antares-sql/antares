@@ -302,6 +302,9 @@ export default {
       this.query = this.tab.content;
       this.selectedSchema = this.tab.schema || this.breadcrumbsSchema;
 
+      if (!this.databaseSchemas.includes(this.selectedSchema))
+         this.selectedSchema = null;
+
       window.addEventListener('keydown', this.onKey);
    },
    mounted () {
