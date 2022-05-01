@@ -1,5 +1,5 @@
 <template>
-   <details class="accordion workspace-explorebar-database">
+   <details ref="schemaAccordion" class="accordion workspace-explorebar-database">
       <summary
          class="accordion-header database-name"
          :class="{'text-bold': breadcrumbs.schema === database.name}"

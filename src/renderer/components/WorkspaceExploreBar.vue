@@ -52,6 +52,7 @@
             <WorkspaceExploreBarSchema
                v-for="db of workspace.structure"
                :key="db.name"
+               ref="schema"
                :database="db"
                :connection="connection"
                @show-schema-context="openSchemaContext"
@@ -259,6 +260,11 @@ export default {
          window.addEventListener('mousemove', this.resize);
          window.addEventListener('mouseup', this.stopResize);
       });
+
+      if (this.workspace.structure.length === 1) { // Auto-open if juust one schema
+         this.$refs.schema[0].selectSchema(this.workspace.structure[0].name);
+         this.$refs.schema[0].$refs.schemaAccordion.open = true;
+      }
    },
    methods: {
       async refresh () {
