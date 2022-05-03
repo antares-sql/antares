@@ -154,7 +154,7 @@
     "chalk": "^4.1.2",
     "cross-env": "^7.0.2",
     "css-loader": "^6.5.0",
-    "electron": "^17.0.1",
+    "electron": "^18.2.0",
     "electron-builder": "^23.0.3",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
