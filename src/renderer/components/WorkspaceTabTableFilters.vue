@@ -137,6 +137,9 @@ export default {
             case 'IS NOT NULL':
                value = '';
                break;
+            case 'LIKE':
+               value = `${sw}%${filter.value}%${sw}`;
+               break;
             default:
                value = `${sw}${filter.value}${sw}`;
          }
