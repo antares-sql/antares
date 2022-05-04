@@ -288,7 +288,9 @@ module.exports = {
       singleFile: 'Single {ext} file',
       zipCompressedFile: 'ZIP compressed {ext} file',
       disableBlur: 'Disable blur',
-      untrustedConnection: 'Untrusted connection'
+      untrustedConnection: 'Untrusted connection',
+      missingOrIncompleteTranslation: 'Missing or incomplete translation?',
+      findOutHowToContribute: 'Find out how to contribute'
    },
    faker: {
       address: 'Address',
