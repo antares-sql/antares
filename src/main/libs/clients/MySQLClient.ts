@@ -192,7 +192,7 @@ export class MySQLClient extends AntaresCore {
 
       // ANSI_QUOTES check
       const [response] = await connection.query<mysql.RowDataPacket[]>('SHOW GLOBAL VARIABLES LIKE \'%sql_mode%\'');
-      const sqlMode = response[0]?.Variable_name?.split(',');
+      const sqlMode = response[0]?.Value?.split(',');
       const hasAnsiQuotes = sqlMode.includes('ANSI_QUOTES');
 
       if (this._params.readonly)
@@ -219,7 +219,7 @@ export class MySQLClient extends AntaresCore {
 
       // ANSI_QUOTES check
       const [res] = await connection.query<mysql.RowDataPacket[]>('SHOW GLOBAL VARIABLES LIKE \'%sql_mode%\'');
-      const sqlMode = res[0]?.Variable_name?.split(',');
+      const sqlMode = res[0]?.Value?.split(',');
       const hasAnsiQuotes = sqlMode.includes('ANSI_QUOTES');
 
       if (hasAnsiQuotes)
