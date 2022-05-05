@@ -306,7 +306,7 @@ export class SQLiteClient extends AntaresCore {
             ${field.unsigned ? 'UNSIGNED' : ''} 
             ${field.nullable ? 'NULL' : 'NOT NULL'}
             ${field.autoIncrement ? 'AUTO_INCREMENT' : ''}
-            ${field.default ? `DEFAULT ${field.default}` : ''}
+            ${field.default !== null ? `DEFAULT ${field.default || '\'\''}` : ''}
             ${field.onUpdate ? `ON UPDATE ${field.onUpdate}` : ''}`);
       });
 

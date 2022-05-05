@@ -612,7 +612,7 @@ export class PostgreSQLClient extends AntaresCore {
             ${field.unsigned ? 'UNSIGNED' : ''} 
             ${field.zerofill ? 'ZEROFILL' : ''}
             ${field.nullable ? 'NULL' : 'NOT NULL'}
-            ${field.default ? `DEFAULT ${field.default}` : ''}
+            ${field.default !== null ? `DEFAULT ${field.default || '\'\''}` : ''}
             ${field.onUpdate ? `ON UPDATE ${field.onUpdate}` : ''}`);
       });
 
@@ -671,7 +671,7 @@ export class PostgreSQLClient extends AntaresCore {
             ${addition.unsigned ? 'UNSIGNED' : ''} 
             ${addition.zerofill ? 'ZEROFILL' : ''}
             ${addition.nullable ? 'NULL' : 'NOT NULL'}
-            ${addition.default ? `DEFAULT ${addition.default}` : ''}
+            ${addition.default !== null ? `DEFAULT ${addition.default || '\'\''}` : ''}
             ${addition.onUpdate ? `ON UPDATE ${addition.onUpdate}` : ''}`);
       });
 
@@ -715,7 +715,7 @@ export class PostgreSQLClient extends AntaresCore {
 
          alterColumns.push(`ALTER COLUMN "${change.name}" TYPE ${localType}${length ? `(${length}${change.numScale ? `,${change.numScale}` : ''})` : ''}${change.isArray ? '[]' : ''} USING "${change.name}"::${localType}`);
          alterColumns.push(`ALTER COLUMN "${change.name}" ${change.nullable ? 'DROP NOT NULL' : 'SET NOT NULL'}`);
-         alterColumns.push(`ALTER COLUMN "${change.name}" ${change.default ? `SET DEFAULT ${change.default}` : 'DROP DEFAULT'}`);
+         alterColumns.push(`ALTER COLUMN "${change.name}" ${change.default !== null ? `SET DEFAULT ${change.default || '\'\''}` : 'DROP DEFAULT'}`);
 
          if (['SERIAL', 'SMALLSERIAL', 'BIGSERIAL'].includes(change.type)) {
             const sequenceName = `${table}_${change.name}_seq`.replace(' ', '_');

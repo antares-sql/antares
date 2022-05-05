@@ -754,7 +754,7 @@ export class MySQLClient extends AntaresCore {
             ${field.zerofill ? 'ZEROFILL' : ''}
             ${field.nullable ? 'NULL' : 'NOT NULL'}
             ${field.autoIncrement ? 'AUTO_INCREMENT' : ''}
-            ${field.default ? `DEFAULT ${field.default}` : ''}
+            ${field.default !== null ? `DEFAULT ${field.default || '\'\''}` : ''}
             ${field.comment ? `COMMENT '${field.comment}'` : ''}
             ${field.collation ? `COLLATE ${field.collation}` : ''}
             ${field.onUpdate ? `ON UPDATE ${field.onUpdate}` : ''}`);
@@ -817,7 +817,7 @@ export class MySQLClient extends AntaresCore {
             ${addition.zerofill ? 'ZEROFILL' : ''}
             ${addition.nullable ? 'NULL' : 'NOT NULL'}
             ${addition.autoIncrement ? 'AUTO_INCREMENT' : ''}
-            ${addition.default ? `DEFAULT ${addition.default}` : ''}
+            ${addition.default !== null ? `DEFAULT ${addition.default || '\'\''}` : ''}
             ${addition.comment ? `COMMENT '${addition.comment}'` : ''}
             ${addition.collation ? `COLLATE ${addition.collation}` : ''}
             ${addition.onUpdate ? `ON UPDATE ${addition.onUpdate}` : ''}
@@ -855,7 +855,7 @@ export class MySQLClient extends AntaresCore {
             ${change.zerofill ? 'ZEROFILL' : ''}
             ${change.nullable ? 'NULL' : 'NOT NULL'}
             ${change.autoIncrement ? 'AUTO_INCREMENT' : ''}
-            ${change.default ? `DEFAULT ${change.default}` : ''}
+            ${change.default !== null ? `DEFAULT ${change.default || '\'\''}` : ''}
             ${change.comment ? `COMMENT '${change.comment}'` : ''}
             ${change.collation ? `COLLATE ${change.collation}` : ''}
             ${change.onUpdate ? `ON UPDATE ${change.onUpdate}` : ''}
