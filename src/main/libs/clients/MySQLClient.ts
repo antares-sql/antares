@@ -102,7 +102,7 @@ export class MySQLClient extends AntaresCore {
       return { name, length };
    }
 
-   private _getTypeInfo (type: string) {
+   _getTypeInfo (type: string) {
       return dataTypes
          .reduce((acc, group) => [...acc, ...group.types], [])
          .filter((_type) => _type.name === type.toUpperCase())[0];

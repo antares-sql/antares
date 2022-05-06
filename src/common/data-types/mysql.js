@@ -58,7 +58,7 @@ module.exports = [
          },
          {
             name: 'DOUBLE',
-            length: true,
+            length: false,
             collation: false,
             unsigned: false,
             zerofill: false

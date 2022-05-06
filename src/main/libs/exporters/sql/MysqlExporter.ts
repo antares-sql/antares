@@ -197,11 +197,35 @@ ${footer}
       );
       let sqlString = '';
 
+      sqlString += this.buildComment('Creating temporary tables to overcome VIEW dependency errors');
+
+      // Temporary tables
       for (const view of views) {
-         sqlString += `DROP VIEW IF EXISTS \`${view.Name}\`;\n`;
+         const viewFields = await this._client.getTableColumns({ schema: this.schemaName, table: view.Name });
+         const tableFields: string[] = [];
+
+         for (const field of viewFields) {
+            const typeInfo = this._client._getTypeInfo(field.type);
+            const length = typeInfo.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
+
+            tableFields.push(`\`${field.name}\` ${field.type.toUpperCase()}${length ? `(${length}${field.numScale ? `,${field.numScale}` : ''})` : ''} ${field.unsigned ? 'UNSIGNED' : ''} ${field.zerofill ? 'ZEROFILL' : ''} ${field.nullable ? 'NULL' : 'NOT NULL'} ${field.autoIncrement ? 'AUTO_INCREMENT' : ''} ${field.collation ? `COLLATE ${field.collation}` : ''}`);
+         }
+         sqlString +=
+`
+CREATE TABLE \`${view.Name}\`(
+   ${tableFields.join(',\n\t')}
+);`;
+
+         sqlString += '\n';
+      }
+
+      sqlString += '\n';
+
+      for (const view of views) {
+         sqlString += `DROP TABLE IF EXISTS \`${view.Name}\`;\n`;
          const viewSyntax = await this.getCreateTable(view.Name);
          sqlString += viewSyntax.replaceAll('`' + this.schemaName + '`.', '');
-         sqlString += '\n';
+         sqlString += '\n\n';
       }
 
       return sqlString;
