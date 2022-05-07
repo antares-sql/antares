@@ -14,7 +14,7 @@ const parsedContributors = contributors.reduce((acc, c) => {
 }, []).join(',');
 
 const isDevMode = process.env.NODE_ENV !== 'production';
-const whiteListedModules = ['.bin', 'vue', '@vue', 'pinia', 'vue-i18n'];
+const whiteListedModules = ['.bin'];
 const externals = {};
 
 fs.readdirSync('node_modules')
