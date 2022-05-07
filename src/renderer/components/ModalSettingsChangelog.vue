@@ -42,12 +42,16 @@ export default {
    methods: {
       async getChangelog () {
          try {
-            const apiRes = await fetch(`https://api.github.com/repos/Fabio286/antares/releases/tags/v${this.appVersion}`, {
+            const apiRes = await fetch(`https://api.github.com/repos/antares-sql/antares/releases/tags/v${this.appVersion}`, {
                method: 'GET'
             });
 
             const { body } = await apiRes.json();
-            const markdown = body.substr(0, body.indexOf('### Download'));
+            const cutOffset = body.indexOf('### Download');
+            const markdown = cutOffset >= 0
+               ? body.substr(0, cutOffset)
+               : body;
+
             const renderer = {
                link (href, title, text) {
                   return text;
