@@ -17,7 +17,7 @@ export class SQLiteClient extends AntaresCore {
       this._connectionsToCommit = new Map();
    }
 
-   _getTypeInfo (type: string) {
+   getTypeInfo (type: string): antares.TypeInformations {
       return dataTypes
          .reduce((acc, group) => [...acc, ...group.types], [])
          .filter(_type => _type.name === type.toUpperCase())[0];
@@ -298,7 +298,7 @@ export class SQLiteClient extends AntaresCore {
 
       // ADD FIELDS
       fields.forEach(field => {
-         const typeInfo = this._getTypeInfo(field.type);
+         const typeInfo = this.getTypeInfo(field.type);
          const length = typeInfo?.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
 
          newColumns.push(`"${field.name}" 

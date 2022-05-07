@@ -102,7 +102,7 @@ export class MySQLClient extends AntaresCore {
       return { name, length };
    }
 
-   _getTypeInfo (type: string) {
+   getTypeInfo (type: string): antares.TypeInformations {
       return dataTypes
          .reduce((acc, group) => [...acc, ...group.types], [])
          .filter((_type) => _type.name === type.toUpperCase())[0];
@@ -745,7 +745,7 @@ export class MySQLClient extends AntaresCore {
 
       // ADD FIELDS
       fields.forEach(field => {
-         const typeInfo = this._getTypeInfo(field.type);
+         const typeInfo = this.getTypeInfo(field.type);
          const length = typeInfo.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
 
          newColumns.push(`\`${field.name}\` 
@@ -808,7 +808,7 @@ export class MySQLClient extends AntaresCore {
 
       // ADD FIELDS
       additions.forEach(addition => {
-         const typeInfo = this._getTypeInfo(addition.type);
+         const typeInfo = this.getTypeInfo(addition.type);
          const length = typeInfo.length ? addition.enumValues || addition.numLength || addition.charLength || addition.datePrecision : false;
 
          alterColumns.push(`ADD COLUMN \`${addition.name}\` 
@@ -846,7 +846,7 @@ export class MySQLClient extends AntaresCore {
 
       // CHANGE FIELDS
       changes.forEach(change => {
-         const typeInfo = this._getTypeInfo(change.type);
+         const typeInfo = this.getTypeInfo(change.type);
          const length = typeInfo.length ? change.enumValues || change.numLength || change.charLength || change.datePrecision : false;
 
          alterColumns.push(`CHANGE COLUMN \`${change.orgName}\` \`${change.name}\` 

@@ -205,7 +205,7 @@ ${footer}
          const tableFields: string[] = [];
 
          for (const field of viewFields) {
-            const typeInfo = this._client._getTypeInfo(field.type);
+            const typeInfo = this._client.getTypeInfo(field.type);
             const length = typeInfo.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
 
             tableFields.push(`\`${field.name}\` ${field.type.toUpperCase()}${length ? `(${length}${field.numScale ? `,${field.numScale}` : ''})` : ''} ${field.unsigned ? 'UNSIGNED' : ''} ${field.zerofill ? 'ZEROFILL' : ''} ${field.nullable ? 'NULL' : 'NOT NULL'} ${field.autoIncrement ? 'AUTO_INCREMENT' : ''} ${field.collation ? `COLLATE ${field.collation}` : ''}`);

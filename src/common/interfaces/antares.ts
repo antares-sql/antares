@@ -58,6 +58,15 @@ export interface ConnectionParams {
    sshPassphrase?: string;
 }
 
+export interface TypeInformations {
+   name: string;
+   length: boolean;
+   scale: boolean;
+   collation: boolean;
+   unsigned: boolean;
+   zerofill: boolean;
+}
+
 // Tables
 export interface TableField {
    name: string;

@@ -71,7 +71,7 @@ export class PostgreSQLClient extends AntaresCore {
       }
    }
 
-   _getTypeInfo (type: string) {
+   getTypeInfo (type: string): antares.TypeInformations {
       return dataTypes
          .reduce((acc, group) => [...acc, ...group.types], [])
          .filter(_type => _type.name === type.toUpperCase())[0];
@@ -604,7 +604,7 @@ export class PostgreSQLClient extends AntaresCore {
 
       // ADD FIELDS
       fields.forEach(field => {
-         const typeInfo = this._getTypeInfo(field.type);
+         const typeInfo = this.getTypeInfo(field.type);
          const length = typeInfo.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
 
          newColumns.push(`"${field.name}" 
@@ -663,7 +663,7 @@ export class PostgreSQLClient extends AntaresCore {
 
       // ADD FIELDS
       additions.forEach(addition => {
-         const typeInfo = this._getTypeInfo(addition.type);
+         const typeInfo = this.getTypeInfo(addition.type);
          const length = typeInfo.length ? addition.numLength || addition.charLength || addition.datePrecision : false;
 
          alterColumns.push(`ADD COLUMN "${addition.name}" 
@@ -695,7 +695,7 @@ export class PostgreSQLClient extends AntaresCore {
 
       // CHANGE FIELDS
       changes.forEach(change => {
-         const typeInfo = this._getTypeInfo(change.type);
+         const typeInfo = this.getTypeInfo(change.type);
          const length = typeInfo.length ? change.numLength || change.charLength || change.datePrecision : false;
          let localType;
 
