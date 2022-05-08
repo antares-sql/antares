@@ -26,17 +26,22 @@
             @focus.prevent="activate()"
             @blur.prevent="deactivate()"
             @keyup.esc="deactivate()"
-            @keydown.down.prevent="moveDown()"
-            @keydown.up.prevent="moveUp()"
+            @keydown.down.prevent="keyArrows('down')"
+            @keydown.up.prevent="keyArrows('up')"
             @keypress.enter.prevent.stop.self="select(filteredOptions[hightlightedIndex])"
          >
          <span v-if="searchable && !isOpen || !searchable">{{ currentOptionLabel }}</span>
       </div>
-      <div v-if="isOpen" class="select__list-wrapper">
+      <div
+         v-if="isOpen"
+         ref="optionList"
+         class="select__list-wrapper"
+      >
          <ul class="select__list" @mousedown.prevent>
             <li
                v-for="(opt, index) of filteredOptions"
                :key="getOptionValue(opt)"
+               :ref="(el) => optionRefs[index] = el"
                :class="{
                   'select__option--highlight': index === hightlightedIndex,
                   'select__option--selected': isSelected(opt)
@@ -101,6 +106,8 @@ export default defineComponent({
       const isOpen = ref(false);
       const el = ref(null);
       const searchInput = ref(null);
+      const optionList = ref(null);
+      const optionRefs = [];
       const searchText = ref('');
       const filteredOptions = computed(() => {
          const normalizedSearch = (searchText.value || '').toLowerCase().trim();
@@ -187,13 +194,21 @@ export default defineComponent({
          emit('close');
       };
 
-      const moveUp = () => {
-         if (hightlightedIndex.value > 0)
-            hightlightedIndex.value--;
-      };
-      const moveDown = () => {
-         if (hightlightedIndex.value < filteredOptions.value.length -1)
-            hightlightedIndex.value++;
+      const keyArrows = (direction) => {
+         const sum = direction === 'down' ? +1 : -1;
+         const index = hightlightedIndex.value + sum;
+         hightlightedIndex.value = Math.max(0, index > filteredOptions.value.length - 1 ? filteredOptions.value.length - 1 : index);
+
+         const optEl = optionRefs[hightlightedIndex.value];
+
+         const visMin = optionList.value.scrollTop;
+         const visMax = optionList.value.scrollTop + optionList.value.clientHeight - optEl.clientHeight;
+
+         if (optEl.offsetTop < visMin)
+            optionList.value.scrollTop = optEl.offsetTop;
+
+         else if (optEl.offsetTop >= visMax)
+            optionList.value.scrollTop = optEl.offsetTop - optionList.value.clientHeight + optEl.clientHeight;
       };
 
       return {
@@ -209,10 +224,11 @@ export default defineComponent({
          deactivate,
          select,
          isSelected,
-         moveUp,
-         moveDown,
+         keyArrows,
          isOpen,
-         hightlightedIndex
+         hightlightedIndex,
+         optionList,
+         optionRefs
       };
    }
 });
