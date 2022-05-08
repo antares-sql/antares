@@ -128,12 +128,12 @@ export default defineComponent({
 
       const getOptionValue = (opt) => {
          const key = typeof props.optionTrackBy === 'function' ? props.optionTrackBy() : props.optionTrackBy;
-         return opt[key];
+         return key ? opt[key] : opt;
       };
 
       const getOptionLabel = (opt) => {
          const key = typeof props.optionLabel === 'function' ? props.optionLabel() : props.optionLabel;
-         return opt[key];
+         return key ? opt[key] : opt;
       };
 
       const currentOptionLabel = computed(() => {
@@ -221,7 +221,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .select {
   position: relative;
-  width: 100%;
   display: block;
 
   &__search-input {
