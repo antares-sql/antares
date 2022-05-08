@@ -317,6 +317,14 @@ option:checked {
       }
     }
 
+    &.select-sm {
+      .select__list {
+        li {
+          padding: 0.05rem 0.3rem;
+        }
+      }
+    }
+
     .select__option--selected {
       background: rgba($primary-color, 0.25);
     }
