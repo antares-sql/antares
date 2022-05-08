@@ -87,7 +87,6 @@ option:checked {
   }
 }
 
-
 .workspace-query-results {
   overflow: auto;
   white-space: nowrap;
@@ -209,17 +208,17 @@ option:checked {
       }
     }
   }
-  
-  .modal-overlay{
-    background: rgba( 255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+
+  .modal-overlay {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
   }
 }
 
-#wrapper:not(.no-blur){
-  .modal-overlay{
-    backdrop-filter: blur( 4px );
-    -webkit-backdrop-filter: blur( 4px );
+#wrapper:not(.no-blur) {
+  .modal-overlay {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 }
 
@@ -296,6 +295,35 @@ option:checked {
     height: 21px;
     font-size: 0.7rem;
     padding: 1px 0.4rem 0;
+  }
+
+  &.select {
+    &.select-open {
+      border-color: $primary-color !important;
+      @include control-shadow();
+    }
+
+    .select__list-wrapper {
+      border: 1px solid transparent;
+      border-radius: $border-radius;
+      box-shadow: 0px 8px 17px 0px rgba(0, 0, 0, 0.2), 0px 6px 20px 0px rgba(0, 0, 0, 0.19);
+    }
+
+    .select__list {
+      margin: 0;
+      li {
+        margin: 0;
+        padding: 0.3rem 0.8rem;
+      }
+    }
+
+    .select__option--selected {
+      background: rgba($primary-color, 0.25);
+    }
+
+    .select__option--highlight {
+      background: $primary-color;
+    }
   }
 }
 

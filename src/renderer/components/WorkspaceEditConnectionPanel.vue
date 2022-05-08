@@ -50,15 +50,13 @@
                            <label class="form-label cut-text">{{ $t('word.client') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
-                           <select v-model="localConnection.client" class="form-select">
-                              <option
-                                 v-for="client in clients"
-                                 :key="client.slug"
-                                 :value="client.slug"
-                              >
-                                 {{ client.name }}
-                              </option>
-                           </select>
+                           <BaseSelect
+                              v-model="localConnection.client"
+                              :options="clients"
+                              option-track-by="slug"
+                              option-label="name"
+                              class="form-select"
+                           />
                         </div>
                      </div>
                      <div v-if="connection.client === 'pg'" class="form-group columns">
@@ -401,12 +399,14 @@ import { useWorkspacesStore } from '@/stores/workspaces';
 import Connection from '@/ipc-api/Connection';
 import ModalAskCredentials from '@/components/ModalAskCredentials';
 import BaseUploadInput from '@/components/BaseUploadInput';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'WorkspaceEditConnectionPanel',
    components: {
       ModalAskCredentials,
-      BaseUploadInput
+      BaseUploadInput,
+      BaseSelect
    },
    props: {
       connection: Object
