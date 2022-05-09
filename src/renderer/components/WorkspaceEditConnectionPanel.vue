@@ -56,6 +56,8 @@
                               option-track-by="slug"
                               option-label="name"
                               class="form-select"
+                              dropdown-container=".workspace .connection-panel-wrapper"
+                              :dropdown-offsets="{top: 10}"
                            />
                         </div>
                      </div>

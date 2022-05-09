@@ -6,7 +6,7 @@
       role="combobox"
       :tabindex="searchable ? -1 : tabindex"
       @focus="activate()"
-      @blur="searchable ? false : deactivate()"
+      @blur="searchable ? false : handleBlurEvent()"
       @keyup.esc="deactivate()"
       @keydown.self.down.prevent="moveDown()"
       @keydown.self.up.prevent="moveUp"
@@ -23,8 +23,8 @@
             :tabindex="tabindex"
             :value="searchText"
             @input="searchText = $event.target.value"
-            @focus.prevent="activate()"
-            @blur.prevent="deactivate()"
+            @focus.prevent="!isOpen ? activate() : false"
+            @blur.prevent="handleBlurEvent()"
             @keyup.esc="deactivate()"
             @keydown.down.prevent="keyArrows('down')"
             @keydown.up.prevent="keyArrows('up')"
@@ -32,43 +32,51 @@
          >
          <span v-if="searchable && !isOpen || !searchable">{{ currentOptionLabel }}</span>
       </div>
-      <div
+      <Teleport
          v-if="isOpen"
-         ref="optionList"
-         class="select__list-wrapper"
+         ref="teleportEl"
+         :to="dropdownContainer"
       >
-         <ul class="select__list" @mousedown.prevent>
-            <li
-               v-for="(opt, index) of filteredOptions"
-               :key="getOptionValue(opt)"
-               :ref="(el) => optionRefs[index] = el"
-               :class="{
-                  'select__option--highlight': index === hightlightedIndex,
-                  'select__option--selected': isSelected(opt)
-               }"
-               @click.stop="select(opt)"
-               @mouseenter.self="hightlightedIndex = index"
-            >
-               <slot
-                  name="option"
-                  :option="opt"
-                  :index="index"
+         <div
+            ref="optionList"
+            :class="`select__list-wrapper ${dropdownClass ? dropdownClass : '' }`"
+         >
+            <ul class="select__list" @mousedown.prevent>
+               <li
+                  v-for="(opt, index) of filteredOptions"
+                  :key="getOptionValue(opt)"
+                  :ref="(el) => optionRefs[index] = el"
+                  :class="{
+                     'select__option--highlight': index === hightlightedIndex,
+                     'select__option--selected': isSelected(opt)
+                  }"
+                  @click.stop="select(opt)"
+                  @mouseenter.self="hightlightedIndex = index"
                >
-                  {{ getOptionLabel(opt) }}
-               </slot>
-            </li>
-         </ul>
-      </div>
+                  <slot
+                     name="option"
+                     :option="opt"
+                     :index="index"
+                  >
+                     {{ getOptionLabel(opt) }}
+                  </slot>
+               </li>
+            </ul>
+         </div>
+      </Teleport>
    </div>
 </template>
 
 <script>
-import { defineComponent, computed, ref, watch } from 'vue';
+import { defineComponent, computed, ref, watch, nextTick, onMounted, onUnmounted } from 'vue';
 
 export default defineComponent({
    name: 'BaseSelect',
    props: {
       modelValue: {
+         type: [String, Number, Object]
+      },
+      value: {
          type: [String, Number, Object]
       },
       searchable: {
@@ -89,21 +97,35 @@ export default defineComponent({
       },
       optionTrackBy: {
          type: [String, Function],
-         default: (opt) => opt.id || opt.value
+         default: () => (opt) => {
+            for (const guess of ['id', 'value']) if (opt[guess]) return guess;
+         }
       },
       optionLabel: {
          type: [String, Function],
-         default: (opt) => opt.label
+         default: () => (opt) => opt.label ? 'label' : undefined
       },
       closeOnSelect: {
          type: Boolean,
          default: true
+      },
+      dropdownContainer: {
+         type: String,
+         default: '#main-content'
+      },
+      dropdownOffsets: {
+         type: Object,
+         default: () => ({ top: 10, left: 0 })
+      },
+      dropdownClass: {
+         type: String
       }
    },
-   emits: ['select', 'open', 'close', 'update:modelValue'],
+   emits: ['select', 'open', 'close', 'update:modelValue', 'change', 'blur'],
    setup (props, { emit }) {
       const hightlightedIndex = ref(0);
       const isOpen = ref(false);
+      const internalValue = ref(props.modelValue || props.value);
       const el = ref(null);
       const searchInput = ref(null);
       const optionList = ref(null);
@@ -134,12 +156,12 @@ export default defineComponent({
       });
 
       const getOptionValue = (opt) => {
-         const key = typeof props.optionTrackBy === 'function' ? props.optionTrackBy() : props.optionTrackBy;
+         const key = typeof props.optionTrackBy === 'function' ? props.optionTrackBy(opt) : props.optionTrackBy;
          return key ? opt[key] : opt;
       };
 
       const getOptionLabel = (opt) => {
-         const key = typeof props.optionLabel === 'function' ? props.optionLabel() : props.optionLabel;
+         const key = typeof props.optionLabel === 'function' ? props.optionLabel(opt) : props.optionLabel;
          return key ? opt[key] : opt;
       };
 
@@ -153,19 +175,22 @@ export default defineComponent({
       });
 
       const select = (opt) => {
+         internalValue.value = opt;
          emit('select', opt);
          emit('update:modelValue', getOptionValue(opt));
+         emit('change', opt);
 
          if (props.closeOnSelect)
             deactivate();
       };
 
       const isSelected = (opt) => {
-         return props.modelValue === getOptionValue(opt);
+         return internalValue.value === getOptionValue(opt);
       };
 
       const activate = () => {
          if (isOpen.value) return;
+         isOpen.value = true;
 
          if (props.searchable)
             searchInput.value.focus();
@@ -173,14 +198,13 @@ export default defineComponent({
          else
             el.value.focus();
 
-         isOpen.value = true;
+         nextTick(() => adjustListPosition());
 
          emit('open');
       };
 
       const deactivate = () => {
          if (!isOpen.value) return;
-
          isOpen.value = false;
 
          if (props.searchable)
@@ -192,6 +216,16 @@ export default defineComponent({
          if (!props.preserveSearch) searchText.value = '';
 
          emit('close');
+      };
+
+      const adjustListPosition = () => {
+         const element = el.value;
+         const { left, top } = element.getBoundingClientRect();
+         const { left: offsetLeft = 0, top: offsetTop = 0 } = props.dropdownOffsets;
+
+         optionList.value.style.left = `${left + offsetLeft}px`;
+         optionList.value.style.top = `${top + element.clientHeight + offsetTop}px`;
+         optionList.value.style.minWidth = `${element.clientWidth}px`;
       };
 
       const keyArrows = (direction) => {
@@ -211,6 +245,18 @@ export default defineComponent({
             optionList.value.scrollTop = optEl.offsetTop - optionList.value.clientHeight + optEl.clientHeight;
       };
 
+      const handleBlurEvent = () => {
+         deactivate();
+         emit('blur');
+      };
+
+      onMounted(() => {
+         window.addEventListener('resize', adjustListPosition);
+      });
+      onUnmounted(() => {
+         window.removeEventListener('resize', adjustListPosition);
+      });
+
       return {
          el,
          searchInput,
@@ -228,7 +274,8 @@ export default defineComponent({
          isOpen,
          hightlightedIndex,
          optionList,
-         optionRefs
+         optionRefs,
+         handleBlurEvent
       };
    }
 });
@@ -236,7 +283,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .select {
-  position: relative;
+
   display: block;
 
   &__search-input {
@@ -248,10 +295,9 @@ export default defineComponent({
   }
 
   &__list-wrapper {
-    position: absolute;
+    position: fixed;
     display: block;
-    width: 100%;
-    z-index: 50;
+    z-index: 5;
     -webkit-overflow-scrolling: touch;
     max-height: 240px;
     overflow: auto;

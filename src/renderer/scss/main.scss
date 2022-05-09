@@ -302,37 +302,33 @@ option:checked {
       border-color: $primary-color !important;
       @include control-shadow();
     }
+  }
+}
 
-    .select__list-wrapper {
-      border: 1px solid transparent;
-      border-radius: $border-radius;
-      box-shadow: 0px 8px 17px 0px rgba(0, 0, 0, 0.2), 0px 6px 20px 0px rgba(0, 0, 0, 0.19);
-    }
+.select__list {
+  margin: 0;
+  li {
+    margin: 0;
+    padding: 0.3rem 0.8rem;
 
-    .select__list {
-      margin: 0;
-      li {
-        margin: 0;
-        padding: 0.3rem 0.8rem;
-      }
-    }
-
-    &.select-sm {
-      .select__list {
-        li {
-          padding: 0.05rem 0.3rem;
-        }
-      }
-    }
-
-    .select__option--selected {
-      background: rgba($primary-color, 0.25);
-    }
-
-    .select__option--highlight {
-      background: $primary-color;
+    .select-sm & {
+      padding: 0.05rem 0.3rem;
     }
   }
+}
+
+.select__list-wrapper {
+  border: 1px solid transparent;
+  border-radius: $border-radius;
+  box-shadow: 0px 8px 17px 0px rgba(0, 0, 0, 0.2), 0px 6px 20px 0px rgba(0, 0, 0, 0.19);
+}
+
+.select__option--selected {
+  background: rgba($primary-color, 0.25);
+}
+
+.select__option--highlight {
+  background: $primary-color;
 }
 
 .form-input[type="file"] {

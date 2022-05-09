@@ -121,12 +121,10 @@
     border-color: $primary-color;
   }
 
-  .form-select {
-    .select {
-      &__list-wrapper {
-        border-color: $bg-color-gray;
-        background-color: $bg-color-light-dark;
-      }
+  .select {
+    &__list-wrapper {
+      border-color: $bg-color-gray;
+      background-color: $bg-color-light-dark;
     }
   }
 
