@@ -126,6 +126,11 @@
       border-color: $bg-color-gray;
       background-color: $bg-color-light-dark;
     }
+
+    &__group {
+      background: rgba($bg-color-gray, 0.65);
+      color: rgba($bg-color-light-gray, 0.7);
+    }
   }
 
   .form-input[readonly] {

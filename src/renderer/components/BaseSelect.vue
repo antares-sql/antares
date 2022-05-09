@@ -44,11 +44,12 @@
             <ul class="select__list" @mousedown.prevent>
                <li
                   v-for="(opt, index) of filteredOptions"
-                  :key="getOptionValue(opt)"
+                  :key="opt.id"
                   :ref="(el) => optionRefs[index] = el"
                   :class="{
-                     'select__option--highlight': index === hightlightedIndex,
-                     'select__option--selected': isSelected(opt)
+                     'select__group': opt.$type === 'group',
+                     'select__option--highlight': opt.$type === 'option' && index === hightlightedIndex,
+                     'select__option--selected': opt.$type === 'option' && isSelected(opt)
                   }"
                   @click.stop="select(opt)"
                   @mouseenter.self="hightlightedIndex = index"
@@ -58,7 +59,7 @@
                      :option="opt"
                      :index="index"
                   >
-                     {{ getOptionLabel(opt) }}
+                     {{ opt.label }}
                   </slot>
                </li>
             </ul>
@@ -105,13 +106,19 @@ export default defineComponent({
          type: [String, Function],
          default: () => (opt) => opt.label ? 'label' : undefined
       },
+      groupLabel: {
+         type: String
+      },
+      groupValues: {
+         type: String
+      },
       closeOnSelect: {
          type: Boolean,
          default: true
       },
       dropdownContainer: {
          type: String,
-         default: '#main-content'
+         default: '#window-content'
       },
       dropdownOffsets: {
          type: Object,
@@ -131,13 +138,61 @@ export default defineComponent({
       const optionList = ref(null);
       const optionRefs = [];
       const searchText = ref('');
+
+      const getOptionValue = (opt) => _guess('optionTrackBy', opt);
+      const getOptionLabel = (opt) => _guess('optionLabel', opt);
+      const _guess = (name, item) => {
+         const prop = props[name];
+         const key = typeof prop === 'function' ? prop(item) : prop;
+         return key ? item[key] : item;
+      };
+
+      const flattenOptions = computed(() => {
+         return [...props.options].reduce((prev, curr) => {
+            if (curr[props.groupValues] && curr[props.groupValues].length) {
+               prev.push({
+                  $type: 'group',
+                  label: curr[props.groupLabel],
+                  id: `group-${curr[props.groupLabel]}`,
+                  count: curr[props.groupLabel].length
+               });
+
+               return prev.concat(curr[props.groupValues].map(el => {
+                  const value = getOptionValue(el);
+                  return {
+                     $type: 'option',
+                     label: getOptionLabel(el),
+                     id: `option-${value}`,
+                     value,
+                     $data: {
+                        ...el
+                     }
+                  };
+               }));
+            }
+            else {
+               const value = getOptionValue(curr);
+               prev.push({
+                  $type: 'option',
+                  label: getOptionLabel(curr),
+                  id: `option-${value}`,
+                  value,
+                  $data: {
+                     ...curr
+                  }
+               });
+            }
+
+            return prev;
+         }, []);
+      });
+
       const filteredOptions = computed(() => {
          const normalizedSearch = (searchText.value || '').toLowerCase().trim();
-         const options = [...props.options];
 
          return normalizedSearch
-            ? options.filter(opt => getOptionLabel(opt).trim().toLowerCase().indexOf(normalizedSearch) !== -1)
-            : options;
+            ? flattenOptions.value.filter(opt => opt.$type === 'group' || opt.label.trim().toLowerCase().indexOf(normalizedSearch) !== -1)
+            : flattenOptions.value;
       });
 
       const searchInputStyle = computed(() => {
@@ -155,29 +210,16 @@ export default defineComponent({
             hightlightedIndex.value = 0;
       });
 
-      const getOptionValue = (opt) => {
-         const key = typeof props.optionTrackBy === 'function' ? props.optionTrackBy(opt) : props.optionTrackBy;
-         return key ? opt[key] : opt;
-      };
-
-      const getOptionLabel = (opt) => {
-         const key = typeof props.optionLabel === 'function' ? props.optionLabel(opt) : props.optionLabel;
-         return key ? opt[key] : opt;
-      };
-
-      const currentOptionLabel = computed(() => {
-         if (props.modelValue) {
-            const opt = props.options.find(d => getOptionValue(d) === props.modelValue);
-            return getOptionLabel(opt);
-         }
-
-         return undefined;
-      });
+      const currentOptionLabel = computed(() =>
+         flattenOptions.value.find(d => d.value === props.modelValue)?.label
+      );
 
       const select = (opt) => {
-         internalValue.value = opt;
+         if (opt.$type === 'group') return;
+
+         internalValue.value = opt.value;
          emit('select', opt);
-         emit('update:modelValue', getOptionValue(opt));
+         emit('update:modelValue', opt.value);
          emit('change', opt);
 
          if (props.closeOnSelect)
@@ -185,12 +227,13 @@ export default defineComponent({
       };
 
       const isSelected = (opt) => {
-         return internalValue.value === getOptionValue(opt);
+         return internalValue.value === opt.value;
       };
 
       const activate = () => {
          if (isOpen.value) return;
          isOpen.value = true;
+         hightlightedIndex.value = flattenOptions.value.findIndex(el => el.value === internalValue.value) || 0;
 
          if (props.searchable)
             searchInput.value.focus();
@@ -198,7 +241,10 @@ export default defineComponent({
          else
             el.value.focus();
 
-         nextTick(() => adjustListPosition());
+         nextTick(() => {
+            adjustListPosition();
+            scrollTo(optionRefs[hightlightedIndex.value]);
+         });
 
          emit('open');
       };
@@ -230,11 +276,22 @@ export default defineComponent({
 
       const keyArrows = (direction) => {
          const sum = direction === 'down' ? +1 : -1;
-         const index = hightlightedIndex.value + sum;
-         hightlightedIndex.value = Math.max(0, index > filteredOptions.value.length - 1 ? filteredOptions.value.length - 1 : index);
+         let index = hightlightedIndex.value + sum;
+         index = Math.max(0, index > filteredOptions.value.length - 1 ? filteredOptions.value.length - 1 : index);
+         if (filteredOptions.value[index].$type === 'group')
+            index=Math.max(1, index+sum);
+
+         hightlightedIndex.value = index;
 
          const optEl = optionRefs[hightlightedIndex.value];
+         if (!optEl)
+            return;
 
+         scrollTo(optEl);
+      };
+
+      const scrollTo = (optEl) => {
+         if (!optEl) return;
          const visMin = optionList.value.scrollTop;
          const visMax = optionList.value.scrollTop + optionList.value.clientHeight - optEl.clientHeight;
 
@@ -263,8 +320,6 @@ export default defineComponent({
          searchText,
          searchInputStyle,
          filteredOptions,
-         getOptionValue,
-         getOptionLabel,
          currentOptionLabel,
          activate,
          deactivate,
@@ -295,6 +350,7 @@ export default defineComponent({
   }
 
   &__list-wrapper {
+    cursor: pointer;
     position: fixed;
     display: block;
     z-index: 5;
@@ -308,5 +364,6 @@ export default defineComponent({
   &__list {
     list-style: none;
   }
+
 }
 </style>
