@@ -170,7 +170,7 @@
     "playwright-core": "~1.21.1",
     "progress-webpack-plugin": "~1.0.12",
     "rimraf": "~3.0.2",
-    "sass": "~1.42.1",
+    "sass": "~1.51.0",
     "sass-loader": "~12.3.0",
     "standard-version": "~9.3.1",
     "style-loader": "~3.3.1",
