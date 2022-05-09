@@ -2,6 +2,7 @@
   "include": [
     "./tests/**/*", 
     "./src/main/**/*", 
+    "./src/renderer/**/*", 
     "./src/common/interfaces/antares.ts"
   ],
   "compilerOptions": {

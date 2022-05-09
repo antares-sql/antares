@@ -46,13 +46,15 @@
    </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { computed, defineComponent, onBeforeUnmount } from 'vue';
+
+export default defineComponent({
    name: 'BaseConfirmModal',
    props: {
       size: {
          type: String,
-         validator: prop => ['small', 'medium', '400', 'large'].includes(prop),
+         validator: (prop: string) => ['small', 'medium', '400', 'large'].includes(prop),
          default: 'small'
       },
       hideFooter: {
@@ -63,48 +65,52 @@ export default {
       cancelText: String
    },
    emits: ['confirm', 'hide'],
-   computed: {
-      hasHeader () {
-         return !!this.$slots.header;
-      },
-      hasBody () {
-         return !!this.$slots.body;
-      },
-      hasDefault () {
-         return !!this.$slots.default;
-      },
-      modalSizeClass () {
-         if (this.size === 'small')
+   setup (props, { slots, emit }) {
+      const hasHeader = computed(() => !!slots.header);
+      const hasBody = computed(() => !!slots.body);
+      const hasDefault = computed(() => !!slots.default);
+      const modalSizeClass = computed(() => {
+         if (props.size === 'small')
             return 'modal-sm';
-         if (this.size === '400')
+         if (props.size === '400')
             return 'modal-400';
-         else if (this.size === 'large')
+         else if (props.size === 'large')
             return 'modal-lg';
          else return '';
-      }
-   },
-   created () {
-      window.addEventListener('keydown', this.onKey);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-   },
-   methods: {
-      confirmModal () {
-         this.$emit('confirm');
-         this.hideModal();
-      },
+      });
 
-      hideModal () {
-         this.$emit('hide');
-      },
-      onKey (e) {
+      const confirmModal = () => {
+         emit('confirm');
+         hideModal();
+      };
+
+      const hideModal = () => {
+         emit('hide');
+      };
+
+      const onKey = (e: KeyboardEvent) => {
          e.stopPropagation();
          if (e.key === 'Escape')
-            this.hideModal();
-      }
+            hideModal();
+      };
+
+      window.addEventListener('keydown', onKey);
+
+      onBeforeUnmount(() => {
+         window.removeEventListener('keydown', onKey);
+      });
+
+      return {
+         hasHeader,
+         hasBody,
+         hasDefault,
+         modalSizeClass,
+         confirmModal,
+         hideModal,
+         onKey
+      };
    }
-};
+});
 </script>
 
 <style scoped>
