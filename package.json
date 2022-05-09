@@ -183,7 +183,7 @@
     "unzip-crx-3": "~0.2.0",
     "vue-eslint-parser": "~8.3.0",
     "vue-loader": "~16.8.3",
-    "webpack": "~5.60.0",
+    "webpack": "~5.72.0",
     "webpack-cli": "~4.9.1",
     "webpack-dev-server": "~4.4.0",
     "xvfb-maybe": "~0.2.1"
