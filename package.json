@@ -110,7 +110,7 @@
   },
   "dependencies": {
     "@electron/remote": "~2.0.1",
-    "@faker-js/faker": "~6.1.2",
+    "@faker-js/faker": "~6.3.1",
     "@mdi/font": "~6.1.95",
     "@turf/helpers": "~6.5.0",
     "@vscode/vscode-languagedetection": "~1.0.21",
