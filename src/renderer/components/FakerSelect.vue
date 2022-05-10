@@ -52,7 +52,7 @@
       >
       <BaseUploadInput
          v-else-if="inputProps().type === 'file'"
-         :value="selectedValue"
+         :model-value="selectedValue"
          :message="$t('word.browse')"
          @clear="clearValue"
          @change="filesChange($event)"

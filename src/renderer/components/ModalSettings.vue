@@ -328,7 +328,7 @@ import { storeToRefs } from 'pinia';
 import { useApplicationStore } from '@/stores/application';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import localesNames from '@/i18n/supported-locales';
+import { localesNames } from '@/i18n/supported-locales';
 import ModalSettingsUpdate from '@/components/ModalSettingsUpdate';
 import ModalSettingsChangelog from '@/components/ModalSettingsChangelog';
 import BaseTextEditor from '@/components/BaseTextEditor';

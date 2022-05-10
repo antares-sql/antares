@@ -46,70 +46,57 @@
    </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, onBeforeUnmount } from 'vue';
+<script setup lang="ts">
+import { computed, onBeforeUnmount, PropType, useSlots } from 'vue';
 
-export default defineComponent({
-   name: 'BaseConfirmModal',
-   props: {
-      size: {
-         type: String,
-         validator: (prop: string) => ['small', 'medium', '400', 'large'].includes(prop),
-         default: 'small'
-      },
-      hideFooter: {
-         type: Boolean,
-         default: false
-      },
-      confirmText: String,
-      cancelText: String
+const props = defineProps({
+   size: {
+      type: String as PropType<'small' | 'medium' | '400' | 'large'>,
+      validator: (prop: string) => ['small', 'medium', '400', 'large'].includes(prop),
+      default: 'small'
    },
-   emits: ['confirm', 'hide'],
-   setup (props, { slots, emit }) {
-      const hasHeader = computed(() => !!slots.header);
-      const hasBody = computed(() => !!slots.body);
-      const hasDefault = computed(() => !!slots.default);
-      const modalSizeClass = computed(() => {
-         if (props.size === 'small')
-            return 'modal-sm';
-         if (props.size === '400')
-            return 'modal-400';
-         else if (props.size === 'large')
-            return 'modal-lg';
-         else return '';
-      });
+   hideFooter: {
+      type: Boolean,
+      default: false
+   },
+   confirmText: String,
+   cancelText: String
+});
+const emit = defineEmits(['confirm', 'hide']);
+const slots = useSlots();
 
-      const confirmModal = () => {
-         emit('confirm');
-         hideModal();
-      };
+const hasHeader = computed(() => !!slots.header);
+const hasBody = computed(() => !!slots.body);
+const hasDefault = computed(() => !!slots.default);
+const modalSizeClass = computed(() => {
+   if (props.size === 'small')
+      return 'modal-sm';
+   if (props.size === '400')
+      return 'modal-400';
+   else if (props.size === 'large')
+      return 'modal-lg';
+   else return '';
+});
 
-      const hideModal = () => {
-         emit('hide');
-      };
+const confirmModal = () => {
+   emit('confirm');
+   hideModal();
+};
 
-      const onKey = (e: KeyboardEvent) => {
-         e.stopPropagation();
-         if (e.key === 'Escape')
-            hideModal();
-      };
+const hideModal = () => {
+   emit('hide');
+};
 
-      window.addEventListener('keydown', onKey);
+const onKey = (e: KeyboardEvent) => {
+   e.stopPropagation();
+   if (e.key === 'Escape')
+      hideModal();
+};
 
-      onBeforeUnmount(() => {
-         window.removeEventListener('keydown', onKey);
-      });
+window.addEventListener('keydown', onKey);
 
-      return {
-         hasHeader,
-         hasBody,
-         hasDefault,
-         modalSizeClass,
-         confirmModal,
-         hideModal,
-         onKey
-      };
-   }
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
 });
 </script>
 

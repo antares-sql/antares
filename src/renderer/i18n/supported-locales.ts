@@ -1,4 +1,4 @@
-export default {
+export const localesNames = {
    'en-US': 'English',
    'it-IT': 'Italiano',
    'ar-SA': 'العربية',

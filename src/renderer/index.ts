@@ -29,7 +29,7 @@ createApp(App)
    .mount('#app');
 
 const { locale } = useSettingsStore();
-i18n.global.locale = locale;
+i18n.global.locale = locale as string;// TODO: temp
 
 // IPC exceptions
 ipcRenderer.on('unhandled-exception', (event, error) => {
@@ -59,7 +59,7 @@ ipcRenderer.on('no-auto-update', () => {
 
 ipcRenderer.on('download-progress', (event, data) => {
    useApplicationStore().updateStatus = 'downloading';
-   useApplicationStore().downloadprogress = data.percent;
+   useApplicationStore().downloadProgress = data.percent;
 });
 
 ipcRenderer.on('update-downloaded', () => {

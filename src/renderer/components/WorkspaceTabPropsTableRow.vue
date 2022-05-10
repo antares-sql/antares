@@ -90,7 +90,7 @@
          </label>
       </div>
       <div class="td p-0 type-int" tabindex="0">
-         <template v-if="fieldType.length">
+         <template v-if="fieldType?.length">
             <span
                v-if="!isInlineEditor.length"
                class="cell-content"
@@ -355,7 +355,7 @@ export default {
    },
    props: {
       row: Object,
-      dataTypes: Array,
+      dataTypes: { type: Array, default: () => [] },
       indexes: Array,
       foreigns: Array,
       customizations: Object

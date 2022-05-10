@@ -134,7 +134,7 @@
 </template>
 
 <script>
-import arrayToFile from '../libs/arrayToFile';
+import { arrayToFile } from '../libs/arrayToFile';
 import { useNotificationsStore } from '@/stores/notifications';
 import Schema from '@/ipc-api/Schema';
 import { useConnectionsStore } from '@/stores/connections';

@@ -4,6 +4,9 @@ import Connection from '@/ipc-api/Connection';
 import Schema from '@/ipc-api/Schema';
 import Users from '@/ipc-api/Users';
 import { uidGen } from 'common/libs/uidGen';
+
+import customizations from 'common/customizations';
+
 import { useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
@@ -22,14 +25,14 @@ export const useWorkspacesStore = defineStore('workspaces', {
          if (state.selectedWorkspace) return state.selectedWorkspace;
          return state.workspaces[0].uid;
       },
-      getWorkspace: state => uid => {
+      getWorkspace: state => (uid) => {
          return state.workspaces.find(workspace => workspace.uid === uid);
       },
       getDatabaseVariable: state => (uid, name) => {
          return state.workspaces.find(workspace => workspace.uid === uid).variables.find(variable => variable.name === name);
       },
       getWorkspaceTab (state) {
-         return tUid => {
+         return (tUid) => {
             if (!this.getSelected) return;
             const workspace = state.workspaces.find(workspace => workspace.uid === this.getSelected);
             if ('tabs' in workspace)
@@ -89,24 +92,24 @@ export const useWorkspacesStore = defineStore('workspaces', {
             else {
                let dataTypes = [];
                let indexTypes = [];
-               let customizations = {};
+               let clientCustomizations;
 
                switch (connection.client) {
                   case 'mysql':
                   case 'maria':
-                     dataTypes = require('common/data-types/mysql');
-                     indexTypes = require('common/index-types/mysql');
-                     customizations = require('common/customizations/mysql');
+                     dataTypes = require('common/data-types/mysql').default;
+                     indexTypes = require('common/index-types/mysql').default;
+                     clientCustomizations = customizations.mysql;
                      break;
                   case 'pg':
-                     dataTypes = require('common/data-types/postgresql');
-                     indexTypes = require('common/index-types/postgresql');
-                     customizations = require('common/customizations/postgresql');
+                     dataTypes = require('common/data-types/postgresql').default;
+                     indexTypes = require('common/index-types/postgresql').default;
+                     clientCustomizations = customizations.pg;
                      break;
                   case 'sqlite':
-                     dataTypes = require('common/data-types/sqlite');
-                     indexTypes = require('common/index-types/sqlite');
-                     customizations = require('common/customizations/sqlite');
+                     dataTypes = require('common/data-types/sqlite').default;
+                     indexTypes = require('common/index-types/sqlite').default;
+                     clientCustomizations = customizations.sqlite;
                      break;
                }
 
@@ -144,7 +147,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
                      client: connection.client,
                      dataTypes,
                      indexTypes,
-                     customizations,
+                     customizations: clientCustomizations,
                      structure: response,
                      connectionStatus: 'connected',
                      tabs: cachedTabs,

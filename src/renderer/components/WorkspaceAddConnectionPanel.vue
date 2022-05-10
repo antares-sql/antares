@@ -96,7 +96,7 @@
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
-                              :value="connection.databasePath"
+                              :model-value="connection.databasePath"
                               :message="$t('word.browse')"
                               @clear="pathClear('databasePath')"
                               @change="pathSelection($event, 'databasePath')"
@@ -211,7 +211,7 @@
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
-                              :value="connection.key"
+                              :model-value="connection.key"
                               :message="$t('word.browse')"
                               @clear="pathClear('key')"
                               @change="pathSelection($event, 'key')"
@@ -224,7 +224,7 @@
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
-                              :value="connection.cert"
+                              :model-value="connection.cert"
                               :message="$t('word.browse')"
                               @clear="pathClear('cert')"
                               @change="pathSelection($event, 'cert')"
@@ -237,7 +237,7 @@
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
-                              :value="connection.ca"
+                              :model-value="connection.ca"
                               :message="$t('word.browse')"
                               @clear="pathClear('ca')"
                               @change="pathSelection($event, 'ca')"
@@ -342,7 +342,7 @@
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
-                              :value="connection.sshKey"
+                              :model-value="connection.sshKey"
                               :message="$t('word.browse')"
                               @clear="pathClear('sshKey')"
                               @change="pathSelection($event, 'sshKey')"

@@ -14,64 +14,58 @@
    </div>
 </template>
 
-<script>
-export default {
-   name: 'BaseNotification',
-   props: {
-      message: {
-         type: String,
-         default: ''
-      },
-      status: {
-         type: String,
-         default: ''
-      }
-   },
-   emits: ['close'],
-   data () {
-      return {
-         isExpanded: false
-      };
-   },
-   computed: {
-      notificationStatus () {
-         let className = '';
-         let iconName = '';
-         switch (this.status) {
-            case 'success':
-               className = 'toast-success';
-               iconName = 'mdi-check';
-               break;
-            case 'error':
-               className = 'toast-error';
-               iconName = 'mdi-alert-rhombus';
-               break;
-            case 'warning':
-               className = 'toast-warning';
-               iconName = 'mdi-alert';
-               break;
-            case 'primary':
-               className = 'toast-primary';
-               iconName = 'mdi-information-outline';
-               break;
-         }
+<script setup lang="ts">
+import { computed, ref } from 'vue';
 
-         return { className, iconName };
-      },
-      isExpandable () {
-         return this.message.length > 80;
-      }
+const props = defineProps({
+   message: {
+      type: String,
+      default: ''
    },
-   methods: {
-      hideToast () {
-         this.$emit('close');
-      },
-      toggleExpand () {
-         this.isExpanded = !this.isExpanded;
-      }
+   status: {
+      type: String,
+      default: ''
    }
+});
+const isExpanded = ref(false);
+const emit = defineEmits(['close']);
+
+const notificationStatus = computed(() => {
+   let className = '';
+   let iconName = '';
+   switch (props.status) {
+      case 'success':
+         className = 'toast-success';
+         iconName = 'mdi-check';
+         break;
+      case 'error':
+         className = 'toast-error';
+         iconName = 'mdi-alert-rhombus';
+         break;
+      case 'warning':
+         className = 'toast-warning';
+         iconName = 'mdi-alert';
+         break;
+      case 'primary':
+         className = 'toast-primary';
+         iconName = 'mdi-information-outline';
+         break;
+   }
+
+   return { className, iconName };
+});
+
+const isExpandable = computed(() => props.message.length > 80);
+
+const hideToast = () => {
+   emit('close');
+};
+
+const toggleExpand = () => {
+   isExpanded.value = !isExpanded.value;
 };
 </script>
+
 <style scoped>
   .toast {
     display: flex;

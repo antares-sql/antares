@@ -112,7 +112,7 @@ import { uidGen } from 'common/libs/uidGen';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import arrayToFile from '../libs/arrayToFile';
+import { arrayToFile } from '../libs/arrayToFile';
 import { TEXT, LONG_TEXT, BLOB } from 'common/fieldTypes';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll';
 import WorkspaceTabQueryTableRow from '@/components/WorkspaceTabQueryTableRow';
