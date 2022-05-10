@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import { uidGen } from 'common/libs/uidGen';
+
 export default {
    name: 'BaseUploadInput',
    props: {
@@ -38,11 +40,8 @@ export default {
    emits: ['change', 'clear'],
    data () {
       return {
-         id: null
+         id: uidGen()
       };
-   },
-   mounted () {
-      this.id = this._uid;
    },
    methods: {
       clear () {
