@@ -1,7 +1,7 @@
 import * as antares from 'common/interfaces/antares';
 import * as sqlite from 'better-sqlite3';
 import { AntaresCore } from '../AntaresCore';
-import * as dataTypes from 'common/data-types/sqlite';
+import dataTypes from 'common/data-types/sqlite';
 import { NUMBER, FLOAT, TIME, DATETIME } from 'common/fieldTypes';
 
 export class SQLiteClient extends AntaresCore {

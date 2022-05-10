@@ -1,6 +1,6 @@
 import * as pg from 'pg';
 import * as importer from 'common/interfaces/importer';
-import fs from 'fs/promises';
+import * as fs from 'fs/promises';
 import PostgreSQLParser from '../../parsers/PostgreSQLParser';
 import { BaseImporter } from '../BaseImporter';
 

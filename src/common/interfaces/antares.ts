@@ -67,6 +67,11 @@ export interface TypeInformations {
    zerofill: boolean;
 }
 
+export interface TypesGroup {
+   group: string;
+   types: TypeInformations[];
+}
+
 // Tables
 export interface TableField {
    name: string;

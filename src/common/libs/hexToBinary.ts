@@ -23,7 +23,7 @@ const lookup = {
    F: '1111'
 } as const;
 
-type HexChar = keyof typeof lookup
+export type HexChar = keyof typeof lookup
 
 export default function hexToBinary (hex: HexChar[]) {
    let binary = '';

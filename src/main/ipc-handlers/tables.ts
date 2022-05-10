@@ -6,7 +6,7 @@ import moment from 'moment';
 import { sqlEscaper } from 'common/libs/sqlEscaper';
 import { TEXT, LONG_TEXT, ARRAY, TEXT_SEARCH, NUMBER, FLOAT, BLOB, BIT, DATE, DATETIME } from 'common/fieldTypes';
 import * as customizations from 'common/customizations';
-import fs from 'fs';
+import * as fs from 'fs';
 
 export default (connections: {[key: string]: antares.Client}) => {
    ipcMain.handle('get-table-columns', async (event, params) => {

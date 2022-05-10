@@ -1,3 +1,5 @@
+import { TypesGroup } from 'common/interfaces/antares';
+
 export default [
    {
       group: 'integer',
@@ -134,4 +136,4 @@ export default [
          }
       ]
    }
-];
+] as TypesGroup[];
