@@ -1,4 +1,8 @@
-module.exports = {
+import { Customizations } from '../interfaces/customizations';
+import { defaults } from './defaults';
+
+export const customizations: Customizations = {
+   ...defaults,
    // Core
    fileConnection: true,
    // Structure

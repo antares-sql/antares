@@ -1,5 +1,4 @@
-'use strict';
-export function mimeFromHex (hex) {
+export function mimeFromHex (hex: string) {
    switch (hex.substring(0, 4)) { // 2 bytes
       case '424D':
          return { ext: 'bmp', mime: 'image/bmp' };
@@ -23,7 +22,7 @@ export function mimeFromHex (hex) {
             case '425A68':
                return { ext: 'bz2', mime: 'application/x-bzip2' };
             default:
-               switch (hex) { // 4 bytes
+               switch (hex) { // 4 bites
                   case '89504E47':
                      return { ext: 'png', mime: 'image/png' };
                   case '47494638':

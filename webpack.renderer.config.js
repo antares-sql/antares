@@ -27,7 +27,7 @@ const config = {
    name: 'renderer',
    mode: process.env.NODE_ENV,
    devtool: isDevMode ? 'eval-source-map' : false,
-   entry: path.join(__dirname, './src/renderer/index.js'),
+   entry: path.join(__dirname, './src/renderer/index.ts'),
    target: 'electron-renderer',
    output: {
       path: path.resolve(__dirname, 'dist'),

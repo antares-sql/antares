@@ -3,13 +3,7 @@
 const pattern = /[\0\x08\x09\x1a\n\r"'\\\%]/gm;
 const regex = new RegExp(pattern);
 
-/**
- * Escapes a string
- *
- * @param {String} string
- * @returns {String}
- */
-function sqlEscaper (string) {
+function sqlEscaper (string: string) {
    return string.replace(regex, char => {
       const m = ['\\0', '\\x08', '\\x09', '\\x1a', '\\n', '\\r', '\'', '\"', '\\', '\\\\', '%'];
       const r = ['\\\\0', '\\\\b', '\\\\t', '\\\\z', '\\\\n', '\\\\r', '\\\'', '\\\"', '\\\\', '\\\\\\\\', '\%'];

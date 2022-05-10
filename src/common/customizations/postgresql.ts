@@ -1,6 +1,7 @@
-const defaults = require('./defaults');
+import { Customizations } from '../interfaces/customizations';
+import { defaults } from './defaults';
 
-module.exports = {
+export const customizations: Customizations = {
    ...defaults,
    // Defaults
    defaultPort: 5432,

@@ -1,5 +1,3 @@
-'use strict';
-
 const lookup = {
    0: '0000',
    1: '0001',
@@ -23,15 +21,11 @@ const lookup = {
    D: '1101',
    E: '1110',
    F: '1111'
-};
+} as const;
 
-/**
- * Converts hexadecimal string to binary string
- *
- * @param {string} hex Hexadecimal string
- * @returns {string} Binary string
- */
-export default function hexToBinary (hex) {
+type HexChar = keyof typeof lookup
+
+export default function hexToBinary (hex: HexChar[]) {
    let binary = '';
    for (let i = 0; i < hex.length; i++)
       binary += lookup[hex[i]];

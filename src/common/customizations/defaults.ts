@@ -1,4 +1,6 @@
-module.exports = {
+import { Customizations } from '../interfaces/customizations';
+
+export const defaults: Customizations = {
    // Defaults
    defaultPort: null,
    defaultUser: null,
@@ -68,24 +70,24 @@ module.exports = {
    viewUpdateOption: false,
    procedureDeterministic: false,
    procedureDataAccess: false,
-   procedureSql: false,
+   procedureSql: null,
    procedureContext: false,
    procedureLanguage: false,
    functionDeterministic: false,
    functionDataAccess: false,
-   functionSql: false,
+   functionSql: null,
    functionContext: false,
    functionLanguage: false,
-   triggerSql: false,
+   triggerSql: null,
    triggerStatementInCreation: false,
    triggerMultipleEvents: false,
    triggerTableInName: false,
    triggerUpdateColumns: false,
    triggerOnlyRename: false,
    triggerEnableDisable: false,
-   triggerFunctionSql: false,
-   triggerFunctionlanguages: false,
+   triggerFunctionSql: null,
+   triggerFunctionlanguages: null,
    parametersLength: false,
-   languages: false,
+   languages: null,
    readOnlyMode: false
 };
