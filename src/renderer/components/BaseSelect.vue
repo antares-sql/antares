@@ -2,9 +2,9 @@
    <div
       ref="el"
       class="select"
-      :class="{'select-open': isOpen}"
+      :class="{'select-open': isOpen, 'select--disabled': disabled}"
       role="combobox"
-      :tabindex="searchable ? -1 : tabindex"
+      :tabindex="searchable || disabled ? -1 : tabindex"
       @focus="activate()"
       @blur="searchable ? false : handleBlurEvent()"
       @keyup.esc="deactivate()"
@@ -98,13 +98,11 @@ export default defineComponent({
       },
       optionTrackBy: {
          type: [String, Function],
-         default: () => (opt) => {
-            for (const guess of ['id', 'value']) if (opt[guess]) return guess;
-         }
+         default: 'value'
       },
       optionLabel: {
          type: [String, Function],
-         default: () => (opt) => opt.label ? 'label' : undefined
+         default: 'label'
       },
       groupLabel: {
          type: String
@@ -126,6 +124,10 @@ export default defineComponent({
       },
       dropdownClass: {
          type: String
+      },
+      disabled: {
+         type: Boolean,
+         default: false
       }
    },
    emits: ['select', 'open', 'close', 'update:modelValue', 'change', 'blur'],
@@ -143,8 +145,10 @@ export default defineComponent({
       const getOptionLabel = (opt) => _guess('optionLabel', opt);
       const _guess = (name, item) => {
          const prop = props[name];
-         const key = typeof prop === 'function' ? prop(item) : prop;
-         return key ? item[key] : item;
+         if (typeof prop === 'function')
+            return prop(item);
+
+         return item[prop] || item;
       };
 
       const flattenOptions = computed(() => {
@@ -231,7 +235,7 @@ export default defineComponent({
       };
 
       const activate = () => {
-         if (isOpen.value) return;
+         if (isOpen.value || props.disabled) return;
          isOpen.value = true;
          hightlightedIndex.value = flattenOptions.value.findIndex(el => el.value === internalValue.value) || 0;
 
@@ -365,5 +369,9 @@ export default defineComponent({
     list-style: none;
   }
 
+   &--disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+   }
 }
 </style>
