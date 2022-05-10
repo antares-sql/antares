@@ -1,7 +1,7 @@
 {
   "name": "antares",
   "productName": "Antares",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "A modern, fast and productivity driven SQL client with a focus in UX.",
   "license": "MIT",
   "repository": "https://github.com/antares-sql/antares.git",
@@ -127,7 +127,7 @@
     "mysql2": "~2.3.2",
     "pg": "~8.7.1",
     "pg-query-stream": "~4.2.3",
-    "pgsql-ast-parser": "~7.2.1",
+    "pgsql-ast-parser": "~10.0.5",
     "pinia": "~2.0.13",
     "source-map-support": "~0.5.20",
     "spectre.css": "~0.5.9",
