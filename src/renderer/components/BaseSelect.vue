@@ -48,8 +48,9 @@
                   :ref="(el) => optionRefs[index] = el"
                   :class="{
                      'select__group': opt.$type === 'group',
-                     'select__option--highlight': opt.$type === 'option' && index === hightlightedIndex,
-                     'select__option--selected': opt.$type === 'option' && isSelected(opt)
+                     'select__option--highlight': opt.$type === 'option' && !opt.disabled && index === hightlightedIndex,
+                     'select__option--selected': opt.$type === 'option' && isSelected(opt),
+                     'select__option--disabled': opt.disabled
                   }"
                   @click.stop="select(opt)"
                   @mouseenter.self="hightlightedIndex = index"
@@ -104,6 +105,9 @@ export default defineComponent({
          type: [String, Function],
          default: 'label'
       },
+      optionDisabled: {
+         type: Function
+      },
       groupLabel: {
          type: String
       },
@@ -143,6 +147,7 @@ export default defineComponent({
 
       const getOptionValue = (opt) => _guess('optionTrackBy', opt);
       const getOptionLabel = (opt) => _guess('optionLabel', opt);
+      const getOptionDisabled = (opt) => _guess('optionDisabled', opt);
       const _guess = (name, item) => {
          const prop = props[name];
          if (typeof prop === 'function')
@@ -167,6 +172,7 @@ export default defineComponent({
                      $type: 'option',
                      label: getOptionLabel(el),
                      id: `option-${value}`,
+                     disabled: getOptionDisabled(el) === true,
                      value,
                      $data: {
                         ...el
@@ -180,6 +186,7 @@ export default defineComponent({
                   $type: 'option',
                   label: getOptionLabel(curr),
                   id: `option-${value}`,
+                  disabled: getOptionDisabled(curr) === true,
                   value,
                   $data: {
                      ...curr
@@ -219,7 +226,7 @@ export default defineComponent({
       );
 
       const select = (opt) => {
-         if (opt.$type === 'group') return;
+         if (opt.$type === 'group' || opt.disabled) return;
 
          internalValue.value = opt.value;
          emit('select', opt);
@@ -258,10 +265,10 @@ export default defineComponent({
          isOpen.value = false;
 
          if (props.searchable)
-            searchInput.value.blur();
+            searchInput.value?.blur();
 
          else
-            el.value.blur();
+            el.value?.blur();
 
          if (!props.preserveSearch) searchText.value = '';
 
@@ -342,32 +349,38 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .select {
+   display: block;
 
-  display: block;
+   &__search-input {
+      appearance: none;
+      border: none;
+      background: transparent;
+      outline: none;
+      color: currentColor;
+   }
 
-  &__search-input {
-    appearance: none;
-    border: none;
-    background: transparent;
-    outline: none;
-    color: currentColor;
-  }
+   &__list-wrapper {
+      cursor: pointer;
+      position: fixed;
+      display: block;
+      z-index: 5;
+      -webkit-overflow-scrolling: touch;
+      max-height: 240px;
+      overflow: auto;
+      left: 0;
+      top: 40px;
+   }
 
-  &__list-wrapper {
-    cursor: pointer;
-    position: fixed;
-    display: block;
-    z-index: 5;
-    -webkit-overflow-scrolling: touch;
-    max-height: 240px;
-    overflow: auto;
-    left: 0;
-    top: 40px;
-  }
+   &__list {
+      list-style: none;
+   }
 
-  &__list {
-    list-style: none;
-  }
+   &__option {
+      &--disabled {
+         opacity: 0.6;
+         cursor: not-allowed;
+      }
+   }
 
    &--disabled {
       opacity: 0.6;
