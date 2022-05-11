@@ -311,7 +311,8 @@ option:checked {
     margin: 0;
     padding: 0.3rem 0.8rem;
 
-    .select-sm & {
+    .select-sm &,
+    .small-select & {
       padding: 0.05rem 0.3rem;
     }
   }

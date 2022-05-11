@@ -72,99 +72,11 @@
                      class="tooltip tooltip-right ml-2"
                      :data-tooltip="$t('message.fakeDataLanguage')"
                   >
-                     <select v-model="fakerLocale" class="form-select">
-                        <option value="ar">
-                           Arabic
-                        </option><option value="az">
-                           Azerbaijani
-                        </option><option value="zh_CN">
-                           Chinese
-                        </option><option value="zh_TW">
-                           Chinese (Taiwan)
-                        </option><option value="cz">
-                           Czech
-                        </option><option value="nl">
-                           Dutch
-                        </option><option value="nl_BE">
-                           Dutch (Belgium)
-                        </option><option value="en">
-                           English
-                        </option><option value="en_AU_ocker">
-                           English (Australia Ocker)
-                        </option><option value="en_AU">
-                           English (Australia)
-                        </option><option value="en_BORK">
-                           English (Bork)
-                        </option><option value="en_CA">
-                           English (Canada)
-                        </option><option value="en_GB">
-                           English (Great Britain)
-                        </option><option value="en_IND">
-                           English (India)
-                        </option><option value="en_IE">
-                           English (Ireland)
-                        </option><option value="en_ZA">
-                           English (South Africa)
-                        </option><option value="en_US">
-                           English (United States)
-                        </option><option value="fa">
-                           Farsi
-                        </option><option value="fi">
-                           Finnish
-                        </option><option value="fr">
-                           French
-                        </option><option value="fr_CA">
-                           French (Canada)
-                        </option><option value="fr_CH">
-                           French (Switzerland)
-                        </option><option value="ge">
-                           Georgian
-                        </option><option value="de">
-                           German
-                        </option><option value="de_AT">
-                           German (Austria)
-                        </option><option value="de_CH">
-                           German (Switzerland)
-                        </option><option value="hr">
-                           Hrvatski
-                        </option><option value="id_ID">
-                           Indonesia
-                        </option><option value="it">
-                           Italian
-                        </option><option value="ja">
-                           Japanese
-                        </option><option value="ko">
-                           Korean
-                        </option><option value="nep">
-                           Nepalese
-                        </option><option value="nb_NO">
-                           Norwegian
-                        </option><option value="pl">
-                           Polish
-                        </option><option value="pt_BR">
-                           Portuguese (Brazil)
-                        </option><option value="pt_PT">
-                           Portuguese (Portugal)
-                        </option><option value="ro">
-                           Romanian
-                        </option><option value="ru">
-                           Russian
-                        </option><option value="sk">
-                           Slovakian
-                        </option><option value="es">
-                           Spanish
-                        </option><option value="es_MX">
-                           Spanish (Mexico)
-                        </option><option value="sv">
-                           Swedish
-                        </option><option value="tr">
-                           Turkish
-                        </option><option value="uk">
-                           Ukrainian
-                        </option><option value="vi">
-                           Vietnamese
-                        </option>
-                     </select>
+                     <BaseSelect
+                        v-model="fakerLocale"
+                        :options="locales"
+                        class="form-select"
+                     />
                   </div>
                </div>
                <div class="column col-auto">
@@ -193,11 +105,13 @@ import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import Tables from '@/ipc-api/Tables';
 import FakerSelect from '@/components/FakerSelect';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'ModalFakerRows',
    components: {
-      FakerSelect
+      FakerSelect,
+      BaseSelect
    },
    props: {
       tabUid: [String, Number],
@@ -210,14 +124,62 @@ export default {
       const workspacesStore = useWorkspacesStore();
 
       const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
-
       const { getWorkspace, getWorkspaceTab } = workspacesStore;
+      const locales = [
+         { value: 'ar', label: 'Arabic' },
+         { value: 'az', label: 'Azerbaijani' },
+         { value: 'zh_CN', label: 'Chinese' },
+         { value: 'zh_TW', label: 'Chinese (Taiwan)' },
+         { value: 'cz', label: 'Czech' },
+         { value: 'nl', label: 'Dutch' },
+         { value: 'nl_BE', label: 'Dutch (Belgium)' },
+         { value: 'en', label: 'English' },
+         { value: 'en_AU_ocker', label: 'English (Australia Ocker)' },
+         { value: 'en_AU', label: 'English (Australia)' },
+         { value: 'en_BORK', label: 'English (Bork)' },
+         { value: 'en_CA', label: 'English (Canada)' },
+         { value: 'en_GB', label: 'English (Great Britain)' },
+         { value: 'en_IND', label: 'English (India)' },
+         { value: 'en_IE', label: 'English (Ireland)' },
+         { value: 'en_ZA', label: 'English (South Africa)' },
+         { value: 'en_US', label: 'English (United States)' },
+         { value: 'fa', label: 'Farsi' },
+         { value: 'fi', label: 'Finnish' },
+         { value: 'fr', label: 'French' },
+         { value: 'fr_CA', label: 'French (Canada)' },
+         { value: 'fr_CH', label: 'French (Switzerland)' },
+         { value: 'ge', label: 'Georgian' },
+         { value: 'de', label: 'German' },
+         { value: 'de_AT', label: 'German (Austria)' },
+         { value: 'de_CH', label: 'German (Switzerland)' },
+         { value: 'hr', label: 'Hrvatski' },
+         { value: 'id_ID', label: 'Indonesia' },
+         { value: 'it', label: 'Italian' },
+         { value: 'ja', label: 'Japanese' },
+         { value: 'ko', label: 'Korean' },
+         { value: 'nep', label: 'Nepalese' },
+         { value: 'nb_NO', label: 'Norwegian' },
+         { value: 'pl', label: 'Polish' },
+         { value: 'pt_BR', label: 'Portuguese (Brazil)' },
+         { value: 'pt_PT', label: 'Portuguese (Portugal)' },
+         { value: 'ro', label: 'Romanian' },
+         { value: 'ru', label: 'Russian' },
+         { value: 'sk', label: 'Slovakian' },
+         { value: 'es', label: 'Spanish' },
+         { value: 'es_MX', label: 'Spanish (Mexico)' },
+         { value: 'sv', label: 'Swedish' },
+         { value: 'tr', label: 'Turkish' },
+         { value: 'uk', label: 'Ukrainian' },
+         { value: 'vi', label: 'Vietnamese' }
+
+      ];
 
       return {
          addNotification,
          selectedWorkspace,
          getWorkspace,
-         getWorkspaceTab
+         getWorkspaceTab,
+         locales
       };
    },
    data () {

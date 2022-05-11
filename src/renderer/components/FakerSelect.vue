@@ -1,38 +1,26 @@
 <template>
    <fieldset class="input-group mb-0">
-      <select
+      <BaseSelect
          v-model="selectedGroup"
          class="form-select"
+         :options="[{name: 'manual'}, ...fakerGroups]"
+         :option-label="(opt) => opt.name === 'manual' ? $t('message.manualValue') : $t(`faker.${opt.name}`)"
+         option-track-by="name"
          :disabled="!isChecked"
          style="flex-grow: 0;"
          @change="onChange"
-      >
-         <option value="manual">
-            {{ $t('message.manualValue') }}
-         </option>
-         <option
-            v-for="group in fakerGroups"
-            :key="group.name"
-            :value="group.name"
-         >
-            {{ $t(`faker.${group.name}`) }}
-         </option>
-      </select>
-      <select
+      />
+
+      <BaseSelect
          v-if="selectedGroup !== 'manual'"
          v-model="selectedMethod"
+         :options="fakerMethods"
+         :option-label="(opt) => $t(`faker.${opt.name}`)"
+         option-track-by="name"
          class="form-select"
          :disabled="!isChecked"
          @change="onChange"
-      >
-         <option
-            v-for="method in fakerMethods"
-            :key="method.name"
-            :value="method.name"
-         >
-            {{ $t(`faker.${method.name}`) }}
-         </option>
-      </select>
+      />
       <ForeignKeySelect
          v-else-if="foreignKeys.includes(field.name)"
          ref="formInput"
@@ -66,21 +54,14 @@
          :type="inputProps().type"
          :disabled="!isChecked"
       >
-      <select
+      <BaseSelect
          v-else-if="enumArray"
          v-model="selectedValue"
+         :options="enumArray"
          class="form-select"
          :disabled="!isChecked"
          @change="onChange"
-      >
-         <option
-            v-for="val in enumArray"
-            :key="val"
-            :value="val"
-         >
-            {{ val }}
-         </option>
-      </select>
+      />
       <input
          v-else
          ref="formInput"
@@ -109,12 +90,14 @@ import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 
 import BaseUploadInput from '@/components/BaseUploadInput';
 import ForeignKeySelect from '@/components/ForeignKeySelect';
 import FakerMethods from 'common/FakerMethods';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'FakerSelect',
    components: {
       ForeignKeySelect,
-      BaseUploadInput
+      BaseUploadInput,
+      BaseSelect
    },
    props: {
       type: String,

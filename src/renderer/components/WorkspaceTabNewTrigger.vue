@@ -46,60 +46,43 @@
             <div v-if="customizations.definer" class="column col-auto">
                <div class="form-group">
                   <label class="form-label">{{ $t('word.definer') }}</label>
-                  <select
-                     v-if="workspace.users.length"
+                  <BaseSelect
                      v-model="localTrigger.definer"
+                     :options="users"
+                     :option-label="(user) => user.value === '' ? $t('message.currentUser') : `${user.name}@${user.host}`"
+                     :option-track-by="(user) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
                      class="form-select"
-                  >
-                     <option value="">
-                        {{ $t('message.currentUser') }}
-                     </option>
-                     <option v-if="!isDefinerInUsers" :value="originalTrigger.definer">
-                        {{ originalTrigger.definer.replaceAll('`', '') }}
-                     </option>
-                     <option
-                        v-for="user in workspace.users"
-                        :key="`${user.name}@${user.host}`"
-                        :value="`\`${user.name}\`@\`${user.host}\``"
-                     >
-                        {{ user.name }}@{{ user.host }}
-                     </option>
-                  </select>
-                  <select v-if="!workspace.users.length" class="form-select">
-                     <option value="">
-                        {{ $t('message.currentUser') }}
-                     </option>
-                  </select>
+                  />
                </div>
             </div>
             <fieldset class="column columns mb-0" :disabled="customizations.triggerOnlyRename">
                <div class="column col-auto">
                   <div class="form-group">
                      <label class="form-label">{{ $t('word.table') }}</label>
-                     <select v-model="localTrigger.table" class="form-select">
-                        <option v-for="table in schemaTables" :key="table.name">
-                           {{ table.name }}
-                        </option>
-                     </select>
+                     <BaseSelect
+                        v-model="localTrigger.table"
+                        :options="schemaTables"
+                        option-label="name"
+                        option-track-by="name"
+                        class="form-select"
+                     />
                   </div>
                </div>
                <div class="column col-auto">
                   <div class="form-group">
                      <label class="form-label">{{ $t('word.event') }}</label>
                      <div class="input-group">
-                        <select v-model="localTrigger.activation" class="form-select">
-                           <option>BEFORE</option>
-                           <option>AFTER</option>
-                        </select>
-                        <select
+                        <BaseSelect
+                           v-model="localTrigger.activation"
+                           :options="['BEFORE', 'AFTER']"
+                           class="form-select"
+                        />
+                        <BaseSelect
                            v-if="!customizations.triggerMultipleEvents"
                            v-model="localTrigger.event"
+                           :options="Object.keys(localEvents)"
                            class="form-select"
-                        >
-                           <option v-for="event in Object.keys(localEvents)" :key="event">
-                              {{ event }}
-                           </option>
-                        </select>
+                        />
                         <div v-if="customizations.triggerMultipleEvents" class="px-4">
                            <label
                               v-for="event in Object.keys(localEvents)"
@@ -138,12 +121,14 @@ import { useWorkspacesStore } from '@/stores/workspaces';
 import QueryEditor from '@/components/QueryEditor';
 import BaseLoader from '@/components/BaseLoader';
 import Triggers from '@/ipc-api/Triggers';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'WorkspaceTabNewTrigger',
    components: {
       BaseLoader,
-      QueryEditor
+      QueryEditor,
+      BaseSelect
    },
    props: {
       tabUid: String,
@@ -211,6 +196,15 @@ export default {
             .map(schema => schema.tables);
 
          return schemaTables.length ? schemaTables[0].filter(table => table.type === 'table') : [];
+      },
+      users () {
+         const users = [{ value: '' }, ...this.workspace.users];
+         if (!this.isDefinerInUsers) {
+            const [name, host] = this.originalTrigger.definer.replaceAll('`', '').split('@');
+            users.unshift({ name, host });
+         }
+
+         return users;
       }
    },
    watch: {

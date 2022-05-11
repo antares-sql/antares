@@ -46,61 +46,44 @@
             <div class="column col-auto">
                <div v-if="workspace.customizations.definer" class="form-group">
                   <label class="form-label">{{ $t('word.definer') }}</label>
-                  <select
-                     v-if="workspace.users.length"
+                  <BaseSelect
                      v-model="localView.definer"
+                     :options="users"
+                     :option-label="(user) => user.value === '' ? $t('message.currentUser') : `${user.name}@${user.host}`"
+                     :option-track-by="(user) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
                      class="form-select"
-                  >
-                     <option value="">
-                        {{ $t('message.currentUser') }}
-                     </option>
-                     <option v-if="!isDefinerInUsers" :value="originalView.definer">
-                        {{ originalView.definer.replaceAll('`', '') }}
-                     </option>
-                     <option
-                        v-for="user in workspace.users"
-                        :key="`${user.name}@${user.host}`"
-                        :value="`\`${user.name}\`@\`${user.host}\``"
-                     >
-                        {{ user.name }}@{{ user.host }}
-                     </option>
-                  </select>
-                  <select v-if="!workspace.users.length" class="form-select">
-                     <option value="">
-                        {{ $t('message.currentUser') }}
-                     </option>
-                  </select>
+                  />
                </div>
             </div>
             <div class="column col-auto mr-2">
                <div v-if="workspace.customizations.viewSqlSecurity" class="form-group">
                   <label class="form-label">{{ $t('message.sqlSecurity') }}</label>
-                  <select v-model="localView.security" class="form-select">
-                     <option>DEFINER</option>
-                     <option>INVOKER</option>
-                  </select>
+                  <BaseSelect
+                     v-model="localView.security"
+                     :options="['DEFINER', 'INVOKER']"
+                     class="form-select"
+                  />
                </div>
             </div>
             <div class="column col-auto mr-2">
                <div v-if="workspace.customizations.viewAlgorithm" class="form-group">
                   <label class="form-label">{{ $t('word.algorithm') }}</label>
-                  <select v-model="localView.algorithm" class="form-select">
-                     <option>UNDEFINED</option>
-                     <option>MERGE</option>
-                     <option>TEMPTABLE</option>
-                  </select>
+                  <BaseSelect
+                     v-model="localView.algorithm"
+                     :options="['UNDEFINED', 'MERGE', 'TEMPTABLE']"
+                     class="form-select"
+                  />
                </div>
             </div>
             <div v-if="workspace.customizations.viewUpdateOption" class="column col-auto mr-2">
                <div class="form-group">
                   <label class="form-label">{{ $t('message.updateOption') }}</label>
-                  <select v-model="localView.updateOption" class="form-select">
-                     <option value="">
-                        None
-                     </option>
-                     <option>CASCADED</option>
-                     <option>LOCAL</option>
-                  </select>
+                  <BaseSelect
+                     v-model="localView.updateOption"
+                     :option-track-by="(user) => user.value"
+                     :options="[{label: 'None', value: ''}, {label: 'CASCADED', value: 'CASCADED'}, {label: 'LOCAL', value: 'LOCAL'}]"
+                     class="form-select"
+                  />
                </div>
             </div>
          </div>
@@ -127,12 +110,14 @@ import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
 import Views from '@/ipc-api/Views';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'WorkspaceTabNewView',
    components: {
       BaseLoader,
-      QueryEditor
+      QueryEditor,
+      BaseSelect
    },
    props: {
       tabUid: String,
@@ -189,6 +174,15 @@ export default {
       },
       isDefinerInUsers () {
          return this.originalView ? this.workspace.users.some(user => this.originalView.definer === `\`${user.name}\`@\`${user.host}\``) : true;
+      },
+      users () {
+         const users = [{ value: '' }, ...this.workspace.users];
+         if (!this.isDefinerInUsers) {
+            const [name, host] = this.originalView.definer.replaceAll('`', '').split('@');
+            users.unshift({ name, host });
+         }
+
+         return users;
       }
    },
    watch: {

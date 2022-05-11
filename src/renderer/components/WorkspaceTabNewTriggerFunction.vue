@@ -45,11 +45,11 @@
                   <label class="form-label">
                      {{ $t('word.language') }}
                   </label>
-                  <select v-model="localFunction.language" class="form-select">
-                     <option v-for="language in customizations.triggerFunctionlanguages" :key="language">
-                        {{ language }}
-                     </option>
-                  </select>
+                  <BaseSelect
+                     v-model="localFunction.language"
+                     :options="customizations.triggerFunctionlanguages"
+                     class="form-select"
+                  />
                </div>
             </div>
             <div v-if="customizations.definer" class="column col-auto">
@@ -57,27 +57,13 @@
                   <label class="form-label">
                      {{ $t('word.definer') }}
                   </label>
-                  <select
-                     v-if="workspace.users.length"
+                  <BaseSelect
                      v-model="localFunction.definer"
+                     :options="workspace.users"
+                     :option-label="(user) => user.value === '' ? $t('message.currentUser') : `${user.name}@${user.host}`"
+                     :option-track-by="(user) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
                      class="form-select"
-                  >
-                     <option value="">
-                        {{ $t('message.currentUser') }}
-                     </option>
-                     <option
-                        v-for="user in workspace.users"
-                        :key="`${user.name}@${user.host}`"
-                        :value="`\`${user.name}\`@\`${user.host}\``"
-                     >
-                        {{ user.name }}@{{ user.host }}
-                     </option>
-                  </select>
-                  <select v-if="!workspace.users.length" class="form-select">
-                     <option value="">
-                        {{ $t('message.currentUser') }}
-                     </option>
-                  </select>
+                  />
                </div>
             </div>
             <div v-if="customizations.comment" class="form-group">
@@ -114,12 +100,14 @@ import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseLoader from '@/components/BaseLoader';
 import QueryEditor from '@/components/QueryEditor';
 import Functions from '@/ipc-api/Functions';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'WorkspaceTabNewTriggerFunction',
    components: {
       BaseLoader,
-      QueryEditor
+      QueryEditor,
+      BaseSelect
    },
    props: {
       tabUid: String,

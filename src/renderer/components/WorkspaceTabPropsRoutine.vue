@@ -66,11 +66,11 @@
                   <label class="form-label">
                      {{ $t('word.language') }}
                   </label>
-                  <select v-model="localRoutine.language" class="form-select">
-                     <option v-for="language in customizations.languages" :key="language">
-                        {{ language }}
-                     </option>
-                  </select>
+                  <BaseSelect
+                     v-model="localRoutine.language"
+                     :options="customizations.languages"
+                     class="form-select"
+                  />
                </div>
             </div>
             <div v-if="customizations.definer" class="column col-auto">
@@ -78,27 +78,13 @@
                   <label class="form-label">
                      {{ $t('word.definer') }}
                   </label>
-                  <select
-                     v-if="workspace.users.length"
+                  <BaseSelect
                      v-model="localRoutine.definer"
+                     :options="[{value: '', name:$t('message.currentUser')}, ...workspace.users]"
+                     :option-label="(user) => user.value === '' ? user.name : `${user.name}@${user.host}`"
+                     :option-track-by="(user) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
                      class="form-select"
-                  >
-                     <option value="">
-                        {{ $t('message.currentUser') }}
-                     </option>
-                     <option
-                        v-for="user in workspace.users"
-                        :key="`${user.name}@${user.host}`"
-                        :value="`\`${user.name}\`@\`${user.host}\``"
-                     >
-                        {{ user.name }}@{{ user.host }}
-                     </option>
-                  </select>
-                  <select v-if="!workspace.users.length" class="form-select">
-                     <option value="">
-                        {{ $t('message.currentUser') }}
-                     </option>
-                  </select>
+                  />
                </div>
             </div>
             <div v-if="customizations.comment" class="column">
@@ -118,10 +104,11 @@
                   <label class="form-label">
                      {{ $t('message.sqlSecurity') }}
                   </label>
-                  <select v-model="localRoutine.security" class="form-select">
-                     <option>DEFINER</option>
-                     <option>INVOKER</option>
-                  </select>
+                  <BaseSelect
+                     v-model="localRoutine.security"
+                     :options="['DEFINER', 'INVOKER']"
+                     class="form-select"
+                  />
                </div>
             </div>
             <div v-if="customizations.procedureDataAccess" class="column col-auto">
@@ -129,12 +116,11 @@
                   <label class="form-label">
                      {{ $t('message.dataAccess') }}
                   </label>
-                  <select v-model="localRoutine.dataAccess" class="form-select">
-                     <option>CONTAINS SQL</option>
-                     <option>NO SQL</option>
-                     <option>READS SQL DATA</option>
-                     <option>MODIFIES SQL DATA</option>
-                  </select>
+                  <BaseSelect
+                     v-model="localRoutine.dataAccess"
+                     :options="['CONTAINS SQL', 'NO SQL', 'READS SQL DATA', 'MODIFIES SQL DATA']"
+                     class="form-select"
+                  />
                </div>
             </div>
             <div v-if="customizations.procedureDeterministic" class="column col-auto">
@@ -187,6 +173,7 @@ import BaseLoader from '@/components/BaseLoader';
 import WorkspaceTabPropsRoutineParamsModal from '@/components/WorkspaceTabPropsRoutineParamsModal';
 import ModalAskParameters from '@/components/ModalAskParameters';
 import Routines from '@/ipc-api/Routines';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'WorkspaceTabPropsRoutine',
@@ -194,7 +181,8 @@ export default {
       QueryEditor,
       BaseLoader,
       WorkspaceTabPropsRoutineParamsModal,
-      ModalAskParameters
+      ModalAskParameters,
+      BaseSelect
    },
    props: {
       tabUid: String,

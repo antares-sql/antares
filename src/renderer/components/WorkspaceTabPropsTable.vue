@@ -101,15 +101,13 @@
                   <label class="form-label">
                      {{ $t('word.collation') }}
                   </label>
-                  <select v-model="localOptions.collation" class="form-select">
-                     <option
-                        v-for="collation in workspace.collations"
-                        :key="collation.id"
-                        :value="collation.collation"
-                     >
-                        {{ collation.collation }}
-                     </option>
-                  </select>
+                  <BaseSelect
+                     v-model="localOptions.collation"
+                     :options="workspace.collations"
+                     option-label="collation"
+                     option-track-by="collation"
+                     class="form-select"
+                  />
                </div>
             </div>
             <div v-if="workspace.customizations.engines" class="column col-auto">
@@ -117,15 +115,13 @@
                   <label class="form-label">
                      {{ $t('word.engine') }}
                   </label>
-                  <select v-model="localOptions.engine" class="form-select">
-                     <option
-                        v-for="engine in workspace.engines"
-                        :key="engine.name"
-                        :value="engine.name"
-                     >
-                        {{ engine.name }}
-                     </option>
-                  </select>
+                  <BaseSelect
+                     v-model="localOptions.engine"
+                     class="form-select"
+                     :options="workspace.engines"
+                     option-label="name"
+                     option-track-by="name"
+                  />
                </div>
             </div>
          </div>
@@ -186,6 +182,7 @@ import BaseLoader from '@/components/BaseLoader';
 import WorkspaceTabPropsTableFields from '@/components/WorkspaceTabPropsTableFields';
 import WorkspaceTabPropsTableIndexesModal from '@/components/WorkspaceTabPropsTableIndexesModal';
 import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTableForeignModal';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'WorkspaceTabPropsTable',
@@ -193,7 +190,8 @@ export default {
       BaseLoader,
       WorkspaceTabPropsTableFields,
       WorkspaceTabPropsTableIndexesModal,
-      WorkspaceTabPropsTableForeignModal
+      WorkspaceTabPropsTableForeignModal,
+      BaseSelect
    },
    props: {
       tabUid: String,
