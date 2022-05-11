@@ -40,7 +40,6 @@ const bottomHeight: Ref<number> = ref(0);
 const visibleItems: Ref<any[]> = ref([]);
 const renderTimeout: Ref<NodeJS.Timeout> = ref(null);
 const localScrollElement: Ref<HTMLDivElement> = ref(null);
-const scrollElement = ref(props.scrollElement);
 
 const checkScrollPosition = () => {
    clearTimeout(renderTimeout.value);
@@ -72,12 +71,12 @@ const setScrollElement = () => {
    if (localScrollElement.value)
       localScrollElement.value.removeEventListener('scroll', checkScrollPosition);
 
-   localScrollElement.value = scrollElement.value ? scrollElement.value : root.value;
+   localScrollElement.value = props.scrollElement ? props.scrollElement : root.value;
    updateWindow();
    localScrollElement.value.addEventListener('scroll', checkScrollPosition);
 };
 
-watch(scrollElement, () => {
+watch(() => props.scrollElement, () => {
    setScrollElement();
 });
 
