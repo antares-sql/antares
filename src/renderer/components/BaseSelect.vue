@@ -2,7 +2,7 @@
    <div
       ref="el"
       class="select"
-      :class="{'select-open': isOpen, 'select--disabled': disabled}"
+      :class="{'select--open': isOpen, 'select--disabled': disabled}"
       role="combobox"
       :tabindex="searchable || disabled ? -1 : tabindex"
       @focus="activate()"
@@ -34,7 +34,6 @@
       </div>
       <Teleport
          v-if="isOpen"
-         ref="teleportEl"
          :to="dropdownContainer"
       >
          <div
@@ -76,10 +75,10 @@ export default defineComponent({
    name: 'BaseSelect',
    props: {
       modelValue: {
-         type: [String, Number, Object]
+         type: [String, Number, Object, Boolean]
       },
       value: {
-         type: [String, Number, Object]
+         type: [String, Number, Object, Boolean]
       },
       searchable: {
          type: Boolean,
@@ -276,13 +275,22 @@ export default defineComponent({
       };
 
       const adjustListPosition = () => {
-         const element = el.value;
-         const { left, top } = element.getBoundingClientRect();
-         const { left: offsetLeft = 0, top: offsetTop = 0 } = props.dropdownOffsets;
+         setTimeout(() => {
+            const element = el.value;
+            let { left, top } = element.getBoundingClientRect();
+            const { left: offsetLeft = 0, top: offsetTop = 0 } = props.dropdownOffsets;
+            top = top + element.clientHeight + offsetTop;
+            const openBottom = top >= 0 && top + optionList.value.clientHeight <= window.innerHeight;
 
-         optionList.value.style.left = `${left + offsetLeft}px`;
-         optionList.value.style.top = `${top + element.clientHeight + offsetTop}px`;
-         optionList.value.style.minWidth = `${element.clientWidth}px`;
+            if (!openBottom) {
+               top -= (offsetTop * 2 + element.clientHeight);
+               optionList.value.style.transform = 'translate(0, -100%)';
+            }
+
+            optionList.value.style.left = `${left + offsetLeft}px`;
+            optionList.value.style.top = `${top}px`;
+            optionList.value.style.minWidth = `${element.clientWidth}px`;
+         }, 100);
       };
 
       const keyArrows = (direction) => {
@@ -351,12 +359,18 @@ export default defineComponent({
 .select {
    display: block;
 
+   &:focus, &--open {
+      z-index: 10;
+   }
+
    &__search-input {
       appearance: none;
       border: none;
       background: transparent;
       outline: none;
       color: currentColor;
+      max-width: 100%;
+      width: 100%;
    }
 
    &__list-wrapper {
