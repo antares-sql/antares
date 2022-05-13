@@ -46,13 +46,14 @@
                   :key="opt.id"
                   :ref="(el) => optionRefs[index] = el"
                   :class="{
+                     'select__item': true,
                      'select__group': opt.$type === 'group',
                      'select__option--highlight': opt.$type === 'option' && !opt.disabled && index === hightlightedIndex,
                      'select__option--selected': opt.$type === 'option' && isSelected(opt),
                      'select__option--disabled': opt.disabled
                   }"
                   @click.stop="select(opt)"
-                  @mouseenter.self="hightlightedIndex = index"
+                  @mousemove.self="hightlightedIndex = index"
                >
                   <slot
                      name="option"
@@ -70,6 +71,7 @@
 
 <script>
 import { defineComponent, computed, ref, watch, nextTick, onMounted, onUnmounted } from 'vue';
+import { option } from 'yargs';
 
 export default defineComponent({
    name: 'BaseSelect',
