@@ -92,7 +92,7 @@
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
-                              :value="localConnection.databasePath"
+                              :model-value="localConnection.databasePath"
                               :message="$t('word.browse')"
                               @clear="pathClear('databasePath')"
                               @change="pathSelection($event, 'databasePath')"
@@ -207,7 +207,7 @@
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
-                              :value="localConnection.key"
+                              :model-value="localConnection.key"
                               :message="$t('word.browse')"
                               @clear="pathClear('key')"
                               @change="pathSelection($event, 'key')"
@@ -220,7 +220,7 @@
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
-                              :value="localConnection.cert"
+                              :model-value="localConnection.cert"
                               :message="$t('word.browse')"
                               @clear="pathClear('cert')"
                               @change="pathSelection($event, 'cert')"
@@ -233,7 +233,7 @@
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
-                              :value="localConnection.ca"
+                              :model-value="localConnection.ca"
                               :message="$t('word.browse')"
                               @clear="pathClear('ca')"
                               @change="pathSelection($event, 'ca')"
@@ -330,7 +330,7 @@
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
-                              :value="localConnection.sshKey"
+                              :model-value="localConnection.sshKey"
                               :message="$t('word.browse')"
                               @clear="pathClear('sshKey')"
                               @change="pathSelection($event, 'sshKey')"

@@ -2,6 +2,52 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.4](https://github.com/antares-sql/antares/compare/v0.5.3...v0.5.4) (2022-05-10)
+
+
+### Bug Fixes
+
+* app blocked by BIT fields with no default, closes [#256](https://github.com/antares-sql/antares/issues/256) ([e62f280](https://github.com/antares-sql/antares/commit/e62f280528edb0ff4550ee75038ea216e81e4f10))
+* file upload input not working ([58611bf](https://github.com/antares-sql/antares/commit/58611bf07f343e6899a7446bfcd1247b0c75fc7f))
+* SSH tunnel not working ([6d61518](https://github.com/antares-sql/antares/commit/6d6151814e5006935d493b9b83dbda1aa5b35391))
+* unable to insert auto-generated datetime fields ([ff27244](https://github.com/antares-sql/antares/commit/ff272440bdc2a7fe699e04f8809bd5af8f9529c0))
+
+
+### Improvements
+
+* **UI:** left alignment for numbers in result tables, closes [#249](https://github.com/antares-sql/antares/issues/249) ([e02565c](https://github.com/antares-sql/antares/commit/e02565c0d9bb63efa76a79f38e3ed3586a30ad1c))
+
+### [0.5.3](https://github.com/antares-sql/antares/compare/v0.5.2...v0.5.3) (2022-05-08)
+
+
+### Features
+
+* default open schema if only one present ([0fa22fb](https://github.com/antares-sql/antares/commit/0fa22fbe72fd4e3b2cfff6fc1847347f69fafda6))
+
+
+### Bug Fixes
+
+* can not use vue teleport with props as root element ([88eb9f7](https://github.com/antares-sql/antares/commit/88eb9f7ab80c407ec6517206c27cce715c41eb24))
+* importer webpack config ([f82db96](https://github.com/antares-sql/antares/commit/f82db96f34579c5f5f0c025ba82aff13047eb045))
+* importer webpack config ([b4d9821](https://github.com/antares-sql/antares/commit/b4d9821300991bf000846ae38ed18d79564db67b))
+* LIKE operator in table filter not properly working, closes [#242](https://github.com/antares-sql/antares/issues/242) ([eb1afed](https://github.com/antares-sql/antares/commit/eb1afed108d97e2acb7ea5279aabd582014c3c58))
+* locale change ([6af0c33](https://github.com/antares-sql/antares/commit/6af0c33461dfab868bca757e55ae62e6c6094c6c))
+* missing storeToRefs imports ([ff8bb45](https://github.com/antares-sql/antares/commit/ff8bb45d6d19303b2e7701639d22e52e4ae2976c))
+* missing tabs uid ([18b66b5](https://github.com/antares-sql/antares/commit/18b66b50323e69ed9d0090a4cbbe0ada9e10838d))
+* **MySQL:** creating temporary tables on export to overcome view dependency errors ([e4c5d9b](https://github.com/antares-sql/antares/commit/e4c5d9b404c2b20cf113607a80ee928b810e6f05))
+* **MySQL:** support to ANSI_QUOTES mode not working, closes [#243](https://github.com/antares-sql/antares/issues/243) ([9fcc7d1](https://github.com/antares-sql/antares/commit/9fcc7d1cefc3c035a63e843616c3138c772037f1))
+* prevents query tabs targets previous schema if not in explorebar, closes [#236](https://github.com/antares-sql/antares/issues/236) ([5e4abd3](https://github.com/antares-sql/antares/commit/5e4abd3e81d70bcb9b3a897d38d6f8ec3ff0706b))
+* query editor table fields suggestion ([e9dedfa](https://github.com/antares-sql/antares/commit/e9dedfaf3203f5621e54fd707003a47e6e5a5c4d))
+* **SQLite:** tables with sqlite in name not visible, closes [#239](https://github.com/antares-sql/antares/issues/239) ([690cdcb](https://github.com/antares-sql/antares/commit/690cdcb2eb1c7bf514271000c31211d1c0b33e54))
+* unable to add parameters to new routines/functions ([350d536](https://github.com/antares-sql/antares/commit/350d53642e2491fd2dedbbf999579ba9c9bc59a0))
+* unable to disconnect from database ([47e1f27](https://github.com/antares-sql/antares/commit/47e1f27bb83b99288157185ad8b62d190a9e7881))
+* unable to set an empty string as field default ([bfdb463](https://github.com/antares-sql/antares/commit/bfdb463390453a55963af29ef0e7cd3aea26f4cf))
+* undefined uid variable in the setting bar ([3cca3ed](https://github.com/antares-sql/antares/commit/3cca3ed2b31c5763794c52cce34ccba1e848efe2))
+* various warnings and exceptions ([c50cbc5](https://github.com/antares-sql/antares/commit/c50cbc577f667c17ba676960cf2c840d24366c80))
+* verbose devtool loggin with missing sourcemap ([1174bab](https://github.com/antares-sql/antares/commit/1174bab0cc895c4e294804d810b0789166602725))
+* wrong path module importation ([472fa6f](https://github.com/antares-sql/antares/commit/472fa6f4300b7e3fbf8c8079a548ca34d941f5fb))
+* wrong path module importation ([9a0f982](https://github.com/antares-sql/antares/commit/9a0f98272342d201e9bc979d5bc5768cfd20f3fb))
+
 ### [0.5.2](https://github.com/antares-sql/antares/compare/v0.5.1...v0.5.2) (2022-04-10)
 
 

@@ -1,14 +1,8 @@
 
 @mixin type-colors($types) {
-  $numbers: ('int','tinyint','smallint','mediumint','float','double','decimal');
-
   @each $type, $color in $types {
     .type-#{$type} {
       color: $color;
-
-      @if index($numbers, $type) {
-        text-align: right;
-      }
     }
   }
 }
