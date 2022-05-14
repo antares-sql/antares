@@ -55,7 +55,85 @@
    </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, Ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useApplicationStore } from '@/stores/application';
+import { useConnectionsStore } from '@/stores/connections';
+import { useWorkspacesStore } from '@/stores/workspaces';
+import * as Draggable from 'vuedraggable';
+import SettingBarContext from '@/components/SettingBarContext.vue';
+import { ConnectionParams } from 'common/interfaces/antares';
+import { computed } from '@vue/reactivity';
+
+const applicationStore = useApplicationStore();
+const connectionsStore = useConnectionsStore();
+const workspacesStore = useWorkspacesStore();
+
+const { updateStatus } = storeToRefs(applicationStore);
+const { connections: getConnections } = storeToRefs(connectionsStore);
+const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+const { showSettingModal, showScratchpad } = applicationStore;
+const { getConnectionName, updateConnections } = connectionsStore;
+const { getWorkspace, selectWorkspace } = workspacesStore;
+
+const isContext: Ref<boolean> = ref(false);
+const isDragging: Ref<boolean> = ref(false);
+const contextEvent: Ref<Event> = ref(null);
+const contextConnection: Ref<ConnectionParams> = ref(null);
+
+const connections = computed({
+   get () {
+      return getConnections.value;
+   },
+   set (value) {
+      updateConnections(value);
+   }
+});
+
+const hasUpdates = computed(() => ['available', 'downloading', 'downloaded', 'link'].includes(updateStatus.value));
+
+const contextMenu = (event: Event, connection: ConnectionParams) => {
+   contextEvent.value = event;
+   contextConnection.value = connection;
+   isContext.value = true;
+};
+
+const tooltipPosition = (e: Event) => {
+   const el = e.target ? e.target : e;
+   const fromTop = window.pageYOffset + (el as HTMLElement).getBoundingClientRect().top - ((el as HTMLElement).offsetHeight / 4);
+   (el as HTMLElement).querySelector<HTMLElement>('.ex-tooltip-content').style.top = `${fromTop}px`;
+};
+
+const getStatusBadge = (uid: string) => {
+   if (getWorkspace(uid)) {
+      const status = getWorkspace(uid).connectionStatus;
+
+      switch (status) {
+         case 'connected':
+            return 'badge badge-connected';
+         case 'connecting':
+            return 'badge badge-connecting';
+         case 'failed':
+            return 'badge badge-failed';
+         default:
+            return '';
+      }
+   }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const dragStop = (e: any) => { // TODO: temp
+   isDragging.value = false;
+
+   setTimeout(() => {
+      tooltipPosition(e.originalEvent.target.parentNode);
+   }, 200);
+};
+</script>
+
+<!-- <script>
 import { storeToRefs } from 'pinia';
 import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
@@ -157,7 +235,7 @@ export default {
       }
    }
 };
-</script>
+</script> -->
 
 <style lang="scss">
   #settingbar {

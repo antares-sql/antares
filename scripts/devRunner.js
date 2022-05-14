@@ -59,7 +59,7 @@ async function restartElectron () {
       console.error(chalk.red(data.toString()));
    });
 
-   electronProcess.on('exit', (code, signal) => {
+   electronProcess.on('exit', () => {
       if (!manualRestart) process.exit(0);
    });
 }

@@ -1,4 +1,8 @@
-const arrayToFile = args => {
+export const arrayToFile = (args: {
+   type: 'csv' | 'json';
+   content: object[];
+   filename: string;
+}) => {
    let mime;
    let content;
 
@@ -33,5 +37,3 @@ const arrayToFile = args => {
    downloadLink.click();
    downloadLink.remove();
 };
-
-export default arrayToFile;

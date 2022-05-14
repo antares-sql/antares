@@ -271,7 +271,7 @@ export default {
             else if ([...TIME, ...DATE].includes(field.type))
                fieldDefault = field.default;
             else if (BIT.includes(field.type))
-               fieldDefault = field.default.replaceAll('\'', '').replaceAll('b', '');
+               fieldDefault = field.default?.replaceAll('\'', '').replaceAll('b', '');
             else if (DATETIME.includes(field.type)) {
                if (field.default && ['current_timestamp', 'now()'].some(term => field.default.toLowerCase().includes(term))) {
                   let datePrecision = '';

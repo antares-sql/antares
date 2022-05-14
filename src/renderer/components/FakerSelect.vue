@@ -104,151 +104,148 @@
    </fieldset>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, PropType, Ref, ref, watch } from 'vue';
 import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
-import BaseUploadInput from '@/components/BaseUploadInput';
-import ForeignKeySelect from '@/components/ForeignKeySelect';
+import BaseUploadInput from '@/components/BaseUploadInput.vue';
+import ForeignKeySelect from '@/components/ForeignKeySelect.vue';
 import FakerMethods from 'common/FakerMethods';
 
-export default {
-   name: 'FakerSelect',
-   components: {
-      ForeignKeySelect,
-      BaseUploadInput
-   },
-   props: {
-      type: String,
-      field: Object,
-      isChecked: Boolean,
-      foreignKeys: Array,
-      keyUsage: Array,
-      fieldLength: Number,
-      fieldObj: Object
-   },
-   emits: ['update:modelValue'],
-   data () {
-      return {
-         localType: null,
-         selectedGroup: 'manual',
-         selectedMethod: '',
-         selectedValue: '',
-         debounceTimeout: null,
-         methodParams: {},
-         enumArray: null
-      };
-   },
-   computed: {
-      fakerGroups () {
-         if ([...TEXT, ...LONG_TEXT].includes(this.type))
-            this.localType = 'string';
-         else if (NUMBER.includes(this.type))
-            this.localType = 'number';
-         else if (FLOAT.includes(this.type))
-            this.localType = 'float';
-         else if ([...DATE, ...DATETIME].includes(this.type))
-            this.localType = 'datetime';
-         else if (TIME.includes(this.type))
-            this.localType = 'time';
-         else
-            this.localType = 'none';
+const props = defineProps({
+   type: String,
+   field: Object,
+   isChecked: Boolean,
+   foreignKeys: Array,
+   keyUsage: Array as PropType<{field: string}[]>,
+   fieldLength: Number,
+   fieldObj: Object
+});
+const emit = defineEmits(['update:modelValue']);
 
-         return FakerMethods.getGroupsByType(this.localType);
-      },
-      fakerMethods () {
-         return FakerMethods.getMethods({ type: this.localType, group: this.selectedGroup });
-      },
-      methodData () {
-         return this.fakerMethods.find(method => method.name === this.selectedMethod);
-      }
-   },
-   watch: {
-      fieldObj () {
-         if (this.fieldObj) {
-            if (Array.isArray(this.fieldObj.value)) {
-               this.enumArray = this.fieldObj.value;
-               this.selectedValue = this.fieldObj.value[0];
-            }
-            else
-               this.selectedValue = this.fieldObj.value;
-         }
-      },
-      selectedGroup () {
-         if (this.fakerMethods.length)
-            this.selectedMethod = this.fakerMethods[0].name;
-         else
-            this.selectedMethod = '';
-      },
-      selectedMethod () {
-         this.onChange();
-      },
-      selectedValue () {
-         clearTimeout(this.debounceTimeout);
-         this.debounceTimeout = null;
-         this.debounceTimeout = setTimeout(() => {
-            this.onChange();
-         }, 200);
-      }
-   },
-   methods: {
-      inputProps () {
-         if ([...TEXT, ...LONG_TEXT].includes(this.type))
-            return { type: 'text', mask: false };
+const localType: Ref<string> = ref(null);
+const selectedGroup: Ref<string> = ref('manual');
+const selectedMethod: Ref<string> = ref('');
+const selectedValue: Ref<string> = ref('');
+const debounceTimeout: Ref<NodeJS.Timeout> = ref(null);
+const methodParams: Ref<{[key: string]: string}> = ref({});
+const enumArray: Ref<string[]> = ref(null);
 
-         if ([...NUMBER, ...FLOAT].includes(this.type))
-            return { type: 'number', mask: false };
+const fakerGroups = computed(() => {
+   if ([...TEXT, ...LONG_TEXT].includes(props.type))
+      localType.value = 'string';
+   else if (NUMBER.includes(props.type))
+      localType.value = 'number';
+   else if (FLOAT.includes(props.type))
+      localType.value = 'float';
+   else if ([...DATE, ...DATETIME].includes(props.type))
+      localType.value = 'datetime';
+   else if (TIME.includes(props.type))
+      localType.value = 'time';
+   else
+      localType.value = 'none';
 
-         if (TIME.includes(this.type)) {
-            let timeMask = '##:##:##';
-            const precision = this.fieldLength;
+   return FakerMethods.getGroupsByType(localType.value);
+});
 
-            for (let i = 0; i < precision; i++)
-               timeMask += i === 0 ? '.#' : '#';
+const fakerMethods = computed(() => {
+   return FakerMethods.getMethods({ type: localType.value, group: selectedGroup.value });
+});
 
-            return { type: 'text', mask: timeMask };
-         }
+const methodData = computed(() => {
+   return fakerMethods.value.find(method => method.name === selectedMethod.value);
+});
 
-         if (DATE.includes(this.type))
-            return { type: 'text', mask: '####-##-##' };
+const inputProps = () => {
+   if ([...TEXT, ...LONG_TEXT].includes(props.type))
+      return { type: 'text', mask: false };
 
-         if (DATETIME.includes(this.type)) {
-            let datetimeMask = '####-##-## ##:##:##';
-            const precision = this.fieldLength;
+   if ([...NUMBER, ...FLOAT].includes(props.type))
+      return { type: 'number', mask: false };
 
-            for (let i = 0; i < precision; i++)
-               datetimeMask += i === 0 ? '.#' : '#';
+   if (TIME.includes(props.type)) {
+      let timeMask = '##:##:##';
+      const precision = props.fieldLength;
 
-            return { type: 'text', mask: datetimeMask };
-         }
+      for (let i = 0; i < precision; i++)
+         timeMask += i === 0 ? '.#' : '#';
 
-         if (BLOB.includes(this.type))
-            return { type: 'file', mask: false };
-
-         if (BIT.includes(this.type))
-            return { type: 'text', mask: false };
-
-         return { type: 'text', mask: false };
-      },
-      getKeyUsage (keyName) {
-         return this.keyUsage.find(key => key.field === keyName);
-      },
-      filesChange (event) {
-         const { files } = event.target;
-         if (!files.length) return;
-
-         this.selectedValue = files[0].path;
-      },
-      clearValue () {
-         this.selectedValue = '';
-      },
-      onChange () {
-         this.$emit('update:modelValue', {
-            group: this.selectedGroup,
-            method: this.selectedMethod,
-            params: this.methodParams,
-            value: this.selectedValue,
-            length: this.fieldLength
-         });
-      }
+      return { type: 'text', mask: timeMask };
    }
+
+   if (DATE.includes(props.type))
+      return { type: 'text', mask: '####-##-##' };
+
+   if (DATETIME.includes(props.type)) {
+      let datetimeMask = '####-##-## ##:##:##';
+      const precision = props.fieldLength;
+
+      for (let i = 0; i < precision; i++)
+         datetimeMask += i === 0 ? '.#' : '#';
+
+      return { type: 'text', mask: datetimeMask };
+   }
+
+   if (BLOB.includes(props.type))
+      return { type: 'file', mask: false };
+
+   if (BIT.includes(props.type))
+      return { type: 'text', mask: false };
+
+   return { type: 'text', mask: false };
 };
+
+const getKeyUsage = (keyName: string) => {
+   return props.keyUsage.find(key => key.field === keyName);
+};
+
+const filesChange = ({ target } : {target: HTMLInputElement }) => {
+   const { files } = target;
+   if (!files.length) return;
+
+   selectedValue.value = files[0].path;
+};
+
+const clearValue = () => {
+   selectedValue.value = '';
+};
+
+const onChange = () => {
+   emit('update:modelValue', {
+      group: selectedGroup.value,
+      method: selectedMethod.value,
+      params: methodParams.value,
+      value: selectedValue.value,
+      length: props.fieldLength
+   });
+};
+
+watch(() => props.fieldObj, () => {
+   if (props.fieldObj) {
+      if (Array.isArray(props.fieldObj.value)) {
+         enumArray.value = props.fieldObj.value;
+         selectedValue.value = props.fieldObj.value[0];
+      }
+      else
+         selectedValue.value = props.fieldObj.value;
+   }
+});
+
+watch(selectedGroup, () => {
+   if (fakerMethods.value.length)
+      selectedMethod.value = fakerMethods.value[0].name;
+   else
+      selectedMethod.value = '';
+});
+
+watch(selectedMethod, () => {
+   onChange();
+});
+
+watch(selectedValue, () => {
+   clearTimeout(debounceTimeout.value);
+   debounceTimeout.value = null;
+   debounceTimeout.value = setTimeout(() => {
+      onChange();
+   }, 200);
+});
 </script>

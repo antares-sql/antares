@@ -28,55 +28,30 @@
    </ConfirmModal>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, Ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useApplicationStore } from '@/stores/application';
-import ConfirmModal from '@/components/BaseConfirmModal';
-import TextEditor from '@/components/BaseTextEditor';
 import { useScratchpadStore } from '@/stores/scratchpad';
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import TextEditor from '@/components/BaseTextEditor.vue';
 
-export default {
-   name: 'TheScratchpad',
-   components: {
-      ConfirmModal,
-      TextEditor
-   },
-   emits: ['hide'],
-   setup () {
-      const applicationStore = useApplicationStore();
-      const scratchpadStore = useScratchpadStore();
+const applicationStore = useApplicationStore();
+const scratchpadStore = useScratchpadStore();
 
-      const { notes } = storeToRefs(scratchpadStore);
-      const { changeNotes } = scratchpadStore;
+const { notes } = storeToRefs(scratchpadStore);
+const { changeNotes } = scratchpadStore;
+const { hideScratchpad } = applicationStore;
 
-      return {
-         notes,
-         hideScratchpad: applicationStore.hideScratchpad,
-         changeNotes
-      };
-   },
-   data () {
-      return {
-         localNotes: '',
-         debounceTimeout: null
-      };
-   },
-   watch: {
-      localNotes () {
-         clearTimeout(this.debounceTimeout);
+const localNotes: Ref<string> = ref(notes.value as string);// TODO: temp
+const debounceTimeout: Ref<NodeJS.Timeout> = ref(null);
 
-         this.debounceTimeout = setTimeout(() => {
-            this.changeNotes(this.localNotes);
-         }, 200);
-      }
-   },
-   created () {
-      this.localNotes = this.notes;
-   },
-   methods: {
-      hideModal () {
-         this.$emit('hide');
-      }
-   }
-};
+watch(localNotes, () => {
+   clearTimeout(debounceTimeout.value);
+
+   debounceTimeout.value = setTimeout(() => {
+      changeNotes(localNotes.value);
+   }, 200);
+});
+
 </script>

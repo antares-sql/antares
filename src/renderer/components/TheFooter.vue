@@ -26,46 +26,39 @@
    </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { shell } from 'electron';
+import { storeToRefs } from 'pinia';
 import { useApplicationStore } from '@/stores/application';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import { storeToRefs } from 'pinia';
-const { shell } = require('electron');
+import { computed, ComputedRef } from 'vue';
 
-export default {
-   name: 'TheFooter',
-   setup () {
-      const applicationStore = useApplicationStore();
-      const workspacesStore = useWorkspacesStore();
+interface DatabaseInfos {// TODO: temp
+   name: string;
+   number: string;
+   arch: string;
+   os: string;
+}
 
-      const { getSelected: workspace } = storeToRefs(workspacesStore);
+const applicationStore = useApplicationStore();
+const workspacesStore = useWorkspacesStore();
 
-      const { appVersion, showSettingModal } = applicationStore;
-      const { getWorkspace } = workspacesStore;
+const { getSelected: workspace } = storeToRefs(workspacesStore);
 
-      return {
-         appVersion,
-         showSettingModal,
-         workspace,
-         getWorkspace
-      };
-   },
-   computed: {
-      version () {
-         return this.getWorkspace(this.workspace) ? this.getWorkspace(this.workspace).version : null;
-      },
-      versionString () {
-         if (this.version)
-            return `${this.version.name} ${this.version.number} (${this.version.arch} ${this.version.os})`;
-         return '';
-      }
-   },
-   methods: {
-      openOutside (link) {
-         shell.openExternal(link);
-      }
-   }
-};
+const { showSettingModal } = applicationStore;
+const { getWorkspace } = workspacesStore;
+
+const version: ComputedRef<DatabaseInfos> = computed(() => {
+   return getWorkspace(workspace.value) ? getWorkspace(workspace.value).version : null;
+});
+
+const versionString = computed(() => {
+   if (version.value)
+      return `${version.value.name} ${version.value.number} (${version.value.arch} ${version.value.os})`;
+   return '';
+});
+
+const openOutside = (link: string) => shell.openExternal(link);
 </script>
 
 <style lang="scss">

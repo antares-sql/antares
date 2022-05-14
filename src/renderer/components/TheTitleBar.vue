@@ -5,7 +5,7 @@
          <img
             v-if="!isMacOS"
             class="titlebar-logo"
-            src="@/images/logo.svg"
+            :src="appIcon"
          >
       </div>
       <div class="titlebar-elements titlebar-title">
@@ -52,79 +52,74 @@
    </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { ipcRenderer } from 'electron';
 import { getCurrentWindow } from '@electron/remote';
 import { useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import { storeToRefs } from 'pinia';
+import { onUnmounted, ref } from 'vue';
+import { computed } from '@vue/reactivity';
+import { useI18n } from 'vue-i18n';
 
-export default {
-   name: 'TheTitleBar',
-   setup () {
-      const { getConnectionName } = useConnectionsStore();
-      const workspacesStore = useWorkspacesStore();
+const { t } = useI18n();
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const { getConnectionName } = useConnectionsStore();
+const workspacesStore = useWorkspacesStore();
 
-      const { getWorkspace } = workspacesStore;
+const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
-      return {
-         getConnectionName,
-         selectedWorkspace,
-         getWorkspace
-      };
-   },
-   data () {
-      return {
-         w: getCurrentWindow(),
-         isMaximized: getCurrentWindow().isMaximized(),
-         isDevelopment: process.env.NODE_ENV === 'development',
-         isMacOS: process.platform === 'darwin'
-      };
-   },
-   computed: {
-      windowTitle () {
-         if (!this.selectedWorkspace) return '';
-         if (this.selectedWorkspace === 'NEW') return this.$t('message.createNewConnection');
+const { getWorkspace } = workspacesStore;
 
-         const connectionName = this.getConnectionName(this.selectedWorkspace);
-         const workspace = this.getWorkspace(this.selectedWorkspace);
-         const breadcrumbs = Object.values(workspace.breadcrumbs).filter(breadcrumb => breadcrumb) || [workspace.client];
+const appIcon = require('@/images/logo.svg');
+const w = ref(getCurrentWindow());
+const isMaximized = ref(getCurrentWindow().isMaximized());
+const isDevelopment = ref(process.env.NODE_ENV === 'development');
+const isMacOS = ref(process.platform === 'darwin');
 
-         return [connectionName, ...breadcrumbs].join(' • ');
-      }
-   },
-   created () {
-      window.addEventListener('resize', this.onResize);
-   },
-   unmounted () {
-      window.removeEventListener('resize', this.onResize);
-   },
-   methods: {
-      closeApp () {
-         ipcRenderer.send('close-app');
-      },
-      minimizeApp () {
-         this.w.minimize();
-      },
-      toggleFullScreen () {
-         if (this.isMaximized)
-            this.w.unmaximize();
-         else
-            this.w.maximize();
-      },
-      openDevTools () {
-         this.w.openDevTools();
-      },
-      reload () {
-         this.w.reload();
-      },
-      onResize () {
-         this.isMaximized = this.w.isMaximized();
-      }
-   }
+const windowTitle = computed(() => {
+   if (!selectedWorkspace.value) return '';
+   if (selectedWorkspace.value === 'NEW') return t('message.createNewConnection');
+
+   const connectionName = getConnectionName(selectedWorkspace.value);
+   const workspace = getWorkspace(selectedWorkspace.value);
+   const breadcrumbs = Object.values(workspace.breadcrumbs).filter(breadcrumb => breadcrumb) || [workspace.client];
+
+   return [connectionName, ...breadcrumbs].join(' • ');
+});
+
+const closeApp = () => {
+   ipcRenderer.send('close-app');
 };
+
+const minimizeApp = () => {
+   w.value.minimize();
+};
+
+const toggleFullScreen = () => {
+   if (isMaximized.value)
+      w.value.unmaximize();
+   else
+      w.value.maximize();
+};
+
+const openDevTools = () => {
+   w.value.webContents.openDevTools();
+};
+
+const reload = () => {
+   w.value.reload();
+};
+
+const onResize = () => {
+   isMaximized.value = w.value.isMaximized();
+};
+
+window.addEventListener('resize', onResize);
+
+onUnmounted(() => {
+   window.removeEventListener('resize', onResize);
+});
 </script>
 
 <style lang="scss">

@@ -99,7 +99,7 @@ onMounted(() => {
       enableLiveAutocompletion: false
    });
 
-   editor.session.on('changeFold', () => {
+   (editor.session as unknown as ace.Ace.Editor).on('change', () => {
       const content = editor.getValue();
       emit('update:modelValue', content);
    });
