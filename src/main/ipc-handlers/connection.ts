@@ -1,5 +1,5 @@
 import * as antares from 'common/interfaces/antares';
-import fs from 'fs';
+import * as fs from 'fs';
 import { ipcMain } from 'electron';
 import { ClientsFactory } from '../libs/ClientsFactory';
 import { SslOptions } from 'mysql2';
