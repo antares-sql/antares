@@ -144,7 +144,11 @@ export class PostgreSQLClient extends AntaresCore {
 
    async getConnectionPool () {
       const dbConfig = await this.getDbConfig();
-      const pool = new pg.Pool({ ...dbConfig, max: this._poolSize });
+      const pool = new pg.Pool({
+         ...dbConfig,
+         max: this._poolSize,
+         idleTimeoutMillis: 0
+      });
       const connection = pool;
 
       if (this._params.readonly) {

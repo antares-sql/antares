@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.4](https://github.com/antares-sql/antares/compare/v0.5.3...v0.5.4) (2022-05-10)
+
+
+### Bug Fixes
+
+* app blocked by BIT fields with no default, closes [#256](https://github.com/antares-sql/antares/issues/256) ([e62f280](https://github.com/antares-sql/antares/commit/e62f280528edb0ff4550ee75038ea216e81e4f10))
+* file upload input not working ([58611bf](https://github.com/antares-sql/antares/commit/58611bf07f343e6899a7446bfcd1247b0c75fc7f))
+* SSH tunnel not working ([6d61518](https://github.com/antares-sql/antares/commit/6d6151814e5006935d493b9b83dbda1aa5b35391))
+* unable to insert auto-generated datetime fields ([ff27244](https://github.com/antares-sql/antares/commit/ff272440bdc2a7fe699e04f8809bd5af8f9529c0))
+
+
+### Improvements
+
+* **UI:** left alignment for numbers in result tables, closes [#249](https://github.com/antares-sql/antares/issues/249) ([e02565c](https://github.com/antares-sql/antares/commit/e02565c0d9bb63efa76a79f38e3ed3586a30ad1c))
+
 ### [0.5.3](https://github.com/antares-sql/antares/compare/v0.5.2...v0.5.3) (2022-05-08)
 
 

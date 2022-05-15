@@ -3,7 +3,7 @@ import * as antares from 'common/interfaces/antares';
 import { InsertRowsParams } from 'common/interfaces/tableApis';
 import { ipcMain } from 'electron';
 import { faker } from '@faker-js/faker';
-import moment from 'moment';
+import * as moment from 'moment';
 import { sqlEscaper } from 'common/libs/sqlEscaper';
 import { TEXT, LONG_TEXT, ARRAY, TEXT_SEARCH, NUMBER, FLOAT, BLOB, BIT, DATE, DATETIME } from 'common/fieldTypes';
 import customizations from 'common/customizations';

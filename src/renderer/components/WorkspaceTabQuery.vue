@@ -255,7 +255,8 @@ export default {
          durationsCount: 0,
          affectedCount: null,
          editorHeight: 200,
-         isHistoryOpen: false
+         isHistoryOpen: false,
+         debounceTimeout: null
       };
    },
    computed: {
@@ -285,6 +286,19 @@ export default {
       }
    },
    watch: {
+      query (val) {
+         clearTimeout(this.debounceTimeout);
+
+         this.debounceTimeout = setTimeout(() => {
+            this.updateTabContent({
+               uid: this.connection.uid,
+               tab: this.tab.uid,
+               type: 'query',
+               schema: this.selectedSchema,
+               content: val
+            });
+         }, 200);
+      },
       isSelected (val) {
          if (val) {
             this.changeBreadcrumbs({ schema: this.selectedSchema, query: `Query #${this.tab.index}` });
@@ -357,13 +371,6 @@ export default {
                      return acc + (curr.report ? curr.report.affectedRows : 0);
                   }, null);
 
-               this.updateTabContent({
-                  uid: this.connection.uid,
-                  tab: this.tab.uid,
-                  type: 'query',
-                  schema: this.selectedSchema,
-                  content: query
-               });
                this.saveHistory(params);
                if (!this.autocommit)
                   this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: true });
