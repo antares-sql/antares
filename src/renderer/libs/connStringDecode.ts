@@ -1,22 +1,24 @@
-import formatter from 'pg-connection-string'; // parses a connection string
+import { ConnectionParams } from 'common/interfaces/antares';
+import * as formatter from 'pg-connection-string'; // parses a connection string
 
-const formatHost = host => {
+const formatHost = (host: string) => {
    const results = host === 'localhost' ? '127.0.0.1' : host;
    return results;
 };
 
-const checkForSSl = conn => {
+const checkForSSl = (conn: string) => {
    return conn.includes('ssl=true');
 };
 
-const connStringConstruct = (args) => {
+const connStringConstruct = (args: ConnectionParams & { pgConnString: string }): ConnectionParams => {
    if (!args.pgConnString)
       return args;
 
    if (typeof args.pgConnString !== 'string')
       return args;
 
-   const stringArgs = formatter.parse(args.pgConnString);
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   const stringArgs: any = formatter.parse(args.pgConnString);
 
    const client = args.client || 'pg';
 

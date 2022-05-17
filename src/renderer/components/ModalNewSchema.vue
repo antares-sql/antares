@@ -67,91 +67,74 @@
    </Teleport>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, onBeforeUnmount, Ref, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import Schema from '@/ipc-api/Schema';
-import { storeToRefs } from 'pinia';
 
-export default {
-   name: 'ModalNewSchema',
-   emits: ['reload', 'close'],
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+const { addNotification } = useNotificationsStore();
+const workspacesStore = useWorkspacesStore();
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
-      const { getWorkspace, getDatabaseVariable } = workspacesStore;
+const { getWorkspace, getDatabaseVariable } = workspacesStore;
 
-      return {
-         addNotification,
-         selectedWorkspace,
-         getWorkspace,
-         getDatabaseVariable
-      };
-   },
-   data () {
-      return {
-         isLoading: false,
-         database: {
-            name: '',
-            collation: ''
-         }
-      };
-   },
-   computed: {
-      collations () {
-         return this.getWorkspace(this.selectedWorkspace).collations;
-      },
-      customizations () {
-         return this.getWorkspace(this.selectedWorkspace).customizations;
-      },
-      defaultCollation () {
-         return this.getDatabaseVariable(this.selectedWorkspace, 'collation_server') ? this.getDatabaseVariable(this.selectedWorkspace, 'collation_server').value : '';
+const emit = defineEmits(['reload', 'close']);
+
+const firstInput: Ref<HTMLInputElement> = ref(null);
+const isLoading = ref(false);
+const database = ref({
+   name: '',
+   collation: ''
+});
+
+const collations = computed(() => getWorkspace(selectedWorkspace.value).collations);
+const customizations = computed(() => getWorkspace(selectedWorkspace.value).customizations);
+const defaultCollation = computed(() => getDatabaseVariable(selectedWorkspace.value, 'collation_server') ? getDatabaseVariable(selectedWorkspace.value, 'collation_server').value : '');
+
+database.value = { ...database.value, collation: defaultCollation.value };
+
+const createSchema = async () => {
+   isLoading.value = true;
+   try {
+      const { status, response } = await Schema.createSchema({
+         uid: selectedWorkspace.value,
+         ...database.value
+      });
+
+      if (status === 'success') {
+         closeModal();
+         emit('reload');
       }
-   },
-   created () {
-      this.database = { ...this.database, collation: this.defaultCollation };
-      window.addEventListener('keydown', this.onKey);
-      setTimeout(() => {
-         this.$refs.firstInput.focus();
-      }, 20);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-   },
-   methods: {
-      async createSchema () {
-         this.isLoading = true;
-         try {
-            const { status, response } = await Schema.createSchema({
-               uid: this.selectedWorkspace,
-               ...this.database
-            });
-
-            if (status === 'success') {
-               this.closeModal();
-               this.$emit('reload');
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-         this.isLoading = false;
-      },
-      closeModal () {
-         this.$emit('close');
-      },
-      onKey (e) {
-         e.stopPropagation();
-         if (e.key === 'Escape')
-            this.closeModal();
-      }
+      else
+         addNotification({ status: 'error', message: response });
    }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+   isLoading.value = false;
 };
+
+const closeModal = () => {
+   emit('close');
+};
+
+const onKey = (e: KeyboardEvent) => {
+   e.stopPropagation();
+   if (e.key === 'Escape')
+      closeModal();
+};
+
+window.addEventListener('keydown', onKey);
+setTimeout(() => {
+   firstInput.value.focus();
+}, 20);
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+});
 </script>
 
 <style scoped>

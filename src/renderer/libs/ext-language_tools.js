@@ -1,14 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/no-this-alias */
-/* eslint-disable no-labels */
-/* eslint-disable no-return-assign */
-/* eslint-disable no-cond-assign */
-/* eslint-disable no-prototype-builtins */
-/* eslint-disable no-mixed-operators */
+/* eslint-disable */
 /*
    Got from 'ace-builds/src-noconflict/ext-language_tools' and edited to support icons.
-   I'm not responsible of this crazy code.
+   I'm not responsible of this crazy code 🤯.
 */
 
 ace.define('ace/snippets', ['require', 'exports', 'module', 'ace/lib/oop', 'ace/lib/event_emitter', 'ace/lib/lang', 'ace/range', 'ace/range_list', 'ace/keyboard/hash_handler', 'ace/tokenizer', 'ace/clipboard', 'ace/lib/dom', 'ace/editor'], function (require, exports, module) {

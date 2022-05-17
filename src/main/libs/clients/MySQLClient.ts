@@ -321,7 +321,7 @@ export class MySQLClient extends AntaresCore {
       return filteredDatabases.map(db => {
          if (schemas.has(db.Database)) {
             // TABLES
-            const remappedTables = tablesArr.filter(table => table.Db === db.Database).map(table => {
+            const remappedTables: antares.TableInfos[] = tablesArr.filter(table => table.Db === db.Database).map(table => {
                let tableType;
                switch (table.Comment) {
                   case 'VIEW':
@@ -350,7 +350,7 @@ export class MySQLClient extends AntaresCore {
             });
 
             // PROCEDURES
-            const remappedProcedures = procedures.filter(procedure => procedure.Db === db.Database).map(procedure => {
+            const remappedProcedures: antares.RoutineInfos[] = procedures.filter(procedure => procedure.Db === db.Database).map(procedure => {
                return {
                   name: procedure.Name,
                   type: procedure.Type,
@@ -364,7 +364,7 @@ export class MySQLClient extends AntaresCore {
             });
 
             // FUNCTIONS
-            const remappedFunctions = functions.filter(func => func.Db === db.Database).map(func => {
+            const remappedFunctions: antares.FunctionInfos[] = functions.filter(func => func.Db === db.Database).map(func => {
                return {
                   name: func.Name,
                   type: func.Type,
@@ -378,7 +378,7 @@ export class MySQLClient extends AntaresCore {
             });
 
             // SCHEDULERS
-            const remappedSchedulers = schedulers.filter(scheduler => scheduler.Db === db.Database).map(scheduler => {
+            const remappedSchedulers: antares.EventInfos[] = schedulers.filter(scheduler => scheduler.Db === db.Database).map(scheduler => {
                return {
                   name: scheduler.EVENT_NAME,
                   definition: scheduler.EVENT_DEFINITION,
@@ -404,7 +404,7 @@ export class MySQLClient extends AntaresCore {
             });
 
             // TRIGGERS
-            const remappedTriggers = triggersArr.filter(trigger => trigger.Db === db.Database).map(trigger => {
+            const remappedTriggers: antares.TriggerInfos[] = triggersArr.filter(trigger => trigger.Db === db.Database).map(trigger => {
                return {
                   name: trigger.Trigger,
                   statement: trigger.Statement,

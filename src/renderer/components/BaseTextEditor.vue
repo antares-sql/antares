@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, watch } from 'vue';
 import * as ace from 'ace-builds';
 import 'ace-builds/webpack-resolver';
 import { storeToRefs } from 'pinia';
@@ -28,7 +28,6 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:modelValue']);
 const settingsStore = useSettingsStore();
-const mode = ref(props.mode);
 
 const {
    editorTheme,
@@ -40,7 +39,7 @@ const {
 let editor: ace.Ace.Editor;
 const id = uidGen();
 
-watch(mode, () => {
+watch(() => props.mode, () => {
    if (editor)
       editor.session.setMode(`ace/mode/${props.mode}`);
 });
@@ -82,7 +81,7 @@ watch(lineWrap, () => {
 
 onMounted(() => {
    editor = ace.edit(`editor-${id}`, {
-      mode: `ace/mode/${mode.value}`,
+      mode: `ace/mode/${props.mode}`,
       theme: `ace/theme/${editorTheme.value}`,
       value: props.modelValue || '',
       fontSize: 14,

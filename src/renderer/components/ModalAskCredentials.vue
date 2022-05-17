@@ -55,30 +55,25 @@
    </Teleport>
 </template>
 
-<script>
-export default {
-   name: 'ModalAskCredentials',
-   emits: ['close-asking', 'credentials'],
-   data () {
-      return {
-         credentials: {
-            user: '',
-            password: ''
-         }
-      };
-   },
-   created () {
-      setTimeout(() => {
-         this.$refs.firstInput.focus();
-      }, 20);
-   },
-   methods: {
-      closeModal () {
-         this.$emit('close-asking');
-      },
-      sendCredentials () {
-         this.$emit('credentials', this.credentials);
-      }
-   }
+<script setup lang="ts">
+import { Ref, ref } from 'vue';
+
+const credentials = ref({
+   user: '',
+   password: ''
+});
+const firstInput: Ref<HTMLInputElement> = ref(null);
+const emit = defineEmits(['close-asking', 'credentials']);
+
+const closeModal = () => {
+   emit('close-asking');
 };
+
+const sendCredentials = () => {
+   emit('credentials', credentials.value);
+};
+
+setTimeout(() => {
+   firstInput.value.focus();
+}, 20);
 </script>

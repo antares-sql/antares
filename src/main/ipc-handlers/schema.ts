@@ -172,7 +172,10 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('export', (event, { uid, type, tables, ...rest }) => {
-      if (exporter !== null) return;
+      if (exporter !== null) {
+         exporter.kill();
+         return;
+      }
 
       return new Promise((resolve/*, reject */) => {
          (async () => {
@@ -265,7 +268,10 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('import-sql', async (event, options) => {
-      if (importer !== null) return;
+      if (importer !== null) {
+         importer.kill();
+         return;
+      }
 
       return new Promise((resolve/*, reject */) => {
          (async () => {

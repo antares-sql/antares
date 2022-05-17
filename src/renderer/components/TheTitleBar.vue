@@ -53,13 +53,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onUnmounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { ipcRenderer } from 'electron';
 import { getCurrentWindow } from '@electron/remote';
 import { useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import { onUnmounted, ref } from 'vue';
-import { computed } from '@vue/reactivity';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();

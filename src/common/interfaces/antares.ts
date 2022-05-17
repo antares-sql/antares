@@ -73,6 +73,19 @@ export interface TypesGroup {
 }
 
 // Tables
+export interface TableInfos {
+   name: string;
+   type: string;
+   rows: number;
+   created: Date;
+   updated: Date;
+   engine: string;
+   comment: string;
+   size: number;
+   autoIncrement: number;
+   collation: string;
+}
+
 export interface TableField {
    name: string;
    key: string;
@@ -87,7 +100,7 @@ export interface TableField {
    unsigned?: boolean;
    zerofill?: boolean;
    order?: number;
-   default?: number | string;
+   default?: string;
    enumValues?: string;
    charset?: string;
    collation?: string;
@@ -97,6 +110,7 @@ export interface TableField {
    comment?: string;
    after?: string;
    orgName?: string;
+   length?: number;
 }
 
 export interface TableIndex {
@@ -170,6 +184,7 @@ export interface AlterTableParams {
 }
 
 // Views
+export type ViewInfos = TableInfos
 export interface CreateViewParams {
    schema: string;
    name: string;
@@ -185,6 +200,18 @@ export interface AlterViewParams extends CreateViewParams {
 }
 
 // Triggers
+export interface TriggerInfos {
+   name: string;
+   statement: string;
+   timing: string;
+   definer: string;
+   event: string;
+   table: string;
+   sqlMode: string;
+   created: Date;
+   charset: string;
+}
+
 export interface CreateTriggerParams {
    definer?: string;
    schema: string;
@@ -200,6 +227,19 @@ export interface AlterTriggerParams extends CreateTriggerParams {
 }
 
 // Routines & Functions
+export interface RoutineInfos {
+   name: string;
+   type: string;
+   definer: string;
+   created: string;
+   updated: string;
+   comment?: string;
+   charset?: string;
+   security?: string;
+}
+
+export type FunctionInfos = RoutineInfos
+
 export interface FunctionParam {
    context: string;
    name: string;
@@ -244,6 +284,29 @@ export interface AlterFunctionParams extends CreateFunctionParams {
 }
 
 // Events
+export interface EventInfos {
+   name: string;
+   definition: string;
+   type: string;
+   definer: string;
+   body: string;
+   starts: string;
+   ends: string;
+   enabled: boolean;
+   executeAt: string;
+   intervalField: string;
+   intervalValue: string;
+   onCompletion: string;
+   originator: string;
+   sqlMode: string;
+   created: string;
+   updated: string;
+   lastExecuted: string;
+   comment: string;
+   charset: string;
+   timezone: string;
+}
+
 export interface CreateEventParams {
    definer?: string;
    schema: string;
@@ -261,6 +324,17 @@ export interface CreateEventParams {
 
 export interface AlterEventParams extends CreateEventParams {
    oldName?: string;
+}
+
+// Schema
+export interface SchemaInfos {
+   name: string;
+   size: number;
+   tables: TableInfos[];
+   functions: RoutineInfos[];
+   procedures: RoutineInfos[];
+   triggers: TriggerInfos[];
+   schedulers: EventInfos[];
 }
 
 // Query

@@ -272,7 +272,13 @@ export default {
                sql = `CALL \`${this.localElement.name}\`(${params.join(',')})`;
          }
 
-         this.newTab({ uid: this.workspace.uid, content: sql, type: 'query', autorun: true });
+         this.newTab({
+            uid: this.workspace.uid,
+            content: sql,
+            type: 'query',
+            schema: this.selectedSchema,
+            autorun: true
+         });
          this.closeContext();
       },
       async runFunctionCheck () {
@@ -317,7 +323,13 @@ export default {
                sql = `SELECT \`${this.localElement.name}\` (${params.join(',')})`;
          }
 
-         this.newTab({ uid: this.workspace.uid, content: sql, type: 'query', autorun: true });
+         this.newTab({
+            uid: this.workspace.uid,
+            content: sql,
+            type: 'query',
+            schema: this.selectedSchema,
+            autorun: true
+         });
          this.closeContext();
       },
       async toggleTrigger () {

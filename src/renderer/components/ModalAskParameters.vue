@@ -47,83 +47,78 @@
    </ConfirmModal>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, PropType, Ref, ref } from 'vue';
 import { NUMBER, FLOAT } from 'common/fieldTypes';
-import ConfirmModal from '@/components/BaseConfirmModal';
+import { FunctionParam } from 'common/interfaces/antares';
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
 
-export default {
-   name: 'ModalAskParameters',
-   components: {
-      ConfirmModal
-   },
-   props: {
-      localRoutine: Object,
-      client: String
-   },
-   emits: ['confirm', 'close'],
-   data () {
-      return {
-         values: {}
-      };
-   },
-   computed: {
-      inParameters () {
-         return this.localRoutine.parameters.filter(param => param.context === 'IN');
-      }
-   },
-   created () {
-      window.addEventListener('keydown', this.onKey);
+// eslint-disable-next-line camelcase
+type LocalRoutineParams = FunctionParam & {_antares_id: string};
 
-      setTimeout(() => {
-         this.$refs.firstInput[0].focus();
-      }, 20);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-   },
-   methods: {
-      typeClass (type) {
-         if (type)
-            return `type-${type.toLowerCase().replaceAll(' ', '_').replaceAll('"', '')}`;
-         return '';
-      },
-      runRoutine () {
-         const valArr = Object.keys(this.values).reduce((acc, curr, i) => {
-            let qc;
-            switch (this.client) {
-               case 'maria':
-               case 'mysql':
-                  qc = '"';
-                  break;
-               case 'pg':
-                  qc = '\'';
-                  break;
-               default:
-                  qc = '"';
-            }
+const props = defineProps({
+   localRoutine: Object as PropType<{name: string; parameters: LocalRoutineParams[]}>,
+   client: String
+});
 
-            const param = this.localRoutine.parameters.find(param => `${i}-${param.name}` === curr);
+const emit = defineEmits(['confirm', 'close']);
 
-            const value = [...NUMBER, ...FLOAT].includes(param.type) ? this.values[curr] : `${qc}${this.values[curr]}${qc}`;
-            acc.push(value);
-            return acc;
-         }, []);
-         this.$emit('confirm', valArr);
-      },
-      closeModal () {
-         this.$emit('close');
-      },
-      onKey (e) {
-         e.stopPropagation();
-         if (e.key === 'Escape')
-            this.closeModal();
-      },
-      wrapNumber (num) {
-         if (!num) return '';
-         return `(${num})`;
-      }
-   }
+const firstInput: Ref<HTMLInputElement[]> = ref(null);
+const values: Ref<{[key: string]: string}> = ref({});
+
+const inParameters = computed(() => {
+   return props.localRoutine.parameters.filter(param => param.context === 'IN');
+});
+
+const typeClass = (type: string) => {
+   if (type)
+      return `type-${type.toLowerCase().replaceAll(' ', '_').replaceAll('"', '')}`;
+   return '';
 };
+
+const runRoutine = () => {
+   const valArr = Object.keys(values.value).reduce((acc, curr, i) => {
+      let qc;
+      switch (props.client) {
+         case 'maria':
+         case 'mysql':
+            qc = '"';
+            break;
+         case 'pg':
+            qc = '\'';
+            break;
+         default:
+            qc = '"';
+      }
+
+      const param = props.localRoutine.parameters.find(param => `${i}-${param.name}` === curr);
+
+      const value = [...NUMBER, ...FLOAT].includes(param.type) ? values.value[curr] : `${qc}${values.value[curr]}${qc}`;
+      acc.push(value);
+      return acc;
+   }, []);
+
+   emit('confirm', valArr);
+};
+
+const closeModal = () => emit('close');
+
+const onKey = (e: KeyboardEvent) => {
+   e.stopPropagation();
+   if (e.key === 'Escape')
+      closeModal();
+};
+
+const wrapNumber = (num: number) => {
+   if (!num) return '';
+   return `(${num})`;
+};
+
+window.addEventListener('keydown', onKey);
+
+setTimeout(() => {
+   firstInput.value[0].focus();
+}, 20);
 </script>
 
 <style scoped>

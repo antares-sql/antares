@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, Ref } from 'vue';
+import { ref, Ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
@@ -64,7 +64,6 @@ import { useWorkspacesStore } from '@/stores/workspaces';
 import * as Draggable from 'vuedraggable';
 import SettingBarContext from '@/components/SettingBarContext.vue';
 import { ConnectionParams } from 'common/interfaces/antares';
-import { computed } from '@vue/reactivity';
 
 const applicationStore = useApplicationStore();
 const connectionsStore = useConnectionsStore();
@@ -80,7 +79,7 @@ const { getWorkspace, selectWorkspace } = workspacesStore;
 
 const isContext: Ref<boolean> = ref(false);
 const isDragging: Ref<boolean> = ref(false);
-const contextEvent: Ref<Event> = ref(null);
+const contextEvent: Ref<MouseEvent> = ref(null);
 const contextConnection: Ref<ConnectionParams> = ref(null);
 
 const connections = computed({
@@ -94,7 +93,7 @@ const connections = computed({
 
 const hasUpdates = computed(() => ['available', 'downloading', 'downloaded', 'link'].includes(updateStatus.value));
 
-const contextMenu = (event: Event, connection: ConnectionParams) => {
+const contextMenu = (event: MouseEvent, connection: ConnectionParams) => {
    contextEvent.value = event;
    contextConnection.value = connection;
    isContext.value = true;
@@ -132,110 +131,6 @@ const dragStop = (e: any) => { // TODO: temp
    }, 200);
 };
 </script>
-
-<!-- <script>
-import { storeToRefs } from 'pinia';
-import { useApplicationStore } from '@/stores/application';
-import { useConnectionsStore } from '@/stores/connections';
-import { useWorkspacesStore } from '@/stores/workspaces';
-import Draggable from 'vuedraggable';
-import SettingBarContext from '@/components/SettingBarContext';
-
-export default {
-   name: 'TheSettingBar',
-   components: {
-      Draggable,
-      SettingBarContext
-   },
-   setup () {
-      const applicationStore = useApplicationStore();
-      const connectionsStore = useConnectionsStore();
-      const workspacesStore = useWorkspacesStore();
-
-      const { updateStatus } = storeToRefs(applicationStore);
-      const { connections: getConnections } = storeToRefs(connectionsStore);
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
-
-      const { showSettingModal, showScratchpad } = applicationStore;
-      const { getConnectionName, updateConnections } = connectionsStore;
-      const { getWorkspace, selectWorkspace } = workspacesStore;
-
-      return {
-         applicationStore,
-         updateStatus,
-         showSettingModal,
-         showScratchpad,
-         getConnections,
-         getConnectionName,
-         updateConnections,
-         selectedWorkspace,
-         getWorkspace,
-         selectWorkspace
-      };
-   },
-   data () {
-      return {
-         dragElement: null,
-         isContext: false,
-         isDragging: false,
-         contextEvent: null,
-         contextConnection: {},
-         scale: 0
-      };
-   },
-   computed: {
-      connections: {
-         get () {
-            return this.getConnections;
-         },
-         set (value) {
-            this.updateConnections(value);
-         }
-      },
-      hasUpdates () {
-         return ['available', 'downloading', 'downloaded', 'link'].includes(this.updateStatus);
-      }
-   },
-   methods: {
-      contextMenu (event, connection) {
-         this.contextEvent = event;
-         this.contextConnection = connection;
-         this.isContext = true;
-      },
-      workspaceName (connection) {
-         return connection.ask ? '' : `${connection.user + '@'}${connection.host}:${connection.port}`;
-      },
-      tooltipPosition (e) {
-         const el = e.target ? e.target : e;
-         const fromTop = window.pageYOffset + el.getBoundingClientRect().top - (el.offsetHeight / 4);
-         el.querySelector('.ex-tooltip-content').style.top = `${fromTop}px`;
-      },
-      getStatusBadge (uid) {
-         if (this.getWorkspace(uid)) {
-            const status = this.getWorkspace(uid).connectionStatus;
-
-            switch (status) {
-               case 'connected':
-                  return 'badge badge-connected';
-               case 'connecting':
-                  return 'badge badge-connecting';
-               case 'failed':
-                  return 'badge badge-failed';
-               default:
-                  return '';
-            }
-         }
-      },
-      dragStop (e) {
-         this.isDragging = false;
-
-         setTimeout(() => {
-            this.tooltipPosition(e.originalEvent.target.parentNode);
-         }, 200);
-      }
-   }
-};
-</script> -->
 
 <style lang="scss">
   #settingbar {

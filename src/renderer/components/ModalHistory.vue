@@ -97,129 +97,115 @@
    </Teleport>
 </template>
 
-<script>
-import moment from 'moment';
+<script setup lang="ts">
+import { Component, computed, ComputedRef, onBeforeUnmount, onMounted, onUpdated, Prop, Ref, ref, watch } from 'vue';
+import * as moment from 'moment';
+import { ConnectionParams } from 'common/interfaces/antares';
 import { useHistoryStore } from '@/stores/history';
 import { useConnectionsStore } from '@/stores/connections';
-import { useNotificationsStore } from '@/stores/notifications';
-import BaseVirtualScroll from '@/components/BaseVirtualScroll';
+import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
 
-export default {
-   name: 'ModalHistory',
-   components: {
-      BaseVirtualScroll
-   },
-   props: {
-      connection: Object
-   },
-   emits: ['select-query', 'close'],
-   setup () {
-      const { getHistoryByWorkspace, deleteQueryFromHistory } = useHistoryStore();
-      const { getConnectionName } = useConnectionsStore();
-      const { addNotification } = useNotificationsStore();
+interface HistoryRow {
+   uid:string;
+   sql: string;
+   schema: string;
+   date: string;
+}
 
-      return {
-         getHistoryByWorkspace,
-         deleteQueryFromHistory,
-         getConnectionName,
-         addNotification
-      };
-   },
-   data () {
-      return {
-         resultsSize: 1000,
-         isQuering: false,
-         scrollElement: null,
-         searchTermInterval: null,
-         searchTerm: '',
-         localSearchTerm: ''
-      };
-   },
-   computed: {
-      connectionName () {
-         return this.getConnectionName(this.connection.uid);
-      },
-      history () {
-         return this.getHistoryByWorkspace(this.connection.uid) || [];
-      },
-      filteredHistory () {
-         return this.history.filter(q => q.sql.toLowerCase().search(this.searchTerm.toLowerCase()) >= 0);
-      }
-   },
-   watch: {
-      searchTerm () {
-         clearTimeout(this.searchTermInterval);
+const { getHistoryByWorkspace, deleteQueryFromHistory } = useHistoryStore();
+const { getConnectionName } = useConnectionsStore();
 
-         this.searchTermInterval = setTimeout(() => {
-            this.localSearchTerm = this.searchTerm;
-         }, 200);
-      }
-   },
-   created () {
-      window.addEventListener('keydown', this.onKey, { capture: true });
-   },
-   updated () {
-      if (this.$refs.table)
-         this.refreshScroller();
+const props = defineProps({
+   connection: Object as Prop<ConnectionParams>
+});
 
-      if (this.$refs.tableWrapper)
-         this.scrollElement = this.$refs.tableWrapper;
-   },
-   mounted () {
-      this.resizeResults();
-      window.addEventListener('resize', this.resizeResults);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey, { capture: true });
-      window.removeEventListener('resize', this.resizeResults);
-      clearInterval(this.refreshInterval);
-   },
-   methods: {
-      copyQuery (sql) {
-         navigator.clipboard.writeText(sql);
-      },
-      deleteQuery (query) {
-         this.deleteQueryFromHistory({
-            workspace: this.connection.uid,
-            ...query
-         });
-      },
-      resizeResults () {
-         if (this.$refs.resultTable) {
-            const el = this.$refs.tableWrapper.parentElement;
+const emit = defineEmits(['select-query', 'close']);
 
-            if (el)
-               this.resultsSize = el.offsetHeight - this.$refs.searchForm.offsetHeight;
+const table: Ref<HTMLDivElement> = ref(null);
+const resultTable: Ref<Component & { updateWindow: () => void }> = ref(null);
+const tableWrapper: Ref<HTMLDivElement> = ref(null);
+const searchForm: Ref<HTMLInputElement> = ref(null);
+const resultsSize = ref(1000);
+const scrollElement: Ref<HTMLDivElement> = ref(null);
+const searchTermInterval: Ref<NodeJS.Timeout> = ref(null);
+const searchTerm = ref('');
+const localSearchTerm = ref('');
 
-            this.$refs.resultTable.updateWindow();
-         }
-      },
-      formatDate (date) {
-         return moment(date).isValid() ? moment(date).format('HH:mm:ss - YYYY/MM/DD') : date;
-      },
-      refreshScroller () {
-         this.resizeResults();
-      },
-      closeModal () {
-         this.$emit('close');
-      },
-      highlightWord (string) {
-         string = string.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+const connectionName = computed(() => getConnectionName(props.connection.uid));
+const history: ComputedRef<HistoryRow[]> = computed(() => (getHistoryByWorkspace(props.connection.uid) || []));
+const filteredHistory = computed(() => history.value.filter(q => q.sql.toLowerCase().search(searchTerm.value.toLowerCase()) >= 0));
 
-         if (this.searchTerm) {
-            const regexp = new RegExp(`(${this.searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-            return string.replace(regexp, '<span class="text-primary text-bold">$1</span>');
-         }
-         else
-            return string;
-      },
-      onKey (e) {
-         e.stopPropagation();
-         if (e.key === 'Escape')
-            this.closeModal();
-      }
+watch(searchTerm, () => {
+   clearTimeout(searchTermInterval.value);
+
+   searchTermInterval.value = setTimeout(() => {
+      localSearchTerm.value = searchTerm.value;
+   }, 200);
+});
+
+const copyQuery = (sql: string) => {
+   navigator.clipboard.writeText(sql);
+};
+
+const deleteQuery = (query: HistoryRow[]) => {
+   deleteQueryFromHistory({
+      workspace: props.connection.uid,
+      ...query
+   });
+};
+
+const resizeResults = () => {
+   if (resultTable.value) {
+      const el = tableWrapper.value.parentElement;
+
+      if (el)
+         resultsSize.value = el.offsetHeight - searchForm.value.offsetHeight;
+
+      resultTable.value.updateWindow();
    }
 };
+
+const formatDate = (date: Date) => moment(date).isValid() ? moment(date).format('HH:mm:ss - YYYY/MM/DD') : date;
+const refreshScroller = () => resizeResults();
+const closeModal = () => emit('close');
+
+const highlightWord = (string: string) => {
+   string = string.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
+   if (searchTerm.value) {
+      const regexp = new RegExp(`(${searchTerm.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      return string.replace(regexp, '<span class="text-primary text-bold">$1</span>');
+   }
+   else
+      return string;
+};
+
+const onKey = (e: KeyboardEvent) => {
+   e.stopPropagation();
+   if (e.key === 'Escape')
+      closeModal();
+};
+
+window.addEventListener('keydown', onKey, { capture: true });
+
+onUpdated(() => {
+   if (table.value)
+      refreshScroller();
+
+   if (tableWrapper.value)
+      scrollElement.value = tableWrapper.value;
+});
+
+onMounted(() => {
+   resizeResults();
+   window.addEventListener('resize', resizeResults);
+});
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey, { capture: true });
+   window.removeEventListener('resize', resizeResults);
+   clearInterval(searchTermInterval.value);
+});
 </script>
 
 <style lang="scss" scoped>

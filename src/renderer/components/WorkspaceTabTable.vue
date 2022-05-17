@@ -156,14 +156,6 @@
             @hard-sort="hardSort"
          />
       </div>
-      <ModalNewTableRow
-         v-if="isAddModal"
-         :fields="fields"
-         :key-usage="keyUsage"
-         :tab-uid="tabUid"
-         @hide="hideAddModal"
-         @reload="reloadTable"
-      />
       <ModalFakerRows
          v-if="isFakerModal"
          :fields="fields"
@@ -184,7 +176,6 @@ import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseLoader from '@/components/BaseLoader';
 import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable';
 import WorkspaceTabTableFilters from '@/components/WorkspaceTabTableFilters';
-import ModalNewTableRow from '@/components/ModalNewTableRow';
 import ModalFakerRows from '@/components/ModalFakerRows';
 import tableTabs from '@/mixins/tableTabs';
 
@@ -194,7 +185,6 @@ export default {
       BaseLoader,
       WorkspaceTabQueryTable,
       WorkspaceTabTableFilters,
-      ModalNewTableRow,
       ModalFakerRows
    },
    mixins: [tableTabs],
@@ -231,7 +221,6 @@ export default {
          isSearch: false,
          results: [],
          lastTable: null,
-         isAddModal: false,
          isFakerModal: false,
          autorefreshTimer: 0,
          refreshInterval: null,
@@ -409,12 +398,6 @@ export default {
          }
          else if (direction === 'prev' && this.page > 1)
             this.page--;
-      },
-      showAddModal () {
-         this.isAddModal = true;
-      },
-      hideAddModal () {
-         this.isAddModal = false;
       },
       showFakerModal () {
          if (this.isQuering) return;
