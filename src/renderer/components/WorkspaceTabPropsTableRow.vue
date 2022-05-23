@@ -49,7 +49,7 @@
             v-if="!isInlineEditor.type"
             class="cell-content text-left"
             :class="typeClass(localRow.type)"
-            @click="editON($event, localRow.type.toUpperCase(), 'type')"
+            @dblclick="editON($event, localRow.type.toUpperCase(), 'type')"
          >
             {{ localRow.type }}
          </span>
@@ -201,7 +201,7 @@
             <span
                v-if="!isInlineEditor.collation"
                class="cell-content"
-               @click="editON($event, localRow.collation, 'collation')"
+               @dblclick="editON($event, localRow.collation, 'collation')"
             >
                {{ localRow.collation }}
             </span>
