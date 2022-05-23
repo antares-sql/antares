@@ -8,5 +8,6 @@ export default {
    'de-DE': 'Deutsch (Deutschland)',
    'vi-VN': 'Tiếng Việt',
    'ja-JP': '日本語',
-   'zh-CN': '简体中文'
+   'zh-CN': '简体中文',
+   'ru-RU': 'Русский'
 };
