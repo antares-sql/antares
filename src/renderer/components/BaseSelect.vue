@@ -32,11 +32,9 @@
          >
          <span v-if="searchable && !isOpen || !searchable">{{ currentOptionLabel }}</span>
       </div>
-      <Teleport
-         v-if="isOpen"
-         :to="dropdownContainer"
-      >
+      <Transition :name="animation">
          <div
+            v-if="isOpen"
             ref="optionList"
             :class="`select__list-wrapper ${dropdownClass ? dropdownClass : '' }`"
          >
@@ -65,13 +63,12 @@
                </li>
             </ul>
          </div>
-      </Teleport>
+      </Transition>
    </div>
 </template>
 
 <script>
 import { defineComponent, computed, ref, watch, nextTick, onMounted, onUnmounted } from 'vue';
-import { option } from 'yargs';
 
 export default defineComponent({
    name: 'BaseSelect',
@@ -119,9 +116,9 @@ export default defineComponent({
          type: Boolean,
          default: true
       },
-      dropdownContainer: {
+      animation: {
          type: String,
-         default: '#window-content'
+         default: 'fade-slide-down'
       },
       dropdownOffsets: {
          type: Object,
@@ -277,22 +274,20 @@ export default defineComponent({
       };
 
       const adjustListPosition = () => {
-         setTimeout(() => {
-            const element = el.value;
-            let { left, top } = element.getBoundingClientRect();
-            const { left: offsetLeft = 0, top: offsetTop = 0 } = props.dropdownOffsets;
-            top = top + element.clientHeight + offsetTop;
-            const openBottom = top >= 0 && top + optionList.value.clientHeight <= window.innerHeight;
+         const element = el.value;
+         let { left, top } = element.getBoundingClientRect();
+         const { left: offsetLeft = 0, top: offsetTop = 0 } = props.dropdownOffsets;
+         top = top + element.clientHeight + offsetTop;
+         const openBottom = top >= 0 && top + optionList.value.clientHeight <= window.innerHeight;
 
-            if (!openBottom) {
-               top -= (offsetTop * 2 + element.clientHeight);
-               optionList.value.style.transform = 'translate(0, -100%)';
-            }
+         if (!openBottom) {
+            top -= (offsetTop * 2 + element.clientHeight);
+            optionList.value.style.transform = 'translate(0, -100%)';
+         }
 
-            optionList.value.style.left = `${left + offsetLeft}px`;
-            optionList.value.style.top = `${top}px`;
-            optionList.value.style.minWidth = `${element.clientWidth}px`;
-         }, 100);
+         optionList.value.style.left = `${left + offsetLeft}px`;
+         optionList.value.style.top = `${top}px`;
+         optionList.value.style.minWidth = `${element.clientWidth}px`;
       };
 
       const keyArrows = (direction) => {
@@ -330,6 +325,14 @@ export default defineComponent({
 
       onMounted(() => {
          window.addEventListener('resize', adjustListPosition);
+         nextTick(() => {
+            // fix position when the component is created and opened at the same time
+            if (isOpen.value) {
+               setTimeout(() => {
+                  adjustListPosition();
+               }, 50);
+            }
+         });
       });
       onUnmounted(() => {
          window.removeEventListener('resize', adjustListPosition);
