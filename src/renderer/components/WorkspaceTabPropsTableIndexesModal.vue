@@ -89,16 +89,12 @@
                         {{ $t('word.type') }}
                      </label>
                      <div class="column">
-                        <select v-model="selectedIndexObj.type" class="form-select">
-                           <option
-                              v-for="index in indexTypes"
-                              :key="index"
-                              :value="index"
-                              :disabled="index === 'PRIMARY' && hasPrimary"
-                           >
-                              {{ index }}
-                           </option>
-                        </select>
+                        <BaseSelect
+                           v-model="selectedIndexObj.type"
+                           :options="indexTypes"
+                           :option-disabled="(opt) => opt === 'PRIMARY'"
+                           class="form-select"
+                        />
                      </div>
                   </div>
                   <div class="form-group">
@@ -140,11 +136,13 @@
 <script>
 import { uidGen } from 'common/libs/uidGen';
 import ConfirmModal from '@/components/BaseConfirmModal';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'WorkspaceTabPropsTableIndexesModal',
    components: {
-      ConfirmModal
+      ConfirmModal,
+      BaseSelect
    },
    props: {
       localIndexes: Array,

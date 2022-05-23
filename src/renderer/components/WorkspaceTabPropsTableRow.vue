@@ -53,31 +53,18 @@
          >
             {{ localRow.type }}
          </span>
-         <select
+         <BaseSelect
             v-else
             ref="editField"
             v-model="editingContent"
+            :options="types"
+            group-label="group"
+            group-values="types"
+            option-label="name"
+            option-track-by="name"
             class="form-select editable-field pl-1 pr-4 small-select text-uppercase"
             @blur="editOFF"
-         >
-            <option v-if="!isInDataTypes">
-               {{ row.type }}
-            </option>
-            <optgroup
-               v-for="group in dataTypes"
-               :key="group.group"
-               :label="group.group"
-            >
-               <option
-                  v-for="type in group.types"
-                  :key="type.name"
-                  :selected="localRow.type === type.name"
-                  :value="type.name"
-               >
-                  {{ type.name }}
-               </option>
-            </optgroup>
-         </select>
+         />
       </div>
       <div
          v-if="customizations.tableArray"
@@ -218,22 +205,16 @@
             >
                {{ localRow.collation }}
             </span>
-            <select
+            <BaseSelect
                v-else
                ref="editField"
                v-model="editingContent"
+               :options="collations"
+               option-label="collation"
+               option-track-by="collation"
                class="form-select small-select pl-1 pr-4 editable-field"
                @blur="editOFF"
-            >
-               <option
-                  v-for="collation in collations"
-                  :key="collation.collation"
-                  :selected="localRow.collation === collation.collation"
-                  :value="collation.collation"
-               >
-                  {{ collation.collation }}
-               </option>
-            </select>
+            />
          </template>
       </div>
       <ConfirmModal
@@ -347,11 +328,13 @@ import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import ConfirmModal from '@/components/BaseConfirmModal';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'WorkspaceTabPropsTableRow',
    components: {
-      ConfirmModal
+      ConfirmModal,
+      BaseSelect
    },
    props: {
       row: Object,
@@ -431,6 +414,13 @@ export default {
             typeNames = [...groupTypeNames, ...typeNames];
          }
          return typeNames.includes(this.row.type);
+      },
+      types () {
+         const types = [...this.dataTypes];
+         if (!this.isInDataTypes)
+            types.unshift({ name: this.row });
+
+         return types;
       }
    },
    watch: {

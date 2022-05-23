@@ -38,25 +38,21 @@
                   class="editable-field form-input input-sm px-1"
                   @blur="editOFF"
                >
-               <select
+               <BaseSelect
                   v-else-if="inputProps.type === 'boolean'"
                   v-model="editingContent"
+                  :options="['true', 'false']"
                   class="form-select small-select editable-field"
                   @blur="editOFF"
-               >
-                  <option>true</option>
-                  <option>false</option>
-               </select>
-               <select
+               />
+               <BaseSelect
                   v-else-if="enumArray"
                   v-model="editingContent"
+                  :options="enumArray"
                   class="form-select small-select editable-field"
+                  dropdown-class="small-select"
                   @blur="editOFF"
-               >
-                  <option v-for="value in enumArray" :key="value">
-                     {{ value }}
-                  </option>
-               </select>
+               />
                <input
                   v-else
                   ref="editField"
@@ -95,19 +91,14 @@
                      <label for="editorMode" class="form-label mr-2">
                         <b>{{ $t('word.content') }}</b>:
                      </label>
-                     <select
+                     <BaseSelect
                         id="editorMode"
                         v-model="editorMode"
+                        :options="availableLanguages"
+                        option-label="name"
+                        option-track-by="slug"
                         class="form-select select-sm"
-                     >
-                        <option
-                           v-for="language in availableLanguages"
-                           :key="language.slug"
-                           :value="language.slug"
-                        >
-                           {{ language.name }}
-                        </option>
-                     </select>
+                     />
                   </div>
                   <div class="d-flex">
                      <div class="p-vcentered">
@@ -223,6 +214,7 @@ import ConfirmModal from '@/components/BaseConfirmModal';
 import TextEditor from '@/components/BaseTextEditor';
 import BaseMap from '@/components/BaseMap';
 import ForeignKeySelect from '@/components/ForeignKeySelect';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'WorkspaceTabQueryTableRow',
@@ -230,7 +222,8 @@ export default {
       ConfirmModal,
       TextEditor,
       ForeignKeySelect,
-      BaseMap
+      BaseMap,
+      BaseSelect
    },
    props: {
       row: Object,

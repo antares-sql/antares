@@ -57,11 +57,11 @@
                   <label class="form-label">
                      {{ $t('word.language') }}
                   </label>
-                  <select v-model="localFunction.language" class="form-select">
-                     <option v-for="language in customizations.languages" :key="language">
-                        {{ language }}
-                     </option>
-                  </select>
+                  <BaseSelect
+                     v-model="localFunction.language"
+                     :options="customizations.languages"
+                     class="form-select"
+                  />
                </div>
             </div>
             <div v-if="customizations.definer" class="column col-auto">
@@ -69,27 +69,13 @@
                   <label class="form-label">
                      {{ $t('word.definer') }}
                   </label>
-                  <select
-                     v-if="workspace.users.length"
+                  <BaseSelect
                      v-model="localFunction.definer"
+                     :options="[{value: '', name:$t('message.currentUser')}, ...workspace.users]"
+                     :option-label="(user) => user.value === '' ? user.name : `${user.name}@${user.host}`"
+                     :option-track-by="(user) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
                      class="form-select"
-                  >
-                     <option value="">
-                        {{ $t('message.currentUser') }}
-                     </option>
-                     <option
-                        v-for="user in workspace.users"
-                        :key="`${user.name}@${user.host}`"
-                        :value="`\`${user.name}\`@\`${user.host}\``"
-                     >
-                        {{ user.name }}@{{ user.host }}
-                     </option>
-                  </select>
-                  <select v-if="!workspace.users.length" class="form-select">
-                     <option value="">
-                        {{ $t('message.currentUser') }}
-                     </option>
-                  </select>
+                  />
                </div>
             </div>
             <div class="column col-auto">
@@ -98,29 +84,16 @@
                      {{ $t('word.returns') }}
                   </label>
                   <div class="input-group">
-                     <select
+                     <BaseSelect
                         v-model="localFunction.returns"
                         class="form-select text-uppercase"
+                        :options="[{ name: 'VOID' }, ...workspace.dataTypes]"
+                        group-label="group"
+                        group-values="types"
+                        option-label="name"
+                        option-track-by="name"
                         style="max-width: 150px;"
-                     >
-                        <option v-if="localFunction.returns === 'VOID'">
-                           VOID
-                        </option>
-                        <optgroup
-                           v-for="group in workspace.dataTypes"
-                           :key="group.group"
-                           :label="group.group"
-                        >
-                           <option
-                              v-for="type in group.types"
-                              :key="type.name"
-                              :selected="localFunction.returns === type.name"
-                              :value="type.name"
-                           >
-                              {{ type.name }}
-                           </option>
-                        </optgroup>
-                     </select>
+                     />
                      <input
                         v-if="customizations.parametersLength"
                         v-model="localFunction.returnsLength"
@@ -150,10 +123,11 @@
                   <label class="form-label">
                      {{ $t('message.sqlSecurity') }}
                   </label>
-                  <select v-model="localFunction.security" class="form-select">
-                     <option>DEFINER</option>
-                     <option>INVOKER</option>
-                  </select>
+                  <BaseSelect
+                     v-model="localFunction.security"
+                     :options="['DEFINER', 'INVOKER']"
+                     class="form-select"
+                  />
                </div>
             </div>
             <div v-if="customizations.functionDataAccess" class="column col-auto">
@@ -161,12 +135,11 @@
                   <label class="form-label">
                      {{ $t('message.dataAccess') }}
                   </label>
-                  <select v-model="localFunction.dataAccess" class="form-select">
-                     <option>CONTAINS SQL</option>
-                     <option>NO SQL</option>
-                     <option>READS SQL DATA</option>
-                     <option>MODIFIES SQL DATA</option>
-                  </select>
+                  <BaseSelect
+                     v-model="localFunction.dataAccess"
+                     :options="['CONTAINS SQL', 'NO SQL', 'READS SQL DATA', 'MODIFIES SQL DATA']"
+                     class="form-select"
+                  />
                </div>
             </div>
             <div v-if="customizations.functionDeterministic" class="column col-auto">
@@ -210,13 +183,15 @@ import QueryEditor from '@/components/QueryEditor';
 import WorkspaceTabPropsFunctionParamsModal from '@/components/WorkspaceTabPropsFunctionParamsModal';
 import Functions from '@/ipc-api/Functions';
 import { storeToRefs } from 'pinia';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'WorkspaceTabNewFunction',
    components: {
       BaseLoader,
       QueryEditor,
-      WorkspaceTabPropsFunctionParamsModal
+      WorkspaceTabPropsFunctionParamsModal,
+      BaseSelect
    },
    props: {
       tabUid: String,

@@ -18,6 +18,22 @@
     background: #ababab;
   }
 
+  .select {
+    &__list-wrapper {
+      border: #bcc3ce;
+      background-color: $body-bg;
+    }
+
+    &__group {
+      background: $bg-color-light-gray;
+      color: $unknown-color;
+    }
+
+    &__option--highlight {
+      color: $light-color;
+    }
+  }
+
   .menu {
     .menu-item a {
       &:hover {

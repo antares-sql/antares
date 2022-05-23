@@ -115,14 +115,13 @@
                </div>
                <div class="input-group pr-2" :title="$t('message.commitMode')">
                   <i class="input-group-addon addon-sm mdi mdi-24px mdi-source-commit p-0" />
-                  <select v-model="autocommit" class="form-select select-sm text-bold">
-                     <option :value="true">
-                        {{ $t('message.autoCommit') }}
-                     </option>
-                     <option :value="false">
-                        {{ $t('message.manualCommit') }}
-                     </option>
-                  </select>
+                  <BaseSelect
+                     v-model="autocommit"
+                     :options="[{value: true, label: $t('message.autoCommit')}, {value: false, label: $t('message.manualCommit')}]"
+                     :option-label="opt => opt.label"
+                     :option-track-by="opt => opt.value"
+                     class="form-select select-sm text-bold"
+                  />
                </div>
             </div>
             <div class="workspace-query-info">
@@ -149,14 +148,12 @@
                </div>
                <div class="input-group" :title="$t('word.schema')">
                   <i class="input-group-addon addon-sm mdi mdi-24px mdi-database" />
-                  <select v-model="selectedSchema" class="form-select select-sm text-bold">
-                     <option :value="null">
-                        {{ $t('message.noSchema') }}
-                     </option>
-                     <option v-for="schemaName in databaseSchemas" :key="schemaName">
-                        {{ schemaName }}
-                     </option>
-                  </select>
+
+                  <BaseSelect
+                     v-model="selectedSchema"
+                     :options="[{value: 'null', label: $t('message.noSchema')}, ...databaseSchemas.map(el => ({label: el, value: el}))]"
+                     class="form-select select-sm text-bold"
+                  />
                </div>
             </div>
          </div>
@@ -199,6 +196,7 @@ import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable';
 import WorkspaceTabQueryEmptyState from '@/components/WorkspaceTabQueryEmptyState';
 import ModalHistory from '@/components/ModalHistory';
 import tableTabs from '@/mixins/tableTabs';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'WorkspaceTabQuery',
@@ -207,7 +205,8 @@ export default {
       QueryEditor,
       WorkspaceTabQueryTable,
       WorkspaceTabQueryEmptyState,
-      ModalHistory
+      ModalHistory,
+      BaseSelect
    },
    mixins: [tableTabs],
    props: {
