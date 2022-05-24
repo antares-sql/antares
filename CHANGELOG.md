@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.5](https://github.com/antares-sql/antares/compare/v0.5.4...v0.5.5) (2022-05-24)
+
+
+### Features
+
+* added dropdown animation ([5398964](https://github.com/antares-sql/antares/commit/539896419064db9127f6a72acdbb11af2c4aa60a))
+* **translation:** russian translation, closes [#266](https://github.com/antares-sql/antares/issues/266) ([9082960](https://github.com/antares-sql/antares/commit/9082960310573a6e4d14bfbe82ed2eb1489f308d))
+* **UI:** BaseSelect disabled state ([2b436d8](https://github.com/antares-sql/antares/commit/2b436d8613a1e3dff55d73adbddf5d2cd2452f27))
+* **UI:** BaseSelect in table filters ([a037d0c](https://github.com/antares-sql/antares/commit/a037d0cc0148444e8e6c5b87c79f6ba9c2a6f0fe))
+* **UI:** BaseSelect option list scrolls automatically using up/down keys ([0043d07](https://github.com/antares-sql/antares/commit/0043d077081fc49724722a5d5a74986d990c539d))
+* **UI:** BaseSelect small variant ([5582a12](https://github.com/antares-sql/antares/commit/5582a12bbfade75dbcc7f9d71ada7190ed08d3c2))
+* **UI:** BaseSelect supports disabled options ([f7e04d6](https://github.com/antares-sql/antares/commit/f7e04d633340a53420ce1c434e906c9434620e6e))
+* **UI:** BaseSelect supports option groups ([1869e6a](https://github.com/antares-sql/antares/commit/1869e6a1482daf9381d9ac2244bf0aeffa758edc))
+* **UI:** ForeignKeySelect implements BaseSelect component ([302c664](https://github.com/antares-sql/antares/commit/302c66457deeb50facf4735291640fcf48b78f66))
+* **UI:** initial BaseSelect integration ([22622df](https://github.com/antares-sql/antares/commit/22622df2cfcb71054c6f6110b7ad9d4f635553dc))
+* **UI:** new BaseSelect component ([745d551](https://github.com/antares-sql/antares/commit/745d551cc9253eae4e39e5d3406ceee051a7d6c1))
+* **UI:** select tab replace with BaseSelect component ([42bc919](https://github.com/antares-sql/antares/commit/42bc9196ffc2f64b77f9cb42136255fc74815034))
+
+
+### Bug Fixes
+
+* **PostgreSQL:** idle timeout disabled ([a082514](https://github.com/antares-sql/antares/commit/a082514f88040c7e0ffdf4e8357bab45370a4c39))
+* query tab content disappears reordering or closing other tabs, closes [#261](https://github.com/antares-sql/antares/issues/261) ([c5baf2b](https://github.com/antares-sql/antares/commit/c5baf2b0d379fdd28ee8cb907628bbfca940e2f6))
+* SSH tunnel connection error with private key, closes [#260](https://github.com/antares-sql/antares/issues/260) ([c826888](https://github.com/antares-sql/antares/commit/c826888b0dd0908958a4f727ddfa642e846269cf))
+* **UI:** BaseSelect keyboard navigation ([7c45203](https://github.com/antares-sql/antares/commit/7c452036368fa0db6b9cde7c35e60a8e57bfece7))
+* **UI:** BaseSelect style ([71b0736](https://github.com/antares-sql/antares/commit/71b0736d0ddbd599ab41cde0a6b0823e2bb7da2f))
+
+
+### Improvements
+
+* **UI:** max height for query text area increased ([5d5f1da](https://github.com/antares-sql/antares/commit/5d5f1da97b9adfa743197d8fa0bbb6addd565a7a))
+
 ### [0.5.4](https://github.com/antares-sql/antares/compare/v0.5.3...v0.5.4) (2022-05-10)
 
 
