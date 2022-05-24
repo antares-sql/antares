@@ -1,7 +1,7 @@
 {
   "name": "antares",
   "productName": "Antares",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "A modern, fast and productivity driven SQL client with a focus in UX.",
   "license": "MIT",
   "repository": "https://github.com/antares-sql/antares.git",
@@ -131,7 +131,7 @@
     "pinia": "~2.0.13",
     "source-map-support": "~0.5.20",
     "spectre.css": "~0.5.9",
-    "sql-formatter": "~4.0.2",
+    "sql-formatter": "~6.1.2",
     "ssh2-promise": "~1.0.2",
     "v-mask": "~2.3.0",
     "vue": "~3.2.33",
