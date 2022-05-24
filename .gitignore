@@ -7,5 +7,4 @@ node_modules
 thumbs.db
 NOTES.md
 *.txt
-package-lock.json
 *.heapsnapshot

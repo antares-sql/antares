@@ -52,68 +52,61 @@
    </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { ipcRenderer, shell } from 'electron';
 import { storeToRefs } from 'pinia';
 import { useApplicationStore } from '@/stores/application';
 import { useSettingsStore } from '@/stores/settings';
 
-export default {
-   name: 'ModalSettingsUpdate',
-   setup () {
-      const applicationStore = useApplicationStore();
-      const settingsStore = useSettingsStore();
+const { t } = useI18n();
 
-      const {
-         updateStatus,
-         getDownloadProgress
-      } = storeToRefs(applicationStore);
-      const { allowPrerelease } = storeToRefs(settingsStore);
+const applicationStore = useApplicationStore();
+const settingsStore = useSettingsStore();
 
-      const { changeAllowPrerelease } = settingsStore;
+const {
+   updateStatus,
+   getDownloadProgress: downloadPercentage
+} = storeToRefs(applicationStore);
+const { allowPrerelease } = storeToRefs(settingsStore);
 
-      return {
-         updateStatus,
-         downloadPercentage: getDownloadProgress,
-         allowPrerelease,
-         changeAllowPrerelease
-      };
-   },
-   computed: {
-      updateMessage () {
-         switch (this.updateStatus) {
-            case 'noupdate':
-               return this.$t('message.noUpdatesAvailable');
-            case 'checking':
-               return this.$t('message.checkingForUpdate');
-            case 'nocheck':
-               return this.$t('message.checkFailure');
-            case 'available':
-               return this.$t('message.updateAvailable');
-            case 'downloading':
-               return this.$t('message.downloadingUpdate');
-            case 'downloaded':
-               return this.$t('message.updateDownloaded');
-            case 'link':
-               return this.$t('message.updateAvailable');
-            default:
-               return this.updateStatus;
-         }
-      }
-   },
-   methods: {
-      openOutside (link) {
-         shell.openExternal(link);
-      },
-      checkForUpdates () {
-         ipcRenderer.send('check-for-updates');
-      },
-      restartToUpdate () {
-         ipcRenderer.send('restart-to-update');
-      },
-      toggleAllowPrerelease () {
-         this.changeAllowPrerelease(!this.allowPrerelease);
-      }
+const { changeAllowPrerelease } = settingsStore;
+
+const updateMessage = computed(() => {
+   switch (updateStatus.value) {
+      case 'noupdate':
+         return t('message.noUpdatesAvailable');
+      case 'checking':
+         return t('message.checkingForUpdate');
+      case 'nocheck':
+         return t('message.checkFailure');
+      case 'available':
+         return t('message.updateAvailable');
+      case 'downloading':
+         return t('message.downloadingUpdate');
+      case 'downloaded':
+         return t('message.updateDownloaded');
+      case 'link':
+         return t('message.updateAvailable');
+      default:
+         return updateStatus.value;
    }
+});
+
+const openOutside = (link: string) => {
+   shell.openExternal(link);
+};
+
+const checkForUpdates = () => {
+   ipcRenderer.send('check-for-updates');
+};
+
+const restartToUpdate = () => {
+   ipcRenderer.send('restart-to-update');
+};
+
+const toggleAllowPrerelease = () => {
+   changeAllowPrerelease(!allowPrerelease.value);
 };
 </script>

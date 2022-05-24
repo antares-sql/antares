@@ -31,11 +31,12 @@
             <div>
                <div>
                   <TextEditor
-                     :value="row.info || ''"
+                     :model-value="props.row.info || ''"
                      editor-class="textarea-editor"
                      :mode="editorMode"
                      :read-only="true"
                   />
+                  <div class="mb-4" />
                </div>
             </div>
          </template>
@@ -43,60 +44,46 @@
    </div>
 </template>
 
-<script>
-import ConfirmModal from '@/components/BaseConfirmModal';
-import TextEditor from '@/components/BaseTextEditor';
+<script setup lang="ts">
+import { Ref, ref } from 'vue';
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import TextEditor from '@/components/BaseTextEditor.vue';
 
-export default {
-   name: 'ModalProcessesListRow',
-   components: {
-      ConfirmModal,
-      TextEditor
-   },
-   props: {
-      row: Object
-   },
-   emits: ['select-row', 'contextmenu', 'stop-refresh'],
-   data () {
-      return {
-         isInlineEditor: {},
-         isInfoModal: false,
-         editorMode: 'sql'
-      };
-   },
-   computed: {},
-   methods: {
-      isNull (value) {
-         return value === null ? ' is-null' : '';
-      },
-      selectRow () {
-         this.$emit('select-row');
-      },
-      openContext (event, payload) {
-         this.$emit('contextmenu', event, payload);
-      },
-      hideInfoModal () {
-         this.isInfoModal = false;
-      },
-      dblClick (col) {
-         if (col !== 'info') return;
-         this.$emit('stop-refresh');
-         this.isInfoModal = true;
-      },
-      onKey (e) {
-         e.stopPropagation();
-         if (e.key === 'Escape') {
-            this.isInlineEditor[this.editingField] = false;
-            this.editingField = null;
-            window.removeEventListener('keydown', this.onKey);
-         }
-      },
-      cutText (val) {
-         if (typeof val !== 'string') return val;
-         return val.length > 250 ? `${val.substring(0, 250)}[...]` : val;
-      }
-   }
+const props = defineProps({
+   row: Object
+});
+
+const emit = defineEmits(['select-row', 'contextmenu', 'stop-refresh']);
+
+const isInlineEditor: Ref<{[key: string]: boolean}> = ref({});
+const isInfoModal = ref(false);
+const editorMode = ref('sql');
+
+const isNull = (value: string | number) => value === null ? ' is-null' : '';
+
+const selectRow = () => {
+   emit('select-row');
 };
+
+const openContext = (event: MouseEvent, payload: { id: number; field: string }) => {
+   emit('contextmenu', event, payload);
+};
+
+const hideInfoModal = () => {
+   isInfoModal.value = false;
+};
+
+const dblClick = (col: string) => {
+   if (col !== 'info') return;
+   emit('stop-refresh');
+   isInfoModal.value = true;
+};
+
+const cutText = (val: string | number) => {
+   if (typeof val !== 'string') return val;
+   return val.length > 250 ? `${val.substring(0, 250)}[...]` : val;
+};
+
 </script>
 
 <style lang="scss">

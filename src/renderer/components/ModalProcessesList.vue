@@ -294,13 +294,13 @@ const closeContext = () => {
 };
 
 const copyCell = () => {
-   const row = results.value.find(row => row.id === selectedRow.value);
+   const row = results.value.find(row => Number(row.id) === selectedRow.value);
    const valueToCopy = row[selectedCell.value.field];
    navigator.clipboard.writeText(valueToCopy);
 };
 
 const copyRow = () => {
-   const row = results.value.find(row => row.id === selectedRow.value);
+   const row = results.value.find(row => Number(row.id) === selectedRow.value);
    const rowToCopy = JSON.parse(JSON.stringify(row));
    navigator.clipboard.writeText(JSON.stringify(rowToCopy));
 };
