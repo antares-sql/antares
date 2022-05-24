@@ -1,4 +1,4 @@
-export const localesNames = {
+export const localesNames: {[key: string]: string} = {
    'en-US': 'English',
    'it-IT': 'Italiano',
    'ar-SA': 'العربية',
