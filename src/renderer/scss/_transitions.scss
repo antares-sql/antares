@@ -1,3 +1,16 @@
+.fade-slide-down-enter-active,
+.fade-slide-down-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-slide-down-enter-from,
+.fade-slide-down-leave-to {
+  opacity: 0;
+  transform: translateY(-1.8rem);
+}
+
 .slide-fade-enter-active {
   transition: all 0.3s ease;
 }

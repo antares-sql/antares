@@ -69,19 +69,14 @@
                                     </label>
                                  </div>
                                  <div class="col-3 col-sm-12">
-                                    <select
+                                    <BaseSelect
                                        v-model="localLocale"
                                        class="form-select"
+                                       :options="locales"
+                                       option-track-by="code"
+                                       option-label="name"
                                        @change="changeLocale(localLocale)"
-                                    >
-                                       <option
-                                          v-for="(locale, key) in locales"
-                                          :key="key"
-                                          :value="locale.code"
-                                       >
-                                          {{ locale.name }}
-                                       </option>
-                                    </select>
+                                    />
                                  </div>
                                  <div class="col-4 col-sm-12 px-2 p-vcentered">
                                     <small class="d-block" style="line-height:1.1; font-size:70%;">
@@ -97,18 +92,12 @@
                                     </label>
                                  </div>
                                  <div class="col-3 col-sm-12">
-                                    <select
+                                    <BaseSelect
                                        v-model="localPageSize"
                                        class="form-select"
+                                       :options="pageSizes"
                                        @change="changePageSize(+localPageSize)"
-                                    >
-                                       <option
-                                          v-for="size in pageSizes"
-                                          :key="size"
-                                       >
-                                          {{ size }}
-                                       </option>
-                                    </select>
+                                    />
                                  </div>
                               </div>
                               <div class="form-group column col-12 mb-0">
@@ -231,26 +220,16 @@
                               {{ t('message.editorTheme') }}
                            </div>
                            <div class="column col-6 h5 mb-4">
-                              <select
+                              <BaseSelect
                                  v-model="localEditorTheme"
                                  class="form-select"
+                                 :options="editorThemes"
+                                 option-label="name"
+                                 option-track-by="code"
+                                 group-label="group"
+                                 group-values="themes"
                                  @change="changeEditorTheme(localEditorTheme)"
-                              >
-                                 <optgroup
-                                    v-for="group in editorThemes"
-                                    :key="group.group"
-                                    :label="group.group"
-                                 >
-                                    <option
-                                       v-for="theme in group.themes"
-                                       :key="theme.name"
-                                       :value="theme.code"
-                                       :selected="editorTheme === theme.code"
-                                    >
-                                       {{ theme.name }}
-                                    </option>
-                                 </optgroup>
-                              </select>
+                              />
                            </div>
                            <div class="column col-6 mb-4">
                               <div class="btn-group btn-group-block">
@@ -334,6 +313,7 @@ import { localesNames } from '@/i18n/supported-locales';
 import ModalSettingsUpdate from '@/components/ModalSettingsUpdate.vue';
 import ModalSettingsChangelog from '@/components/ModalSettingsChangelog.vue';
 import BaseTextEditor from '@/components/BaseTextEditor.vue';
+import BaseSelect from '@/components/BaseSelect.vue';
 import { computed } from '@vue/reactivity';
 
 const { t, availableLocales } = useI18n();

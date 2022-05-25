@@ -12,24 +12,18 @@
                @change="doFilter"
             ><i class="form-icon" />
          </label>
-         <select v-model="row.field" class="form-select col-auto select-sm">
-            <option
-               v-for="(item, j) of fields"
-               :key="j"
-               :value="item.name"
-            >
-               {{ item.name }}
-            </option>
-         </select>
-         <select v-model="row.op" class="form-select ml-2 col-auto select-sm">
-            <option
-               v-for="(operator, k) of operators"
-               :key="k"
-               :value="operator"
-            >
-               {{ operator }}
-            </option>
-         </select>
+         <BaseSelect
+            v-model="row.field"
+            class="form-select ml-2 col-auto select-sm"
+            :options="fields"
+            option-track-by="name"
+            option-label="name"
+         />
+         <BaseSelect
+            v-model="row.op"
+            class="form-select ml-2 col-auto select-sm"
+            :options="operators"
+         />
          <div class="workspace-table-filters-row-value ml-2">
             <input
                v-if="!row.op.includes('NULL')"
@@ -73,8 +67,12 @@
 <script>
 import customizations from 'common/customizations';
 import { NUMBER, FLOAT } from 'common/fieldTypes';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
+   components: {
+      BaseSelect
+   },
    props: {
       fields: Array,
       connClient: String

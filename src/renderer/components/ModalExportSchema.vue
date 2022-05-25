@@ -206,14 +206,11 @@
                               >
                            </div>
                            <div class="column col-6">
-                              <select v-model="options.sqlInsertDivider" class="form-select">
-                                 <option value="bytes">
-                                    KiB
-                                 </option>
-                                 <option value="rows">
-                                    {{ $tc('word.row', 2) }}
-                                 </option>
-                              </select>
+                              <BaseSelect
+                                 v-model="options.sqlInsertDivider"
+                                 class="form-select"
+                                 :options="[{value: 'bytes', label: 'KiB'}, {value: 'rows', label: $tc('word.row', 2)}]"
+                              />
                            </div>
                         </div>
                      </div>
@@ -223,14 +220,11 @@
                      </div>
                      <div class="columns">
                         <div class="column h5 mb-4">
-                           <select v-model="options.outputFormat" class="form-select">
-                              <option value="sql">
-                                 {{ $t('message.singleFile', {ext: '.sql'}) }}
-                              </option>
-                              <option value="sql.zip">
-                                 {{ $t('message.zipCompressedFile', {ext: '.sql'}) }}
-                              </option>
-                           </select>
+                           <BaseSelect
+                              v-model="options.outputFormat"
+                              class="form-select"
+                              :options="[{value: 'sql', label: $t('message.singleFile', {ext: '.sql'})}, {value: 'sql.zip', label: $t('message.zipCompressedFile', {ext: '.sql'})}]"
+                           />
                         </div>
                      </div>
                   </div>
@@ -282,6 +276,7 @@ import { useWorkspacesStore } from '@/stores/workspaces';
 import Application from '@/ipc-api/Application';
 import Schema from '@/ipc-api/Schema';
 import { Customizations } from 'common/interfaces/customizations';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 const props = defineProps({
    selectedSchema: String

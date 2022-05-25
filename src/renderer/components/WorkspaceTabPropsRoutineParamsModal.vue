@@ -89,22 +89,15 @@
                         {{ $t('word.type') }}
                      </label>
                      <div class="column">
-                        <select v-model="selectedParamObj.type" class="form-select text-uppercase">
-                           <optgroup
-                              v-for="group in workspace.dataTypes"
-                              :key="group.group"
-                              :label="group.group"
-                           >
-                              <option
-                                 v-for="type in group.types"
-                                 :key="type.name"
-                                 :selected="selectedParamObj.type.toUpperCase() === type.name"
-                                 :value="type.name"
-                              >
-                                 {{ type.name }}
-                              </option>
-                           </optgroup>
-                        </select>
+                        <BaseSelect
+                           v-model="selectedParamObj.type"
+                           class="form-select text-uppercase"
+                           :options="workspace.dataTypes"
+                           group-label="group"
+                           group-values="types"
+                           option-label="name"
+                           option-track-by="name"
+                        />
                      </div>
                   </div>
                   <div v-if="customizations.parametersLength" class="form-group">
@@ -174,11 +167,13 @@
 <script>
 import { uidGen } from 'common/libs/uidGen';
 import ConfirmModal from '@/components/BaseConfirmModal';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'WorkspaceTabPropsRoutineParamsModal',
    components: {
-      ConfirmModal
+      ConfirmModal,
+      BaseSelect
    },
    props: {
       localParameters: {

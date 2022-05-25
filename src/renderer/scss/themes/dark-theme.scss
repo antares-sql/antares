@@ -121,6 +121,18 @@
     border-color: $primary-color;
   }
 
+  .select {
+    &__list-wrapper {
+      border-color: $bg-color-gray;
+      background-color: $bg-color-light-dark;
+    }
+
+    &__group {
+      background: rgba($bg-color-gray, 0.65);
+      color: rgba($bg-color-light-gray, 0.7);
+    }
+  }
+
   .form-input[readonly] {
     background-color: $bg-color-dark;
     cursor: default;
@@ -232,7 +244,7 @@
       }
     }
   }
-  
+
   .connection-panel {
     .panel {
       background: rgba($bg-color-light-dark, 50%);
@@ -240,9 +252,7 @@
   }
 
   .bg-checkered {
-    background-image:
-      linear-gradient(to right, rgba(192, 192, 192, 0.75), rgba(192, 192, 192, 0.75)),
-      linear-gradient(to right, black 50%, white 50%),
+    background-image: linear-gradient(to right, rgba(192, 192, 192, 0.75), rgba(192, 192, 192, 0.75)), linear-gradient(to right, black 50%, white 50%),
       linear-gradient(to bottom, black 50%, white 50%);
     background-blend-mode: normal, difference, normal;
     background-size: 2em 2em;

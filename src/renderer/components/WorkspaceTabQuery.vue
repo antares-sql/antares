@@ -21,7 +21,7 @@
             :height="editorHeight"
          />
          <div ref="resizer" class="query-area-resizer" />
-         <div class="workspace-query-runner-footer">
+         <div ref="queryAreaFooter" class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
                <div @mouseenter="setCancelButtonVisibility(true)" @mouseleave="setCancelButtonVisibility(false)">
                   <button
@@ -115,14 +115,13 @@
                </div>
                <div class="input-group pr-2" :title="$t('message.commitMode')">
                   <i class="input-group-addon addon-sm mdi mdi-24px mdi-source-commit p-0" />
-                  <select v-model="autocommit" class="form-select select-sm text-bold">
-                     <option :value="true">
-                        {{ $t('message.autoCommit') }}
-                     </option>
-                     <option :value="false">
-                        {{ $t('message.manualCommit') }}
-                     </option>
-                  </select>
+                  <BaseSelect
+                     v-model="autocommit"
+                     :options="[{value: true, label: $t('message.autoCommit')}, {value: false, label: $t('message.manualCommit')}]"
+                     :option-label="opt => opt.label"
+                     :option-track-by="opt => opt.value"
+                     class="form-select select-sm text-bold"
+                  />
                </div>
             </div>
             <div class="workspace-query-info">
@@ -149,14 +148,12 @@
                </div>
                <div class="input-group" :title="$t('word.schema')">
                   <i class="input-group-addon addon-sm mdi mdi-24px mdi-database" />
-                  <select v-model="selectedSchema" class="form-select select-sm text-bold">
-                     <option :value="null">
-                        {{ $t('message.noSchema') }}
-                     </option>
-                     <option v-for="schemaName in databaseSchemas" :key="schemaName">
-                        {{ schemaName }}
-                     </option>
-                  </select>
+
+                  <BaseSelect
+                     v-model="selectedSchema"
+                     :options="[{value: 'null', label: $t('message.noSchema')}, ...databaseSchemas.map(el => ({label: el, value: el}))]"
+                     class="form-select select-sm text-bold"
+                  />
                </div>
             </div>
          </div>
@@ -199,6 +196,7 @@ import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable';
 import WorkspaceTabQueryEmptyState from '@/components/WorkspaceTabQueryEmptyState';
 import ModalHistory from '@/components/ModalHistory';
 import tableTabs from '@/mixins/tableTabs';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'WorkspaceTabQuery',
@@ -207,7 +205,8 @@ export default {
       QueryEditor,
       WorkspaceTabQueryTable,
       WorkspaceTabQueryEmptyState,
-      ModalHistory
+      ModalHistory,
+      BaseSelect
    },
    mixins: [tableTabs],
    props: {
@@ -320,6 +319,7 @@ export default {
          this.selectedSchema = null;
 
       window.addEventListener('keydown', this.onKey);
+      window.addEventListener('resize', this.onWindowResize);
    },
    mounted () {
       const resizer = this.$refs.resizer;
@@ -335,6 +335,7 @@ export default {
          this.runQuery(this.query);
    },
    beforeUnmount () {
+      window.removeEventListener('resize', this.onWindowResize);
       window.removeEventListener('keydown', this.onKey);
       const params = {
          uid: this.connection.uid,
@@ -419,10 +420,23 @@ export default {
       },
       resize (e) {
          const el = this.$refs.queryEditor.$el;
-         let editorHeight = e.pageY - el.getBoundingClientRect().top;
-         if (editorHeight > 400) editorHeight = 400;
+         const queryFooterHeight = this.$refs.queryAreaFooter.clientHeight;
+         const bottom = e.pageY || this.$refs.resizer.getBoundingClientRect().bottom;
+         const maxHeight = window.innerHeight - 100 - queryFooterHeight;
+         let editorHeight = bottom - el.getBoundingClientRect().top;
+         if (editorHeight > maxHeight) editorHeight = maxHeight;
          if (editorHeight < 50) editorHeight = 50;
          this.editorHeight = editorHeight;
+      },
+      onWindowResize (e) {
+         const el = this.$refs.queryEditor.$el;
+         const queryFooterHeight = this.$refs.queryAreaFooter.clientHeight;
+         const bottom = e.pageY || this.$refs.resizer.getBoundingClientRect().bottom;
+         const maxHeight = window.innerHeight - 100 - queryFooterHeight;
+         const editorHeight = bottom - el.getBoundingClientRect().top;
+
+         if (editorHeight > maxHeight)
+            this.editorHeight = maxHeight;
       },
       stopResize () {
          window.removeEventListener('mousemove', this.resize);
@@ -520,9 +534,8 @@ export default {
     position: relative;
 
     .query-area-resizer {
-      position: absolute;
       height: 4px;
-      bottom: 40px;
+      margin-top: -2px;
       width: 100%;
       cursor: ns-resize;
       z-index: 99;

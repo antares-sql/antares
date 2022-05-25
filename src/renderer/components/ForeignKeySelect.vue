@@ -1,23 +1,15 @@
 <template>
-   <select
+   <BaseSelect
       ref="editField"
+      :options="foreigns"
       class="form-select pl-1 pr-4"
       :class="{'small-select': size === 'small'}"
+      :value="currentValue"
+      dropdown-class="select-sm"
+      dropdown-container=".workspace-query-results > .vscroll"
       @change="onChange"
-      @blur="emit('blur')"
-   >
-      <option v-if="!isValidDefault" :value="modelValue">
-         {{ modelValue === null ? 'NULL' : modelValue }}
-      </option>
-      <option
-         v-for="row in foreignList"
-         :key="row.foreign_column"
-         :value="row.foreign_column"
-         :selected="row.foreign_column === modelValue"
-      >
-         {{ row.foreign_column }} {{ cutText('foreign_description' in row ? ` - ${row.foreign_description}` : '') }}
-      </option>
-   </select>
+      @blur="$emit('blur')"
+   />
 </template>
 
 <script setup lang="ts">
@@ -27,6 +19,7 @@ import Tables from '@/ipc-api/Tables';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import { TEXT, LONG_TEXT } from 'common/fieldTypes';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 const props = defineProps({
    modelValue: [String, Number],
@@ -46,6 +39,7 @@ const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const editField: Ref<HTMLSelectElement> = ref(null);
 const foreignList = ref([]);
+const currentValue = ref(props.modelValue);
 
 const isValidDefault = computed(() => {
    if (!foreignList.value.length) return true;
@@ -53,8 +47,17 @@ const isValidDefault = computed(() => {
    return foreignList.value.some(foreign => foreign.foreign_column.toString() === props.modelValue.toString());
 });
 
-const onChange = () => {
-   emit('update:modelValue', editField.value.value);
+const foreigns = computed(() => {
+   const list = [];
+   if (!isValidDefault.value)
+      list.push({ value: props.modelValue, label: props.modelValue === null ? 'NULL' : props.modelValue });
+   for (const row of foreignList.value)
+      list.push({ value: row.foreign_column, label: `${row.foreign_column} ${cutText('foreign_description' in row ? ` - ${row.foreign_description}` : '')}` });
+   return list;
+});
+
+const onChange = (opt: any) => {
+   emit('update:modelValue', opt.value);
 };
 
 const cutText = (val: string) => {

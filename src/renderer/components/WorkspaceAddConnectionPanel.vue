@@ -50,19 +50,13 @@
                            <label class="form-label cut-text">{{ $t('word.client') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
-                           <select
-                              id="connection-client"
+                           <BaseSelect
                               v-model="connection.client"
+                              :options="clients"
+                              option-track-by="slug"
+                              option-label="name"
                               class="form-select"
-                           >
-                              <option
-                                 v-for="client in clients"
-                                 :key="client.slug"
-                                 :value="client.slug"
-                              >
-                                 {{ client.name }}
-                              </option>
-                           </select>
+                           />
                         </div>
                      </div>
                      <div v-if="connection.client === 'pg'" class="form-group columns">
@@ -404,12 +398,14 @@ import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import ModalAskCredentials from '@/components/ModalAskCredentials';
 import BaseUploadInput from '@/components/BaseUploadInput';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'WorkspaceAddConnectionPanel',
    components: {
       ModalAskCredentials,
-      BaseUploadInput
+      BaseUploadInput,
+      BaseSelect
    },
    setup () {
       const { addConnection } = useConnectionsStore();

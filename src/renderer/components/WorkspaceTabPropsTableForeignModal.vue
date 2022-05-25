@@ -117,19 +117,14 @@
                         {{ $t('message.referenceTable') }}
                      </label>
                      <div class="column">
-                        <select
+                        <BaseSelect
                            v-model="selectedForeignObj.refTable"
+                           :options="schemaTables"
+                           option-label="name"
+                           option-track-by="name"
                            class="form-select"
                            @change="reloadRefFields"
-                        >
-                           <option
-                              v-for="schemaTable in schemaTables"
-                              :key="schemaTable.name"
-                              :value="schemaTable.name"
-                           >
-                              {{ schemaTable.name }}
-                           </option>
-                        </select>
+                        />
                      </div>
                   </div>
                   <div class="form-group mb-4">
@@ -153,15 +148,11 @@
                         {{ $t('message.onUpdate') }}
                      </label>
                      <div class="column">
-                        <select v-model="selectedForeignObj.onUpdate" class="form-select">
-                           <option
-                              v-for="action in foreignActions"
-                              :key="action"
-                              :value="action"
-                           >
-                              {{ action }}
-                           </option>
-                        </select>
+                        <BaseSelect
+                           v-model="selectedForeignObj.onUpdate"
+                           :options="foreignActions"
+                           class="form-select"
+                        />
                      </div>
                   </div>
                   <div class="form-group">
@@ -169,15 +160,11 @@
                         {{ $t('message.onDelete') }}
                      </label>
                      <div class="column">
-                        <select v-model="selectedForeignObj.onDelete" class="form-select">
-                           <option
-                              v-for="action in foreignActions"
-                              :key="action"
-                              :value="action"
-                           >
-                              {{ action }}
-                           </option>
-                        </select>
+                        <BaseSelect
+                           v-model="selectedForeignObj.onDelete"
+                           :options="foreignActions"
+                           class="form-select"
+                        />
                      </div>
                   </div>
                </form>
@@ -206,11 +193,13 @@ import { useNotificationsStore } from '@/stores/notifications';
 import { uidGen } from 'common/libs/uidGen';
 import Tables from '@/ipc-api/Tables';
 import ConfirmModal from '@/components/BaseConfirmModal';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'WorkspaceTabPropsTableForeignModal',
    components: {
-      ConfirmModal
+      ConfirmModal,
+      BaseSelect
    },
    props: {
       localKeyUsage: Array,

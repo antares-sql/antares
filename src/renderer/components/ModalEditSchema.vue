@@ -21,6 +21,7 @@
                         </div>
                         <div class="col-9">
                            <input
+                              ref="firstInput"
                               v-model="database.name"
                               class="form-input"
                               type="text"
@@ -35,19 +36,13 @@
                            <label class="form-label">{{ $t('word.collation') }}</label>
                         </div>
                         <div class="col-9">
-                           <select
-                              ref="firstInput"
+                           <BaseSelect
                               v-model="database.collation"
                               class="form-select"
-                           >
-                              <option
-                                 v-for="collation in collations"
-                                 :key="collation.id"
-                                 :value="collation.collation"
-                              >
-                                 {{ collation.collation }}
-                              </option>
-                           </select>
+                              :options="collations"
+                              option-label="collation"
+                              option-track-by="collation"
+                           />
                            <small>{{ $t('message.serverDefault') }}: {{ defaultCollation }}</small>
                         </div>
                      </div>
@@ -73,6 +68,7 @@ import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import Schema from '@/ipc-api/Schema';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 const props = defineProps({
    selectedSchema: String

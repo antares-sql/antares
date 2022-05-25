@@ -12,7 +12,8 @@ const i18n = createI18n({
       'de-DE': require('./de-DE'),
       'vi-VN': require('./vi-VN'),
       'ja-JP': require('./ja-JP'),
-      'zh-CN': require('./zh-CN')
+      'zh-CN': require('./zh-CN'),
+      'ru-RU': require('./ru-RU')
    }
 });
 export default i18n;

@@ -18,14 +18,11 @@
                   {{ $t('word.execution') }}
                </label>
                <div class="column">
-                  <select
-                     ref="firstInput"
+                  <BaseSelect
                      v-model="optionsProxy.execution"
+                     :options="['EVERY', 'ONCE']"
                      class="form-select"
-                  >
-                     <option>EVERY</option>
-                     <option>ONCE</option>
-                  </select>
+                  />
                </div>
             </div>
             <div v-if="optionsProxy.execution === 'EVERY'">
@@ -39,27 +36,26 @@
                            type="text"
                            @keypress="isNumberOrMinus($event)"
                         >
-                        <select
+                        <BaseSelect
                            v-model="optionsProxy.every[1]"
                            class="form-select text-uppercase"
+                           :options="['YEAR',
+                                      'QUARTER',
+                                      'MONTH',
+                                      'WEEK',
+                                      'DAY',
+                                      'HOUR',
+                                      'MINUTE',
+                                      'SECOND',
+                                      'YEAR_MONTH',
+                                      'DAY_HOUR',
+                                      'DAY_MINUTE',
+                                      'DAY_SECOND',
+                                      'HOUR_MINUTE',
+                                      'HOUR_SECOND',
+                                      'MINUTE_SECOND']"
                            style="width: 0;"
-                        >
-                           <option>YEAR</option>
-                           <option>QUARTER</option>
-                           <option>MONTH</option>
-                           <option>WEEK</option>
-                           <option>DAY</option>
-                           <option>HOUR</option>
-                           <option>MINUTE</option>
-                           <option>SECOND</option>
-                           <option>YEAR_MONTH</option>
-                           <option>DAY_HOUR</option>
-                           <option>DAY_MINUTE</option>
-                           <option>DAY_SECOND</option>
-                           <option>HOUR_MINUTE</option>
-                           <option>HOUR_SECOND</option>
-                           <option>MINUTE_SECOND</option>
-                        </select>
+                        />
                      </div>
                   </div>
                </div>
@@ -140,11 +136,13 @@
 <script>
 import moment from 'moment';
 import ConfirmModal from '@/components/BaseConfirmModal';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 export default {
    name: 'WorkspaceTabPropsSchedulerTimingModal',
    components: {
-      ConfirmModal
+      ConfirmModal,
+      BaseSelect
    },
    props: {
       localOptions: Object,
@@ -169,10 +167,6 @@ export default {
       if (!this.optionsProxy.starts) this.optionsProxy.starts = moment().format('YYYY-MM-DD HH:mm:ss');
       if (!this.optionsProxy.ends) this.optionsProxy.ends = moment().format('YYYY-MM-DD HH:mm:ss');
       if (!this.optionsProxy.every.length) this.optionsProxy.every = ['1', 'DAY'];
-
-      setTimeout(() => {
-         this.$refs.firstInput.focus();
-      }, 20);
    },
    methods: {
       confirmOptionsChange () {

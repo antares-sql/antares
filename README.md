@@ -136,6 +136,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/raliqala"><img src="https://avatars.githubusercontent.com/u/30502407?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Topollo</b></sub></a><br /><a href="https://github.com/antares-sql/antares/commits?author=raliqala" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/SmileYzn"><img src="https://avatars.githubusercontent.com/u/5851851?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Cleverson</b></sub></a><br /><a href="#translation-SmileYzn" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/fredatgithub"><img src="https://avatars.githubusercontent.com/u/6720055?v=4?s=100" width="100px;" alt=""/><br /><sub><b>fred</b></sub></a><br /><a href="#translation-fredatgithub" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/xak666"><img src="https://avatars.githubusercontent.com/u/38811437?v=4?s=100" width="100px;" alt=""/><br /><sub><b>xaka_xak</b></sub></a><br /><a href="#translation-xak666" title="Translation">🌍</a></td>
   </tr>
 </table>
 
