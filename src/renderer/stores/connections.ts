@@ -1,6 +1,7 @@
-import { defineStore, acceptHMRUpdate } from 'pinia';
-import Store from 'electron-store';
-import crypto from 'crypto';
+import { defineStore } from 'pinia';
+import * as Store from 'electron-store';
+import * as crypto from 'crypto';
+import { ConnectionParams } from 'common/interfaces/antares';
 const key = localStorage.getItem('key');
 
 if (!key)
@@ -16,10 +17,10 @@ const persistentStore = new Store({
 
 export const useConnectionsStore = defineStore('connections', {
    state: () => ({
-      connections: persistentStore.get('connections', [])
+      connections: persistentStore.get('connections', []) as ConnectionParams[]
    }),
    getters: {
-      getConnectionName: state => uid => {
+      getConnectionName: state => (uid: string) => {
          const connection = state.connections.filter(connection => connection.uid === uid)[0];
          let connectionName = '';
 
@@ -42,16 +43,16 @@ export const useConnectionsStore = defineStore('connections', {
       }
    },
    actions: {
-      addConnection (connection) {
+      addConnection (connection: ConnectionParams) {
          this.connections.push(connection);
          persistentStore.set('connections', this.connections);
       },
-      deleteConnection (connection) {
-         this.connections = this.connections.filter(el => el.uid !== connection.uid);
+      deleteConnection (connection: ConnectionParams) {
+         this.connections = (this.connections as ConnectionParams[]).filter(el => el.uid !== connection.uid);
          persistentStore.set('connections', this.connections);
       },
-      editConnection (connection) {
-         const editedConnections = this.connections.map(conn => {
+      editConnection (connection: ConnectionParams) {
+         const editedConnections = (this.connections as ConnectionParams[]).map(conn => {
             if (conn.uid === connection.uid) return connection;
             return conn;
          });
@@ -59,12 +60,9 @@ export const useConnectionsStore = defineStore('connections', {
          this.selected_conection = {};
          persistentStore.set('connections', this.connections);
       },
-      updateConnections (connections) {
+      updateConnections (connections: ConnectionParams) {
          this.connections = connections;
          persistentStore.set('connections', this.connections);
       }
    }
 });
-
-if (import.meta.webpackHot)
-   import.meta.webpackHot.accept(acceptHMRUpdate(useConnectionsStore, import.meta.webpackHot));

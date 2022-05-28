@@ -337,6 +337,15 @@ export interface SchemaInfos {
    schedulers: EventInfos[];
 }
 
+export interface CollationInfos {
+   charset: string;
+   collation: string;
+   compiled: boolean;
+   default: boolean;
+   id: string | number;
+   sortLen: number;
+}
+
 // Query
 export interface QueryBuilderObject {
    schema: string;

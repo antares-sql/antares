@@ -1,19 +1,26 @@
-import { defineStore, acceptHMRUpdate } from 'pinia';
-import Store from 'electron-store';
+import { defineStore } from 'pinia';
+import * as Store from 'electron-store';
 import { uidGen } from 'common/libs/uidGen';
 const persistentStore = new Store({ name: 'history' });
 const historySize = 1000;
 
+export interface HistoryRecord {
+   uid: string;
+   sql: string;
+   date: Date;
+   schema?: string;
+}
+
 export const useHistoryStore = defineStore('history', {
    state: () => ({
-      history: persistentStore.get('history', {}),
+      history: persistentStore.get('history', {}) as {[key: string]: HistoryRecord[]},
       favorites: persistentStore.get('favorites', {})
    }),
    getters: {
-      getHistoryByWorkspace: state => uid => state.history[uid]
+      getHistoryByWorkspace: state => (uid: string) => state.history[uid]
    },
    actions: {
-      saveHistory (args) {
+      saveHistory (args: { uid: string; query: string; schema: string; tabUid: string }) {
          if (this.getHistoryByWorkspace(args.uid) &&
             this.getHistoryByWorkspace(args.uid).length &&
             this.getHistoryByWorkspace(args.uid)[0].sql === args.query
@@ -37,12 +44,9 @@ export const useHistoryStore = defineStore('history', {
 
          persistentStore.set('history', this.history);
       },
-      deleteQueryFromHistory (query) {
-         this.history[query.workspace] = this.history[query.workspace].filter(q => q.uid !== query.uid);
+      deleteQueryFromHistory (query: Partial<HistoryRecord> & { workspace: string}) {
+         this.history[query.workspace] = (this.history[query.workspace] as HistoryRecord[]).filter(q => q.uid !== query.uid);
          persistentStore.set('history', this.history);
       }
    }
 });
-
-if (import.meta.webpackHot)
-   import.meta.webpackHot.accept(acceptHMRUpdate(useHistoryStore, import.meta.webpackHot));

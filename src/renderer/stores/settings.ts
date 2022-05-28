@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import i18n from '@/i18n';
-import Store from 'electron-store';
+import * as Store from 'electron-store';
 const persistentStore = new Store({ name: 'settings' });
 const isDarkTheme = window.matchMedia('(prefers-color-scheme: dark)');
 const defaultAppTheme = isDarkTheme.matches ? 'dark' : 'light';
