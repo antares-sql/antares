@@ -104,8 +104,6 @@ export default (connections: {[key: string]: antares.Client}) => {
                   escapedParam = `"${sqlEscaper(params.content)}"`;
                   break;
                case 'pg':
-                  escapedParam = `'${params.content.replaceAll('\'', '\'\'')}'`;
-                  break;
                case 'sqlite':
                   escapedParam = `'${params.content.replaceAll('\'', '\'\'')}'`;
                   break;
@@ -341,6 +339,7 @@ export default (connections: {[key: string]: antares.Client}) => {
                            escapedParam = `"${sqlEscaper(params.row[key].value)}"`;
                            break;
                         case 'pg':
+                        case 'sqlite':
                            escapedParam = `'${params.row[key].value.replaceAll('\'', '\'\'')}'`;
                            break;
                      }
