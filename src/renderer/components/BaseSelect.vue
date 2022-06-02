@@ -154,7 +154,7 @@ export default defineComponent({
          if (typeof prop === 'function')
             return prop(item);
 
-         return item[prop] || item;
+         return item[prop] !== undefined ? item[prop] : item;
       };
 
       const flattenOptions = computed(() => {
