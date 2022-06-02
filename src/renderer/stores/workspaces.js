@@ -117,13 +117,14 @@ export const useWorkspacesStore = defineStore('workspaces', {
 
                // Check if Maria or MySQL
                const isMySQL = version.name.includes('MySQL');
+               const isMaria = version.name.includes('Maria');
 
                if (isMySQL && connection.client !== 'mysql') {
                   const connProxy = Object.assign({}, connection);
                   connProxy.client = 'mysql';
                   connectionsStore.editConnection(connProxy);
                }
-               else if (!isMySQL && connection.client === 'mysql') {
+               else if (isMaria && connection.client === 'mysql') {
                   const connProxy = Object.assign({}, connection);
                   connProxy.client = 'maria';
                   connectionsStore.editConnection(connProxy);
