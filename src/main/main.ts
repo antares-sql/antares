@@ -19,7 +19,7 @@ let mainWindow: BrowserWindow;
 let mainWindowState: windowStateKeeper.State;
 
 async function createMainWindow () {
-   const icon = require('../renderer/images/logo-32.png');
+   const icon = require('../renderer/images/logo-64.png');
    const window = new BrowserWindow({
       width: mainWindowState.width,
       height: mainWindowState.height,

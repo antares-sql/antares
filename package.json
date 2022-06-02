@@ -48,6 +48,7 @@
       "package.json"
     ],
     "win": {
+      "icon": "assets/icon.png",
       "target": [
         "nsis",
         "portable"
@@ -81,6 +82,12 @@
     "appImage": {
       "license": "./LICENSE",
       "category": "Development"
+    },
+    "nsis": {
+      "license": "./LICENSE",
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeader": "assets/icon.png"
     },
     "portable": {
       "artifactName": "${productName}-${version}-portable.exe"
