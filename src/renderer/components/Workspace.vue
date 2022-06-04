@@ -556,7 +556,9 @@ export default {
          selectTab,
          newTab,
          removeTab,
-         updateTabs
+         updateTabs,
+         selectNextTab,
+         selectPrevTab
       } = workspacesStore;
 
       return {
@@ -568,7 +570,9 @@ export default {
          selectTab,
          newTab,
          removeTab,
-         updateTabs
+         updateTabs,
+         selectNextTab,
+         selectPrevTab
       };
    },
    data () {
@@ -669,6 +673,22 @@ export default {
             const currentTab = this.getSelectedTab();
             if (currentTab)
                this.closeTab(currentTab);
+         }
+
+         // select next tab
+         if (e.altKey && (e.ctrlKey || e.metaKey) && e.key === 'ArrowRight')
+            this.selectNextTab({ uid: this.connection.uid });
+
+         // select prev tab
+         if (e.altKey && (e.ctrlKey || e.metaKey) && e.key === 'ArrowLeft')
+            this.selectPrevTab({ uid: this.connection.uid });
+
+         // select tab by index (range 1-9). CTRL|CMD number
+         if ((e.ctrlKey || e.metaKey) && !e.altKey && e.keyCode >= 49 && e.keyCode <= 57) {
+            const newIndex = parseInt(e.key) - 1;
+
+            if (this.workspace.tabs[newIndex])
+               this.selectTab({ uid: this.connection.uid, tab: this.workspace.tabs[newIndex].uid });
          }
       },
       openAsPermanentTab (tab) {

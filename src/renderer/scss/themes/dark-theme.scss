@@ -231,7 +231,8 @@
         .td {
           border-color: $body-bg-dark;
 
-          &:focus {
+          &:focus,
+          &.selected {
             box-shadow: inset 0 0 0 2px darken($body-font-color-dark, 40%);
             background-color: rgba($color: #000, $alpha: 0.3);
           }
