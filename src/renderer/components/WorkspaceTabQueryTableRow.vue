@@ -2,14 +2,15 @@
    <div
       class="tr"
       :style="{height: itemHeight+'px'}"
-      @click="selectRow($event, row._antares_id)"
    >
       <div
          v-for="(col, cKey) in row"
          v-show="cKey !== '_antares_id'"
          :key="cKey"
          class="td p-0"
-         tabindex="0"
+         :class="{selected: selectedCell === cKey}"
+         @click="selectRow($event, cKey)"
+
          @contextmenu.prevent="openContext($event, { id: row._antares_id, orgField: cKey })"
       >
          <template v-if="cKey !== '_antares_id'">
@@ -17,7 +18,7 @@
                v-if="!isInlineEditor[cKey] && fields[cKey]"
                class="cell-content"
                :class="`${isNull(col)} ${typeClass(fields[cKey].type)}`"
-               @dblclick="editON($event, col, cKey)"
+               @dblclick="editON(cKey)"
             >{{ cutText(typeFormat(col, fields[cKey].type.toLowerCase(), fields[cKey].length)) }}</span>
             <ForeignKeySelect
                v-else-if="isForeignKey(cKey)"
@@ -105,7 +106,7 @@
                         <div class="mr-4">
                            <b>{{ $t('word.size') }}</b>: {{ editingContent ? editingContent.length : 0 }}
                         </div>
-                        <div>
+                        <div v-if="editingType">
                            <b>{{ $t('word.type') }}</b>: {{ editingType.toUpperCase() }}
                         </div>
                      </div>
@@ -170,7 +171,9 @@
                      <b>{{ $t('word.size') }}</b>: {{ formatBytes(editingContent.length) }}<br>
                      <b>{{ $t('word.mimeType') }}</b>: {{ contentInfo.mime }}
                   </div>
-                  <div><b>{{ $t('word.type') }}</b>: {{ editingType.toUpperCase() }}</div>
+                  <div v-if="editingType">
+                     <b>{{ $t('word.type') }}</b>: {{ editingType.toUpperCase() }}
+                  </div>
                </div>
                <div class="mt-3">
                   <label>{{ $t('message.uploadFile') }}</label>
@@ -230,9 +233,11 @@ export default {
       fields: Object,
       keyUsage: Array,
       itemHeight: Number,
-      elementType: { type: String, default: 'table' }
+      elementType: { type: String, default: 'table' },
+      selected: { type: Boolean, default: false },
+      selectedCell: { type: String, default: null }
    },
-   emits: ['update-field', 'select-row', 'contextmenu'],
+   emits: ['update-field', 'select-row', 'contextmenu', 'start-editing', 'stop-editing'],
    data () {
       return {
          isInlineEditor: {},
@@ -336,6 +341,9 @@ export default {
 
          return false;
       },
+      isBaseSelectField () {
+         return this.isForeignKey(this.editingField) || this.inputProps.type === 'boolean' || this.enumArray;
+      },
       enumArray () {
          if (this.fields[this.editingField] && this.fields[this.editingField].enumValues)
             return this.fields[this.editingField].enumValues.replaceAll('\'', '').split(',');
@@ -362,7 +370,20 @@ export default {
                   this.editorMode = this.availableLanguages.find(lang => lang.id === filteredLanguages[0].languageId).slug;
             })();
          }
+      },
+      selected (isSelected) {
+         if (isSelected)
+            window.addEventListener('keydown', this.onKey);
+
+         else {
+            this.editOFF();
+            window.removeEventListener('keydown', this.onKey);
+         }
       }
+   },
+   beforeUnmount () {
+      if (this.selected)
+         window.removeEventListener('keydown', this.onKey);
    },
    methods: {
       isForeignKey (key) {
@@ -382,11 +403,10 @@ export default {
       bufferToBase64 (val) {
          return bufferToBase64(val);
       },
-      editON (event, content, field) {
+      editON (field) {
          if (!this.isEditable || this.editingType === 'none') return;
 
-         window.addEventListener('keydown', this.onKey);
-
+         const content = this.row[field];
          const type = this.fields[field].type.toUpperCase();
          this.originalContent = this.typeFormat(content, type, this.fields[field].length);
          this.editingType = type;
@@ -396,6 +416,7 @@ export default {
          if ([...LONG_TEXT, ...ARRAY, ...TEXT_SEARCH].includes(type)) {
             this.isTextareaEditor = true;
             this.editingContent = this.typeFormat(content, type);
+            this.$emit('start-editing', field);
             return;
          }
 
@@ -405,6 +426,7 @@ export default {
                this.isMapModal = true;
                this.editingContent = this.typeFormat(content, type);
             }
+            this.$emit('start-editing', field);
             return;
          }
 
@@ -426,19 +448,21 @@ export default {
                   };
                }
             }
+            this.$emit('start-editing', field);
             return;
          }
 
          // Inline editable fields
          this.editingContent = this.originalContent;
-         this.$nextTick(() => { // Focus on input
-            event.target.blur();
-
-            this.$nextTick(() => document.querySelector('.editable-field').focus());
-         });
 
          const obj = { [field]: true };
          this.isInlineEditor = { ...this.isInlineEditor, ...obj };
+
+         this.$nextTick(() => { // Focus on input
+            document.querySelector('.editable-field').focus();
+         });
+
+         this.$emit('start-editing', field);
       },
       editOFF () {
          if (!this.editingField) return;
@@ -451,7 +475,13 @@ export default {
                   this.editingContent = this.editingContent.slice(0, -1);
             }
 
-            if (this.editingContent === this.typeFormat(this.originalContent, this.editingType, this.editingLength)) return;// If not changed
+            // If not changed
+            if (this.editingContent === this.typeFormat(this.originalContent, this.editingType, this.editingLength)) {
+               this.editingType = null;
+               this.editingField = null;
+               this.$emit('stop-editing', this.editingField);
+               return;
+            }
 
             content = this.editingContent;
          }
@@ -472,15 +502,17 @@ export default {
             content
          });
 
+         this.$emit('stop-editing', this.editingField);
+
          this.editingType = null;
          this.editingField = null;
-         window.removeEventListener('keydown', this.onKey);
       },
       hideEditorModal () {
          this.isTextareaEditor = false;
          this.isBlobEditor = false;
          this.isMapModal = false;
          this.isMultiSpatial = false;
+         this.$emit('stop-editing', this.editingField);
       },
       downloadFile () {
          const downloadLink = document.createElement('a');
@@ -508,8 +540,8 @@ export default {
          };
          this.willBeDeleted = true;
       },
-      selectRow (event, row) {
-         this.$emit('select-row', event, row);
+      selectRow (event, field) {
+         this.$emit('select-row', event, this.row, field);
       },
       getKeyUsage (keyName) {
          if (keyName.includes('.'))
@@ -523,10 +555,17 @@ export default {
       },
       onKey (e) {
          e.stopPropagation();
-         if (e.key === 'Escape') {
+
+         if (!this.editingField && e.key === 'Enter')
+            return this.editON(this.selectedCell);
+
+         if (this.editingField && e.key === 'Enter' && !this.isBaseSelectField)
+            return this.editOFF();
+
+         if (this.editingField && e.key === 'Escape') {
             this.isInlineEditor[this.editingField] = false;
             this.editingField = null;
-            window.removeEventListener('keydown', this.onKey);
+            this.$emit('stop-editing', this.editingField);
          }
       },
       formatBytes,
