@@ -37,6 +37,8 @@
             v-if="isOpen"
             ref="optionList"
             :class="`select__list-wrapper ${dropdownClass ? dropdownClass : '' }`"
+            @mousedown="isMouseDown = true"
+            @mouseup="handleMouseUpEvent()"
          >
             <ul class="select__list" @mousedown.prevent>
                <li
@@ -136,6 +138,7 @@ export default defineComponent({
    setup (props, { emit }) {
       const hightlightedIndex = ref(0);
       const isOpen = ref(false);
+      const isMouseDown = ref(false);
       const internalValue = ref(props.modelValue || props.value);
       const el = ref(null);
       const searchInput = ref(null);
@@ -151,7 +154,7 @@ export default defineComponent({
          if (typeof prop === 'function')
             return prop(item);
 
-         return item[prop] || item;
+         return item[prop] !== undefined ? item[prop] : item;
       };
 
       const flattenOptions = computed(() => {
@@ -319,12 +322,24 @@ export default defineComponent({
       };
 
       const handleBlurEvent = () => {
+         if (isMouseDown.value) return;
          deactivate();
          emit('blur');
       };
 
+      const handleMouseUpEvent = () => {
+         isMouseDown.value = false;
+         searchInput.value.focus();
+      };
+
+      const handleWheelEvent = (e) => {
+         if (!e.target.className.includes('select__')) deactivate();
+      };
+
       onMounted(() => {
          window.addEventListener('resize', adjustListPosition);
+         window.addEventListener('wheel', handleWheelEvent);
+
          nextTick(() => {
             // fix position when the component is created and opened at the same time
             if (isOpen.value) {
@@ -336,6 +351,7 @@ export default defineComponent({
       });
       onUnmounted(() => {
          window.removeEventListener('resize', adjustListPosition);
+         window.removeEventListener('wheel', handleWheelEvent);
       });
 
       return {
@@ -351,10 +367,12 @@ export default defineComponent({
          isSelected,
          keyArrows,
          isOpen,
+         isMouseDown,
          hightlightedIndex,
          optionList,
          optionRefs,
-         handleBlurEvent
+         handleBlurEvent,
+         handleMouseUpEvent
       };
    }
 });

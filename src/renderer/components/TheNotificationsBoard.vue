@@ -29,7 +29,7 @@ const settingsStore = useSettingsStore();
 const { removeNotification } = notificationsStore;
 
 const { notifications } = storeToRefs(notificationsStore);
-const { notificationsTimeout } = storeToRefs(settingsStore) as {notificationsTimeout: Ref<number>};// TODO: temp
+const { notificationsTimeout } = storeToRefs(settingsStore);
 
 const timeouts: Ref<{[key: string]: NodeJS.Timeout}> = ref({});
 

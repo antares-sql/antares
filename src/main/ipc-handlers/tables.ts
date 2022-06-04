@@ -104,8 +104,6 @@ export default (connections: {[key: string]: antares.Client}) => {
                   escapedParam = `"${sqlEscaper(params.content)}"`;
                   break;
                case 'pg':
-                  escapedParam = `'${params.content.replaceAll('\'', '\'\'')}'`;
-                  break;
                case 'sqlite':
                   escapedParam = `'${params.content.replaceAll('\'', '\'\'')}'`;
                   break;
@@ -248,8 +246,7 @@ export default (connections: {[key: string]: antares.Client}) => {
 
    ipcMain.handle('insert-table-rows', async (event, params) => {
       try { // TODO: move to client classes
-         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-         const insertObj: {[key: string]: any} = {};
+         const insertObj: {[key: string]: string | number | boolean | Date | Buffer} = {};
          for (const key in params.row) {
             const type = params.fields[key];
             let escapedParam;
@@ -318,12 +315,10 @@ export default (connections: {[key: string]: antares.Client}) => {
 
    ipcMain.handle('insert-table-fake-rows', async (event, params: InsertRowsParams) => {
       try { // TODO: move to client classes
-         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-         const rows: {[key: string]: any}[] = [];
+         const rows: {[key: string]: string | number | boolean | Date | Buffer}[] = [];
 
          for (let i = 0; i < +params.repeat; i++) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const insertObj: {[key: string]: any} = {};
+            const insertObj: {[key: string]: string | number | boolean | Date | Buffer} = {};
 
             for (const key in params.row) {
                const type = params.fields[key];
@@ -341,6 +336,7 @@ export default (connections: {[key: string]: antares.Client}) => {
                            escapedParam = `"${sqlEscaper(params.row[key].value)}"`;
                            break;
                         case 'pg':
+                        case 'sqlite':
                            escapedParam = `'${params.row[key].value.replaceAll('\'', '\'\'')}'`;
                            break;
                      }
@@ -381,8 +377,7 @@ export default (connections: {[key: string]: antares.Client}) => {
                   insertObj[key] = escapedParam;
                }
                else { // Faker value
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  const parsedParams: {[key: string]: any} = {};
+                  const parsedParams: {[key: string]: string | number | boolean | Date | Buffer} = {};
                   let fakeValue;
 
                   if (params.locale)
@@ -402,7 +397,7 @@ export default (connections: {[key: string]: antares.Client}) => {
 
                   if (typeof fakeValue === 'string') {
                      if (params.row[key].length)
-                        fakeValue = fakeValue.substr(0, params.row[key].length);
+                        fakeValue = fakeValue.substring(0, params.row[key].length);
                      fakeValue = `'${sqlEscaper(fakeValue)}'`;
                   }
                   else if ([...DATE, ...DATETIME].includes(type))

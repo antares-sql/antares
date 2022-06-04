@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
-import Store from 'electron-store';
-const persistentStore = new Store({ name: 'settings' });
+import * as Store from 'electron-store';
+const persistentStore = new Store({ name: 'settings', clearInvalidConfig: true });
 const isMacOS = process.platform === 'darwin';
 
 let mainWindow: Electron.IpcMainEvent;

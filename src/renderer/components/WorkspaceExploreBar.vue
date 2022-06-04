@@ -48,7 +48,7 @@
                />
             </div>
          </div>
-         <div class="workspace-explorebar-body" @click="$refs.explorebar.focus()">
+         <div class="workspace-explorebar-body" @click="explorebar.focus()">
             <WorkspaceExploreBarSchema
                v-for="db of workspace.structure"
                :key="db.name"
@@ -115,7 +115,8 @@
    </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { Component, computed, onMounted, Ref, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { useConnectionsStore } from '@/stores/connections';
@@ -125,428 +126,291 @@ import { useWorkspacesStore } from '@/stores/workspaces';
 
 import Tables from '@/ipc-api/Tables';
 import Views from '@/ipc-api/Views';
-import Functions from '@/ipc-api/Functions';
-import Schedulers from '@/ipc-api/Schedulers';
 
-import WorkspaceExploreBarSchema from '@/components/WorkspaceExploreBarSchema';
-import DatabaseContext from '@/components/WorkspaceExploreBarSchemaContext';
-import TableContext from '@/components/WorkspaceExploreBarTableContext';
-import MiscContext from '@/components/WorkspaceExploreBarMiscContext';
-import MiscFolderContext from '@/components/WorkspaceExploreBarMiscFolderContext';
-import ModalNewSchema from '@/components/ModalNewSchema';
+import WorkspaceExploreBarSchema from '@/components/WorkspaceExploreBarSchema.vue';
+import DatabaseContext from '@/components/WorkspaceExploreBarSchemaContext.vue';
+import TableContext from '@/components/WorkspaceExploreBarTableContext.vue';
+import MiscContext from '@/components/WorkspaceExploreBarMiscContext.vue';
+import MiscFolderContext from '@/components/WorkspaceExploreBarMiscFolderContext.vue';
+import ModalNewSchema from '@/components/ModalNewSchema.vue';
 
-export default {
-   name: 'WorkspaceExploreBar',
-   components: {
-      WorkspaceExploreBarSchema,
-      DatabaseContext,
-      TableContext,
-      MiscContext,
-      MiscFolderContext,
-      ModalNewSchema
-   },
-   props: {
-      connection: Object,
-      isSelected: Boolean
-   },
-   setup () {
-      const { getConnectionName } = useConnectionsStore();
-      const { addNotification } = useNotificationsStore();
-      const settingsStore = useSettingsStore();
-      const workspacesStore = useWorkspacesStore();
+const props = defineProps({
+   connection: Object,
+   isSelected: Boolean
+});
 
-      const { explorebarSize } = storeToRefs(settingsStore);
+const { getConnectionName } = useConnectionsStore();
+const { addNotification } = useNotificationsStore();
+const settingsStore = useSettingsStore();
+const workspacesStore = useWorkspacesStore();
 
-      const { changeExplorebarSize } = settingsStore;
-      const {
-         getWorkspace,
-         removeConnected: disconnectWorkspace,
-         refreshStructure,
-         changeBreadcrumbs,
-         selectTab,
-         newTab,
-         removeTabs,
-         setSearchTerm,
-         addLoadingElement,
-         removeLoadingElement
-      } = workspacesStore;
+const { explorebarSize } = storeToRefs(settingsStore);
 
-      return {
-         getConnectionName,
-         addNotification,
-         explorebarSize,
-         changeExplorebarSize,
-         getWorkspace,
-         disconnectWorkspace,
-         refreshStructure,
-         changeBreadcrumbs,
-         selectTab,
-         newTab,
-         removeTabs,
-         setSearchTerm,
-         addLoadingElement,
-         removeLoadingElement
-      };
-   },
-   data () {
-      return {
-         isRefreshing: false,
+const { changeExplorebarSize } = settingsStore;
+const {
+   getWorkspace,
+   removeConnected: disconnectWorkspace,
+   refreshStructure,
+   newTab,
+   removeTabs,
+   setSearchTerm,
+   addLoadingElement,
+   removeLoadingElement
+} = workspacesStore;
 
-         isNewDBModal: false,
-         isNewViewModal: false,
-         isNewTriggerModal: false,
-         isNewRoutineModal: false,
-         isNewFunctionModal: false,
-         isNewTriggerFunctionModal: false,
-         isNewSchedulerModal: false,
+const searchInput: Ref<HTMLInputElement> = ref(null);
+const explorebar: Ref<HTMLInputElement> = ref(null);
+const resizer: Ref<HTMLInputElement> = ref(null);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const schema: Ref<Component & { selectSchema: (name: string) => void; $refs: any }[]> = ref(null);
+const isRefreshing = ref(false);
+const isNewDBModal = ref(false);
+const localWidth = ref(null);
+const explorebarWidthInterval = ref(null);
+const searchTermInterval = ref(null);
+const isDatabaseContext = ref(false);
+const isTableContext = ref(false);
+const isMiscContext = ref(false);
+const isMiscFolderContext = ref(false);
+const databaseContextEvent = ref(null);
+const tableContextEvent = ref(null);
+const miscContextEvent = ref(null);
+const selectedSchema = ref('');
+const selectedTable = ref(null);
+const selectedMisc = ref(null);
+const searchTerm = ref('');
 
-         localWidth: null,
-         explorebarWidthInterval: null,
-         searchTermInterval: null,
-         isDatabaseContext: false,
-         isTableContext: false,
-         isMiscContext: false,
-         isMiscFolderContext: false,
+const workspace = computed(() => {
+   return getWorkspace(props.connection.uid);
+});
 
-         databaseContextEvent: null,
-         tableContextEvent: null,
-         miscContextEvent: null,
+const connectionName = computed(() => {
+   return getConnectionName(props.connection.uid);
+});
 
-         selectedSchema: '',
-         selectedTable: null,
-         selectedMisc: null,
-         searchTerm: ''
-      };
-   },
-   computed: {
-      workspace () {
-         return this.getWorkspace(this.connection.uid);
-      },
-      connectionName () {
-         return this.getConnectionName(this.connection.uid);
-      },
-      customizations () {
-         return this.workspace.customizations;
-      }
-   },
-   watch: {
-      localWidth (val) {
-         clearTimeout(this.explorebarWidthInterval);
+const customizations = computed(() => {
+   return workspace.value.customizations;
+});
 
-         this.explorebarWidthInterval = setTimeout(() => {
-            this.changeExplorebarSize(val);
-         }, 500);
-      },
-      isSelected (val) {
-         if (val) this.localWidth = this.explorebarSize;
-      },
-      searchTerm () {
-         clearTimeout(this.searchTermInterval);
+watch(localWidth, (val: number) => {
+   clearTimeout(explorebarWidthInterval.value);
 
-         this.searchTermInterval = setTimeout(() => {
-            this.setSearchTerm(this.searchTerm);
-         }, 200);
-      }
-   },
-   created () {
-      this.localWidth = this.explorebarSize;
-   },
-   mounted () {
-      const resizer = this.$refs.resizer;
+   explorebarWidthInterval.value = setTimeout(() => {
+      changeExplorebarSize(val);
+   }, 500);
+});
 
-      resizer.addEventListener('mousedown', e => {
-         e.preventDefault();
+watch(() => props.isSelected, (val: boolean) => {
+   if (val) localWidth.value = explorebarSize.value;
+});
 
-         window.addEventListener('mousemove', this.resize);
-         window.addEventListener('mouseup', this.stopResize);
-      });
+watch(searchTerm, () => {
+   clearTimeout(searchTermInterval.value);
 
-      if (this.workspace.structure.length === 1) { // Auto-open if juust one schema
-         this.$refs.schema[0].selectSchema(this.workspace.structure[0].name);
-         this.$refs.schema[0].$refs.schemaAccordion.open = true;
-      }
-   },
-   methods: {
-      async refresh () {
-         if (!this.isRefreshing) {
-            this.isRefreshing = true;
-            await this.refreshStructure(this.connection.uid);
-            this.isRefreshing = false;
-         }
-      },
-      explorebarSearch (e) {
-         if (e.code === 'Backspace') {
-            e.preventDefault();
-            if (this.searchTerm.length)
-               this.searchTerm = this.searchTerm.slice(0, -1);
-            else
-               return;
-         }
-         else if (e.key.length > 1)// Prevent non-alphanumerics
-            return;
+   searchTermInterval.value = setTimeout(() => {
+      setSearchTerm(searchTerm.value);
+   }, 200);
+});
 
-         this.$refs.searchInput.focus();
-      },
-      resize (e) {
-         const el = this.$refs.explorebar;
-         let explorebarWidth = e.pageX - el.getBoundingClientRect().left;
-         if (explorebarWidth > 500) explorebarWidth = 500;
-         if (explorebarWidth < 150) explorebarWidth = 150;
-         this.localWidth = explorebarWidth;
-      },
-      stopResize () {
-         window.removeEventListener('mousemove', this.resize);
-      },
-      showNewDBModal () {
-         this.isNewDBModal = true;
-      },
-      hideNewDBModal () {
-         this.isNewDBModal = false;
-      },
-      openCreateElementTab (element) {
-         this.closeDatabaseContext();
-         this.closeMiscFolderContext();
+localWidth.value = explorebarSize.value;
 
-         this.newTab({
-            uid: this.workspace.uid,
-            schema: this.selectedSchema,
-            elementName: '',
-            elementType: element,
-            type: `new-${element}`
-         });
-      },
-      openSchemaContext (payload) {
-         this.selectedSchema = payload.schema;
-         this.databaseContextEvent = payload.event;
-         this.isDatabaseContext = true;
-      },
-      closeDatabaseContext () {
-         this.isDatabaseContext = false;
-      },
-      openTableContext (payload) {
-         this.selectedTable = payload.table;
-         this.selectedSchema = payload.schema;
-         this.tableContextEvent = payload.event;
-         this.isTableContext = true;
-      },
-      closeTableContext () {
-         this.isTableContext = false;
-      },
-      openMiscContext (payload) {
-         this.selectedMisc = payload.misc;
-         this.selectedSchema = payload.schema;
-         this.miscContextEvent = payload.event;
-         this.isMiscContext = true;
-      },
-      openMiscFolderContext (payload) {
-         this.selectedMisc = payload.type;
-         this.selectedSchema = payload.schema;
-         this.miscContextEvent = payload.event;
-         this.isMiscFolderContext = true;
-      },
-      closeMiscContext () {
-         this.isMiscContext = false;
-      },
-      closeMiscFolderContext () {
-         this.isMiscFolderContext = false;
-      },
-      showCreateTriggerModal () {
-         this.closeDatabaseContext();
-         this.closeMiscFolderContext();
-         this.isNewTriggerModal = true;
-      },
-      hideCreateTriggerModal () {
-         this.isNewTriggerModal = false;
-      },
-      showCreateRoutineModal () {
-         this.closeDatabaseContext();
-         this.closeMiscFolderContext();
-         this.isNewRoutineModal = true;
-      },
-      hideCreateRoutineModal () {
-         this.isNewRoutineModal = false;
-      },
-      showCreateFunctionModal () {
-         this.closeDatabaseContext();
-         this.closeMiscFolderContext();
-         this.isNewFunctionModal = true;
-      },
-      hideCreateFunctionModal () {
-         this.isNewFunctionModal = false;
-      },
-      showCreateTriggerFunctionModal () {
-         this.closeDatabaseContext();
-         this.closeMiscFolderContext();
-         this.isNewTriggerFunctionModal = true;
-      },
-      hideCreateTriggerFunctionModal () {
-         this.isNewTriggerFunctionModal = false;
-      },
-      showCreateSchedulerModal () {
-         this.closeDatabaseContext();
-         this.closeMiscFolderContext();
-         this.isNewSchedulerModal = true;
-      },
-      hideCreateSchedulerModal () {
-         this.isNewSchedulerModal = false;
-      },
-      async deleteTable (payload) {
-         this.closeTableContext();
+onMounted(() => {
+   resizer.value.addEventListener('mousedown', (e: MouseEvent) => {
+      e.preventDefault();
 
-         this.addLoadingElement({
-            name: payload.table.name,
-            schema: payload.schema,
-            type: 'table'
-         });
+      window.addEventListener('mousemove', resize);
+      window.addEventListener('mouseup', stopResize);
+   });
 
-         try {
-            let res;
+   if (workspace.value.structure.length === 1) { // Auto-open if juust one schema
+      schema.value[0].selectSchema(workspace.value.structure[0].name);
+      schema.value[0].$refs.schemaAccordion.open = true;
+   }
+});
 
-            if (payload.table.type === 'table') {
-               res = await Tables.dropTable({
-                  uid: this.connection.uid,
-                  table: payload.table.name,
-                  schema: payload.schema
-               });
-            }
-            else if (payload.table.type === 'view') {
-               res = await Views.dropView({
-                  uid: this.connection.uid,
-                  view: payload.table.name,
-                  schema: payload.schema
-               });
-            }
-
-            const { status, response } = res;
-
-            if (status === 'success') {
-               this.refresh();
-
-               this.removeTabs({
-                  uid: this.connection.uid,
-                  elementName: payload.table.name,
-                  elementType: payload.table.type,
-                  schema: payload.schema
-               });
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.removeLoadingElement({
-            name: payload.table.name,
-            schema: payload.schema,
-            type: 'table'
-         });
-      },
-      async duplicateTable (payload) {
-         this.closeTableContext();
-
-         this.addLoadingElement({
-            name: payload.table.name,
-            schema: payload.schema,
-            type: 'table'
-         });
-
-         try {
-            const { status, response } = await Tables.duplicateTable({
-               uid: this.connection.uid,
-               table: payload.table.name,
-               schema: payload.schema
-            });
-
-            if (status === 'success')
-               this.refresh();
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.removeLoadingElement({
-            name: payload.table.name,
-            schema: payload.schema,
-            type: 'table'
-         });
-      },
-      async openCreateFunctionEditor (payload) {
-         const params = {
-            uid: this.connection.uid,
-            schema: this.selectedSchema,
-            ...payload
-         };
-
-         const { status, response } = await Functions.createFunction(params);
-
-         if (status === 'success') {
-            await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedSchema, function: payload.name });
-
-            this.newTab({
-               uid: this.workspace.uid,
-               schema: this.selectedSchema,
-               elementName: payload.name,
-               elementType: 'function',
-               type: 'function-props'
-            });
-         }
-         else
-            this.addNotification({ status: 'error', message: response });
-      },
-      async openCreateTriggerFunctionEditor (payload) {
-         const params = {
-            uid: this.connection.uid,
-            schema: this.selectedSchema,
-            ...payload
-         };
-
-         const { status, response } = await Functions.createTriggerFunction(params);
-
-         if (status === 'success') {
-            await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedSchema, triggerFunction: payload.name });
-
-            this.newTab({
-               uid: this.workspace.uid,
-               schema: this.selectedSchema,
-               elementName: payload.name,
-               elementType: 'triggerFunction',
-               type: 'trigger-function-props'
-            });
-         }
-         else
-            this.addNotification({ status: 'error', message: response });
-      },
-      async openCreateSchedulerEditor (payload) {
-         const params = {
-            uid: this.connection.uid,
-            schema: this.selectedSchema,
-            ...payload
-         };
-
-         const { status, response } = await Schedulers.createScheduler(params);
-
-         if (status === 'success') {
-            await this.refresh();
-            this.changeBreadcrumbs({ schema: this.selectedSchema, scheduler: payload.name });
-
-            this.newTab({
-               uid: this.workspace.uid,
-               schema: this.selectedSchema,
-               elementName: payload.name,
-               elementType: 'scheduler',
-               type: 'scheduler-props'
-            });
-         }
-         else
-            this.addNotification({ status: 'error', message: response });
-      }
+const refresh = async () => {
+   if (!isRefreshing.value) {
+      isRefreshing.value = true;
+      await refreshStructure(props.connection.uid);
+      isRefreshing.value = false;
    }
 };
+
+const explorebarSearch = (e: KeyboardEvent) => {
+   if (e.code === 'Backspace') {
+      e.preventDefault();
+      if (searchTerm.value.length)
+         searchTerm.value = searchTerm.value.slice(0, -1);
+      else
+         return;
+   }
+   else if (e.key.length > 1)// Prevent non-alphanumerics
+      return;
+
+   searchInput.value.focus();
+};
+
+const resize = (e: MouseEvent) => {
+   const el = explorebar.value;
+   let explorebarWidth = e.pageX - el.getBoundingClientRect().left;
+   if (explorebarWidth > 500) explorebarWidth = 500;
+   if (explorebarWidth < 150) explorebarWidth = 150;
+   localWidth.value = explorebarWidth;
+};
+
+const stopResize = () => {
+   window.removeEventListener('mousemove', resize);
+};
+
+const showNewDBModal = () => {
+   isNewDBModal.value = true;
+};
+
+const hideNewDBModal = () => {
+   isNewDBModal.value = false;
+};
+
+const openCreateElementTab = (element: string) => {
+   closeDatabaseContext();
+   closeMiscFolderContext();
+
+   newTab({
+      uid: workspace.value.uid,
+      schema: selectedSchema.value,
+      elementName: '',
+      elementType: element,
+      type: `new-${element}`
+   });
+};
+
+const openSchemaContext = (payload: { schema: string; event: PointerEvent }) => {
+   selectedSchema.value = payload.schema;
+   databaseContextEvent.value = payload.event;
+   isDatabaseContext.value = true;
+};
+
+const closeDatabaseContext = () => {
+   isDatabaseContext.value = false;
+};
+
+const openTableContext = (payload: { schema: string; table: string; event: PointerEvent }) => {
+   selectedTable.value = payload.table;
+   selectedSchema.value = payload.schema;
+   tableContextEvent.value = payload.event;
+   isTableContext.value = true;
+};
+
+const closeTableContext = () => {
+   isTableContext.value = false;
+};
+
+const openMiscContext = (payload: { schema: string; misc: string; event: PointerEvent }) => {
+   selectedMisc.value = payload.misc;
+   selectedSchema.value = payload.schema;
+   miscContextEvent.value = payload.event;
+   isMiscContext.value = true;
+};
+
+const openMiscFolderContext = (payload: { schema: string; type: string; event: PointerEvent }) => {
+   selectedMisc.value = payload.type;
+   selectedSchema.value = payload.schema;
+   miscContextEvent.value = payload.event;
+   isMiscFolderContext.value = true;
+};
+
+const closeMiscContext = () => {
+   isMiscContext.value = false;
+};
+
+const closeMiscFolderContext = () => {
+   isMiscFolderContext.value = false;
+};
+
+const deleteTable = async (payload: { schema: string; table: { name: string; type: string }; event: PointerEvent }) => {
+   closeTableContext();
+
+   addLoadingElement({
+      name: payload.table.name,
+      schema: payload.schema,
+      type: 'table'
+   });
+
+   try {
+      let res;
+
+      if (payload.table.type === 'table') {
+         res = await Tables.dropTable({
+            uid: props.connection.uid,
+            table: payload.table.name,
+            schema: payload.schema
+         });
+      }
+      else if (payload.table.type === 'view') {
+         res = await Views.dropView({
+            uid: props.connection.uid,
+            view: payload.table.name,
+            schema: payload.schema
+         });
+      }
+
+      const { status, response } = res;
+
+      if (status === 'success') {
+         refresh();
+
+         removeTabs({
+            uid: props.connection.uid as string,
+            elementName: payload.table.name as string,
+            elementType: payload.table.type,
+            schema: payload.schema as string
+         });
+      }
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   removeLoadingElement({
+      name: payload.table.name,
+      schema: payload.schema,
+      type: 'table'
+   });
+};
+
+const duplicateTable = async (payload: { schema: string; table: { name: string }; event: PointerEvent }) => {
+   closeTableContext();
+
+   addLoadingElement({
+      name: payload.table.name,
+      schema: payload.schema,
+      type: 'table'
+   });
+
+   try {
+      const { status, response } = await Tables.duplicateTable({
+         uid: props.connection.uid,
+         table: payload.table.name,
+         schema: payload.schema
+      });
+
+      if (status === 'success')
+         refresh();
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   removeLoadingElement({
+      name: payload.table.name,
+      schema: payload.schema,
+      type: 'table'
+   });
+};
+
 </script>
 
 <style lang="scss">

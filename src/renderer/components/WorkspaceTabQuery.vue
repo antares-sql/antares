@@ -151,7 +151,7 @@
 
                   <BaseSelect
                      v-model="selectedSchema"
-                     :options="[{value: 'null', label: $t('message.noSchema')}, ...databaseSchemas.map(el => ({label: el, value: el}))]"
+                     :options="[{value: null, label: $t('message.noSchema')}, ...databaseSchemas.map(el => ({label: el, value: el}))]"
                      class="form-select select-sm text-bold"
                   />
                </div>

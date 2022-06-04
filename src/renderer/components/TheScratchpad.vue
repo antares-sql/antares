@@ -43,7 +43,7 @@ const { notes } = storeToRefs(scratchpadStore);
 const { changeNotes } = scratchpadStore;
 const { hideScratchpad } = applicationStore;
 
-const localNotes: Ref<string> = ref(notes.value as string);// TODO: temp
+const localNotes = ref(notes.value);
 const debounceTimeout: Ref<NodeJS.Timeout> = ref(null);
 
 watch(localNotes, () => {

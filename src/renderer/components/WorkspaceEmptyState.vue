@@ -1,61 +1,48 @@
 <template>
    <div class="column col-12 empty">
       <div class="empty-icon">
-         <img
-            v-if="applicationTheme === 'dark'"
-            src="../images/logo-dark.svg"
-            width="200"
-         >
-         <img
-            v-if="applicationTheme === 'light'"
-            src="../images/logo-light.svg"
-            width="200"
-         >
+         <img :src="logos[applicationTheme]" width="200">
       </div>
       <p class="h6 empty-subtitle">
-         {{ $t('message.noOpenTabs') }}
+         {{ t('message.noOpenTabs') }}
       </p>
       <div class="empty-action">
-         <button class="btn btn-gray d-flex" @click="$emit('new-tab')">
+         <button class="btn btn-gray d-flex" @click="emit('new-tab')">
             <i class="mdi mdi-24px mdi-tab-plus mr-2" />
-            {{ $t('message.openNewTab') }}
+            {{ t('message.openNewTab') }}
          </button>
       </div>
    </div>
 </template>
-
-<script>
+<script setup lang="ts">
+import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import { storeToRefs } from 'pinia';
-export default {
-   name: 'WorkspaceEmptyState',
-   emits: ['new-tab'],
-   setup () {
-      const settingsStore = useSettingsStore();
-      const workspacesStore = useWorkspacesStore();
+import { useI18n } from 'vue-i18n';
 
-      const { applicationTheme } = storeToRefs(settingsStore);
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const { t } = useI18n();
 
-      const { getWorkspace, changeBreadcrumbs } = workspacesStore;
+const emit = defineEmits(['new-tab']);
 
-      return {
-         applicationTheme,
-         selectedWorkspace,
-         getWorkspace,
-         changeBreadcrumbs
-      };
-   },
-   computed: {
-      workspace () {
-         return this.getWorkspace(this.selectedWorkspace);
-      }
-   },
-   created () {
-      this.changeBreadcrumbs({ schema: this.workspace.breadcrumbs.schema });
-   }
+const logos = {
+   light: require('../images/logo-light.svg') as string,
+   dark: require('../images/logo-dark.svg') as string
 };
+
+const settingsStore = useSettingsStore();
+const workspacesStore = useWorkspacesStore();
+
+const { applicationTheme } = storeToRefs(settingsStore);
+const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+const { getWorkspace, changeBreadcrumbs } = workspacesStore;
+
+const workspace = computed(() => {
+   return getWorkspace(selectedWorkspace.value);
+});
+
+changeBreadcrumbs({ schema: workspace.value.breadcrumbs.schema });
 </script>
 
 <style scoped>

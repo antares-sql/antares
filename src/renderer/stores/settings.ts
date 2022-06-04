@@ -7,6 +7,7 @@ const defaultAppTheme = isDarkTheme.matches ? 'dark' : 'light';
 const defaultEditorTheme = isDarkTheme.matches ? 'twilight' : 'sqlserver';
 
 export type EditorFontSize = 'small' | 'medium' | 'large';
+export type ApplicationTheme = 'light' | 'dark';
 
 export const useSettingsStore = defineStore('settings', {
    state: () => ({
@@ -17,7 +18,7 @@ export const useSettingsStore = defineStore('settings', {
       dataTabLimit: persistentStore.get('data_tab_limit', 1000) as number,
       autoComplete: persistentStore.get('auto_complete', true) as boolean,
       lineWrap: persistentStore.get('line_wrap', true) as boolean,
-      applicationTheme: persistentStore.get('application_theme', defaultAppTheme) as string,
+      applicationTheme: persistentStore.get('application_theme', defaultAppTheme) as ApplicationTheme,
       editorTheme: persistentStore.get('editor_theme', defaultEditorTheme) as string,
       editorFontSize: persistentStore.get('editor_font_size', 'medium') as EditorFontSize,
       restoreTabs: persistentStore.get('restore_tabs', true) as boolean,

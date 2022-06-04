@@ -86,7 +86,7 @@ const connections = computed({
    get () {
       return getConnections.value;
    },
-   set (value) {
+   set (value: ConnectionParams[]) {
       updateConnections(value);
    }
 });

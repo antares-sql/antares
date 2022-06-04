@@ -101,16 +101,9 @@
 import { Component, computed, ComputedRef, onBeforeUnmount, onMounted, onUpdated, Prop, Ref, ref, watch } from 'vue';
 import * as moment from 'moment';
 import { ConnectionParams } from 'common/interfaces/antares';
-import { useHistoryStore } from '@/stores/history';
+import { HistoryRecord, useHistoryStore } from '@/stores/history';
 import { useConnectionsStore } from '@/stores/connections';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
-
-interface HistoryRow {
-   uid:string;
-   sql: string;
-   schema: string;
-   date: string;
-}
 
 const { getHistoryByWorkspace, deleteQueryFromHistory } = useHistoryStore();
 const { getConnectionName } = useConnectionsStore();
@@ -132,7 +125,7 @@ const searchTerm = ref('');
 const localSearchTerm = ref('');
 
 const connectionName = computed(() => getConnectionName(props.connection.uid));
-const history: ComputedRef<HistoryRow[]> = computed(() => (getHistoryByWorkspace(props.connection.uid) || []));
+const history: ComputedRef<HistoryRecord[]> = computed(() => (getHistoryByWorkspace(props.connection.uid) || []));
 const filteredHistory = computed(() => history.value.filter(q => q.sql.toLowerCase().search(searchTerm.value.toLowerCase()) >= 0));
 
 watch(searchTerm, () => {
@@ -147,7 +140,7 @@ const copyQuery = (sql: string) => {
    navigator.clipboard.writeText(sql);
 };
 
-const deleteQuery = (query: HistoryRow[]) => {
+const deleteQuery = (query: HistoryRecord[]) => {
    deleteQueryFromHistory({
       workspace: props.connection.uid,
       ...query

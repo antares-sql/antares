@@ -60,7 +60,7 @@ export const useConnectionsStore = defineStore('connections', {
          this.selected_conection = {};
          persistentStore.set('connections', this.connections);
       },
-      updateConnections (connections: ConnectionParams) {
+      updateConnections (connections: ConnectionParams[]) {
          this.connections = connections;
          persistentStore.set('connections', this.connections);
       }

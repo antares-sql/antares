@@ -248,6 +248,8 @@ import { useWorkspacesStore } from '@/stores/workspaces';
 import { formatBytes } from 'common/libs/formatBytes';
 import { storeToRefs } from 'pinia';
 
+// TODO: expose selectSchema & schemaAccordion
+
 export default {
    name: 'WorkspaceExploreBarSchema',
    props: {

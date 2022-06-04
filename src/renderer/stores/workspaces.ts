@@ -25,16 +25,16 @@ import { Customizations } from 'common/interfaces/customizations';
 export interface WorkspaceTab {
    uid: string;
    tab?: string;
-   index: number;
-   selected: boolean;
-   type: string;
+   index?: number;
+   selected?: boolean;
+   type?: string;
    schema?: string;
    elementName?: string;
    elementNewName?: string;
    elementType?: string;
    isChanged?: boolean;
    content?: string;
-   autorun: boolean;
+   autorun?: boolean;
 }
 
 export interface WorkspaceStructure {
@@ -70,7 +70,7 @@ export interface Workspace {
    variables: { name: string; value: string }[];
    collations: CollationInfos[];
    users: { host: string; name: string; password: string }[];
-   breadcrumbs: Breadcrumb[];
+   breadcrumbs: Breadcrumb;
    loadingElements: { name: string; schema: string; type: string }[];
    loadedSchemas: Set<string>;
    dataTypes?: { [key: string]: TypesGroup[] };
@@ -171,18 +171,18 @@ export const useWorkspacesStore = defineStore('workspaces', {
                switch (connection.client) {
                   case 'mysql':
                   case 'maria':
-                     dataTypes = require('common/data-types/mysql');
-                     indexTypes = require('common/index-types/mysql');
+                     dataTypes = require('common/data-types/mysql').default;
+                     indexTypes = require('common/index-types/mysql').default;
                      clientCustomizations = customizations.mysql;
                      break;
                   case 'pg':
-                     dataTypes = require('common/data-types/postgresql');
-                     indexTypes = require('common/index-types/postgresql');
+                     dataTypes = require('common/data-types/postgresql').default;
+                     indexTypes = require('common/index-types/postgresql').default;
                      clientCustomizations = customizations.pg;
                      break;
                   case 'sqlite':
-                     dataTypes = require('common/data-types/sqlite');
-                     indexTypes = require('common/index-types/sqlite');
+                     dataTypes = require('common/data-types/sqlite').default;
+                     indexTypes = require('common/index-types/sqlite').default;
                      clientCustomizations = customizations.sqlite;
                      break;
                }
@@ -392,7 +392,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
             variables: [],
             collations: [],
             users: [],
-            breadcrumbs: [],
+            breadcrumbs: {},
             loadingElements: [],
             loadedSchemas: new Set()
          };
@@ -684,7 +684,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
             : workspace
          );
       },
-      updateTabs ({ uid, tabs }: {uid: string; tabs: string[]}) {
+      updateTabs ({ uid, tabs }: {uid: string; tabs: WorkspaceTab[]}) {
          this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === uid
             ? { ...workspace, tabs }
             : workspace

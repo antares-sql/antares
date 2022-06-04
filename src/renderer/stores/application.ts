@@ -34,7 +34,7 @@ export const useApplicationStore = defineStore('application', {
       setLoadingStatus (payload: boolean) {
          this.isLoading = payload;
       },
-      setBaseCompleters (payload: boolean) {
+      setBaseCompleters (payload: Ace.Completer[]) {
          this.baseCompleter = payload;
       },
       // Modals

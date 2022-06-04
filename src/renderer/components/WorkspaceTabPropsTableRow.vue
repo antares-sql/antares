@@ -132,7 +132,7 @@
             <input
                v-model="localRow.unsigned"
                type="checkbox"
-               :disabled="!fieldType.unsigned"
+               :disabled="!fieldType?.unsigned"
             >
             <i class="form-icon" />
          </label>

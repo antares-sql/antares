@@ -484,246 +484,196 @@
    </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, onBeforeUnmount, Prop, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import Draggable from 'vuedraggable';
+import * as Draggable from 'vuedraggable';
 import Connection from '@/ipc-api/Connection';
-import { useWorkspacesStore } from '@/stores/workspaces';
+import { useWorkspacesStore, WorkspaceTab } from '@/stores/workspaces';
+import { ConnectionParams } from 'common/interfaces/antares';
 
-import WorkspaceEmptyState from '@/components/WorkspaceEmptyState';
-import WorkspaceExploreBar from '@/components/WorkspaceExploreBar';
-import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPanel';
-import WorkspaceTabQuery from '@/components/WorkspaceTabQuery';
-import WorkspaceTabTable from '@/components/WorkspaceTabTable';
+import WorkspaceEmptyState from '@/components/WorkspaceEmptyState.vue';
+import WorkspaceExploreBar from '@/components/WorkspaceExploreBar.vue';
+import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPanel.vue';
+import WorkspaceTabQuery from '@/components/WorkspaceTabQuery.vue';
+import WorkspaceTabTable from '@/components/WorkspaceTabTable.vue';
 
-import WorkspaceTabNewTable from '@/components/WorkspaceTabNewTable';
-import WorkspaceTabNewView from '@/components/WorkspaceTabNewView';
-import WorkspaceTabNewTrigger from '@/components/WorkspaceTabNewTrigger';
-import WorkspaceTabNewRoutine from '@/components/WorkspaceTabNewRoutine';
-import WorkspaceTabNewFunction from '@/components/WorkspaceTabNewFunction';
-import WorkspaceTabNewScheduler from '@/components/WorkspaceTabNewScheduler';
-import WorkspaceTabNewTriggerFunction from '@/components/WorkspaceTabNewTriggerFunction';
+import WorkspaceTabNewTable from '@/components/WorkspaceTabNewTable.vue';
+import WorkspaceTabNewView from '@/components/WorkspaceTabNewView.vue';
+import WorkspaceTabNewTrigger from '@/components/WorkspaceTabNewTrigger.vue';
+import WorkspaceTabNewRoutine from '@/components/WorkspaceTabNewRoutine.vue';
+import WorkspaceTabNewFunction from '@/components/WorkspaceTabNewFunction.vue';
+import WorkspaceTabNewScheduler from '@/components/WorkspaceTabNewScheduler.vue';
+import WorkspaceTabNewTriggerFunction from '@/components/WorkspaceTabNewTriggerFunction.vue';
 
-import WorkspaceTabPropsTable from '@/components/WorkspaceTabPropsTable';
-import WorkspaceTabPropsView from '@/components/WorkspaceTabPropsView';
-import WorkspaceTabPropsTrigger from '@/components/WorkspaceTabPropsTrigger';
-import WorkspaceTabPropsTriggerFunction from '@/components/WorkspaceTabPropsTriggerFunction';
-import WorkspaceTabPropsRoutine from '@/components/WorkspaceTabPropsRoutine';
-import WorkspaceTabPropsFunction from '@/components/WorkspaceTabPropsFunction';
-import WorkspaceTabPropsScheduler from '@/components/WorkspaceTabPropsScheduler';
-import ModalProcessesList from '@/components/ModalProcessesList';
-import ModalDiscardChanges from '@/components/ModalDiscardChanges';
+import WorkspaceTabPropsTable from '@/components/WorkspaceTabPropsTable.vue';
+import WorkspaceTabPropsView from '@/components/WorkspaceTabPropsView.vue';
+import WorkspaceTabPropsTrigger from '@/components/WorkspaceTabPropsTrigger.vue';
+import WorkspaceTabPropsTriggerFunction from '@/components/WorkspaceTabPropsTriggerFunction.vue';
+import WorkspaceTabPropsRoutine from '@/components/WorkspaceTabPropsRoutine.vue';
+import WorkspaceTabPropsFunction from '@/components/WorkspaceTabPropsFunction.vue';
+import WorkspaceTabPropsScheduler from '@/components/WorkspaceTabPropsScheduler.vue';
+import ModalProcessesList from '@/components/ModalProcessesList.vue';
+import ModalDiscardChanges from '@/components/ModalDiscardChanges.vue';
 
-export default {
-   name: 'Workspace',
-   components: {
-      Draggable,
-      WorkspaceEmptyState,
-      WorkspaceExploreBar,
-      WorkspaceEditConnectionPanel,
-      WorkspaceTabQuery,
-      WorkspaceTabTable,
-      WorkspaceTabNewTable,
-      WorkspaceTabPropsTable,
-      WorkspaceTabNewView,
-      WorkspaceTabPropsView,
-      WorkspaceTabNewTrigger,
-      WorkspaceTabPropsTrigger,
-      WorkspaceTabNewTriggerFunction,
-      WorkspaceTabPropsTriggerFunction,
-      WorkspaceTabNewRoutine,
-      WorkspaceTabNewFunction,
-      WorkspaceTabPropsRoutine,
-      WorkspaceTabPropsFunction,
-      WorkspaceTabNewScheduler,
-      WorkspaceTabPropsScheduler,
-      ModalProcessesList,
-      ModalDiscardChanges
+const workspacesStore = useWorkspacesStore();
+
+const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+const {
+   getWorkspace,
+   addWorkspace,
+   connectWorkspace,
+   selectTab,
+   newTab,
+   removeTab,
+   updateTabs
+} = workspacesStore;
+
+const props = defineProps({
+   connection: Object as Prop<ConnectionParams>
+});
+
+const hasWheelEvent = ref(false);
+const isProcessesModal = ref(false);
+const unsavedTab = ref(null);
+const tabWrap = ref(null);
+
+const workspace = computed(() => getWorkspace(props.connection.uid));
+
+const draggableTabs = computed<WorkspaceTab[]>({
+   get () {
+      return workspace.value.tabs;
    },
-   props: {
-      connection: Object
-   },
-   setup () {
-      const workspacesStore = useWorkspacesStore();
+   set (val) {
+      updateTabs({ uid: props.connection.uid, tabs: val });
+   }
+});
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const isSelected = computed(() => {
+   return selectedWorkspace.value === props.connection.uid;
+});
 
-      const {
-         getWorkspace,
-         addWorkspace,
-         connectWorkspace,
-         removeConnected,
-         selectTab,
-         newTab,
-         removeTab,
-         updateTabs
-      } = workspacesStore;
+const selectedTab = computed(() => {
+   return workspace.value ? workspace.value.selectedTab : null;
+});
 
-      return {
-         selectedWorkspace,
-         getWorkspace,
-         addWorkspace,
-         connectWorkspace,
-         removeConnected,
-         selectTab,
-         newTab,
-         removeTab,
-         updateTabs
-      };
-   },
-   data () {
-      return {
-         hasWheelEvent: false,
-         isProcessesModal: false,
-         unsavedTab: null
-      };
-   },
-   computed: {
-      workspace () {
-         return this.getWorkspace(this.connection.uid);
-      },
-      draggableTabs: {
-         get () {
-            return this.workspace.tabs;
-         },
-         set (val) {
-            this.updateTabs({ uid: this.connection.uid, tabs: val });
-         }
-      },
-      isSelected () {
-         return this.selectedWorkspace === this.connection.uid;
-      },
-      isSettingSupported () {
-         if (this.workspace.breadcrumbs.table && this.workspace.customizations.tableSettings) return true;
-         if (this.workspace.breadcrumbs.view && this.workspace.customizations.viewSettings) return true;
-         if (this.workspace.breadcrumbs.trigger && this.workspace.customizations.triggerSettings) return true;
-         if (this.workspace.breadcrumbs.procedure && this.workspace.customizations.routineSettings) return true;
-         if (this.workspace.breadcrumbs.function && this.workspace.customizations.functionSettings) return true;
-         if (this.workspace.breadcrumbs.triggerFunction && this.workspace.customizations.functionSettings) return true;
-         if (this.workspace.breadcrumbs.scheduler && this.workspace.customizations.schedulerSettings) return true;
-         return false;
-      },
-      selectedTab () {
-         return this.workspace ? this.workspace.selectedTab : null;
-      },
-      queryTabs () {
-         return this.workspace ? this.workspace.tabs.filter(tab => tab.type === 'query') : [];
-      },
-      schemaChild () {
-         for (const key in this.workspace.breadcrumbs) {
-            if (key === 'schema') continue;
-            if (this.workspace.breadcrumbs[key]) return this.workspace.breadcrumbs[key];
-         }
-         return false;
-      },
-      hasTools () {
-         if (!this.workspace.customizations) return false;
-         else {
-            return this.workspace.customizations.processesList ||
-            this.workspace.customizations.usersManagement ||
-            this.workspace.customizations.variables;
-         }
-      }
-   },
-   watch: {
-      queryTabs: {
-         handler (newVal, oldVal) {
-            if (newVal.length > oldVal.length) {
-               setTimeout(() => {
-                  const scroller = this.$refs.tabWrap;
-                  if (scroller) scroller.$el.scrollLeft = scroller.$el.scrollWidth;
-               }, 0);
-            }
-         },
-         deep: true
-      }
-   },
-   async created () {
-      window.addEventListener('keydown', this.onKey);
-      await this.addWorkspace(this.connection.uid);
-      const isInitiated = await Connection.checkConnection(this.connection.uid);
-      if (isInitiated)
-         this.connectWorkspace(this.connection);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-   },
-   methods: {
-      addQueryTab () {
-         this.newTab({ uid: this.connection.uid, type: 'query' });
-      },
-      getSelectedTab () {
-         return this.workspace.tabs.find(tab => tab.uid === this.selectedTab);
-      },
-      onKey (e) {
-         e.stopPropagation();
+const queryTabs = computed(() => {
+   return workspace.value ? workspace.value.tabs.filter(tab => tab.type === 'query') : [];
+});
 
-         if (!this.isSelected)
-            return;
+const hasTools = computed(() => {
+   if (!workspace.value.customizations) return false;
+   else {
+      return workspace.value.customizations.processesList ||
+      workspace.value.customizations.usersManagement ||
+      workspace.value.customizations.variables;
+   }
+});
 
-         if ((e.ctrlKey || e.metaKey) && e.keyCode === 84 && !e.altKey) { // CTRL|Command + t
-            this.addQueryTab();
-         }
+watch(queryTabs, (newVal, oldVal) => {
+   if (newVal.length > oldVal.length) {
+      setTimeout(() => {
+         const scroller = tabWrap.value;
+         if (scroller) scroller.$el.scrollLeft = scroller.$el.scrollWidth;
+      }, 0);
+   }
+});
 
-         if ((e.ctrlKey || e.metaKey) && e.keyCode === 87 && !e.altKey) { // CTRL|Command + w
-            const currentTab = this.getSelectedTab();
-            if (currentTab)
-               this.closeTab(currentTab);
-         }
-      },
-      openAsPermanentTab (tab) {
-         const permanentTabs = {
-            table: 'data',
-            view: 'data',
-            trigger: 'trigger-props',
-            triggerFunction: 'trigger-function-props',
-            function: 'function-props',
-            routine: 'routine-props',
-            scheduler: 'scheduler-props'
-         };
+const addQueryTab = () => {
+   newTab({ uid: props.connection.uid, type: 'query' });
+};
 
-         this.newTab({
-            uid: this.connection.uid,
-            schema: tab.schema,
-            elementName: tab.elementName,
-            type: permanentTabs[tab.elementType],
-            elementType: tab.elementType
-         });
-      },
-      closeTab (tab, force) {
-         this.unsavedTab = null;
-         // if (tab.type === 'query' && this.queryTabs.length === 1) return;
-         if (!force && tab.isChanged) {
-            this.unsavedTab = tab;
-            return;
-         }
+const getSelectedTab = () => {
+   return workspace.value.tabs.find(tab => tab.uid === selectedTab.value);
+};
 
-         this.removeTab({ uid: this.connection.uid, tab: tab.uid });
-      },
-      showProcessesModal () {
-         this.isProcessesModal = true;
-      },
-      hideProcessesModal () {
-         this.isProcessesModal = false;
-      },
-      addWheelEvent () {
-         if (!this.hasWheelEvent) {
-            this.$refs.tabWrap.$el.addEventListener('wheel', e => {
-               if (e.deltaY > 0) this.$refs.tabWrap.$el.scrollLeft += 50;
-               else this.$refs.tabWrap.$el.scrollLeft -= 50;
-            });
-            this.hasWheelEvent = true;
-         }
-      },
-      cutText (string) {
-         const limit = 20;
-         const escapedString = string.replace(/\s{2,}/g, ' ');
-         if (escapedString.length > limit)
-            return `${escapedString.substr(0, limit)}...`;
-         return escapedString;
-      }
+const onKey = (e: KeyboardEvent) => {
+   e.stopPropagation();
+
+   if (!isSelected.value)
+      return;
+
+   if ((e.ctrlKey || e.metaKey) && e.key === 't' && !e.altKey) { // CTRL|Command + t
+      addQueryTab();
+   }
+
+   if ((e.ctrlKey || e.metaKey) && e.key === 'w' && !e.altKey) { // CTRL|Command + w
+      const currentTab = getSelectedTab();
+      if (currentTab)
+         closeTab(currentTab);
    }
 };
+
+const openAsPermanentTab = (tab: WorkspaceTab) => {
+   const permanentTabs = {
+      table: 'data',
+      view: 'data',
+      trigger: 'trigger-props',
+      triggerFunction: 'trigger-function-props',
+      function: 'function-props',
+      routine: 'routine-props',
+      procedure: 'routine-props',
+      scheduler: 'scheduler-props'
+   } as {[key: string]: string};
+
+   newTab({
+      uid: props.connection.uid,
+      schema: tab.schema,
+      elementName: tab.elementName,
+      type: permanentTabs[tab.elementType],
+      elementType: tab.elementType
+   });
+};
+
+const closeTab = (tab: WorkspaceTab, force = false) => {
+   unsavedTab.value = null;
+   // if (tab.type === 'query' && this.queryTabs.length === 1) return;
+   if (!force && tab.isChanged) {
+      unsavedTab.value = tab;
+      return;
+   }
+
+   removeTab({ uid: props.connection.uid, tab: tab.uid });
+};
+
+const showProcessesModal = () => {
+   isProcessesModal.value = true;
+};
+
+const hideProcessesModal = () => {
+   isProcessesModal.value = false;
+};
+
+const addWheelEvent = () => {
+   if (!hasWheelEvent.value) {
+      tabWrap.value.$el.addEventListener('wheel', (e: WheelEvent) => {
+         if (e.deltaY > 0) tabWrap.value.$el.scrollLeft += 50;
+         else tabWrap.value.$el.scrollLeft -= 50;
+      });
+      hasWheelEvent.value = true;
+   }
+};
+
+const cutText = (string: string) => {
+   const limit = 20;
+   const escapedString = string.replace(/\s{2,}/g, ' ');
+   if (escapedString.length > limit)
+      return `${escapedString.substr(0, limit)}...`;
+   return escapedString;
+};
+
+(async () => {
+   window.addEventListener('keydown', onKey);
+   await addWorkspace(props.connection.uid);
+   const isInitiated = await Connection.checkConnection(props.connection.uid);
+   if (isInitiated)
+      connectWorkspace(props.connection);
+})();
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+});
 </script>
 
 <style lang="scss">
