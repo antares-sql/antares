@@ -166,24 +166,23 @@ defineExpose({ startImport });
 
 <style lang="scss" scoped>
 .modal {
+  .modal-container {
+    max-width: 800px;
+  }
 
-   .modal-container {
-      max-width: 800px;
-   }
+  .modal-body {
+    max-height: 60vh;
+    display: flex;
+    flex-direction: column;
+  }
 
-   .modal-body {
-      max-height: 60vh;
-      display: flex;
-      flex-direction: column;
-   }
-
-   .modal-footer {
-      display: flex;
-   }
+  .modal-footer {
+    display: flex;
+  }
 }
 
 .progress-status {
-   font-style: italic;
-   font-size: 80%;
+  font-style: italic;
+  font-size: 80%;
 }
 </style>

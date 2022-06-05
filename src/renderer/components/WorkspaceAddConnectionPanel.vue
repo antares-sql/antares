@@ -478,7 +478,7 @@ const startTest = async () => {
       isAsking.value = true;
    else {
       try {
-         const res = await Connection.makeTest(connection);
+         const res = await Connection.makeTest(connection.value);
          if (res.status === 'error')
             addNotification({ status: 'error', message: res.response.message || res.response.toString() });
          else

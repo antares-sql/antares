@@ -22,8 +22,8 @@
     "postinstall": "electron-builder install-app-deps && npm run devtools:install",
     "test:e2e": "npm run compile && npm run test:e2e-dry",
     "test:e2e-dry": "xvfb-maybe -- playwright test",
-    "lint": "eslint . --ext .js,.vue && stylelint \"./src/**/*.{css,scss,sass,vue}\"",
-    "lint:fix": "eslint . --ext .js,.vue --fix && stylelint \"./src/**/*.{css,scss,sass,vue}\" --fix",
+    "lint": "eslint . --ext .js,.ts,.vue && stylelint \"./src/**/*.{css,scss,sass,vue}\"",
+    "lint:fix": "eslint . --ext .js,.ts,.vue --fix && stylelint \"./src/**/*.{css,scss,sass,vue}\" --fix",
     "contributors:add": "all-contributors add",
     "contributors:generate": "all-contributors generate"
   },

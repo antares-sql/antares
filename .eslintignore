@@ -2,3 +2,4 @@ node_modules
 assets
 out
 dist
+build

@@ -14,6 +14,12 @@ export type ClientCode = 'mysql' | 'maria' | 'pg' | 'sqlite'
 export type Exporter = MysqlExporter | PostgreSQLExporter
 export type Importer = MySQLImporter | PostgreSQLImporter
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface IpcResponse<T = any> {
+   status: 'success' | 'error';
+   response?: T;
+}
+
 /**
  * Pasameters needed to create a new Antares connection to a database
  */

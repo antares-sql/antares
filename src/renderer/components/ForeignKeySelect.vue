@@ -8,7 +8,7 @@
       dropdown-class="select-sm"
       dropdown-container=".workspace-query-results > .vscroll"
       @change="onChange"
-      @blur="$emit('blur')"
+      @blur="emit('blur')"
    />
 </template>
 
@@ -20,6 +20,7 @@ import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import { TEXT, LONG_TEXT } from 'common/fieldTypes';
 import BaseSelect from '@/components/BaseSelect.vue';
+import { TableField } from 'common/interfaces/antares';
 
 const props = defineProps({
    modelValue: [String, Number],
@@ -56,7 +57,7 @@ const foreigns = computed(() => {
    return list;
 });
 
-const onChange = (opt: any) => {
+const onChange = (opt: HTMLSelectElement) => {
    emit('update:modelValue', opt.value);
 };
 
@@ -65,7 +66,7 @@ const cutText = (val: string) => {
    return val.length > 15 ? `${val.substring(0, 15)}...` : val;
 };
 
-let foreignDesc;
+let foreignDesc: string | false;
 const params = {
    uid: selectedWorkspace.value,
    schema: props.keyUsage.refSchema,
@@ -77,7 +78,7 @@ const params = {
       const { status, response } = await Tables.getTableColumns(params);
 
       if (status === 'success') {
-         const textField = response.find((field: {type: string; name: string}) => [...TEXT, ...LONG_TEXT].includes(field.type) && field.name !== props.keyUsage.refField);
+         const textField = (response as TableField[]).find((field: {type: string; name: string}) => [...TEXT, ...LONG_TEXT].includes(field.type) && field.name !== props.keyUsage.refField);
          foreignDesc = textField ? textField.name : false;
       }
       else

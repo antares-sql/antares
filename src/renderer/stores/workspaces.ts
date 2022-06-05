@@ -133,7 +133,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
          else
             this.selectedWorkspace = uid;
       },
-      async connectWorkspace (connection: ConnectionParams) {
+      async connectWorkspace (connection: ConnectionParams & { pgConnString: string }) {
          this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === connection.uid
             ? {
                ...workspace,

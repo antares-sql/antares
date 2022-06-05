@@ -20,7 +20,7 @@ export default function useResultTables (uid, reloadTable, addNotification) {
             if (response.reload)// Needed for blob fields
                reloadTable();
             else
-               tableRef.applyUpdate(payload);
+               tableRef.value.applyUpdate(payload);
          }
          else
             addNotification({ status: 'error', message: response });

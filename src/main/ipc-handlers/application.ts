@@ -5,11 +5,6 @@ export default () => {
       app.exit();
    });
 
-   ipcMain.on('get-key', async event => {
-      const key = false;
-      event.returnValue = key;
-   });
-
    ipcMain.handle('show-open-dialog', (event, options) => {
       return dialog.showOpenDialog(options);
    });

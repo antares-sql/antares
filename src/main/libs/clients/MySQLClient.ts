@@ -1381,6 +1381,14 @@ export class MySQLClient extends AntaresCore {
             xa: row.XA,
             savepoints: row.Savepoints,
             isDefault: row.Support.includes('DEFAULT')
+         } as {
+            name: string;
+            support: string;
+            comment: string;
+            transactions: string;
+            xa: string;
+            savepoints: string;
+            isDefault: boolean;
          };
       });
    }
@@ -1405,7 +1413,12 @@ export class MySQLClient extends AntaresCore {
                break;
          }
          return acc;
-      }, {});
+      }, {}) as {
+         number: string;
+         name: string;
+         arch: string;
+         os: string;
+      };
    }
 
    async getProcesses () {
@@ -1423,6 +1436,15 @@ export class MySQLClient extends AntaresCore {
             time: row.TIME,
             state: row.STATE,
             info: row.INFO
+         } as {
+            id: number;
+            user: string;
+            host: string;
+            db: string;
+            command: string;
+            time: number;
+            state: string;
+            info: string;
          };
       });
    }

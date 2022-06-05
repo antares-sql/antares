@@ -300,6 +300,7 @@ option:checked {
   &.select {
     &.select--open {
       border-color: $primary-color !important;
+
       @include control-shadow();
     }
   }
@@ -307,6 +308,7 @@ option:checked {
 
 .select__list {
   margin: 0;
+
   li {
     margin: 0;
     padding: 0.3rem 0.8rem;
@@ -322,7 +324,7 @@ option:checked {
   z-index: 401 !important;
   border: 1px solid transparent;
   border-radius: $border-radius;
-  box-shadow: 0px 8px 17px 0px rgba(0, 0, 0, 0.2), 0px 6px 20px 0px rgba(0, 0, 0, 0.19);
+  box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .select__option--selected {

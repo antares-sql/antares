@@ -79,7 +79,7 @@
                                     />
                                  </div>
                                  <div class="col-4 col-sm-12 px-2 p-vcentered">
-                                    <small class="d-block" style="line-height:1.1; font-size:70%;">
+                                    <small class="d-block" style="line-height: 1.1; font-size: 70%;">
                                        {{ t('message.missingOrIncompleteTranslation') }}<br>
                                        <a class="text-bold c-hand" @click="openOutside('https://github.com/antares-sql/antares/wiki/Translate-Antares')">{{ t('message.findOutHowToContribute') }}</a>
                                     </small>
