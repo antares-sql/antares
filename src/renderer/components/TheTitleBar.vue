@@ -26,15 +26,16 @@
          >
             <i class="mdi mdi-24px mdi-refresh" />
          </div>
+         <div v-if="isWindows" style="width: 140px;" />
          <div
-            v-if="!isMacOS"
+            v-if="isLinux"
             class="titlebar-element"
             @click="minimizeApp"
          >
             <i class="mdi mdi-24px mdi-minus" />
          </div>
          <div
-            v-if="!isMacOS"
+            v-if="isLinux"
             class="titlebar-element"
             @click="toggleFullScreen"
          >
@@ -42,7 +43,7 @@
             <i v-else class="mdi mdi-24px mdi-fullscreen" />
          </div>
          <div
-            v-if="!isMacOS"
+            v-if="isLinux"
             class="titlebar-element close-button"
             @click="closeApp"
          >
@@ -80,7 +81,9 @@ export default {
          w: getCurrentWindow(),
          isMaximized: getCurrentWindow().isMaximized(),
          isDevelopment: process.env.NODE_ENV === 'development',
-         isMacOS: process.platform === 'darwin'
+         isMacOS: process.platform === 'darwin',
+         isWindows: process.platform === 'win32',
+         isLinux: process.platform === 'linux'
       };
    },
    computed: {
@@ -171,7 +174,7 @@ export default {
         height: $titlebar-height;
         line-height: 0;
         padding: 0 0.7rem;
-        opacity: 0.7;
+        opacity: 0.9;
         transition: opacity 0.2s;
         -webkit-app-region: no-drag;
 
