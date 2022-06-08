@@ -1,5 +1,9 @@
 <template>
-   <div id="titlebar" v-if="!isLinux" @dblclick="toggleFullScreen">
+   <div
+      v-if="!isLinux"
+      id="titlebar"
+      @dblclick="toggleFullScreen"
+   >
       <div class="titlebar-resizer" />
       <div class="titlebar-elements">
          <img
@@ -96,6 +100,11 @@ export default {
          const breadcrumbs = Object.values(workspace.breadcrumbs).filter(breadcrumb => breadcrumb) || [workspace.client];
 
          return [connectionName, ...breadcrumbs].join(' • ');
+      }
+   },
+   watch: {
+      windowTitle: function (val) {
+         ipcRenderer.send('change-window-title', val);
       }
    },
    created () {
