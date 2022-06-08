@@ -104,7 +104,9 @@ const config = {
                {
                   loader: 'sass-loader',
                   options: {
-                     additionalData: '@import "@/scss/_variables.scss";',
+                     additionalData: `
+                        $platform: ${process.platform};
+                        @import "@/scss/_variables.scss";`,
                      sassOptions: { quietDeps: true }
                   }
                }

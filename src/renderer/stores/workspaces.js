@@ -1,4 +1,5 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
+import { ipcRenderer } from 'electron';
 import Store from 'electron-store';
 import Connection from '@/ipc-api/Connection';
 import Schema from '@/ipc-api/Schema';
@@ -342,6 +343,17 @@ export const useWorkspacesStore = defineStore('workspaces', {
                breadcrumbs: { ...breadcrumbsObj, ...payload }
             }
             : workspace);
+
+         
+         const workspace = this.getWorkspace(this.selectedWorkspace);
+         if(workspace){
+            const { getConnectionName } = useConnectionsStore();
+            const connectionName = getConnectionName(this.selectedWorkspace);
+            const breadcrumbs = Object.values(workspace.value.breadcrumbs).filter(breadcrumb => breadcrumb) || [workspace.value.client];
+            const windowTitle = [connectionName, ...breadcrumbs].join(' • ');
+            ipcRenderer.send('change-window-title', windowTitle);
+         }
+
       },
       addLoadedSchema (schema) {
          this.workspaces = this.workspaces.map(workspace => {

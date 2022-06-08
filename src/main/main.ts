@@ -14,7 +14,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 const isMacOS = process.platform === 'darwin';
 const isLinux = process.platform === 'linux';
 const isWindows = process.platform === 'win32';
-const gotTheLock = app.requestSingleInstanceLock();
+const gotTheLock = app.requestSingleInstanceLock(); 
 
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
@@ -89,6 +89,11 @@ else {
          color: appTheme === 'dark' ? '#3f3f3f' : '#fff',
          symbolColor: appTheme === 'dark' ? '#fff' : '#000'
       });
+   });
+
+
+   ipcMain.on('change-window-title', (event, title: string) => {
+      mainWindow.setTitle(title)
    });
 
    // quit application when all windows are closed

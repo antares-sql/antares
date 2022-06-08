@@ -1,5 +1,5 @@
 <template>
-   <div id="titlebar" @dblclick="toggleFullScreen">
+   <div id="titlebar" v-if="!isLinux" @dblclick="toggleFullScreen">
       <div class="titlebar-resizer" />
       <div class="titlebar-elements">
          <img
@@ -27,7 +27,7 @@
             <i class="mdi mdi-24px mdi-refresh" />
          </div>
          <div v-if="isWindows" style="width: 140px;" />
-         <div
+         <!-- <div
             v-if="isLinux"
             class="titlebar-element"
             @click="minimizeApp"
@@ -48,7 +48,7 @@
             @click="closeApp"
          >
             <i class="mdi mdi-24px mdi-close" />
-         </div>
+         </div> -->
       </div>
    </div>
 </template>

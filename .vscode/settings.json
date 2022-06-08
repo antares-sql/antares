@@ -6,7 +6,8 @@
       "PostgreSQL",
       "SQLite",
       "Windows",
-      "translation"
+      "translation",
+      "Linux"
    ],
    "svg.preview.background": "transparent"
 }
