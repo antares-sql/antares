@@ -129,7 +129,7 @@ export default {
       },
       tooltipPosition (e) {
          const el = e.target ? e.target : e;
-         const fromTop = window.pageYOffset + el.getBoundingClientRect().top - (el.offsetHeight / 4);
+         const fromTop = window.scrollY + el.getBoundingClientRect().top - (el.offsetHeight / 4);
          el.querySelector('.ex-tooltip-content').style.top = `${fromTop}px`;
       },
       getStatusBadge (uid) {

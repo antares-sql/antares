@@ -543,9 +543,9 @@ export default {
 
          this.isTesting = false;
       },
-      saveConnection () {
+      async saveConnection () {
+         await this.addConnection(this.connection);
          this.selectWorkspace(this.connection.uid);
-         return this.addConnection(this.connection);
       },
       closeAsking () {
          this.isTesting = false;

@@ -92,7 +92,7 @@ else {
    });
 
    ipcMain.on('change-window-title', (event, title: string) => {
-      mainWindow.setTitle(title);
+      if (mainWindow) mainWindow.setTitle(title);
    });
 
    // quit application when all windows are closed
