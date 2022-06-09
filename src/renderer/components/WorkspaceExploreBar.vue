@@ -161,8 +161,7 @@ const {
 const searchInput: Ref<HTMLInputElement> = ref(null);
 const explorebar: Ref<HTMLInputElement> = ref(null);
 const resizer: Ref<HTMLInputElement> = ref(null);
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const schema: Ref<Component & { selectSchema: (name: string) => void; $refs: any }[]> = ref(null);
+const schema: Ref<Component & { selectSchema: (name: string) => void; $refs: {schemaAccordion: HTMLDetailsElement} }[]> = ref(null);
 const isRefreshing = ref(false);
 const isNewDBModal = ref(false);
 const localWidth = ref(null);

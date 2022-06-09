@@ -71,151 +71,133 @@
    </BaseContextMenu>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import BaseContextMenu from '@/components/BaseContextMenu';
-import ConfirmModal from '@/components/BaseConfirmModal';
+import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import Tables from '@/ipc-api/Tables';
-import { storeToRefs } from 'pinia';
 
-export default {
-   name: 'WorkspaceExploreBarTableContext',
-   components: {
-      BaseContextMenu,
-      ConfirmModal
-   },
-   props: {
-      contextEvent: MouseEvent,
-      selectedTable: Object,
-      selectedSchema: String
-   },
-   emits: ['close-context', 'duplicate-table', 'reload', 'delete-table'],
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+const props = defineProps({
+   contextEvent: MouseEvent,
+   selectedTable: Object,
+   selectedSchema: String
+});
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const emit = defineEmits(['close-context', 'duplicate-table', 'reload', 'delete-table']);
 
-      const {
-         getWorkspace,
-         newTab,
-         removeTabs,
-         addLoadingElement,
-         removeLoadingElement,
-         changeBreadcrumbs
-      } = workspacesStore;
+const { addNotification } = useNotificationsStore();
+const workspacesStore = useWorkspacesStore();
 
-      return {
-         addNotification,
-         getWorkspace,
-         newTab,
-         removeTabs,
-         addLoadingElement,
-         removeLoadingElement,
-         changeBreadcrumbs,
-         selectedWorkspace
-      };
-   },
-   data () {
-      return {
-         isDeleteModal: false,
-         isEmptyModal: false
-      };
-   },
-   computed: {
-      workspace () {
-         return this.getWorkspace(this.selectedWorkspace);
-      },
-      customizations () {
-         return this.workspace && this.workspace.customizations ? this.workspace.customizations : {};
-      }
-   },
-   methods: {
-      showDeleteModal () {
-         this.isDeleteModal = true;
-      },
-      hideDeleteModal () {
-         this.isDeleteModal = false;
-      },
-      showEmptyModal () {
-         this.isEmptyModal = true;
-      },
-      hideEmptyModal () {
-         this.isEmptyModal = false;
-      },
-      closeContext () {
-         this.$emit('close-context');
-      },
-      openTableSettingTab () {
-         this.newTab({
-            uid: this.selectedWorkspace,
-            elementName: this.selectedTable.name,
-            schema: this.selectedSchema,
-            type: 'table-props',
-            elementType: 'table'
-         });
+const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
-         this.changeBreadcrumbs({
-            schema: this.selectedSchema,
-            table: this.selectedTable.name
-         });
+const {
+   getWorkspace,
+   newTab,
+   addLoadingElement,
+   removeLoadingElement,
+   changeBreadcrumbs
+} = workspacesStore;
 
-         this.closeContext();
-      },
-      openViewSettingTab () {
-         this.newTab({
-            uid: this.selectedWorkspace,
-            elementType: 'table',
-            elementName: this.selectedTable.name,
-            schema: this.selectedSchema,
-            type: 'view-props'
-         });
+const isDeleteModal = ref(false);
+const isEmptyModal = ref(false);
 
-         this.changeBreadcrumbs({
-            schema: this.selectedSchema,
-            view: this.selectedTable.name
-         });
+const workspace = computed(() => getWorkspace(selectedWorkspace.value));
+const customizations = computed(() => workspace.value && workspace.value.customizations ? workspace.value.customizations : null);
 
-         this.closeContext();
-      },
-      duplicateTable () {
-         this.$emit('duplicate-table', { schema: this.selectedSchema, table: this.selectedTable });
-      },
-      async emptyTable () {
-         this.closeContext();
+const showDeleteModal = () => {
+   isDeleteModal.value = true;
+};
 
-         this.addLoadingElement({
-            name: this.selectedTable.name,
-            schema: this.selectedSchema,
-            type: 'table'
-         });
+const hideDeleteModal = () => {
+   isDeleteModal.value = false;
+};
 
-         try {
-            const { status, response } = await Tables.truncateTable({
-               uid: this.selectedWorkspace,
-               table: this.selectedTable.name,
-               schema: this.selectedSchema
-            });
+const showEmptyModal = () => {
+   isEmptyModal.value = true;
+};
 
-            if (status === 'success')
-               this.$emit('reload');
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
+const hideEmptyModal = () => {
+   isEmptyModal.value = false;
+};
 
-         this.removeLoadingElement({
-            name: this.selectedTable.name,
-            schema: this.selectedSchema,
-            type: 'table'
-         });
-      },
-      deleteTable () {
-         this.$emit('delete-table', { schema: this.selectedSchema, table: this.selectedTable });
-      }
+const closeContext = () => {
+   emit('close-context');
+};
+
+const openTableSettingTab = () => {
+   newTab({
+      uid: selectedWorkspace.value,
+      elementName: props.selectedTable.name,
+      schema: props.selectedSchema,
+      type: 'table-props',
+      elementType: 'table'
+   });
+
+   changeBreadcrumbs({
+      schema: props.selectedSchema,
+      table: props.selectedTable.name
+   });
+
+   closeContext();
+};
+
+const openViewSettingTab = () => {
+   newTab({
+      uid: selectedWorkspace.value,
+      elementType: 'table',
+      elementName: props.selectedTable.name,
+      schema: props.selectedSchema,
+      type: 'view-props'
+   });
+
+   changeBreadcrumbs({
+      schema: props.selectedSchema,
+      view: props.selectedTable.name
+   });
+
+   closeContext();
+};
+
+const duplicateTable = () => {
+   emit('duplicate-table', { schema: props.selectedSchema, table: props.selectedTable });
+};
+
+const emptyTable = async () => {
+   closeContext();
+
+   addLoadingElement({
+      name: props.selectedTable.name,
+      schema: props.selectedSchema,
+      type: 'table'
+   });
+
+   try {
+      const { status, response } = await Tables.truncateTable({
+         uid: selectedWorkspace.value,
+         table: props.selectedTable.name,
+         schema: props.selectedSchema
+      });
+
+      if (status === 'success')
+         emit('reload');
+      else
+         addNotification({ status: 'error', message: response });
    }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   removeLoadingElement({
+      name: props.selectedTable.name,
+      schema: props.selectedSchema,
+      type: 'table'
+   });
+};
+
+const deleteTable = () => {
+   emit('delete-table', { schema: props.selectedSchema, table: props.selectedTable });
 };
 </script>

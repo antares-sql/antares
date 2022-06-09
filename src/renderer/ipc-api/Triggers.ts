@@ -7,7 +7,7 @@ export default class {
       return ipcRenderer.invoke('get-trigger-informations', unproxify(params));
    }
 
-   static dropTrigger (params: { schema: string; trigger: string }): Promise<IpcResponse> {
+   static dropTrigger (params: { uid: string; schema: string; trigger: string }): Promise<IpcResponse> {
       return ipcRenderer.invoke('drop-trigger', unproxify(params));
    }
 
@@ -19,7 +19,7 @@ export default class {
       return ipcRenderer.invoke('create-trigger', unproxify(params));
    }
 
-   static toggleTrigger (params: { uid: string; schema: string; trigger: string }): Promise<IpcResponse> {
+   static toggleTrigger (params: { uid: string; schema: string; trigger: string; enabled: boolean }): Promise<IpcResponse> {
       return ipcRenderer.invoke('toggle-trigger', unproxify(params));
    }
 }

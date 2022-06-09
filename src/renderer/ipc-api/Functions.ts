@@ -1,9 +1,9 @@
-import { AlterFunctionParams, CreateFunctionParams, FunctionInfos, IpcResponse } from 'common/interfaces/antares';
+import { AlterFunctionParams, CreateFunctionParams, IpcResponse } from 'common/interfaces/antares';
 import { ipcRenderer } from 'electron';
 import { unproxify } from '../libs/unproxify';
 
 export default class {
-   static getFunctionInformations (params: { uid: string; schema: string; func: string}): Promise<IpcResponse<FunctionInfos>> {
+   static getFunctionInformations (params: { uid: string; schema: string; func: string}): Promise<IpcResponse> {
       return ipcRenderer.invoke('get-function-informations', unproxify(params));
    }
 

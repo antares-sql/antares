@@ -11,12 +11,14 @@ import { useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
 import {
+   ClientCode,
    CollationInfos,
    ConnectionParams,
    EventInfos,
    FunctionInfos,
    RoutineInfos,
    TableInfos,
+   TriggerFunctionInfos,
    TriggerInfos,
    TypesGroup
 } from 'common/interfaces/antares';
@@ -44,12 +46,13 @@ export interface WorkspaceStructure {
    schedulers: EventInfos[];
    tables: TableInfos[];
    triggers: TriggerInfos[];
+   triggerFunctions: TriggerFunctionInfos[];
    size: number;
 }
 
 export interface Breadcrumb {
    function?: string;
-   procedure?: string;
+   routine?: string;
    query?: string;
    scheduler?: string;
    schema?: string;
@@ -61,7 +64,7 @@ export interface Breadcrumb {
 
 export interface Workspace {
    uid: string;
-   client?: string;
+   client?: ClientCode;
    connectionStatus: string;
    selectedTab: string | number;
    searchTerm: string;
@@ -133,7 +136,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
          else
             this.selectedWorkspace = uid;
       },
-      async connectWorkspace (connection: ConnectionParams & { pgConnString: string }) {
+      async connectWorkspace (connection: ConnectionParams & { pgConnString?: string }) {
          this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === connection.uid
             ? {
                ...workspace,
@@ -405,7 +408,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
             table: null,
             trigger: null,
             triggerFunction: null,
-            procedure: null,
+            routine: null,
             function: null,
             scheduler: null,
             view: null,

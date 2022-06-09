@@ -10,7 +10,7 @@ const checkForSSl = (conn: string) => {
    return conn.includes('ssl=true');
 };
 
-const connStringConstruct = (args: ConnectionParams & { pgConnString: string }): ConnectionParams => {
+const connStringConstruct = (args: ConnectionParams & { pgConnString?: string }): ConnectionParams => {
    if (!args.pgConnString)
       return args;
 

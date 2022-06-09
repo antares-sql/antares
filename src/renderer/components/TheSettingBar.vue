@@ -101,7 +101,7 @@ const contextMenu = (event: MouseEvent, connection: ConnectionParams) => {
 
 const tooltipPosition = (e: Event) => {
    const el = e.target ? e.target : e;
-   const fromTop = window.pageYOffset + (el as HTMLElement).getBoundingClientRect().top - ((el as HTMLElement).offsetHeight / 4);
+   const fromTop = window.scrollY + (el as HTMLElement).getBoundingClientRect().top - ((el as HTMLElement).offsetHeight / 4);
    (el as HTMLElement).querySelector<HTMLElement>('.ex-tooltip-content').style.top = `${fromTop}px`;
 };
 

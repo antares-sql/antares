@@ -1,112 +1,68 @@
 <template>
    <BaseContextMenu
-      :context-event="contextEvent"
+      :context-event="props.contextEvent"
       @close-context="closeContext"
    >
       <div
-         v-if="selectedMisc === 'trigger'"
+         v-if="props.selectedMisc === 'trigger'"
          class="context-element"
-         @click="$emit('open-create-trigger-tab')"
+         @click="emit('open-create-trigger-tab')"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-table-cog text-light pr-1" /> {{ $t('message.createNewTrigger') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-table-cog text-light pr-1" /> {{ t('message.createNewTrigger') }}</span>
       </div>
       <div
-         v-if="selectedMisc === 'procedure'"
+         v-if="props.selectedMisc === 'procedure'"
          class="context-element"
-         @click="$emit('open-create-routine-tab')"
+         @click="emit('open-create-routine-tab')"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-sync-circle text-light pr-1" /> {{ $t('message.createNewRoutine') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-sync-circle text-light pr-1" /> {{ t('message.createNewRoutine') }}</span>
       </div>
       <div
-         v-if="selectedMisc === 'function'"
+         v-if="props.selectedMisc === 'function'"
          class="context-element"
-         @click="$emit('open-create-function-tab')"
+         @click="emit('open-create-function-tab')"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-arrow-right-bold-box text-light pr-1" /> {{ $t('message.createNewFunction') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-arrow-right-bold-box text-light pr-1" /> {{ t('message.createNewFunction') }}</span>
       </div>
       <div
-         v-if="selectedMisc === 'triggerFunction'"
+         v-if="props.selectedMisc === 'triggerFunction'"
          class="context-element"
-         @click="$emit('open-create-trigger-function-tab')"
+         @click="emit('open-create-trigger-function-tab')"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-cog-clockwise text-light pr-1" /> {{ $t('message.createNewFunction') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-cog-clockwise text-light pr-1" /> {{ t('message.createNewFunction') }}</span>
       </div>
       <div
-         v-if="selectedMisc === 'scheduler'"
+         v-if="props.selectedMisc === 'scheduler'"
          class="context-element"
-         @click="$emit('open-create-scheduler-tab')"
+         @click="emit('open-create-scheduler-tab')"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-calendar-clock text-light pr-1" /> {{ $t('message.createNewScheduler') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-calendar-clock text-light pr-1" /> {{ t('message.createNewScheduler') }}</span>
       </div>
    </BaseContextMenu>
 </template>
 
-<script>
-import { useNotificationsStore } from '@/stores/notifications';
-import { useWorkspacesStore } from '@/stores/workspaces';
-import BaseContextMenu from '@/components/BaseContextMenu';
-import { storeToRefs } from 'pinia';
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+import BaseContextMenu from '@/components/BaseContextMenu.vue';
 
-export default {
-   name: 'WorkspaceExploreBarMiscContext',
-   components: {
-      BaseContextMenu
-   },
-   props: {
-      contextEvent: MouseEvent,
-      selectedMisc: String,
-      selectedSchema: String
-   },
-   emits: [
-      'open-create-trigger-tab',
-      'open-create-routine-tab',
-      'open-create-function-tab',
-      'open-create-trigger-function-tab',
-      'open-create-scheduler-tab',
-      'close-context'
-   ],
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+const { t } = useI18n();
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const props = defineProps({
+   contextEvent: MouseEvent,
+   selectedMisc: String,
+   selectedSchema: String
+});
 
-      const { getWorkspace, changeBreadcrumbs } = workspacesStore;
+const emit = defineEmits([
+   'open-create-trigger-tab',
+   'open-create-routine-tab',
+   'open-create-function-tab',
+   'open-create-trigger-function-tab',
+   'open-create-scheduler-tab',
+   'close-context'
+]);
 
-      return {
-         addNotification,
-         selectedWorkspace,
-         getWorkspace,
-         changeBreadcrumbs
-      };
-   },
-   data () {
-      return {
-         localElement: {}
-      };
-   },
-   computed: {
-      workspace () {
-         return this.getWorkspace(this.selectedWorkspace);
-      }
-   },
-   methods: {
-      showDeleteModal () {
-         this.isDeleteModal = true;
-      },
-      hideDeleteModal () {
-         this.isDeleteModal = false;
-      },
-      showAskParamsModal () {
-         this.isAskingParameters = true;
-      },
-      hideAskParamsModal () {
-         this.isAskingParameters = false;
-         this.closeContext();
-      },
-      closeContext () {
-         this.$emit('close-context');
-      }
-   }
+const closeContext = () => {
+   emit('close-context');
 };
 </script>

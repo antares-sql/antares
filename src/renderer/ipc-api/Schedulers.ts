@@ -19,7 +19,7 @@ export default class {
       return ipcRenderer.invoke('create-scheduler', unproxify(params));
    }
 
-   static toggleScheduler (params: { uid: string; schema: string; scheduler: string}): Promise<IpcResponse> {
+   static toggleScheduler (params: { uid: string; schema: string; scheduler: string; enabled: boolean}): Promise<IpcResponse> {
       return ipcRenderer.invoke('toggle-scheduler', unproxify(params));
    }
 }

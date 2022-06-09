@@ -87,7 +87,7 @@ export interface TableInfos {
    updated: Date;
    engine: string;
    comment: string;
-   size: number;
+   size: number | false;
    autoIncrement: number;
    collation: string;
 }
@@ -216,6 +216,7 @@ export interface TriggerInfos {
    sqlMode: string;
    created: Date;
    charset: string;
+   enabled?: boolean;
 }
 
 export interface CreateTriggerParams {
@@ -231,8 +232,21 @@ export interface CreateTriggerParams {
 export interface AlterTriggerParams extends CreateTriggerParams {
    oldName?: string;
 }
+export interface TriggerFunctionInfos {
+   name: string;
+   type: string;
+   security: string;
+}
 
 // Routines & Functions
+
+export interface FunctionParam {
+   context: string;
+   name: string;
+   type: string;
+   length: number;
+}
+
 export interface RoutineInfos {
    name: string;
    type: string;
@@ -242,16 +256,10 @@ export interface RoutineInfos {
    comment?: string;
    charset?: string;
    security?: string;
+   parameters?: FunctionParam[];
 }
 
 export type FunctionInfos = RoutineInfos
-
-export interface FunctionParam {
-   context: string;
-   name: string;
-   type: string;
-   length: number;
-}
 
 export interface CreateRoutineParams {
    name: string;
@@ -337,7 +345,7 @@ export interface SchemaInfos {
    name: string;
    size: number;
    tables: TableInfos[];
-   functions: RoutineInfos[];
+   functions: FunctionInfos[];
    procedures: RoutineInfos[];
    triggers: TriggerInfos[];
    schedulers: EventInfos[];

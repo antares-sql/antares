@@ -4,12 +4,12 @@ import connStringConstruct from '../libs/connStringDecode';
 import { unproxify } from '../libs/unproxify';
 
 export default class {
-   static makeTest (params: ConnectionParams & { pgConnString: string }): Promise<IpcResponse> {
+   static makeTest (params: ConnectionParams & { pgConnString?: string }): Promise<IpcResponse> {
       const newParams = connStringConstruct(params) as ConnectionParams;
       return ipcRenderer.invoke('test-connection', unproxify(newParams));
    }
 
-   static connect (params: ConnectionParams & { pgConnString: string }): Promise<IpcResponse> {
+   static connect (params: ConnectionParams & { pgConnString?: string }): Promise<IpcResponse> {
       const newParams = connStringConstruct(params) as ConnectionParams;
       return ipcRenderer.invoke('connect', unproxify(newParams));
    }

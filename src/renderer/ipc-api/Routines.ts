@@ -1,9 +1,9 @@
 import { ipcRenderer } from 'electron';
 import { unproxify } from '../libs/unproxify';
-import { AlterRoutineParams, CreateRoutineParams, IpcResponse, RoutineInfos } from 'common/interfaces/antares';
+import { AlterRoutineParams, CreateRoutineParams, IpcResponse } from 'common/interfaces/antares';
 
 export default class {
-   static getRoutineInformations (params: { uid: string; schema: string; routine: string}): Promise<IpcResponse<RoutineInfos>> {
+   static getRoutineInformations (params: { uid: string; schema: string; routine: string}): Promise<IpcResponse> {
       return ipcRenderer.invoke('get-routine-informations', unproxify(params));
    }
 
