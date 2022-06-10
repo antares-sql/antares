@@ -438,15 +438,12 @@ export default {
 
          // Fields Changes
          const changes = [];
-         this.originalFields.forEach((originalField, oI) => {
-            const lI = this.localFields.findIndex(localField => localField._antares_id === originalField._antares_id);
-            const originalSibling = oI > 0 ? this.originalFields[oI - 1]._antares_id : false;
-            const localSibling = lI > 0 ? this.localFields[lI - 1]._antares_id : false;
-            const after = lI > 0 ? this.localFields[lI - 1].name : false;
+         this.localFields.forEach((field, i) => {
+            const originalField = this.originalFields.find(oField => oField._antares_id === field._antares_id);
+            const after = i > 0 ? this.localFields[i - 1].name : false;
             const orgName = originalField.name;
 
-            if (JSON.stringify(originalField) !== JSON.stringify(this.localFields[lI]) || originalSibling !== localSibling)
-               if (this.localFields[lI]) changes.push({ ...this.localFields[lI], after, orgName });
+            changes.push({ ...field, after, orgName });
          });
 
          // OPTIONS
