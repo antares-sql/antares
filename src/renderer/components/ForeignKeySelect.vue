@@ -43,7 +43,7 @@ export default {
    data () {
       return {
          foreignList: [],
-         currentValue: this.modelValue
+         currentValue: this.modelValue || null
       };
    },
    computed: {

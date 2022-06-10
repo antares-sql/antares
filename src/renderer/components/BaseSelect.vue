@@ -222,8 +222,16 @@ export default defineComponent({
             hightlightedIndex.value = 0;
       });
 
+      watch(() => props.modelValue, (val) => {
+         internalValue.value = val;
+      });
+
+      watch(() => props.value, (val) => {
+         internalValue.value = val;
+      });
+
       const currentOptionLabel = computed(() =>
-         flattenOptions.value.find(d => d.value === props.modelValue)?.label
+         flattenOptions.value.find(d => d.value === internalValue.value)?.label
       );
 
       const select = (opt) => {
@@ -380,48 +388,49 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .select {
-   display: block;
+  display: block;
 
-   &:focus, &--open {
-      z-index: 10;
-   }
+  &:focus,
+  &--open {
+    z-index: 10;
+  }
 
-   &__search-input {
-      appearance: none;
-      border: none;
-      background: transparent;
-      outline: none;
-      color: currentColor;
-      max-width: 100%;
-      width: 100%;
-   }
+  &__search-input {
+    appearance: none;
+    border: none;
+    background: transparent;
+    outline: none;
+    color: currentColor;
+    max-width: 100%;
+    width: 100%;
+  }
 
-   &__list-wrapper {
-      cursor: pointer;
-      position: fixed;
-      display: block;
-      z-index: 5;
-      -webkit-overflow-scrolling: touch;
-      max-height: 240px;
-      overflow: auto;
-      left: 0;
-      top: 40px;
-   }
+  &__list-wrapper {
+    cursor: pointer;
+    position: fixed;
+    display: block;
+    z-index: 5;
+    -webkit-overflow-scrolling: touch;
+    max-height: 240px;
+    overflow: auto;
+    left: 0;
+    top: 40px;
+  }
 
-   &__list {
-      list-style: none;
-   }
+  &__list {
+    list-style: none;
+  }
 
-   &__option {
-      &--disabled {
-         opacity: 0.6;
-         cursor: not-allowed;
-      }
-   }
-
-   &--disabled {
+  &__option {
+    &--disabled {
       opacity: 0.6;
       cursor: not-allowed;
-   }
+    }
+  }
+
+  &--disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 </style>
