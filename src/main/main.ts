@@ -85,10 +85,12 @@ else {
 
    ipcMain.on('refresh-theme-settings', () => {
       const appTheme = persistentStore.get('application_theme');
-      mainWindow.setTitleBarOverlay({
-         color: appTheme === 'dark' ? '#3f3f3f' : '#fff',
-         symbolColor: appTheme === 'dark' ? '#fff' : '#000'
-      });
+      if(isWindows){
+         mainWindow.setTitleBarOverlay({
+            color: appTheme === 'dark' ? '#3f3f3f' : '#fff',
+            symbolColor: appTheme === 'dark' ? '#fff' : '#000'
+         });
+      }
    });
 
    ipcMain.on('change-window-title', (event, title: string) => {

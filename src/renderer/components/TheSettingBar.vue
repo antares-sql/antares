@@ -98,6 +98,7 @@ export default {
    data () {
       return {
          dragElement: null,
+         isLinux: process.platform === 'linux',
          isContext: false,
          isDragging: false,
          contextEvent: null,
@@ -129,7 +130,9 @@ export default {
       },
       tooltipPosition (e) {
          const el = e.target ? e.target : e;
-         const fromTop = window.scrollY + el.getBoundingClientRect().top - (el.offsetHeight / 4);
+         const fromTop = this.isLinux 
+            ? window.scrollY + el.getBoundingClientRect().top + (el.offsetHeight / 4)
+            : window.scrollY + el.getBoundingClientRect().top - (el.offsetHeight / 4)
          el.querySelector('.ex-tooltip-content').style.top = `${fromTop}px`;
       },
       getStatusBadge (uid) {
