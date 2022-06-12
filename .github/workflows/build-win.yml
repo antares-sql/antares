@@ -1,4 +1,4 @@
-name: Build/release [windows]
+name: Build/release [WINDOWS]
 
 on: push
 

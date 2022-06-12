@@ -13,7 +13,7 @@
     "compile:workers": "webpack --mode=production --config webpack.workers.config.js",
     "compile:renderer": "webpack --mode=production --config webpack.renderer.config.js",
     "build": "cross-env NODE_ENV=production npm run compile",
-    "build:local": "npm run build && electron-builder",
+    "build:local": "npm run build && electron-builder --publish never",
     "build:appx": "npm run build:local -- --win appx",
     "rebuild:electron": "rimraf ./dist &&  npm run postinstall",
     "release": "standard-version",

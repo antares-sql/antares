@@ -1,16 +1,11 @@
-name: Create artifact [linux]
+name: Create artifact [LINUX]
 
 on: 
   workflow_dispatch: {}
 
 jobs:
-  release:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-
+  build:
+    runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v3
@@ -20,12 +15,6 @@ jobs:
           npm install
           npm run build:local
 
-      - name: Build/release Electron app
-        uses: samuelmeuli/action-electron-builder@v1
-        with:
-          github_token: ${{ secrets.github_token }}
-          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
-
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
@@ -33,5 +22,5 @@ jobs:
           retention-days: 3
           path: |
             build
-            !build/linux-unpacked
+            !build/*-unpacked
             !build/.icon-ico
