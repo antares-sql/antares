@@ -169,6 +169,8 @@ export default (connections: {[key: string]: antares.Client}) => {
          }
          else {
             const { orgRow } = params;
+            delete orgRow._antares_id;
+
             reload = true;
 
             for (const key in orgRow) {

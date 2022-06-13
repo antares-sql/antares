@@ -77,6 +77,7 @@ const { showSettingModal, showScratchpad } = applicationStore;
 const { getConnectionName, updateConnections } = connectionsStore;
 const { getWorkspace, selectWorkspace } = workspacesStore;
 
+const isLinux = process.platform === 'linux';
 const isContext: Ref<boolean> = ref(false);
 const isDragging: Ref<boolean> = ref(false);
 const contextEvent: Ref<MouseEvent> = ref(null);
@@ -101,7 +102,9 @@ const contextMenu = (event: MouseEvent, connection: ConnectionParams) => {
 
 const tooltipPosition = (e: Event) => {
    const el = e.target ? e.target : e;
-   const fromTop = window.scrollY + (el as HTMLElement).getBoundingClientRect().top - ((el as HTMLElement).offsetHeight / 4);
+   const fromTop = isLinux
+      ? window.scrollY + (el as HTMLElement).getBoundingClientRect().top + ((el as HTMLElement).offsetHeight / 4)
+      : window.scrollY + (el as HTMLElement).getBoundingClientRect().top - ((el as HTMLElement).offsetHeight / 4);
    (el as HTMLElement).querySelector<HTMLElement>('.ex-tooltip-content').style.top = `${fromTop}px`;
 };
 

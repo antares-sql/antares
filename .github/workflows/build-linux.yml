@@ -1,4 +1,4 @@
-name: Build/release [linux]
+name: Build/release [LINUX]
 
 on: push
 

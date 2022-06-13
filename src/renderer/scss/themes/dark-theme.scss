@@ -231,7 +231,8 @@
         .td {
           border-color: $body-bg-dark;
 
-          &:focus {
+          &:focus,
+          &.selected {
             box-shadow: inset 0 0 0 2px darken($body-font-color-dark, 40%);
             background-color: rgba($color: #000, $alpha: 0.3);
           }
@@ -362,7 +363,7 @@
       .titlebar-element {
         &:hover {
           opacity: 1;
-          background: rgba($color: #fff, $alpha: 0.2);
+          background: rgba($color: #fff, $alpha: 0.1);
         }
 
         &.close-button:hover {

@@ -1,0 +1,26 @@
+name: Create artifact [LINUX]
+
+on: 
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: npm install & build
+        run: |
+          npm install
+          npm run build:local
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-build
+          retention-days: 3
+          path: |
+            build
+            !build/*-unpacked
+            !build/.icon-ico

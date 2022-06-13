@@ -222,8 +222,16 @@ export default defineComponent({
             hightlightedIndex.value = 0;
       });
 
+      watch(() => props.modelValue, (val) => {
+         internalValue.value = val;
+      });
+
+      watch(() => props.value, (val) => {
+         internalValue.value = val;
+      });
+
       const currentOptionLabel = computed(() =>
-         flattenOptions.value.find(d => d.value === props.modelValue)?.label
+         flattenOptions.value.find(d => d.value === internalValue.value)?.label
       );
 
       const select = (opt) => {

@@ -197,13 +197,14 @@ export const useWorkspacesStore = defineStore('workspaces', {
 
                // Check if Maria or MySQL
                const isMySQL = version.name.includes('MySQL');
+               const isMaria = version.name.includes('Maria');
 
                if (isMySQL && connection.client !== 'mysql') {
                   const connProxy = Object.assign({}, connection);
                   connProxy.client = 'mysql';
                   connectionsStore.editConnection(connProxy);
                }
-               else if (!isMySQL && connection.client === 'mysql') {
+               else if (isMaria && connection.client === 'mysql') {
                   const connProxy = Object.assign({}, connection);
                   connProxy.client = 'maria';
                   connectionsStore.editConnection(connProxy);
@@ -686,6 +687,26 @@ export const useWorkspacesStore = defineStore('workspaces', {
             ? { ...workspace, selectedTab: tab }
             : workspace
          );
+      },
+      selectNextTab ({ uid }: {uid: string }) {
+         const workspace = (this.workspaces as Workspace[]).find(workspace => workspace.uid === uid);
+
+         let newIndex = workspace.tabs.findIndex(tab => tab.selected || tab.uid === workspace.selectedTab) + 1;
+
+         if (newIndex > workspace.tabs.length -1)
+            newIndex = 0;
+
+         this.selectTab({ uid, tab: workspace.tabs[newIndex].uid });
+      },
+      selectPrevTab ({ uid }: {uid: string }) {
+         const workspace = (this.workspaces as Workspace[]).find(workspace => workspace.uid === uid);
+
+         let newIndex = workspace.tabs.findIndex(tab => tab.selected || tab.uid === workspace.selectedTab) - 1;
+
+         if (newIndex < 0)
+            newIndex = workspace.tabs.length -1;
+
+         this.selectTab({ uid, tab: workspace.tabs[newIndex].uid });
       },
       updateTabs ({ uid, tabs }: {uid: string; tabs: WorkspaceTab[]}) {
          this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === uid

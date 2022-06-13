@@ -1,5 +1,9 @@
 <template>
-   <div id="titlebar" @dblclick="toggleFullScreen">
+   <div
+      v-if="!isLinux"
+      id="titlebar"
+      @dblclick="toggleFullScreen"
+   >
       <div class="titlebar-resizer" />
       <div class="titlebar-elements">
          <img
@@ -26,28 +30,7 @@
          >
             <i class="mdi mdi-24px mdi-refresh" />
          </div>
-         <div
-            v-if="!isMacOS"
-            class="titlebar-element"
-            @click="minimizeApp"
-         >
-            <i class="mdi mdi-24px mdi-minus" />
-         </div>
-         <div
-            v-if="!isMacOS"
-            class="titlebar-element"
-            @click="toggleFullScreen"
-         >
-            <i v-if="isMaximized" class="mdi mdi-24px mdi-fullscreen-exit" />
-            <i v-else class="mdi mdi-24px mdi-fullscreen" />
-         </div>
-         <div
-            v-if="!isMacOS"
-            class="titlebar-element close-button"
-            @click="closeApp"
-         >
-            <i class="mdi mdi-24px mdi-close" />
-         </div>
+         <div v-if="isWindows" style="width: 140px;" />
       </div>
    </div>
 </template>
@@ -55,7 +38,6 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { ipcRenderer } from 'electron';
 import { getCurrentWindow } from '@electron/remote';
 import { useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
@@ -74,7 +56,9 @@ const appIcon = require('@/images/logo.svg');
 const w = ref(getCurrentWindow());
 const isMaximized = ref(getCurrentWindow().isMaximized());
 const isDevelopment = ref(process.env.NODE_ENV === 'development');
-const isMacOS = ref(process.platform === 'darwin');
+const isMacOS = process.platform === 'darwin';
+const isWindows = process.platform === 'win32';
+const isLinux = process.platform === 'linux';
 
 const windowTitle = computed(() => {
    if (!selectedWorkspace.value) return '';
@@ -86,14 +70,6 @@ const windowTitle = computed(() => {
 
    return [connectionName, ...breadcrumbs].join(' • ');
 });
-
-const closeApp = () => {
-   ipcRenderer.send('close-app');
-};
-
-const minimizeApp = () => {
-   w.value.minimize();
-};
 
 const toggleFullScreen = () => {
    if (isMaximized.value)
@@ -165,7 +141,7 @@ onUnmounted(() => {
         height: $titlebar-height;
         line-height: 0;
         padding: 0 0.7rem;
-        opacity: 0.7;
+        opacity: 0.9;
         transition: opacity 0.2s;
         -webkit-app-region: no-drag;
 

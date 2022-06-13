@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { ipcRenderer } from 'electron';
 import i18n from '@/i18n';
 import * as Store from 'electron-store';
 const persistentStore = new Store({ name: 'settings' });
@@ -57,6 +58,7 @@ export const useSettingsStore = defineStore('settings', {
       changeApplicationTheme (theme: string) {
          this.applicationTheme = theme;
          persistentStore.set('application_theme', this.applicationTheme);
+         ipcRenderer.send('refresh-theme-settings');
       },
       changeEditorTheme (theme: string) {
          this.editorTheme = theme;

@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.6](https://github.com/antares-sql/antares/compare/v0.5.4...v0.5.6) (2022-06-02)
+
+### Bug Fixes
+
+* empty query tab schema select if no schema selected ([31b7999](https://github.com/antares-sql/antares/commit/31b7999bba5d115913d42087614b9888bc761068))
+* inline field update not working with tables missing primary key ([caf776b](https://github.com/antares-sql/antares/commit/caf776bd55606c793c9763c204aa9f05d1feb27f))
+* **SQLite:** unable to insert rows with TEXT fields ([a7d5e19](https://github.com/antares-sql/antares/commit/a7d5e1973cd59d7d0ef1e74bdcf44d87fba43559))
+* **UI:** select closes clicking on scrollbar ([8870304](https://github.com/antares-sql/antares/commit/8870304c15346257a90193807b9ae07c1393e3e2))
+
+
+### Improvements
+
+* improved precision of MariaDB or MySQL auto detection ([26aad51](https://github.com/antares-sql/antares/commit/26aad519df6ea1bbc7dffbf540193a7b2ed9ae2a))
+
 ### [0.5.5](https://github.com/antares-sql/antares/compare/v0.5.4...v0.5.5) (2022-05-24)
 
 

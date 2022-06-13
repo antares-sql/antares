@@ -1,7 +1,7 @@
 {
   "name": "antares",
   "productName": "Antares",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "description": "A modern, fast and productivity driven SQL client with a focus in UX.",
   "license": "MIT",
   "repository": "https://github.com/antares-sql/antares.git",
@@ -13,7 +13,7 @@
     "compile:workers": "webpack --mode=production --config webpack.workers.config.js",
     "compile:renderer": "webpack --mode=production --config webpack.renderer.config.js",
     "build": "cross-env NODE_ENV=production npm run compile",
-    "build:local": "npm run build && electron-builder",
+    "build:local": "npm run build && electron-builder --publish never",
     "build:appx": "npm run build:local -- --win appx",
     "rebuild:electron": "rimraf ./dist &&  npm run postinstall",
     "release": "standard-version",
@@ -81,6 +81,12 @@
     "appImage": {
       "license": "./LICENSE",
       "category": "Development"
+    },
+    "nsis": {
+      "license": "./LICENSE",
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeader": "assets/icon.ico"
     },
     "portable": {
       "artifactName": "${productName}-${version}-portable.exe"

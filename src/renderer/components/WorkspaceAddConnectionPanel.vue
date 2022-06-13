@@ -516,9 +516,9 @@ const continueTest = async (credentials: { user: string; password: string }) => 
    isTesting.value = false;
 };
 
-const saveConnection = () => {
+const saveConnection = async () => {
+   await addConnection(connection.value);
    selectWorkspace(connection.value.uid);
-   return addConnection(connection.value);
 };
 
 const closeAsking = () => {

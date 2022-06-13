@@ -21,6 +21,7 @@ test('launch app', async () => {
 
 test('main window elements visibility', async () => {
    const visibleSelectors = [
+      // '#titlebar',
       '#window-content',
       '#settingbar',
       '#footer'

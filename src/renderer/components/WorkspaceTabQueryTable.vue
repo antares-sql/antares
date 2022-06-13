@@ -5,7 +5,6 @@
       tabindex="0"
       :style="{'height': resultsSize+'px'}"
       @keyup.delete="showDeleteConfirmModal"
-      @keydown.ctrl.a="selectAllRows($event)"
       @keydown.esc="deselectRows"
    >
       <TableContext
@@ -78,7 +77,11 @@
                   :key-usage="keyUsage"
                   :element-type="elementType"
                   :class="{'selected': selectedRows.includes(row._antares_id)}"
-                  @select-row="selectRow($event, row._antares_id)"
+                  :selected="selectedRows.includes(row._antares_id)"
+                  :selected-cell="selectedRows.length === 1 && selectedRows.includes(row._antares_id) ? selectedField : null"
+                  @start-editing="isEditingRow = true"
+                  @stop-editing="isEditingRow = false"
+                  @select-row="selectRow"
                   @update-field="updateField($event, row)"
                   @contextmenu="contextMenu"
                />
@@ -162,7 +165,9 @@ export default {
          currentSortDir: 'asc',
          resultsetIndex: 0,
          scrollElement: null,
-         rowHeight: 23
+         rowHeight: 23,
+         selectedField: null,
+         isEditingRow: false
       };
    },
    computed: {
@@ -268,9 +273,11 @@ export default {
    },
    mounted () {
       window.addEventListener('resize', this.resizeResults);
+      window.addEventListener('keydown', this.onKey);
    },
    unmounted () {
       window.removeEventListener('resize', this.resizeResults);
+      window.removeEventListener('keydown', this.onKey);
    },
    methods: {
       fieldType (cKey) {
@@ -447,20 +454,23 @@ export default {
             return row;
          });
       },
-      selectRow (event, row) {
-         if (event.ctrlKey) {
-            if (this.selectedRows.includes(row))
-               this.selectedRows = this.selectedRows.filter(el => el !== row);
+      selectRow (event, row, field) {
+         this.selectedField = field;
+         const selectedRowId = row._antares_id;
+
+         if (event.ctrlKey || event.metaKey) {
+            if (this.selectedRows.includes(selectedRowId))
+               this.selectedRows = this.selectedRows.filter(el => el !== selectedRowId);
             else
-               this.selectedRows.push(row);
+               this.selectedRows.push(selectedRowId);
          }
          else if (event.shiftKey) {
             if (!this.selectedRows.length)
-               this.selectedRows.push(row);
+               this.selectedRows.push(selectedRowId);
             else {
                const lastID = this.selectedRows.slice(-1)[0];
                const lastIndex = this.sortedResults.findIndex(el => el._antares_id === lastID);
-               const clickedIndex = this.sortedResults.findIndex(el => el._antares_id === row);
+               const clickedIndex = this.sortedResults.findIndex(el => el._antares_id === selectedRowId);
                if (lastIndex > clickedIndex) {
                   for (let i = clickedIndex; i < lastIndex; i++)
                      this.selectedRows.push(this.sortedResults[i]._antares_id);
@@ -472,18 +482,20 @@ export default {
             }
          }
          else
-            this.selectedRows = [row];
+            this.selectedRows = [selectedRowId];
       },
       selectAllRows (e) {
          if (e.target.classList.contains('editable-field')) return;
 
+         this.selectedField = 0;
          this.selectedRows = this.localResults.reduce((acc, curr) => {
             acc.push(curr._antares_id);
             return acc;
          }, []);
       },
       deselectRows () {
-         this.selectedRows = [];
+         if (!this.isEditingRow)
+            this.selectedRows = [];
       },
       contextMenu (event, cell) {
          if (event.target.localName === 'input') return;
@@ -536,6 +548,113 @@ export default {
             content: rows,
             filename
          });
+      },
+      onKey (e) {
+         if (!this.isSelected)
+            return;
+
+         if (this.isEditingRow)
+            return;
+
+         if ((e.ctrlKey || e.metaKey) && e.code === 'KeyA' && !e.altKey)
+            this.selectAllRows(e);
+
+         // row naviation stuff
+         if ((e.code.includes('Arrow') || e.code === 'Tab') && this.sortedResults.length > 0 && !e.altKey) {
+            e.preventDefault();
+
+            const aviableFields= Object.keys(this.sortedResults[0]).slice(0, -1); // removes _antares_id
+
+            if (!this.selectedField)
+               this.selectedField = aviableFields[0];
+
+            const selectedId = this.selectedRows[0];
+            const selectedIndex = this.sortedResults.findIndex(row => row._antares_id === selectedId);
+            const selectedFieldIndex = aviableFields.findIndex(field => field === this.selectedField);
+            let nextIndex = 0;
+            let nextFieldIndex = 0;
+
+            if (selectedIndex > -1) {
+               switch (e.code) {
+                  case 'ArrowDown':
+                     nextIndex = selectedIndex + 1;
+                     nextFieldIndex = selectedFieldIndex;
+
+                     if (nextIndex > this.sortedResults.length -1)
+                        nextIndex = this.sortedResults.length -1;
+
+                     break;
+                  case 'ArrowUp':
+                     nextIndex = selectedIndex - 1;
+                     nextFieldIndex = selectedFieldIndex;
+
+                     if (nextIndex < 0)
+                        nextIndex = 0;
+
+                     break;
+
+                  case 'ArrowRight':
+                     nextIndex = selectedIndex;
+                     nextFieldIndex = selectedFieldIndex + 1;
+
+                     if (nextFieldIndex > aviableFields.length -1)
+                        nextFieldIndex = 0;
+
+                     break;
+
+                  case 'ArrowLeft':
+                     nextIndex = selectedIndex;
+                     nextFieldIndex = selectedFieldIndex - 1;
+
+                     if (nextFieldIndex < 0)
+                        nextFieldIndex = aviableFields.length -1;
+
+                     break;
+
+                  case 'Tab':
+                     nextIndex = selectedIndex;
+                     if (e.shiftKey) {
+                        nextFieldIndex = selectedFieldIndex - 1;
+                        if (nextFieldIndex < 0)
+                           nextFieldIndex = aviableFields.length -1;
+                     }
+                     else {
+                        nextFieldIndex = selectedFieldIndex + 1;
+                        if (nextFieldIndex > aviableFields.length -1)
+                           nextFieldIndex = 0;
+                     }
+               }
+            }
+
+            if (this.sortedResults[nextIndex] && nextIndex !== selectedIndex) {
+               this.selectedRows = [this.sortedResults[nextIndex]._antares_id];
+               this.$nextTick(() => this.scrollToCell(this.scrollElement.querySelector('.td.selected')));
+            }
+
+            if (aviableFields[nextFieldIndex] && nextFieldIndex !== selectedFieldIndex) {
+               this.selectedField = aviableFields[nextFieldIndex];
+               this.$nextTick(() => this.scrollToCell(this.scrollElement.querySelector('.td.selected')));
+            }
+         }
+      },
+      scrollToCell (el) {
+         if (!el) return;
+         const visYMin = this.scrollElement.scrollTop;
+         const visYMax = this.scrollElement.scrollTop + this.scrollElement.clientHeight - el.clientHeight;
+         const visXMin = this.scrollElement.scrollLeft;
+         const visXMax = this.scrollElement.scrollLeft + this.scrollElement.clientWidth - el.clientWidth;
+
+         if (el.offsetTop < visYMin)
+            this.scrollElement.scrollTop = el.offsetTop;
+
+         else if (el.offsetTop >= visYMax)
+            this.scrollElement.scrollTop = el.offsetTop - this.scrollElement.clientHeight + el.clientHeight;
+
+         if (el.offsetLeft < visXMin)
+            this.scrollElement.scrollLeft = el.offsetLeft;
+
+         else if (el.offsetLeft >= visXMax)
+            this.scrollElement.scrollLeft = el.offsetLeft - this.scrollElement.clientWidth + el.clientWidth;
       }
    }
 };

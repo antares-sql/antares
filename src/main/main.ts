@@ -1,4 +1,4 @@
-import { app, BrowserWindow, /* session, */ nativeImage, Menu } from 'electron';
+import { app, BrowserWindow, /* session, */ nativeImage, Menu, ipcMain } from 'electron';
 import * as path from 'path';
 import * as Store from 'electron-store';
 import * as windowStateKeeper from 'electron-window-state';
@@ -7,9 +7,13 @@ import * as remoteMain from '@electron/remote/main';
 import ipcHandlers from './ipc-handlers';
 
 Store.initRenderer();
+const persistentStore = new Store({ name: 'settings' });
 
+const appTheme = persistentStore.get('application_theme');
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const isMacOS = process.platform === 'darwin';
+const isLinux = process.platform === 'linux';
+const isWindows = process.platform === 'win32';
 const gotTheLock = app.requestSingleInstanceLock();
 
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
@@ -19,7 +23,7 @@ let mainWindow: BrowserWindow;
 let mainWindowState: windowStateKeeper.State;
 
 async function createMainWindow () {
-   const icon = require('../renderer/images/logo-32.png');
+   const icon = require('../renderer/images/logo-64.png');
    const window = new BrowserWindow({
       width: mainWindowState.width,
       height: mainWindowState.height,
@@ -28,15 +32,21 @@ async function createMainWindow () {
       minWidth: 900,
       minHeight: 550,
       title: 'Antares SQL',
-      autoHideMenuBar: true,
       icon: nativeImage.createFromDataURL(icon.default),
       webPreferences: {
          nodeIntegration: true,
          contextIsolation: false,
          spellcheck: false
       },
-      frame: false,
-      titleBarStyle: isMacOS ? 'hidden' : 'default',
+      autoHideMenuBar: true,
+      titleBarStyle: isLinux ? 'default' :'hidden',
+      titleBarOverlay: isWindows
+         ? {
+            color: appTheme === 'dark' ? '#3f3f3f' : '#fff',
+            symbolColor: appTheme === 'dark' ? '#fff' : '#000',
+            height: 30
+         }
+         : false,
       trafficLightPosition: isMacOS ? { x: 10, y: 8 } : undefined,
       backgroundColor: '#1d1d1d'
    });
@@ -73,10 +83,24 @@ else {
    // Initialize ipcHandlers
    ipcHandlers();
 
+   ipcMain.on('refresh-theme-settings', () => {
+      const appTheme = persistentStore.get('application_theme');
+      if(isWindows){
+         mainWindow.setTitleBarOverlay({
+            color: appTheme === 'dark' ? '#3f3f3f' : '#fff',
+            symbolColor: appTheme === 'dark' ? '#fff' : '#000'
+         });
+      }
+   });
+
+   ipcMain.on('change-window-title', (event, title: string) => {
+      if (mainWindow) mainWindow.setTitle(title);
+   });
+
    // quit application when all windows are closed
    app.on('window-all-closed', () => {
       // on macOS it is common for applications to stay open until the user explicitly quits
-      if (isMacOS) app.quit();
+      if (!isMacOS) app.quit();
    });
 
    app.on('activate', async () => {

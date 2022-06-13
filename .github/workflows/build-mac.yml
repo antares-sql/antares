@@ -1,4 +1,4 @@
-name: Build/release [mac]
+name: Build/release [MAC]
 
 on: push
 
