@@ -440,6 +440,7 @@ export default {
          const changes = [];
          this.localFields.forEach((field, i) => {
             const originalField = this.originalFields.find(oField => oField._antares_id === field._antares_id);
+            if (!originalField) return;
             const after = i > 0 ? this.localFields[i - 1].name : false;
             const orgName = originalField.name;
 
