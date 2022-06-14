@@ -72,8 +72,8 @@
                   <BaseSelect
                      v-model="localRoutine.definer"
                      :options="[{value: '', name:$t('message.currentUser')}, ...workspace.users]"
-                     :option-label="(user) => user.value === '' ? user.name : `${user.name}@${user.host}`"
-                     :option-track-by="(user) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
+                     :option-label="(user: any) => user.value === '' ? user.name : `${user.name}@${user.host}`"
+                     :option-track-by="(user: any) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
                      class="form-select"
                   />
                </div>
@@ -129,7 +129,6 @@
          <label class="form-label ml-2">{{ $t('message.routineBody') }}</label>
          <QueryEditor
             v-show="isSelected"
-            :key="`new-${_uid}`"
             ref="queryEditor"
             v-model="localRoutine.sql"
             :workspace="workspace"
@@ -148,209 +147,174 @@
    </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
+import { Ace } from 'ace-builds';
+import Routines from '@/ipc-api/Routines';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import QueryEditor from '@/components/QueryEditor';
-import BaseLoader from '@/components/BaseLoader';
-import WorkspaceTabPropsRoutineParamsModal from '@/components/WorkspaceTabPropsRoutineParamsModal';
-import Routines from '@/ipc-api/Routines';
-import { storeToRefs } from 'pinia';
+import QueryEditor from '@/components/QueryEditor.vue';
+import BaseLoader from '@/components/BaseLoader.vue';
+import WorkspaceTabPropsRoutineParamsModal from '@/components/WorkspaceTabPropsRoutineParamsModal.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import { FunctionParam } from 'common/interfaces/antares';
 
-export default {
-   name: 'WorkspaceTabNewRoutine',
-   components: {
-      QueryEditor,
-      BaseLoader,
-      WorkspaceTabPropsRoutineParamsModal,
-      BaseSelect
-   },
-   props: {
-      tabUid: String,
-      connection: Object,
-      tab: Object,
-      isSelected: Boolean,
-      schema: String
-   },
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+const props = defineProps({
+   tabUid: String,
+   connection: Object,
+   tab: Object,
+   isSelected: Boolean,
+   schema: String
+});
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const { addNotification } = useNotificationsStore();
+const workspacesStore = useWorkspacesStore();
 
-      const {
-         getWorkspace,
-         refreshStructure,
-         changeBreadcrumbs,
-         setUnsavedChanges,
-         newTab,
-         removeTab,
-         renameTabs
-      } = workspacesStore;
+const {
+   getWorkspace,
+   refreshStructure,
+   changeBreadcrumbs,
+   setUnsavedChanges,
+   newTab,
+   removeTab
+} = workspacesStore;
 
-      return {
-         addNotification,
-         selectedWorkspace,
-         getWorkspace,
-         refreshStructure,
-         changeBreadcrumbs,
-         setUnsavedChanges,
-         newTab,
-         removeTab,
-         renameTabs
-      };
-   },
-   data () {
-      return {
-         isLoading: false,
-         isSaving: false,
-         isParamsModal: false,
-         originalRoutine: {},
-         localRoutine: {},
-         lastRoutine: null,
-         sqlProxy: '',
-         editorHeight: 300
-      };
-   },
-   computed: {
-      workspace () {
-         return this.getWorkspace(this.connection.uid);
-      },
-      customizations () {
-         return this.workspace.customizations;
-      },
-      isChanged () {
-         return JSON.stringify(this.originalRoutine) !== JSON.stringify(this.localRoutine);
-      },
-      isDefinerInUsers () {
-         return this.originalRoutine ? this.workspace.users.some(user => this.originalRoutine.definer === `\`${user.name}\`@\`${user.host}\``) : true;
-      },
-      schemaTables () {
-         const schemaTables = this.workspace.structure
-            .filter(schema => schema.name === this.schema)
-            .map(schema => schema.tables);
+const queryEditor: Ref<Component & {editor: Ace.Editor; $el: HTMLElement}> = ref(null);
+const firstInput: Ref<HTMLInputElement> = ref(null);
+const isLoading = ref(false);
+const isSaving = ref(false);
+const isParamsModal = ref(false);
+const originalRoutine = ref(null);
+const localRoutine = ref(null);
+const editorHeight = ref(300);
 
-         return schemaTables.length ? schemaTables[0].filter(table => table.type === 'table') : [];
+const workspace = computed(() => {
+   return getWorkspace(props.connection.uid);
+});
+
+const customizations = computed(() => {
+   return workspace.value.customizations;
+});
+
+const isChanged = computed(() => {
+   return JSON.stringify(originalRoutine.value) !== JSON.stringify(localRoutine.value);
+});
+
+const saveChanges = async () => {
+   if (isSaving.value) return;
+   isSaving.value = true;
+   const params = {
+      uid: props.connection.uid,
+      schema: props.schema,
+      ...localRoutine.value
+   };
+
+   try {
+      const { status, response } = await Routines.createRoutine(params);
+
+      if (status === 'success') {
+         await refreshStructure(props.connection.uid);
+
+         newTab({
+            uid: props.connection.uid,
+            schema: props.schema,
+            elementName: localRoutine.value.name,
+            elementType: 'routine',
+            type: 'routine-props'
+         });
+
+         removeTab({ uid: props.connection.uid, tab: props.tab.uid });
+         changeBreadcrumbs({ schema: props.schema, routine: localRoutine.value.name });
       }
-   },
-   watch: {
-      isSelected (val) {
-         if (val)
-            this.changeBreadcrumbs({ schema: this.schema });
-      },
-      isChanged (val) {
-         this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: val });
-      }
-   },
-   created () {
-      this.originalRoutine = {
-         sql: this.customizations.procedureSql,
-         language: this.customizations.languages ? this.customizations.languages[0] : null,
-         name: '',
-         definer: '',
-         comment: '',
-         security: 'DEFINER',
-         dataAccess: 'CONTAINS SQL',
-         deterministic: false
-      };
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
 
-      this.localRoutine = JSON.parse(JSON.stringify(this.originalRoutine));
+   isSaving.value = false;
+};
 
-      setTimeout(() => {
-         this.resizeQueryEditor();
-      }, 50);
+const clearChanges = () => {
+   localRoutine.value = JSON.parse(JSON.stringify(originalRoutine.value));
+   queryEditor.value.editor.session.setValue(localRoutine.value.sql);
+};
 
-      window.addEventListener('keydown', this.onKey);
-   },
-   mounted () {
-      if (this.isSelected)
-         this.changeBreadcrumbs({ schema: this.schema });
+const resizeQueryEditor = () => {
+   if (queryEditor.value) {
+      const footer = document.getElementById('footer');
+      const size = window.innerHeight - queryEditor.value.$el.getBoundingClientRect().top - footer.offsetHeight;
+      editorHeight.value = size;
+      queryEditor.value.editor.resize();
+   }
+};
 
-      setTimeout(() => {
-         this.$refs.firstInput.focus();
-      }, 100);
+const parametersUpdate = (parameters: FunctionParam[]) => {
+   localRoutine.value = { ...localRoutine.value, parameters };
+};
 
-      window.addEventListener('resize', this.resizeQueryEditor);
-   },
-   unmounted () {
-      window.removeEventListener('resize', this.resizeQueryEditor);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-   },
-   methods: {
-      async saveChanges () {
-         if (this.isSaving) return;
-         this.isSaving = true;
-         const params = {
-            uid: this.connection.uid,
-            schema: this.schema,
-            ...this.localRoutine
-         };
+const showParamsModal = () => {
+   isParamsModal.value = true;
+};
 
-         try {
-            const { status, response } = await Routines.createRoutine(params);
+const hideParamsModal = () => {
+   isParamsModal.value = false;
+};
 
-            if (status === 'success') {
-               await this.refreshStructure(this.connection.uid);
-
-               this.newTab({
-                  uid: this.connection.uid,
-                  schema: this.schema,
-                  elementName: this.localRoutine.name,
-                  elementType: 'routine',
-                  type: 'routine-props'
-               });
-
-               this.removeTab({ uid: this.connection.uid, tab: this.tab.uid });
-               this.changeBreadcrumbs({ schema: this.schema, routine: this.localRoutine.name });
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.isSaving = false;
-      },
-      clearChanges () {
-         this.localRoutine = JSON.parse(JSON.stringify(this.originalRoutine));
-         this.$refs.queryEditor.editor.session.setValue(this.localRoutine.sql);
-      },
-      resizeQueryEditor () {
-         if (this.$refs.queryEditor) {
-            const footer = document.getElementById('footer');
-            const size = window.innerHeight - this.$refs.queryEditor.$el.getBoundingClientRect().top - footer.offsetHeight;
-            this.editorHeight = size;
-            this.$refs.queryEditor.editor.resize();
-         }
-      },
-      parametersUpdate (parameters) {
-         this.localRoutine = { ...this.localRoutine, parameters };
-      },
-      showParamsModal () {
-         this.isParamsModal = true;
-      },
-      hideParamsModal () {
-         this.isParamsModal = false;
-      },
-      showAskParamsModal () {
-         this.isAskingParameters = true;
-      },
-      hideAskParamsModal () {
-         this.isAskingParameters = false;
-      },
-      onKey (e) {
-         if (this.isSelected) {
-            e.stopPropagation();
-            if (e.ctrlKey && e.keyCode === 83) { // CTRL + S
-               if (this.isChanged)
-                  this.saveChanges();
-            }
-         }
+const onKey = (e: KeyboardEvent) => {
+   if (props.isSelected) {
+      e.stopPropagation();
+      if (e.ctrlKey && e.key === 's') { // CTRL + S
+         if (isChanged.value)
+            saveChanges();
       }
    }
 };
+
+watch(() => props.isSelected, (val) => {
+   if (val) changeBreadcrumbs({ schema: props.schema });
+});
+
+watch(isChanged, (val) => {
+   setUnsavedChanges({ uid: props.connection.uid, tUid: props.tabUid, isChanged: val });
+});
+
+originalRoutine.value = {
+   sql: customizations.value.functionSql,
+   language: customizations.value.languages ? customizations.value.languages[0] : null,
+   name: '',
+   definer: '',
+   comment: '',
+   security: 'DEFINER',
+   dataAccess: 'CONTAINS SQL',
+   deterministic: false,
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   returns: workspace.value.dataTypes.length ? (workspace.value.dataTypes[0] as any).types[0].name : null
+};
+
+localRoutine.value = JSON.parse(JSON.stringify(originalRoutine.value));
+
+setTimeout(() => {
+   resizeQueryEditor();
+}, 50);
+
+window.addEventListener('keydown', onKey);
+
+onMounted(() => {
+   if (props.isSelected)
+      changeBreadcrumbs({ schema: props.schema });
+
+   setTimeout(() => {
+      firstInput.value.focus();
+   }, 100);
+});
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+});
+
+onUnmounted(() => {
+   window.removeEventListener('resize', resizeQueryEditor);
+});
 </script>

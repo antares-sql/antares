@@ -11,20 +11,20 @@
                   @click="saveChanges"
                >
                   <i class="mdi mdi-24px mdi-content-save mr-1" />
-                  <span>{{ $t('word.save') }}</span>
+                  <span>{{ t('word.save') }}</span>
                </button>
                <button
                   :disabled="!isChanged"
                   class="btn btn-link btn-sm mr-0"
-                  :title="$t('message.clearChanges')"
+                  :title="t('message.clearChanges')"
                   @click="clearChanges"
                >
                   <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
-                  <span>{{ $t('word.clear') }}</span>
+                  <span>{{ t('word.clear') }}</span>
                </button>
             </div>
             <div class="workspace-query-info">
-               <div class="d-flex" :title="$t('word.schema')">
+               <div class="d-flex" :title="t('word.schema')">
                   <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
                </div>
             </div>
@@ -34,7 +34,7 @@
          <div class="columns">
             <div class="column col-auto">
                <div class="form-group">
-                  <label class="form-label">{{ $t('word.name') }}</label>
+                  <label class="form-label">{{ t('word.name') }}</label>
                   <input
                      ref="firstInput"
                      v-model="localTrigger.name"
@@ -45,12 +45,12 @@
             </div>
             <div v-if="customizations.definer" class="column col-auto">
                <div class="form-group">
-                  <label class="form-label">{{ $t('word.definer') }}</label>
+                  <label class="form-label">{{ t('word.definer') }}</label>
                   <BaseSelect
                      v-model="localTrigger.definer"
                      :options="users"
-                     :option-label="(user) => user.value === '' ? $t('message.currentUser') : `${user.name}@${user.host}`"
-                     :option-track-by="(user) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
+                     :option-label="(user: any) => user.value === '' ? t('message.currentUser') : `${user.name}@${user.host}`"
+                     :option-track-by="(user: any) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
                      class="form-select"
                   />
                </div>
@@ -58,7 +58,7 @@
             <fieldset class="column columns mb-0" :disabled="customizations.triggerOnlyRename">
                <div class="column col-auto">
                   <div class="form-group">
-                     <label class="form-label">{{ $t('word.table') }}</label>
+                     <label class="form-label">{{ t('word.table') }}</label>
                      <BaseSelect
                         v-model="localTrigger.table"
                         :options="schemaTables"
@@ -70,7 +70,7 @@
                </div>
                <div class="column col-auto">
                   <div class="form-group">
-                     <label class="form-label">{{ $t('word.event') }}</label>
+                     <label class="form-label">{{ t('word.event') }}</label>
                      <div class="input-group">
                         <BaseSelect
                            v-model="localTrigger.activation"
@@ -88,9 +88,9 @@
                               v-for="event in Object.keys(localEvents)"
                               :key="event"
                               class="form-checkbox form-inline"
-                              @change.prevent="changeEvents(event)"
+                              @change.prevent="changeEvents(event as 'INSERT' | 'UPDATE' | 'DELETE')"
                            >
-                              <input :checked="localEvents[event]" type="checkbox"><i class="form-icon" /> {{ event }}
+                              <input :checked="localEvents[event as 'INSERT' | 'UPDATE' | 'DELETE']" type="checkbox"><i class="form-icon" /> {{ event }}
                            </label>
                         </div>
                      </div>
@@ -101,7 +101,7 @@
       </div>
       <div class="workspace-query-results column col-12 mt-2 p-relative">
          <BaseLoader v-if="isLoading" />
-         <label class="form-label ml-2">{{ $t('message.triggerStatement') }}</label>
+         <label class="form-label ml-2">{{ t('message.triggerStatement') }}</label>
          <QueryEditor
             v-show="isSelected"
             ref="queryEditor"
@@ -114,219 +114,204 @@
    </div>
 </template>
 
-<script>
-import { storeToRefs } from 'pinia';
+<script setup lang="ts">
+import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
+import { Ace } from 'ace-builds';
+import { useI18n } from 'vue-i18n';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import QueryEditor from '@/components/QueryEditor';
-import BaseLoader from '@/components/BaseLoader';
+import QueryEditor from '@/components/QueryEditor.vue';
+import BaseLoader from '@/components/BaseLoader.vue';
 import Triggers from '@/ipc-api/Triggers';
 import BaseSelect from '@/components/BaseSelect.vue';
 
-export default {
-   name: 'WorkspaceTabNewTrigger',
-   components: {
-      BaseLoader,
-      QueryEditor,
-      BaseSelect
-   },
-   props: {
-      tabUid: String,
-      connection: Object,
-      tab: Object,
-      isSelected: Boolean,
-      schema: String
-   },
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+const { t } = useI18n();
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const props = defineProps({
+   tabUid: String,
+   connection: Object,
+   tab: Object,
+   isSelected: Boolean,
+   schema: String
+});
 
-      const {
-         getWorkspace,
-         refreshStructure,
-         changeBreadcrumbs,
-         setUnsavedChanges,
-         newTab,
-         removeTab,
-         renameTabs
-      } = workspacesStore;
+const { addNotification } = useNotificationsStore();
+const workspacesStore = useWorkspacesStore();
 
-      return {
-         addNotification,
-         selectedWorkspace,
-         getWorkspace,
-         refreshStructure,
-         changeBreadcrumbs,
-         setUnsavedChanges,
-         newTab,
-         removeTab,
-         renameTabs
-      };
-   },
-   data () {
-      return {
-         isLoading: false,
-         isSaving: false,
-         originalTrigger: {},
-         localTrigger: {},
-         lastTrigger: null,
-         sqlProxy: '',
-         editorHeight: 300,
-         localEvents: { INSERT: false, UPDATE: false, DELETE: false }
-      };
-   },
-   computed: {
-      workspace () {
-         return this.getWorkspace(this.connection.uid);
-      },
-      customizations () {
-         return this.workspace.customizations;
-      },
-      isChanged () {
-         return JSON.stringify(this.originalTrigger) !== JSON.stringify(this.localTrigger);
-      },
-      isDefinerInUsers () {
-         return this.originalTrigger ? this.workspace.users.some(user => this.originalTrigger.definer === `\`${user.name}\`@\`${user.host}\``) : true;
-      },
-      schemaTables () {
-         const schemaTables = this.workspace.structure
-            .filter(schema => schema.name === this.schema)
-            .map(schema => schema.tables);
+const {
+   getWorkspace,
+   refreshStructure,
+   changeBreadcrumbs,
+   setUnsavedChanges,
+   newTab,
+   removeTab
+} = workspacesStore;
 
-         return schemaTables.length ? schemaTables[0].filter(table => table.type === 'table') : [];
-      },
-      users () {
-         const users = [{ value: '' }, ...this.workspace.users];
-         if (!this.isDefinerInUsers) {
-            const [name, host] = this.originalTrigger.definer.replaceAll('`', '').split('@');
-            users.unshift({ name, host });
-         }
+const queryEditor: Ref<Component & {editor: Ace.Editor; $el: HTMLElement}> = ref(null);
+const firstInput: Ref<HTMLInputElement> = ref(null);
+const isLoading = ref(false);
+const isSaving = ref(false);
+const originalTrigger = ref(null);
+const localTrigger = ref(null);
+const editorHeight = ref(300);
+const localEvents = ref({ INSERT: false, UPDATE: false, DELETE: false });
 
-         return users;
-      }
-   },
-   watch: {
-      isSelected (val) {
-         if (val)
-            this.changeBreadcrumbs({ schema: this.schema });
-      },
-      isChanged (val) {
-         this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: val });
-      }
-   },
-   created () {
-      this.originalTrigger = {
-         sql: this.customizations.triggerSql,
-         definer: '',
-         table: this.schemaTables.length ? this.schemaTables[0].name : null,
-         activation: 'BEFORE',
-         event: this.customizations.triggerMultipleEvents ? ['INSERT'] : 'INSERT',
-         name: ''
-      };
+const workspace = computed(() => {
+   return getWorkspace(props.connection.uid);
+});
 
-      this.localTrigger = JSON.parse(JSON.stringify(this.originalTrigger));
+const customizations = computed(() => {
+   return workspace.value.customizations;
+});
 
-      setTimeout(() => {
-         this.resizeQueryEditor();
-      }, 50);
+const isChanged = computed(() => {
+   return JSON.stringify(originalTrigger.value) !== JSON.stringify(localTrigger.value);
+});
 
-      window.addEventListener('keydown', this.onKey);
-   },
-   mounted () {
-      if (this.isSelected)
-         this.changeBreadcrumbs({ schema: this.schema });
+const isDefinerInUsers = computed(() => {
+   return originalTrigger.value ? workspace.value.users.some(user => originalTrigger.value.definer === `\`${user.name}\`@\`${user.host}\``) : true;
+});
 
-      setTimeout(() => {
-         this.$refs.firstInput.focus();
-      }, 100);
+const schemaTables = computed(() => {
+   const schemaTables = workspace.value.structure
+      .filter(schema => schema.name === props.schema)
+      .map(schema => schema.tables);
 
-      window.addEventListener('resize', this.resizeQueryEditor);
-   },
-   unmounted () {
-      window.removeEventListener('resize', this.resizeQueryEditor);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-   },
-   methods: {
-      changeEvents (event) {
-         if (this.customizations.triggerMultipleEvents) {
-            this.localEvents[event] = !this.localEvents[event];
-            this.localTrigger.event = [];
-            for (const key in this.localEvents) {
-               if (this.localEvents[key])
-                  this.localTrigger.event.push(key);
-            }
-         }
-      },
-      async saveChanges () {
-         if (this.isSaving) return;
-         this.isSaving = true;
-         const params = {
-            uid: this.connection.uid,
-            schema: this.schema,
-            ...this.localTrigger
-         };
+   return schemaTables.length ? schemaTables[0].filter(table => table.type === 'table') : [];
+});
 
-         try {
-            const { status, response } = await Triggers.createTrigger(params);
+const users = computed(() => {
+   const users = [{ value: '' }, ...workspace.value.users];
+   if (!isDefinerInUsers.value) {
+      const [name, host] = originalTrigger.value.definer.replaceAll('`', '').split('@');
+      users.unshift({ name, host });
+   }
 
-            if (status === 'success') {
-               await this.refreshStructure(this.connection.uid);
+   return users;
+});
 
-               this.newTab({
-                  uid: this.connection.uid,
-                  schema: this.schema,
-                  elementName: this.localTrigger.name,
-                  elementType: 'trigger',
-                  type: 'trigger-props'
-               });
-
-               this.removeTab({ uid: this.connection.uid, tab: this.tab.uid });
-               this.changeBreadcrumbs({ schema: this.schema, trigger: this.localTrigger.name });
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.isSaving = false;
-      },
-      clearChanges () {
-         this.localTrigger = JSON.parse(JSON.stringify(this.originalTrigger));
-         this.$refs.queryEditor.editor.session.setValue(this.localTrigger.sql);
-
-         Object.keys(this.localEvents).forEach(event => {
-            this.localEvents[event] = false;
-         });
-
-         if (this.customizations.triggerMultipleEvents) {
-            this.originalTrigger.event.forEach(e => {
-               this.localEvents[e] = true;
-            });
-         }
-      },
-      resizeQueryEditor () {
-         if (this.$refs.queryEditor) {
-            const footer = document.getElementById('footer');
-            const size = window.innerHeight - this.$refs.queryEditor.$el.getBoundingClientRect().top - footer.offsetHeight;
-            this.editorHeight = size;
-            this.$refs.queryEditor.editor.resize();
-         }
-      },
-      onKey (e) {
-         if (this.isSelected) {
-            e.stopPropagation();
-            if (e.ctrlKey && e.keyCode === 83) { // CTRL + S
-               if (this.isChanged)
-                  this.saveChanges();
-            }
-         }
+const changeEvents = (event: 'INSERT' | 'UPDATE' | 'DELETE') => {
+   if (customizations.value.triggerMultipleEvents) {
+      localEvents.value[event] = !localEvents.value[event];
+      localTrigger.value.event = [];
+      for (const key in localEvents.value) {
+         if (localEvents.value[key as 'INSERT' | 'UPDATE' | 'DELETE'])
+            localTrigger.value.event.push(key);
       }
    }
 };
+
+const saveChanges = async () => {
+   if (isSaving.value) return;
+   isSaving.value = true;
+   const params = {
+      uid: props.connection.uid,
+      schema: props.schema,
+      ...localTrigger.value
+   };
+
+   try {
+      const { status, response } = await Triggers.createTrigger(params);
+
+      if (status === 'success') {
+         await refreshStructure(props.connection.uid);
+
+         newTab({
+            uid: props.connection.uid,
+            schema: props.schema,
+            elementName: localTrigger.value.name,
+            elementType: 'trigger',
+            type: 'trigger-props'
+         });
+
+         removeTab({ uid: props.connection.uid, tab: props.tab.uid });
+         changeBreadcrumbs({ schema: props.schema, trigger: localTrigger.value.name });
+      }
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   isSaving.value = false;
+};
+
+const clearChanges = () => {
+   localTrigger.value = JSON.parse(JSON.stringify(originalTrigger.value));
+   queryEditor.value.editor.session.setValue(localTrigger.value.sql);
+
+   Object.keys(localEvents.value).forEach((event: 'INSERT' | 'UPDATE' | 'DELETE') => {
+      localEvents.value[event] = false;
+   });
+
+   if (customizations.value.triggerMultipleEvents) {
+      originalTrigger.value.event.forEach((e: 'INSERT' | 'UPDATE' | 'DELETE') => {
+         localEvents.value[e] = true;
+      });
+   }
+};
+
+const resizeQueryEditor = () => {
+   if (queryEditor.value) {
+      const footer = document.getElementById('footer');
+      const size = window.innerHeight - queryEditor.value.$el.getBoundingClientRect().top - footer.offsetHeight;
+      editorHeight.value = size;
+      queryEditor.value.editor.resize();
+   }
+};
+
+const onKey = (e: KeyboardEvent) => {
+   if (props.isSelected) {
+      e.stopPropagation();
+      if (e.ctrlKey && e.keyCode === 83) { // CTRL + S
+         if (isChanged.value)
+            saveChanges();
+      }
+   }
+};
+
+watch(() => props.isSelected, (val) => {
+   if (val) changeBreadcrumbs({ schema: props.schema });
+});
+
+watch(isChanged, (val) => {
+   setUnsavedChanges({ uid: props.connection.uid, tUid: props.tabUid, isChanged: val });
+});
+
+originalTrigger.value = {
+   sql: customizations.value.triggerSql,
+   definer: '',
+   table: schemaTables.value.length ? schemaTables.value[0].name : null,
+   activation: 'BEFORE',
+   event: customizations.value.triggerMultipleEvents ? ['INSERT'] : 'INSERT',
+   name: ''
+};
+
+localTrigger.value = JSON.parse(JSON.stringify(originalTrigger.value));
+
+setTimeout(() => {
+   resizeQueryEditor();
+}, 50);
+
+window.addEventListener('keydown', onKey);
+
+onMounted(() => {
+   if (props.isSelected)
+      changeBreadcrumbs({ schema: props.schema });
+
+   setTimeout(() => {
+      firstInput.value.focus();
+   }, 100);
+
+   window.addEventListener('resize', resizeQueryEditor);
+});
+
+onUnmounted(() => {
+   window.removeEventListener('resize', resizeQueryEditor);
+});
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+});
 </script>

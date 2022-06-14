@@ -124,7 +124,7 @@
    </div>
 </template>
 
-<script>
+<script>// TODO: expose tableWrapper
 import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';

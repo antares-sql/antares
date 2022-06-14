@@ -72,8 +72,8 @@
                   <BaseSelect
                      v-model="localFunction.definer"
                      :options="[{value: '', name:$t('message.currentUser')}, ...workspace.users]"
-                     :option-label="(user) => user.value === '' ? user.name : `${user.name}@${user.host}`"
-                     :option-track-by="(user) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
+                     :option-label="(user: any) => user.value === '' ? user.name : `${user.name}@${user.host}`"
+                     :option-track-by="(user: any) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
                      class="form-select"
                   />
                </div>
@@ -87,7 +87,7 @@
                      <BaseSelect
                         v-model="localFunction.returns"
                         class="form-select text-uppercase"
-                        :options="[{ name: 'VOID' }, ...workspace.dataTypes]"
+                        :options="[{ name: 'VOID' }, ...(workspace.dataTypes as any)]"
                         group-label="group"
                         group-values="types"
                         option-label="name"
@@ -175,213 +175,174 @@
    </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
+import { Ace } from 'ace-builds';
+import Functions from '@/ipc-api/Functions';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import BaseLoader from '@/components/BaseLoader';
-import QueryEditor from '@/components/QueryEditor';
-import WorkspaceTabPropsFunctionParamsModal from '@/components/WorkspaceTabPropsFunctionParamsModal';
-import Functions from '@/ipc-api/Functions';
-import { storeToRefs } from 'pinia';
+import BaseLoader from '@/components/BaseLoader.vue';
+import QueryEditor from '@/components/QueryEditor.vue';
+import WorkspaceTabPropsFunctionParamsModal from '@/components/WorkspaceTabPropsFunctionParamsModal.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import { FunctionInfos, FunctionParam } from 'common/interfaces/antares';
 
-export default {
-   name: 'WorkspaceTabNewFunction',
-   components: {
-      BaseLoader,
-      QueryEditor,
-      WorkspaceTabPropsFunctionParamsModal,
-      BaseSelect
-   },
-   props: {
-      tabUid: String,
-      connection: Object,
-      tab: Object,
-      isSelected: Boolean,
-      schema: String
-   },
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+const props = defineProps({
+   tabUid: String,
+   connection: Object,
+   tab: Object,
+   isSelected: Boolean,
+   schema: String
+});
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const { addNotification } = useNotificationsStore();
+const workspacesStore = useWorkspacesStore();
 
-      const {
-         getWorkspace,
-         refreshStructure,
-         changeBreadcrumbs,
-         setUnsavedChanges,
-         newTab,
-         removeTab,
-         renameTabs
-      } = workspacesStore;
+const {
+   getWorkspace,
+   refreshStructure,
+   changeBreadcrumbs,
+   setUnsavedChanges,
+   newTab,
+   removeTab
+} = workspacesStore;
 
-      return {
-         addNotification,
-         selectedWorkspace,
-         getWorkspace,
-         refreshStructure,
-         changeBreadcrumbs,
-         setUnsavedChanges,
-         newTab,
-         removeTab,
-         renameTabs
-      };
-   },
-   data () {
-      return {
-         isLoading: false,
-         isSaving: false,
-         isParamsModal: false,
-         originalFunction: {},
-         localFunction: {},
-         lastFunction: null,
-         sqlProxy: '',
-         editorHeight: 300
-      };
-   },
-   computed: {
-      workspace () {
-         return this.getWorkspace(this.connection.uid);
-      },
-      customizations () {
-         return this.workspace.customizations;
-      },
-      isChanged () {
-         return JSON.stringify(this.originalFunction) !== JSON.stringify(this.localFunction);
-      },
-      isDefinerInUsers () {
-         return this.originalFunction
-            ? this.workspace.users.some(user => this.originalFunction.definer === `\`${user.name}\`@\`${user.host}\``)
-            : true;
-      },
-      schemaTables () {
-         const schemaTables = this.workspace.structure
-            .filter(schema => schema.name === this.schema)
-            .map(schema => schema.tables);
+const queryEditor: Ref<Component & {editor: Ace.Editor; $el: HTMLElement}> = ref(null);
+const firstInput: Ref<HTMLInputElement> = ref(null);
+const isLoading = ref(false);
+const isSaving = ref(false);
+const isParamsModal = ref(false);
+const originalFunction: Ref<FunctionInfos> = ref(null);
+const localFunction = ref(null);
+const editorHeight = ref(300);
 
-         return schemaTables.length ? schemaTables[0].filter(table => table.type === 'table') : [];
+const workspace = computed(() => {
+   return getWorkspace(props.connection.uid);
+});
+
+const customizations = computed(() => {
+   return workspace.value.customizations;
+});
+
+const isChanged = computed(() => {
+   return JSON.stringify(originalFunction.value) !== JSON.stringify(localFunction.value);
+});
+
+const saveChanges = async () => {
+   if (isSaving.value) return;
+   isSaving.value = true;
+   const params = {
+      uid: props.connection.uid,
+      schema: props.schema,
+      ...localFunction.value
+   };
+
+   try {
+      const { status, response } = await Functions.createFunction(params);
+
+      if (status === 'success') {
+         await refreshStructure(props.connection.uid);
+
+         newTab({
+            uid: props.connection.uid,
+            schema: props.schema,
+            elementName: localFunction.value.name,
+            elementType: 'function',
+            type: 'function-props'
+         });
+
+         removeTab({ uid: props.connection.uid, tab: props.tab.uid });
+         changeBreadcrumbs({ schema: props.schema, function: localFunction.value.name });
       }
-   },
-   watch: {
-      isSelected (val) {
-         if (val)
-            this.changeBreadcrumbs({ schema: this.schema });
-      },
-      isChanged (val) {
-         this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: val });
-      }
-   },
-   created () {
-      this.originalFunction = {
-         sql: this.customizations.functionSql,
-         language: this.customizations.languages ? this.customizations.languages[0] : null,
-         name: '',
-         definer: '',
-         comment: '',
-         security: 'DEFINER',
-         dataAccess: 'CONTAINS SQL',
-         deterministic: false,
-         returns: this.workspace.dataTypes.length ? this.workspace.dataTypes[0].types[0].name : null
-      };
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
 
-      this.localFunction = JSON.parse(JSON.stringify(this.originalFunction));
+   isSaving.value = false;
+};
 
-      setTimeout(() => {
-         this.resizeQueryEditor();
-      }, 50);
+const clearChanges = () => {
+   localFunction.value = JSON.parse(JSON.stringify(originalFunction.value));
+   queryEditor.value.editor.session.setValue(localFunction.value.sql);
+};
 
-      window.addEventListener('keydown', this.onKey);
-   },
-   mounted () {
-      if (this.isSelected)
-         this.changeBreadcrumbs({ schema: this.schema });
+const resizeQueryEditor = () => {
+   if (queryEditor.value) {
+      const footer = document.getElementById('footer');
+      const size = window.innerHeight - queryEditor.value.$el.getBoundingClientRect().top - footer.offsetHeight;
+      editorHeight.value = size;
+      queryEditor.value.editor.resize();
+   }
+};
 
-      setTimeout(() => {
-         this.$refs.firstInput.focus();
-      }, 100);
-   },
-   unmounted () {
-      window.removeEventListener('resize', this.resizeQueryEditor);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-   },
-   methods: {
-      async saveChanges () {
-         if (this.isSaving) return;
-         this.isSaving = true;
-         const params = {
-            uid: this.connection.uid,
-            schema: this.schema,
-            ...this.localFunction
-         };
+const parametersUpdate = (parameters: FunctionParam[]) => {
+   localFunction.value = { ...localFunction.value, parameters };
+};
 
-         try {
-            const { status, response } = await Functions.createFunction(params);
+const showParamsModal = () => {
+   isParamsModal.value = true;
+};
 
-            if (status === 'success') {
-               await this.refreshStructure(this.connection.uid);
+const hideParamsModal = () => {
+   isParamsModal.value = false;
+};
 
-               this.newTab({
-                  uid: this.connection.uid,
-                  schema: this.schema,
-                  elementName: this.localFunction.name,
-                  elementType: 'function',
-                  type: 'function-props'
-               });
-
-               this.removeTab({ uid: this.connection.uid, tab: this.tab.uid });
-               this.changeBreadcrumbs({ schema: this.schema, function: this.localFunction.name });
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.isSaving = false;
-      },
-      clearChanges () {
-         this.localFunction = JSON.parse(JSON.stringify(this.originalFunction));
-         this.$refs.queryEditor.editor.session.setValue(this.localFunction.sql);
-      },
-      resizeQueryEditor () {
-         if (this.$refs.queryEditor) {
-            const footer = document.getElementById('footer');
-            const size = window.innerHeight - this.$refs.queryEditor.$el.getBoundingClientRect().top - footer.offsetHeight;
-            this.editorHeight = size;
-            this.$refs.queryEditor.editor.resize();
-         }
-      },
-      optionsUpdate (options) {
-         this.localFunction = options;
-      },
-      parametersUpdate (parameters) {
-         this.localFunction = { ...this.localFunction, parameters };
-      },
-      showParamsModal () {
-         this.isParamsModal = true;
-      },
-      hideParamsModal () {
-         this.isParamsModal = false;
-      },
-      showAskParamsModal () {
-         this.isAskingParameters = true;
-      },
-      hideAskParamsModal () {
-         this.isAskingParameters = false;
-      },
-      onKey (e) {
-         if (this.isSelected) {
-            e.stopPropagation();
-            if (e.ctrlKey && e.keyCode === 83) { // CTRL + S
-               if (this.isChanged)
-                  this.saveChanges();
-            }
-         }
+const onKey = (e: KeyboardEvent) => {
+   if (props.isSelected) {
+      e.stopPropagation();
+      if (e.ctrlKey && e.key === 's') { // CTRL + S
+         if (isChanged.value)
+            saveChanges();
       }
    }
 };
+
+watch(() => props.isSelected, (val) => {
+   if (val) changeBreadcrumbs({ schema: props.schema });
+});
+
+watch(isChanged, (val) => {
+   setUnsavedChanges({ uid: props.connection.uid, tUid: props.tabUid, isChanged: val });
+});
+
+originalFunction.value = {
+   sql: customizations.value.functionSql,
+   language: customizations.value.languages ? customizations.value.languages[0] : null,
+   name: '',
+   definer: '',
+   comment: '',
+   security: 'DEFINER',
+   dataAccess: 'CONTAINS SQL',
+   deterministic: false,
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   returns: workspace.value.dataTypes.length ? (workspace.value.dataTypes[0] as any).types[0].name : null
+};
+
+localFunction.value = JSON.parse(JSON.stringify(originalFunction.value));
+
+setTimeout(() => {
+   resizeQueryEditor();
+}, 50);
+
+window.addEventListener('keydown', onKey);
+
+onMounted(() => {
+   if (props.isSelected)
+      changeBreadcrumbs({ schema: props.schema });
+
+   setTimeout(() => {
+      firstInput.value.focus();
+   }, 100);
+});
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+});
+
+onUnmounted(() => {
+   window.removeEventListener('resize', resizeQueryEditor);
+});
 </script>

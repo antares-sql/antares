@@ -11,7 +11,7 @@
          <span class="d-flex"><i class="mdi mdi-18px mdi-table-cog text-light pr-1" /> {{ t('message.createNewTrigger') }}</span>
       </div>
       <div
-         v-if="props.selectedMisc === 'procedure'"
+         v-if="['procedure', 'routine'].includes(props.selectedMisc)"
          class="context-element"
          @click="emit('open-create-routine-tab')"
       >

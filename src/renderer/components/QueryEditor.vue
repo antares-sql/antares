@@ -133,8 +133,8 @@ const mode = computed(() => {
       case 'mysql':
       case 'maria':
          return 'mysql';
-      case 'mssql':
-         return 'sqlserver';
+      // case 'mssql':
+      //    return 'sqlserver';
       case 'pg':
          return 'pgsql';
       default:

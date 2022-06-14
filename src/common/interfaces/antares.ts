@@ -93,6 +93,8 @@ export interface TableInfos {
 }
 
 export interface TableField {
+   // eslint-disable-next-line camelcase
+   _antares_id?: string;
    name: string;
    key: string;
    type: string;
@@ -120,6 +122,8 @@ export interface TableField {
 }
 
 export interface TableIndex {
+   // eslint-disable-next-line camelcase
+   _antares_id?: string;
    name: string;
    fields: string[];
    type: string;
@@ -249,14 +253,20 @@ export interface FunctionParam {
 
 export interface RoutineInfos {
    name: string;
-   type: string;
+   type?: string;
    definer: string;
-   created: string;
-   updated: string;
+   created?: string;
+   sql?: string;
+   updated?: string;
    comment?: string;
    charset?: string;
    security?: string;
+   language?: string;
+   dataAccess?: string;
+   deterministic?: boolean;
    parameters?: FunctionParam[];
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   returns?: any;
 }
 
 export type FunctionInfos = RoutineInfos

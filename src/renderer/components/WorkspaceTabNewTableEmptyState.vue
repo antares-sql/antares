@@ -1,22 +1,22 @@
 <template>
    <div class="column col-12 empty">
       <p class="h6 empty-subtitle">
-         {{ $t('message.thereAreNoTableFields') }}
+         {{ t('message.thereAreNoTableFields') }}
       </p>
       <div class="empty-action">
-         <button class="btn btn-gray d-flex" @click="$emit('new-field')">
+         <button class="btn btn-gray d-flex" @click="emit('new-field')">
             <i class="mdi mdi-24px mdi-playlist-plus mr-2" />
-            {{ $t('message.addNewField') }}
+            {{ t('message.addNewField') }}
          </button>
       </div>
    </div>
 </template>
 
-<script>
-export default {
-   name: 'WorkspaceTabNewTableEmptyState',
-   emits: ['new-field']
-};
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+const emit = defineEmits(['new-field']);
 </script>
 
 <style scoped>

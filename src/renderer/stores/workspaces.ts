@@ -72,7 +72,7 @@ export interface Workspace {
    structure: WorkspaceStructure[];
    variables: { name: string; value: string }[];
    collations: CollationInfos[];
-   users: { host: string; name: string; password: string }[];
+   users: { host: string; name: string; password?: string }[];
    breadcrumbs: Breadcrumb;
    loadingElements: { name: string; schema: string; type: string }[];
    loadedSchemas: Set<string>;

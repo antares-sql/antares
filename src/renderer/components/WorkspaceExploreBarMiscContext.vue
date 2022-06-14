@@ -4,7 +4,7 @@
       @close-context="closeContext"
    >
       <div
-         v-if="['procedure', 'function'].includes(selectedMisc.type)"
+         v-if="['procedure', 'routine', 'function'].includes(selectedMisc.type)"
          class="context-element"
          @click="runElementCheck"
       >
@@ -77,7 +77,7 @@ import Triggers from '@/ipc-api/Triggers';
 import Routines from '@/ipc-api/Routines';
 import Functions from '@/ipc-api/Functions';
 import Schedulers from '@/ipc-api/Schedulers';
-import { EventInfos, FunctionInfos, RoutineInfos, TriggerInfos } from 'common/interfaces/antares';
+import { EventInfos, FunctionInfos, IpcResponse, RoutineInfos, TriggerInfos } from 'common/interfaces/antares';
 
 const { t } = useI18n();
 
@@ -153,7 +153,7 @@ const closeContext = () => {
 
 const deleteMisc = async () => {
    try {
-      let res;
+      let res: IpcResponse;
 
       switch (props.selectedMisc.type) {
          case 'trigger':
@@ -163,6 +163,7 @@ const deleteMisc = async () => {
                trigger: props.selectedMisc.name
             });
             break;
+         case 'routine':
          case 'procedure':
             res = await Routines.dropRoutine({
                uid: selectedWorkspace.value,
@@ -187,6 +188,8 @@ const deleteMisc = async () => {
             break;
       }
 
+      console.log(res);
+
       const { status, response } = res;
 
       if (status === 'success') {
@@ -209,7 +212,7 @@ const deleteMisc = async () => {
 };
 
 const runElementCheck = () => {
-   if (props.selectedMisc.type === 'procedure')
+   if (['procedure', 'routine'].includes(props.selectedMisc.type))
       runRoutineCheck();
    else if (props.selectedMisc.type === 'function')
       runFunctionCheck();
@@ -257,9 +260,9 @@ const runRoutine = (params?: string[]) => {
       case 'pg':
          sql = `CALL ${localElement.value.name}(${params.join(',')})`;
          break;
-      case 'mssql':
-         sql = `EXEC ${localElement.value.name} ${params.join(',')}`;
-         break;
+      // case 'mssql':
+      //    sql = `EXEC ${localElement.value.name} ${params.join(',')}`;
+      //    break;
       default:
          sql = `CALL \`${localElement.value.name}\`(${params.join(',')})`;
    }
@@ -310,9 +313,9 @@ const runFunction = (params?: string[]) => {
       case 'pg':
          sql = `SELECT ${localElement.value.name}(${params.join(',')})`;
          break;
-      case 'mssql':
-         sql = `SELECT ${localElement.value.name} ${params.join(',')}`;
-         break;
+      // case 'mssql':
+      //    sql = `SELECT ${localElement.value.name} ${params.join(',')}`;
+      //    break;
       default:
          sql = `SELECT \`${localElement.value.name}\` (${params.join(',')})`;
    }

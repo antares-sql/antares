@@ -249,6 +249,11 @@ export default {
       workspace () {
          return this.getWorkspace(this.connection.uid);
       },
+      defaultCollation () {
+         if (this.workspace.customizations.collations)
+            return this.getDatabaseVariable(this.selectedWorkspace, 'collation_server')?.value || '';
+         return '';
+      },
       defaultEngine () {
          const engine = this.getDatabaseVariable(this.connection.uid, 'default_storage_engine');
          return engine ? engine.value : '';
@@ -440,6 +445,7 @@ export default {
          const changes = [];
          this.localFields.forEach((field, i) => {
             const originalField = this.originalFields.find(oField => oField._antares_id === field._antares_id);
+            if (!originalField) return;
             const after = i > 0 ? this.localFields[i - 1].name : false;
             const orgName = originalField.name;
 
@@ -586,7 +592,7 @@ export default {
             order: this.localFields.length + 1,
             default: null,
             charset: null,
-            collation: null,
+            collation: this.defaultCollation,
             autoIncrement: false,
             onUpdate: '',
             comment: ''

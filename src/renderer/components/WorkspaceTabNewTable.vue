@@ -11,16 +11,16 @@
                   @click="saveChanges"
                >
                   <i class="mdi mdi-24px mdi-content-save mr-1" />
-                  <span>{{ $t('word.save') }}</span>
+                  <span>{{ t('word.save') }}</span>
                </button>
                <button
                   :disabled="!isChanged || isSaving"
                   class="btn btn-link btn-sm mr-0"
-                  :title="$t('message.clearChanges')"
+                  :title="t('message.clearChanges')"
                   @click="clearChanges"
                >
                   <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
-                  <span>{{ $t('word.clear') }}</span>
+                  <span>{{ t('word.clear') }}</span>
                </button>
 
                <div class="divider-vert py-3" />
@@ -28,20 +28,20 @@
                <button
                   :disabled="isSaving"
                   class="btn btn-dark btn-sm"
-                  :title="$t('message.addNewField')"
+                  :title="t('message.addNewField')"
                   @click="addField"
                >
                   <i class="mdi mdi-24px mdi-playlist-plus mr-1" />
-                  <span>{{ $t('word.add') }}</span>
+                  <span>{{ t('word.add') }}</span>
                </button>
                <button
                   :disabled="isSaving || !localFields.length"
                   class="btn btn-dark btn-sm"
-                  :title="$t('message.manageIndexes')"
+                  :title="t('message.manageIndexes')"
                   @click="showIntdexesModal"
                >
                   <i class="mdi mdi-24px mdi-key mdi-rotate-45 mr-1" />
-                  <span>{{ $t('word.indexes') }}</span>
+                  <span>{{ t('word.indexes') }}</span>
                </button>
                <button
                   class="btn btn-dark btn-sm"
@@ -49,11 +49,11 @@
                   @click="showForeignModal"
                >
                   <i class="mdi mdi-24px mdi-key-link mr-1" />
-                  <span>{{ $t('word.foreignKeys') }}</span>
+                  <span>{{ t('word.foreignKeys') }}</span>
                </button>
             </div>
             <div class="workspace-query-info">
-               <div class="d-flex" :title="$t('word.schema')">
+               <div class="d-flex" :title="t('word.schema')">
                   <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
                </div>
             </div>
@@ -63,7 +63,7 @@
          <div class="columns mb-4">
             <div class="column col-auto">
                <div class="form-group">
-                  <label class="form-label">{{ $t('word.name') }}</label>
+                  <label class="form-label">{{ t('word.name') }}</label>
                   <input
                      ref="firstInput"
                      v-model="localOptions.name"
@@ -74,7 +74,7 @@
             </div>
             <div v-if="workspace.customizations.comment" class="column">
                <div class="form-group">
-                  <label class="form-label">{{ $t('word.comment') }}</label>
+                  <label class="form-label">{{ t('word.comment') }}</label>
                   <input
                      v-model="localOptions.comment"
                      class="form-input"
@@ -86,7 +86,7 @@
             <div v-if="workspace.customizations.collations" class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ $t('word.collation') }}
+                     {{ t('word.collation') }}
                   </label>
                   <BaseSelect
                      v-model="localOptions.collation"
@@ -100,7 +100,7 @@
             <div v-if="workspace.customizations.engines" class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ $t('word.engine') }}
+                     {{ t('word.engine') }}
                   </label>
                   <BaseSelect
                      v-model="localOptions.engine"
@@ -160,310 +160,302 @@
    </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { Component, computed, onBeforeUnmount, onMounted, Prop, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import { uidGen } from 'common/libs/uidGen';
 import Tables from '@/ipc-api/Tables';
-import BaseLoader from '@/components/BaseLoader';
-import WorkspaceTabPropsTableFields from '@/components/WorkspaceTabPropsTableFields';
-import WorkspaceTabPropsTableIndexesModal from '@/components/WorkspaceTabPropsTableIndexesModal';
-import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTableForeignModal';
-import WorkspaceTabNewTableEmptyState from '@/components/WorkspaceTabNewTableEmptyState';
+import BaseLoader from '@/components/BaseLoader.vue';
+import WorkspaceTabPropsTableFields from '@/components/WorkspaceTabPropsTableFields.vue';
+import WorkspaceTabPropsTableIndexesModal from '@/components/WorkspaceTabPropsTableIndexesModal.vue';
+import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTableForeignModal.vue';
+import WorkspaceTabNewTableEmptyState from '@/components/WorkspaceTabNewTableEmptyState.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import { ConnectionParams, TableField, TableForeign, TableIndex, TableOptions } from 'common/interfaces/antares';
 
-export default {
-   name: 'WorkspaceTabNewTable',
-   components: {
-      BaseLoader,
-      WorkspaceTabPropsTableFields,
-      WorkspaceTabPropsTableIndexesModal,
-      WorkspaceTabPropsTableForeignModal,
-      WorkspaceTabNewTableEmptyState,
-      BaseSelect
-   },
-   props: {
-      tabUid: String,
-      connection: Object,
-      tab: Object,
-      isSelected: Boolean,
-      schema: String
-   },
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+const { t } = useI18n();
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const props = defineProps({
+   tabUid: String,
+   connection: Object as Prop<ConnectionParams>,
+   tab: Object,
+   isSelected: Boolean,
+   schema: String
+});
 
-      const {
-         getWorkspace,
-         getDatabaseVariable,
-         refreshStructure,
-         setUnsavedChanges,
-         newTab,
-         renameTabs,
-         removeTab,
-         changeBreadcrumbs
-      } = workspacesStore;
+const { addNotification } = useNotificationsStore();
+const workspacesStore = useWorkspacesStore();
 
-      return {
-         addNotification,
-         getWorkspace,
-         getDatabaseVariable,
-         refreshStructure,
-         setUnsavedChanges,
-         newTab,
-         renameTabs,
-         removeTab,
-         changeBreadcrumbs,
-         selectedWorkspace
-      };
-   },
-   data () {
-      return {
-         isLoading: false,
-         isSaving: false,
-         isIndexesModal: false,
-         isForeignModal: false,
-         isOptionsChanging: false,
-         originalFields: [],
-         localFields: [],
-         originalKeyUsage: [],
-         localKeyUsage: [],
-         originalIndexes: [],
-         localIndexes: [],
-         tableOptions: {},
-         localOptions: {},
-         lastTable: null,
-         newFieldsCounter: 0
-      };
-   },
-   computed: {
-      workspace () {
-         return this.getWorkspace(this.connection.uid);
-      },
-      defaultCollation () {
-         if (this.workspace.customizations.collations)
-            return this.getDatabaseVariable(this.selectedWorkspace, 'collation_server')?.value || '';
-         return '';
-      },
-      defaultEngine () {
-         if (this.workspace.customizations.engines)
-            return this.workspace.engines?.find(engine => engine.isDefault)?.name || '';
-         return '';
-      },
-      schemaTables () {
-         const schemaTables = this.workspace.structure
-            .filter(schema => schema.name === this.schema)
-            .map(schema => schema.tables);
+const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
-         return schemaTables.length ? schemaTables[0].filter(table => table.type === 'table') : [];
-      },
-      isChanged () {
-         return JSON.stringify(this.originalFields) !== JSON.stringify(this.localFields) ||
-            JSON.stringify(this.originalKeyUsage) !== JSON.stringify(this.localKeyUsage) ||
-            JSON.stringify(this.originalIndexes) !== JSON.stringify(this.localIndexes) ||
-            JSON.stringify(this.tableOptions) !== JSON.stringify(this.localOptions);
-      },
-      isValid () {
-         return !!this.localFields.length && !!this.localOptions.name.trim().length;
+const {
+   getWorkspace,
+   getDatabaseVariable,
+   refreshStructure,
+   setUnsavedChanges,
+   newTab,
+   removeTab,
+   changeBreadcrumbs
+} = workspacesStore;
+
+const indexTable: Ref<Component & {$refs: { tableWrapper: HTMLDivElement }}> = ref(null);
+const firstInput: Ref<HTMLInputElement> = ref(null);
+const isLoading = ref(false);
+const isSaving = ref(false);
+const isIndexesModal = ref(false);
+const isForeignModal = ref(false);
+const originalFields: Ref<TableField[]> = ref([]);
+const localFields: Ref<TableField[]> = ref([]);
+const originalKeyUsage: Ref<TableForeign[]> = ref([]);
+const localKeyUsage: Ref<TableForeign[]> = ref([]);
+const originalIndexes: Ref<TableIndex[]> = ref([]);
+const localIndexes: Ref<TableIndex[]> = ref([]);
+const tableOptions: Ref<TableOptions> = ref(null);
+const localOptions: Ref<TableOptions> = ref(null);
+const newFieldsCounter = ref(0);
+
+const workspace = computed(() => {
+   return getWorkspace(props.connection.uid);
+});
+
+const defaultCollation = computed(() => {
+   if (workspace.value.customizations.collations)
+      return getDatabaseVariable(selectedWorkspace.value, 'collation_server')?.value || '';
+   return '';
+});
+
+const defaultEngine = computed(() => {
+   if (workspace.value.customizations.engines)
+      return workspace.value.engines?.find(engine => engine.isDefault)?.name as string || '';
+   return '';
+});
+
+const schemaTables = computed(() => {
+   const schemaTables = workspace.value.structure
+      .filter(schema => schema.name === props.schema)
+      .map(schema => schema.tables);
+
+   return schemaTables.length ? schemaTables[0].filter(table => table.type === 'table') : [];
+});
+
+const isChanged = computed(() => {
+   return JSON.stringify(originalFields.value) !== JSON.stringify(localFields.value) ||
+      JSON.stringify(originalKeyUsage.value) !== JSON.stringify(localKeyUsage.value) ||
+      JSON.stringify(originalIndexes.value) !== JSON.stringify(localIndexes.value) ||
+      JSON.stringify(tableOptions.value) !== JSON.stringify(localOptions.value);
+});
+
+const isValid = computed(() => {
+   return !!localFields.value.length && !!localOptions.value.name.trim().length;
+});
+
+const saveChanges = async () => {
+   if (isSaving.value || !isValid.value) return;
+   isSaving.value = true;
+
+   const params = {
+      uid: props.connection.uid,
+      schema: props.schema,
+      fields: localFields.value,
+      foreigns: localKeyUsage.value,
+      indexes: localIndexes.value,
+      options: localOptions.value
+   };
+
+   try {
+      const { status, response } = await Tables.createTable(params);
+
+      if (status === 'success') {
+         await refreshStructure(props.connection.uid);
+
+         newTab({
+            uid: props.connection.uid,
+            schema: props.schema,
+            elementName: localOptions.value.name,
+            elementType: 'table',
+            type: 'table-props'
+         });
+
+         removeTab({ uid: props.connection.uid, tab: props.tab.uid });
+         changeBreadcrumbs({ schema: props.schema, table: localOptions.value.name });
       }
-   },
-   watch: {
-      isSelected (val) {
-         if (val)
-            this.changeBreadcrumbs({ schema: this.schema });
-      },
-      isChanged (val) {
-         this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: val });
-      }
-   },
-   created () {
-      this.tableOptions = {
-         name: '',
-         type: 'table',
-         engine: this.defaultEngine,
-         comment: '',
-         collation: this.defaultCollation
-      };
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
 
-      this.localOptions = JSON.parse(JSON.stringify(this.tableOptions));
-      window.addEventListener('keydown', this.onKey);
-   },
-   mounted () {
-      if (this.isSelected)
-         this.changeBreadcrumbs({ schema: this.schema });
+   isSaving.value = false;
+   newFieldsCounter.value = 0;
+};
 
-      setTimeout(() => {
-         this.$refs.firstInput.focus();
-      }, 100);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-   },
-   methods: {
-      async saveChanges () {
-         if (this.isSaving || !this.isValid) return;
-         this.isSaving = true;
+const clearChanges = () => {
+   localFields.value = JSON.parse(JSON.stringify(originalFields.value));
+   localIndexes.value = JSON.parse(JSON.stringify(originalIndexes.value));
+   localKeyUsage.value = JSON.parse(JSON.stringify(originalKeyUsage.value));
 
-         const params = {
-            uid: this.connection.uid,
-            schema: this.schema,
-            fields: this.localFields,
-            foreigns: this.localKeyUsage,
-            indexes: this.localIndexes,
-            options: this.localOptions
-         };
+   tableOptions.value = {
+      name: '',
+      type: 'table',
+      engine: defaultEngine.value,
+      comment: '',
+      collation: defaultCollation.value
+   };
 
-         try {
-            const { status, response } = await Tables.createTable(params);
+   localOptions.value = JSON.parse(JSON.stringify(tableOptions.value));
+   newFieldsCounter.value = 0;
+};
 
-            if (status === 'success') {
-               await this.refreshStructure(this.connection.uid);
+const addField = () => {
+   localFields.value.push({
+      _antares_id: uidGen(),
+      name: `${t('word.field', 1)}_${++newFieldsCounter.value}`,
+      key: '',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      type: (workspace.value.dataTypes[0] as any).types[0].name,
+      schema: props.schema,
+      numPrecision: null,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      numLength: (workspace.value.dataTypes[0] as any).types[0].length,
+      datePrecision: null,
+      charLength: null,
+      nullable: false,
+      unsigned: false,
+      zerofill: false,
+      order: localFields.value.length + 1,
+      default: null,
+      charset: null,
+      collation: defaultCollation.value,
+      autoIncrement: false,
+      onUpdate: '',
+      comment: ''
+   });
 
-               this.newTab({
-                  uid: this.connection.uid,
-                  schema: this.schema,
-                  elementName: this.localOptions.name,
-                  elementType: 'table',
-                  type: 'table-props'
-               });
+   setTimeout(() => {
+      const scrollable = indexTable.value.$refs.tableWrapper;
+      scrollable.scrollTop = scrollable.scrollHeight + 30;
+   }, 20);
+};
 
-               this.removeTab({ uid: this.connection.uid, tab: this.tab.uid });
-               this.changeBreadcrumbs({ schema: this.schema, table: this.localOptions.name });
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
+const renameField = (payload: {index: string; new: string; old: string}) => {
+   localIndexes.value = localIndexes.value.map(index => {
+      const fi = index.fields.findIndex(field => field === payload.old);
+      if (fi !== -1)
+         index.fields[fi] = payload.new;
+      return index;
+   });
 
-         this.isSaving = false;
-         this.newFieldsCounter = 0;
-      },
-      clearChanges () {
-         this.localFields = JSON.parse(JSON.stringify(this.originalFields));
-         this.localIndexes = JSON.parse(JSON.stringify(this.originalIndexes));
-         this.localKeyUsage = JSON.parse(JSON.stringify(this.originalKeyUsage));
+   localKeyUsage.value = localKeyUsage.value.map(key => {
+      if (key.field === payload.old)
+         key.field = payload.new;
+      return key;
+   });
+};
 
-         this.tableOptions = {
-            name: '',
-            type: 'table',
-            engine: this.defaultEngine,
-            comment: '',
-            collation: this.defaultCollation
-         };
+const duplicateField = (uid: string) => {
+   const fieldToClone = Object.assign({}, localFields.value.find(field => field._antares_id === uid));
+   fieldToClone._antares_id = uidGen();
+   fieldToClone.name = `${fieldToClone.name}_copy`;
+   fieldToClone.order = localFields.value.length + 1;
+   localFields.value = [...localFields.value, fieldToClone];
 
-         this.localOptions = JSON.parse(JSON.stringify(this.tableOptions));
-         this.newFieldsCounter = 0;
-      },
-      addField () {
-         this.localFields.push({
-            _antares_id: uidGen(),
-            name: `${this.$tc('word.field', 1)}_${++this.newFieldsCounter}`,
-            key: '',
-            type: this.workspace.dataTypes[0].types[0].name,
-            schema: this.schema,
-            numPrecision: null,
-            numLength: this.workspace.dataTypes[0].types[0].length,
-            datePrecision: null,
-            charLength: null,
-            nullable: false,
-            unsigned: false,
-            zerofill: false,
-            order: this.localFields.length + 1,
-            default: null,
-            charset: null,
-            collation: null,
-            autoIncrement: false,
-            onUpdate: '',
-            comment: ''
-         });
+   setTimeout(() => {
+      const scrollable = indexTable.value.$refs.tableWrapper;
+      scrollable.scrollTop = scrollable.scrollHeight + 30;
+   }, 20);
+};
 
-         setTimeout(() => {
-            const scrollable = this.$refs.indexTable.$refs.tableWrapper;
-            scrollable.scrollTop = scrollable.scrollHeight + 30;
-         }, 20);
-      },
-      renameField (payload) {
-         this.localIndexes = this.localIndexes.map(index => {
-            const fi = index.fields.findIndex(field => field === payload.old);
-            if (fi !== -1)
-               index.fields[fi] = payload.new;
-            return index;
-         });
+const removeField = (uid: string) => {
+   localFields.value = localFields.value.filter(field => field._antares_id !== uid);
+};
 
-         this.localKeyUsage = this.localKeyUsage.map(key => {
-            if (key.field === payload.old)
-               key.field = payload.new;
-            return key;
-         });
-      },
-      duplicateField (uid) {
-         const fieldToClone = Object.assign({}, this.localFields.find(field => field._antares_id === uid));
-         fieldToClone._antares_id = uidGen();
-         fieldToClone.name = `${fieldToClone.name}_copy`;
-         fieldToClone.order = this.localFields.length + 1;
-         this.localFields = [...this.localFields, fieldToClone];
+const addNewIndex = (payload: { index: string; field: string }) => {
+   localIndexes.value = [...localIndexes.value, {
+      _antares_id: uidGen(),
+      name: payload.index === 'PRIMARY' ? 'PRIMARY' : payload.field,
+      fields: [payload.field],
+      type: payload.index,
+      comment: '',
+      indexType: 'BTREE',
+      indexComment: '',
+      cardinality: 0
+   }];
+};
 
-         setTimeout(() => {
-            const scrollable = this.$refs.indexTable.$refs.tableWrapper;
-            scrollable.scrollTop = scrollable.scrollHeight + 30;
-         }, 20);
-      },
-      removeField (uid) {
-         this.localFields = this.localFields.filter(field => field._antares_id !== uid);
-      },
-      addNewIndex (payload) {
-         this.localIndexes = [...this.localIndexes, {
-            _antares_id: uidGen(),
-            name: payload.index === 'PRIMARY' ? 'PRIMARY' : payload.field,
-            fields: [payload.field],
-            type: payload.index,
-            comment: '',
-            indexType: 'BTREE',
-            indexComment: '',
-            cardinality: 0
-         }];
-      },
-      addToIndex (payload) {
-         this.localIndexes = this.localIndexes.map(index => {
-            if (index._antares_id === payload.index) index.fields.push(payload.field);
-            return index;
-         });
-      },
-      optionsUpdate (options) {
-         this.localOptions = options;
-      },
-      showIntdexesModal () {
-         this.isIndexesModal = true;
-      },
-      hideIndexesModal () {
-         this.isIndexesModal = false;
-      },
-      indexesUpdate (indexes) {
-         this.localIndexes = indexes;
-      },
-      showForeignModal () {
-         this.isForeignModal = true;
-      },
-      hideForeignModal () {
-         this.isForeignModal = false;
-      },
-      foreignsUpdate (foreigns) {
-         this.localKeyUsage = foreigns;
-      },
-      onKey (e) {
-         if (this.isSelected) {
-            e.stopPropagation();
-            if (e.ctrlKey && e.keyCode === 83) { // CTRL + S
-               if (this.isChanged)
-                  this.saveChanges();
-            }
-         }
+const addToIndex = (payload: { index: string; field: string }) => {
+   localIndexes.value = localIndexes.value.map(index => {
+      if (index._antares_id === payload.index) index.fields.push(payload.field);
+      return index;
+   });
+};
+
+const showIntdexesModal = () => {
+   isIndexesModal.value = true;
+};
+
+const hideIndexesModal = () => {
+   isIndexesModal.value = false;
+};
+
+const indexesUpdate = (indexes: TableIndex[]) => {
+   localIndexes.value = indexes;
+};
+
+const showForeignModal = () => {
+   isForeignModal.value = true;
+};
+
+const hideForeignModal = () => {
+   isForeignModal.value = false;
+};
+
+const foreignsUpdate = (foreigns: TableForeign[]) => {
+   localKeyUsage.value = foreigns;
+};
+
+const onKey = (e: KeyboardEvent) => {
+   if (props.isSelected) {
+      e.stopPropagation();
+      if (e.ctrlKey && e.key === 's') { // CTRL + S
+         if (isChanged.value)
+            saveChanges();
       }
    }
 };
+
+watch(() => props.isSelected, (val) => {
+   if (val) changeBreadcrumbs({ schema: props.schema });
+});
+
+watch(isChanged, (val) => {
+   setUnsavedChanges({ uid: props.connection.uid, tUid: props.tabUid, isChanged: val });
+});
+
+tableOptions.value = {
+   name: '',
+   type: 'table',
+   engine: defaultEngine.value,
+   comment: '',
+   collation: defaultCollation.value
+};
+
+localOptions.value = JSON.parse(JSON.stringify(tableOptions.value));
+window.addEventListener('keydown', onKey);
+
+onMounted(() => {
+   if (props.isSelected)
+      changeBreadcrumbs({ schema: props.schema });
+
+   setTimeout(() => {
+      firstInput.value.focus();
+   }, 100);
+});
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+});
 </script>
