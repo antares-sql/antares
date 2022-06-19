@@ -1,7 +1,7 @@
 {
   "name": "antares",
   "productName": "Antares",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "description": "A modern, fast and productivity driven SQL client with a focus in UX.",
   "license": "MIT",
   "repository": "https://github.com/antares-sql/antares.git",
@@ -190,7 +190,7 @@
     "vue-eslint-parser": "~8.3.0",
     "vue-loader": "~16.8.3",
     "webpack": "~5.60.0",
-    "webpack-cli": "~4.9.1",
+    "webpack-cli": "~4.10.0",
     "webpack-dev-server": "~4.4.0",
     "xvfb-maybe": "~0.2.1"
   }
