@@ -1,7 +1,7 @@
 {
   "name": "antares",
   "productName": "Antares",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "description": "A modern, fast and productivity driven SQL client with a focus in UX.",
   "license": "MIT",
   "repository": "https://github.com/antares-sql/antares.git",
@@ -152,7 +152,7 @@
     "@types/better-sqlite3": "~7.5.0",
     "@types/node": "~17.0.23",
     "@types/pg": "~8.6.5",
-    "@typescript-eslint/eslint-plugin": "~5.18.0",
+    "@typescript-eslint/eslint-plugin": "~5.28.0",
     "@typescript-eslint/parser": "~5.18.0",
     "@vue/compiler-sfc": "~3.2.33",
     "all-contributors-cli": "~6.20.0",
