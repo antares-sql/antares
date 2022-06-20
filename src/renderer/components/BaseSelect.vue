@@ -132,6 +132,10 @@ export default defineComponent({
       disabled: {
          type: Boolean,
          default: false
+      },
+      maxVisibleOptions: {
+         type: Number,
+         default: 100
       }
    },
    emits: ['select', 'open', 'close', 'update:modelValue', 'change', 'blur'],
@@ -147,7 +151,7 @@ export default defineComponent({
       const searchText = ref('');
 
       const getOptionValue = (opt) => _guess('optionTrackBy', opt);
-      const getOptionLabel = (opt) => _guess('optionLabel', opt);
+      const getOptionLabel = (opt) => _guess('optionLabel', opt) + '';
       const getOptionDisabled = (opt) => _guess('optionDisabled', opt);
       const _guess = (name, item) => {
          const prop = props[name];
@@ -200,11 +204,30 @@ export default defineComponent({
       });
 
       const filteredOptions = computed(() => {
-         const normalizedSearch = (searchText.value || '').toLowerCase().trim();
+         const searchTerms = (searchText.value || '').toLowerCase().trim();
 
-         return normalizedSearch
-            ? flattenOptions.value.filter(opt => opt.$type === 'group' || opt.label.trim().toLowerCase().indexOf(normalizedSearch) !== -1)
+         let options = searchTerms
+            ? flattenOptions.value.filter(opt => opt.$type === 'group' || opt.label.trim().toLowerCase().indexOf(searchTerms) !== -1)
             : flattenOptions.value;
+
+         if (options.length > props.maxVisibleOptions) {
+            let sliceStart = 0;
+            let sliceEnd = sliceStart + props.maxVisibleOptions;
+
+            // if no search active try to open the dropdown showing options around the selected one
+            if (searchTerms === '') {
+               const index = internalValue.value ? flattenOptions.value.findIndex(el => el.value === internalValue.value) : -1;
+
+               if (index < options.length -1) {
+                  sliceStart = Math.max(0, index - Math.floor(props.maxVisibleOptions / 2));
+                  sliceEnd = Math.min(sliceStart + sliceEnd, options.length -1);
+               }
+            }
+
+            options = options.slice(sliceStart, sliceEnd);
+         }
+
+         return options;
       });
 
       const searchInputStyle = computed(() => {
@@ -253,7 +276,7 @@ export default defineComponent({
       const activate = () => {
          if (isOpen.value || props.disabled) return;
          isOpen.value = true;
-         hightlightedIndex.value = flattenOptions.value.findIndex(el => el.value === internalValue.value) || 0;
+         hightlightedIndex.value = filteredOptions.value.findIndex(el => el.value === internalValue.value) || 0;
 
          if (props.searchable)
             searchInput.value.focus();
