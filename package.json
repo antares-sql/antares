@@ -150,7 +150,7 @@
     "@babel/preset-typescript": "~7.16.7",
     "@playwright/test": "~1.21.1",
     "@types/better-sqlite3": "~7.5.0",
-    "@types/node": "~17.0.23",
+    "@types/node": "~18.0.0",
     "@types/pg": "~8.6.5",
     "@typescript-eslint/eslint-plugin": "~5.18.0",
     "@typescript-eslint/parser": "~5.18.0",
