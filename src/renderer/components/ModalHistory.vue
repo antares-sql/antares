@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <i class="mdi mdi-24px mdi-history mr-1" />
-                     <span class="cut-text">{{ $t('word.history') }}: {{ connectionName }}</span>
+                     <span class="cut-text">{{ t('word.history') }}: {{ connectionName }}</span>
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -22,7 +22,7 @@
                      v-model="searchTerm"
                      class="form-input"
                      type="text"
-                     :placeholder="$t('message.searchForQueries')"
+                     :placeholder="t('message.searchForQueries')"
                   >
                   <i v-if="!searchTerm" class="form-icon mdi mdi-magnify mdi-18px pr-4" />
                   <i
@@ -67,13 +67,13 @@
                                     <small class="tile-subtitle">{{ query.schema }} · {{ formatDate(query.date) }}</small>
                                     <div class="tile-history-buttons">
                                        <button class="btn btn-link pl-1" @click.stop="$emit('select-query', query.sql)">
-                                          <i class="mdi mdi-open-in-app pr-1" /> {{ $t('word.select') }}
+                                          <i class="mdi mdi-open-in-app pr-1" /> {{ t('word.select') }}
                                        </button>
                                        <button class="btn btn-link pl-1" @click="copyQuery(query.sql)">
-                                          <i class="mdi mdi-content-copy pr-1" /> {{ $t('word.copy') }}
+                                          <i class="mdi mdi-content-copy pr-1" /> {{ t('word.copy') }}
                                        </button>
                                        <button class="btn btn-link pl-1" @click="deleteQuery(query)">
-                                          <i class="mdi mdi-delete-forever pr-1" /> {{ $t('word.delete') }}
+                                          <i class="mdi mdi-delete-forever pr-1" /> {{ t('word.delete') }}
                                        </button>
                                     </div>
                                  </div>
@@ -88,7 +88,7 @@
                      <i class="mdi mdi-history mdi-48px" />
                   </div>
                   <p class="empty-title h5">
-                     {{ $t('message.thereIsNoQueriesYet') }}
+                     {{ t('message.thereIsNoQueriesYet') }}
                   </p>
                </div>
             </div>
@@ -99,11 +99,14 @@
 
 <script setup lang="ts">
 import { Component, computed, ComputedRef, onBeforeUnmount, onMounted, onUpdated, Prop, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import * as moment from 'moment';
 import { ConnectionParams } from 'common/interfaces/antares';
 import { HistoryRecord, useHistoryStore } from '@/stores/history';
 import { useConnectionsStore } from '@/stores/connections';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
+
+const { t } = useI18n();
 
 const { getHistoryByWorkspace, deleteQueryFromHistory } = useHistoryStore();
 const { getConnectionName } = useConnectionsStore();

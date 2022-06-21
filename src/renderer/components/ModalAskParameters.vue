@@ -50,14 +50,11 @@
 <script setup lang="ts">
 import { computed, PropType, Ref, ref } from 'vue';
 import { NUMBER, FLOAT } from 'common/fieldTypes';
-import { FunctionParam } from 'common/interfaces/antares';
+import { FunctionInfos, RoutineInfos } from 'common/interfaces/antares';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 
-// eslint-disable-next-line camelcase
-type LocalRoutineParams = FunctionParam & {_antares_id: string};
-
 const props = defineProps({
-   localRoutine: Object as PropType<{name: string; parameters: LocalRoutineParams[]}>,
+   localRoutine: Object as PropType<RoutineInfos | FunctionInfos>,
    client: String
 });
 

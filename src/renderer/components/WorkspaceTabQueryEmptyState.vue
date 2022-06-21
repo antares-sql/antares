@@ -3,25 +3,25 @@
       <div class="columns">
          <div class="column col-16 text-right">
             <div class="mb-4">
-               {{ $t('message.runQuery') }}
+               {{ t('message.runQuery') }}
             </div>
             <div v-if="customizations.cancelQueries" class="mb-4">
-               {{ $t('message.killQuery') }}
+               {{ t('message.killQuery') }}
             </div>
             <div class="mb-4">
-               {{ $t('word.format') }}
+               {{ t('word.format') }}
             </div>
             <div class="mb-4">
-               {{ $t('word.clear') }}
+               {{ t('word.clear') }}
             </div>
             <div class="mb-4">
-               {{ $t('word.history') }}
+               {{ t('word.history') }}
             </div>
             <div class="mb-4">
-               {{ $t('message.openNewTab') }}
+               {{ t('message.openNewTab') }}
             </div>
             <div class="mb-4">
-               {{ $t('message.closeTab') }}
+               {{ t('message.closeTab') }}
             </div>
          </div>
          <div class="column col-16">
@@ -51,13 +51,14 @@
    </div>
 </template>
 
-<script>
-export default {
-   name: 'WorkspaceTabQueryEmptyState',
-   props: {
-      customizations: Object
-   }
-};
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+
+defineProps({
+   customizations: Object
+});
 </script>
 
 <style scoped>

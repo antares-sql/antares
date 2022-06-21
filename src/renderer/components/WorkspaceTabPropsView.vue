@@ -11,20 +11,20 @@
                   @click="saveChanges"
                >
                   <i class="mdi mdi-24px mdi-content-save mr-1" />
-                  <span>{{ $t('word.save') }}</span>
+                  <span>{{ t('word.save') }}</span>
                </button>
                <button
                   :disabled="!isChanged"
                   class="btn btn-link btn-sm mr-0"
-                  :title="$t('message.clearChanges')"
+                  :title="t('message.clearChanges')"
                   @click="clearChanges"
                >
                   <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
-                  <span>{{ $t('word.clear') }}</span>
+                  <span>{{ t('word.clear') }}</span>
                </button>
             </div>
             <div class="workspace-query-info">
-               <div class="d-flex" :title="$t('word.schema')">
+               <div class="d-flex" :title="t('word.schema')">
                   <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
                </div>
             </div>
@@ -34,7 +34,7 @@
          <div class="columns">
             <div class="column col-auto">
                <div class="form-group">
-                  <label class="form-label">{{ $t('word.name') }}</label>
+                  <label class="form-label">{{ t('word.name') }}</label>
                   <input
                      v-model="localView.name"
                      class="form-input"
@@ -44,19 +44,19 @@
             </div>
             <div class="column col-auto">
                <div v-if="workspace.customizations.definer" class="form-group">
-                  <label class="form-label">{{ $t('word.definer') }}</label>
+                  <label class="form-label">{{ t('word.definer') }}</label>
                   <BaseSelect
                      v-model="localView.definer"
                      :options="users"
-                     :option-label="(user) => user.value === '' ? $t('message.currentUser') : `${user.name}@${user.host}`"
-                     :option-track-by="(user) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
+                     :option-label="(user: any) => user.value === '' ? t('message.currentUser') : `${user.name}@${user.host}`"
+                     :option-track-by="(user: any) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
                      class="form-select"
                   />
                </div>
             </div>
             <div class="column col-auto mr-2">
                <div v-if="workspace.customizations.viewSqlSecurity" class="form-group">
-                  <label class="form-label">{{ $t('message.sqlSecurity') }}</label>
+                  <label class="form-label">{{ t('message.sqlSecurity') }}</label>
                   <BaseSelect
                      v-model="localView.security"
                      :options="['DEFINER', 'INVOKER']"
@@ -66,7 +66,7 @@
             </div>
             <div class="column col-auto mr-2">
                <div v-if="workspace.customizations.viewAlgorithm" class="form-group">
-                  <label class="form-label">{{ $t('word.algorithm') }}</label>
+                  <label class="form-label">{{ t('word.algorithm') }}</label>
                   <BaseSelect
                      v-model="localView.algorithm"
                      :options="['UNDEFINED', 'MERGE', 'TEMPTABLE']"
@@ -76,10 +76,10 @@
             </div>
             <div v-if="workspace.customizations.viewUpdateOption" class="column col-auto mr-2">
                <div class="form-group">
-                  <label class="form-label">{{ $t('message.updateOption') }}</label>
+                  <label class="form-label">{{ t('message.updateOption') }}</label>
                   <BaseSelect
                      v-model="localView.updateOption"
-                     :option-track-by="(user) => user.value"
+                     :option-track-by="(user: any) => user.value"
                      :options="[{label: 'None', value: ''}, {label: 'CASCADED', value: 'CASCADED'}, {label: 'LOCAL', value: 'LOCAL'}]"
                      class="form-select"
                   />
@@ -89,7 +89,7 @@
       </div>
       <div class="workspace-query-results column col-12 mt-2 p-relative">
          <BaseLoader v-if="isLoading" />
-         <label class="form-label ml-2">{{ $t('message.selectStatement') }}</label>
+         <label class="form-label ml-2">{{ t('message.selectStatement') }}</label>
          <QueryEditor
             v-show="isSelected"
             ref="queryEditor"
@@ -102,223 +102,204 @@
    </div>
 </template>
 
-<script>
-import { storeToRefs } from 'pinia';
+<script setup lang="ts">
+import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
+import { Ace } from 'ace-builds';
+import { useI18n } from 'vue-i18n';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import BaseLoader from '@/components/BaseLoader';
-import QueryEditor from '@/components/QueryEditor';
-import Views from '@/ipc-api/Views';
+import BaseLoader from '@/components/BaseLoader.vue';
+import QueryEditor from '@/components/QueryEditor.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import Views from '@/ipc-api/Views';
 
-export default {
-   name: 'WorkspaceTabPropsView',
-   components: {
-      BaseLoader,
-      QueryEditor,
-      BaseSelect
-   },
-   props: {
-      tabUid: String,
-      connection: Object,
-      isSelected: Boolean,
-      schema: String,
-      view: String
-   },
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+const { t } = useI18n();
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const props = defineProps({
+   tabUid: String,
+   connection: Object,
+   isSelected: Boolean,
+   schema: String,
+   view: String
+});
 
-      const {
-         getWorkspace,
-         refreshStructure,
-         renameTabs,
-         changeBreadcrumbs,
-         setUnsavedChanges
-      } = workspacesStore;
+const { addNotification } = useNotificationsStore();
+const workspacesStore = useWorkspacesStore();
 
-      return {
-         addNotification,
-         selectedWorkspace,
-         getWorkspace,
-         refreshStructure,
-         renameTabs,
-         changeBreadcrumbs,
-         setUnsavedChanges
-      };
-   },
-   data () {
-      return {
-         isLoading: false,
-         isSaving: false,
-         originalView: null,
-         localView: { sql: '' },
-         lastView: null,
-         sqlProxy: '',
-         editorHeight: 300
-      };
-   },
-   computed: {
-      workspace () {
-         return this.getWorkspace(this.connection.uid);
-      },
-      isChanged () {
-         return JSON.stringify(this.originalView) !== JSON.stringify(this.localView);
-      },
-      isDefinerInUsers () {
-         return this.originalView ? this.workspace.users.some(user => this.originalView.definer === `\`${user.name}\`@\`${user.host}\``) : true;
-      },
-      users () {
-         const users = [{ value: '' }, ...this.workspace.users];
-         if (!this.isDefinerInUsers) {
-            const [name, host] = this.originalView.definer.replaceAll('`', '').split('@');
-            users.unshift({ name, host });
-         }
+const {
+   getWorkspace,
+   refreshStructure,
+   renameTabs,
+   changeBreadcrumbs,
+   setUnsavedChanges
+} = workspacesStore;
 
-         return users;
+const queryEditor: Ref<Component & {editor: Ace.Editor; $el: HTMLElement}> = ref(null);
+const isLoading = ref(false);
+const isSaving = ref(false);
+const originalView = ref(null);
+const localView = ref(null);
+const editorHeight = ref(300);
+const lastView = ref(null);
+const sqlProxy = ref('');
+
+const workspace = computed(() => getWorkspace(props.connection.uid));
+const isChanged = computed(() => JSON.stringify(originalView.value) !== JSON.stringify(localView.value));
+const isDefinerInUsers = computed(() => originalView.value ? workspace.value.users.some(user => originalView.value.definer === `\`${user.name}\`@\`${user.host}\``) : true);
+
+const users = computed(() => {
+   const users = [{ value: '' }, ...workspace.value.users];
+   if (!isDefinerInUsers.value) {
+      const [name, host] = originalView.value.definer.replaceAll('`', '').split('@');
+      users.unshift({ name, host });
+   }
+
+   return users;
+});
+
+const getViewData = async () => {
+   if (!props.view) return;
+   isLoading.value = true;
+   localView.value = { sql: '' };
+   lastView.value = props.view;
+
+   const params = {
+      uid: props.connection.uid,
+      schema: props.schema,
+      view: props.view
+   };
+
+   try {
+      const { status, response } = await Views.getViewInformations(params);
+      if (status === 'success') {
+         originalView.value = response;
+         localView.value = JSON.parse(JSON.stringify(originalView.value));
+         sqlProxy.value = localView.value.sql;
       }
-   },
-   watch: {
-      async schema () {
-         if (this.isSelected) {
-            await this.getViewData();
-            this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
-            this.lastView = this.view;
-         }
-      },
-      async view () {
-         if (this.isSelected) {
-            await this.getViewData();
-            this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
-            this.lastView = this.view;
-         }
-      },
-      isSelected (val) {
-         if (val) {
-            this.changeBreadcrumbs({ schema: this.schema, view: this.view });
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
 
-            setTimeout(() => {
-               this.resizeQueryEditor();
-            }, 200);
+   resizeQueryEditor();
+   isLoading.value = false;
+};
 
-            if (this.lastView !== this.view)
-               this.getViewData();
-         }
-      },
-      isChanged (val) {
-         this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: val });
+const saveChanges = async () => {
+   if (isSaving.value) return;
+   isSaving.value = true;
+   const params = {
+      uid: props.connection.uid,
+      view: {
+         ...localView.value,
+         schema: props.schema,
+         oldName: originalView.value.name
       }
-   },
-   async created () {
-      await this.getViewData();
-      this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
-      window.addEventListener('keydown', this.onKey);
-   },
-   mounted () {
-      window.addEventListener('resize', this.resizeQueryEditor);
-   },
-   unmounted () {
-      window.removeEventListener('resize', this.resizeQueryEditor);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-   },
-   methods: {
-      async getViewData () {
-         if (!this.view) return;
-         this.isLoading = true;
-         this.localView = { sql: '' };
-         this.lastView = this.view;
+   };
 
-         const params = {
-            uid: this.connection.uid,
-            schema: this.schema,
-            view: this.view
-         };
+   try {
+      const { status, response } = await Views.alterView(params);
 
-         try {
-            const { status, response } = await Views.getViewInformations(params);
-            if (status === 'success') {
-               this.originalView = response;
-               this.localView = JSON.parse(JSON.stringify(this.originalView));
-               this.sqlProxy = this.localView.sql;
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
+      if (status === 'success') {
+         const oldName = originalView.value.name;
+
+         await refreshStructure(props.connection.uid);
+
+         if (oldName !== localView.value.name) {
+            renameTabs({
+               uid: props.connection.uid,
+               schema: props.schema,
+               elementName: oldName,
+               elementNewName: localView.value.name,
+               elementType: 'view'
+            });
+
+            changeBreadcrumbs({ schema: props.schema, view: localView.value.name });
          }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
+         else
+            getViewData();
+      }
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
 
-         this.resizeQueryEditor();
-         this.isLoading = false;
-      },
-      async saveChanges () {
-         if (this.isSaving) return;
-         this.isSaving = true;
-         const params = {
-            uid: this.connection.uid,
-            view: {
-               ...this.localView,
-               schema: this.schema,
-               oldName: this.originalView.name
-            }
-         };
+   isSaving.value = false;
+};
 
-         try {
-            const { status, response } = await Views.alterView(params);
+const clearChanges = () => {
+   localView.value = JSON.parse(JSON.stringify(originalView.value));
+   queryEditor.value.editor.session.setValue(localView.value.sql);
+};
 
-            if (status === 'success') {
-               const oldName = this.originalView.name;
+const resizeQueryEditor = () => {
+   if (queryEditor.value) {
+      const footer = document.getElementById('footer');
+      const size = window.innerHeight - queryEditor.value.$el.getBoundingClientRect().top - footer.offsetHeight;
+      editorHeight.value = size;
+      queryEditor.value.editor.resize();
+   }
+};
 
-               await this.refreshStructure(this.connection.uid);
-
-               if (oldName !== this.localView.name) {
-                  this.renameTabs({
-                     uid: this.connection.uid,
-                     schema: this.schema,
-                     elementName: oldName,
-                     elementNewName: this.localView.name,
-                     elementType: 'view'
-                  });
-
-                  this.changeBreadcrumbs({ schema: this.schema, view: this.localView.name });
-               }
-               else
-                  this.getViewData();
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.isSaving = false;
-      },
-      clearChanges () {
-         this.localView = JSON.parse(JSON.stringify(this.originalView));
-         this.$refs.queryEditor.editor.session.setValue(this.localView.sql);
-      },
-      resizeQueryEditor () {
-         if (this.$refs.queryEditor) {
-            const footer = document.getElementById('footer');
-            const size = window.innerHeight - this.$refs.queryEditor.$el.getBoundingClientRect().top - footer.offsetHeight;
-            this.editorHeight = size;
-            this.$refs.queryEditor.editor.resize();
-         }
-      },
-      onKey (e) {
-         if (this.isSelected) {
-            e.stopPropagation();
-            if (e.ctrlKey && e.keyCode === 83) { // CTRL + S
-               if (this.isChanged)
-                  this.saveChanges();
-            }
-         }
+const onKey = (e: KeyboardEvent) => {
+   if (props.isSelected) {
+      e.stopPropagation();
+      if (e.ctrlKey && e.key === 's') { // CTRL + S
+         if (isChanged.value)
+            saveChanges();
       }
    }
 };
+
+watch(() => props.schema, async () => {
+   if (props.isSelected) {
+      await getViewData();
+      queryEditor.value.editor.session.setValue(localView.value.sql);
+      lastView.value = props.view;
+   }
+});
+
+watch(() => props.view, async () => {
+   if (props.isSelected) {
+      await getViewData();
+      queryEditor.value.editor.session.setValue(localView.value.sql);
+      lastView.value = props.view;
+   }
+});
+
+watch(() => props.isSelected, (val) => {
+   if (val) {
+      changeBreadcrumbs({ schema: props.schema, view: localView.value.name });
+
+      setTimeout(() => {
+         resizeQueryEditor();
+      }, 50);
+   }
+});
+
+watch(isChanged, (val) => {
+   setUnsavedChanges({ uid: props.connection.uid, tUid: props.tabUid, isChanged: val });
+});
+
+(async () => {
+   await getViewData();
+   queryEditor.value.editor.session.setValue(localView.value.sql);
+   window.addEventListener('keydown', onKey);
+})();
+
+onMounted(() => {
+   window.addEventListener('resize', resizeQueryEditor);
+});
+
+onUnmounted(() => {
+   window.removeEventListener('resize', resizeQueryEditor);
+});
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+});
 </script>

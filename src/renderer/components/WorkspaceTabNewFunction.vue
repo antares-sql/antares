@@ -11,27 +11,27 @@
                   @click="saveChanges"
                >
                   <i class="mdi mdi-24px mdi-content-save mr-1" />
-                  <span>{{ $t('word.save') }}</span>
+                  <span>{{ t('word.save') }}</span>
                </button>
                <button
                   :disabled="!isChanged"
                   class="btn btn-link btn-sm mr-0"
-                  :title="$t('message.clearChanges')"
+                  :title="t('message.clearChanges')"
                   @click="clearChanges"
                >
                   <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
-                  <span>{{ $t('word.clear') }}</span>
+                  <span>{{ t('word.clear') }}</span>
                </button>
 
                <div class="divider-vert py-3" />
 
                <button class="btn btn-dark btn-sm" @click="showParamsModal">
                   <i class="mdi mdi-24px mdi-dots-horizontal mr-1" />
-                  <span>{{ $t('word.parameters') }}</span>
+                  <span>{{ t('word.parameters') }}</span>
                </button>
             </div>
             <div class="workspace-query-info">
-               <div class="d-flex" :title="$t('word.schema')">
+               <div class="d-flex" :title="t('word.schema')">
                   <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
                </div>
             </div>
@@ -42,7 +42,7 @@
             <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ $t('word.name') }}
+                     {{ t('word.name') }}
                   </label>
                   <input
                      ref="firstInput"
@@ -55,7 +55,7 @@
             <div v-if="customizations.languages" class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ $t('word.language') }}
+                     {{ t('word.language') }}
                   </label>
                   <BaseSelect
                      v-model="localFunction.language"
@@ -67,11 +67,11 @@
             <div v-if="customizations.definer" class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ $t('word.definer') }}
+                     {{ t('word.definer') }}
                   </label>
                   <BaseSelect
                      v-model="localFunction.definer"
-                     :options="[{value: '', name:$t('message.currentUser')}, ...workspace.users]"
+                     :options="[{value: '', name:t('message.currentUser')}, ...workspace.users]"
                      :option-label="(user: any) => user.value === '' ? user.name : `${user.name}@${user.host}`"
                      :option-track-by="(user: any) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
                      class="form-select"
@@ -81,7 +81,7 @@
             <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ $t('word.returns') }}
+                     {{ t('word.returns') }}
                   </label>
                   <div class="input-group">
                      <BaseSelect
@@ -101,7 +101,7 @@
                         class="form-input"
                         type="number"
                         min="0"
-                        :placeholder="$t('word.length')"
+                        :placeholder="t('word.length')"
                      >
                   </div>
                </div>
@@ -109,7 +109,7 @@
             <div v-if="customizations.comment" class="column">
                <div class="form-group">
                   <label class="form-label">
-                     {{ $t('word.comment') }}
+                     {{ t('word.comment') }}
                   </label>
                   <input
                      v-model="localFunction.comment"
@@ -121,7 +121,7 @@
             <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ $t('message.sqlSecurity') }}
+                     {{ t('message.sqlSecurity') }}
                   </label>
                   <BaseSelect
                      v-model="localFunction.security"
@@ -133,7 +133,7 @@
             <div v-if="customizations.functionDataAccess" class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ $t('message.dataAccess') }}
+                     {{ t('message.dataAccess') }}
                   </label>
                   <BaseSelect
                      v-model="localFunction.dataAccess"
@@ -146,7 +146,7 @@
                <div class="form-group">
                   <label class="form-label d-invisible">.</label>
                   <label class="form-checkbox form-inline">
-                     <input v-model="localFunction.deterministic" type="checkbox"><i class="form-icon" /> {{ $t('word.deterministic') }}
+                     <input v-model="localFunction.deterministic" type="checkbox"><i class="form-icon" /> {{ t('word.deterministic') }}
                   </label>
                </div>
             </div>
@@ -154,7 +154,7 @@
       </div>
       <div class="workspace-query-results column col-12 mt-2 p-relative">
          <BaseLoader v-if="isLoading" />
-         <label class="form-label ml-2">{{ $t('message.functionBody') }}</label>
+         <label class="form-label ml-2">{{ t('message.functionBody') }}</label>
          <QueryEditor
             v-show="isSelected"
             ref="queryEditor"
@@ -186,6 +186,9 @@ import QueryEditor from '@/components/QueryEditor.vue';
 import WorkspaceTabPropsFunctionParamsModal from '@/components/WorkspaceTabPropsFunctionParamsModal.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import { FunctionInfos, FunctionParam } from 'common/interfaces/antares';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
    tabUid: String,

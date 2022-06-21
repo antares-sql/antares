@@ -15,7 +15,7 @@ export default class {
       return ipcRenderer.invoke('alter-function', unproxify(params));
    }
 
-   static alterTriggerFunction (params: {func: CreateFunctionParams & { uid: string }}): Promise<IpcResponse> {
+   static alterTriggerFunction (params: { uid: string; func: AlterFunctionParams }): Promise<IpcResponse> {
       return ipcRenderer.invoke('alter-trigger-function', unproxify(params));
    }
 

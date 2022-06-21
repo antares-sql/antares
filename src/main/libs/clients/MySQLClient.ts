@@ -381,25 +381,18 @@ export class MySQLClient extends AntaresCore {
             const remappedSchedulers: antares.EventInfos[] = schedulers.filter(scheduler => scheduler.Db === db.Database).map(scheduler => {
                return {
                   name: scheduler.EVENT_NAME,
-                  definition: scheduler.EVENT_DEFINITION,
-                  type: scheduler.EVENT_TYPE,
+                  schema: scheduler.Db,
+                  sql: scheduler.EVENT_DEFINITION,
+                  execution: scheduler.EVENT_TYPE === 'RECURRING' ? 'EVERY' : 'ONCE',
                   definer: scheduler.DEFINER,
-                  body: scheduler.EVENT_BODY,
                   starts: scheduler.STARTS,
                   ends: scheduler.ENDS,
+                  state: scheduler.STATUS === 'ENABLED' ? 'ENABLE' : scheduler.STATE === 'DISABLED' ? 'DISABLE' : 'DISABLE ON SLAVE',
                   enabled: scheduler.STATUS === 'ENABLED',
-                  executeAt: scheduler.EXECUTE_AT,
-                  intervalField: scheduler.INTERVAL_FIELD,
-                  intervalValue: scheduler.INTERVAL_VALUE,
-                  onCompletion: scheduler.ON_COMPLETION,
-                  originator: scheduler.ORIGINATOR,
-                  sqlMode: scheduler.SQL_MODE,
-                  created: scheduler.CREATED,
-                  updated: scheduler.LAST_ALTERED,
-                  lastExecuted: scheduler.LAST_EXECUTED,
-                  comment: scheduler.EVENT_COMMENT,
-                  charset: scheduler.CHARACTER_SET_CLIENT,
-                  timezone: scheduler.TIME_ZONE
+                  at: scheduler.EXECUTE_AT,
+                  every: [scheduler.INTERVAL_FIELD, scheduler.INTERVAL_VALUE],
+                  preserve: scheduler.ON_COMPLETION.includes('PRESERVE'),
+                  comment: scheduler.EVENT_COMMENT
                };
             });
 
@@ -930,19 +923,22 @@ export class MySQLClient extends AntaresCore {
    }
 
    async getViewInformations ({ schema, view }: { schema: string; view: string }) {
-      const sql = `SHOW CREATE VIEW \`${schema}\`.\`${view}\``;
-      const results = await this.raw(sql);
+      const { rows: algorithm } = await this.raw(`SHOW CREATE VIEW \`${schema}\`.\`${view}\``);
+      const { rows: viewInfo } = await this.raw(`
+          SELECT * 
+          FROM INFORMATION_SCHEMA.VIEWS
+          WHERE TABLE_SCHEMA = '${schema}' 
+          AND TABLE_NAME = '${view}'
+       `);
 
-      return results.rows.map(row => {
-         return {
-            algorithm: row['Create View'].match(/(?<=CREATE ALGORITHM=).*?(?=\s)/gs)[0],
-            definer: row['Create View'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
-            security: row['Create View'].match(/(?<=SQL SECURITY ).*?(?=\s)/gs)[0],
-            updateOption: row['Create View'].match(/(?<=WITH ).*?(?=\s)/gs) ? row['Create View'].match(/(?<=WITH ).*?(?=\s)/gs)[0] : '',
-            sql: row['Create View'].match(/(?<=AS ).*?$/gs)[0],
-            name: row.View
-         };
-      })[0];
+      return {
+         algorithm: algorithm[0]['Create View'].match(/(?<=CREATE ALGORITHM=).*?(?=\s)/gs)[0],
+         definer: viewInfo[0].DEFINER,
+         security: viewInfo[0].SECURITY_TYPE,
+         updateOption: viewInfo[0].CHECK_OPTION === 'NONE' ? '' : viewInfo[0].CHECK_OPTION,
+         sql: viewInfo[0].VIEW_DEFINITION,
+         name: viewInfo[0].TABLE_NAME
+      };
    }
 
    async dropView (params: { schema: string; view: string }) {
@@ -955,7 +951,7 @@ export class MySQLClient extends AntaresCore {
          USE \`${view.schema}\`; 
          ALTER ALGORITHM = ${view.algorithm}${view.definer ? ` DEFINER=${view.definer}` : ''} 
          SQL SECURITY ${view.security} 
-         params \`${view.schema}\`.\`${view.oldName}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}
+         VIEW \`${view.schema}\`.\`${view.oldName}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}
       `;
 
       if (view.name !== view.oldName)

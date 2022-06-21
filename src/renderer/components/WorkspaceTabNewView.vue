@@ -144,17 +144,9 @@ const originalView = ref(null);
 const localView = ref(null);
 const editorHeight = ref(300);
 
-const workspace = computed(() => {
-   return getWorkspace(props.connection.uid);
-});
-
-const isChanged = computed(() => {
-   return JSON.stringify(originalView.value) !== JSON.stringify(localView.value);
-});
-
-const isDefinerInUsers = computed(() => {
-   return originalView.value ? workspace.value.users.some(user => originalView.value.definer === `\`${user.name}\`@\`${user.host}\``) : true;
-});
+const workspace = computed(() => getWorkspace(props.connection.uid));
+const isChanged = computed(() => JSON.stringify(originalView.value) !== JSON.stringify(localView.value));
+const isDefinerInUsers = computed(() => originalView.value ? workspace.value.users.some(user => originalView.value.definer === `\`${user.name}\`@\`${user.host}\``) : true);
 
 const users = computed(() => {
    const users = [{ value: '' }, ...workspace.value.users];

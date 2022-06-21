@@ -1,6 +1,6 @@
 <template>
    <ConfirmModal
-      :confirm-text="$t('word.confirm')"
+      :confirm-text="t('word.confirm')"
       size="medium"
       class="options-modal"
       @confirm="confirmIndexesChange"
@@ -9,7 +9,7 @@
       <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-key mdi-rotate-45 mr-1" />
-            <span class="cut-text">{{ $t('word.indexes') }} "{{ table }}"</span>
+            <span class="cut-text">{{ t('word.indexes') }} "{{ table }}"</span>
          </div>
       </template>
       <template #body>
@@ -20,16 +20,16 @@
                      <div class="d-flex">
                         <button class="btn btn-dark btn-sm d-flex" @click="addIndex">
                            <i class="mdi mdi-24px mdi-key-plus mr-1" />
-                           <span>{{ $t('word.add') }}</span>
+                           <span>{{ t('word.add') }}</span>
                         </button>
                         <button
                            class="btn btn-dark btn-sm d-flex ml-2 mr-0"
-                           :title="$t('message.clearChanges')"
+                           :title="t('message.clearChanges')"
                            :disabled="!isChanged"
                            @click.prevent="clearChanges"
                         >
                            <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
-                           <span>{{ $t('word.clear') }}</span>
+                           <span>{{ t('word.clear') }}</span>
                         </button>
                      </div>
                   </div>
@@ -50,12 +50,12 @@
                            <div class="tile-title">
                               {{ index.name }}
                            </div>
-                           <small class="tile-subtitle text-gray">{{ index.type }} · {{ index.fields.length }} {{ $tc('word.field', index.fields.length) }}</small>
+                           <small class="tile-subtitle text-gray">{{ index.type }} · {{ index.fields.length }} {{ t('word.field', index.fields.length) }}</small>
                         </div>
                         <div class="tile-action">
                            <button
                               class="btn btn-link remove-field p-0 mr-2"
-                              :title="$t('word.delete')"
+                              :title="t('word.delete')"
                               @click.prevent="removeIndex(index._antares_id)"
                            >
                               <i class="mdi mdi-close" />
@@ -74,7 +74,7 @@
                >
                   <div class="form-group">
                      <label class="form-label col-3">
-                        {{ $t('word.name') }}
+                        {{ t('word.name') }}
                      </label>
                      <div class="column">
                         <input
@@ -86,20 +86,20 @@
                   </div>
                   <div class="form-group">
                      <label class="form-label col-3">
-                        {{ $t('word.type') }}
+                        {{ t('word.type') }}
                      </label>
                      <div class="column">
                         <BaseSelect
                            v-model="selectedIndexObj.type"
                            :options="indexTypes"
-                           :option-disabled="(opt) => opt === 'PRIMARY'"
+                           :option-disabled="(opt: any) => opt === 'PRIMARY'"
                            class="form-select"
                         />
                      </div>
                   </div>
                   <div class="form-group">
                      <label class="form-label col-3">
-                        {{ $tc('word.field', fields.length) }}
+                        {{ t('word.field', fields.length) }}
                      </label>
                      <div class="fields-list column pt-1">
                         <label
@@ -108,7 +108,7 @@
                            class="form-checkbox m-0"
                            @click.prevent="toggleField(field.name)"
                         >
-                           <input type="checkbox" :checked="selectedIndexObj.fields.some(f => f === field.name)">
+                           <input type="checkbox" :checked="selectedIndexObj.fields.some((f: string) => f === field.name)">
                            <i class="form-icon" /> {{ field.name }}
                         </label>
                      </div>
@@ -119,11 +119,11 @@
                      <i class="mdi mdi-key-outline mdi-48px" />
                   </div>
                   <p class="empty-title h5">
-                     {{ $t('message.thereAreNoIndexes') }}
+                     {{ t('message.thereAreNoIndexes') }}
                   </p>
                   <div class="empty-action">
                      <button class="btn btn-primary" @click="addIndex">
-                        {{ $t('message.createNewIndex') }}
+                        {{ t('message.createNewIndex') }}
                      </button>
                   </div>
                </div>
@@ -133,116 +133,113 @@
    </ConfirmModal>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, onMounted, onUnmounted, Prop, Ref, ref } from 'vue';
+import { TableField } from 'common/interfaces/antares';
 import { uidGen } from 'common/libs/uidGen';
-import ConfirmModal from '@/components/BaseConfirmModal';
+import { useI18n } from 'vue-i18n';
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 
-export default {
-   name: 'WorkspaceTabPropsTableIndexesModal',
-   components: {
-      ConfirmModal,
-      BaseSelect
-   },
-   props: {
-      localIndexes: Array,
-      table: String,
-      fields: Array,
-      workspace: Object,
-      indexTypes: Array
-   },
-   emits: ['hide', 'indexes-update'],
-   data () {
-      return {
-         indexesProxy: [],
-         isOptionsChanging: false,
-         selectedIndexID: '',
-         modalInnerHeight: 400
-      };
-   },
-   computed: {
-      selectedIndexObj () {
-         return this.indexesProxy.find(index => index._antares_id === this.selectedIndexID);
-      },
-      isChanged () {
-         return JSON.stringify(this.localIndexes) !== JSON.stringify(this.indexesProxy);
-      },
-      hasPrimary () {
-         return this.indexesProxy.some(index => index.type === 'PRIMARY');
-      }
-   },
-   mounted () {
-      this.indexesProxy = JSON.parse(JSON.stringify(this.localIndexes));
+const { t } = useI18n();
 
-      if (this.indexesProxy.length)
-         this.resetSelectedID();
+const props = defineProps({
+   localIndexes: Array,
+   table: String,
+   fields: Array as Prop<TableField[]>,
+   workspace: Object,
+   indexTypes: Array
+});
 
-      this.getModalInnerHeight();
-      window.addEventListener('resize', this.getModalInnerHeight);
-   },
-   unmounted () {
-      window.removeEventListener('resize', this.getModalInnerHeight);
-   },
-   methods: {
-      confirmIndexesChange () {
-         this.indexesProxy = this.indexesProxy.filter(index => index.fields.length);
-         this.$emit('indexes-update', this.indexesProxy);
-      },
-      selectIndex (event, id) {
-         if (this.selectedIndexID !== id && !event.target.classList.contains('remove-field'))
-            this.selectedIndexID = id;
-      },
-      getModalInnerHeight () {
-         const modalBody = document.querySelector('.modal-body');
-         if (modalBody)
-            this.modalInnerHeight = modalBody.clientHeight - (parseFloat(getComputedStyle(modalBody).paddingTop) + parseFloat(getComputedStyle(modalBody).paddingBottom));
-      },
-      addIndex () {
-         this.indexesProxy = [...this.indexesProxy, {
-            _antares_id: uidGen(),
-            name: 'NEW_INDEX',
-            fields: [],
-            type: 'INDEX',
-            comment: '',
-            indexType: 'BTREE',
-            indexComment: '',
-            cardinality: 0
-         }];
+const emit = defineEmits(['hide', 'indexes-update']);
 
-         if (this.indexesProxy.length === 1)
-            this.resetSelectedID();
+const indexesPanel: Ref<HTMLDivElement> = ref(null);
+const indexesProxy = ref([]);
+const selectedIndexID = ref('');
+const modalInnerHeight = ref(400);
 
-         setTimeout(() => {
-            this.$refs.indexesPanel.scrollTop = this.$refs.indexesPanel.scrollHeight + 60;
-         }, 20);
-      },
-      removeIndex (id) {
-         this.indexesProxy = this.indexesProxy.filter(index => index._antares_id !== id);
+const selectedIndexObj = computed(() => indexesProxy.value.find(index => index._antares_id === selectedIndexID.value));
+const isChanged = computed(() => JSON.stringify(props.localIndexes) !== JSON.stringify(indexesProxy.value));
 
-         if (this.selectedIndexID === id && this.indexesProxy.length)
-            this.resetSelectedID();
-      },
-      clearChanges () {
-         this.indexesProxy = JSON.parse(JSON.stringify(this.localIndexes));
-         if (!this.indexesProxy.some(index => index._antares_id === this.selectedIndexID))
-            this.resetSelectedID();
-      },
-      toggleField (field) {
-         this.indexesProxy = this.indexesProxy.map(index => {
-            if (index._antares_id === this.selectedIndexID) {
-               if (index.fields.includes(field))
-                  index.fields = index.fields.filter(f => f !== field);
-               else
-                  index.fields.push(field);
-            }
-            return index;
-         });
-      },
-      resetSelectedID () {
-         this.selectedIndexID = this.indexesProxy.length ? this.indexesProxy[0]._antares_id : '';
-      }
-   }
+const confirmIndexesChange = () => {
+   indexesProxy.value = indexesProxy.value.filter(index => index.fields.length);
+   emit('indexes-update', indexesProxy.value);
 };
+
+const selectIndex = (event: MouseEvent, id: string) => {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   if (selectedIndexID.value !== id && !(event.target as any).classList.contains('remove-field'))
+      selectedIndexID.value = id;
+};
+
+const getModalInnerHeight = () => {
+   const modalBody = document.querySelector('.modal-body');
+   if (modalBody)
+      modalInnerHeight.value = modalBody.clientHeight - (parseFloat(getComputedStyle(modalBody).paddingTop) + parseFloat(getComputedStyle(modalBody).paddingBottom));
+};
+
+const addIndex = () => {
+   indexesProxy.value = [...indexesProxy.value, {
+      _antares_id: uidGen(),
+      name: 'NEW_INDEX',
+      fields: [],
+      type: 'INDEX',
+      comment: '',
+      indexType: 'BTREE',
+      indexComment: '',
+      cardinality: 0
+   }];
+
+   if (indexesProxy.value.length === 1)
+      resetSelectedID();
+
+   setTimeout(() => {
+      indexesPanel.value.scrollTop = indexesPanel.value.scrollHeight + 60;
+   }, 20);
+};
+
+const removeIndex = (id: string) => {
+   indexesProxy.value = indexesProxy.value.filter(index => index._antares_id !== id);
+
+   if (selectedIndexID.value === id && indexesProxy.value.length)
+      resetSelectedID();
+};
+
+const clearChanges = () => {
+   indexesProxy.value = JSON.parse(JSON.stringify(props.localIndexes));
+   if (!indexesProxy.value.some(index => index._antares_id === selectedIndexID.value))
+      resetSelectedID();
+};
+
+const toggleField = (field: string) => {
+   indexesProxy.value = indexesProxy.value.map(index => {
+      if (index._antares_id === selectedIndexID.value) {
+         if (index.fields.includes(field))
+            index.fields = index.fields.filter((f: string) => f !== field);
+         else
+            index.fields.push(field);
+      }
+      return index;
+   });
+};
+
+const resetSelectedID = () => {
+   selectedIndexID.value = indexesProxy.value.length ? indexesProxy.value[0]._antares_id : '';
+};
+
+onMounted(() => {
+   indexesProxy.value = JSON.parse(JSON.stringify(props.localIndexes));
+
+   if (indexesProxy.value.length)
+      resetSelectedID();
+
+   getModalInnerHeight();
+   window.addEventListener('resize', getModalInnerHeight);
+});
+
+onUnmounted(() => {
+   window.removeEventListener('resize', getModalInnerHeight);
+});
 </script>
 
 <style lang="scss" scoped>

@@ -11,7 +11,7 @@ export default class {
       return ipcRenderer.invoke('drop-routine', unproxify(params));
    }
 
-   static alterRoutine (params: { routine: AlterRoutineParams & { uid: string } }): Promise<IpcResponse> {
+   static alterRoutine (params: { uid: string; routine: AlterRoutineParams }): Promise<IpcResponse> {
       return ipcRenderer.invoke('alter-routine', unproxify(params));
    }
 

@@ -1,12 +1,20 @@
-// TODO: unfinished
 import Tables from '@/ipc-api/Tables';
-import { ref } from 'vue';
+import { Component, Ref, ref } from 'vue';
+import { useNotificationsStore } from '@/stores/notifications';
+import { TableDeleteParams, TableUpdateParams } from 'common/interfaces/tableApis';
+const { addNotification } = useNotificationsStore();
 
-export default function useResultTables (uid, reloadTable, addNotification) {
-   const tableRef = ref(null);
+export function useResultTables (uid: string, reloadTable: () => void) {
+   const queryTable: Ref<Component & {
+      resetSort: () => void;
+      resizeResults: () => void;
+      refreshScroller: () => void;
+      downloadTable: (format: string, fileName: string) => void;
+      applyUpdate: (payload: TableUpdateParams) => void;
+   }> = ref(null);
    const isQuering = ref(false);
 
-   async function updateField (payload) {
+   async function updateField (payload: TableUpdateParams) {
       isQuering.value = true;
 
       const params = {
@@ -20,7 +28,7 @@ export default function useResultTables (uid, reloadTable, addNotification) {
             if (response.reload)// Needed for blob fields
                reloadTable();
             else
-               tableRef.value.applyUpdate(payload);
+               queryTable.value.applyUpdate(payload);
          }
          else
             addNotification({ status: 'error', message: response });
@@ -32,7 +40,7 @@ export default function useResultTables (uid, reloadTable, addNotification) {
       isQuering.value = false;
    }
 
-   async function deleteSelected (payload) {
+   async function deleteSelected (payload: TableDeleteParams) {
       isQuering.value = true;
 
       const params = {
@@ -56,7 +64,7 @@ export default function useResultTables (uid, reloadTable, addNotification) {
    }
 
    return {
-      tableRef,
+      queryTable,
       isQuering,
       updateField,
       deleteSelected

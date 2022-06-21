@@ -92,13 +92,15 @@ export interface TableInfos {
    collation: string;
 }
 
+export type TableOptions = Partial<TableInfos>;
+
 export interface TableField {
    // eslint-disable-next-line camelcase
    _antares_id?: string;
    name: string;
-   key: string;
    type: string;
    schema: string;
+   table?: string;
    numPrecision?: number;
    numLength?: number;
    datePrecision?: number;
@@ -109,6 +111,7 @@ export interface TableField {
    zerofill?: boolean;
    order?: number;
    default?: string;
+   defaultType?: string;
    enumValues?: string;
    charset?: string;
    collation?: string;
@@ -118,7 +121,11 @@ export interface TableField {
    comment?: string;
    after?: string;
    orgName?: string;
-   length?: number;
+   length?: number | false;
+   alias: string;
+   tableAlias: string;
+   orgTable: string;
+   key?: 'pri' | 'uni';
 }
 
 export interface TableIndex {
@@ -136,6 +143,8 @@ export interface TableIndex {
 }
 
 export interface TableForeign {
+   // eslint-disable-next-line camelcase
+   _antares_id?: string;
    constraintName: string;
    refSchema: string;
    table: string;
@@ -145,15 +154,6 @@ export interface TableForeign {
    onUpdate: string;
    onDelete: string;
    oldName?: string;
-}
-
-export interface TableOptions {
-   name: string;
-   type?: 'table' | 'view';
-   engine?: string;
-   comment?: string;
-   collation?: string;
-   autoIncrement?: number;
 }
 
 export interface CreateTableParams {
@@ -236,15 +236,12 @@ export interface CreateTriggerParams {
 export interface AlterTriggerParams extends CreateTriggerParams {
    oldName?: string;
 }
-export interface TriggerFunctionInfos {
-   name: string;
-   type: string;
-   security: string;
-}
 
 // Routines & Functions
 
 export interface FunctionParam {
+   // eslint-disable-next-line camelcase
+   _antares_id: string;
    context: string;
    name: string;
    type: string;
@@ -267,9 +264,11 @@ export interface RoutineInfos {
    parameters?: FunctionParam[];
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    returns?: any;
+   returnsLength?: number;
 }
 
 export type FunctionInfos = RoutineInfos
+export type TriggerFunctionInfos = FunctionInfos
 
 export interface CreateRoutineParams {
    name: string;
@@ -309,29 +308,6 @@ export interface AlterFunctionParams extends CreateFunctionParams {
 
 // Events
 export interface EventInfos {
-   name: string;
-   definition: string;
-   type: string;
-   definer: string;
-   body: string;
-   starts: string;
-   ends: string;
-   enabled: boolean;
-   executeAt: string;
-   intervalField: string;
-   intervalValue: string;
-   onCompletion: string;
-   originator: string;
-   sqlMode: string;
-   created: string;
-   updated: string;
-   lastExecuted: string;
-   comment: string;
-   charset: string;
-   timezone: string;
-}
-
-export interface CreateEventParams {
    definer?: string;
    schema: string;
    name: string;
@@ -340,11 +316,14 @@ export interface CreateEventParams {
    starts: string;
    ends: string;
    at: string;
-   preserve: string;
+   preserve: boolean;
    state: string;
    comment: string;
+   enabled?: boolean;
    sql: string;
 }
+
+export type CreateEventParams = EventInfos;
 
 export interface AlterEventParams extends CreateEventParams {
    oldName?: string;
@@ -397,17 +376,10 @@ export interface QueryParams {
    tabUid?: string;
 }
 
-export interface QueryField {
-   name: string;
-   alias: string;
-   orgName: string;
-   schema: string;
-   table: string;
-   tableAlias: string;
-   orgTable: string;
-   type: string;
-   length: number;
-}
+/**
+ * @deprecated Use TableFIeld
+ */
+export type QueryField = TableField
 
 export interface QueryForeign {
    schema: string;

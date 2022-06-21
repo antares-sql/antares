@@ -201,7 +201,7 @@ const {
    changeBreadcrumbs
 } = workspacesStore;
 
-const indexTable: Ref<Component & {$refs: { tableWrapper: HTMLDivElement }}> = ref(null);
+const indexTable: Ref<Component & { tableWrapper: HTMLDivElement }> = ref(null);
 const firstInput: Ref<HTMLInputElement> = ref(null);
 const isLoading = ref(false);
 const isSaving = ref(false);
@@ -336,7 +336,7 @@ const addField = () => {
    });
 
    setTimeout(() => {
-      const scrollable = indexTable.value.$refs.tableWrapper;
+      const scrollable = indexTable.value.tableWrapper;
       scrollable.scrollTop = scrollable.scrollHeight + 30;
    }, 20);
 };
@@ -364,7 +364,7 @@ const duplicateField = (uid: string) => {
    localFields.value = [...localFields.value, fieldToClone];
 
    setTimeout(() => {
-      const scrollable = indexTable.value.$refs.tableWrapper;
+      const scrollable = indexTable.value.tableWrapper;
       scrollable.scrollTop = scrollable.scrollHeight + 30;
    }, 20);
 };

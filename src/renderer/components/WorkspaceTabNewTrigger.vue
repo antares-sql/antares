@@ -85,12 +85,12 @@
                         />
                         <div v-if="customizations.triggerMultipleEvents" class="px-4">
                            <label
-                              v-for="event in Object.keys(localEvents)"
+                              v-for="event in Object.keys(localEvents) as ('INSERT' | 'UPDATE' | 'DELETE')[]"
                               :key="event"
                               class="form-checkbox form-inline"
-                              @change.prevent="changeEvents(event as 'INSERT' | 'UPDATE' | 'DELETE')"
+                              @change.prevent="changeEvents(event)"
                            >
-                              <input :checked="localEvents[event as 'INSERT' | 'UPDATE' | 'DELETE']" type="checkbox"><i class="form-icon" /> {{ event }}
+                              <input :checked="localEvents[event]" type="checkbox"><i class="form-icon" /> {{ event }}
                            </label>
                         </div>
                      </div>

@@ -1,6 +1,6 @@
 import { ipcRenderer } from 'electron';
 import { unproxify } from '../libs/unproxify';
-import { AlterTableParams, CreateTableParams, IpcResponse, TableForeign, TableIndex, TableInfos } from 'common/interfaces/antares';
+import { AlterTableParams, CreateTableParams, IpcResponse } from 'common/interfaces/antares';
 
 export default class {
    static getTableColumns (params: {schema: string; table: string }): Promise<IpcResponse> {
@@ -27,15 +27,15 @@ export default class {
       return ipcRenderer.invoke('get-table-count', unproxify(params));
    }
 
-   static getTableOptions (params: { uid: string; schema: string; table: string }): Promise<IpcResponse<TableInfos>> {
+   static getTableOptions (params: { uid: string; schema: string; table: string }): Promise<IpcResponse> {
       return ipcRenderer.invoke('get-table-options', unproxify(params));
    }
 
-   static getTableIndexes (params: { uid: string; schema: string; table: string }): Promise<IpcResponse<TableIndex[]>> {
+   static getTableIndexes (params: { uid: string; schema: string; table: string }): Promise<IpcResponse> {
       return ipcRenderer.invoke('get-table-indexes', unproxify(params));
    }
 
-   static getKeyUsage (params: { uid: string; schema: string; table: string }): Promise<IpcResponse<TableForeign[]>> {
+   static getKeyUsage (params: { uid: string; schema: string; table: string }): Promise<IpcResponse> {
       return ipcRenderer.invoke('get-key-usage', unproxify(params));
    }
 

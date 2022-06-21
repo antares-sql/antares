@@ -82,7 +82,7 @@ export default class {
       return ipcRenderer.invoke('get-processes', uid);
    }
 
-   static killProcess (params: { uid: string; pid: string }): Promise<IpcResponse> {
+   static killProcess (params: { uid: string; pid: number }): Promise<IpcResponse> {
       return ipcRenderer.invoke('kill-process', unproxify(params));
    }
 
