@@ -4,11 +4,6 @@
    </div>
 </template>
 
-<script>
-export default {
-   name: 'BaseLoader'
-};
-</script>
 <style scoped>
 .empty {
   position: absolute;

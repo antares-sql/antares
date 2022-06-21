@@ -8,23 +8,23 @@
                   :class="{'active': selectedTab === 'general'}"
                   @click="selectTab('general')"
                >
-                  <a class="tab-link">{{ $t('word.general') }}</a>
+                  <a class="tab-link">{{ t('word.general') }}</a>
                </li>
                <li
-                  v-if="customizations.sslConnection"
+                  v-if="clientCustomizations.sslConnection"
                   class="tab-item c-hand"
                   :class="{'active': selectedTab === 'ssl'}"
                   @click="selectTab('ssl')"
                >
-                  <a class="tab-link">{{ $t('word.ssl') }}</a>
+                  <a class="tab-link">{{ t('word.ssl') }}</a>
                </li>
                <li
-                  v-if="customizations.sshConnection"
+                  v-if="clientCustomizations.sshConnection"
                   class="tab-item c-hand"
                   :class="{'active': selectedTab === 'ssh'}"
                   @click="selectTab('ssh')"
                >
-                  <a class="tab-link">{{ $t('word.sshTunnel') }}</a>
+                  <a class="tab-link">{{ t('word.sshTunnel') }}</a>
                </li>
             </ul>
          </div>
@@ -34,7 +34,7 @@
                   <fieldset class="m-0" :disabled="isBusy">
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.connectionName') }}</label>
+                           <label class="form-label cut-text">{{ t('word.connectionName') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -47,7 +47,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.client') }}</label>
+                           <label class="form-label cut-text">{{ t('word.client') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseSelect
@@ -61,7 +61,7 @@
                      </div>
                      <div v-if="connection.client === 'pg'" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.connectionString') }}</label>
+                           <label class="form-label cut-text">{{ t('word.connectionString') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -72,9 +72,9 @@
                            >
                         </div>
                      </div>
-                     <div v-if="!customizations.fileConnection" class="form-group columns">
+                     <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.hostName') }}/IP</label>
+                           <label class="form-label cut-text">{{ t('word.hostName') }}/IP</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -84,22 +84,22 @@
                            >
                         </div>
                      </div>
-                     <div v-if="customizations.fileConnection" class="form-group columns">
+                     <div v-if="clientCustomizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.database') }}</label>
+                           <label class="form-label cut-text">{{ t('word.database') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
                               :model-value="connection.databasePath"
-                              :message="$t('word.browse')"
+                              :message="t('word.browse')"
                               @clear="pathClear('databasePath')"
                               @change="pathSelection($event, 'databasePath')"
                            />
                         </div>
                      </div>
-                     <div v-if="!customizations.fileConnection" class="form-group columns">
+                     <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.port') }}</label>
+                           <label class="form-label cut-text">{{ t('word.port') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -111,9 +111,9 @@
                            >
                         </div>
                      </div>
-                     <div v-if="customizations.database" class="form-group columns">
+                     <div v-if="clientCustomizations.database" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.database') }}</label>
+                           <label class="form-label cut-text">{{ t('word.database') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -123,9 +123,9 @@
                            >
                         </div>
                      </div>
-                     <div v-if="!customizations.fileConnection" class="form-group columns">
+                     <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.user') }}</label>
+                           <label class="form-label cut-text">{{ t('word.user') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -136,9 +136,9 @@
                            >
                         </div>
                      </div>
-                     <div v-if="!customizations.fileConnection" class="form-group columns">
+                     <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.password') }}</label>
+                           <label class="form-label cut-text">{{ t('word.password') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -149,32 +149,32 @@
                            >
                         </div>
                      </div>
-                     <div v-if="customizations.connectionSchema" class="form-group columns">
+                     <div v-if="clientCustomizations.connectionSchema" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.schema') }}</label>
+                           <label class="form-label cut-text">{{ t('word.schema') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
                               v-model="connection.schema"
                               class="form-input"
                               type="text"
-                              :placeholder="$t('word.all')"
+                              :placeholder="t('word.all')"
                            >
                         </div>
                      </div>
-                     <div v-if="customizations.readOnlyMode" class="form-group columns">
+                     <div v-if="clientCustomizations.readOnlyMode" class="form-group columns">
                         <div class="column col-4 col-sm-12" />
                         <div class="column col-8 col-sm-12">
                            <label class="form-checkbox form-inline">
-                              <input v-model="connection.readonly" type="checkbox"><i class="form-icon" /> {{ $t('message.readOnlyMode') }}
+                              <input v-model="connection.readonly" type="checkbox"><i class="form-icon" /> {{ t('message.readOnlyMode') }}
                            </label>
                         </div>
                      </div>
-                     <div v-if="!customizations.fileConnection" class="form-group columns">
+                     <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12" />
                         <div class="column col-8 col-sm-12">
                            <label class="form-checkbox form-inline">
-                              <input v-model="connection.ask" type="checkbox"><i class="form-icon" /> {{ $t('message.askCredentials') }}
+                              <input v-model="connection.ask" type="checkbox"><i class="form-icon" /> {{ t('message.askCredentials') }}
                            </label>
                         </div>
                      </div>
@@ -188,7 +188,7 @@
                   <div class="form-group columns">
                      <div class="column col-4 col-sm-12">
                         <label class="form-label cut-text">
-                           {{ $t('message.enableSsl') }}
+                           {{ t('message.enableSsl') }}
                         </label>
                      </div>
                      <div class="column col-8 col-sm-12">
@@ -201,12 +201,12 @@
                   <fieldset class="m-0" :disabled="isBusy || !connection.ssl">
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.privateKey') }}</label>
+                           <label class="form-label cut-text">{{ t('word.privateKey') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
                               :model-value="connection.key"
-                              :message="$t('word.browse')"
+                              :message="t('word.browse')"
                               @clear="pathClear('key')"
                               @change="pathSelection($event, 'key')"
                            />
@@ -214,12 +214,12 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.certificate') }}</label>
+                           <label class="form-label cut-text">{{ t('word.certificate') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
                               :model-value="connection.cert"
-                              :message="$t('word.browse')"
+                              :message="t('word.browse')"
                               @clear="pathClear('cert')"
                               @change="pathSelection($event, 'cert')"
                            />
@@ -227,12 +227,12 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.caCertificate') }}</label>
+                           <label class="form-label cut-text">{{ t('word.caCertificate') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
                               :model-value="connection.ca"
-                              :message="$t('word.browse')"
+                              :message="t('word.browse')"
                               @clear="pathClear('ca')"
                               @change="pathSelection($event, 'ca')"
                            />
@@ -240,7 +240,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.ciphers') }}</label>
+                           <label class="form-label cut-text">{{ t('word.ciphers') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -255,7 +255,7 @@
                         <div class="column col-4 col-sm-12" />
                         <div class="column col-8 col-sm-12">
                            <label class="form-checkbox form-inline">
-                              <input v-model="connection.untrustedConnection" type="checkbox"><i class="form-icon" /> {{ $t('message.untrustedConnection') }}
+                              <input v-model="connection.untrustedConnection" type="checkbox"><i class="form-icon" /> {{ t('message.untrustedConnection') }}
                            </label>
                         </div>
                      </div>
@@ -269,7 +269,7 @@
                   <div class="form-group columns">
                      <div class="column col-4 col-sm-12">
                         <label class="form-label cut-text">
-                           {{ $t('message.enableSsh') }}
+                           {{ t('message.enableSsh') }}
                         </label>
                      </div>
                      <div class="column col-8 col-sm-12">
@@ -282,7 +282,7 @@
                   <fieldset class="m-0" :disabled="isBusy || !connection.ssh">
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.hostName') }}/IP</label>
+                           <label class="form-label cut-text">{{ t('word.hostName') }}/IP</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -294,7 +294,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.user') }}</label>
+                           <label class="form-label cut-text">{{ t('word.user') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -306,7 +306,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.password') }}</label>
+                           <label class="form-label cut-text">{{ t('word.password') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -318,7 +318,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.port') }}</label>
+                           <label class="form-label cut-text">{{ t('word.port') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -332,12 +332,12 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.privateKey') }}</label>
+                           <label class="form-label cut-text">{{ t('word.privateKey') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
                               :model-value="connection.sshKey"
-                              :message="$t('word.browse')"
+                              :message="t('word.browse')"
                               @clear="pathClear('sshKey')"
                               @change="pathSelection($event, 'sshKey')"
                            />
@@ -345,7 +345,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ $t('word.passphrase') }}</label>
+                           <label class="form-label cut-text">{{ t('word.passphrase') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -368,7 +368,7 @@
                @click="startTest"
             >
                <i class="mdi mdi-24px mdi-lightning-bolt mr-1" />
-               {{ $t('message.testConnection') }}
+               {{ t('message.testConnection') }}
             </button>
             <button
                id="connection-save"
@@ -377,7 +377,7 @@
                @click="saveConnection"
             >
                <i class="mdi mdi-24px mdi-content-save mr-1" />
-               {{ $t('word.save') }}
+               {{ t('word.save') }}
             </button>
          </div>
       </div>
@@ -389,188 +389,171 @@
    </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, Ref, ref, watch } from 'vue';
 import customizations from 'common/customizations';
 import Connection from '@/ipc-api/Connection';
 import { uidGen } from 'common/libs/uidGen';
 import { useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import ModalAskCredentials from '@/components/ModalAskCredentials';
-import BaseUploadInput from '@/components/BaseUploadInput';
+import ModalAskCredentials from '@/components/ModalAskCredentials.vue';
+import BaseUploadInput from '@/components/BaseUploadInput.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import { ConnectionParams } from 'common/interfaces/antares';
+import { useI18n } from 'vue-i18n';
 
-export default {
-   name: 'WorkspaceAddConnectionPanel',
-   components: {
-      ModalAskCredentials,
-      BaseUploadInput,
-      BaseSelect
-   },
-   setup () {
-      const { addConnection } = useConnectionsStore();
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+const { t } = useI18n();
 
-      const { connectWorkspace, selectWorkspace } = workspacesStore;
+const { addConnection } = useConnectionsStore();
+const { addNotification } = useNotificationsStore();
+const workspacesStore = useWorkspacesStore();
 
-      return {
-         addConnection,
-         addNotification,
-         connectWorkspace,
-         selectWorkspace
-      };
-   },
-   data () {
-      return {
-         clients: [
-            { name: 'MySQL', slug: 'mysql' },
-            { name: 'MariaDB', slug: 'maria' },
-            { name: 'PostgreSQL', slug: 'pg' },
-            { name: 'SQLite', slug: 'sqlite' }
-         ],
-         connection: {
-            name: '',
-            client: 'mysql',
-            host: '127.0.0.1',
-            database: null,
-            databasePath: '',
-            port: null,
-            user: null,
-            password: '',
-            ask: false,
-            readonly: false,
-            uid: uidGen('C'),
-            ssl: false,
-            cert: '',
-            key: '',
-            ca: '',
-            ciphers: '',
-            untrustedConnection: false,
-            ssh: false,
-            sshHost: '',
-            sshUser: '',
-            sshPass: '',
-            sshKey: '',
-            sshPort: 22,
-            pgConnString: ''
-         },
-         isConnecting: false,
-         isTesting: false,
-         isAsking: false,
-         selectedTab: 'general'
-      };
-   },
-   computed: {
-      customizations () {
-         return customizations[this.connection.client];
-      },
-      isBusy () {
-         return this.isConnecting || this.isTesting;
+const { connectWorkspace, selectWorkspace } = workspacesStore;
+
+const clients = ref([
+   { name: 'MySQL', slug: 'mysql' },
+   { name: 'MariaDB', slug: 'maria' },
+   { name: 'PostgreSQL', slug: 'pg' },
+   { name: 'SQLite', slug: 'sqlite' }
+]);
+
+const connection = ref({
+   name: '',
+   client: 'mysql',
+   host: '127.0.0.1',
+   database: null,
+   databasePath: '',
+   port: null,
+   user: null,
+   password: '',
+   ask: false,
+   readonly: false,
+   uid: uidGen('C'),
+   ssl: false,
+   cert: '',
+   key: '',
+   ca: '',
+   ciphers: '',
+   untrustedConnection: false,
+   ssh: false,
+   sshHost: '',
+   sshUser: '',
+   sshPass: '',
+   sshKey: '',
+   sshPort: 22,
+   pgConnString: ''
+}) as Ref<ConnectionParams & { pgConnString: string }>;
+
+const firstInput: Ref<HTMLInputElement> = ref(null);
+const isConnecting = ref(false);
+const isTesting = ref(false);
+const isAsking = ref(false);
+const selectedTab = ref('general');
+
+const clientCustomizations = computed(() => {
+   return customizations[connection.value.client];
+});
+
+const isBusy = computed(() => {
+   return isConnecting.value || isTesting.value;
+});
+
+watch(() => connection.value.client, () => {
+   connection.value.user = clientCustomizations.value.defaultUser;
+   connection.value.port = clientCustomizations.value.defaultPort;
+   connection.value.database = clientCustomizations.value.defaultDatabase;
+});
+
+const setDefaults = () => {
+   connection.value.user = clientCustomizations.value.defaultUser;
+   connection.value.port = clientCustomizations.value.defaultPort;
+   connection.value.database = clientCustomizations.value.defaultDatabase;
+};
+
+const startTest = async () => {
+   isTesting.value = true;
+
+   if (connection.value.ask)
+      isAsking.value = true;
+   else {
+      try {
+         const res = await Connection.makeTest(connection.value);
+         if (res.status === 'error')
+            addNotification({ status: 'error', message: res.response.message || res.response.toString() });
+         else
+            addNotification({ status: 'success', message: t('message.connectionSuccessfullyMade') });
       }
-   },
-   watch: {
-      'connection.client' () {
-         this.connection.user = this.customizations.defaultUser;
-         this.connection.port = this.customizations.defaultPort;
-         this.connection.database = this.customizations.defaultDatabase;
+      catch (err) {
+         addNotification({ status: 'error', message: err.stack });
       }
-   },
-   created () {
-      this.setDefaults();
 
-      setTimeout(() => {
-         if (this.$refs.firstInput) this.$refs.firstInput.focus();
-      }, 20);
-   },
-   methods: {
-      setDefaults () {
-         this.connection.user = this.customizations.defaultUser;
-         this.connection.port = this.customizations.defaultPort;
-         this.connection.database = this.customizations.defaultDatabase;
-      },
-      async startConnection () {
-         await this.saveConnection();
-         this.isConnecting = true;
-
-         if (this.connection.ask)
-            this.isAsking = true;
-         else {
-            await this.connectWorkspace(this.connection);
-            this.isConnecting = false;
-         }
-      },
-      async startTest () {
-         this.isTesting = true;
-
-         if (this.connection.ask)
-            this.isAsking = true;
-         else {
-            try {
-               const res = await Connection.makeTest(this.connection);
-               if (res.status === 'error')
-                  this.addNotification({ status: 'error', message: res.response.message || res.response.toString() });
-               else
-                  this.addNotification({ status: 'success', message: this.$t('message.connectionSuccessfullyMade') });
-            }
-            catch (err) {
-               this.addNotification({ status: 'error', message: err.stack });
-            }
-
-            this.isTesting = false;
-         }
-      },
-      async continueTest (credentials) { // if "Ask for credentials" is true
-         this.isAsking = false;
-         const params = Object.assign({}, this.connection, credentials);
-         try {
-            if (this.isConnecting) {
-               const params = Object.assign({}, this.connection, credentials);
-               await this.connectWorkspace(params);
-               this.isConnecting = false;
-            }
-            else {
-               const res = await Connection.makeTest(params);
-               if (res.status === 'error')
-                  this.addNotification({ status: 'error', message: res.response.message || res.response.toString() });
-               else
-                  this.addNotification({ status: 'success', message: this.$t('message.connectionSuccessfullyMade') });
-            }
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.isTesting = false;
-      },
-      async saveConnection () {
-         await this.addConnection(this.connection);
-         this.selectWorkspace(this.connection.uid);
-      },
-      closeAsking () {
-         this.isTesting = false;
-         this.isAsking = false;
-      },
-      selectTab (tab) {
-         this.selectedTab = tab;
-      },
-      toggleSsl () {
-         this.connection.ssl = !this.connection.ssl;
-      },
-      toggleSsh () {
-         this.connection.ssh = !this.connection.ssh;
-      },
-      pathSelection (event, name) {
-         const { files } = event.target;
-         if (!files.length) return;
-
-         this.connection[name] = files[0].path;
-      },
-      pathClear (name) {
-         this.connection[name] = '';
-      }
+      isTesting.value = false;
    }
 };
+
+const continueTest = async (credentials: { user: string; password: string }) => { // if "Ask for credentials" is true
+   isAsking.value = false;
+   const params = Object.assign({}, connection.value, credentials);
+
+   try {
+      if (isConnecting.value) {
+         await connectWorkspace(params);
+         isConnecting.value = false;
+      }
+      else {
+         const res = await Connection.makeTest(params);
+         if (res.status === 'error')
+            addNotification({ status: 'error', message: res.response.message || res.response.toString() });
+         else
+            addNotification({ status: 'success', message: t('message.connectionSuccessfullyMade') });
+      }
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   isTesting.value = false;
+};
+
+const saveConnection = async () => {
+   await addConnection(connection.value);
+   selectWorkspace(connection.value.uid);
+};
+
+const closeAsking = () => {
+   isTesting.value = false;
+   isAsking.value = false;
+};
+
+const selectTab = (tab: string) => {
+   selectedTab.value = tab;
+};
+
+const toggleSsl = () => {
+   connection.value.ssl = !connection.value.ssl;
+};
+
+const toggleSsh = () => {
+   connection.value.ssh = !connection.value.ssh;
+};
+
+const pathSelection = (event: Event & {target: {files: {path: string}[]}}, name: keyof ConnectionParams) => {
+   const { files } = event.target;
+   if (!files.length) return;
+
+   (connection.value as unknown as {[key: string]: string})[name] = files[0].path as string;
+};
+
+const pathClear = (name: keyof ConnectionParams) => {
+   (connection.value as unknown as {[key: string]: string})[name] = '';
+};
+
+setDefaults();
+
+setTimeout(() => {
+   if (firstInput.value) firstInput.value.focus();
+}, 20);
 </script>
 
 <style lang="scss" scoped>

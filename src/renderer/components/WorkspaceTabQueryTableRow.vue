@@ -19,7 +19,7 @@
                class="cell-content"
                :class="`${isNull(col)} ${typeClass(fields[cKey].type)}`"
                @dblclick="editON(cKey)"
-            >{{ cutText(typeFormat(col, fields[cKey].type.toLowerCase(), fields[cKey].length)) }}</span>
+            >{{ cutText(typeFormat(col, fields[cKey].type.toLowerCase(), fields[cKey].length) as string) }}</span>
             <ForeignKeySelect
                v-else-if="isForeignKey(cKey)"
                v-model="editingContent"
@@ -68,14 +68,14 @@
       </div>
       <ConfirmModal
          v-if="isTextareaEditor"
-         :confirm-text="$t('word.update')"
+         :confirm-text="t('word.update')"
          size="medium"
          @confirm="editOFF"
          @hide="hideEditorModal"
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-playlist-edit mr-1" /> <span class="cut-text">{{ $t('word.edit') }} "{{ editingField }}"</span>
+               <i class="mdi mdi-24px mdi-playlist-edit mr-1" /> <span class="cut-text">{{ t('word.edit') }} "{{ editingField }}"</span>
             </div>
          </template>
          <template #body>
@@ -90,7 +90,7 @@
                <div class="editor-field-info p-vcentered">
                   <div class="d-flex p-vcentered">
                      <label for="editorMode" class="form-label mr-2">
-                        <b>{{ $t('word.content') }}</b>:
+                        <b>{{ t('word.content') }}</b>:
                      </label>
                      <BaseSelect
                         id="editorMode"
@@ -104,10 +104,10 @@
                   <div class="d-flex">
                      <div class="p-vcentered">
                         <div class="mr-4">
-                           <b>{{ $t('word.size') }}</b>: {{ editingContent ? editingContent.length : 0 }}
+                           <b>{{ t('word.size') }}</b>: {{ editingContent ? editingContent.length : 0 }}
                         </div>
                         <div v-if="editingType">
-                           <b>{{ $t('word.type') }}</b>: {{ editingType.toUpperCase() }}
+                           <b>{{ t('word.type') }}</b>: {{ editingType.toUpperCase() }}
                         </div>
                      </div>
                   </div>
@@ -132,14 +132,14 @@
       </ConfirmModal>
       <ConfirmModal
          v-if="isBlobEditor"
-         :confirm-text="$t('word.update')"
+         :confirm-text="t('word.update')"
          @confirm="editOFF"
          @hide="hideEditorModal"
       >
          <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-playlist-edit mr-1" />
-               <span class="cut-text">{{ $t('word.edit') }} "{{ editingField }}"</span>
+               <span class="cut-text">{{ t('word.edit') }} "{{ editingField }}"</span>
             </div>
          </template>
          <template #body>
@@ -156,11 +156,11 @@
                      </div>
                      <div class="editor-buttons mt-2">
                         <button class="btn btn-link btn-sm" @click="downloadFile">
-                           <span>{{ $t('word.download') }}</span>
+                           <span>{{ t('word.download') }}</span>
                            <i class="mdi mdi-24px mdi-download ml-1" />
                         </button>
                         <button class="btn btn-link btn-sm" @click="prepareToDelete">
-                           <span>{{ $t('word.delete') }}</span>
+                           <span>{{ t('word.delete') }}</span>
                            <i class="mdi mdi-24px mdi-delete-forever ml-1" />
                         </button>
                      </div>
@@ -168,19 +168,19 @@
                </Transition>
                <div class="editor-field-info">
                   <div>
-                     <b>{{ $t('word.size') }}</b>: {{ formatBytes(editingContent.length) }}<br>
-                     <b>{{ $t('word.mimeType') }}</b>: {{ contentInfo.mime }}
+                     <b>{{ t('word.size') }}</b>: {{ formatBytes(editingContent.length) }}<br>
+                     <b>{{ t('word.mimeType') }}</b>: {{ contentInfo.mime }}
                   </div>
                   <div v-if="editingType">
-                     <b>{{ $t('word.type') }}</b>: {{ editingType.toUpperCase() }}
+                     <b>{{ t('word.type') }}</b>: {{ editingType.toUpperCase() }}
                   </div>
                </div>
                <div class="mt-3">
-                  <label>{{ $t('message.uploadFile') }}</label>
+                  <label>{{ t('message.uploadFile') }}</label>
                   <input
                      class="form-input"
                      type="file"
-                     @change="filesChange($event)"
+                     @change="filesChange($event as any)"
                   >
                </div>
             </div>
@@ -189,13 +189,15 @@
    </div>
 </template>
 
-<script>
-import moment from 'moment';
+<script setup lang="ts">
+import { computed, onBeforeUnmount, Prop, ref, Ref, watch, nextTick } from 'vue';
+import { useI18n } from 'vue-i18n';
+import * as moment from 'moment';
 import { ModelOperations } from '@vscode/vscode-languagedetection';
 import { mimeFromHex } from 'common/libs/mimeFromHex';
 import { formatBytes } from 'common/libs/formatBytes';
 import { bufferToBase64 } from 'common/libs/bufferToBase64';
-import hexToBinary from 'common/libs/hexToBinary';
+import hexToBinary, { HexChar } from 'common/libs/hexToBinary';
 import {
    TEXT,
    LONG_TEXT,
@@ -213,413 +215,423 @@ import {
    SPATIAL,
    IS_MULTI_SPATIAL
 } from 'common/fieldTypes';
-import ConfirmModal from '@/components/BaseConfirmModal';
-import TextEditor from '@/components/BaseTextEditor';
-import BaseMap from '@/components/BaseMap';
-import ForeignKeySelect from '@/components/ForeignKeySelect';
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import TextEditor from '@/components/BaseTextEditor.vue';
+import BaseMap from '@/components/BaseMap.vue';
+import ForeignKeySelect from '@/components/ForeignKeySelect.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import { QueryForeign, TableField } from 'common/interfaces/antares';
 
-export default {
-   name: 'WorkspaceTabQueryTableRow',
-   components: {
-      ConfirmModal,
-      TextEditor,
-      ForeignKeySelect,
-      BaseMap,
-      BaseSelect
-   },
-   props: {
-      row: Object,
-      fields: Object,
-      keyUsage: Array,
-      itemHeight: Number,
-      elementType: { type: String, default: 'table' },
-      selected: { type: Boolean, default: false },
-      selectedCell: { type: String, default: null }
-   },
-   emits: ['update-field', 'select-row', 'contextmenu', 'start-editing', 'stop-editing'],
-   data () {
-      return {
-         isInlineEditor: {},
-         isTextareaEditor: false,
-         isBlobEditor: false,
-         isMapModal: false,
-         isMultiSpatial: false,
-         willBeDeleted: false,
-         originalContent: null,
-         editingContent: null,
-         editingType: null,
-         editingField: null,
-         editingLength: null,
-         editorMode: 'text',
-         contentInfo: {
-            ext: '',
-            mime: '',
-            size: null
-         },
-         fileToUpload: null,
-         availableLanguages: [
-            { name: 'TEXT', slug: 'text', id: 'text' },
-            { name: 'HTML', slug: 'html', id: 'html' },
-            { name: 'XML', slug: 'xml', id: 'xml' },
-            { name: 'JSON', slug: 'json', id: 'json' },
-            { name: 'SVG', slug: 'svg', id: 'svg' },
-            { name: 'INI', slug: 'ini', id: 'ini' },
-            { name: 'MARKDOWN', slug: 'markdown', id: 'md' },
-            { name: 'YAML', slug: 'yaml', id: 'yaml' }
-         ]
-      };
-   },
-   computed: {
-      inputProps () {
-         if ([...TEXT, ...LONG_TEXT].includes(this.editingType))
-            return { type: 'text', mask: false };
+const { t } = useI18n();
 
-         if ([...NUMBER, ...FLOAT].includes(this.editingType))
-            return { type: 'number', mask: false };
+const props = defineProps({
+   row: Object,
+   fields: Object as Prop<{
+      [key: string]: TableField;
+   }>,
+   keyUsage: Array as Prop<QueryForeign[]>,
+   itemHeight: Number,
+   elementType: { type: String, default: 'table' },
+   selected: { type: Boolean, default: false },
+   selectedCell: { type: String, default: null }
+});
 
-         if (TIME.includes(this.editingType)) {
-            let timeMask = '##:##:##';
-            const precision = this.fields[this.editingField].length;
+const emit = defineEmits(['update-field', 'select-row', 'contextmenu', 'start-editing', 'stop-editing']);
 
-            for (let i = 0; i < precision; i++)
-               timeMask += i === 0 ? '.#' : '#';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isInlineEditor: Ref<any> = ref({});
+const isTextareaEditor = ref(false);
+const isBlobEditor = ref(false);
+const isMapModal = ref(false);
+const isMultiSpatial = ref(false);
+const willBeDeleted = ref(false);
+const originalContent = ref(null);
+const editingContent = ref(null);
+const editingType = ref(null);
+const editingField = ref(null);
+const editingLength = ref(null);
+const editorMode = ref('text');
+const contentInfo = ref({
+   ext: '',
+   mime: '',
+   size: null
+});
+const fileToUpload = ref(null);
+const availableLanguages = ref([
+   { name: 'TEXT', slug: 'text', id: 'text' },
+   { name: 'HTML', slug: 'html', id: 'html' },
+   { name: 'XML', slug: 'xml', id: 'xml' },
+   { name: 'JSON', slug: 'json', id: 'json' },
+   { name: 'SVG', slug: 'svg', id: 'svg' },
+   { name: 'INI', slug: 'ini', id: 'ini' },
+   { name: 'MARKDOWN', slug: 'markdown', id: 'md' },
+   { name: 'YAML', slug: 'yaml', id: 'yaml' }
+]);
 
-            if (HAS_TIMEZONE.includes(this.editingType))
-               timeMask += 'X##';
+const inputProps = computed(() => {
+   if ([...TEXT, ...LONG_TEXT].includes(editingType.value))
+      return { type: 'text', mask: false };
 
-            return { type: 'text', mask: timeMask };
-         }
+   if ([...NUMBER, ...FLOAT].includes(editingType.value))
+      return { type: 'number', mask: false };
 
-         if (DATE.includes(this.editingType))
-            return { type: 'text', mask: '####-##-##' };
+   if (TIME.includes(editingType.value)) {
+      let timeMask = '##:##:##';
+      const precision = props.fields[editingField.value].length;
 
-         if (DATETIME.includes(this.editingType)) {
-            let datetimeMask = '####-##-## ##:##:##';
-            const precision = this.fields[this.editingField].length;
+      for (let i = 0; i < precision; i++)
+         timeMask += i === 0 ? '.#' : '#';
 
-            for (let i = 0; i < precision; i++)
-               datetimeMask += i === 0 ? '.#' : '#';
+      if (HAS_TIMEZONE.includes(editingType.value))
+         timeMask += 'X##';
 
-            if (HAS_TIMEZONE.includes(this.editingType))
-               datetimeMask += 'X##';
+      return { type: 'text', mask: timeMask };
+   }
 
-            return { type: 'text', mask: datetimeMask };
-         }
+   if (DATE.includes(editingType.value))
+      return { type: 'text', mask: '####-##-##' };
 
-         if (BLOB.includes(this.editingType))
-            return { type: 'file', mask: false };
+   if (DATETIME.includes(editingType.value)) {
+      let datetimeMask = '####-##-## ##:##:##';
+      const precision = props.fields[editingField.value].length;
 
-         if (BOOLEAN.includes(this.editingType))
-            return { type: 'boolean', mask: false };
+      for (let i = 0; i < precision; i++)
+         datetimeMask += i === 0 ? '.#' : '#';
 
-         if (SPATIAL.includes(this.editingType))
-            return { type: 'map', mask: false };
+      if (HAS_TIMEZONE.includes(editingType.value))
+         datetimeMask += 'X##';
 
-         return { type: 'text', mask: false };
-      },
-      isImage () {
-         return ['gif', 'jpg', 'png', 'bmp', 'ico', 'tif'].includes(this.contentInfo.ext);
-      },
-      foreignKeys () {
-         return this.keyUsage.map(key => key.field);
-      },
-      isEditable () {
-         if (this.elementType === 'view') return false;
+      return { type: 'text', mask: datetimeMask };
+   }
 
-         if (this.fields) {
-            const nElements = Object.keys(this.fields).reduce((acc, curr) => {
-               acc.add(this.fields[curr].table);
-               acc.add(this.fields[curr].schema);
-               return acc;
-            }, new Set([]));
+   if (BLOB.includes(editingType.value))
+      return { type: 'file', mask: false };
 
-            if (nElements.size > 2) return false;
+   if (BOOLEAN.includes(editingType.value))
+      return { type: 'boolean', mask: false };
 
-            return !!(this.fields[Object.keys(this.fields)[0]].schema && this.fields[Object.keys(this.fields)[0]].table);
-         }
+   if (SPATIAL.includes(editingType.value))
+      return { type: 'map', mask: false };
 
-         return false;
-      },
-      isBaseSelectField () {
-         return this.isForeignKey(this.editingField) || this.inputProps.type === 'boolean' || this.enumArray;
-      },
-      enumArray () {
-         if (this.fields[this.editingField] && this.fields[this.editingField].enumValues)
-            return this.fields[this.editingField].enumValues.replaceAll('\'', '').split(',');
-         return false;
-      }
-   },
-   watch: {
-      fields () {
-         Object.keys(this.fields).forEach(field => {
-            this.isInlineEditor[field.name] = false;
-         });
-      },
-      isTextareaEditor (val) {
-         if (val) {
-            const modelOperations = new ModelOperations();
-            (async () => {
-               const detected = await modelOperations.runModel(this.editingContent);
-               const filteredLanguages = detected.filter(dLang =>
-                  this.availableLanguages.some(aLang => aLang.id === dLang.languageId) &&
-                     dLang.confidence > 0.1
-               );
+   return { type: 'text', mask: false };
+});
 
-               if (filteredLanguages.length)
-                  this.editorMode = this.availableLanguages.find(lang => lang.id === filteredLanguages[0].languageId).slug;
-            })();
-         }
-      },
-      selected (isSelected) {
-         if (isSelected)
-            window.addEventListener('keydown', this.onKey);
+const isImage = computed(() => {
+   return ['gif', 'jpg', 'png', 'bmp', 'ico', 'tif'].includes(contentInfo.value.ext);
+});
 
-         else {
-            this.editOFF();
-            window.removeEventListener('keydown', this.onKey);
-         }
-      }
-   },
-   beforeUnmount () {
-      if (this.selected)
-         window.removeEventListener('keydown', this.onKey);
-   },
-   methods: {
-      isForeignKey (key) {
-         if (key.includes('.'))
-            key = key.split('.').pop();
+const foreignKeys = computed(() => {
+   return props.keyUsage.map(key => key.field);
+});
 
-         return this.foreignKeys.includes(key);
-      },
-      isNull (value) {
-         return value === null ? ' is-null' : '';
-      },
-      typeClass (type) {
-         if (type)
-            return `type-${type.toLowerCase().replaceAll(' ', '_').replaceAll('"', '')}`;
-         return '';
-      },
-      bufferToBase64 (val) {
-         return bufferToBase64(val);
-      },
-      editON (field) {
-         if (!this.isEditable || this.editingType === 'none') return;
+const isEditable = computed(() => {
+   if (props.elementType === 'view') return false;
 
-         const content = this.row[field];
-         const type = this.fields[field].type.toUpperCase();
-         this.originalContent = this.typeFormat(content, type, this.fields[field].length);
-         this.editingType = type;
-         this.editingField = field;
-         this.editingLength = this.fields[field].length;
+   if (props.fields) {
+      const nElements = Object.keys(props.fields).reduce((acc, curr) => {
+         acc.add(props.fields[curr].table);
+         acc.add(props.fields[curr].schema);
+         return acc;
+      }, new Set([]));
 
-         if ([...LONG_TEXT, ...ARRAY, ...TEXT_SEARCH].includes(type)) {
-            this.isTextareaEditor = true;
-            this.editingContent = this.typeFormat(content, type);
-            this.$emit('start-editing', field);
-            return;
-         }
+      if (nElements.size > 2) return false;
 
-         if (SPATIAL.includes(type)) {
-            if (content) {
-               this.isMultiSpatial = IS_MULTI_SPATIAL.includes(type);
-               this.isMapModal = true;
-               this.editingContent = this.typeFormat(content, type);
-            }
-            this.$emit('start-editing', field);
-            return;
-         }
+      return !!(props.fields[Object.keys(props.fields)[0]].schema && props.fields[Object.keys(props.fields)[0]].table);
+   }
 
-         if (BLOB.includes(type)) {
-            this.isBlobEditor = true;
-            this.editingContent = content || '';
-            this.fileToUpload = null;
-            this.willBeDeleted = false;
+   return false;
+});
 
-            if (content !== null) {
-               const buff = Buffer.from(this.editingContent);
-               if (buff.length) {
-                  const hex = buff.toString('hex').substring(0, 8).toUpperCase();
-                  const { ext, mime } = mimeFromHex(hex);
-                  this.contentInfo = {
-                     ext,
-                     mime,
-                     size: this.editingContent.length
-                  };
-               }
-            }
-            this.$emit('start-editing', field);
-            return;
-         }
+const isBaseSelectField = computed(() => {
+   return isForeignKey(editingField.value) || inputProps.value.type === 'boolean' || enumArray.value;
+});
 
-         // Inline editable fields
-         this.editingContent = this.originalContent;
+const enumArray = computed(() => {
+   if (props.fields[editingField.value] && props.fields[editingField.value].enumValues)
+      return props.fields[editingField.value].enumValues.replaceAll('\'', '').split(',');
+   return false;
+});
 
-         const obj = { [field]: true };
-         this.isInlineEditor = { ...this.isInlineEditor, ...obj };
+const isForeignKey = (key: string) => {
+   if (key) {
+      if (key.includes('.'))
+         key = key.split('.').pop();
 
-         this.$nextTick(() => { // Focus on input
-            document.querySelector('.editable-field').focus();
-         });
-
-         this.$emit('start-editing', field);
-      },
-      editOFF () {
-         if (!this.editingField) return;
-
-         this.isInlineEditor[this.editingField] = false;
-         let content;
-         if (!BLOB.includes(this.editingType)) {
-            if ([...DATETIME, ...TIME].includes(this.editingType)) {
-               if (this.editingContent.substring(this.editingContent.length - 1) === '.')
-                  this.editingContent = this.editingContent.slice(0, -1);
-            }
-
-            // If not changed
-            if (this.editingContent === this.typeFormat(this.originalContent, this.editingType, this.editingLength)) {
-               this.editingType = null;
-               this.editingField = null;
-               this.$emit('stop-editing', this.editingField);
-               return;
-            }
-
-            content = this.editingContent;
-         }
-         else { // Handle file upload
-            if (this.willBeDeleted) {
-               content = '';
-               this.willBeDeleted = false;
-            }
-            else {
-               if (!this.fileToUpload) return;
-               content = this.fileToUpload.file.path;
-            }
-         }
-
-         this.$emit('update-field', {
-            field: this.fields[this.editingField].name,
-            type: this.editingType,
-            content
-         });
-
-         this.$emit('stop-editing', this.editingField);
-
-         this.editingType = null;
-         this.editingField = null;
-      },
-      hideEditorModal () {
-         this.isTextareaEditor = false;
-         this.isBlobEditor = false;
-         this.isMapModal = false;
-         this.isMultiSpatial = false;
-         this.$emit('stop-editing', this.editingField);
-      },
-      downloadFile () {
-         const downloadLink = document.createElement('a');
-
-         downloadLink.href = `data:${this.contentInfo.mime};base64, ${bufferToBase64(this.editingContent)}`;
-         downloadLink.setAttribute('download', `${this.editingField}.${this.contentInfo.ext}`);
-         document.body.appendChild(downloadLink);
-
-         downloadLink.click();
-         downloadLink.remove();
-      },
-      filesChange (event) {
-         const { files } = event.target;
-         if (!files.length) return;
-
-         this.fileToUpload = { name: files[0].name, file: files[0] };
-         this.willBeDeleted = false;
-      },
-      prepareToDelete () {
-         this.editingContent = '';
-         this.contentInfo = {
-            ext: '',
-            mime: '',
-            size: null
-         };
-         this.willBeDeleted = true;
-      },
-      selectRow (event, field) {
-         this.$emit('select-row', event, this.row, field);
-      },
-      getKeyUsage (keyName) {
-         if (keyName.includes('.'))
-            return this.keyUsage.find(key => key.field === keyName.split('.').pop());
-         return this.keyUsage.find(key => key.field === keyName);
-      },
-      openContext (event, payload) {
-         payload.field = this.fields[payload.orgField].name;// Ensures field name only
-         payload.isEditable = this.isEditable;
-         this.$emit('contextmenu', event, payload);
-      },
-      onKey (e) {
-         e.stopPropagation();
-
-         if (!this.editingField && e.key === 'Enter')
-            return this.editON(this.selectedCell);
-
-         if (this.editingField && e.key === 'Enter' && !this.isBaseSelectField)
-            return this.editOFF();
-
-         if (this.editingField && e.key === 'Escape') {
-            this.isInlineEditor[this.editingField] = false;
-            this.editingField = null;
-            this.$emit('stop-editing', this.editingField);
-         }
-      },
-      formatBytes,
-      cutText (val) {
-         if (typeof val !== 'string') return val;
-         return val.length > 128 ? `${val.substring(0, 128)}[...]` : val;
-      },
-      typeFormat (val, type, precision) {
-         if (!val) return val;
-
-         type = type.toUpperCase();
-
-         if (DATE.includes(type))
-            return moment(val).isValid() ? moment(val).format('YYYY-MM-DD') : val;
-
-         if (DATETIME.includes(type)) {
-            if (typeof val === 'string')
-               return val;
-
-            let datePrecision = '';
-            for (let i = 0; i < precision; i++)
-               datePrecision += i === 0 ? '.S' : 'S';
-
-            return moment(val).isValid() ? moment(val).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`) : val;
-         }
-
-         if (BLOB.includes(type)) {
-            const buff = Buffer.from(val);
-            if (!buff.length) return '';
-
-            const hex = buff.toString('hex').substring(0, 8).toUpperCase();
-            return `${mimeFromHex(hex).mime} (${formatBytes(buff.length)})`;
-         }
-
-         if (BIT.includes(type)) {
-            if (typeof val === 'number') val = [val];
-            const hex = Buffer.from(val).toString('hex');
-            const bitString = hexToBinary(hex);
-            return parseInt(bitString).toString().padStart(precision, '0');
-         }
-
-         if (ARRAY.includes(type)) {
-            if (Array.isArray(val))
-               return JSON.stringify(val).replaceAll('[', '{').replaceAll(']', '}');
-            return val;
-         }
-
-         if (SPATIAL.includes(type))
-            return val;
-
-         return typeof val === 'object' ? JSON.stringify(val) : val;
-      }
+      return foreignKeys.value.includes(key);
    }
 };
+
+const isNull = (value: null | string | number) => {
+   return value === null ? ' is-null' : '';
+};
+
+const typeClass = (type: string) => {
+   if (type)
+      return `type-${type.toLowerCase().replaceAll(' ', '_').replaceAll('"', '')}`;
+   return '';
+};
+
+const editON = async (field: string) => {
+   if (!isEditable.value || editingType.value === 'none') return;
+
+   const content = props.row[field];
+   const type = props.fields[field].type.toUpperCase();
+   originalContent.value = typeFormat(content, type, props.fields[field].length);
+   editingType.value = type;
+   editingField.value = field;
+   editingLength.value = props.fields[field].length;
+
+   if ([...LONG_TEXT, ...ARRAY, ...TEXT_SEARCH].includes(type)) {
+      isTextareaEditor.value = true;
+      editingContent.value = typeFormat(content, type);
+      emit('start-editing', field);
+      return;
+   }
+
+   if (SPATIAL.includes(type)) {
+      if (content) {
+         isMultiSpatial.value = IS_MULTI_SPATIAL.includes(type);
+         isMapModal.value = true;
+         editingContent.value = typeFormat(content, type);
+      }
+      emit('start-editing', field);
+      return;
+   }
+
+   if (BLOB.includes(type)) {
+      isBlobEditor.value = true;
+      editingContent.value = content || '';
+      fileToUpload.value = null;
+      willBeDeleted.value = false;
+
+      if (content !== null) {
+         const buff = Buffer.from(editingContent.value);
+         if (buff.length) {
+            const hex = buff.toString('hex').substring(0, 8).toUpperCase();
+            const { ext, mime } = mimeFromHex(hex);
+            contentInfo.value = {
+               ext,
+               mime,
+               size: editingContent.value.length
+            };
+         }
+      }
+      emit('start-editing', field);
+      return;
+   }
+
+   // Inline editable fields
+   editingContent.value = originalContent.value;
+
+   const obj = { [field]: true };
+   isInlineEditor.value = { ...isInlineEditor.value, ...obj };
+   nextTick(() => {
+      document.querySelector<HTMLInputElement>('.editable-field').focus();
+   });
+
+   emit('start-editing', field);
+};
+
+const editOFF = () => {
+   if (!editingField.value) return;
+
+   isInlineEditor.value[editingField.value] = false;
+   let content;
+   if (!BLOB.includes(editingType.value)) {
+      if ([...DATETIME, ...TIME].includes(editingType.value)) {
+         if (editingContent.value.substring(editingContent.value.length - 1) === '.')
+            editingContent.value = editingContent.value.slice(0, -1);
+      }
+
+      // If not changed
+      if (editingContent.value === typeFormat(originalContent.value, editingType.value, editingLength.value)) {
+         editingType.value = null;
+         editingField.value = null;
+         emit('stop-editing', editingField.value);
+         return;
+      }
+
+      content = editingContent.value;
+   }
+   else { // Handle file upload
+      if (willBeDeleted.value) {
+         content = '';
+         willBeDeleted.value = false;
+      }
+      else {
+         if (!fileToUpload.value) return;
+         content = fileToUpload.value.file.path;
+      }
+   }
+
+   emit('update-field', {
+      field: props.fields[editingField.value].name,
+      type: editingType.value,
+      content
+   });
+
+   emit('stop-editing', editingField.value);
+
+   editingType.value = null;
+   editingField.value = null;
+};
+
+const hideEditorModal = () => {
+   isTextareaEditor.value = false;
+   isBlobEditor.value = false;
+   isMapModal.value = false;
+   isMultiSpatial.value = false;
+   emit('stop-editing', editingField.value);
+};
+
+const downloadFile = () => {
+   const downloadLink = document.createElement('a');
+
+   downloadLink.href = `data:${contentInfo.value.mime};base64, ${bufferToBase64(editingContent.value)}`;
+   downloadLink.setAttribute('download', `${editingField.value}.${contentInfo.value.ext}`);
+   document.body.appendChild(downloadLink);
+
+   downloadLink.click();
+   downloadLink.remove();
+};
+
+const filesChange = (event: Event & {target: {files: {name: string}[]}}) => {
+   const { files } = event.target;
+   if (!files.length) return;
+
+   fileToUpload.value = { name: files[0].name, file: files[0] };
+   willBeDeleted.value = false;
+};
+
+const prepareToDelete = () => {
+   editingContent.value = '';
+   contentInfo.value = {
+      ext: '',
+      mime: '',
+      size: null
+   };
+   willBeDeleted.value = true;
+};
+
+const selectRow = (event: Event, field: string) => {
+   emit('select-row', event, props.row, field);
+};
+
+const getKeyUsage = (keyName: string) => {
+   if (keyName.includes('.'))
+      return props.keyUsage.find(key => key.field === keyName.split('.').pop());
+   return props.keyUsage.find(key => key.field === keyName);
+};
+
+const openContext = (event: MouseEvent, payload: { id: string; field?: string; orgField: string; isEditable?: boolean }) => {
+   payload.field = props.fields[payload.orgField].name;// Ensures field name only
+   payload.isEditable = isEditable.value;
+   emit('contextmenu', event, payload);
+};
+
+const onKey = (e: KeyboardEvent) => {
+   e.stopPropagation();
+
+   if (!editingField.value && e.key === 'Enter')
+      return editON(props.selectedCell);
+
+   if (editingField.value && e.key === 'Enter' && !isBaseSelectField.value)
+      return editOFF();
+
+   if (editingField.value && e.key === 'Escape') {
+      isInlineEditor.value[editingField.value] = false;
+      editingField.value = null;
+      emit('stop-editing', editingField.value);
+   }
+};
+
+const cutText = (val: string) => {
+   if (typeof val !== 'string') return val;
+   return val.length > 128 ? `${val.substring(0, 128)}[...]` : val;
+};
+
+const typeFormat = (val: string | number | Date | number[], type: string, precision?: number | false) => {
+   if (!val) return val;
+
+   type = type.toUpperCase();
+
+   if (DATE.includes(type))
+      return moment(val).isValid() ? moment(val).format('YYYY-MM-DD') : val;
+
+   if (DATETIME.includes(type)) {
+      if (typeof val === 'string')
+         return val;
+
+      let datePrecision = '';
+      for (let i = 0; i < precision; i++)
+         datePrecision += i === 0 ? '.S' : 'S';
+
+      return moment(val).isValid() ? moment(val).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`) : val;
+   }
+
+   if (BLOB.includes(type)) {
+      const buff = Buffer.from(val as string);
+      if (!buff.length) return '';
+
+      const hex = buff.toString('hex').substring(0, 8).toUpperCase();
+      return `${mimeFromHex(hex).mime} (${formatBytes(buff.length)})`;
+   }
+
+   if (BIT.includes(type)) {
+      if (typeof val === 'number') val = [val] as number[];
+      const hex = Buffer.from(val as number[]).toString('hex') as unknown as HexChar[];
+      const bitString = hexToBinary(hex);
+      return parseInt(bitString).toString().padStart(Number(precision), '0');
+   }
+
+   if (ARRAY.includes(type)) {
+      if (Array.isArray(val))
+         return JSON.stringify(val).replaceAll('[', '{').replaceAll(']', '}');
+      return val;
+   }
+
+   if (SPATIAL.includes(type))
+      return val;
+
+   return typeof val === 'object' ? JSON.stringify(val) : val;
+};
+
+watch(() => props.fields, () => {
+   Object.keys(props.fields).forEach(field => {
+      isInlineEditor.value[field] = false;
+   });
+});
+
+watch(isTextareaEditor, (val) => {
+   if (val) {
+      const modelOperations = new ModelOperations();
+      (async () => {
+         const detected = await modelOperations.runModel(editingContent.value);
+         const filteredLanguages = detected.filter(dLang =>
+            availableLanguages.value.some(aLang => aLang.id === dLang.languageId) &&
+               dLang.confidence > 0.1
+         );
+
+         if (filteredLanguages.length)
+            editorMode.value = availableLanguages.value.find(lang => lang.id === filteredLanguages[0].languageId).slug;
+      })();
+   }
+});
+
+watch(() => props.selected, (isSelected) => {
+   if (isSelected)
+      window.addEventListener('keydown', onKey);
+
+   else {
+      editOFF();
+      window.removeEventListener('keydown', onKey);
+   }
+});
+
+onBeforeUnmount(() => {
+   if (props.selected)
+      window.removeEventListener('keydown', onKey);
+});
 </script>
 
 <style lang="scss">

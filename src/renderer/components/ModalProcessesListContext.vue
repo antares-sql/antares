@@ -1,14 +1,14 @@
 <template>
    <BaseContextMenu
-      :context-event="contextEvent"
+      :context-event="props.contextEvent"
       @close-context="closeContext"
    >
-      <div v-if="selectedRow" class="context-element">
+      <div v-if="props.selectedRow" class="context-element">
          <span class="d-flex"><i class="mdi mdi-18px mdi-content-copy text-light pr-1" /> {{ $t('word.copy') }}</span>
          <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
          <div class="context-submenu">
             <div
-               v-if="selectedRow"
+               v-if="props.selectedRow"
                class="context-element"
                @click="copyCell"
             >
@@ -17,7 +17,7 @@
                </span>
             </div>
             <div
-               v-if="selectedRow"
+               v-if="props.selectedRow"
                class="context-element"
                @click="copyRow"
             >
@@ -28,7 +28,7 @@
          </div>
       </div>
       <div
-         v-if="selectedRow"
+         v-if="props.selectedRow"
          class="context-element"
          @click="killProcess"
       >
@@ -39,38 +39,33 @@
    </BaseContextMenu>
 </template>
 
-<script>
-import BaseContextMenu from '@/components/BaseContextMenu';
+<script setup lang="ts">
+import BaseContextMenu from '@/components/BaseContextMenu.vue';
 
-export default {
-   name: 'ModalProcessesListContext',
-   components: {
-      BaseContextMenu
-   },
-   props: {
-      contextEvent: MouseEvent,
-      selectedRow: Number,
-      selectedCell: Object
-   },
-   emits: ['close-context', 'copy-cell', 'copy-row', 'kill-process'],
-   computed: {
-   },
-   methods: {
-      closeContext () {
-         this.$emit('close-context');
-      },
-      copyCell () {
-         this.$emit('copy-cell');
-         this.closeContext();
-      },
-      copyRow () {
-         this.$emit('copy-row');
-         this.closeContext();
-      },
-      killProcess () {
-         this.$emit('kill-process');
-         this.closeContext();
-      }
-   }
+const props = defineProps({
+   contextEvent: MouseEvent,
+   selectedRow: Number,
+   selectedCell: Object
+});
+
+const emit = defineEmits(['close-context', 'copy-cell', 'copy-row', 'kill-process']);
+
+const closeContext = () => {
+   emit('close-context');
+};
+
+const copyCell = () => {
+   emit('copy-cell');
+   closeContext();
+};
+
+const copyRow = () => {
+   emit('copy-row');
+   closeContext();
+};
+
+const killProcess = () => {
+   emit('kill-process');
+   closeContext();
 };
 </script>

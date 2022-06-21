@@ -27,7 +27,7 @@ const config = {
    name: 'renderer',
    mode: process.env.NODE_ENV,
    devtool: isDevMode ? 'eval-source-map' : false,
-   entry: path.join(__dirname, './src/renderer/index.js'),
+   entry: path.join(__dirname, './src/renderer/index.ts'),
    target: 'electron-renderer',
    output: {
       path: path.resolve(__dirname, 'dist'),
@@ -44,7 +44,7 @@ const config = {
          '@': path.resolve(__dirname, 'src/renderer'),
          common: path.resolve(__dirname, 'src/common')
       },
-      extensions: ['', '.js', '.vue', '.json'],
+      extensions: ['', '.js', '.vue', '.ts', '.json'],
       fallback: {
          fs: false,
          path: false,
@@ -89,12 +89,21 @@ const config = {
             exclude: /node_modules/
          },
          {
+            test: /\.vue$/,
+            loader: 'vue-loader'
+         },
+         {
             test: /\.node$/,
             use: 'node-loader'
          },
          {
-            test: /\.vue$/,
-            loader: 'vue-loader'
+            test: /\.ts$/,
+            exclude: /node_modules/,
+            loader: 'ts-loader',
+            options: {
+               appendTsSuffixTo: [/.vue$/],
+               transpileOnly: true
+            }
          },
          {
             test: /\.s(c|a)ss$/,

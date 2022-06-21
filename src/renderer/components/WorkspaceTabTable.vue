@@ -8,7 +8,7 @@
                      <button
                         class="btn btn-dark btn-sm mr-0 pr-1"
                         :class="{'loading':isQuering}"
-                        :title="`${$t('word.refresh')} (F5)`"
+                        :title="`${t('word.refresh')} (F5)`"
                         @click="reloadTable"
                      >
                         <i v-if="!+autorefreshTimer" class="mdi mdi-24px mdi-refresh mr-1" />
@@ -18,7 +18,7 @@
                         <i class="mdi mdi-24px mdi-menu-down" />
                      </div>
                      <div class="menu px-3">
-                        <span>{{ $t('word.autoRefresh') }}: <b>{{ +autorefreshTimer ? `${autorefreshTimer}s` : 'OFF' }}</b></span>
+                        <span>{{ t('word.autoRefresh') }}: <b>{{ +autorefreshTimer ? `${autorefreshTimer}s` : 'OFF' }}</b></span>
                         <input
                            v-model="autorefreshTimer"
                            class="slider no-border"
@@ -46,7 +46,7 @@
                            {{ page }}
                         </div>
                         <div class="menu px-3">
-                           <span>{{ $t('message.pageNumber') }}</span>
+                           <span>{{ t('message.pageNumber') }}</span>
                            <input
                               ref="pageSelect"
                               v-model="pageProxy"
@@ -72,7 +72,7 @@
 
                <button
                   class="btn btn-sm"
-                  :title="`${$t('word.filter')} (CTRL+F)`"
+                  :title="`${t('word.filter')} (CTRL+F)`"
                   :class="{'btn-primary': isSearch, 'btn-dark': !isSearch}"
                   @click="isSearch = !isSearch"
                >
@@ -95,7 +95,7 @@
                      tabindex="0"
                   >
                      <i class="mdi mdi-24px mdi-file-export mr-1" />
-                     <span>{{ $t('word.export') }}</span>
+                     <span>{{ t('word.export') }}</span>
                      <i class="mdi mdi-24px mdi-menu-down" />
                   </button>
                   <ul class="menu text-left">
@@ -112,22 +112,22 @@
                <div
                   v-if="results.length"
                   class="d-flex"
-                  :title="$t('message.queryDuration')"
+                  :title="t('message.queryDuration')"
                >
                   <i class="mdi mdi-timer-sand mdi-rotate-180 pr-1" /> <b>{{ results[0].duration / 1000 }}s</b>
                </div>
                <div v-if="results.length && results[0].rows">
-                  {{ $t('word.results') }}: <b>{{ localeString(results[0].rows.length) }}</b>
+                  {{ t('word.results') }}: <b>{{ localeString(results[0].rows.length) }}</b>
                </div>
                <div v-if="hasApproximately || (page > 1 && approximateCount)">
-                  {{ $t('word.total') }}: <b
-                     :title="!customizations.tableRealCount ? $t('word.approximately') : ''"
+                  {{ t('word.total') }}: <b
+                     :title="!customizations.tableRealCount ? t('word.approximately') : ''"
                   >
                      <span v-if="!customizations.tableRealCount">≈</span>
                      {{ localeString(approximateCount) }}
                   </b>
                </div>
-               <div class="d-flex" :title="$t('word.schema')">
+               <div class="d-flex" :title="t('word.schema')">
                   <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
                </div>
             </div>
@@ -156,14 +156,6 @@
             @hard-sort="hardSort"
          />
       </div>
-      <ModalNewTableRow
-         v-if="isAddModal"
-         :fields="fields"
-         :key-usage="keyUsage"
-         :tab-uid="tabUid"
-         @hide="hideAddModal"
-         @reload="reloadTable"
-      />
       <ModalFakerRows
          v-if="isFakerModal"
          :fields="fields"
@@ -175,300 +167,288 @@
    </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, onBeforeUnmount, Prop, ref, Ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
 import Tables from '@/ipc-api/Tables';
+import { useResultTables } from '@/composables/useResultTables';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import BaseLoader from '@/components/BaseLoader';
-import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable';
-import WorkspaceTabTableFilters from '@/components/WorkspaceTabTableFilters';
-import ModalNewTableRow from '@/components/ModalNewTableRow';
-import ModalFakerRows from '@/components/ModalFakerRows';
-import tableTabs from '@/mixins/tableTabs';
+import BaseLoader from '@/components/BaseLoader.vue';
+import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable.vue';
+import WorkspaceTabTableFilters from '@/components/WorkspaceTabTableFilters.vue';
+import ModalFakerRows from '@/components/ModalFakerRows.vue';
+import { ConnectionParams } from 'common/interfaces/antares';
+import { TableFilterClausole } from 'common/interfaces/tableApis';
 
-export default {
-   name: 'WorkspaceTabTable',
-   components: {
-      BaseLoader,
-      WorkspaceTabQueryTable,
-      WorkspaceTabTableFilters,
-      ModalNewTableRow,
-      ModalFakerRows
-   },
-   mixins: [tableTabs],
-   props: {
-      connection: Object,
-      isSelected: Boolean,
-      table: String,
-      schema: String,
-      elementType: String
-   },
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const settingsStore = useSettingsStore();
-      const workspacesStore = useWorkspacesStore();
+const { t } = useI18n();
 
-      const { dataTabLimit: limit } = storeToRefs(settingsStore);
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const props = defineProps({
+   connection: Object as Prop<ConnectionParams>,
+   isSelected: Boolean,
+   table: String,
+   schema: String,
+   elementType: String
+});
 
-      const { changeBreadcrumbs, getWorkspace } = workspacesStore;
+const reloadTable = () => getTableData();
 
-      return {
-         addNotification,
-         limit,
-         selectedWorkspace,
-         changeBreadcrumbs,
-         getWorkspace
-      };
-   },
-   data () {
-      return {
-         tabUid: 'data', // ???
-         isQuering: false,
-         isPageMenu: false,
-         isSearch: false,
-         results: [],
-         lastTable: null,
-         isAddModal: false,
-         isFakerModal: false,
-         autorefreshTimer: 0,
-         refreshInterval: null,
-         sortParams: {},
-         filters: [],
-         page: 1,
-         pageProxy: 1,
-         approximateCount: 0
-      };
-   },
-   computed: {
-      workspace () {
-         return this.getWorkspace(this.connection.uid);
-      },
-      customizations () {
-         return this.workspace.customizations;
-      },
-      isTable () {
-         return !!this.workspace.breadcrumbs.table;
-      },
-      fields () {
-         return this.results.length ? this.results[0].fields : [];
-      },
-      keyUsage () {
-         return this.results.length ? this.results[0].keys : [];
-      },
-      tableInfo () {
-         try {
-            return this.workspace.structure.find(db => db.name === this.schema).tables.find(table => table.name === this.table);
-         }
-         catch (err) {
-            return { rows: 0 };
-         }
-      },
-      hasApproximately () {
-         return this.results.length &&
-            this.results[0].rows &&
-            this.results[0].rows.length === this.limit &&
-            this.results[0].rows.length < this.approximateCount;
-      }
-   },
-   watch: {
-      schema () {
-         if (this.isSelected) {
-            this.page = 1;
-            this.approximateCount = 0;
-            this.sortParams = {};
-            this.getTableData();
-            this.lastTable = this.table;
-            this.$refs.queryTable.resetSort();
-         }
-      },
-      table () {
-         if (this.isSelected) {
-            this.page = 1;
-            this.approximateCount = 0;
-            this.sortParams = {};
-            this.getTableData();
-            this.lastTable = this.table;
-            this.$refs.queryTable.resetSort();
-         }
-      },
-      page (val, oldVal) {
-         if (val && val > 0 && val !== oldVal) {
-            this.pageProxy = this.page;
-            this.getTableData();
-         }
-      },
-      isSelected (val) {
-         if (val) {
-            this.changeBreadcrumbs({ schema: this.schema, [this.elementType]: this.table });
+const {
+   queryTable,
+   isQuering,
+   updateField,
+   deleteSelected
+} = useResultTables(props.connection.uid, reloadTable);
 
-            if (this.lastTable !== this.table)
-               this.getTableData();
-         }
-      },
-      isSearch (val) {
-         if (this.filters.length > 0 && !val) {
-            this.filters = [];
-            this.getTableData();
-         }
-         this.resizeScroller();
-      }
-   },
-   created () {
-      this.getTableData();
-      window.addEventListener('keydown', this.onKey);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-      clearInterval(this.refreshInterval);
-   },
-   methods: {
-      async getTableData () {
-         if (!this.table || !this.isSelected) return;
-         this.isQuering = true;
+const { addNotification } = useNotificationsStore();
+const settingsStore = useSettingsStore();
+const workspacesStore = useWorkspacesStore();
 
-         // if table changes clear cached values
-         if (this.lastTable !== this.table)
-            this.results = [];
+const { dataTabLimit: limit } = storeToRefs(settingsStore);
 
-         this.lastTable = this.table;
+const { changeBreadcrumbs, getWorkspace } = workspacesStore;
 
-         const params = {
-            uid: this.connection.uid,
-            schema: this.schema,
-            table: this.table,
-            limit: this.limit,
-            page: this.page,
-            sortParams: { ...this.sortParams },
-            where: [...this.filters] || []
-         };
+const pageSelect: Ref<HTMLInputElement> = ref(null);
+const tabUid = ref('data');
+const isPageMenu = ref(false);
+const isSearch = ref(false);
+const results = ref([]);
+const lastTable = ref(null);
+const isFakerModal = ref(false);
+const autorefreshTimer = ref(0);
+const refreshInterval = ref(null);
+const sortParams = ref({} as { field: string; dir: 'asc' | 'desc'});
+const filters = ref([]);
+const page = ref(1);
+const pageProxy = ref(1);
+const approximateCount = ref(0);
 
-         try { // Table data
-            const { status, response } = await Tables.getTableData(params);
+const workspace = computed(() => {
+   return getWorkspace(props.connection.uid);
+});
 
-            if (status === 'success')
-               this.results = [response];
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
+const customizations = computed(() => {
+   return workspace.value.customizations;
+});
 
-         if (this.results.length && this.results[0].rows.length === this.limit) {
-            try { // Table approximate count
-               const { status, response } = await Tables.getTableApproximateCount(params);
+const isTable = computed(() => {
+   return !!workspace.value.breadcrumbs.table;
+});
 
-               if (status === 'success')
-                  this.approximateCount = response;
-               else
-                  this.addNotification({ status: 'error', message: response });
-            }
-            catch (err) {
-               this.addNotification({ status: 'error', message: err.stack });
-            }
-         }
+const fields = computed(() => {
+   return results.value.length ? results.value[0].fields : [];
+});
 
-         this.isQuering = false;
-      },
-      getTable () {
-         return this.table;
-      },
-      reloadTable () {
-         this.getTableData();
-      },
-      hardSort (sortParams) {
-         this.sortParams = sortParams;
-         this.getTableData();
-      },
-      openPageMenu () {
-         if (this.isQuering || (this.results.length && this.results[0].rows.length < this.limit && this.page === 1)) return;
+const keyUsage = computed(() => {
+   return results.value.length ? results.value[0].keys : [];
+});
 
-         this.isPageMenu = true;
-         if (this.isPageMenu)
-            setTimeout(() => this.$refs.pageSelect.focus(), 20);
-      },
-      setPageNumber () {
-         this.isPageMenu = false;
+const getTableData = async () => {
+   if (!props.table || !props.isSelected) return;
+   isQuering.value = true;
 
-         if (this.pageProxy > 0)
-            this.page = this.pageProxy;
+   // if table changes clear cached values
+   if (lastTable.value !== props.table)
+      results.value = [];
+
+   lastTable.value = props.table;
+
+   const params = {
+      uid: props.connection.uid,
+      schema: props.schema,
+      table: props.table,
+      limit: limit.value,
+      page: page.value,
+      sortParams: { ...sortParams.value },
+      where: [...filters.value] || []
+   };
+
+   try { // Table data
+      const { status, response } = await Tables.getTableData(params);
+
+      if (status === 'success')
+         results.value = [response];
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   if (results.value.length && results.value[0].rows.length === limit.value) {
+      try { // Table approximate count
+         const { status, response } = await Tables.getTableApproximateCount(params);
+
+         if (status === 'success')
+            approximateCount.value = response;
          else
-            this.pageProxy = this.page;
-      },
-      pageChange (direction) {
-         if (this.isQuering) return;
+            addNotification({ status: 'error', message: response as unknown as string });
+      }
+      catch (err) {
+         addNotification({ status: 'error', message: err.stack });
+      }
+   }
 
-         if (direction === 'next' && (this.results.length && this.results[0].rows.length === this.limit)) {
-            if (!this.page)
-               this.page = 2;
-            else
-               this.page++;
-         }
-         else if (direction === 'prev' && this.page > 1)
-            this.page--;
-      },
-      showAddModal () {
-         this.isAddModal = true;
-      },
-      hideAddModal () {
-         this.isAddModal = false;
-      },
-      showFakerModal () {
-         if (this.isQuering) return;
-         this.isFakerModal = true;
-      },
-      hideFakerModal () {
-         this.isFakerModal = false;
-      },
-      onKey (e) {
-         if (this.isSelected) {
-            e.stopPropagation();
-            if (e.key === 'F5')
-               this.reloadTable();
+   isQuering.value = false;
+};
 
-            if (e.ctrlKey || e.metaKey) {
-               if (e.key === 'ArrowRight')
-                  this.pageChange('next');
-               if (e.key === 'ArrowLeft')
-                  this.pageChange('prev');
-               if (e.keyCode === 70) // f
-                  this.isSearch = !this.isSearch;
-            }
-         }
-      },
-      setRefreshInterval () {
-         if (this.refreshInterval)
-            clearInterval(this.refreshInterval);
+const hardSort = (params: { field: string; dir: 'asc' | 'desc'}) => {
+   sortParams.value = params;
+   getTableData();
+};
 
-         if (+this.autorefreshTimer) {
-            this.refreshInterval = setInterval(() => {
-               if (!this.isQuering)
-                  this.reloadTable();
-            }, this.autorefreshTimer * 1000);
-         }
-      },
-      downloadTable (format) {
-         this.$refs.queryTable.downloadTable(format, this.table);
-      },
-      onFilterChange (clausoles) {
-         this.resizeScroller();
-         if (clausoles.length === 0)
-            this.isSearch = false;
-      },
-      resizeScroller () {
-         setTimeout(() => this.$refs.queryTable.refreshScroller(), 1);
-      },
-      updateFilters (clausoles) {
-         this.filters = clausoles;
-         this.getTableData();
-      },
-      localeString (val) {
-         if (val !== null)
-            return val.toLocaleString();
+const openPageMenu = () => {
+   if (isQuering.value || (results.value.length && results.value[0].rows.length < limit.value && page.value === 1)) return;
+
+   isPageMenu.value = true;
+   if (isPageMenu.value)
+      setTimeout(() => pageSelect.value.focus(), 20);
+};
+
+const setPageNumber = () => {
+   isPageMenu.value = false;
+
+   if (pageProxy.value > 0)
+      page.value = pageProxy.value;
+   else
+      pageProxy.value = page.value;
+};
+
+const pageChange = (direction: 'prev' | 'next') => {
+   if (isQuering.value) return;
+
+   if (direction === 'next' && (results.value.length && results.value[0].rows.length === limit.value)) {
+      if (!page.value)
+         page.value = 2;
+      else
+         page.value++;
+   }
+   else if (direction === 'prev' && page.value > 1)
+      page.value--;
+};
+
+const showFakerModal = () => {
+   if (isQuering.value) return;
+   isFakerModal.value = true;
+};
+
+const hideFakerModal = () => {
+   isFakerModal.value = false;
+};
+
+const onKey = (e: KeyboardEvent) => {
+   if (props.isSelected) {
+      e.stopPropagation();
+      if (e.key === 'F5')
+         reloadTable();
+
+      if (e.ctrlKey || e.metaKey) {
+         if (e.key === 'ArrowRight')
+            pageChange('next');
+         if (e.key === 'ArrowLeft')
+            pageChange('prev');
+         if (e.key === 'f') // f
+            isSearch.value = !isSearch.value;
       }
    }
 };
+
+const setRefreshInterval = () => {
+   if (refreshInterval.value)
+      clearInterval(refreshInterval.value);
+
+   if (+autorefreshTimer.value) {
+      refreshInterval.value = setInterval(() => {
+         if (!isQuering.value)
+            reloadTable();
+      }, autorefreshTimer.value * 1000);
+   }
+};
+
+const downloadTable = (format: 'csv' | 'json') => {
+   queryTable.value.downloadTable(format, props.table);
+};
+
+const onFilterChange = (clausoles: TableFilterClausole[]) => {
+   resizeScroller();
+   if (clausoles.length === 0)
+      isSearch.value = false;
+};
+
+const resizeScroller = () => {
+   setTimeout(() => queryTable.value.refreshScroller(), 1);
+};
+
+const updateFilters = (clausoles: TableFilterClausole[]) => {
+   filters.value = clausoles;
+   getTableData();
+};
+
+const localeString = (val: number | null) => {
+   if (val !== null)
+      return val.toLocaleString();
+};
+
+const hasApproximately = computed(() => {
+   return results.value.length &&
+      results.value[0].rows &&
+      results.value[0].rows.length === limit.value &&
+      results.value[0].rows.length < approximateCount.value;
+});
+
+watch(() => props.schema, () => {
+   if (props.isSelected) {
+      page.value = 1;
+      approximateCount.value = 0;
+      sortParams.value = {} as { field: string; dir: 'asc' | 'desc'};
+      getTableData();
+      lastTable.value = props.table;
+      queryTable.value.resetSort();
+   }
+});
+
+watch(() => props.table, () => {
+   if (props.isSelected) {
+      page.value = 1;
+      approximateCount.value = 0;
+      sortParams.value = {} as { field: string; dir: 'asc' | 'desc'};
+      getTableData();
+      lastTable.value = props.table;
+      queryTable.value.resetSort();
+   }
+});
+
+watch(page, (val, oldVal) => {
+   if (val && val > 0 && val !== oldVal) {
+      pageProxy.value = page.value;
+      getTableData();
+   }
+});
+
+watch(() => props.isSelected, (val) => {
+   if (val) {
+      changeBreadcrumbs({ schema: props.schema, [props.elementType]: props.table });
+
+      if (lastTable.value !== props.table)
+         getTableData();
+   }
+});
+
+watch(isSearch, (val) => {
+   if (filters.value.length > 0 && !val) {
+      filters.value = [];
+      getTableData();
+   }
+   resizeScroller();
+});
+
+getTableData();
+window.addEventListener('keydown', onKey);
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+   clearInterval(refreshInterval.value);
+});
 </script>

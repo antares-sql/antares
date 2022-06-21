@@ -2,6 +2,7 @@
   "include": [
     "./tests/**/*", 
     "./src/main/**/*", 
+    "./src/renderer/**/*", 
     "./src/common/interfaces/antares.ts"
   ],
   "compilerOptions": {
@@ -10,6 +11,7 @@
     "allowJs": true,
     "module": "CommonJS",
     "noImplicitAny": true,
+    "jsx": "preserve",
     "types": [
       "node"
     ],
@@ -18,7 +20,8 @@
     "resolveJsonModule": true,
     "removeComments": true,
     "paths": {
-      "common/*": ["./src/common/*"]
+      "common/*": ["./src/common/*"],
+      "@/*": ["./src/renderer/*"],
     }
   }
 }

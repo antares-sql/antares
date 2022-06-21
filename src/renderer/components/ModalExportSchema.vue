@@ -146,7 +146,7 @@
                            <div class="tbody">
                               <div
                                  v-for="item in tables"
-                                 :key="item.name"
+                                 :key="item.table"
                                  class="tr"
                               >
                                  <div class="td">
@@ -193,7 +193,7 @@
                      >
                         <input v-model="options.includes[key]" type="checkbox"><i class="form-icon" /> {{ $tc(`word.${key}`, 2) }}
                      </label>
-                     <div v-if="customizations.exportByChunks">
+                     <div v-if="clientCustoms.exportByChunks">
                         <div class="h6 mt-4 mb-2">
                            {{ $t('message.newInserStmtEvery') }}:
                         </div>
@@ -263,211 +263,204 @@
    </Teleport>
 </template>
 
-<script>
-import moment from 'moment';
+<script setup lang="ts">
+import { computed, onBeforeUnmount, Ref, ref } from 'vue';
+import * as moment from 'moment';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
+import { SchemaInfos } from 'common/interfaces/antares';
+import { ExportState, TableParams } from 'common/interfaces/exporter';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import customizations from 'common/customizations';
 import Application from '@/ipc-api/Application';
 import Schema from '@/ipc-api/Schema';
+import { Customizations } from 'common/interfaces/customizations';
 import BaseSelect from '@/components/BaseSelect.vue';
 
-export default {
-   name: 'ModalExportSchema',
-   components: {
-      BaseSelect
-   },
-   props: {
-      selectedSchema: String
-   },
-   emits: ['close'],
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+const props = defineProps({
+   selectedSchema: String
+});
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const emit = defineEmits(['close']);
+const { t } = useI18n();
 
-      const {
-         getWorkspace,
-         getDatabaseVariable,
-         refreshSchema
-      } = workspacesStore;
+const { addNotification } = useNotificationsStore();
+const workspacesStore = useWorkspacesStore();
 
-      return {
-         addNotification,
-         selectedWorkspace,
-         getWorkspace,
-         getDatabaseVariable,
-         refreshSchema
-      };
-   },
-   data () {
-      return {
-         isExporting: false,
-         isRefreshing: false,
-         progressPercentage: 0,
-         progressStatus: '',
-         tables: [],
-         options: {
-            includes: {},
-            outputFormat: 'sql',
-            sqlInsertAfter: 250,
-            sqlInsertDivider: 'bytes'
-         },
-         basePath: ''
-      };
-   },
-   computed: {
-      currentWorkspace () {
-         return this.getWorkspace(this.selectedWorkspace);
-      },
-      customizations () {
-         return this.currentWorkspace.customizations;
-      },
-      schemaItems () {
-         const db = this.currentWorkspace.structure.find(db => db.name === this.selectedSchema);
-         if (db)
-            return db.tables.filter(table => table.type === 'table');
+const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
-         return [];
-      },
-      filename () {
-         const date = moment().format('YYYY-MM-DD');
-         return `${this.selectedSchema}_${date}.${this.options.outputFormat}`;
-      },
-      dumpFilePath () {
-         return `${this.basePath}/${this.filename}`;
-      },
-      includeStructureStatus () {
-         if (this.tables.every(item => item.includeStructure)) return 1;
-         else if (this.tables.some(item => item.includeStructure)) return 2;
-         else return 0;
-      },
-      includeContentStatus () {
-         if (this.tables.every(item => item.includeContent)) return 1;
-         else if (this.tables.some(item => item.includeContent)) return 2;
-         else return 0;
-      },
-      includeDropStatementStatus () {
-         if (this.tables.every(item => item.includeDropStatement)) return 1;
-         else if (this.tables.some(item => item.includeDropStatement)) return 2;
-         else return 0;
-      }
-   },
-   async created () {
-      if (!this.schemaItems.length) await this.refresh();
+const {
+   getWorkspace,
+   refreshSchema
+} = workspacesStore;
 
-      window.addEventListener('keydown', this.onKey);
+const isExporting = ref(false);
+const isRefreshing = ref(false);
+const progressPercentage = ref(0);
+const progressStatus = ref('');
+const tables: Ref<TableParams[]> = ref([]);
+const options = ref({
+   includes: {} as {[key: string]: boolean},
+   outputFormat: 'sql',
+   sqlInsertAfter: 250,
+   sqlInsertDivider: 'bytes'
+});
+const basePath = ref('');
 
-      this.basePath = await Application.getDownloadPathDirectory();
-      this.tables = this.schemaItems.map(item => ({
-         table: item.name,
-         includeStructure: true,
-         includeContent: true,
-         includeDropStatement: true
-      }));
+const currentWorkspace = computed(() => getWorkspace(selectedWorkspace.value));
+const clientCustoms: Ref<Customizations> = computed(() => currentWorkspace.value.customizations);
+const schemaItems = computed(() => {
+   const db: SchemaInfos = currentWorkspace.value.structure.find((db: SchemaInfos) => db.name === props.selectedSchema);
+   if (db)
+      return db.tables.filter(table => table.type === 'table');
 
-      const structure = ['functions', 'views', 'triggers', 'routines', 'schedulers'];
+   return [];
+});
+const filename = computed(() => {
+   const date = moment().format('YYYY-MM-DD');
+   return `${props.selectedSchema}_${date}.${options.value.outputFormat}`;
+});
+const dumpFilePath = computed(() => `${basePath.value}/${filename.value}`);
+const includeStructureStatus = computed(() => {
+   if (tables.value.every(item => item.includeStructure)) return 1;
+   else if (tables.value.some(item => item.includeStructure)) return 2;
+   else return 0;
+});
+const includeContentStatus = computed(() => {
+   if (tables.value.every(item => item.includeContent)) return 1;
+   else if (tables.value.some(item => item.includeContent)) return 2;
+   else return 0;
+});
+const includeDropStatementStatus = computed(() => {
+   if (tables.value.every(item => item.includeDropStatement)) return 1;
+   else if (tables.value.some(item => item.includeDropStatement)) return 2;
+   else return 0;
+});
 
-      structure.forEach(feat => {
-         const val = customizations[this.currentWorkspace.client][feat];
-         if (val)
-            this.options.includes[feat] = true;
-      });
+const startExport = async () => {
+   isExporting.value = true;
+   const { uid, client } = currentWorkspace.value;
+   const params = {
+      uid,
+      type: client,
+      schema: props.selectedSchema,
+      outputFile: dumpFilePath.value,
+      tables: [...tables.value],
+      ...options.value
+   };
 
-      ipcRenderer.on('export-progress', this.updateProgress);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-      ipcRenderer.off('export-progress', this.updateProgress);
-   },
-   methods: {
-      async startExport () {
-         this.isExporting = true;
-         const { uid, client } = this.currentWorkspace;
-         const params = {
-            uid,
-            type: client,
-            schema: this.selectedSchema,
-            outputFile: this.dumpFilePath,
-            tables: [...this.tables],
-            ...this.options
-         };
-
-         try {
-            const { status, response } = await Schema.export(params);
-            if (status === 'success')
-               this.progressStatus = response.cancelled ? this.$t('word.aborted') : this.$t('word.completed');
-            else {
-               this.progressStatus = response;
-               this.addNotification({ status: 'error', message: response });
-            }
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.isExporting = false;
-      },
-      updateProgress (event, state) {
-         this.progressPercentage = Number((state.currentItemIndex / state.totalItems * 100).toFixed(1));
-         switch (state.op) {
-            case 'PROCESSING':
-               this.progressStatus = this.$t('message.processingTableExport', { table: state.currentItem });
-               break;
-            case 'FETCH':
-               this.progressStatus = this.$t('message.fechingTableExport', { table: state.currentItem });
-               break;
-            case 'WRITE':
-               this.progressStatus = this.$t('message.writingTableExport', { table: state.currentItem });
-               break;
-         }
-      },
-      async closeModal () {
-         let willClose = true;
-         if (this.isExporting) {
-            willClose = false;
-            const { response } = await Schema.abortExport();
-            willClose = response.willAbort;
-         }
-
-         if (willClose)
-            this.$emit('close');
-      },
-      onKey (e) {
-         e.stopPropagation();
-         if (e.key === 'Escape')
-            this.closeModal();
-      },
-      checkAllTables () {
-         this.tables = this.tables.map(item => ({ ...item, includeStructure: true, includeContent: true, includeDropStatement: true }));
-      },
-      uncheckAllTables () {
-         this.tables = this.tables.map(item => ({ ...item, includeStructure: false, includeContent: false, includeDropStatement: false }));
-      },
-      toggleAllTablesOption (option) {
-         const options = ['includeStructure', 'includeContent', 'includeDropStatement'];
-         if (!options.includes(option)) return;
-
-         if (this[`${option}Status`] !== 1)
-            this.tables = this.tables.map(item => ({ ...item, [option]: true }));
-         else
-            this.tables = this.tables.map(item => ({ ...item, [option]: false }));
-      },
-      async refresh () {
-         this.isRefreshing = true;
-         await this.refreshSchema({ uid: this.currentWorkspace.uid, schema: this.selectedSchema });
-         this.isRefreshing = false;
-      },
-      async openPathDialog () {
-         const result = await Application.showOpenDialog({ properties: ['openDirectory'] });
-         if (result && !result.canceled)
-            this.basePath = result.filePaths[0];
+   try {
+      const { status, response } = await Schema.export(params);
+      if (status === 'success')
+         progressStatus.value = response.cancelled ? t('word.aborted') : t('word.completed');
+      else {
+         progressStatus.value = response;
+         addNotification({ status: 'error', message: response });
       }
    }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   isExporting.value = false;
 };
+
+const updateProgress = (event: Event, state: ExportState) => {
+   progressPercentage.value = Number((state.currentItemIndex / state.totalItems * 100).toFixed(1));
+   switch (state.op) {
+      case 'PROCESSING':
+         progressStatus.value = t('message.processingTableExport', { table: state.currentItem });
+         break;
+      case 'FETCH':
+         progressStatus.value = t('message.fechingTableExport', { table: state.currentItem });
+         break;
+      case 'WRITE':
+         progressStatus.value = t('message.writingTableExport', { table: state.currentItem });
+         break;
+   }
+};
+
+const closeModal = async () => {
+   let willClose = true;
+   if (isExporting.value) {
+      willClose = false;
+      const { response } = await Schema.abortExport();
+      willClose = response.willAbort;
+   }
+
+   if (willClose)
+      emit('close');
+};
+
+const onKey = (e: KeyboardEvent) => {
+   e.stopPropagation();
+   if (e.key === 'Escape')
+      closeModal();
+};
+
+const checkAllTables = () => {
+   tables.value = tables.value.map(item => ({ ...item, includeStructure: true, includeContent: true, includeDropStatement: true }));
+};
+
+const uncheckAllTables = () => {
+   tables.value = tables.value.map(item => ({ ...item, includeStructure: false, includeContent: false, includeDropStatement: false }));
+};
+
+const toggleAllTablesOption = (option: 'includeStructure' | 'includeContent' |'includeDropStatement') => {
+   const options = {
+      includeStructure: includeStructureStatus.value,
+      includeContent: includeContentStatus.value,
+      includeDropStatement: includeDropStatementStatus.value
+   };
+
+   if (options[option] !== 1)
+      tables.value = tables.value.map(item => ({ ...item, [option]: true }));
+   else
+      tables.value = tables.value.map(item => ({ ...item, [option]: false }));
+};
+
+const refresh = async () => {
+   isRefreshing.value = true;
+   await refreshSchema({ uid: currentWorkspace.value.uid, schema: props.selectedSchema });
+   isRefreshing.value = false;
+};
+
+const openPathDialog = async () => {
+   const result = await Application.showOpenDialog({ properties: ['openDirectory'] });
+   if (result && !result.canceled)
+      basePath.value = result.filePaths[0];
+};
+
+(async () => {
+   if (!schemaItems.value.length) await refresh();
+
+   window.addEventListener('keydown', onKey);
+
+   basePath.value = await Application.getDownloadPathDirectory();
+   tables.value = schemaItems.value.map(item => ({
+      table: item.name,
+      includeStructure: true,
+      includeContent: true,
+      includeDropStatement: true
+   }));
+
+   const structure = ['functions', 'views', 'triggers', 'routines', 'schedulers'];
+
+   structure.forEach((feat: keyof Customizations) => {
+      const val = clientCustoms.value[feat];
+      if (val)
+         options.value.includes[feat] = true;
+   });
+
+   ipcRenderer.on('export-progress', updateProgress);
+})();
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+   ipcRenderer.off('export-progress', updateProgress);
+});
+
 </script>
 
 <style lang="scss" scoped>
@@ -476,14 +469,15 @@ export default {
   overflow: hidden;
 
   .left {
-     display: flex;
-     flex-direction: column;
-     flex: 1;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
   }
 }
 
 .workspace-query-results {
-   flex: 1 0 1px;
+  flex: 1 0 1px;
+
   .table {
     width: 100% !important;
   }
@@ -499,25 +493,24 @@ export default {
 }
 
 .modal {
-
   .modal-container {
     max-width: 800px;
   }
 
-    .modal-body {
-      max-height: 60vh;
-      display: flex;
-      flex-direction: column;
-    }
+  .modal-body {
+    max-height: 60vh;
+    display: flex;
+    flex-direction: column;
+  }
 
-    .modal-footer {
-       display: flex;
-    }
+  .modal-footer {
+    display: flex;
+  }
 }
 
 .progress-status {
-   font-style: italic;
-   font-size: 80%;
+  font-style: italic;
+  font-size: 80%;
 }
 
 </style>

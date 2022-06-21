@@ -97,567 +97,570 @@
          <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-delete mr-1" />
-               <span class="cut-text">{{ $tc('message.deleteRows', selectedRows.length) }}</span>
+               <span class="cut-text">{{ t('message.deleteRows', selectedRows.length) }}</span>
             </div>
          </template>
          <template #body>
             <div class="mb-2">
-               {{ $tc('message.confirmToDeleteRows', selectedRows.length) }}
+               {{ t('message.confirmToDeleteRows', selectedRows.length) }}
             </div>
          </template>
       </ConfirmModal>
    </div>
 </template>
 
-<script>
+<script setup lang="ts">
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Component, computed, nextTick, onMounted, onUnmounted, onUpdated, Prop, ref, Ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { uidGen } from 'common/libs/uidGen';
-import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import arrayToFile from '../libs/arrayToFile';
+import { arrayToFile } from '../libs/arrayToFile';
 import { TEXT, LONG_TEXT, BLOB } from 'common/fieldTypes';
-import BaseVirtualScroll from '@/components/BaseVirtualScroll';
-import WorkspaceTabQueryTableRow from '@/components/WorkspaceTabQueryTableRow';
-import TableContext from '@/components/WorkspaceTabQueryTableContext';
-import ConfirmModal from '@/components/BaseConfirmModal';
+import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
+import WorkspaceTabQueryTableRow from '@/components/WorkspaceTabQueryTableRow.vue';
+import TableContext from '@/components/WorkspaceTabQueryTableContext.vue';
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import moment from 'moment';
+import { useI18n } from 'vue-i18n';
+import { TableField, QueryResult } from 'common/interfaces/antares';
+import { TableUpdateParams } from 'common/interfaces/tableApis';
 
-export default {
-   name: 'WorkspaceTabQueryTable',
-   components: {
-      BaseVirtualScroll,
-      WorkspaceTabQueryTableRow,
-      TableContext,
-      ConfirmModal
-   },
-   props: {
-      results: Array,
-      connUid: String,
-      mode: String,
-      isSelected: Boolean,
-      elementType: { type: String, default: 'table' }
-   },
-   emits: ['update-field', 'delete-selected', 'hard-sort'],
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const settingsStore = useSettingsStore();
-      const { getWorkspace } = useWorkspacesStore();
+const { t } = useI18n();
 
-      const { dataTabLimit: pageSize } = storeToRefs(settingsStore);
+const settingsStore = useSettingsStore();
+const { getWorkspace } = useWorkspacesStore();
 
-      return {
-         addNotification,
-         pageSize,
-         getWorkspace
-      };
-   },
-   data () {
-      return {
-         resultsSize: 0,
-         localResults: [],
-         isContext: false,
-         isDeleteConfirmModal: false,
-         contextEvent: null,
-         selectedCell: null,
-         selectedRows: [],
-         currentSort: '',
-         currentSortDir: 'asc',
-         resultsetIndex: 0,
-         scrollElement: null,
-         rowHeight: 23,
-         selectedField: null,
-         isEditingRow: false
-      };
-   },
-   computed: {
-      workspaceSchema () {
-         return this.getWorkspace(this.connUid).breadcrumbs.schema;
-      },
-      primaryField () {
-         const primaryFields = this.fields.filter(field => field.key === 'pri');
-         const uniqueFields = this.fields.filter(field => field.key === 'uni');
+const { dataTabLimit: pageSize } = storeToRefs(settingsStore);
 
-         if ((primaryFields.length > 1 || !primaryFields.length) && (uniqueFields.length > 1 || !uniqueFields.length))
-            return false;
+const props = defineProps({
+   results: Array as Prop<QueryResult[]>,
+   connUid: String,
+   mode: String,
+   isSelected: Boolean,
+   elementType: { type: String, default: 'table' }
+});
 
-         return primaryFields[0] || uniqueFields[0];
-      },
-      isSortable () {
-         return this.fields.every(field => field.name);
-      },
-      isHardSort () {
-         return this.mode === 'table' && this.localResults.length === this.pageSize;
-      },
-      sortedResults () {
-         if (this.currentSort && !this.isHardSort) {
-            return [...this.localResults].sort((a, b) => {
-               let modifier = 1;
-               let valA = typeof a[this.currentSort] === 'string' ? a[this.currentSort].toLowerCase() : a[this.currentSort];
-               if (!isNaN(valA)) valA = Number(valA);
-               let valB = typeof b[this.currentSort] === 'string' ? b[this.currentSort].toLowerCase() : b[this.currentSort];
-               if (!isNaN(valB)) valB = Number(valB);
-               if (this.currentSortDir === 'desc') modifier = -1;
-               if (valA < valB) return -1 * modifier;
-               if (valA > valB) return 1 * modifier;
-               return 0;
-            });
-         }
-         else
-            return this.localResults;
-      },
-      resultsWithRows () {
-         return this.results.filter(result => result.rows);
-      },
-      fields () {
-         return this.resultsWithRows.length ? this.resultsWithRows[this.resultsetIndex].fields : [];
-      },
-      keyUsage () {
-         return this.resultsWithRows.length ? this.resultsWithRows[this.resultsetIndex].keys : [];
-      },
-      fieldsObj () {
-         if (this.sortedResults.length) {
-            const fieldsObj = {};
-            for (const key in this.sortedResults[0]) {
-               if (key === '_antares_id') continue;
+const emit = defineEmits(['update-field', 'delete-selected', 'hard-sort']);
 
-               const fieldObj = this.fields.find(field => {
-                  let fieldNames = [
-                     field.name,
-                     field.alias,
-                     `${field.table}.${field.name}`,
-                     `${field.table}.${field.alias}`,
-                     `${field.tableAlias}.${field.name}`,
-                     `${field.tableAlias}.${field.alias}`
-                  ];
+const resultTable: Ref<Component & {updateWindow: () => void}> = ref(null);
+const tableWrapper: Ref<HTMLDivElement> = ref(null);
+const table: Ref<HTMLDivElement> = ref(null);
+const resultsSize = ref(0);
+const localResults: Ref<QueryResult<any>[]> = ref([]);
+const isContext = ref(false);
+const isDeleteConfirmModal = ref(false);
+const contextEvent = ref(null);
+const selectedCell = ref(null);
+const selectedRows = ref([]);
+const currentSort = ref('');
+const currentSortDir = ref('asc');
+const resultsetIndex = ref(0);
+const scrollElement = ref(null);
+const rowHeight = ref(23);
+const selectedField = ref(null);
+const isEditingRow = ref(false);
 
-                  if (field.table)
-                     fieldNames = [...fieldNames, `${field.table.toLowerCase()}.${field.name}`, `${field.table.toLowerCase()}.${field.alias}`];
+const workspaceSchema = computed(() => getWorkspace(props.connUid).breadcrumbs.schema);
 
-                  if (field.tableAlias)
-                     fieldNames = [...fieldNames, `${field.tableAlias.toLowerCase()}.${field.name}`, `${field.tableAlias.toLowerCase()}.${field.alias}`];
+const primaryField = computed(() => {
+   const primaryFields = fields.value.filter(field => field.key === 'pri');
+   const uniqueFields = fields.value.filter(field => field.key === 'uni');
 
-                  return fieldNames.includes(key);
-               });
+   if ((primaryFields.length > 1 || !primaryFields.length) && (uniqueFields.length > 1 || !uniqueFields.length))
+      return null;
 
-               fieldsObj[key] = fieldObj;
-            }
-            return fieldsObj;
-         }
-         return {};
-      }
-   },
-   watch: {
-      results () {
-         this.setLocalResults();
-         this.resultsetIndex = 0;
-      },
-      resultsetIndex () {
-         this.setLocalResults();
-      },
-      isSelected (val) {
-         if (val) this.refreshScroller();
-      }
-   },
-   updated () {
-      if (this.$refs.table)
-         this.refreshScroller();
+   return primaryFields[0] || uniqueFields[0];
+});
 
-      if (this.$refs.tableWrapper)
-         this.scrollElement = this.$refs.tableWrapper;
+const isSortable = computed(() => {
+   return fields.value.every(field => field.name);
+});
 
-      document.querySelectorAll('.column-resizable').forEach(element => {
-         if (element.clientWidth !== 0)
-            element.style.width = element.clientWidth + 'px';
+const isHardSort = computed(() => {
+   return props.mode === 'table' && localResults.value.length === pageSize.value;
+});
+
+const sortedResults = computed(() => {
+   if (currentSort.value && !isHardSort.value) {
+      return [...localResults.value].sort((a: any, b: any) => {
+         let modifier = 1;
+         let valA = typeof a[currentSort.value] === 'string' ? a[currentSort.value].toLowerCase() : a[currentSort.value];
+         if (!isNaN(valA)) valA = Number(valA);
+         let valB = typeof b[currentSort.value] === 'string' ? b[currentSort.value].toLowerCase() : b[currentSort.value];
+         if (!isNaN(valB)) valB = Number(valB);
+         if (currentSortDir.value === 'desc') modifier = -1;
+         if (valA < valB) return -1 * modifier;
+         if (valA > valB) return 1 * modifier;
+         return 0;
       });
-   },
-   mounted () {
-      window.addEventListener('resize', this.resizeResults);
-      window.addEventListener('keydown', this.onKey);
-   },
-   unmounted () {
-      window.removeEventListener('resize', this.resizeResults);
-      window.removeEventListener('keydown', this.onKey);
-   },
-   methods: {
-      fieldType (cKey) {
-         let type = 'unknown';
-         const field = this.fields.filter(field => field.name === cKey)[0];
-         if (field)
-            type = field.type;
+   }
+   else
+      return localResults.value;
+});
 
-         return type;
-      },
-      fieldPrecision (cKey) {
-         let length = 0;
-         const field = this.fields.filter(field => field.name === cKey)[0];
-         if (field)
-            length = field.datePrecision;
+const resultsWithRows = computed(() => props.results.filter(result => result.rows));
+const fields = computed(() => resultsWithRows.value.length ? resultsWithRows.value[resultsetIndex.value].fields : []);
+const keyUsage = computed(() => resultsWithRows.value.length ? resultsWithRows.value[resultsetIndex.value].keys : []);
 
-         return length;
-      },
-      fieldLength (field) {
-         if ([...BLOB, ...LONG_TEXT].includes(field.type)) return null;
-         else if (TEXT.includes(field.type)) return field.charLength;
-         else if (field.numScale) return `${field.numPrecision}, ${field.numScale}`;
-         return field.length;
-      },
-      keyName (key) {
-         switch (key) {
-            case 'pri':
-               return 'PRIMARY';
-            case 'uni':
-               return 'UNIQUE';
-            case 'mul':
-               return 'INDEX';
-            default:
-               return 'UNKNOWN ' + key;
-         }
-      },
-      getTable (index) {
-         if (this.resultsWithRows[index] && this.resultsWithRows[index].fields && this.resultsWithRows[index].fields.length)
-            return this.resultsWithRows[index].fields[0].table;
-         return '';
-      },
-      getSchema (index) {
-         if (this.resultsWithRows[index] && this.resultsWithRows[index].fields && this.resultsWithRows[index].fields.length)
-            return this.resultsWithRows[index].fields[0].schema;
-         return this.workspaceSchema;
-      },
-      getPrimaryValue (row) {
-         const primaryFieldName = Object.keys(row).find(prop => [
-            this.primaryField.alias,
-            this.primaryField.name,
-            `${this.primaryField.table}.${this.primaryField.alias}`,
-            `${this.primaryField.table}.${this.primaryField.name}`,
-            `${this.primaryField.tableAlias}.${this.primaryField.alias}`,
-            `${this.primaryField.tableAlias}.${this.primaryField.name}`
-         ].includes(prop));
-         return row[primaryFieldName];
-      },
-      setLocalResults () {
-         this.localResults = this.resultsWithRows[this.resultsetIndex] && this.resultsWithRows[this.resultsetIndex].rows
-            ? this.resultsWithRows[this.resultsetIndex].rows.map(item => {
-               return { ...item, _antares_id: uidGen() };
-            })
-            : [];
-      },
-      resizeResults () {
-         if (this.$refs.resultTable && this.isSelected) {
-            const el = this.$refs.tableWrapper;
+const fieldsObj = computed(() => {
+   if (sortedResults.value.length) {
+      const fieldsObj: {[key: string]: TableField} = {};
+      for (const key in sortedResults.value[0]) {
+         if (key === '_antares_id') continue;
 
-            if (el) {
-               const footer = document.getElementById('footer');
-               const size = window.innerHeight - el.getBoundingClientRect().top - footer.offsetHeight;
-               this.resultsSize = size;
-            }
-            this.$refs.resultTable.updateWindow();
-         }
-      },
-      refreshScroller () {
-         this.resizeResults();
-      },
-      updateField (payload, row) {
-         const orgRow = this.localResults.find(lr => lr._antares_id === row._antares_id);
+         const fieldObj = fields.value.find(field => {
+            let fieldNames = [
+               field.name,
+               field.alias,
+               `${field.table}.${field.name}`,
+               `${field.table}.${field.alias}`,
+               `${field.tableAlias}.${field.name}`,
+               `${field.tableAlias}.${field.alias}`
+            ];
 
-         Object.keys(orgRow).forEach(key => { // remap the row
-            if (orgRow[key] instanceof Date && moment(orgRow[key]).isValid()) { // if datetime
-               let datePrecision = '';
-               const precision = this.fields.find(field => field.name === key).datePrecision;
-               for (let i = 0; i < precision; i++)
-                  datePrecision += i === 0 ? '.S' : 'S';
+            if (field.table)
+               fieldNames = [...fieldNames, `${field.table.toLowerCase()}.${field.name}`, `${field.table.toLowerCase()}.${field.alias}`];
 
-               orgRow[key] = moment(orgRow[key]).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`);
-            }
+            if (field.tableAlias)
+               fieldNames = [...fieldNames, `${field.tableAlias.toLowerCase()}.${field.name}`, `${field.tableAlias.toLowerCase()}.${field.alias}`];
+
+            return fieldNames.includes(key);
          });
 
-         const params = {
-            primary: this.primaryField.name,
-            schema: this.getSchema(this.resultsetIndex),
-            table: this.getTable(this.resultsetIndex),
-            id: this.getPrimaryValue(orgRow),
-            row,
-            orgRow,
-            ...payload
-         };
-         this.$emit('update-field', params);
-      },
-      closeContext () {
-         this.isContext = false;
-      },
-      showDeleteConfirmModal (e) {
-         if (e && e.path && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.path[0].tagName))
-            return;
-         this.isDeleteConfirmModal = true;
-      },
-      hideDeleteConfirmModal () {
-         this.isDeleteConfirmModal = false;
-      },
-      deleteSelected () {
-         this.closeContext();
-         const rows = JSON.parse(JSON.stringify(this.localResults)).filter(row => this.selectedRows.includes(row._antares_id)).map(row => {
-            delete row._antares_id;
-            return row;
-         });
+         fieldsObj[key] = fieldObj;
+      }
+      return fieldsObj;
+   }
+   return {};
+});
 
-         const params = {
-            primary: this.primaryField.name,
-            schema: this.getSchema(this.resultsetIndex),
-            table: this.getTable(this.resultsetIndex),
-            rows
-         };
-         this.$emit('delete-selected', params);
-      },
-      setNull () {
-         const row = this.localResults.find(row => this.selectedRows.includes(row._antares_id));
+const fieldLength = (field: TableField) => {
+   if ([...BLOB, ...LONG_TEXT].includes(field.type)) return null;
+   else if (TEXT.includes(field.type)) return field.charLength;
+   else if (field.numScale) return `${field.numPrecision}, ${field.numScale}`;
+   return field.length;
+};
 
-         const params = {
-            primary: this.primaryField.name,
-            schema: this.getSchema(this.resultsetIndex),
-            table: this.getTable(this.resultsetIndex),
-            id: this.getPrimaryValue(row),
-            row,
-            orgRow: row,
-            field: this.selectedCell.field,
-            content: null
-         };
-         this.$emit('update-field', params);
-      },
-      copyCell () {
-         const row = this.localResults.find(row => this.selectedRows.includes(row._antares_id));
-         const cellName = Object.keys(row).find(prop => [
-            this.selectedCell.field,
-            this.selectedCell.orgField,
-            `${this.fields[0].table}.${this.selectedCell.field}`,
-            `${this.fields[0].tableAlias}.${this.selectedCell.field}`
-         ].includes(prop));
-         let valueToCopy = row[cellName];
-         if (typeof valueToCopy === 'object')
-            valueToCopy = JSON.stringify(valueToCopy);
-         navigator.clipboard.writeText(valueToCopy);
-      },
-      copyRow () {
-         const row = this.localResults.find(row => this.selectedRows.includes(row._antares_id));
-         const rowToCopy = JSON.parse(JSON.stringify(row));
-         delete rowToCopy._antares_id;
-         navigator.clipboard.writeText(JSON.stringify(rowToCopy));
-      },
-      applyUpdate (params) {
-         const { primary, id, field, table, content } = params;
+const keyName = (key: string) => {
+   switch (key) {
+      case 'pri':
+         return 'PRIMARY';
+      case 'uni':
+         return 'UNIQUE';
+      case 'mul':
+         return 'INDEX';
+      default:
+         return 'UNKNOWN ' + key;
+   }
+};
 
-         this.localResults = this.localResults.map(row => {
-            if (row[primary] === id)// only fieldName
-               row[field] = content;
-            else if (row[`${table}.${primary}`] === id)// table.fieldName
-               row[`${table}.${field}`] = content;
+const getTable = (index: number) => {
+   if (resultsWithRows.value[index] && resultsWithRows.value[index].fields && resultsWithRows.value[index].fields.length)
+      return resultsWithRows.value[index].fields[0].table;
+   return '';
+};
 
-            return row;
-         });
-      },
-      selectRow (event, row, field) {
-         this.selectedField = field;
-         const selectedRowId = row._antares_id;
+const getSchema = (index: number) => {
+   if (resultsWithRows.value[index] && resultsWithRows.value[index].fields && resultsWithRows.value[index].fields.length)
+      return resultsWithRows.value[index].fields[0].schema;
+   return workspaceSchema.value;
+};
 
-         if (event.ctrlKey || event.metaKey) {
-            if (this.selectedRows.includes(selectedRowId))
-               this.selectedRows = this.selectedRows.filter(el => el !== selectedRowId);
-            else
-               this.selectedRows.push(selectedRowId);
+const getPrimaryValue = (row: any) => {
+   const primaryFieldName = Object.keys(row).find(prop => [
+      primaryField.value.alias,
+      primaryField.value.name,
+      `${primaryField.value.table}.${primaryField.value.alias}`,
+      `${primaryField.value.table}.${primaryField.value.name}`,
+      `${primaryField.value.tableAlias}.${primaryField.value.alias}`,
+      `${primaryField.value.tableAlias}.${primaryField.value.name}`
+   ].includes(prop));
+   return row[primaryFieldName];
+};
+
+const setLocalResults = () => {
+   localResults.value = resultsWithRows.value[resultsetIndex.value] && resultsWithRows.value[resultsetIndex.value].rows
+      ? resultsWithRows.value[resultsetIndex.value].rows.map(item => {
+         return { ...item, _antares_id: uidGen() };
+      })
+      : [];
+};
+
+const resizeResults = () => {
+   if (resultTable.value && props.isSelected) {
+      const el = tableWrapper.value;
+
+      if (el) {
+         const footer = document.getElementById('footer');
+         const size = window.innerHeight - el.getBoundingClientRect().top - footer.offsetHeight;
+         resultsSize.value = size;
+      }
+      resultTable.value.updateWindow();
+   }
+};
+
+const refreshScroller = () => resizeResults();
+
+const updateField = (payload: { field: string; type: string; content: any }, row: {[key: string]: any}) => {
+   const orgRow: any = localResults.value.find((lr: any) => lr._antares_id === row._antares_id);
+
+   Object.keys(orgRow).forEach(key => { // remap the row
+      if (orgRow[key] instanceof Date && moment(orgRow[key]).isValid()) { // if datetime
+         let datePrecision = '';
+         const precision = fields.value.find(field => field.name === key)?.datePrecision;
+         for (let i = 0; i < precision; i++)
+            datePrecision += i === 0 ? '.S' : 'S';
+
+         orgRow[key] = moment(orgRow[key]).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`);
+      }
+   });
+
+   const params = {
+      primary: primaryField.value.name,
+      schema: getSchema(resultsetIndex.value),
+      table: getTable(resultsetIndex.value),
+      id: getPrimaryValue(orgRow),
+      row,
+      orgRow,
+      ...payload
+   };
+   emit('update-field', params);
+};
+
+const closeContext = () => {
+   isContext.value = false;
+};
+
+const showDeleteConfirmModal = (e: any) => {
+   if (e && e.path && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.path[0].tagName))
+      return;
+   isDeleteConfirmModal.value = true;
+};
+
+const hideDeleteConfirmModal = () => {
+   isDeleteConfirmModal.value = false;
+};
+
+const deleteSelected = () => {
+   closeContext();
+   const rows = JSON.parse(JSON.stringify(localResults.value)).filter((row: any) => selectedRows.value.includes(row._antares_id)).map((row: any) => {
+      delete row._antares_id;
+      return row;
+   });
+
+   const params = {
+      primary: primaryField.value.name,
+      schema: getSchema(resultsetIndex.value),
+      table: getTable(resultsetIndex.value),
+      rows
+   };
+   emit('delete-selected', params);
+};
+
+const setNull = () => {
+   const row = localResults.value.find((row: any) => selectedRows.value.includes(row._antares_id));
+
+   const params = {
+      primary: primaryField.value.name,
+      schema: getSchema(resultsetIndex.value),
+      table: getTable(resultsetIndex.value),
+      id: getPrimaryValue(row),
+      row,
+      orgRow: row,
+      field: selectedCell.value.field,
+      content: null as string
+   };
+   emit('update-field', params);
+};
+
+const copyCell = () => {
+   const row: any = localResults.value.find((row: any) => selectedRows.value.includes(row._antares_id));
+   const cellName = Object.keys(row).find(prop => [
+      selectedCell.value.field,
+      selectedCell.value.orgField,
+      `${fields.value[0].table}.${selectedCell.value.field}`,
+      `${fields.value[0].tableAlias}.${selectedCell.value.field}`
+   ].includes(prop));
+   let valueToCopy = row[cellName];
+   if (typeof valueToCopy === 'object')
+      valueToCopy = JSON.stringify(valueToCopy);
+   navigator.clipboard.writeText(valueToCopy);
+};
+
+const copyRow = () => {
+   const row = localResults.value.find((row: any) => selectedRows.value.includes(row._antares_id));
+   const rowToCopy = JSON.parse(JSON.stringify(row));
+   delete rowToCopy._antares_id;
+   navigator.clipboard.writeText(JSON.stringify(rowToCopy));
+};
+
+const applyUpdate = (params: TableUpdateParams) => {
+   const { primary, id, field, table, content } = params;
+
+   localResults.value = localResults.value.map((row: any) => {
+      if (row[primary] === id)// only fieldName
+         row[field] = content;
+      else if (row[`${table}.${primary}`] === id)// table.fieldName
+         row[`${table}.${field}`] = content;
+
+      return row;
+   });
+};
+
+const selectRow = (event: KeyboardEvent, row: any, field: string) => {
+   selectedField.value = field;
+   const selectedRowId = row._antares_id;
+
+   if (event.ctrlKey || event.metaKey) {
+      if (selectedRows.value.includes(selectedRowId))
+         selectedRows.value = selectedRows.value.filter(el => el !== selectedRowId);
+      else
+         selectedRows.value.push(selectedRowId);
+   }
+   else if (event.shiftKey) {
+      if (!selectedRows.value.length)
+         selectedRows.value.push(selectedRowId);
+      else {
+         const lastID = selectedRows.value.slice(-1)[0];
+         const lastIndex = sortedResults.value.findIndex((el: any) => el._antares_id === lastID);
+         const clickedIndex = sortedResults.value.findIndex((el: any) => el._antares_id === selectedRowId);
+         if (lastIndex > clickedIndex) {
+            for (let i = clickedIndex; i < lastIndex; i++)
+               selectedRows.value.push((sortedResults.value[i] as any)._antares_id);
          }
-         else if (event.shiftKey) {
-            if (!this.selectedRows.length)
-               this.selectedRows.push(selectedRowId);
-            else {
-               const lastID = this.selectedRows.slice(-1)[0];
-               const lastIndex = this.sortedResults.findIndex(el => el._antares_id === lastID);
-               const clickedIndex = this.sortedResults.findIndex(el => el._antares_id === selectedRowId);
-               if (lastIndex > clickedIndex) {
-                  for (let i = clickedIndex; i < lastIndex; i++)
-                     this.selectedRows.push(this.sortedResults[i]._antares_id);
+         else if (lastIndex < clickedIndex) {
+            for (let i = clickedIndex; i > lastIndex; i--)
+               selectedRows.value.push((sortedResults.value[i] as any)._antares_id);
+         }
+      }
+   }
+   else
+      selectedRows.value = [selectedRowId];
+};
+
+const selectAllRows = (e: KeyboardEvent) => {
+   if ((e.target as HTMLElement).classList.contains('editable-field')) return;
+
+   selectedField.value = 0;
+   selectedRows.value = localResults.value.reduce((acc, curr: any) => {
+      acc.push(curr._antares_id);
+      return acc;
+   }, []);
+};
+
+const deselectRows = () => {
+   if (!isEditingRow.value)
+      selectedRows.value = [];
+};
+
+const contextMenu = (event: MouseEvent, cell: any) => {
+   if ((event.target as HTMLElement).localName === 'input') return;
+
+   selectedCell.value = cell;
+   if (!selectedRows.value.includes(cell.id))
+      selectedRows.value = [cell.id];
+   contextEvent.value = event;
+   isContext.value = true;
+};
+
+const sort = (field: string) => {
+   if (!isSortable.value) return;
+
+   selectedRows.value = [];
+
+   if (props.mode === 'query')
+      field = `${getTable(resultsetIndex.value)}.${field}`;
+
+   if (field === currentSort.value) {
+      if (currentSortDir.value === 'asc')
+         currentSortDir.value = 'desc';
+      else
+         resetSort();
+   }
+   else {
+      currentSortDir.value = 'asc';
+      currentSort.value = field;
+   }
+
+   if (isHardSort.value)
+      emit('hard-sort', { field: currentSort.value, dir: currentSortDir.value });
+};
+
+const resetSort = () => {
+   currentSort.value = '';
+   currentSortDir.value = 'asc';
+};
+
+const selectResultset = (index: number) => {
+   resultsetIndex.value = index;
+};
+
+const downloadTable = (format: 'csv' | 'json', filename: string) => {
+   if (!sortedResults.value) return;
+
+   const rows = JSON.parse(JSON.stringify(sortedResults.value)).map((row: any) => {
+      delete row._antares_id;
+      return row;
+   });
+
+   arrayToFile({
+      type: format,
+      content: rows,
+      filename
+   });
+};
+
+const onKey = async (e: KeyboardEvent) => {
+   if (!props.isSelected)
+      return;
+
+   if (isEditingRow.value)
+      return;
+
+   if ((e.ctrlKey || e.metaKey) && e.code === 'KeyA' && !e.altKey)
+      selectAllRows(e);
+
+   // row navigation stuff
+   if ((e.code.includes('Arrow') || e.code === 'Tab') && sortedResults.value.length > 0 && !e.altKey) {
+      e.preventDefault();
+
+      const aviableFields= Object.keys(sortedResults.value[0]).slice(0, -1); // removes _antares_id
+
+      if (!selectedField.value)
+         selectedField.value = aviableFields[0];
+
+      const selectedId = selectedRows.value[0];
+      const selectedIndex = sortedResults.value.findIndex((row: any) => row._antares_id === selectedId);
+      const selectedFieldIndex = aviableFields.findIndex(field => field === selectedField.value);
+      let nextIndex = 0;
+      let nextFieldIndex = 0;
+
+      if (selectedIndex > -1) {
+         switch (e.code) {
+            case 'ArrowDown':
+               nextIndex = selectedIndex + 1;
+               nextFieldIndex = selectedFieldIndex;
+
+               if (nextIndex > sortedResults.value.length -1)
+                  nextIndex = sortedResults.value.length -1;
+
+               break;
+            case 'ArrowUp':
+               nextIndex = selectedIndex - 1;
+               nextFieldIndex = selectedFieldIndex;
+
+               if (nextIndex < 0)
+                  nextIndex = 0;
+
+               break;
+
+            case 'ArrowRight':
+               nextIndex = selectedIndex;
+               nextFieldIndex = selectedFieldIndex + 1;
+
+               if (nextFieldIndex > aviableFields.length -1)
+                  nextFieldIndex = 0;
+
+               break;
+
+            case 'ArrowLeft':
+               nextIndex = selectedIndex;
+               nextFieldIndex = selectedFieldIndex - 1;
+
+               if (nextFieldIndex < 0)
+                  nextFieldIndex = aviableFields.length -1;
+
+               break;
+
+            case 'Tab':
+               nextIndex = selectedIndex;
+               if (e.shiftKey) {
+                  nextFieldIndex = selectedFieldIndex - 1;
+                  if (nextFieldIndex < 0)
+                     nextFieldIndex = aviableFields.length -1;
                }
-               else if (lastIndex < clickedIndex) {
-                  for (let i = clickedIndex; i > lastIndex; i--)
-                     this.selectedRows.push(this.sortedResults[i]._antares_id);
+               else {
+                  nextFieldIndex = selectedFieldIndex + 1;
+                  if (nextFieldIndex > aviableFields.length -1)
+                     nextFieldIndex = 0;
                }
-            }
          }
-         else
-            this.selectedRows = [selectedRowId];
-      },
-      selectAllRows (e) {
-         if (e.target.classList.contains('editable-field')) return;
+      }
 
-         this.selectedField = 0;
-         this.selectedRows = this.localResults.reduce((acc, curr) => {
-            acc.push(curr._antares_id);
-            return acc;
-         }, []);
-      },
-      deselectRows () {
-         if (!this.isEditingRow)
-            this.selectedRows = [];
-      },
-      contextMenu (event, cell) {
-         if (event.target.localName === 'input') return;
+      if (sortedResults.value[nextIndex] && nextIndex !== selectedIndex) {
+         selectedRows.value = [(sortedResults.value[nextIndex] as any)._antares_id];
+         await nextTick();
+         scrollToCell(scrollElement.value.querySelector('.td.selected'));
+      }
 
-         this.selectedCell = cell;
-         if (!this.selectedRows.includes(cell.id))
-            this.selectedRows = [cell.id];
-         this.contextEvent = event;
-         this.isContext = true;
-      },
-      sort (field) {
-         if (!this.isSortable) return;
-
-         this.selectedRows = [];
-
-         if (this.mode === 'query')
-            field = `${this.getTable(this.resultsetIndex)}.${field}`;
-
-         if (field === this.currentSort) {
-            if (this.currentSortDir === 'asc')
-               this.currentSortDir = 'desc';
-            else
-               this.resetSort();
-         }
-         else {
-            this.currentSortDir = 'asc';
-            this.currentSort = field;
-         }
-
-         if (this.isHardSort)
-            this.$emit('hard-sort', { field: this.currentSort, dir: this.currentSortDir });
-      },
-      resetSort () {
-         this.currentSort = '';
-         this.currentSortDir = 'asc';
-      },
-      selectResultset (index) {
-         this.resultsetIndex = index;
-      },
-      downloadTable (format, filename) {
-         if (!this.sortedResults) return;
-
-         const rows = JSON.parse(JSON.stringify(this.sortedResults)).map(row => {
-            delete row._antares_id;
-            return row;
-         });
-
-         arrayToFile({
-            type: format,
-            content: rows,
-            filename
-         });
-      },
-      onKey (e) {
-         if (!this.isSelected)
-            return;
-
-         if (this.isEditingRow)
-            return;
-
-         if ((e.ctrlKey || e.metaKey) && e.code === 'KeyA' && !e.altKey)
-            this.selectAllRows(e);
-
-         // row naviation stuff
-         if ((e.code.includes('Arrow') || e.code === 'Tab') && this.sortedResults.length > 0 && !e.altKey) {
-            e.preventDefault();
-
-            const aviableFields= Object.keys(this.sortedResults[0]).slice(0, -1); // removes _antares_id
-
-            if (!this.selectedField)
-               this.selectedField = aviableFields[0];
-
-            const selectedId = this.selectedRows[0];
-            const selectedIndex = this.sortedResults.findIndex(row => row._antares_id === selectedId);
-            const selectedFieldIndex = aviableFields.findIndex(field => field === this.selectedField);
-            let nextIndex = 0;
-            let nextFieldIndex = 0;
-
-            if (selectedIndex > -1) {
-               switch (e.code) {
-                  case 'ArrowDown':
-                     nextIndex = selectedIndex + 1;
-                     nextFieldIndex = selectedFieldIndex;
-
-                     if (nextIndex > this.sortedResults.length -1)
-                        nextIndex = this.sortedResults.length -1;
-
-                     break;
-                  case 'ArrowUp':
-                     nextIndex = selectedIndex - 1;
-                     nextFieldIndex = selectedFieldIndex;
-
-                     if (nextIndex < 0)
-                        nextIndex = 0;
-
-                     break;
-
-                  case 'ArrowRight':
-                     nextIndex = selectedIndex;
-                     nextFieldIndex = selectedFieldIndex + 1;
-
-                     if (nextFieldIndex > aviableFields.length -1)
-                        nextFieldIndex = 0;
-
-                     break;
-
-                  case 'ArrowLeft':
-                     nextIndex = selectedIndex;
-                     nextFieldIndex = selectedFieldIndex - 1;
-
-                     if (nextFieldIndex < 0)
-                        nextFieldIndex = aviableFields.length -1;
-
-                     break;
-
-                  case 'Tab':
-                     nextIndex = selectedIndex;
-                     if (e.shiftKey) {
-                        nextFieldIndex = selectedFieldIndex - 1;
-                        if (nextFieldIndex < 0)
-                           nextFieldIndex = aviableFields.length -1;
-                     }
-                     else {
-                        nextFieldIndex = selectedFieldIndex + 1;
-                        if (nextFieldIndex > aviableFields.length -1)
-                           nextFieldIndex = 0;
-                     }
-               }
-            }
-
-            if (this.sortedResults[nextIndex] && nextIndex !== selectedIndex) {
-               this.selectedRows = [this.sortedResults[nextIndex]._antares_id];
-               this.$nextTick(() => this.scrollToCell(this.scrollElement.querySelector('.td.selected')));
-            }
-
-            if (aviableFields[nextFieldIndex] && nextFieldIndex !== selectedFieldIndex) {
-               this.selectedField = aviableFields[nextFieldIndex];
-               this.$nextTick(() => this.scrollToCell(this.scrollElement.querySelector('.td.selected')));
-            }
-         }
-      },
-      scrollToCell (el) {
-         if (!el) return;
-         const visYMin = this.scrollElement.scrollTop;
-         const visYMax = this.scrollElement.scrollTop + this.scrollElement.clientHeight - el.clientHeight;
-         const visXMin = this.scrollElement.scrollLeft;
-         const visXMax = this.scrollElement.scrollLeft + this.scrollElement.clientWidth - el.clientWidth;
-
-         if (el.offsetTop < visYMin)
-            this.scrollElement.scrollTop = el.offsetTop;
-
-         else if (el.offsetTop >= visYMax)
-            this.scrollElement.scrollTop = el.offsetTop - this.scrollElement.clientHeight + el.clientHeight;
-
-         if (el.offsetLeft < visXMin)
-            this.scrollElement.scrollLeft = el.offsetLeft;
-
-         else if (el.offsetLeft >= visXMax)
-            this.scrollElement.scrollLeft = el.offsetLeft - this.scrollElement.clientWidth + el.clientWidth;
+      if (aviableFields[nextFieldIndex] && nextFieldIndex !== selectedFieldIndex) {
+         selectedField.value = aviableFields[nextFieldIndex];
+         await nextTick();
+         scrollToCell(scrollElement.value.querySelector('.td.selected'));
       }
    }
 };
+
+const scrollToCell = (el: HTMLElement) => {
+   if (!el) return;
+   const visYMin = scrollElement.value.scrollTop;
+   const visYMax = scrollElement.value.scrollTop + scrollElement.value.clientHeight - el.clientHeight;
+   const visXMin = scrollElement.value.scrollLeft;
+   const visXMax = scrollElement.value.scrollLeft + scrollElement.value.clientWidth - el.clientWidth;
+
+   if (el.offsetTop < visYMin)
+      scrollElement.value.scrollTop = el.offsetTop;
+
+   else if (el.offsetTop >= visYMax)
+      scrollElement.value.scrollTop = el.offsetTop - scrollElement.value.clientHeight + el.clientHeight;
+
+   if (el.offsetLeft < visXMin)
+      scrollElement.value.scrollLeft = el.offsetLeft;
+
+   else if (el.offsetLeft >= visXMax)
+      scrollElement.value.scrollLeft = el.offsetLeft - scrollElement.value.clientWidth + el.clientWidth;
+};
+
+defineExpose({ applyUpdate, refreshScroller, resetSort, resizeResults, downloadTable });
+
+watch(() => props.results, () => {
+   setLocalResults();
+   resultsetIndex.value = 0;
+});
+
+watch(resultsetIndex, () => {
+   setLocalResults();
+});
+
+watch(() => props.isSelected, (val) => {
+   if (val) refreshScroller();
+});
+
+onUpdated(() => {
+   if (table.value)
+      refreshScroller();
+
+   if (tableWrapper.value)
+      scrollElement.value = tableWrapper.value;
+
+   document.querySelectorAll<HTMLElement>('.column-resizable').forEach(element => {
+      if (element.clientWidth !== 0)
+         element.style.width = element.clientWidth + 'px';
+   });
+});
+
+onMounted(() => {
+   window.addEventListener('resize', resizeResults);
+   window.addEventListener('keydown', onKey);
+});
+
+onUnmounted(() => {
+   window.removeEventListener('resize', resizeResults);
+   window.removeEventListener('keydown', onKey);
+});
+
 </script>
 
 <style lang="scss" scoped>

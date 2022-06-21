@@ -1,7 +1,7 @@
 import * as antares from 'common/interfaces/antares';
 import * as mysql from 'mysql2/promise';
 import { AntaresCore } from '../AntaresCore';
-import * as dataTypes from 'common/data-types/mysql';
+import dataTypes from 'common/data-types/mysql';
 import SSH2Promise = require('ssh2-promise');
 import SSHConfig from 'ssh2-promise/lib/sshConfig';
 
@@ -321,7 +321,7 @@ export class MySQLClient extends AntaresCore {
       return filteredDatabases.map(db => {
          if (schemas.has(db.Database)) {
             // TABLES
-            const remappedTables = tablesArr.filter(table => table.Db === db.Database).map(table => {
+            const remappedTables: antares.TableInfos[] = tablesArr.filter(table => table.Db === db.Database).map(table => {
                let tableType;
                switch (table.Comment) {
                   case 'VIEW':
@@ -350,7 +350,7 @@ export class MySQLClient extends AntaresCore {
             });
 
             // PROCEDURES
-            const remappedProcedures = procedures.filter(procedure => procedure.Db === db.Database).map(procedure => {
+            const remappedProcedures: antares.RoutineInfos[] = procedures.filter(procedure => procedure.Db === db.Database).map(procedure => {
                return {
                   name: procedure.Name,
                   type: procedure.Type,
@@ -364,7 +364,7 @@ export class MySQLClient extends AntaresCore {
             });
 
             // FUNCTIONS
-            const remappedFunctions = functions.filter(func => func.Db === db.Database).map(func => {
+            const remappedFunctions: antares.FunctionInfos[] = functions.filter(func => func.Db === db.Database).map(func => {
                return {
                   name: func.Name,
                   type: func.Type,
@@ -378,33 +378,26 @@ export class MySQLClient extends AntaresCore {
             });
 
             // SCHEDULERS
-            const remappedSchedulers = schedulers.filter(scheduler => scheduler.Db === db.Database).map(scheduler => {
+            const remappedSchedulers: antares.EventInfos[] = schedulers.filter(scheduler => scheduler.Db === db.Database).map(scheduler => {
                return {
                   name: scheduler.EVENT_NAME,
-                  definition: scheduler.EVENT_DEFINITION,
-                  type: scheduler.EVENT_TYPE,
+                  schema: scheduler.Db,
+                  sql: scheduler.EVENT_DEFINITION,
+                  execution: scheduler.EVENT_TYPE === 'RECURRING' ? 'EVERY' : 'ONCE',
                   definer: scheduler.DEFINER,
-                  body: scheduler.EVENT_BODY,
                   starts: scheduler.STARTS,
                   ends: scheduler.ENDS,
+                  state: scheduler.STATUS === 'ENABLED' ? 'ENABLE' : scheduler.STATE === 'DISABLED' ? 'DISABLE' : 'DISABLE ON SLAVE',
                   enabled: scheduler.STATUS === 'ENABLED',
-                  executeAt: scheduler.EXECUTE_AT,
-                  intervalField: scheduler.INTERVAL_FIELD,
-                  intervalValue: scheduler.INTERVAL_VALUE,
-                  onCompletion: scheduler.ON_COMPLETION,
-                  originator: scheduler.ORIGINATOR,
-                  sqlMode: scheduler.SQL_MODE,
-                  created: scheduler.CREATED,
-                  updated: scheduler.LAST_ALTERED,
-                  lastExecuted: scheduler.LAST_EXECUTED,
-                  comment: scheduler.EVENT_COMMENT,
-                  charset: scheduler.CHARACTER_SET_CLIENT,
-                  timezone: scheduler.TIME_ZONE
+                  at: scheduler.EXECUTE_AT,
+                  every: [scheduler.INTERVAL_FIELD, scheduler.INTERVAL_VALUE],
+                  preserve: scheduler.ON_COMPLETION.includes('PRESERVE'),
+                  comment: scheduler.EVENT_COMMENT
                };
             });
 
             // TRIGGERS
-            const remappedTriggers = triggersArr.filter(trigger => trigger.Db === db.Database).map(trigger => {
+            const remappedTriggers: antares.TriggerInfos[] = triggersArr.filter(trigger => trigger.Db === db.Database).map(trigger => {
                return {
                   name: trigger.Trigger,
                   statement: trigger.Statement,
@@ -930,19 +923,22 @@ export class MySQLClient extends AntaresCore {
    }
 
    async getViewInformations ({ schema, view }: { schema: string; view: string }) {
-      const sql = `SHOW CREATE VIEW \`${schema}\`.\`${view}\``;
-      const results = await this.raw(sql);
+      const { rows: algorithm } = await this.raw(`SHOW CREATE VIEW \`${schema}\`.\`${view}\``);
+      const { rows: viewInfo } = await this.raw(`
+          SELECT * 
+          FROM INFORMATION_SCHEMA.VIEWS
+          WHERE TABLE_SCHEMA = '${schema}' 
+          AND TABLE_NAME = '${view}'
+       `);
 
-      return results.rows.map(row => {
-         return {
-            algorithm: row['Create View'].match(/(?<=CREATE ALGORITHM=).*?(?=\s)/gs)[0],
-            definer: row['Create View'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
-            security: row['Create View'].match(/(?<=SQL SECURITY ).*?(?=\s)/gs)[0],
-            updateOption: row['Create View'].match(/(?<=WITH ).*?(?=\s)/gs) ? row['Create View'].match(/(?<=WITH ).*?(?=\s)/gs)[0] : '',
-            sql: row['Create View'].match(/(?<=AS ).*?$/gs)[0],
-            name: row.View
-         };
-      })[0];
+      return {
+         algorithm: algorithm[0]['Create View'].match(/(?<=CREATE ALGORITHM=).*?(?=\s)/gs)[0],
+         definer: viewInfo[0].DEFINER,
+         security: viewInfo[0].SECURITY_TYPE,
+         updateOption: viewInfo[0].CHECK_OPTION === 'NONE' ? '' : viewInfo[0].CHECK_OPTION,
+         sql: viewInfo[0].VIEW_DEFINITION,
+         name: viewInfo[0].TABLE_NAME
+      };
    }
 
    async dropView (params: { schema: string; view: string }) {
@@ -955,7 +951,7 @@ export class MySQLClient extends AntaresCore {
          USE \`${view.schema}\`; 
          ALTER ALGORITHM = ${view.algorithm}${view.definer ? ` DEFINER=${view.definer}` : ''} 
          SQL SECURITY ${view.security} 
-         params \`${view.schema}\`.\`${view.oldName}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}
+         VIEW \`${view.schema}\`.\`${view.oldName}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}
       `;
 
       if (view.name !== view.oldName)
@@ -1381,6 +1377,14 @@ export class MySQLClient extends AntaresCore {
             xa: row.XA,
             savepoints: row.Savepoints,
             isDefault: row.Support.includes('DEFAULT')
+         } as {
+            name: string;
+            support: string;
+            comment: string;
+            transactions: string;
+            xa: string;
+            savepoints: string;
+            isDefault: boolean;
          };
       });
    }
@@ -1405,7 +1409,12 @@ export class MySQLClient extends AntaresCore {
                break;
          }
          return acc;
-      }, {});
+      }, {}) as {
+         number: string;
+         name: string;
+         arch: string;
+         os: string;
+      };
    }
 
    async getProcesses () {
@@ -1423,6 +1432,15 @@ export class MySQLClient extends AntaresCore {
             time: row.TIME,
             state: row.STATE,
             info: row.INFO
+         } as {
+            id: number;
+            user: string;
+            host: string;
+            db: string;
+            command: string;
+            time: number;
+            state: string;
+            info: string;
          };
       });
    }

@@ -64,91 +64,85 @@
    </form>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, Prop, ref } from 'vue';
+import { ClientCode, TableField } from 'common/interfaces/antares';
 import customizations from 'common/customizations';
 import { NUMBER, FLOAT } from 'common/fieldTypes';
 import BaseSelect from '@/components/BaseSelect.vue';
+import { TableFilterClausole } from 'common/interfaces/tableApis';
 
-export default {
-   components: {
-      BaseSelect
-   },
-   props: {
-      fields: Array,
-      connClient: String
-   },
-   emits: ['filter-change', 'filter'],
-   data () {
-      return {
-         rows: [],
-         operators: [
-            '=', '!=', '>', '<', '>=', '<=', 'IN', 'NOT IN', 'LIKE', 'BETWEEN', 'IS NULL', 'IS NOT NULL'
-         ]
-      };
-   },
-   computed: {
-      customizations () {
-         return customizations[this.connClient];
-      }
-   },
-   created () {
-      this.addRow();
-   },
-   methods: {
-      addRow () {
-         this.rows.push({ active: true, field: this.fields[0].name, op: '=', value: '', value2: '' });
-         this.$emit('filter-change', this.rows);
-      },
-      removeRow (i) {
-         this.rows = this.rows.filter((_, idx) => idx !== i);
-         this.$emit('filter-change', this.rows);
-      },
-      doFilter () {
-         const clausoles = this.rows.filter(el => el.active).map(el => this.createClausole(el));
-         this.$emit('filter', clausoles);
-      },
-      createClausole (filter) {
-         const field = this.fields.find(field => field.name === filter.field);
-         const isNumeric = [...NUMBER, ...FLOAT].includes(field.type);
-         const { elementsWrapper: ew, stringsWrapper: sw } = this.customizations;
-         let value;
+const props = defineProps({
+   fields: Array as Prop<TableField[]>,
+   connClient: String as Prop<ClientCode>
+});
 
-         switch (filter.op) {
-            case '=':
-            case '!=':
-               value = isNumeric ? filter.value : `${sw}${filter.value}${sw}`;
-               break;
-            case 'BETWEEN':
-               value = isNumeric ? filter.value : `${sw}${filter.value}${sw}`;
-               value += ' AND ';
-               value += isNumeric ? filter.value2 : `${sw}${filter.value2}${sw}`;
-               break;
-            case 'IN':
-            case 'NOT IN':
-               value = filter.value.split(',').map(val => {
-                  val = val.trim();
-                  return isNumeric ? val : `${sw}${val}${sw}`;
-               }).join(',');
-               value = `(${filter.value})`;
-               break;
-            case 'IS NULL':
-            case 'IS NOT NULL':
-               value = '';
-               break;
-            case 'LIKE':
-               value = `${sw}%${filter.value}%${sw}`;
-               break;
-            default:
-               value = `${sw}${filter.value}${sw}`;
-         }
+const emit = defineEmits(['filter-change', 'filter']);
 
-         if (isNumeric && !value.length && !['IS NULL', 'IS NOT NULL'].includes(filter.op))
-            value = `${sw}${sw}`;
+const rows = ref([]);
+const operators = ref([
+   '=', '!=', '>', '<', '>=', '<=', 'IN', 'NOT IN', 'LIKE', 'BETWEEN', 'IS NULL', 'IS NOT NULL'
+]);
 
-         return `${ew}${filter.field}${ew} ${filter.op} ${value}`;
-      }
-   }
+const clientCustomizations = computed(() => customizations[props.connClient]);
+
+const addRow = () => {
+   rows.value.push({ active: true, field: props.fields[0].name, op: '=', value: '', value2: '' });
+   emit('filter-change', rows.value);
 };
+
+const removeRow = (i: number) => {
+   rows.value = rows.value.filter((_, idx) => idx !== i);
+   emit('filter-change', rows.value);
+};
+
+const doFilter = () => {
+   const clausoles = rows.value.filter(el => el.active).map(el => createClausole(el));
+   emit('filter', clausoles);
+};
+
+const createClausole = (filter: TableFilterClausole) => {
+   const field = props.fields.find(field => field.name === filter.field);
+   const isNumeric = [...NUMBER, ...FLOAT].includes(field.type);
+   const { elementsWrapper: ew, stringsWrapper: sw } = clientCustomizations.value;
+   let value;
+
+   switch (filter.op) {
+      case '=':
+      case '!=':
+         value = isNumeric ? filter.value : `${sw}${filter.value}${sw}`;
+         break;
+      case 'BETWEEN':
+         value = isNumeric ? filter.value : `${sw}${filter.value}${sw}`;
+         value += ' AND ';
+         value += isNumeric ? filter.value2 : `${sw}${filter.value2}${sw}`;
+         break;
+      case 'IN':
+      case 'NOT IN':
+         value = filter.value.split(',').map(val => {
+            val = val.trim();
+            return isNumeric ? val : `${sw}${val}${sw}`;
+         }).join(',');
+         value = `(${filter.value})`;
+         break;
+      case 'IS NULL':
+      case 'IS NOT NULL':
+         value = '';
+         break;
+      case 'LIKE':
+         value = `${sw}%${filter.value}%${sw}`;
+         break;
+      default:
+         value = `${sw}${filter.value}${sw}`;
+   }
+
+   if (isNumeric && !value.length && !['IS NULL', 'IS NOT NULL'].includes(filter.op))
+      value = `${sw}${sw}`;
+
+   return `${ew}${filter.field}${ew} ${filter.op} ${value}`;
+};
+
+addRow();
 </script>
 
 <style lang="scss">

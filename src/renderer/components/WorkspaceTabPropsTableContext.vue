@@ -4,7 +4,7 @@
       @close-context="closeContext"
    >
       <div class="context-element">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-key-plus text-light pr-1" /> {{ $t('message.createNewIndex') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-key-plus text-light pr-1" /> {{ t('message.createNewIndex') }}</span>
          <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
          <div class="context-submenu">
             <div
@@ -19,7 +19,7 @@
          </div>
       </div>
       <div v-if="indexes.length" class="context-element">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-key-arrow-right text-light pr-1" /> {{ $t('message.addToIndex') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-key-arrow-right text-light pr-1" /> {{ t('message.addToIndex') }}</span>
          <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
          <div class="context-submenu">
             <div
@@ -34,54 +34,54 @@
          </div>
       </div>
       <div class="context-element" @click="duplicateField">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ $t('word.duplicate') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ t('word.duplicate') }}</span>
       </div>
       <div class="context-element" @click="deleteField">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ $t('message.deleteField') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ t('message.deleteField') }}</span>
       </div>
    </BaseContextMenu>
 </template>
 
-<script>
-import BaseContextMenu from '@/components/BaseContextMenu';
+<script setup lang="ts">
+import { computed, Prop } from 'vue';
+import { useI18n } from 'vue-i18n';
+import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import { TableIndex } from 'common/interfaces/antares';
 
-export default {
-   name: 'WorkspaceTabQueryTableContext',
-   components: {
-      BaseContextMenu
-   },
-   props: {
-      contextEvent: MouseEvent,
-      indexes: Array,
-      indexTypes: Array,
-      selectedField: Object
-   },
-   emits: ['close-context', 'duplicate-selected', 'delete-selected', 'add-new-index', 'add-to-index'],
-   computed: {
-      hasPrimary () {
-         return this.indexes.some(index => index.type === 'PRIMARY');
-      }
-   },
-   methods: {
-      closeContext () {
-         this.$emit('close-context');
-      },
-      duplicateField () {
-         this.$emit('duplicate-selected');
-         this.closeContext();
-      },
-      deleteField () {
-         this.$emit('delete-selected');
-         this.closeContext();
-      },
-      addNewIndex (index) {
-         this.$emit('add-new-index', { field: this.selectedField.name, index });
-         this.closeContext();
-      },
-      addToIndex (index) {
-         this.$emit('add-to-index', { field: this.selectedField.name, index });
-         this.closeContext();
-      }
-   }
+const { t } = useI18n();
+
+const props = defineProps({
+   contextEvent: MouseEvent,
+   indexes: Array as Prop<TableIndex[]>,
+   indexTypes: Array as Prop<string[]>,
+   selectedField: Object
+});
+
+const emit = defineEmits(['close-context', 'duplicate-selected', 'delete-selected', 'add-new-index', 'add-to-index']);
+
+const hasPrimary = computed(() => props.indexes.some(index => index.type === 'PRIMARY'));
+
+const closeContext = () => {
+   emit('close-context');
+};
+
+const duplicateField = () => {
+   emit('duplicate-selected');
+   closeContext();
+};
+
+const deleteField = () => {
+   emit('delete-selected');
+   closeContext();
+};
+
+const addNewIndex = (index: string) => {
+   emit('add-new-index', { field: props.selectedField.name, index });
+   closeContext();
+};
+
+const addToIndex = (index: string) => {
+   emit('add-to-index', { field: props.selectedField.name, index });
+   closeContext();
 };
 </script>

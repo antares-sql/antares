@@ -2,7 +2,7 @@ import * as antares from 'common/interfaces/antares';
 import * as exporter from 'common/interfaces/exporter';
 import { SqlExporter } from './SqlExporter';
 import { BLOB, BIT, DATE, DATETIME, FLOAT, NUMBER, TEXT_SEARCH } from 'common/fieldTypes';
-import hexToBinary from 'common/libs/hexToBinary';
+import hexToBinary, { HexChar } from 'common/libs/hexToBinary';
 import * as moment from 'moment';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -249,7 +249,7 @@ SET row_security = off;\n\n\n`;
                else if (TEXT_SEARCH.includes(column.type))
                   sqlInsertString += `'${val.replaceAll('\'', '\'\'')}'`;
                else if (BIT.includes(column.type))
-                  sqlInsertString += `b'${hexToBinary(Buffer.from(val).toString('hex'))}'`;
+                  sqlInsertString += `b'${hexToBinary(Buffer.from(val).toString('hex') as undefined as HexChar[])}'`;
                else if (BLOB.includes(column.type))
                   sqlInsertString += `decode('${val.toString('hex').toUpperCase()}', 'hex')`;
                else if (NUMBER.includes(column.type))

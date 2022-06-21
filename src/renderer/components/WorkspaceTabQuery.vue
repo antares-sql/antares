@@ -28,11 +28,11 @@
                      v-if="showCancel && isQuering"
                      class="btn btn-primary btn-sm cancellable"
                      :disabled="!query"
-                     :title="$t('word.cancel')"
+                     :title="t('word.cancel')"
                      @click="killTabQuery()"
                   >
                      <i class="mdi mdi-24px mdi-window-close" />
-                     <span class="d-invisible pr-1">{{ $t('word.run') }}</span>
+                     <span class="d-invisible pr-1">{{ t('word.run') }}</span>
                   </button>
                   <button
                      v-else
@@ -43,7 +43,7 @@
                      @click="runQuery(query)"
                   >
                      <i class="mdi mdi-24px mdi-play pr-1" />
-                     <span>{{ $t('word.run') }}</span>
+                     <span>{{ t('word.run') }}</span>
                   </button>
                </div>
                <button
@@ -53,7 +53,7 @@
                   @click="commitTab()"
                >
                   <i class="mdi mdi-24px mdi-cube-send pr-1" />
-                  <span>{{ $t('word.commit') }}</span>
+                  <span>{{ t('word.commit') }}</span>
                </button>
                <button
                   v-if="!autocommit"
@@ -62,7 +62,7 @@
                   @click="rollbackTab()"
                >
                   <i class="mdi mdi-24px mdi-undo-variant pr-1" />
-                  <span>{{ $t('word.rollback') }}</span>
+                  <span>{{ t('word.rollback') }}</span>
                </button>
                <button
                   class="btn btn-link btn-sm mr-0"
@@ -71,7 +71,7 @@
                   @click="clear()"
                >
                   <i class="mdi mdi-24px mdi-delete-sweep pr-1" />
-                  <span>{{ $t('word.clear') }}</span>
+                  <span>{{ t('word.clear') }}</span>
                </button>
 
                <div class="divider-vert py-3" />
@@ -83,7 +83,7 @@
                   @click="beautify()"
                >
                   <i class="mdi mdi-24px mdi-brush pr-1" />
-                  <span>{{ $t('word.format') }}</span>
+                  <span>{{ t('word.format') }}</span>
                </button>
                <button
                   class="btn btn-dark btn-sm"
@@ -92,7 +92,7 @@
                   @click="openHistoryModal()"
                >
                   <i class="mdi mdi-24px mdi-history pr-1" />
-                  <span>{{ $t('word.history') }}</span>
+                  <span>{{ t('word.history') }}</span>
                </button>
                <div class="dropdown table-dropdown pr-2">
                   <button
@@ -101,7 +101,7 @@
                      tabindex="0"
                   >
                      <i class="mdi mdi-24px mdi-file-export mr-1" />
-                     <span>{{ $t('word.export') }}</span>
+                     <span>{{ t('word.export') }}</span>
                      <i class="mdi mdi-24px mdi-menu-down" />
                   </button>
                   <ul class="menu text-left">
@@ -113,13 +113,13 @@
                      </li>
                   </ul>
                </div>
-               <div class="input-group pr-2" :title="$t('message.commitMode')">
+               <div class="input-group pr-2" :title="t('message.commitMode')">
                   <i class="input-group-addon addon-sm mdi mdi-24px mdi-source-commit p-0" />
                   <BaseSelect
                      v-model="autocommit"
-                     :options="[{value: true, label: $t('message.autoCommit')}, {value: false, label: $t('message.manualCommit')}]"
-                     :option-label="opt => opt.label"
-                     :option-track-by="opt => opt.value"
+                     :options="[{value: true, label: t('message.autoCommit')}, {value: false, label: t('message.manualCommit')}]"
+                     :option-label="(opt: any) => opt.label"
+                     :option-track-by="(opt: any) => opt.value"
                      class="form-select select-sm text-bold"
                   />
                </div>
@@ -128,30 +128,30 @@
                <div
                   v-if="results.length"
                   class="d-flex"
-                  :title="$t('message.queryDuration')"
+                  :title="t('message.queryDuration')"
                >
                   <i class="mdi mdi-timer-sand mdi-rotate-180 pr-1" /> <b>{{ durationsCount / 1000 }}s</b>
                </div>
                <div
                   v-if="resultsCount"
                   class="d-flex"
-                  :title="$t('word.results')"
+                  :title="t('word.results')"
                >
                   <i class="mdi mdi-equal pr-1" /> <b>{{ resultsCount.toLocaleString() }}</b>
                </div>
                <div
                   v-if="hasAffected"
                   class="d-flex"
-                  :title="$t('message.affectedRows')"
+                  :title="t('message.affectedRows')"
                >
                   <i class="mdi mdi-target pr-1" /> <b>{{ affectedCount }}</b>
                </div>
-               <div class="input-group" :title="$t('word.schema')">
+               <div class="input-group" :title="t('word.schema')">
                   <i class="input-group-addon addon-sm mdi mdi-24px mdi-database" />
 
                   <BaseSelect
                      v-model="selectedSchema"
-                     :options="[{value: null, label: $t('message.noSchema')}, ...databaseSchemas.map(el => ({label: el, value: el}))]"
+                     :options="[{value: null, label: t('message.noSchema')}, ...databaseSchemas.map(el => ({label: el, value: el}))]"
                      class="form-select select-sm text-bold"
                   />
                </div>
@@ -183,347 +183,331 @@
    </div>
 </template>
 
-<script>
-import { storeToRefs } from 'pinia';
+<script setup lang="ts">
+import { Component, computed, onBeforeUnmount, onMounted, Prop, ref, Ref, watch } from 'vue';
+import { Ace } from 'ace-builds';
+import { useI18n } from 'vue-i18n';
 import { format } from 'sql-formatter';
+import { ConnectionParams } from 'common/interfaces/antares';
 import { useHistoryStore } from '@/stores/history';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import Schema from '@/ipc-api/Schema';
-import QueryEditor from '@/components/QueryEditor';
-import BaseLoader from '@/components/BaseLoader';
-import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable';
-import WorkspaceTabQueryEmptyState from '@/components/WorkspaceTabQueryEmptyState';
-import ModalHistory from '@/components/ModalHistory';
-import tableTabs from '@/mixins/tableTabs';
+import QueryEditor from '@/components/QueryEditor.vue';
+import BaseLoader from '@/components/BaseLoader.vue';
+import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable.vue';
+import WorkspaceTabQueryEmptyState from '@/components/WorkspaceTabQueryEmptyState.vue';
+import ModalHistory from '@/components/ModalHistory.vue';
+import { useResultTables } from '@/composables/useResultTables';
 import BaseSelect from '@/components/BaseSelect.vue';
 
-export default {
-   name: 'WorkspaceTabQuery',
-   components: {
-      BaseLoader,
-      QueryEditor,
-      WorkspaceTabQueryTable,
-      WorkspaceTabQueryEmptyState,
-      ModalHistory,
-      BaseSelect
-   },
-   mixins: [tableTabs],
-   props: {
-      tabUid: String,
-      connection: Object,
-      tab: Object,
-      isSelected: Boolean
-   },
-   setup () {
-      const { getHistoryByWorkspace, saveHistory } = useHistoryStore();
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+const { t } = useI18n();
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const props = defineProps({
+   tabUid: String,
+   connection: Object as Prop<ConnectionParams>,
+   tab: Object,
+   isSelected: Boolean
+});
 
-      const {
-         getWorkspace,
-         changeBreadcrumbs,
-         updateTabContent,
-         setUnsavedChanges
-      } = workspacesStore;
+const reloadTable = () => runQuery(lastQuery.value);
 
-      return {
-         getHistoryByWorkspace,
-         saveHistory,
-         addNotification,
-         selectedWorkspace,
-         getWorkspace,
-         changeBreadcrumbs,
-         updateTabContent,
-         setUnsavedChanges
-      };
-   },
-   data () {
-      return {
-         query: '',
-         lastQuery: '',
-         isQuering: false,
-         isCancelling: false,
-         showCancel: false,
-         autocommit: true,
-         results: [],
-         selectedSchema: null,
-         resultsCount: 0,
-         durationsCount: 0,
-         affectedCount: null,
-         editorHeight: 200,
-         isHistoryOpen: false,
-         debounceTimeout: null
-      };
-   },
-   computed: {
-      workspace () {
-         return this.getWorkspace(this.connection.uid);
-      },
-      breadcrumbsSchema () {
-         return this.workspace.breadcrumbs.schema || null;
-      },
-      databaseSchemas () {
-         return this.workspace.structure.reduce((acc, curr) => {
-            acc.push(curr.name);
-            return acc;
-         }, []);
-      },
-      isWorkspaceSelected () {
-         return this.workspace.uid === this.selectedWorkspace;
-      },
-      history () {
-         return this.getHistoryByWorkspace(this.connection.uid) || [];
-      },
-      hasResults () {
-         return this.results.length && this.results[0].rows;
-      },
-      hasAffected () {
-         return this.affectedCount || (!this.resultsCount && this.affectedCount !== null);
-      }
-   },
-   watch: {
-      query (val) {
-         clearTimeout(this.debounceTimeout);
+const {
+   queryTable,
+   isQuering,
+   updateField,
+   deleteSelected
+} = useResultTables(props.connection.uid, reloadTable);
 
-         this.debounceTimeout = setTimeout(() => {
-            this.updateTabContent({
-               uid: this.connection.uid,
-               tab: this.tab.uid,
-               type: 'query',
-               schema: this.selectedSchema,
-               content: val
-            });
-         }, 200);
-      },
-      isSelected (val) {
-         if (val) {
-            this.changeBreadcrumbs({ schema: this.selectedSchema, query: `Query #${this.tab.index}` });
-            setTimeout(() => {
-               if (this.$refs.queryEditor)
-                  this.$refs.queryEditor.editor.focus();
-            }, 0);
-         }
-      },
-      selectedSchema () {
-         this.changeBreadcrumbs({ schema: this.selectedSchema, query: `Query #${this.tab.index}` });
-      }
-   },
-   created () {
-      this.query = this.tab.content;
-      this.selectedSchema = this.tab.schema || this.breadcrumbsSchema;
+const { saveHistory } = useHistoryStore();
+const { addNotification } = useNotificationsStore();
+const workspacesStore = useWorkspacesStore();
 
-      if (!this.databaseSchemas.includes(this.selectedSchema))
-         this.selectedSchema = null;
+const {
+   getWorkspace,
+   changeBreadcrumbs,
+   updateTabContent,
+   setUnsavedChanges
+} = workspacesStore;
 
-      window.addEventListener('keydown', this.onKey);
-      window.addEventListener('resize', this.onWindowResize);
-   },
-   mounted () {
-      const resizer = this.$refs.resizer;
+const queryEditor: Ref<Component & { editor: Ace.Editor; $el: HTMLElement }> = ref(null);
+const queryAreaFooter: Ref<HTMLDivElement> = ref(null);
+const resizer: Ref<HTMLDivElement> = ref(null);
+const query = ref('');
+const lastQuery = ref('');
+const isCancelling = ref(false);
+const showCancel = ref(false);
+const autocommit = ref(true);
+const results = ref([]);
+const selectedSchema = ref(null);
+const resultsCount = ref(0);
+const durationsCount = ref(0);
+const affectedCount = ref(null);
+const editorHeight = ref(200);
+const isHistoryOpen = ref(false);
+const debounceTimeout = ref(null);
 
-      resizer.addEventListener('mousedown', e => {
-         e.preventDefault();
+const workspace = computed(() => getWorkspace(props.connection.uid));
+const breadcrumbsSchema = computed(() => workspace.value.breadcrumbs.schema || null);
+const databaseSchemas = computed(() => {
+   return workspace.value.structure.reduce((acc, curr) => {
+      acc.push(curr.name);
+      return acc;
+   }, []);
+});
+const hasResults = computed(() => results.value.length && results.value[0].rows);
+const hasAffected = computed(() => affectedCount.value || (!resultsCount.value && affectedCount.value !== null));
 
-         window.addEventListener('mousemove', this.resize);
-         window.addEventListener('mouseup', this.stopResize);
+watch(query, (val) => {
+   clearTimeout(debounceTimeout.value);
+
+   debounceTimeout.value = setTimeout(() => {
+      updateTabContent({
+         uid: props.connection.uid,
+         tab: props.tab.uid,
+         type: 'query',
+         schema: selectedSchema.value,
+         content: val
       });
+   }, 200);
+});
 
-      if (this.tab.autorun)
-         this.runQuery(this.query);
-   },
-   beforeUnmount () {
-      window.removeEventListener('resize', this.onWindowResize);
-      window.removeEventListener('keydown', this.onKey);
+watch(() => props.isSelected, (val) => {
+   if (val) {
+      changeBreadcrumbs({ schema: selectedSchema.value, query: `Query #${props.tab.index}` });
+      setTimeout(() => {
+         if (queryEditor.value)
+            queryEditor.value.editor.focus();
+      }, 0);
+   }
+});
+
+watch(selectedSchema, () => {
+   changeBreadcrumbs({ schema: selectedSchema.value, query: `Query #${props.tab.index}` });
+});
+
+const runQuery = async (query: string) => {
+   if (!query || isQuering.value) return;
+   isQuering.value = true;
+   clearTabData();
+   queryTable.value.resetSort();
+
+   try { // Query Data
       const params = {
-         uid: this.connection.uid,
-         tabUid: this.tab.uid
+         uid: props.connection.uid,
+         schema: selectedSchema.value,
+         tabUid: props.tab.uid,
+         autocommit: autocommit.value,
+         query
       };
-      Schema.destroyConnectionToCommit(params);
-   },
-   methods: {
-      async runQuery (query) {
-         if (!query || this.isQuering) return;
-         this.isQuering = true;
-         this.clearTabData();
-         this.$refs.queryTable.resetSort();
 
-         try { // Query Data
-            const params = {
-               uid: this.connection.uid,
-               schema: this.selectedSchema,
-               tabUid: this.tab.uid,
-               autocommit: this.autocommit,
-               query
-            };
+      const { status, response } = await Schema.rawQuery(params);
 
-            const { status, response } = await Schema.rawQuery(params);
+      if (status === 'success') {
+         results.value = Array.isArray(response) ? response : [response];
+         resultsCount.value = results.value.reduce((acc, curr) => acc + (curr.rows ? curr.rows.length : 0), 0);
+         durationsCount.value = results.value.reduce((acc, curr) => acc + curr.duration, 0);
+         affectedCount.value = results.value
+            .filter(result => result.report !== null)
+            .reduce((acc, curr) => {
+               if (acc === null) acc = 0;
+               return acc + (curr.report ? curr.report.affectedRows : 0);
+            }, null);
 
-            if (status === 'success') {
-               this.results = Array.isArray(response) ? response : [response];
-               this.resultsCount = this.results.reduce((acc, curr) => acc + (curr.rows ? curr.rows.length : 0), 0);
-               this.durationsCount = this.results.reduce((acc, curr) => acc + curr.duration, 0);
-               this.affectedCount = this.results
-                  .filter(result => result.report !== null)
-                  .reduce((acc, curr) => {
-                     if (acc === null) acc = 0;
-                     return acc + (curr.report ? curr.report.affectedRows : 0);
-                  }, null);
-
-               this.saveHistory(params);
-               if (!this.autocommit)
-                  this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: true });
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.isQuering = false;
-         this.lastQuery = query;
-      },
-      async killTabQuery () {
-         if (this.isCancelling) return;
-
-         this.isCancelling = true;
-
-         try {
-            const params = {
-               uid: this.connection.uid,
-               tabUid: this.tab.uid
-            };
-
-            await Schema.killTabQuery(params);
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.isCancelling = false;
-      },
-      setCancelButtonVisibility (val) {
-         if (this.workspace.customizations.cancelQueries)
-            this.showCancel = val;
-      },
-      reloadTable () {
-         this.runQuery(this.lastQuery);
-      },
-      clearTabData () {
-         this.results = [];
-         this.resultsCount = 0;
-         this.durationsCount = 0;
-         this.affectedCount = null;
-      },
-      resize (e) {
-         const el = this.$refs.queryEditor.$el;
-         const queryFooterHeight = this.$refs.queryAreaFooter.clientHeight;
-         const bottom = e.pageY || this.$refs.resizer.getBoundingClientRect().bottom;
-         const maxHeight = window.innerHeight - 100 - queryFooterHeight;
-         let editorHeight = bottom - el.getBoundingClientRect().top;
-         if (editorHeight > maxHeight) editorHeight = maxHeight;
-         if (editorHeight < 50) editorHeight = 50;
-         this.editorHeight = editorHeight;
-      },
-      onWindowResize (e) {
-         const el = this.$refs.queryEditor.$el;
-         const queryFooterHeight = this.$refs.queryAreaFooter.clientHeight;
-         const bottom = e.pageY || this.$refs.resizer.getBoundingClientRect().bottom;
-         const maxHeight = window.innerHeight - 100 - queryFooterHeight;
-         const editorHeight = bottom - el.getBoundingClientRect().top;
-
-         if (editorHeight > maxHeight)
-            this.editorHeight = maxHeight;
-      },
-      stopResize () {
-         window.removeEventListener('mousemove', this.resize);
-         if (this.$refs.queryTable && this.results.length)
-            this.$refs.queryTable.resizeResults();
-
-         if (this.$refs.queryEditor)
-            this.$refs.queryEditor.editor.resize();
-      },
-      beautify () {
-         if (this.$refs.queryEditor) {
-            let language = 'sql';
-
-            switch (this.workspace.client) {
-               case 'mysql':
-                  language = 'mysql';
-                  break;
-               case 'maria':
-                  language = 'mariadb';
-                  break;
-               case 'pg':
-                  language = 'postgresql';
-                  break;
-            }
-
-            const formattedQuery = format(this.query, {
-               language,
-               uppercase: true
-            });
-            this.$refs.queryEditor.editor.session.setValue(formattedQuery);
-         }
-      },
-      openHistoryModal () {
-         this.isHistoryOpen = true;
-      },
-      selectQuery (sql) {
-         if (this.$refs.queryEditor)
-            this.$refs.queryEditor.editor.session.setValue(sql);
-
-         this.isHistoryOpen = false;
-      },
-      clear () {
-         if (this.$refs.queryEditor)
-            this.$refs.queryEditor.editor.session.setValue('');
-         this.clearTabData();
-      },
-      downloadTable (format) {
-         this.$refs.queryTable.downloadTable(format, `${this.tab.type}-${this.tab.index}`);
-      },
-      async commitTab () {
-         this.isQuering = true;
-         try {
-            const params = {
-               uid: this.connection.uid,
-               tabUid: this.tab.uid
-            };
-
-            await Schema.commitTab(params);
-            this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: false });
-            this.addNotification({ status: 'success', message: this.$t('message.actionSuccessful', { action: 'COMMIT' }) });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.isQuering = false;
-      },
-      async rollbackTab () {
-         this.isQuering = true;
-         try {
-            const params = {
-               uid: this.connection.uid,
-               tabUid: this.tab.uid
-            };
-
-            await Schema.rollbackTab(params);
-            this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: false });
-            this.addNotification({ status: 'success', message: this.$t('message.actionSuccessful', { action: 'ROLLBACK' }) });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.isQuering = false;
+         saveHistory(params);
+         if (!autocommit.value)
+            setUnsavedChanges({ uid: props.connection.uid, tUid: props.tabUid, isChanged: true });
       }
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   isQuering.value = false;
+   lastQuery.value = query;
+};
+
+const killTabQuery = async () => {
+   if (isCancelling.value) return;
+
+   isCancelling.value = true;
+
+   try {
+      const params = {
+         uid: props.connection.uid,
+         tabUid: props.tab.uid
+      };
+
+      await Schema.killTabQuery(params);
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   isCancelling.value = false;
+};
+
+const setCancelButtonVisibility = (val: boolean) => {
+   if (workspace.value.customizations.cancelQueries)
+      showCancel.value = val;
+};
+
+const clearTabData = () => {
+   results.value = [];
+   resultsCount.value = 0;
+   durationsCount.value = 0;
+   affectedCount.value = null;
+};
+
+const resize = (e: MouseEvent) => {
+   const el = queryEditor.value.$el;
+   const queryFooterHeight = queryAreaFooter.value.clientHeight;
+   const bottom = e.pageY || resizer.value.getBoundingClientRect().bottom;
+   const maxHeight = window.innerHeight - 100 - queryFooterHeight;
+   let localEditorHeight = bottom - el.getBoundingClientRect().top;
+   if (localEditorHeight > maxHeight) localEditorHeight = maxHeight;
+   if (localEditorHeight < 50) localEditorHeight = 50;
+   editorHeight.value = localEditorHeight;
+};
+
+const onWindowResize = (e: MouseEvent) => {
+   const el = queryEditor.value.$el;
+   const queryFooterHeight = queryAreaFooter.value.clientHeight;
+   const bottom = e.pageY || resizer.value.getBoundingClientRect().bottom;
+   const maxHeight = window.innerHeight - 100 - queryFooterHeight;
+   const localEditorHeight = bottom - el.getBoundingClientRect().top;
+
+   if (localEditorHeight > maxHeight)
+      editorHeight.value = maxHeight;
+};
+
+const stopResize = () => {
+   window.removeEventListener('mousemove', resize);
+   if (queryTable.value && results.value.length)
+      queryTable.value.resizeResults();
+
+   if (queryEditor.value)
+      queryEditor.value.editor.resize();
+};
+
+const beautify = () => {
+   if (queryEditor.value) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let language: any = 'sql';
+
+      switch (workspace.value.client) {
+         case 'mysql':
+            language = 'mysql';
+            break;
+         case 'maria':
+            language = 'mariadb';
+            break;
+         case 'pg':
+            language = 'postgresql';
+            break;
+      }
+
+      const formattedQuery = format(query.value, {
+         language,
+         uppercase: true
+      });
+      queryEditor.value.editor.session.setValue(formattedQuery);
    }
 };
+
+const openHistoryModal = () => {
+   isHistoryOpen.value = true;
+};
+
+const selectQuery = (sql: string) => {
+   if (queryEditor.value)
+      queryEditor.value.editor.session.setValue(sql);
+
+   isHistoryOpen.value = false;
+};
+
+const clear = () => {
+   if (queryEditor.value)
+      queryEditor.value.editor.session.setValue('');
+   clearTabData();
+};
+
+const downloadTable = (format: 'csv' | 'json') => {
+   queryTable.value.downloadTable(format, `${props.tab.type}-${props.tab.index}`);
+};
+
+const commitTab = async () => {
+   isQuering.value = true;
+   try {
+      const params = {
+         uid: props.connection.uid,
+         tabUid: props.tab.uid
+      };
+
+      await Schema.commitTab(params);
+      setUnsavedChanges({ uid: props.connection.uid, tUid: props.tabUid, isChanged: false });
+      addNotification({ status: 'success', message: t('message.actionSuccessful', { action: 'COMMIT' }) });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   isQuering.value = false;
+};
+
+const rollbackTab = async () => {
+   isQuering.value = true;
+   try {
+      const params = {
+         uid: props.connection.uid,
+         tabUid: props.tab.uid
+      };
+
+      await Schema.rollbackTab(params);
+      setUnsavedChanges({ uid: props.connection.uid, tUid: props.tabUid, isChanged: false });
+      addNotification({ status: 'success', message: t('message.actionSuccessful', { action: 'ROLLBACK' }) });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   isQuering.value = false;
+};
+
+query.value = props.tab.content as string;
+selectedSchema.value = props.tab.schema || breadcrumbsSchema.value;
+
+if (!databaseSchemas.value.includes(selectedSchema.value))
+   selectedSchema.value = null;
+
+// window.addEventListener('keydown', onKey);
+window.addEventListener('resize', onWindowResize);
+
+onMounted(() => {
+   const localResizer = resizer.value;
+
+   localResizer.addEventListener('mousedown', (e: MouseEvent) => {
+      e.preventDefault();
+
+      window.addEventListener('mousemove', resize);
+      window.addEventListener('mouseup', stopResize);
+   });
+
+   if (props.tab.autorun)
+      runQuery(query.value);
+});
+
+onBeforeUnmount(() => {
+   window.removeEventListener('resize', onWindowResize);
+   // window.removeEventListener('keydown', onKey);
+   const params = {
+      uid: props.connection.uid,
+      tabUid: props.tab.uid
+   };
+   Schema.destroyConnectionToCommit(params);
+});
 </script>
 
 <style lang="scss">

@@ -46,65 +46,58 @@
    </div>
 </template>
 
-<script>
-export default {
-   name: 'BaseConfirmModal',
-   props: {
-      size: {
-         type: String,
-         validator: prop => ['small', 'medium', '400', 'large'].includes(prop),
-         default: 'small'
-      },
-      hideFooter: {
-         type: Boolean,
-         default: false
-      },
-      confirmText: String,
-      cancelText: String
-   },
-   emits: ['confirm', 'hide'],
-   computed: {
-      hasHeader () {
-         return !!this.$slots.header;
-      },
-      hasBody () {
-         return !!this.$slots.body;
-      },
-      hasDefault () {
-         return !!this.$slots.default;
-      },
-      modalSizeClass () {
-         if (this.size === 'small')
-            return 'modal-sm';
-         if (this.size === '400')
-            return 'modal-400';
-         else if (this.size === 'large')
-            return 'modal-lg';
-         else return '';
-      }
-   },
-   created () {
-      window.addEventListener('keydown', this.onKey);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-   },
-   methods: {
-      confirmModal () {
-         this.$emit('confirm');
-         this.hideModal();
-      },
+<script setup lang="ts">
+import { computed, onBeforeUnmount, PropType, useSlots } from 'vue';
 
-      hideModal () {
-         this.$emit('hide');
-      },
-      onKey (e) {
-         e.stopPropagation();
-         if (e.key === 'Escape')
-            this.hideModal();
-      }
-   }
+const props = defineProps({
+   size: {
+      type: String as PropType<'small' | 'medium' | '400' | 'large'>,
+      validator: (prop: string) => ['small', 'medium', '400', 'large'].includes(prop),
+      default: 'small'
+   },
+   hideFooter: {
+      type: Boolean,
+      default: false
+   },
+   confirmText: String,
+   cancelText: String
+});
+const emit = defineEmits(['confirm', 'hide']);
+const slots = useSlots();
+
+const hasHeader = computed(() => !!slots.header);
+const hasBody = computed(() => !!slots.body);
+const hasDefault = computed(() => !!slots.default);
+const modalSizeClass = computed(() => {
+   if (props.size === 'small')
+      return 'modal-sm';
+   if (props.size === '400')
+      return 'modal-400';
+   else if (props.size === 'large')
+      return 'modal-lg';
+   else return '';
+});
+
+const confirmModal = () => {
+   emit('confirm');
+   hideModal();
 };
+
+const hideModal = () => {
+   emit('hide');
+};
+
+const onKey = (e: KeyboardEvent) => {
+   e.stopPropagation();
+   if (e.key === 'Escape')
+      hideModal();
+};
+
+window.addEventListener('keydown', onKey);
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+});
 </script>
 
 <style scoped>

@@ -2,8 +2,8 @@
    <ConfirmModal
       :confirm-text="$t('word.discard')"
       :cancel-text="$t('word.stay')"
-      @confirm="$emit('confirm')"
-      @hide="$emit('close')"
+      @confirm="emit('confirm')"
+      @hide="emit('close')"
    >
       <template #header>
          <div class="d-flex">
@@ -18,29 +18,23 @@
    </ConfirmModal>
 </template>
 
-<script>
-import ConfirmModal from '@/components/BaseConfirmModal';
+<script setup lang="ts">
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import { onBeforeUnmount } from 'vue';
 
-export default {
-   name: 'ModalDiscardChanges',
-   components: {
-      ConfirmModal
-   },
-   emits: ['confirm', 'close'],
-   created () {
-      window.addEventListener('keydown', this.onKey);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-   },
-   methods: {
-      onKey (e) {
-         e.stopPropagation();
-         if (e.key === 'Escape')
-            this.closeModal();
-      }
-   }
+const emit = defineEmits(['confirm', 'close']);
+
+const onKey = (e: KeyboardEvent) => {
+   e.stopPropagation();
+   if (e.key === 'Escape')
+      emit('close');
 };
+
+window.addEventListener('keydown', onKey);
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+});
 </script>
 
 <style scoped>

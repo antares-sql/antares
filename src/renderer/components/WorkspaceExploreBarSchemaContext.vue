@@ -123,159 +123,154 @@
    </BaseContextMenu>
 </template>
 
-<script>
+<script setup lang="ts">
+import { Component, computed, nextTick, Ref, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import BaseContextMenu from '@/components/BaseContextMenu';
-import ConfirmModal from '@/components/BaseConfirmModal';
-import ModalEditSchema from '@/components/ModalEditSchema';
-import ModalExportSchema from '@/components/ModalExportSchema';
-import ModalImportSchema from '@/components/ModalImportSchema';
+import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import ModalEditSchema from '@/components/ModalEditSchema.vue';
+import ModalExportSchema from '@/components/ModalExportSchema.vue';
+import ModalImportSchema from '@/components/ModalImportSchema.vue';
 import Schema from '@/ipc-api/Schema';
 import Application from '@/ipc-api/Application';
-import { storeToRefs } from 'pinia';
 
-export default {
-   name: 'WorkspaceExploreBarSchemaContext',
-   components: {
-      BaseContextMenu,
-      ConfirmModal,
-      ModalEditSchema,
-      ModalExportSchema,
-      ModalImportSchema
-   },
-   props: {
-      contextEvent: MouseEvent,
-      selectedSchema: String
-   },
-   emits: [
-      'open-create-table-tab',
-      'open-create-view-tab',
-      'open-create-trigger-tab',
-      'open-create-routine-tab',
-      'open-create-function-tab',
-      'open-create-trigger-function-tab',
-      'open-create-scheduler-tab',
-      'close-context',
-      'reload'
-   ],
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+const props = defineProps({
+   contextEvent: MouseEvent,
+   selectedSchema: String
+});
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const emit = defineEmits([
+   'open-create-table-tab',
+   'open-create-view-tab',
+   'open-create-trigger-tab',
+   'open-create-routine-tab',
+   'open-create-function-tab',
+   'open-create-trigger-function-tab',
+   'open-create-scheduler-tab',
+   'close-context',
+   'reload'
+]);
 
-      const {
-         getWorkspace,
-         changeBreadcrumbs
-      } = workspacesStore;
+const { addNotification } = useNotificationsStore();
+const workspacesStore = useWorkspacesStore();
 
-      return {
-         addNotification,
-         selectedWorkspace,
-         getWorkspace,
-         changeBreadcrumbs
-      };
-   },
-   data () {
-      return {
-         isDeleteModal: false,
-         isEditModal: false,
-         isExportSchemaModal: false,
-         isImportSchemaModal: false
-      };
-   },
-   computed: {
-      workspace () {
-         return this.getWorkspace(this.selectedWorkspace);
+const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+const {
+   getWorkspace,
+   changeBreadcrumbs
+} = workspacesStore;
+
+const importModalRef: Ref<Component & {startImport: (file: string) => void}> = ref(null);
+const isDeleteModal = ref(false);
+const isEditModal = ref(false);
+const isExportSchemaModal = ref(false);
+const isImportSchemaModal = ref(false);
+
+const workspace = computed(() => getWorkspace(selectedWorkspace.value));
+
+const openCreateTableTab = () => {
+   emit('open-create-table-tab');
+};
+
+const openCreateViewTab = () => {
+   emit('open-create-view-tab');
+};
+
+const openCreateTriggerTab = () => {
+   emit('open-create-trigger-tab');
+};
+
+const openCreateRoutineTab = () => {
+   emit('open-create-routine-tab');
+};
+
+const openCreateFunctionTab = () => {
+   emit('open-create-function-tab');
+};
+
+const openCreateTriggerFunctionTab = () => {
+   emit('open-create-trigger-function-tab');
+};
+
+const openCreateSchedulerTab = () => {
+   emit('open-create-scheduler-tab');
+};
+
+const showDeleteModal = () => {
+   isDeleteModal.value = true;
+};
+
+const hideDeleteModal = () => {
+   isDeleteModal.value = false;
+};
+
+const showEditModal = () => {
+   isEditModal.value = true;
+};
+
+const hideEditModal = () => {
+   isEditModal.value = false;
+   closeContext();
+};
+
+const showExportSchemaModal = () => {
+   isExportSchemaModal.value = true;
+};
+
+const hideExportSchemaModal = () => {
+   isExportSchemaModal.value = false;
+   closeContext();
+};
+
+const showImportSchemaModal = () => {
+   isImportSchemaModal.value = true;
+};
+
+const hideImportSchemaModal = () => {
+   isImportSchemaModal.value = false;
+   closeContext();
+};
+
+const initImport = async () => {
+   const result = await Application.showOpenDialog({ properties: ['openFile'], filters: [{ name: 'SQL', extensions: ['sql'] }] });
+   if (result && !result.canceled) {
+      const file = result.filePaths[0];
+      showImportSchemaModal();
+      await nextTick();
+      importModalRef.value.startImport(file);
+   }
+};
+
+const closeContext = () => {
+   emit('close-context');
+};
+
+const deleteSchema = async () => {
+   try {
+      const { status, response } = await Schema.deleteSchema({
+         uid: selectedWorkspace.value,
+         database: props.selectedSchema
+      });
+
+      if (status === 'success') {
+         if (props.selectedSchema === workspace.value.breadcrumbs.schema)
+            changeBreadcrumbs({ schema: null });
+
+         closeContext();
+         emit('reload');
       }
-   },
-   methods: {
-      openCreateTableTab () {
-         this.$emit('open-create-table-tab');
-      },
-      openCreateViewTab () {
-         this.$emit('open-create-view-tab');
-      },
-      openCreateTriggerTab () {
-         this.$emit('open-create-trigger-tab');
-      },
-      openCreateRoutineTab () {
-         this.$emit('open-create-routine-tab');
-      },
-      openCreateFunctionTab () {
-         this.$emit('open-create-function-tab');
-      },
-      openCreateTriggerFunctionTab () {
-         this.$emit('open-create-trigger-function-tab');
-      },
-      openCreateSchedulerTab () {
-         this.$emit('open-create-scheduler-tab');
-      },
-      showDeleteModal () {
-         this.isDeleteModal = true;
-      },
-      hideDeleteModal () {
-         this.isDeleteModal = false;
-      },
-      showEditModal () {
-         this.isEditModal = true;
-      },
-      hideEditModal () {
-         this.isEditModal = false;
-         this.closeContext();
-      },
-      showExportSchemaModal () {
-         this.isExportSchemaModal = true;
-      },
-      hideExportSchemaModal () {
-         this.isExportSchemaModal = false;
-         this.closeContext();
-      },
-      showImportSchemaModal () {
-         this.isImportSchemaModal = true;
-      },
-      hideImportSchemaModal () {
-         this.isImportSchemaModal = false;
-         this.closeContext();
-      },
-      async initImport () {
-         const result = await Application.showOpenDialog({ properties: ['openFile'], filters: [{ name: 'SQL', extensions: ['sql'] }] });
-         if (result && !result.canceled) {
-            const file = result.filePaths[0];
-            this.showImportSchemaModal();
-            this.$nextTick(() => {
-               this.$refs.importModalRef.startImport(file);
-            });
-         }
-      },
-      closeContext () {
-         this.$emit('close-context');
-      },
-      async deleteSchema () {
-         try {
-            const { status, response } = await Schema.deleteSchema({
-               uid: this.selectedWorkspace,
-               database: this.selectedSchema
-            });
-
-            if (status === 'success') {
-               if (this.selectedSchema === this.workspace.breadcrumbs.schema)
-                  this.changeBreadcrumbs({ schema: null });
-
-               this.closeContext();
-               this.$emit('reload');
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-      }
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
    }
 };
 </script>
+
 <style lang="scss" scoped>
 .context-submenu {
   min-width: 150px !important;

@@ -1,6 +1,6 @@
 <template>
    <ConfirmModal
-      :confirm-text="$t('word.confirm')"
+      :confirm-text="t('word.confirm')"
       size="400"
       @confirm="confirmOptionsChange"
       @hide="$emit('hide')"
@@ -8,14 +8,14 @@
       <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-timer mr-1" />
-            <span class="cut-text">{{ $t('word.timing') }} "{{ localOptions.name }}"</span>
+            <span class="cut-text">{{ t('word.timing') }} "{{ localOptions.name }}"</span>
          </div>
       </template>
       <template #body>
          <form class="form-horizontal">
             <div class="form-group">
                <label class="form-label col-4">
-                  {{ $t('word.execution') }}
+                  {{ t('word.execution') }}
                </label>
                <div class="column">
                   <BaseSelect
@@ -61,7 +61,7 @@
                </div>
                <div class="form-group">
                   <label class="form-label col-4">
-                     {{ $t('word.starts') }}
+                     {{ t('word.starts') }}
                   </label>
                   <div class="column">
                      <div class="input-group">
@@ -82,7 +82,7 @@
                </div>
                <div class="form-group">
                   <label class="form-label col-4">
-                     {{ $t('word.ends') }}
+                     {{ t('word.ends') }}
                   </label>
                   <div class="column">
                      <div class="input-group">
@@ -124,7 +124,7 @@
                <div class="col-4" />
                <div class="column">
                   <label class="form-checkbox form-inline mt-2">
-                     <input v-model="optionsProxy.preserve" type="checkbox"><i class="form-icon" /> {{ $t('message.preserveOnCompletion') }}
+                     <input v-model="optionsProxy.preserve" type="checkbox"><i class="form-icon" /> {{ t('message.preserveOnCompletion') }}
                   </label>
                </div>
             </div>
@@ -133,52 +133,47 @@
    </ConfirmModal>
 </template>
 
-<script>
-import moment from 'moment';
-import ConfirmModal from '@/components/BaseConfirmModal';
+<script setup lang="ts">
+import { Ref, ref } from 'vue';
+import * as moment from 'moment';
+import { useI18n } from 'vue-i18n';
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import { EventInfos } from 'common/interfaces/antares';
 
-export default {
-   name: 'WorkspaceTabPropsSchedulerTimingModal',
-   components: {
-      ConfirmModal,
-      BaseSelect
-   },
-   props: {
-      localOptions: Object,
-      workspace: Object
-   },
-   emits: ['hide', 'options-update'],
-   data () {
-      return {
-         optionsProxy: {},
-         isOptionsChanging: false,
-         hasStart: false,
-         hasEnd: false
-      };
-   },
-   created () {
-      this.optionsProxy = JSON.parse(JSON.stringify(this.localOptions));
+const { t } = useI18n();
 
-      this.hasStart = !!this.optionsProxy.starts;
-      this.hasEnd = !!this.optionsProxy.ends;
+const props = defineProps({
+   localOptions: Object,
+   workspace: Object
+});
 
-      if (!this.optionsProxy.at) this.optionsProxy.at = moment().format('YYYY-MM-DD HH:mm:ss');
-      if (!this.optionsProxy.starts) this.optionsProxy.starts = moment().format('YYYY-MM-DD HH:mm:ss');
-      if (!this.optionsProxy.ends) this.optionsProxy.ends = moment().format('YYYY-MM-DD HH:mm:ss');
-      if (!this.optionsProxy.every.length) this.optionsProxy.every = ['1', 'DAY'];
-   },
-   methods: {
-      confirmOptionsChange () {
-         if (!this.hasStart) this.optionsProxy.starts = '';
-         if (!this.hasEnd) this.optionsProxy.ends = '';
+const emit = defineEmits(['hide', 'options-update']);
 
-         this.$emit('options-update', this.optionsProxy);
-      },
-      isNumberOrMinus (event) {
-         if (!/\d/.test(event.key) && event.key !== '-')
-            return event.preventDefault();
-      }
-   }
+const optionsProxy: Ref<EventInfos> = ref({} as EventInfos);
+const hasStart = ref(false);
+const hasEnd = ref(false);
+
+const confirmOptionsChange = () => {
+   if (!hasStart.value) optionsProxy.value.starts = '';
+   if (!hasEnd.value) optionsProxy.value.ends = '';
+
+   emit('options-update', optionsProxy.value);
 };
+
+const isNumberOrMinus = (event: KeyboardEvent) => {
+   if (!/\d/.test(event.key) && event.key !== '-')
+      return event.preventDefault();
+};
+
+optionsProxy.value = JSON.parse(JSON.stringify(props.localOptions));
+
+hasStart.value = !!optionsProxy.value.starts;
+hasEnd.value = !!optionsProxy.value.ends;
+
+if (!optionsProxy.value.at) optionsProxy.value.at = moment().format('YYYY-MM-DD HH:mm:ss');
+if (!optionsProxy.value.starts) optionsProxy.value.starts = moment().format('YYYY-MM-DD HH:mm:ss');
+if (!optionsProxy.value.ends) optionsProxy.value.ends = moment().format('YYYY-MM-DD HH:mm:ss');
+if (!optionsProxy.value.every.length) optionsProxy.value.every = ['1', 'DAY'];
+
 </script>

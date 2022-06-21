@@ -9,121 +9,111 @@
    </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { onMounted, watch } from 'vue';
 import * as ace from 'ace-builds';
-import { storeToRefs } from 'pinia';
 import 'ace-builds/webpack-resolver';
+import { storeToRefs } from 'pinia';
 import { useSettingsStore } from '@/stores/settings';
 import { uidGen } from 'common/libs/uidGen';
 
-export default {
-   name: 'BaseTextEditor',
-   props: {
-      modelValue: String,
-      mode: { type: String, default: 'text' },
-      editorClass: { type: String, default: '' },
-      autoFocus: { type: Boolean, default: false },
-      readOnly: { type: Boolean, default: false },
-      showLineNumbers: { type: Boolean, default: true },
-      height: { type: Number, default: 200 }
-   },
-   emits: ['update:modelValue'],
-   setup () {
-      const settingsStore = useSettingsStore();
+const props = defineProps({
+   modelValue: String,
+   mode: { type: String, default: 'text' },
+   editorClass: { type: String, default: '' },
+   autoFocus: { type: Boolean, default: false },
+   readOnly: { type: Boolean, default: false },
+   showLineNumbers: { type: Boolean, default: true },
+   height: { type: Number, default: 200 }
+});
+const emit = defineEmits(['update:modelValue']);
+const settingsStore = useSettingsStore();
 
-      const {
-         editorTheme,
-         editorFontSize,
-         autoComplete,
-         lineWrap
-      } = storeToRefs(settingsStore);
+const {
+   editorTheme,
+   editorFontSize,
+   autoComplete,
+   lineWrap
+} = storeToRefs(settingsStore);
 
-      return {
-         editorTheme,
-         editorFontSize,
-         autoComplete,
-         lineWrap
-      };
-   },
-   data () {
-      return {
-         editor: null,
-         id: uidGen()
-      };
-   },
-   watch: {
-      mode () {
-         if (this.editor)
-            this.editor.session.setMode(`ace/mode/${this.mode}`);
-      },
-      editorTheme () {
-         if (this.editor)
-            this.editor.setTheme(`ace/theme/${this.editorTheme}`);
-      },
-      editorFontSize () {
-         const sizes = {
-            small: '12px',
-            medium: '14px',
-            large: '16px'
-         };
+let editor: ace.Ace.Editor;
+const id = uidGen();
 
-         if (this.editor) {
-            this.editor.setOptions({
-               fontSize: sizes[this.editorFontSize]
-            });
-         }
-      },
-      autoComplete () {
-         if (this.editor) {
-            this.editor.setOptions({
-               enableLiveAutocompletion: this.autoComplete
-            });
-         }
-      },
-      lineWrap () {
-         if (this.editor) {
-            this.editor.setOptions({
-               wrap: this.lineWrap
-            });
-         }
-      }
-   },
-   mounted () {
-      this.editor = ace.edit(`editor-${this.id}`, {
-         mode: `ace/mode/${this.mode}`,
-         theme: `ace/theme/${this.editorTheme}`,
-         value: this.modelValue || '',
-         fontSize: '14px',
-         printMargin: false,
-         readOnly: this.readOnly,
-         showLineNumbers: this.showLineNumbers,
-         showGutter: this.showLineNumbers
+watch(() => props.mode, () => {
+   if (editor)
+      editor.session.setMode(`ace/mode/${props.mode}`);
+});
+
+watch(editorTheme, () => {
+   if (editor)
+      editor.setTheme(`ace/theme/${editorTheme.value}`);
+});
+
+watch(editorFontSize, () => {
+   const sizes = {
+      small: 12,
+      medium: 14,
+      large: 16
+   };
+
+   if (editor) {
+      editor.setOptions({
+         fontSize: sizes[editorFontSize.value as undefined as 'small' | 'medium' | 'large']
       });
+   }
+});
 
-      this.editor.setOptions({
-         enableBasicAutocompletion: false,
-         wrap: this.lineWrap,
-         enableSnippets: false,
-         enableLiveAutocompletion: false
+watch(autoComplete, () => {
+   if (editor) {
+      editor.setOptions({
+         enableLiveAutocompletion: autoComplete.value
       });
+   }
+});
 
-      this.editor.session.on('change', () => {
-         const content = this.editor.getValue();
-         this.$emit('update:modelValue', content);
+watch(lineWrap, () => {
+   if (editor) {
+      editor.setOptions({
+         wrap: lineWrap.value
       });
+   }
+});
 
-      if (this.autoFocus) {
-         setTimeout(() => {
-            this.editor.focus();
-            this.editor.resize();
-         }, 20);
-      }
+onMounted(() => {
+   editor = ace.edit(`editor-${id}`, {
+      mode: `ace/mode/${props.mode}`,
+      theme: `ace/theme/${editorTheme.value}`,
+      value: props.modelValue || '',
+      fontSize: 14,
+      printMargin: false,
+      readOnly: props.readOnly,
+      showLineNumbers: props.showLineNumbers,
+      showGutter: props.showLineNumbers
+   });
 
+   editor.setOptions({
+      enableBasicAutocompletion: false,
+      wrap: lineWrap,
+      enableSnippets: false,
+      enableLiveAutocompletion: false
+   });
+
+   (editor.session as unknown as ace.Ace.Editor).on('change', () => {
+      const content = editor.getValue();
+      emit('update:modelValue', content);
+   });
+
+   if (props.autoFocus) {
       setTimeout(() => {
-         this.editor.resize();
+         editor.focus();
+         editor.resize();
       }, 20);
    }
-};
+
+   setTimeout(() => {
+      editor.resize();
+   }, 20);
+});
 </script>
 
 <style lang="scss" scoped>

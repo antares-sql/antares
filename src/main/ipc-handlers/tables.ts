@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as antares from 'common/interfaces/antares';
 import { InsertRowsParams } from 'common/interfaces/tableApis';
 import { ipcMain } from 'electron';
@@ -5,8 +6,7 @@ import { faker } from '@faker-js/faker';
 import * as moment from 'moment';
 import { sqlEscaper } from 'common/libs/sqlEscaper';
 import { TEXT, LONG_TEXT, ARRAY, TEXT_SEARCH, NUMBER, FLOAT, BLOB, BIT, DATE, DATETIME } from 'common/fieldTypes';
-import * as customizations from 'common/customizations';
-import fs from 'fs';
+import customizations from 'common/customizations';
 
 export default (connections: {[key: string]: antares.Client}) => {
    ipcMain.handle('get-table-columns', async (event, params) => {
@@ -246,84 +246,12 @@ export default (connections: {[key: string]: antares.Client}) => {
       }
    });
 
-   ipcMain.handle('insert-table-rows', async (event, params) => {
-      try { // TODO: move to client classes
-         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-         const insertObj: {[key: string]: any} = {};
-         for (const key in params.row) {
-            const type = params.fields[key];
-            let escapedParam;
-
-            if (params.row[key] === null)
-               escapedParam = 'NULL';
-            else if ([...NUMBER, ...FLOAT].includes(type))
-               escapedParam = +params.row[key];
-            else if ([...TEXT, ...LONG_TEXT].includes(type)) {
-               switch (connections[params.uid]._client) {
-                  case 'mysql':
-                  case 'maria':
-                     escapedParam = `"${sqlEscaper(params.row[key].value)}"`;
-                     break;
-                  case 'pg':
-                     escapedParam = `'${params.row[key].value.replaceAll('\'', '\'\'')}'`;
-                     break;
-               }
-            }
-            else if (BLOB.includes(type)) {
-               if (params.row[key].value) {
-                  let fileBlob;
-
-                  switch (connections[params.uid]._client) {
-                     case 'mysql':
-                     case 'maria':
-                        fileBlob = fs.readFileSync(params.row[key].value);
-                        escapedParam = `0x${fileBlob.toString('hex')}`;
-                        break;
-                     case 'pg':
-                        fileBlob = fs.readFileSync(params.row[key].value);
-                        escapedParam = `decode('${fileBlob.toString('hex')}', 'hex')`;
-                        break;
-                  }
-               }
-               else {
-                  switch (connections[params.uid]._client) {
-                     case 'mysql':
-                     case 'maria':
-                        escapedParam = '""';
-                        break;
-                     case 'pg':
-                        escapedParam = 'decode(\'\', \'hex\')';
-                        break;
-                  }
-               }
-            }
-
-            insertObj[key] = escapedParam;
-         }
-
-         const rows = new Array(+params.repeat).fill(insertObj);
-
-         await connections[params.uid]
-            .schema(params.schema)
-            .into(params.table)
-            .insert(rows)
-            .run();
-
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
-   });
-
    ipcMain.handle('insert-table-fake-rows', async (event, params: InsertRowsParams) => {
       try { // TODO: move to client classes
-         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-         const rows: {[key: string]: any}[] = [];
+         const rows: {[key: string]: string | number | boolean | Date | Buffer}[] = [];
 
          for (let i = 0; i < +params.repeat; i++) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const insertObj: {[key: string]: any} = {};
+            const insertObj: {[key: string]: string | number | boolean | Date | Buffer} = {};
 
             for (const key in params.row) {
                const type = params.fields[key];
@@ -382,8 +310,7 @@ export default (connections: {[key: string]: antares.Client}) => {
                   insertObj[key] = escapedParam;
                }
                else { // Faker value
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  const parsedParams: {[key: string]: any} = {};
+                  const parsedParams: {[key: string]: string | number | boolean | Date | Buffer} = {};
                   let fakeValue;
 
                   if (params.locale)
@@ -403,7 +330,7 @@ export default (connections: {[key: string]: antares.Client}) => {
 
                   if (typeof fakeValue === 'string') {
                      if (params.row[key].length)
-                        fakeValue = fakeValue.substr(0, params.row[key].length);
+                        fakeValue = fakeValue.substring(0, params.row[key].length);
                      fakeValue = `'${sqlEscaper(fakeValue)}'`;
                   }
                   else if ([...DATE, ...DATETIME].includes(type))

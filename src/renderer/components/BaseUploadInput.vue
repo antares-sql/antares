@@ -7,7 +7,7 @@
          {{ lastPart(modelValue) }}
       </span>
       <i
-         v-if="modelValue.length"
+         v-if="modelValue"
          class="file-uploader-reset mdi mdi-close"
          @click.prevent="clear"
       />
@@ -22,40 +22,35 @@
    </label>
 </template>
 
-<script>
+<script setup lang="ts">
 import { uidGen } from 'common/libs/uidGen';
 
-export default {
-   name: 'BaseUploadInput',
-   props: {
-      message: {
-         default: 'Browse',
-         type: String
-      },
-      modelValue: {
-         default: '',
-         type: String
-      }
+defineProps({
+   message: {
+      default: 'Browse',
+      type: String
    },
-   emits: ['change', 'clear'],
-   data () {
-      return {
-         id: uidGen()
-      };
-   },
-   methods: {
-      clear () {
-         this.$emit('clear');
-      },
-      lastPart (string) {
-         if (!string) return '';
-
-         string = string.split(/[/\\]+/).pop();
-         if (string.length >= 19)
-            string = `...${string.slice(-19)}`;
-         return string;
-      }
+   modelValue: {
+      default: '',
+      type: String
    }
+});
+
+const emit = defineEmits(['change', 'clear']);
+
+const id = uidGen();
+
+const clear = () => {
+   emit('clear');
+};
+
+const lastPart = (string: string) => {
+   if (!string) return '';
+
+   string = string.split(/[/\\]+/).pop();
+   if (string.length >= 19)
+      string = `...${string.slice(-19)}`;
+   return string;
 };
 </script>
 

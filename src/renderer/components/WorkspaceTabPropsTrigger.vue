@@ -11,20 +11,20 @@
                   @click="saveChanges"
                >
                   <i class="mdi mdi-24px mdi-content-save mr-1" />
-                  <span>{{ $t('word.save') }}</span>
+                  <span>{{ t('word.save') }}</span>
                </button>
                <button
                   :disabled="!isChanged"
                   class="btn btn-link btn-sm mr-0"
-                  :title="$t('message.clearChanges')"
+                  :title="t('message.clearChanges')"
                   @click="clearChanges"
                >
                   <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
-                  <span>{{ $t('word.clear') }}</span>
+                  <span>{{ t('word.clear') }}</span>
                </button>
             </div>
             <div class="workspace-query-info">
-               <div class="d-flex" :title="$t('word.schema')">
+               <div class="d-flex" :title="t('word.schema')">
                   <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
                </div>
             </div>
@@ -34,7 +34,7 @@
          <div class="columns">
             <div class="column col-auto">
                <div class="form-group">
-                  <label class="form-label">{{ $t('word.name') }}</label>
+                  <label class="form-label">{{ t('word.name') }}</label>
                   <input
                      v-model="localTrigger.name"
                      class="form-input"
@@ -44,12 +44,12 @@
             </div>
             <div v-if="customizations.definer" class="column col-auto">
                <div class="form-group">
-                  <label class="form-label">{{ $t('word.definer') }}</label>
+                  <label class="form-label">{{ t('word.definer') }}</label>
                   <BaseSelect
                      v-model="localTrigger.definer"
                      :options="users"
-                     :option-label="(user) => user.value === '' ? $t('message.currentUser') : `${user.name}@${user.host}`"
-                     :option-track-by="(user) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
+                     :option-label="(user: any) => user.value === '' ? t('message.currentUser') : `${user.name}@${user.host}`"
+                     :option-track-by="(user: any) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
                      class="form-select"
                   />
                </div>
@@ -57,7 +57,7 @@
             <fieldset class="column columns mb-0" :disabled="customizations.triggerOnlyRename">
                <div class="column col-auto">
                   <div class="form-group">
-                     <label class="form-label">{{ $t('word.table') }}</label>
+                     <label class="form-label">{{ t('word.table') }}</label>
                      <BaseSelect
                         v-model="localTrigger.table"
                         :options="schemaTables"
@@ -69,7 +69,7 @@
                </div>
                <div class="column col-auto">
                   <div class="form-group">
-                     <label class="form-label">{{ $t('word.event') }}</label>
+                     <label class="form-label">{{ t('word.event') }}</label>
                      <div class="input-group">
                         <BaseSelect
                            v-model="localTrigger.activation"
@@ -85,7 +85,7 @@
 
                         <div v-if="customizations.triggerMultipleEvents" class="px-4">
                            <label
-                              v-for="event in Object.keys(localEvents)"
+                              v-for="event in (Object.keys(localEvents) as ('INSERT' | 'UPDATE' | 'DELETE')[])"
                               :key="event"
                               class="form-checkbox form-inline"
                               @change.prevent="changeEvents(event)"
@@ -101,7 +101,7 @@
       </div>
       <div class="workspace-query-results column col-12 mt-2 p-relative">
          <BaseLoader v-if="isLoading" />
-         <label class="form-label ml-2">{{ $t('message.triggerStatement') }}</label>
+         <label class="form-label ml-2">{{ t('message.triggerStatement') }}</label>
          <QueryEditor
             v-show="isSelected"
             ref="queryEditor"
@@ -114,268 +114,252 @@
    </div>
 </template>
 
-<script>
-import { storeToRefs } from 'pinia';
+<script setup lang="ts">
+import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
+import { Ace } from 'ace-builds';
+import { useI18n } from 'vue-i18n';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import QueryEditor from '@/components/QueryEditor';
-import BaseLoader from '@/components/BaseLoader';
+import QueryEditor from '@/components/QueryEditor.vue';
+import BaseLoader from '@/components/BaseLoader.vue';
 import Triggers from '@/ipc-api/Triggers';
 import BaseSelect from '@/components/BaseSelect.vue';
 
-export default {
-   name: 'WorkspaceTabPropsTrigger',
-   components: {
-      BaseLoader,
-      QueryEditor,
-      BaseSelect
-   },
-   props: {
-      tabUid: String,
-      connection: Object,
-      trigger: String,
-      isSelected: Boolean,
-      schema: String
-   },
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+type TriggerEventName = 'INSERT' | 'UPDATE' | 'DELETE'
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const { t } = useI18n();
 
-      const {
-         getWorkspace,
-         refreshStructure,
-         renameTabs,
-         newTab,
-         changeBreadcrumbs,
-         setUnsavedChanges
-      } = workspacesStore;
+const props = defineProps({
+   tabUid: String,
+   connection: Object,
+   trigger: String,
+   isSelected: Boolean,
+   schema: String
+});
 
-      return {
-         addNotification,
-         selectedWorkspace,
-         getWorkspace,
-         refreshStructure,
-         renameTabs,
-         newTab,
-         changeBreadcrumbs,
-         setUnsavedChanges
-      };
-   },
-   data () {
-      return {
-         isLoading: false,
-         isSaving: false,
-         originalTrigger: null,
-         localTrigger: { sql: '' },
-         lastTrigger: null,
-         sqlProxy: '',
-         editorHeight: 300,
-         localEvents: { INSERT: false, UPDATE: false, DELETE: false }
-      };
-   },
-   computed: {
-      workspace () {
-         return this.getWorkspace(this.connection.uid);
-      },
-      customizations () {
-         return this.workspace.customizations;
-      },
-      isChanged () {
-         return JSON.stringify(this.originalTrigger) !== JSON.stringify(this.localTrigger);
-      },
-      isDefinerInUsers () {
-         return this.originalTrigger ? this.workspace.users.some(user => this.originalTrigger.definer === `\`${user.name}\`@\`${user.host}\``) : true;
-      },
-      schemaTables () {
-         const schemaTables = this.workspace.structure
-            .filter(schema => schema.name === this.schema)
-            .map(schema => schema.tables);
+const { addNotification } = useNotificationsStore();
+const workspacesStore = useWorkspacesStore();
 
-         return schemaTables.length ? schemaTables[0].filter(table => table.type === 'table') : [];
-      },
-      users () {
-         const users = [{ value: '' }, ...this.workspace.users];
-         if (!this.isDefinerInUsers) {
-            const [name, host] = this.originalTrigger.definer.replaceAll('`', '').split('@');
-            users.unshift({ name, host });
-         }
+const {
+   getWorkspace,
+   refreshStructure,
+   renameTabs,
+   changeBreadcrumbs,
+   setUnsavedChanges
+} = workspacesStore;
 
-         return users;
-      }
-   },
-   watch: {
-      async schema () {
-         if (this.isSelected) {
-            await this.getTriggerData();
-            this.$refs.queryEditor.editor.session.setValue(this.localTrigger.sql);
-            this.lastTrigger = this.trigger;
-         }
-      },
-      async trigger () {
-         if (this.isSelected) {
-            await this.getTriggerData();
-            this.$refs.queryEditor.editor.session.setValue(this.localTrigger.sql);
-            this.lastTrigger = this.trigger;
-         }
-      },
-      async isSelected (val) {
-         if (val) {
-            this.changeBreadcrumbs({ schema: this.schema, trigger: this.trigger });
+const queryEditor: Ref<Component & {editor: Ace.Editor; $el: HTMLElement}> = ref(null);
+const lastTrigger = ref(null);
+const isLoading = ref(false);
+const isSaving = ref(false);
+const originalTrigger = ref(null);
+const localTrigger = ref(null);
+const editorHeight = ref(300);
+const localEvents = ref({ INSERT: false, UPDATE: false, DELETE: false });
 
-            setTimeout(() => {
-               this.resizeQueryEditor();
-            }, 200);
+const workspace = computed(() => {
+   return getWorkspace(props.connection.uid);
+});
 
-            if (this.lastTrigger !== this.trigger)
-               this.getTriggerData();
-         }
-      },
-      isChanged (val) {
-         this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: val });
-      }
-   },
-   async created () {
-      await this.getTriggerData();
-      this.$refs.queryEditor.editor.session.setValue(this.localTrigger.sql);
-      window.addEventListener('keydown', this.onKey);
-   },
-   mounted () {
-      window.addEventListener('resize', this.resizeQueryEditor);
-   },
-   unmounted () {
-      window.removeEventListener('resize', this.resizeQueryEditor);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-   },
-   methods: {
-      async getTriggerData () {
-         if (!this.trigger) return;
+const customizations = computed(() => {
+   return workspace.value.customizations;
+});
 
-         Object.keys(this.localEvents).forEach(event => {
-            this.localEvents[event] = false;
-         });
+const isChanged = computed(() => {
+   return JSON.stringify(originalTrigger.value) !== JSON.stringify(localTrigger.value);
+});
 
-         this.localTrigger = { sql: '' };
-         this.isLoading = true;
-         this.lastTrigger = this.trigger;
+const isDefinerInUsers = computed(() => {
+   return originalTrigger.value ? workspace.value.users.some(user => originalTrigger.value.definer === `\`${user.name}\`@\`${user.host}\``) : true;
+});
 
-         const params = {
-            uid: this.connection.uid,
-            schema: this.schema,
-            trigger: this.trigger
-         };
+const schemaTables = computed(() => {
+   const schemaTables = workspace.value.structure
+      .filter(schema => schema.name === props.schema)
+      .map(schema => schema.tables);
 
-         try {
-            const { status, response } = await Triggers.getTriggerInformations(params);
-            if (status === 'success') {
-               this.originalTrigger = response;
-               this.localTrigger = JSON.parse(JSON.stringify(this.originalTrigger));
-               this.sqlProxy = this.localTrigger.sql;
+   return schemaTables.length ? schemaTables[0].filter(table => table.type === 'table') : [];
+});
 
-               if (this.customizations.triggerMultipleEvents) {
-                  this.originalTrigger.event.forEach(e => {
-                     this.localEvents[e] = true;
-                  });
-               }
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
+const users = computed(() => {
+   const users = [{ value: '' }, ...workspace.value.users];
+   if (!isDefinerInUsers.value) {
+      const [name, host] = originalTrigger.value.definer.replaceAll('`', '').split('@');
+      users.unshift({ name, host });
+   }
 
-         this.resizeQueryEditor();
-         this.isLoading = false;
-      },
-      changeEvents (event) {
-         if (this.customizations.triggerMultipleEvents) {
-            this.localEvents[event] = !this.localEvents[event];
-            this.localTrigger.event = [];
-            for (const key in this.localEvents) {
-               if (this.localEvents[key])
-                  this.localTrigger.event.push(key);
-            }
-         }
-      },
-      async saveChanges () {
-         if (this.isSaving) return;
-         this.isSaving = true;
-         const params = {
-            uid: this.connection.uid,
-            trigger: {
-               ...this.localTrigger,
-               schema: this.schema,
-               oldName: this.originalTrigger.name
-            }
-         };
+   return users;
+});
 
-         try {
-            const { status, response } = await Triggers.alterTrigger(params);
+const getTriggerData = async () => {
+   if (!props.trigger) return;
 
-            if (status === 'success') {
-               await this.refreshStructure(this.connection.uid);
+   Object.keys(localEvents.value).forEach((event: TriggerEventName) => {
+      localEvents.value[event] = false;
+   });
 
-               if (this.originalTrigger.name !== this.localTrigger.name) {
-                  const triggerName = this.customizations.triggerTableInName ? `${this.localTrigger.table}.${this.localTrigger.name}` : this.localTrigger.name;
-                  const triggerOldName = this.customizations.triggerTableInName ? `${this.originalTrigger.table}.${this.originalTrigger.name}` : this.originalTrigger.name;
+   localTrigger.value = { sql: '' };
+   isLoading.value = true;
+   lastTrigger.value = props.trigger;
 
-                  this.renameTabs({
-                     uid: this.connection.uid,
-                     schema: this.schema,
-                     elementName: triggerOldName,
-                     elementNewName: triggerName,
-                     elementType: 'trigger'
-                  });
+   const params = {
+      uid: props.connection.uid,
+      schema: props.schema,
+      trigger: props.trigger
+   };
 
-                  this.changeBreadcrumbs({ schema: this.schema, trigger: triggerName });
-               }
-               else
-                  this.getTriggerData();
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
+   try {
+      const { status, response } = await Triggers.getTriggerInformations(params);
+      if (status === 'success') {
+         originalTrigger.value = response;
+         localTrigger.value = JSON.parse(JSON.stringify(originalTrigger.value));
 
-         this.isSaving = false;
-      },
-      clearChanges () {
-         this.localTrigger = JSON.parse(JSON.stringify(this.originalTrigger));
-         this.$refs.queryEditor.editor.session.setValue(this.localTrigger.sql);
-
-         Object.keys(this.localEvents).forEach(event => {
-            this.localEvents[event] = false;
-         });
-
-         if (this.customizations.triggerMultipleEvents) {
-            this.originalTrigger.event.forEach(e => {
-               this.localEvents[e] = true;
+         if (customizations.value.triggerMultipleEvents) {
+            originalTrigger.value.event.forEach((event: TriggerEventName) => {
+               localEvents.value[event] = true;
             });
          }
-      },
-      resizeQueryEditor () {
-         if (this.$refs.queryEditor) {
-            const footer = document.getElementById('footer');
-            const size = window.innerHeight - this.$refs.queryEditor.$el.getBoundingClientRect().top - footer.offsetHeight;
-            this.editorHeight = size;
-            this.$refs.queryEditor.editor.resize();
-         }
-      },
-      onKey (e) {
-         if (this.isSelected) {
-            e.stopPropagation();
-            if (e.ctrlKey && e.keyCode === 83) { // CTRL + S
-               if (this.isChanged)
-                  this.saveChanges();
-            }
-         }
+      }
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   resizeQueryEditor();
+   isLoading.value = false;
+};
+
+const changeEvents = (event: TriggerEventName) => {
+   if (customizations.value.triggerMultipleEvents) {
+      localEvents.value[event] = !localEvents.value[event];
+      localTrigger.value.event = [];
+      for (const key in localEvents.value) {
+         if (localEvents.value[key as TriggerEventName])
+            localTrigger.value.event.push(key);
       }
    }
 };
+
+const saveChanges = async () => {
+   if (isSaving.value) return;
+   isSaving.value = true;
+   const params = {
+      uid: props.connection.uid,
+      trigger: {
+         ...localTrigger.value,
+         schema: props.schema,
+         oldName: originalTrigger.value.name
+      }
+   };
+
+   try {
+      const { status, response } = await Triggers.alterTrigger(params);
+
+      if (status === 'success') {
+         await refreshStructure(props.connection.uid);
+
+         if (originalTrigger.value.name !== localTrigger.value.name) {
+            const triggerName = customizations.value.triggerTableInName ? `${localTrigger.value.table}.${localTrigger.value.name}` : localTrigger.value.name;
+            const triggerOldName = customizations.value.triggerTableInName ? `${originalTrigger.value.table}.${originalTrigger.value.name}` : originalTrigger.value.name;
+
+            renameTabs({
+               uid: props.connection.uid,
+               schema: props.schema,
+               elementName: triggerOldName,
+               elementNewName: triggerName,
+               elementType: 'trigger'
+            });
+
+            changeBreadcrumbs({ schema: props.schema, trigger: triggerName });
+         }
+         else
+            getTriggerData();
+      }
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   isSaving.value = false;
+};
+
+const clearChanges = () => {
+   localTrigger.value = JSON.parse(JSON.stringify(originalTrigger.value));
+   queryEditor.value.editor.session.setValue(localTrigger.value.sql);
+
+   Object.keys(localEvents.value).forEach((event: TriggerEventName) => {
+      localEvents.value[event] = false;
+   });
+
+   if (customizations.value.triggerMultipleEvents) {
+      originalTrigger.value.event.forEach((event: TriggerEventName) => {
+         localEvents.value[event] = true;
+      });
+   }
+};
+
+const resizeQueryEditor = () => {
+   if (queryEditor.value) {
+      const footer = document.getElementById('footer');
+      const size = window.innerHeight - queryEditor.value.$el.getBoundingClientRect().top - footer.offsetHeight;
+      editorHeight.value = size;
+      queryEditor.value.editor.resize();
+   }
+};
+
+const onKey = (e: KeyboardEvent) => {
+   if (props.isSelected) {
+      e.stopPropagation();
+      if (e.ctrlKey && e.key === 's') { // CTRL + S
+         if (isChanged.value)
+            saveChanges();
+      }
+   }
+};
+
+watch(() => props.schema, async () => {
+   if (props.isSelected) {
+      await getTriggerData();
+      queryEditor.value.editor.session.setValue(localTrigger.value.sql);
+      lastTrigger.value = props.trigger;
+   }
+});
+
+watch(() => props.trigger, async () => {
+   if (props.isSelected) {
+      await getTriggerData();
+      queryEditor.value.editor.session.setValue(localTrigger.value.sql);
+      lastTrigger.value = props.trigger;
+   }
+});
+
+watch(() => props.isSelected, (val) => {
+   if (val) changeBreadcrumbs({ schema: props.schema });
+});
+
+watch(isChanged, (val) => {
+   setUnsavedChanges({ uid: props.connection.uid, tUid: props.tabUid, isChanged: val });
+});
+
+(async () => {
+   await getTriggerData();
+   queryEditor.value.editor.session.setValue(localTrigger.value.sql);
+   window.addEventListener('keydown', onKey);
+})();
+
+onMounted(() => {
+   window.addEventListener('resize', resizeQueryEditor);
+});
+
+onUnmounted(() => {
+   window.removeEventListener('resize', resizeQueryEditor);
+});
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+});
 </script>

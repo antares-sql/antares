@@ -2,7 +2,7 @@ import * as exporter from 'common/interfaces/exporter';
 import * as mysql from 'mysql2/promise';
 import { SqlExporter } from './SqlExporter';
 import { BLOB, BIT, DATE, DATETIME, FLOAT, SPATIAL, IS_MULTI_SPATIAL, NUMBER } from 'common/fieldTypes';
-import hexToBinary from 'common/libs/hexToBinary';
+import hexToBinary, { HexChar } from 'common/libs/hexToBinary';
 import { getArrayDepth } from 'common/libs/getArrayDepth';
 import * as moment from 'moment';
 import { lineString, point, polygon } from '@turf/helpers';
@@ -138,7 +138,7 @@ ${footer}
                      : this.escapeAndQuote(val);
                }
                else if (BIT.includes(column.type))
-                  sqlInsertString += `b'${hexToBinary(Buffer.from(val).toString('hex'))}'`;
+                  sqlInsertString += `b'${hexToBinary(Buffer.from(val).toString('hex') as undefined as HexChar[])}'`;
                else if (BLOB.includes(column.type))
                   sqlInsertString += `X'${val.toString('hex').toUpperCase()}'`;
                else if (NUMBER.includes(column.type))

@@ -55,110 +55,83 @@
    </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, Ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import Draggable from 'vuedraggable';
-import SettingBarContext from '@/components/SettingBarContext';
+import * as Draggable from 'vuedraggable';
+import SettingBarContext from '@/components/SettingBarContext.vue';
+import { ConnectionParams } from 'common/interfaces/antares';
 
-export default {
-   name: 'TheSettingBar',
-   components: {
-      Draggable,
-      SettingBarContext
+const applicationStore = useApplicationStore();
+const connectionsStore = useConnectionsStore();
+const workspacesStore = useWorkspacesStore();
+
+const { updateStatus } = storeToRefs(applicationStore);
+const { connections: getConnections } = storeToRefs(connectionsStore);
+const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+const { showSettingModal, showScratchpad } = applicationStore;
+const { getConnectionName, updateConnections } = connectionsStore;
+const { getWorkspace, selectWorkspace } = workspacesStore;
+
+const isLinux = process.platform === 'linux';
+const isContext: Ref<boolean> = ref(false);
+const isDragging: Ref<boolean> = ref(false);
+const contextEvent: Ref<MouseEvent> = ref(null);
+const contextConnection: Ref<ConnectionParams> = ref(null);
+
+const connections = computed({
+   get () {
+      return getConnections.value;
    },
-   setup () {
-      const applicationStore = useApplicationStore();
-      const connectionsStore = useConnectionsStore();
-      const workspacesStore = useWorkspacesStore();
+   set (value: ConnectionParams[]) {
+      updateConnections(value);
+   }
+});
 
-      const { updateStatus } = storeToRefs(applicationStore);
-      const { connections: getConnections } = storeToRefs(connectionsStore);
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const hasUpdates = computed(() => ['available', 'downloading', 'downloaded', 'link'].includes(updateStatus.value));
 
-      const { showSettingModal, showScratchpad } = applicationStore;
-      const { getConnectionName, updateConnections } = connectionsStore;
-      const { getWorkspace, selectWorkspace } = workspacesStore;
+const contextMenu = (event: MouseEvent, connection: ConnectionParams) => {
+   contextEvent.value = event;
+   contextConnection.value = connection;
+   isContext.value = true;
+};
 
-      return {
-         applicationStore,
-         updateStatus,
-         showSettingModal,
-         showScratchpad,
-         getConnections,
-         getConnectionName,
-         updateConnections,
-         selectedWorkspace,
-         getWorkspace,
-         selectWorkspace
-      };
-   },
-   data () {
-      return {
-         dragElement: null,
-         isLinux: process.platform === 'linux',
-         isContext: false,
-         isDragging: false,
-         contextEvent: null,
-         contextConnection: {},
-         scale: 0
-      };
-   },
-   computed: {
-      connections: {
-         get () {
-            return this.getConnections;
-         },
-         set (value) {
-            this.updateConnections(value);
-         }
-      },
-      hasUpdates () {
-         return ['available', 'downloading', 'downloaded', 'link'].includes(this.updateStatus);
-      }
-   },
-   methods: {
-      contextMenu (event, connection) {
-         this.contextEvent = event;
-         this.contextConnection = connection;
-         this.isContext = true;
-      },
-      workspaceName (connection) {
-         return connection.ask ? '' : `${connection.user + '@'}${connection.host}:${connection.port}`;
-      },
-      tooltipPosition (e) {
-         const el = e.target ? e.target : e;
-         const fromTop = this.isLinux 
-            ? window.scrollY + el.getBoundingClientRect().top + (el.offsetHeight / 4)
-            : window.scrollY + el.getBoundingClientRect().top - (el.offsetHeight / 4)
-         el.querySelector('.ex-tooltip-content').style.top = `${fromTop}px`;
-      },
-      getStatusBadge (uid) {
-         if (this.getWorkspace(uid)) {
-            const status = this.getWorkspace(uid).connectionStatus;
+const tooltipPosition = (e: Event) => {
+   const el = e.target ? e.target : e;
+   const fromTop = isLinux
+      ? window.scrollY + (el as HTMLElement).getBoundingClientRect().top + ((el as HTMLElement).offsetHeight / 4)
+      : window.scrollY + (el as HTMLElement).getBoundingClientRect().top - ((el as HTMLElement).offsetHeight / 4);
+   (el as HTMLElement).querySelector<HTMLElement>('.ex-tooltip-content').style.top = `${fromTop}px`;
+};
 
-            switch (status) {
-               case 'connected':
-                  return 'badge badge-connected';
-               case 'connecting':
-                  return 'badge badge-connecting';
-               case 'failed':
-                  return 'badge badge-failed';
-               default:
-                  return '';
-            }
-         }
-      },
-      dragStop (e) {
-         this.isDragging = false;
+const getStatusBadge = (uid: string) => {
+   if (getWorkspace(uid)) {
+      const status = getWorkspace(uid).connectionStatus;
 
-         setTimeout(() => {
-            this.tooltipPosition(e.originalEvent.target.parentNode);
-         }, 200);
+      switch (status) {
+         case 'connected':
+            return 'badge badge-connected';
+         case 'connecting':
+            return 'badge badge-connecting';
+         case 'failed':
+            return 'badge badge-failed';
+         default:
+            return '';
       }
    }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const dragStop = (e: any) => { // TODO: temp
+   isDragging.value = false;
+
+   setTimeout(() => {
+      tooltipPosition(e.originalEvent.target.parentNode);
+   }, 200);
 };
 </script>
 

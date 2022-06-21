@@ -11,16 +11,16 @@
                   @click="saveChanges"
                >
                   <i class="mdi mdi-24px mdi-content-save mr-1" />
-                  <span>{{ $t('word.save') }}</span>
+                  <span>{{ t('word.save') }}</span>
                </button>
                <button
                   :disabled="!isChanged"
                   class="btn btn-link btn-sm mr-0"
-                  :title="$t('message.clearChanges')"
+                  :title="t('message.clearChanges')"
                   @click="clearChanges"
                >
                   <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
-                  <span>{{ $t('word.clear') }}</span>
+                  <span>{{ t('word.clear') }}</span>
                </button>
 
                <div class="divider-vert py-3" />
@@ -31,15 +31,15 @@
                   @click="runFunctionCheck"
                >
                   <i class="mdi mdi-24px mdi-play mr-1" />
-                  <span>{{ $t('word.run') }}</span>
+                  <span>{{ t('word.run') }}</span>
                </button>
                <button class="btn btn-dark btn-sm" @click="showParamsModal">
                   <i class="mdi mdi-24px mdi-dots-horizontal mr-1" />
-                  <span>{{ $t('word.parameters') }}</span>
+                  <span>{{ t('word.parameters') }}</span>
                </button>
             </div>
             <div class="workspace-query-info">
-               <div class="d-flex" :title="$t('word.schema')">
+               <div class="d-flex" :title="t('word.schema')">
                   <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
                </div>
             </div>
@@ -50,7 +50,7 @@
             <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ $t('word.name') }}
+                     {{ t('word.name') }}
                   </label>
                   <input
                      ref="firstInput"
@@ -64,7 +64,7 @@
             <div v-if="customizations.languages" class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ $t('word.language') }}
+                     {{ t('word.language') }}
                   </label>
                   <BaseSelect
                      v-model="localFunction.language"
@@ -76,13 +76,13 @@
             <div v-if="customizations.definer" class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ $t('word.definer') }}
+                     {{ t('word.definer') }}
                   </label>
                   <BaseSelect
                      v-model="localFunction.definer"
-                     :options="[{value: '', name:$t('message.currentUser')}, ...workspace.users]"
-                     :option-label="(user) => user.value === '' ? user.name : `${user.name}@${user.host}`"
-                     :option-track-by="(user) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
+                     :options="[{value: '', name:t('message.currentUser')}, ...workspace.users]"
+                     :option-label="(user: any) => user.value === '' ? user.name : `${user.name}@${user.host}`"
+                     :option-track-by="(user: any) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
                      class="form-select"
                   />
                </div>
@@ -90,13 +90,13 @@
             <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ $t('word.returns') }}
+                     {{ t('word.returns') }}
                   </label>
                   <div class="input-group">
                      <BaseSelect
                         v-model="localFunction.returns"
                         class="form-select text-uppercase"
-                        :options="[{ name: 'VOID' }, ...workspace.dataTypes]"
+                        :options="[{ name: 'VOID' }, ...(workspace.dataTypes as any)]"
                         group-label="group"
                         group-values="types"
                         option-label="name"
@@ -110,7 +110,7 @@
                         class="form-input"
                         type="number"
                         min="0"
-                        :placeholder="$t('word.length')"
+                        :placeholder="t('word.length')"
                      >
                   </div>
                </div>
@@ -118,7 +118,7 @@
             <div v-if="customizations.comment" class="column">
                <div class="form-group">
                   <label class="form-label">
-                     {{ $t('word.comment') }}
+                     {{ t('word.comment') }}
                   </label>
                   <input
                      v-model="localFunction.comment"
@@ -130,7 +130,7 @@
             <div class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ $t('message.sqlSecurity') }}
+                     {{ t('message.sqlSecurity') }}
                   </label>
                   <BaseSelect
                      v-model="localFunction.security"
@@ -142,7 +142,7 @@
             <div v-if="customizations.functionDataAccess" class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ $t('message.dataAccess') }}
+                     {{ t('message.dataAccess') }}
                   </label>
                   <BaseSelect
                      v-model="localFunction.dataAccess"
@@ -155,7 +155,7 @@
                <div class="form-group">
                   <label class="form-label d-invisible">.</label>
                   <label class="form-checkbox form-inline">
-                     <input v-model="localFunction.deterministic" type="checkbox"><i class="form-icon" /> {{ $t('word.deterministic') }}
+                     <input v-model="localFunction.deterministic" type="checkbox"><i class="form-icon" /> {{ t('word.deterministic') }}
                   </label>
                </div>
             </div>
@@ -163,7 +163,7 @@
       </div>
       <div class="workspace-query-results column col-12 mt-2 p-relative">
          <BaseLoader v-if="isLoading" />
-         <label class="form-label ml-2">{{ $t('message.functionBody') }}</label>
+         <label class="form-label ml-2">{{ t('message.functionBody') }}</label>
          <QueryEditor
             v-show="isSelected"
             ref="queryEditor"
@@ -191,300 +191,273 @@
    </div>
 </template>
 
-<script>
-import { storeToRefs } from 'pinia';
+<script setup lang="ts">
+import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
+import { Ace } from 'ace-builds';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import { uidGen } from 'common/libs/uidGen';
-import BaseLoader from '@/components/BaseLoader';
-import QueryEditor from '@/components/QueryEditor';
-import WorkspaceTabPropsFunctionParamsModal from '@/components/WorkspaceTabPropsFunctionParamsModal';
-import ModalAskParameters from '@/components/ModalAskParameters';
+import BaseLoader from '@/components/BaseLoader.vue';
+import QueryEditor from '@/components/QueryEditor.vue';
+import WorkspaceTabPropsFunctionParamsModal from '@/components/WorkspaceTabPropsFunctionParamsModal.vue';
+import ModalAskParameters from '@/components/ModalAskParameters.vue';
 import Functions from '@/ipc-api/Functions';
 import BaseSelect from '@/components/BaseSelect.vue';
+import { useI18n } from 'vue-i18n';
+import { AlterFunctionParams, FunctionInfos, FunctionParam } from 'common/interfaces/antares';
 
-export default {
-   name: 'WorkspaceTabPropsFunction',
-   components: {
-      BaseLoader,
-      QueryEditor,
-      WorkspaceTabPropsFunctionParamsModal,
-      ModalAskParameters,
-      BaseSelect
-   },
-   props: {
-      tabUid: String,
-      connection: Object,
-      function: String,
-      isSelected: Boolean,
-      schema: String
-   },
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+const { t } = useI18n();
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const props = defineProps({
+   tabUid: String,
+   connection: Object,
+   function: String,
+   isSelected: Boolean,
+   schema: String
+});
 
-      const {
-         getWorkspace,
-         refreshStructure,
-         renameTabs,
-         newTab,
-         changeBreadcrumbs,
-         setUnsavedChanges
-      } = workspacesStore;
+const { addNotification } = useNotificationsStore();
+const workspacesStore = useWorkspacesStore();
 
-      return {
-         addNotification,
-         selectedWorkspace,
-         getWorkspace,
-         refreshStructure,
-         renameTabs,
-         newTab,
-         changeBreadcrumbs,
-         setUnsavedChanges
-      };
-   },
-   data () {
-      return {
-         isLoading: false,
-         isSaving: false,
-         isParamsModal: false,
-         isAskingParameters: false,
-         originalFunction: null,
-         localFunction: { sql: '' },
-         lastFunction: null,
-         sqlProxy: '',
-         editorHeight: 300
-      };
-   },
-   computed: {
-      workspace () {
-         return this.getWorkspace(this.connection.uid);
-      },
-      customizations () {
-         return this.workspace.customizations;
-      },
-      isChanged () {
-         return JSON.stringify(this.originalFunction) !== JSON.stringify(this.localFunction);
-      },
-      isDefinerInUsers () {
-         return this.originalFunction
-            ? this.workspace.users.some(user => this.originalFunction.definer === `\`${user.name}\`@\`${user.host}\``)
-            : true;
-      },
-      isTableNameValid () {
-         return this.localFunction.name !== '';
-      },
-      isInDataTypes () {
-         let typeNames = [];
-         for (const group of this.workspace.dataTypes) {
-            typeNames = group.types.reduce((acc, curr) => {
-               acc.push(curr.name);
-               return acc;
-            }, []);
-         }
-         return typeNames.includes(this.localFunction.returns);
-      },
-      schemaTables () {
-         const schemaTables = this.workspace.structure
-            .filter(schema => schema.name === this.schema)
-            .map(schema => schema.tables);
+const {
+   getWorkspace,
+   refreshStructure,
+   renameTabs,
+   newTab,
+   changeBreadcrumbs,
+   setUnsavedChanges
+} = workspacesStore;
 
-         return schemaTables.length ? schemaTables[0].filter(table => table.type === 'table') : [];
+const queryEditor: Ref<Component & {editor: Ace.Editor; $el: HTMLElement}> = ref(null);
+const firstInput: Ref<HTMLInputElement> = ref(null);
+const isLoading = ref(false);
+const isSaving = ref(false);
+const isParamsModal = ref(false);
+const isAskingParameters = ref(false);
+const originalFunction: Ref<FunctionInfos> = ref(null);
+const localFunction: Ref<FunctionInfos> = ref({ name: '', sql: '', definer: null });
+const lastFunction = ref(null);
+const sqlProxy = ref('');
+const editorHeight = ref(300);
+
+const workspace = computed(() => {
+   return getWorkspace(props.connection.uid);
+});
+
+const customizations = computed(() => {
+   return workspace.value.customizations;
+});
+
+const isChanged = computed(() => {
+   return JSON.stringify(originalFunction.value) !== JSON.stringify(localFunction.value);
+});
+
+const isTableNameValid = computed(() => {
+   return localFunction.value.name !== '';
+});
+
+const getFunctionData = async () => {
+   if (!props.function) return;
+
+   isLoading.value = true;
+   localFunction.value = { name: '', sql: '', definer: null };
+   lastFunction.value = props.function;
+
+   const params = {
+      uid: props.connection.uid,
+      schema: props.schema,
+      func: props.function
+   };
+
+   try {
+      const { status, response } = await Functions.getFunctionInformations(params);
+      if (status === 'success') {
+         originalFunction.value = response;
+
+         originalFunction.value.parameters = [...originalFunction.value.parameters.map(param => {
+            param._antares_id = uidGen();
+            return param;
+         })];
+
+         localFunction.value = JSON.parse(JSON.stringify(originalFunction.value));
+         sqlProxy.value = localFunction.value.sql;
       }
-   },
-   watch: {
-      async schema () {
-         if (this.isSelected) {
-            await this.getFunctionData();
-            this.$refs.queryEditor.editor.session.setValue(this.localFunction.sql);
-            this.lastFunction = this.function;
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   resizeQueryEditor();
+   isLoading.value = false;
+};
+
+const saveChanges = async () => {
+   if (isSaving.value) return;
+   isSaving.value = true;
+   const params = {
+      uid: props.connection.uid,
+      func: {
+         ...localFunction.value,
+         schema: props.schema,
+         oldName: originalFunction.value.name
+      } as AlterFunctionParams
+   };
+
+   try {
+      const { status, response } = await Functions.alterFunction(params);
+
+      if (status === 'success') {
+         const oldName = originalFunction.value.name;
+
+         await refreshStructure(props.connection.uid);
+
+         if (oldName !== localFunction.value.name) {
+            renameTabs({
+               uid: props.connection.uid,
+               schema: props.schema,
+               elementName: oldName,
+               elementNewName: localFunction.value.name,
+               elementType: 'function'
+            });
+
+            changeBreadcrumbs({ schema: props.schema, function: localFunction.value.name });
          }
-      },
-      async function () {
-         if (this.isSelected) {
-            await this.getFunctionData();
-            this.$refs.queryEditor.editor.session.setValue(this.localFunction.sql);
-            this.lastFunction = this.function;
-         }
-      },
-      async isSelected (val) {
-         if (val) {
-            this.changeBreadcrumbs({ schema: this.schema, function: this.function });
-
-            setTimeout(() => {
-               this.resizeQueryEditor();
-            }, 200);
-
-            if (this.lastFunction !== this.function)
-               this.getRoutineData();
-         }
-      },
-      isChanged (val) {
-         this.setUnsavedChanges({ uid: this.connection.uid, tUid: this.tabUid, isChanged: val });
-      }
-   },
-   async created () {
-      await this.getFunctionData();
-      this.$refs.queryEditor.editor.session.setValue(this.localFunction.sql);
-      window.addEventListener('keydown', this.onKey);
-   },
-   mounted () {
-      window.addEventListener('resize', this.resizeQueryEditor);
-   },
-   unmounted () {
-      window.removeEventListener('resize', this.resizeQueryEditor);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-   },
-   methods: {
-      async getFunctionData () {
-         if (!this.function) return;
-
-         this.isLoading = true;
-         this.localFunction = { sql: '' };
-         this.lastFunction = this.function;
-
-         const params = {
-            uid: this.connection.uid,
-            schema: this.schema,
-            func: this.function
-         };
-
-         try {
-            const { status, response } = await Functions.getFunctionInformations(params);
-            if (status === 'success') {
-               this.originalFunction = response;
-
-               this.originalFunction.parameters = [...this.originalFunction.parameters.map(param => {
-                  param._antares_id = uidGen();
-                  return param;
-               })];
-
-               this.localFunction = JSON.parse(JSON.stringify(this.originalFunction));
-               this.sqlProxy = this.localFunction.sql;
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.resizeQueryEditor();
-         this.isLoading = false;
-      },
-      async saveChanges () {
-         if (this.isSaving) return;
-         this.isSaving = true;
-         const params = {
-            uid: this.connection.uid,
-            func: {
-               ...this.localFunction,
-               schema: this.schema,
-               oldName: this.originalFunction.name
-            }
-         };
-
-         try {
-            const { status, response } = await Functions.alterFunction(params);
-
-            if (status === 'success') {
-               const oldName = this.originalFunction.name;
-
-               await this.refreshStructure(this.connection.uid);
-
-               if (oldName !== this.localFunction.name) {
-                  this.renameTabs({
-                     uid: this.connection.uid,
-                     schema: this.schema,
-                     elementName: oldName,
-                     elementNewName: this.localFunction.name,
-                     elementType: 'function'
-                  });
-
-                  this.changeBreadcrumbs({ schema: this.schema, function: this.localFunction.name });
-               }
-               else
-                  this.getFunctionData();
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.isSaving = false;
-      },
-      clearChanges () {
-         this.localFunction = JSON.parse(JSON.stringify(this.originalFunction));
-         this.$refs.queryEditor.editor.session.setValue(this.localFunction.sql);
-      },
-      resizeQueryEditor () {
-         if (this.$refs.queryEditor) {
-            const footer = document.getElementById('footer');
-            const size = window.innerHeight - this.$refs.queryEditor.$el.getBoundingClientRect().top - footer.offsetHeight;
-            this.editorHeight = size;
-            this.$refs.queryEditor.editor.resize();
-         }
-      },
-      optionsUpdate (options) {
-         this.localFunction = options;
-      },
-      parametersUpdate (parameters) {
-         this.localFunction = { ...this.localFunction, parameters };
-      },
-      runFunctionCheck () {
-         if (this.localFunction.parameters.length)
-            this.showAskParamsModal();
          else
-            this.runFunction();
-      },
-      runFunction (params) {
-         if (!params) params = [];
+            getFunctionData();
+      }
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
 
-         let sql;
-         switch (this.connection.client) { // TODO: move in a better place
-            case 'maria':
-            case 'mysql':
-               sql = `SELECT \`${this.originalFunction.name}\` (${params.join(',')})`;
-               break;
-            case 'pg':
-               sql = `SELECT ${this.originalFunction.name}(${params.join(',')})`;
-               break;
-            case 'mssql':
-               sql = `SELECT ${this.originalFunction.name} ${params.join(',')}`;
-               break;
-            default:
-               sql = `SELECT \`${this.originalFunction.name}\` (${params.join(',')})`;
-         }
+   isSaving.value = false;
+};
 
-         this.newTab({ uid: this.connection.uid, content: sql, type: 'query', autorun: true });
-      },
-      showParamsModal () {
-         this.isParamsModal = true;
-      },
-      hideParamsModal () {
-         this.isParamsModal = false;
-      },
-      showAskParamsModal () {
-         this.isAskingParameters = true;
-      },
-      hideAskParamsModal () {
-         this.isAskingParameters = false;
-      },
-      onKey (e) {
-         if (this.isSelected) {
-            e.stopPropagation();
-            if (e.ctrlKey && e.keyCode === 83) { // CTRL + S
-               if (this.isChanged)
-                  this.saveChanges();
-            }
-         }
+const clearChanges = () => {
+   localFunction.value = JSON.parse(JSON.stringify(originalFunction.value));
+   queryEditor.value.editor.session.setValue(localFunction.value.sql);
+};
+
+const resizeQueryEditor = () => {
+   if (queryEditor.value) {
+      const footer = document.getElementById('footer');
+      const size = window.innerHeight - queryEditor.value.$el.getBoundingClientRect().top - footer.offsetHeight;
+      editorHeight.value = size;
+      queryEditor.value.editor.resize();
+   }
+};
+
+const parametersUpdate = (parameters: FunctionParam[]) => {
+   localFunction.value = { ...localFunction.value, parameters };
+};
+
+const runFunctionCheck = () => {
+   if (localFunction.value.parameters.length)
+      showAskParamsModal();
+   else
+      runFunction();
+};
+
+const runFunction = (params?: string[]) => {
+   if (!params) params = [];
+
+   let sql;
+   switch (props.connection.client) { // TODO: move in a better place
+      case 'maria':
+      case 'mysql':
+         sql = `SELECT \`${originalFunction.value.name}\` (${params.join(',')})`;
+         break;
+      case 'pg':
+         sql = `SELECT ${originalFunction.value.name}(${params.join(',')})`;
+         break;
+      case 'mssql':
+         sql = `SELECT ${originalFunction.value.name} ${params.join(',')}`;
+         break;
+      default:
+         sql = `SELECT \`${originalFunction.value.name}\` (${params.join(',')})`;
+   }
+
+   newTab({ uid: props.connection.uid, content: sql, type: 'query', autorun: true });
+};
+
+const showParamsModal = () => {
+   isParamsModal.value = true;
+};
+
+const hideParamsModal = () => {
+   isParamsModal.value = false;
+};
+
+const showAskParamsModal = () => {
+   isAskingParameters.value = true;
+};
+
+const hideAskParamsModal = () => {
+   isAskingParameters.value = false;
+};
+
+const onKey = (e: KeyboardEvent) => {
+   if (props.isSelected) {
+      e.stopPropagation();
+      if (e.ctrlKey && e.keyCode === 83) { // CTRL + S
+         if (isChanged.value)
+            saveChanges();
       }
    }
 };
+
+watch(() => props.schema, async () => {
+   if (props.isSelected) {
+      await getFunctionData();
+      queryEditor.value.editor.session.setValue(localFunction.value.sql);
+      lastFunction.value = props.function;
+   }
+});
+
+watch(() => props.function, async () => {
+   if (props.isSelected) {
+      await getFunctionData();
+      queryEditor.value.editor.session.setValue(localFunction.value.sql);
+      lastFunction.value = props.function;
+   }
+});
+
+watch(() => props.isSelected, async (val) => {
+   if (val) {
+      changeBreadcrumbs({ schema: props.schema, function: props.function });
+
+      setTimeout(() => {
+         resizeQueryEditor();
+      }, 200);
+
+      if (lastFunction.value !== props.function)
+         getFunctionData();
+   }
+});
+
+watch(isChanged, (val) => {
+   setUnsavedChanges({ uid: props.connection.uid, tUid: props.tabUid, isChanged: val });
+});
+
+(async () => {
+   await getFunctionData();
+   queryEditor.value.editor.session.setValue(localFunction.value.sql);
+   window.addEventListener('keydown', onKey);
+})();
+
+onMounted(() => {
+   window.addEventListener('resize', resizeQueryEditor);
+});
+
+onUnmounted(() => {
+   window.removeEventListener('resize', resizeQueryEditor);
+});
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+});
 </script>

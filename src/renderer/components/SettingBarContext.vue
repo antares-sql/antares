@@ -29,83 +29,66 @@
    </BaseContextMenu>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, Prop, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import { uidGen } from 'common/libs/uidGen';
 import { useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import BaseContextMenu from '@/components/BaseContextMenu';
-import ConfirmModal from '@/components/BaseConfirmModal';
-import { storeToRefs } from 'pinia';
+import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import { ConnectionParams } from 'common/interfaces/antares';
 
-export default {
-   name: 'SettingBarContext',
-   components: {
-      BaseContextMenu,
-      ConfirmModal
-   },
-   props: {
-      contextEvent: MouseEvent,
-      contextConnection: Object
-   },
-   emits: ['close-context'],
-   setup () {
-      const {
-         getConnectionName,
-         addConnection,
-         deleteConnection
-      } = useConnectionsStore();
-      const workspacesStore = useWorkspacesStore();
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const {
+   getConnectionName,
+   addConnection,
+   deleteConnection
+} = useConnectionsStore();
+const workspacesStore = useWorkspacesStore();
+const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
-      const { selectWorkspace } = workspacesStore;
+const { selectWorkspace } = workspacesStore;
 
-      return {
-         getConnectionName,
-         addConnection,
-         deleteConnection,
-         selectedWorkspace,
-         selectWorkspace
-      };
-   },
-   data () {
-      return {
-         isConfirmModal: false,
-         isEditModal: false
-      };
-   },
-   computed: {
-      connectionName () {
-         return this.getConnectionName(this.contextConnection.uid);
-      }
-   },
-   methods: {
-      confirmDeleteConnection () {
-         if (this.selectedWorkspace === this.contextConnection.uid)
-            this.selectWorkspace();
-         this.deleteConnection(this.contextConnection);
-         this.closeContext();
-      },
-      duplicateConnection () {
-         let connectionCopy = Object.assign({}, this.contextConnection);
-         connectionCopy = {
-            ...connectionCopy,
-            uid: uidGen('C'),
-            name: connectionCopy.name ? `${connectionCopy?.name}_copy` : ''
-         };
+const props = defineProps({
+   contextEvent: MouseEvent,
+   contextConnection: Object as Prop<ConnectionParams>
+});
 
-         this.addConnection(connectionCopy);
-         this.closeContext();
-      },
-      showConfirmModal () {
-         this.isConfirmModal = true;
-      },
-      hideConfirmModal () {
-         this.isConfirmModal = false;
-         this.closeContext();
-      },
-      closeContext () {
-         this.$emit('close-context');
-      }
-   }
+const emit = defineEmits(['close-context']);
+
+const isConfirmModal = ref(false);
+
+const connectionName = computed(() => getConnectionName(props.contextConnection.uid));
+
+const confirmDeleteConnection = () => {
+   if (selectedWorkspace.value === props.contextConnection.uid)
+      selectWorkspace(null);
+   deleteConnection(props.contextConnection);
+   closeContext();
+};
+
+const duplicateConnection = () => {
+   let connectionCopy = Object.assign({}, props.contextConnection);
+   connectionCopy = {
+      ...connectionCopy,
+      uid: uidGen('C'),
+      name: connectionCopy.name ? `${connectionCopy?.name}_copy` : ''
+   };
+
+   addConnection(connectionCopy);
+   closeContext();
+};
+
+const showConfirmModal = () => {
+   isConfirmModal.value = true;
+};
+
+const hideConfirmModal = () => {
+   isConfirmModal.value = false;
+   closeContext();
+};
+
+const closeContext = () => {
+   emit('close-context');
 };
 </script>

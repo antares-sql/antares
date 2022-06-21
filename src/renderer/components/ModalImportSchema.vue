@@ -49,146 +49,140 @@
    </teleport>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, onBeforeUnmount, Ref, ref } from 'vue';
 import { ipcRenderer } from 'electron';
+import * as moment from 'moment';
+import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import moment from 'moment';
 import Schema from '@/ipc-api/Schema';
-import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
+import { ImportState } from 'common/interfaces/importer';
 
-export default {
-   name: 'ModalImportSchema',
+const { t } = useI18n();
 
-   props: {
-      selectedSchema: String
-   },
-   emits: ['close'],
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+const { addNotification } = useNotificationsStore();
+const workspacesStore = useWorkspacesStore();
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
-      const { getWorkspace, refreshSchema } = workspacesStore;
+const { getWorkspace, refreshSchema } = workspacesStore;
 
-      return {
-         addNotification,
-         selectedWorkspace,
-         getWorkspace,
-         refreshSchema
-      };
-   },
-   data () {
-      return {
-         sqlFile: '',
-         isImporting: false,
-         progressPercentage: 0,
-         queryCount: 0,
-         completed: false,
-         progressStatus: 'Reading',
-         queryErrors: []
-      };
-   },
-   computed: {
-      currentWorkspace () {
-         return this.getWorkspace(this.selectedWorkspace);
-      },
-      formattedQueryErrors () {
-         return this.queryErrors.map(err =>
-            `Time: ${moment(err.time).format('HH:mm:ss.S')} (${err.time})\nError: ${err.message}`
-         ).join('\n\n');
+const props = defineProps({
+   selectedSchema: String
+});
+
+const emit = defineEmits(['close']);
+
+const sqlFile = ref('');
+const isImporting = ref(false);
+const progressPercentage = ref(0);
+const queryCount = ref(0);
+const completed = ref(false);
+const progressStatus = ref('Reading');
+const queryErrors: Ref<{time: string; message: string}[]> = ref([]);
+
+const currentWorkspace = computed(() => getWorkspace(selectedWorkspace.value));
+
+const formattedQueryErrors = computed(() => {
+   return queryErrors.value.map(err =>
+      `Time: ${moment(err.time).format('HH:mm:ss.S')} (${err.time})\nError: ${err.message}`
+   ).join('\n\n');
+});
+
+const startImport = async (file: string) => {
+   isImporting.value = true;
+   sqlFile.value = file;
+
+   const { uid, client } = currentWorkspace.value;
+   const params = {
+      uid,
+      type: client,
+      schema: props.selectedSchema,
+      file: sqlFile.value
+   };
+
+   try {
+      completed.value = false;
+      const { status, response } = await Schema.import(params);
+
+      if (status === 'success')
+         progressStatus.value = response.cancelled ? t('word.aborted') : t('word.completed');
+      else {
+         progressStatus.value = response;
+         addNotification({ status: 'error', message: response });
       }
-   },
-   async created () {
-      window.addEventListener('keydown', this.onKey);
-
-      ipcRenderer.on('import-progress', this.updateProgress);
-      ipcRenderer.on('query-error', this.handleQueryError);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-      ipcRenderer.off('import-progress', this.updateProgress);
-      ipcRenderer.off('query-error', this.handleQueryError);
-   },
-   methods: {
-      async startImport (sqlFile) {
-         this.isImporting = true;
-         this.sqlFile = sqlFile;
-
-         const { uid, client } = this.currentWorkspace;
-         const params = {
-            uid,
-            type: client,
-            schema: this.selectedSchema,
-            file: sqlFile
-         };
-
-         try {
-            this.completed = false;
-            const { status, response } = await Schema.import(params);
-            if (status === 'success')
-               this.progressStatus = response.cancelled ? this.$t('word.aborted') : this.$t('word.completed');
-            else {
-               this.progressStatus = response;
-               this.addNotification({ status: 'error', message: response });
-            }
-            this.refreshSchema({ uid, schema: this.selectedSchema });
-            this.completed = true;
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.isImporting = false;
-      },
-      updateProgress (event, state) {
-         this.progressPercentage = Number(state.percentage).toFixed(1);
-         this.queryCount = Number(state.queryCount);
-      },
-      handleQueryError (event, err) {
-         this.queryErrors.push(err);
-      },
-      async closeModal () {
-         let willClose = true;
-         if (this.isImporting) {
-            willClose = false;
-            const { response } = await Schema.abortImport();
-            willClose = response.willAbort;
-         }
-
-         if (willClose)
-            this.$emit('close');
-      },
-      onKey (e) {
-         e.stopPropagation();
-         if (e.key === 'Escape')
-            this.closeModal();
-      }
+      refreshSchema({ uid, schema: props.selectedSchema });
+      completed.value = true;
    }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   isImporting.value = false;
 };
+
+const updateProgress = (event: Event, state: ImportState) => {
+   progressPercentage.value = parseFloat(Number(state.percentage).toFixed(1));
+   queryCount.value = Number(state.queryCount);
+};
+
+const handleQueryError = (event: Event, err: { time: string; message: string }) => {
+   queryErrors.value.push(err);
+};
+
+const closeModal = async () => {
+   let willClose = true;
+   if (isImporting.value) {
+      willClose = false;
+      const { response } = await Schema.abortImport();
+      willClose = response.willAbort;
+   }
+
+   if (willClose)
+      emit('close');
+};
+
+const onKey = (e: KeyboardEvent) => {
+   e.stopPropagation();
+   if (e.key === 'Escape')
+      closeModal();
+};
+
+window.addEventListener('keydown', onKey);
+
+ipcRenderer.on('import-progress', updateProgress);
+ipcRenderer.on('query-error', handleQueryError);
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+   ipcRenderer.off('import-progress', updateProgress);
+   ipcRenderer.off('query-error', handleQueryError);
+});
+
+defineExpose({ startImport });
 </script>
 
 <style lang="scss" scoped>
 .modal {
+  .modal-container {
+    max-width: 800px;
+  }
 
-   .modal-container {
-      max-width: 800px;
-   }
+  .modal-body {
+    max-height: 60vh;
+    display: flex;
+    flex-direction: column;
+  }
 
-   .modal-body {
-      max-height: 60vh;
-      display: flex;
-      flex-direction: column;
-   }
-
-   .modal-footer {
-      display: flex;
-   }
+  .modal-footer {
+    display: flex;
+  }
 }
 
 .progress-status {
-   font-style: italic;
-   font-size: 80%;
+  font-style: italic;
+  font-size: 80%;
 }
 </style>

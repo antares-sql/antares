@@ -143,7 +143,7 @@ export default defineComponent({
       const hightlightedIndex = ref(0);
       const isOpen = ref(false);
       const isMouseDown = ref(false);
-      const internalValue = ref(props.modelValue || props.value);
+      const internalValue = ref(props.modelValue !== false ? props.modelValue : props.value);
       const el = ref(null);
       const searchInput = ref(null);
       const optionList = ref(null);
@@ -403,7 +403,8 @@ export default defineComponent({
          optionList,
          optionRefs,
          handleBlurEvent,
-         handleMouseUpEvent
+         handleMouseUpEvent,
+         internalValue
       };
    }
 });

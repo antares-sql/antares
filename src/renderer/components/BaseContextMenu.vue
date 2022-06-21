@@ -15,67 +15,60 @@
    </div>
 </template>
 
-<script>
-export default {
-   name: 'BaseContextMenu',
-   props: {
-      contextEvent: MouseEvent
-   },
-   emits: ['close-context'],
-   data () {
-      return {
-         contextSize: null,
-         isBottom: false
-      };
-   },
-   computed: {
-      position () {
-         let topCord = 0;
-         let leftCord = 0;
+<script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted, Ref, ref } from 'vue';
 
-         if (this.contextEvent) {
-            const { clientY, clientX } = this.contextEvent;
-            topCord = `${clientY + 2}px`;
-            leftCord = `${clientX + 5}px`;
+const contextContent: Ref<HTMLDivElement> = ref(null);
+const contextSize: Ref<DOMRect> = ref(null);
+const isBottom: Ref<boolean> = ref(false);
+const props = defineProps<{contextEvent: MouseEvent}>();
+const emit = defineEmits(['close-context']);
 
-            if (this.contextSize) {
-               if (clientY + (this.contextSize.height < 200 ? 200 : this.contextSize.height) + 5 >= window.innerHeight) {
-                  topCord = `${clientY + 3 - this.contextSize.height}px`;
-                  this.isBottom = true;
-               }
+const position = computed(() => {
+   let topCord = '0px';
+   let leftCord = '0px';
 
-               if (clientX + this.contextSize.width + 5 >= window.innerWidth)
-                  leftCord = `${clientX - this.contextSize.width}px`;
-            }
+   if (props.contextEvent) {
+      const { clientY, clientX } = props.contextEvent;
+      topCord = `${clientY + 2}px`;
+      leftCord = `${clientX + 5}px`;
+
+      if (contextSize.value) {
+         if (clientY + (contextSize.value.height < 200 ? 200 : contextSize.value.height) + 5 >= window.innerHeight) {
+            topCord = `${clientY + 3 - contextSize.value.height}px`;
+            isBottom.value = true;
          }
 
-         return {
-            top: topCord,
-            left: leftCord
-         };
-      }
-   },
-   created () {
-      window.addEventListener('keydown', this.onKey);
-   },
-   mounted () {
-      if (this.$refs.contextContent)
-         this.contextSize = this.$refs.contextContent.getBoundingClientRect();
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-   },
-   methods: {
-      close () {
-         this.$emit('close-context');
-      },
-      onKey (e) {
-         e.stopPropagation();
-         if (e.key === 'Escape')
-            this.close();
+         if (clientX + contextSize.value.width + 5 >= window.innerWidth)
+            leftCord = `${clientX - contextSize.value.width}px`;
       }
    }
+
+   return {
+      top: topCord,
+      left: leftCord
+   };
+});
+
+const close = () => {
+   emit('close-context');
 };
+const onKey = (e: KeyboardEvent) => {
+   e.stopPropagation();
+   if (e.key === 'Escape')
+      close();
+};
+
+window.addEventListener('keydown', onKey);
+
+onMounted(() => {
+   if (contextContent.value)
+      contextSize.value = contextContent.value.getBoundingClientRect();
+});
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+});
 </script>
 
 <style lang="scss">

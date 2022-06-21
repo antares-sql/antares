@@ -1,6 +1,6 @@
 <template>
    <ConfirmModal
-      :confirm-text="$t('word.confirm')"
+      :confirm-text="t('word.confirm')"
       size="medium"
       class="options-modal"
       @confirm="confirmForeignsChange"
@@ -9,7 +9,7 @@
       <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-key-link mr-1" />
-            <span class="cut-text">{{ $t('word.foreignKeys') }} "{{ table }}"</span>
+            <span class="cut-text">{{ t('word.foreignKeys') }} "{{ table }}"</span>
          </div>
       </template>
       <template #body>
@@ -20,16 +20,16 @@
                      <div class="d-flex">
                         <button class="btn btn-dark btn-sm d-flex" @click="addForeign">
                            <i class="mdi mdi-24px mdi-link-plus mr-1" />
-                           <span>{{ $t('word.add') }}</span>
+                           <span>{{ t('word.add') }}</span>
                         </button>
                         <button
                            class="btn btn-dark btn-sm d-flex ml-2 mr-0"
-                           :title="$t('message.clearChanges')"
+                           :title="t('message.clearChanges')"
                            :disabled="!isChanged"
                            @click.prevent="clearChanges"
                         >
                            <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
-                           <span>{{ $t('word.clear') }}</span>
+                           <span>{{ t('word.clear') }}</span>
                         </button>
                      </div>
                   </div>
@@ -67,7 +67,7 @@
                         <div class="tile-action">
                            <button
                               class="btn btn-link remove-field p-0 mr-2"
-                              :title="$t('word.delete')"
+                              :title="t('word.delete')"
                               @click.prevent="removeIndex(foreign._antares_id)"
                            >
                               <i class="mdi mdi-close" />
@@ -86,7 +86,7 @@
                >
                   <div class="form-group">
                      <label class="form-label col-3">
-                        {{ $t('word.name') }}
+                        {{ t('word.name') }}
                      </label>
                      <div class="column">
                         <input
@@ -98,7 +98,7 @@
                   </div>
                   <div class="form-group mb-4">
                      <label class="form-label col-3">
-                        {{ $tc('word.field', 1) }}
+                        {{ t('word.field', 1) }}
                      </label>
                      <div class="fields-list column pt-1">
                         <label
@@ -114,7 +114,7 @@
                   </div>
                   <div class="form-group">
                      <label class="form-label col-3 pt-0">
-                        {{ $t('message.referenceTable') }}
+                        {{ t('message.referenceTable') }}
                      </label>
                      <div class="column">
                         <BaseSelect
@@ -129,7 +129,7 @@
                   </div>
                   <div class="form-group mb-4">
                      <label class="form-label col-3">
-                        {{ $t('message.referenceField') }}
+                        {{ t('message.referenceField') }}
                      </label>
                      <div class="fields-list column pt-1">
                         <label
@@ -145,7 +145,7 @@
                   </div>
                   <div class="form-group">
                      <label class="form-label col-3">
-                        {{ $t('message.onUpdate') }}
+                        {{ t('message.onUpdate') }}
                      </label>
                      <div class="column">
                         <BaseSelect
@@ -157,7 +157,7 @@
                   </div>
                   <div class="form-group">
                      <label class="form-label col-3">
-                        {{ $t('message.onDelete') }}
+                        {{ t('message.onDelete') }}
                      </label>
                      <div class="column">
                         <BaseSelect
@@ -174,11 +174,11 @@
                      <i class="mdi mdi-key-link mdi-48px" />
                   </div>
                   <p class="empty-title h5">
-                     {{ $t('message.thereAreNoForeign') }}
+                     {{ t('message.thereAreNoForeign') }}
                   </p>
                   <div class="empty-action">
                      <button class="btn btn-primary" @click="addForeign">
-                        {{ $t('message.createNewForeign') }}
+                        {{ t('message.createNewForeign') }}
                      </button>
                   </div>
                </div>
@@ -188,176 +188,173 @@
    </ConfirmModal>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, onMounted, onUnmounted, Prop, Ref, ref } from 'vue';
 import { useNotificationsStore } from '@/stores/notifications';
+import { useI18n } from 'vue-i18n';
 import { uidGen } from 'common/libs/uidGen';
 import Tables from '@/ipc-api/Tables';
-import ConfirmModal from '@/components/BaseConfirmModal';
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import { TableField } from 'common/interfaces/antares';
 
-export default {
-   name: 'WorkspaceTabPropsTableForeignModal',
-   components: {
-      ConfirmModal,
-      BaseSelect
-   },
-   props: {
-      localKeyUsage: Array,
-      connection: Object,
-      table: String,
-      schema: String,
-      schemaTables: Array,
-      fields: Array,
-      workspace: Object
-   },
-   emits: ['foreigns-update', 'hide'],
-   setup () {
-      const { addNotification } = useNotificationsStore();
+const { t } = useI18n();
 
-      return { addNotification };
-   },
-   data () {
-      return {
-         foreignProxy: [],
-         isOptionsChanging: false,
-         selectedForeignID: '',
-         modalInnerHeight: 400,
-         refFields: {},
-         foreignActions: [
-            'RESTRICT',
-            'CASCADE',
-            'SET NULL',
-            'NO ACTION'
-         ]
-      };
-   },
-   computed: {
-      selectedForeignObj () {
-         return this.foreignProxy.find(foreign => foreign._antares_id === this.selectedForeignID);
-      },
-      isChanged () {
-         return JSON.stringify(this.localKeyUsage) !== JSON.stringify(this.foreignProxy);
-      },
-      hasPrimary () {
-         return this.foreignProxy.some(foreign => foreign.type === 'PRIMARY');
-      }
-   },
-   mounted () {
-      this.foreignProxy = JSON.parse(JSON.stringify(this.localKeyUsage));
+const props = defineProps({
+   localKeyUsage: Array,
+   connection: Object,
+   table: String,
+   schema: String,
+   schemaTables: Array,
+   fields: Array as Prop<TableField[]>,
+   workspace: Object
+});
 
-      if (this.foreignProxy.length)
-         this.resetSelectedID();
+const emit = defineEmits(['foreigns-update', 'hide']);
 
-      if (this.selectedForeignObj)
-         this.getRefFields();
+const { addNotification } = useNotificationsStore();
 
-      this.getModalInnerHeight();
-      window.addEventListener('resize', this.getModalInnerHeight);
-   },
-   unmounted () {
-      window.removeEventListener('resize', this.getModalInnerHeight);
-   },
-   methods: {
-      confirmForeignsChange () {
-         this.foreignProxy = this.foreignProxy.filter(foreign =>
-            foreign.field &&
-            foreign.refField &&
-            foreign.table &&
-            foreign.refTable
-         );
-         this.$emit('foreigns-update', this.foreignProxy);
-      },
-      selectForeign (event, id) {
-         if (this.selectedForeignID !== id && !event.target.classList.contains('remove-field')) {
-            this.selectedForeignID = id;
-            this.getRefFields();
-         }
-      },
-      getModalInnerHeight () {
-         const modalBody = document.querySelector('.modal-body');
-         if (modalBody)
-            this.modalInnerHeight = modalBody.clientHeight - (parseFloat(getComputedStyle(modalBody).paddingTop) + parseFloat(getComputedStyle(modalBody).paddingBottom));
-      },
-      addForeign () {
-         this.foreignProxy = [...this.foreignProxy, {
-            _antares_id: uidGen(),
-            constraintName: `FK_${uidGen()}`,
-            refSchema: this.schema,
-            table: this.table,
-            refTable: '',
-            field: '',
-            refField: '',
-            onUpdate: this.foreignActions[0],
-            onDelete: this.foreignActions[0]
-         }];
+const indexesPanel: Ref<HTMLDivElement> = ref(null);
+const foreignProxy = ref([]);
+const selectedForeignID = ref('');
+const modalInnerHeight = ref(400);
+const refFields = ref({} as {[key: string]: TableField[]});
+const foreignActions = [
+   'RESTRICT',
+   'CASCADE',
+   'SET NULL',
+   'NO ACTION'
+];
 
-         if (this.foreignProxy.length === 1)
-            this.resetSelectedID();
+const selectedForeignObj = computed(() => foreignProxy.value.find(foreign => foreign._antares_id === selectedForeignID.value));
+const isChanged = computed(() => JSON.stringify(props.localKeyUsage) !== JSON.stringify(foreignProxy.value));
 
-         setTimeout(() => {
-            this.$refs.indexesPanel.scrollTop = this.$refs.indexesPanel.scrollHeight + 60;
-         }, 20);
-      },
-      removeIndex (id) {
-         this.foreignProxy = this.foreignProxy.filter(foreign => foreign._antares_id !== id);
+const confirmForeignsChange = () => {
+   foreignProxy.value = foreignProxy.value.filter(foreign =>
+      foreign.field &&
+      foreign.refField &&
+      foreign.table &&
+      foreign.refTable
+   );
+   emit('foreigns-update', foreignProxy.value);
+};
 
-         if (this.selectedForeignID === id && this.foreignProxy.length)
-            this.resetSelectedID();
-      },
-      clearChanges () {
-         this.foreignProxy = JSON.parse(JSON.stringify(this.localKeyUsage));
-         if (!this.foreignProxy.some(foreign => foreign._antares_id === this.selectedForeignID))
-            this.resetSelectedID();
-      },
-      toggleField (field) {
-         this.foreignProxy = this.foreignProxy.map(foreign => {
-            if (foreign._antares_id === this.selectedForeignID)
-               foreign.field = field;
-
-            return foreign;
-         });
-      },
-      toggleRefField (field) {
-         this.foreignProxy = this.foreignProxy.map(foreign => {
-            if (foreign._antares_id === this.selectedForeignID)
-               foreign.refField = field;
-
-            return foreign;
-         });
-      },
-      resetSelectedID () {
-         this.selectedForeignID = this.foreignProxy.length ? this.foreignProxy[0]._antares_id : '';
-      },
-      async getRefFields () {
-         if (!this.selectedForeignObj.refTable) return;
-
-         const params = {
-            uid: this.connection.uid,
-            schema: this.selectedForeignObj.refSchema,
-            table: this.selectedForeignObj.refTable
-         };
-
-         try { // Field data
-            const { status, response } = await Tables.getTableColumns(params);
-            if (status === 'success') {
-               this.refFields = {
-                  ...this.refFields,
-                  [this.selectedForeignID]: response
-               };
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-      },
-      reloadRefFields () {
-         this.selectedForeignObj.refField = '';
-         this.getRefFields();
-      }
+const selectForeign = (event: MouseEvent, id: string) => {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   if (selectedForeignID.value !== id && !(event.target as any).classList.contains('remove-field')) {
+      selectedForeignID.value = id;
+      getRefFields();
    }
 };
+
+const getModalInnerHeight = () => {
+   const modalBody = document.querySelector('.modal-body');
+   if (modalBody)
+      modalInnerHeight.value = modalBody.clientHeight - (parseFloat(getComputedStyle(modalBody).paddingTop) + parseFloat(getComputedStyle(modalBody).paddingBottom));
+};
+
+const addForeign = () => {
+   foreignProxy.value = [...foreignProxy.value, {
+      _antares_id: uidGen(),
+      constraintName: `FK_${uidGen()}`,
+      refSchema: props.schema,
+      table: props.table,
+      refTable: '',
+      field: '',
+      refField: '',
+      onUpdate: foreignActions[0],
+      onDelete: foreignActions[0]
+   }];
+
+   if (foreignProxy.value.length === 1)
+      resetSelectedID();
+
+   setTimeout(() => {
+      indexesPanel.value.scrollTop = indexesPanel.value.scrollHeight + 60;
+   }, 20);
+};
+
+const removeIndex = (id: string) => {
+   foreignProxy.value = foreignProxy.value.filter(foreign => foreign._antares_id !== id);
+
+   if (selectedForeignID.value === id && foreignProxy.value.length)
+      resetSelectedID();
+};
+
+const clearChanges = () => {
+   foreignProxy.value = JSON.parse(JSON.stringify(props.localKeyUsage));
+   if (!foreignProxy.value.some(foreign => foreign._antares_id === selectedForeignID.value))
+      resetSelectedID();
+};
+
+const toggleField = (field: string) => {
+   foreignProxy.value = foreignProxy.value.map(foreign => {
+      if (foreign._antares_id === selectedForeignID.value)
+         foreign.field = field;
+
+      return foreign;
+   });
+};
+
+const toggleRefField = (field: string) => {
+   foreignProxy.value = foreignProxy.value.map(foreign => {
+      if (foreign._antares_id === selectedForeignID.value)
+         foreign.refField = field;
+
+      return foreign;
+   });
+};
+
+const resetSelectedID = () => {
+   selectedForeignID.value = foreignProxy.value.length ? foreignProxy.value[0]._antares_id : '';
+};
+
+const getRefFields = async () => {
+   if (!selectedForeignObj.value.refTable) return;
+
+   const params = {
+      uid: props.connection.uid,
+      schema: selectedForeignObj.value.refSchema,
+      table: selectedForeignObj.value.refTable
+   };
+
+   try { // Field data
+      const { status, response } = await Tables.getTableColumns(params);
+      if (status === 'success') {
+         refFields.value = {
+            ...refFields.value,
+            [selectedForeignID.value]: response
+         };
+      }
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+};
+
+const reloadRefFields = () => {
+   selectedForeignObj.value.refField = '';
+   getRefFields();
+};
+
+onMounted(() => {
+   foreignProxy.value = JSON.parse(JSON.stringify(props.localKeyUsage));
+
+   if (foreignProxy.value.length)
+      resetSelectedID();
+
+   if (selectedForeignObj.value)
+      getRefFields();
+
+   getModalInnerHeight();
+   window.addEventListener('resize', getModalInnerHeight);
+});
+
+onUnmounted(() => {
+   window.removeEventListener('resize', getModalInnerHeight);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -384,7 +381,7 @@ export default {
 }
 
 .fields-list {
-  max-height: 80px;
+  max-height: 90px;
   overflow: auto;
 }
 

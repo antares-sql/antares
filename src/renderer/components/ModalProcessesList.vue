@@ -133,218 +133,218 @@
    </Teleport>
 </template>
 
-<script>
-import arrayToFile from '../libs/arrayToFile';
+<script setup lang="ts">
+import { Component, computed, onBeforeUnmount, onMounted, onUpdated, Prop, Ref, ref } from 'vue';
+import { ConnectionParams } from 'common/interfaces/antares';
+import { arrayToFile } from '../libs/arrayToFile';
 import { useNotificationsStore } from '@/stores/notifications';
 import Schema from '@/ipc-api/Schema';
 import { useConnectionsStore } from '@/stores/connections';
-import BaseVirtualScroll from '@/components/BaseVirtualScroll';
-import ModalProcessesListRow from '@/components/ModalProcessesListRow';
-import ModalProcessesListContext from '@/components/ModalProcessesListContext';
+import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
+import ModalProcessesListRow from '@/components/ModalProcessesListRow.vue';
+import ModalProcessesListContext from '@/components/ModalProcessesListContext.vue';
 
-export default {
-   name: 'ModalProcessesList',
-   components: {
-      BaseVirtualScroll,
-      ModalProcessesListRow,
-      ModalProcessesListContext
-   },
-   props: {
-      connection: Object
-   },
-   emits: ['close'],
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const { getConnectionName } = useConnectionsStore();
+const { addNotification } = useNotificationsStore();
+const { getConnectionName } = useConnectionsStore();
 
-      return { addNotification, getConnectionName };
-   },
-   data () {
-      return {
-         resultsSize: 1000,
-         isQuering: false,
-         isContext: false,
-         autorefreshTimer: 0,
-         refreshInterval: null,
-         contextEvent: null,
-         selectedCell: null,
-         selectedRow: null,
-         results: [],
-         fields: [],
-         currentSort: '',
-         currentSortDir: 'asc',
-         scrollElement: null
-      };
-   },
-   computed: {
-      connectionName () {
-         return this.getConnectionName(this.connection.uid);
-      },
-      sortedResults () {
-         if (this.currentSort) {
-            return [...this.results].sort((a, b) => {
-               let modifier = 1;
-               const valA = typeof a[this.currentSort] === 'string' ? a[this.currentSort].toLowerCase() : a[this.currentSort];
-               const valB = typeof b[this.currentSort] === 'string' ? b[this.currentSort].toLowerCase() : b[this.currentSort];
-               if (this.currentSortDir === 'desc') modifier = -1;
-               if (valA < valB) return -1 * modifier;
-               if (valA > valB) return 1 * modifier;
-               return 0;
-            });
-         }
-         else
-            return this.results;
+const props = defineProps({
+   connection: Object as Prop<ConnectionParams>
+});
+
+const emit = defineEmits(['close']);
+
+const tableWrapper: Ref<HTMLDivElement> = ref(null);
+const table: Ref<HTMLDivElement> = ref(null);
+const resultTable: Ref<Component & {updateWindow: () => void}> = ref(null);
+const resultsSize = ref(1000);
+const isQuering = ref(false);
+const isContext = ref(false);
+const autorefreshTimer = ref(0);
+const refreshInterval: Ref<NodeJS.Timeout> = ref(null);
+const contextEvent = ref(null);
+const selectedCell = ref(null);
+const selectedRow: Ref<number> = ref(null);
+const results = ref([]);
+const fields = ref([]);
+const currentSort = ref('');
+const currentSortDir = ref('asc');
+const scrollElement = ref(null);
+
+const connectionName = computed(() => getConnectionName(props.connection.uid));
+
+const sortedResults = computed(() => {
+   if (currentSort.value) {
+      return [...results.value].sort((a, b) => {
+         let modifier = 1;
+         const valA = typeof a[currentSort.value] === 'string' ? a[currentSort.value].toLowerCase() : a[currentSort.value];
+         const valB = typeof b[currentSort.value] === 'string' ? b[currentSort.value].toLowerCase() : b[currentSort.value];
+         if (currentSortDir.value === 'desc') modifier = -1;
+         if (valA < valB) return -1 * modifier;
+         if (valA > valB) return 1 * modifier;
+         return 0;
+      });
+   }
+   else
+      return results.value;
+});
+
+const getProcessesList = async () => {
+   isQuering.value = true;
+
+   try { // Table data
+      const { status, response } = await Schema.getProcesses(props.connection.uid);
+
+      if (status === 'success') {
+         results.value = response;
+         fields.value = response.length ? Object.keys(response[0]) : [];
       }
-   },
-   created () {
-      window.addEventListener('keydown', this.onKey, { capture: true });
-   },
-   updated () {
-      if (this.$refs.table)
-         this.refreshScroller();
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
 
-      if (this.$refs.tableWrapper)
-         this.scrollElement = this.$refs.tableWrapper;
-   },
-   mounted () {
-      this.getProcessesList();
-      window.addEventListener('resize', this.resizeResults);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey, { capture: true });
-      window.removeEventListener('resize', this.resizeResults);
-      clearInterval(this.refreshInterval);
-   },
-   methods: {
-      async getProcessesList () {
-         this.isQuering = true;
+   isQuering.value = false;
+};
 
-         // if table changes clear cached values
-         if (this.lastTable !== this.table)
-            this.results = [];
+const setRefreshInterval = () => {
+   clearRefresh();
 
-         try { // Table data
-            const { status, response } = await Schema.getProcesses(this.connection.uid);
-
-            if (status === 'success') {
-               this.results = response;
-               this.fields = response.length ? Object.keys(response[0]) : [];
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.isQuering = false;
-      },
-      setRefreshInterval () {
-         this.clearRefresh();
-
-         if (+this.autorefreshTimer) {
-            this.refreshInterval = setInterval(() => {
-               if (!this.isQuering)
-                  this.getProcessesList();
-            }, this.autorefreshTimer * 1000);
-         }
-      },
-      clearRefresh () {
-         if (this.refreshInterval)
-            clearInterval(this.refreshInterval);
-      },
-      resizeResults () {
-         if (this.$refs.resultTable) {
-            const el = this.$refs.tableWrapper.parentElement;
-
-            if (el) {
-               const size = el.offsetHeight;
-               this.resultsSize = size;
-            }
-            this.$refs.resultTable.updateWindow();
-         }
-      },
-      refreshScroller () {
-         this.resizeResults();
-      },
-      sort (field) {
-         if (field === this.currentSort) {
-            if (this.currentSortDir === 'asc')
-               this.currentSortDir = 'desc';
-            else
-               this.resetSort();
-         }
-         else {
-            this.currentSortDir = 'asc';
-            this.currentSort = field;
-         }
-      },
-      resetSort () {
-         this.currentSort = '';
-         this.currentSortDir = 'asc';
-      },
-      stopRefresh () {
-         this.autorefreshTimer = 0;
-         this.clearRefresh();
-      },
-      selectRow (row) {
-         this.selectedRow = Number(row);
-      },
-      contextMenu (event, cell) {
-         if (event.target.localName === 'input') return;
-         this.stopRefresh();
-
-         this.selectedCell = cell;
-         this.selectedRow = Number(cell.id);
-         this.contextEvent = event;
-         this.isContext = true;
-      },
-      async killProcess () {
-         try { // Table data
-            const { status, response } = await Schema.killProcess({ uid: this.connection.uid, pid: this.selectedRow });
-
-            if (status === 'success')
-               this.getProcessesList();
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-      },
-      closeContext () {
-         this.isContext = false;
-      },
-      copyCell () {
-         const row = this.results.find(row => row.id === this.selectedRow);
-         const valueToCopy = row[this.selectedCell.field];
-         navigator.clipboard.writeText(valueToCopy);
-      },
-      copyRow () {
-         const row = this.results.find(row => row.id === this.selectedRow);
-         const rowToCopy = JSON.parse(JSON.stringify(row));
-         navigator.clipboard.writeText(JSON.stringify(rowToCopy));
-      },
-      closeModal () {
-         this.$emit('close');
-      },
-      downloadTable (format) {
-         if (!this.sortedResults) return;
-         arrayToFile({
-            type: format,
-            content: this.sortedResults,
-            filename: 'processes'
-         });
-      },
-      onKey (e) {
-         e.stopPropagation();
-         if (e.key === 'Escape')
-            this.closeModal();
-         if (e.key === 'F5')
-            this.getProcessesList();
-      }
+   if (+autorefreshTimer.value) {
+      refreshInterval.value = setInterval(() => {
+         if (!isQuering.value)
+            getProcessesList();
+      }, autorefreshTimer.value * 1000);
    }
 };
+
+const clearRefresh = () => {
+   if (refreshInterval.value)
+      clearInterval(refreshInterval.value);
+};
+
+const resizeResults = () => {
+   if (resultTable.value) {
+      const el = tableWrapper.value.parentElement;
+
+      if (el) {
+         const size = el.offsetHeight;
+         resultsSize.value = size;
+      }
+      resultTable.value.updateWindow();
+   }
+};
+
+const refreshScroller = () => resizeResults();
+
+const sort = (field: string) => {
+   if (field === currentSort.value) {
+      if (currentSortDir.value === 'asc')
+         currentSortDir.value = 'desc';
+      else
+         resetSort();
+   }
+   else {
+      currentSortDir.value = 'asc';
+      currentSort.value = field;
+   }
+};
+
+const resetSort = () => {
+   currentSort.value = '';
+   currentSortDir.value = 'asc';
+};
+
+const stopRefresh = () => {
+   autorefreshTimer.value = 0;
+   clearRefresh();
+};
+
+const selectRow = (row: number) => {
+   selectedRow.value = Number(row);
+};
+
+const contextMenu = (event: MouseEvent, cell: { id: number; field: string }) => {
+   if ((event.target as HTMLElement).localName === 'input') return;
+   stopRefresh();
+
+   selectedCell.value = cell;
+   selectedRow.value = Number(cell.id);
+   contextEvent.value = event;
+   isContext.value = true;
+};
+
+const killProcess = async () => {
+   try { // Table data
+      const { status, response } = await Schema.killProcess({ uid: props.connection.uid, pid: selectedRow.value });
+
+      if (status === 'success')
+         getProcessesList();
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+};
+
+const closeContext = () => {
+   isContext.value = false;
+};
+
+const copyCell = () => {
+   const row = results.value.find(row => Number(row.id) === selectedRow.value);
+   const valueToCopy = row[selectedCell.value.field];
+   navigator.clipboard.writeText(valueToCopy);
+};
+
+const copyRow = () => {
+   const row = results.value.find(row => Number(row.id) === selectedRow.value);
+   const rowToCopy = JSON.parse(JSON.stringify(row));
+   navigator.clipboard.writeText(JSON.stringify(rowToCopy));
+};
+
+const closeModal = () => emit('close');
+
+const downloadTable = (format: 'csv' | 'json') => {
+   if (!sortedResults.value) return;
+   arrayToFile({
+      type: format,
+      content: sortedResults.value,
+      filename: 'processes'
+   });
+};
+
+const onKey = (e:KeyboardEvent) => {
+   e.stopPropagation();
+   if (e.key === 'Escape')
+      closeModal();
+   if (e.key === 'F5')
+      getProcessesList();
+};
+
+window.addEventListener('keydown', onKey, { capture: true });
+
+onMounted(() => {
+   getProcessesList();
+   window.addEventListener('resize', resizeResults);
+});
+
+onUpdated(() => {
+   if (table.value)
+      refreshScroller();
+   if (tableWrapper.value)
+      scrollElement.value = tableWrapper.value;
+});
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey, { capture: true });
+   window.removeEventListener('resize', resizeResults);
+   clearInterval(refreshInterval.value);
+});
+
+defineExpose({ refreshScroller });
 </script>
 
 <style lang="scss" scoped>

@@ -14,6 +14,12 @@ export type ClientCode = 'mysql' | 'maria' | 'pg' | 'sqlite'
 export type Exporter = MysqlExporter | PostgreSQLExporter
 export type Importer = MySQLImporter | PostgreSQLImporter
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface IpcResponse<T = any> {
+   status: 'success' | 'error';
+   response?: T;
+}
+
 /**
  * Pasameters needed to create a new Antares connection to a database
  */
@@ -67,12 +73,34 @@ export interface TypeInformations {
    zerofill: boolean;
 }
 
+export interface TypesGroup {
+   group: string;
+   types: TypeInformations[];
+}
+
 // Tables
-export interface TableField {
+export interface TableInfos {
    name: string;
-   key: string;
+   type: string;
+   rows: number;
+   created: Date;
+   updated: Date;
+   engine: string;
+   comment: string;
+   size: number | false;
+   autoIncrement: number;
+   collation: string;
+}
+
+export type TableOptions = Partial<TableInfos>;
+
+export interface TableField {
+   // eslint-disable-next-line camelcase
+   _antares_id?: string;
+   name: string;
    type: string;
    schema: string;
+   table?: string;
    numPrecision?: number;
    numLength?: number;
    datePrecision?: number;
@@ -82,7 +110,8 @@ export interface TableField {
    unsigned?: boolean;
    zerofill?: boolean;
    order?: number;
-   default?: number | string;
+   default?: string;
+   defaultType?: string;
    enumValues?: string;
    charset?: string;
    collation?: string;
@@ -92,9 +121,16 @@ export interface TableField {
    comment?: string;
    after?: string;
    orgName?: string;
+   length?: number | false;
+   alias: string;
+   tableAlias: string;
+   orgTable: string;
+   key?: 'pri' | 'uni';
 }
 
 export interface TableIndex {
+   // eslint-disable-next-line camelcase
+   _antares_id?: string;
    name: string;
    fields: string[];
    type: string;
@@ -107,6 +143,8 @@ export interface TableIndex {
 }
 
 export interface TableForeign {
+   // eslint-disable-next-line camelcase
+   _antares_id?: string;
    constraintName: string;
    refSchema: string;
    table: string;
@@ -116,15 +154,6 @@ export interface TableForeign {
    onUpdate: string;
    onDelete: string;
    oldName?: string;
-}
-
-export interface TableOptions {
-   name: string;
-   type?: 'table' | 'view';
-   engine?: string;
-   comment?: string;
-   collation?: string;
-   autoIncrement?: number;
 }
 
 export interface CreateTableParams {
@@ -165,6 +194,7 @@ export interface AlterTableParams {
 }
 
 // Views
+export type ViewInfos = TableInfos
 export interface CreateViewParams {
    schema: string;
    name: string;
@@ -180,6 +210,19 @@ export interface AlterViewParams extends CreateViewParams {
 }
 
 // Triggers
+export interface TriggerInfos {
+   name: string;
+   statement: string;
+   timing: string;
+   definer: string;
+   event: string;
+   table: string;
+   sqlMode: string;
+   created: Date;
+   charset: string;
+   enabled?: boolean;
+}
+
 export interface CreateTriggerParams {
    definer?: string;
    schema: string;
@@ -195,12 +238,37 @@ export interface AlterTriggerParams extends CreateTriggerParams {
 }
 
 // Routines & Functions
+
 export interface FunctionParam {
+   // eslint-disable-next-line camelcase
+   _antares_id: string;
    context: string;
    name: string;
    type: string;
    length: number;
 }
+
+export interface RoutineInfos {
+   name: string;
+   type?: string;
+   definer: string;
+   created?: string;
+   sql?: string;
+   updated?: string;
+   comment?: string;
+   charset?: string;
+   security?: string;
+   language?: string;
+   dataAccess?: string;
+   deterministic?: boolean;
+   parameters?: FunctionParam[];
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   returns?: any;
+   returnsLength?: number;
+}
+
+export type FunctionInfos = RoutineInfos
+export type TriggerFunctionInfos = FunctionInfos
 
 export interface CreateRoutineParams {
    name: string;
@@ -239,7 +307,7 @@ export interface AlterFunctionParams extends CreateFunctionParams {
 }
 
 // Events
-export interface CreateEventParams {
+export interface EventInfos {
    definer?: string;
    schema: string;
    name: string;
@@ -248,14 +316,37 @@ export interface CreateEventParams {
    starts: string;
    ends: string;
    at: string;
-   preserve: string;
+   preserve: boolean;
    state: string;
    comment: string;
+   enabled?: boolean;
    sql: string;
 }
 
+export type CreateEventParams = EventInfos;
+
 export interface AlterEventParams extends CreateEventParams {
    oldName?: string;
+}
+
+// Schema
+export interface SchemaInfos {
+   name: string;
+   size: number;
+   tables: TableInfos[];
+   functions: FunctionInfos[];
+   procedures: RoutineInfos[];
+   triggers: TriggerInfos[];
+   schedulers: EventInfos[];
+}
+
+export interface CollationInfos {
+   charset: string;
+   collation: string;
+   compiled: boolean;
+   default: boolean;
+   id: string | number;
+   sortLen: number;
 }
 
 // Query
@@ -285,17 +376,10 @@ export interface QueryParams {
    tabUid?: string;
 }
 
-export interface QueryField {
-   name: string;
-   alias: string;
-   orgName: string;
-   schema: string;
-   table: string;
-   tableAlias: string;
-   orgTable: string;
-   type: string;
-   length: number;
-}
+/**
+ * @deprecated Use TableFIeld
+ */
+export type QueryField = TableField
 
 export interface QueryForeign {
    schema: string;

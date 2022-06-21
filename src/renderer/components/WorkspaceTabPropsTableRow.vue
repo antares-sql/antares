@@ -77,7 +77,7 @@
          </label>
       </div>
       <div class="td p-0 type-int" tabindex="0">
-         <template v-if="fieldType.length">
+         <template v-if="fieldType?.length">
             <span
                v-if="!isInlineEditor.length"
                class="cell-content"
@@ -132,7 +132,7 @@
             <input
                v-model="localRow.unsigned"
                type="checkbox"
-               :disabled="!fieldType.unsigned"
+               :disabled="!fieldType?.unsigned"
             >
             <i class="form-icon" />
          </label>
@@ -219,7 +219,7 @@
       </div>
       <ConfirmModal
          v-if="isDefaultModal"
-         :confirm-text="$t('word.confirm')"
+         :confirm-text="t('word.confirm')"
          size="400"
          @confirm="editOFF"
          @hide="hideDefaultModal"
@@ -227,7 +227,7 @@
          <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-playlist-edit mr-1" />
-               <span class="cut-text">{{ $t('word.default') }} "{{ row.name }}"</span>
+               <span class="cut-text">{{ t('word.default') }} "{{ row.name }}"</span>
             </div>
          </template>
          <template #body>
@@ -250,7 +250,7 @@
                            value="custom"
                            type="radio"
                            name="default"
-                        ><i class="form-icon" /> {{ $t('message.customValue') }}
+                        ><i class="form-icon" /> {{ t('message.customValue') }}
                      </label>
                      <div class="column">
                         <input
@@ -291,7 +291,7 @@
                            type="radio"
                            name="default"
                            value="expression"
-                        ><i class="form-icon" /> {{ $t('word.expression') }}
+                        ><i class="form-icon" /> {{ t('word.expression') }}
                      </label>
                      <div class="column">
                         <input
@@ -306,7 +306,7 @@
                <div v-if="customizations.onUpdate">
                   <div class="form-group">
                      <label class="form-label col-4">
-                        {{ $t('message.onUpdate') }}
+                        {{ t('message.onUpdate') }}
                      </label>
                      <div class="column">
                         <input
@@ -323,285 +323,269 @@
    </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, nextTick, onMounted, Prop, PropType, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
-import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import ConfirmModal from '@/components/BaseConfirmModal';
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import { TableField, TableIndex, TypesGroup } from 'common/interfaces/antares';
 
-export default {
-   name: 'WorkspaceTabPropsTableRow',
-   components: {
-      ConfirmModal,
-      BaseSelect
+const { t } = useI18n();
+
+const props = defineProps({
+   row: Object as Prop<TableField>,
+   dataTypes: {
+      type: Array as PropType<TypesGroup[]>,
+      default: () => []
    },
-   props: {
-      row: Object,
-      dataTypes: Array,
-      indexes: Array,
-      foreigns: Array,
-      customizations: Object
-   },
-   emits: ['contextmenu', 'rename-field'],
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+   indexes: Array as Prop<TableIndex[]>,
+   foreigns: Array as Prop<string[]>,
+   customizations: Object
+});
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const emit = defineEmits(['contextmenu', 'rename-field']);
 
-      const { getWorkspace } = workspacesStore;
+const workspacesStore = useWorkspacesStore();
 
-      return {
-         addNotification,
-         selectedWorkspace,
-         getWorkspace
-      };
-   },
-   data () {
-      return {
-         localRow: {},
-         isInlineEditor: {},
-         isDefaultModal: false,
-         defaultValue: {
-            type: 'noval',
-            custom: '',
-            expression: '',
-            onUpdate: ''
-         },
-         editingContent: null,
-         originalContent: null,
-         editingField: null
-      };
-   },
-   computed: {
-      localLength () {
-         const localLength = this.localRow.numLength || this.localRow.charLength || this.localRow.datePrecision || this.localRow.numPrecision || 0;
-         return localLength === true ? null : localLength;
-      },
-      fieldType () {
-         const fieldType = this.dataTypes.reduce((acc, group) => [...acc, ...group.types], []).filter(type =>
-            type.name === (this.localRow.type ? this.localRow.type.toUpperCase() : '')
-         );
-         const group = this.dataTypes.filter(group => group.types.some(type =>
-            type.name === (this.localRow.type ? this.localRow.type.toUpperCase() : ''))
-         );
+const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
-         return fieldType.length ? { ...fieldType[0], group: group[0].group } : {};
-      },
-      fieldDefault () {
-         if (this.localRow.autoIncrement) return 'AUTO_INCREMENT';
-         if (this.localRow.default === 'NULL') return 'NULL';
-         return this.localRow.default;
-      },
-      collations () {
-         return this.getWorkspace(this.selectedWorkspace).collations;
-      },
-      canAutoincrement () {
-         return this.indexes.some(index => ['PRIMARY', 'UNIQUE'].includes(index.type));
-      },
-      isNullable () {
-         return this.customizations.nullablePrimary || !this.indexes.some(index => ['PRIMARY'].includes(index.type));
-      },
-      isInDataTypes () {
-         let typeNames = [];
-         for (const group of this.dataTypes) {
-            const groupTypeNames = group.types.reduce((acc, curr) => {
-               acc.push(curr.name);
-               return acc;
-            }, []);
+const { getWorkspace } = workspacesStore;
 
-            typeNames = [...groupTypeNames, ...typeNames];
-         }
-         return typeNames.includes(this.row.type);
-      },
-      types () {
-         const types = [...this.dataTypes];
-         if (!this.isInDataTypes)
-            types.unshift({ name: this.row });
+const localRow: Ref<TableField> = ref({} as TableField);
+const isInlineEditor: Ref<TableField> = ref({} as TableField);
+const isDefaultModal = ref(false);
+const defaultValue = ref({
+   type: 'noval',
+   custom: '',
+   expression: '',
+   onUpdate: ''
+});
+const editingContent: Ref<string | number> = ref(null);
+const originalContent = ref(null);
+const editingField: Ref<keyof TableField> = ref(null);
 
-         return types;
-      }
-   },
-   watch: {
-      localRow () {
-         this.initLocalRow();
-      },
-      row () {
-         this.localRow = this.row;
-      },
-      indexes () {
-         if (!this.canAutoincrement)
-            this.localRow.autoIncrement = false;
+const localLength = computed(() => {
+   const localLength = localRow.value.numLength || localRow.value.charLength || localRow.value.datePrecision || localRow.value.numPrecision || 0 as number | true;
+   return localLength === true ? null : localLength;
+});
 
-         if (!this.isNullable)
-            this.localRow.nullable = false;
-      }
-   },
-   mounted () {
-      this.localRow = this.row;
-      this.initLocalRow();
-      this.isInlineEditor.length = false;
-   },
-   methods: {
-      keyName (key) {
-         switch (key) {
-            case 'pri':
-               return 'PRIMARY';
-            case 'uni':
-               return 'UNIQUE';
-            case 'mul':
-               return 'INDEX';
-            default:
-               return 'UNKNOWN ' + key;
-         }
-      },
-      typeClass (type) {
-         if (type)
-            return `type-${type.toLowerCase().replaceAll(' ', '_').replaceAll('"', '')}`;
-         return '';
-      },
-      initLocalRow () {
-         Object.keys(this.localRow).forEach(key => {
-            this.isInlineEditor[key] = false;
-         });
+const fieldType = computed(() => {
+   const fieldType = props.dataTypes.reduce((acc, group) => [...acc, ...group.types], []).filter(type =>
+      type.name === (localRow.value.type ? localRow.value.type.toUpperCase() : '')
+   );
+   const group = props.dataTypes.filter(group => group.types.some(type =>
+      type.name === (localRow.value.type ? localRow.value.type.toUpperCase() : ''))
+   );
 
-         this.defaultValue.onUpdate = this.localRow.onUpdate;
-         this.defaultValue.type = this.localRow.defaultType || 'noval';
-         if (this.defaultValue.type === 'custom') {
-            this.defaultValue.custom = this.localRow.default
-               ? this.localRow.default.includes('\'')
-                  ? this.localRow.default.split('\'')[1]
-                  : this.localRow.default
-               : '';
-         }
-         else if (this.defaultValue.type === 'expression') {
-            if (this.localRow.default.toUpperCase().includes('ON UPDATE'))
-               this.defaultValue.expression = this.localRow.default.replace(/ on update.*$/i, '');
-            else
-               this.defaultValue.expression = this.localRow.default;
-         }
-      },
-      editON (event, content, field) {
-         if (field === 'length') {
-            if (['integer', 'float', 'binary', 'spatial'].includes(this.fieldType.group)) this.editingField = 'numLength';
-            else if (['string', 'unknown'].includes(this.fieldType.group)) this.editingField = 'charLength';
-            else if (['other'].includes(this.fieldType.group)) this.editingField = 'enumValues';
-            else if (['time'].includes(this.fieldType.group)) this.editingField = 'datePrecision';
-         }
-         else
-            this.editingField = field;
+   return fieldType.length ? { ...fieldType[0], group: group[0].group } : {};
+});
 
-         if (this.localRow.enumValues && field === 'length') {
-            this.editingContent = this.localRow.enumValues;
-            this.originalContent = this.localRow.enumValues;
-         }
-         else if (this.fieldType.scale && field === 'length') {
-            const scale = this.localRow.numScale !== null ? this.localRow.numScale : 0;
-            this.editingContent = `${content}, ${scale}`;
-            this.originalContent = `${content}, ${scale}`;
-         }
-         else {
-            this.editingContent = content;
-            this.originalContent = content;
-         }
+const fieldDefault = computed(() => {
+   if (localRow.value.autoIncrement) return 'AUTO_INCREMENT';
+   if (localRow.value.default === 'NULL') return 'NULL';
+   return localRow.value.default;
+});
 
-         const obj = { [field]: true };
-         this.isInlineEditor = { ...this.isInlineEditor, ...obj };
+const collations = computed(() => getWorkspace(selectedWorkspace.value).collations);
+const canAutoincrement = computed(() => props.indexes.some(index => ['PRIMARY', 'UNIQUE'].includes(index.type)));
+const isNullable = computed(() => props.customizations.nullablePrimary || !props.indexes.some(index => ['PRIMARY'].includes(index.type)));
 
-         if (field === 'default')
-            this.isDefaultModal = true;
-         else {
-            this.$nextTick(() => { // Focus on input
-               event.target.blur();
+const isInDataTypes = computed(() => {
+   let typeNames: string[] = [];
+   for (const group of props.dataTypes) {
+      const groupTypeNames = group.types.reduce((acc, curr) => {
+         acc.push(curr.name);
+         return acc;
+      }, []);
 
-               this.$nextTick(() => document.querySelector('.editable-field').focus());
-            });
-         }
-      },
-      editOFF () {
-         if (this.editingField === 'name')
-            this.$emit('rename-field', { old: this.localRow[this.editingField], new: this.editingContent });
+      typeNames = [...groupTypeNames, ...typeNames];
+   }
+   return typeNames.includes(props.row.type);
+});
 
-         if (this.editingField === 'numLength' && this.fieldType.scale) {
-            const [length, scale] = this.editingContent.split(',');
-            this.localRow.numLength = +length;
-            this.localRow.numScale = scale ? +scale : null;
-         }
-         else
-            this.localRow[this.editingField] = this.editingContent;
+const types = computed(() => {
+   const types = [...props.dataTypes];
+   if (!isInDataTypes.value)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (types as any).unshift({ name: props.row });
 
-         if (this.editingField === 'type' && this.editingContent !== this.originalContent) {
-            this.localRow.numLength = null;
-            this.localRow.numScale = null;
-            this.localRow.charLength = null;
-            this.localRow.datePrecision = null;
-            this.localRow.enumValues = '';
+   return types;
+});
 
-            if (this.fieldType.length) {
-               if (['integer', 'float', 'binary', 'spatial'].includes(this.fieldType.group)) this.localRow.numLength = 11;
-               if (['string'].includes(this.fieldType.group)) this.localRow.charLength = 15;
-               if (['time'].includes(this.fieldType.group)) this.localRow.datePrecision = 0;
-               if (['other'].includes(this.fieldType.group)) this.localRow.enumValues = '\'valA\',\'valB\'';
-            }
+const typeClass = (type: string) => {
+   if (type)
+      return `type-${type.toLowerCase().replaceAll(' ', '_').replaceAll('"', '')}`;
+   return '';
+};
 
-            if (!this.fieldType.collation)
-               this.localRow.collation = null;
+const initLocalRow = () => {
+   Object.keys(localRow.value).forEach(key => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (isInlineEditor as any).value[key] = false;
+   });
 
-            if (!this.fieldType.unsigned)
-               this.localRow.unsigned = false;
-
-            if (!this.fieldType.zerofill)
-               this.localRow.zerofill = false;
-         }
-         else if (this.editingField === 'default') {
-            switch (this.defaultValue.type) {
-               case 'autoincrement':
-                  this.localRow.autoIncrement = true;
-                  break;
-               case 'noval':
-                  this.localRow.autoIncrement = false;
-                  this.localRow.default = null;
-                  break;
-               case 'null':
-                  this.localRow.autoIncrement = false;
-                  this.localRow.default = 'NULL';
-                  break;
-               case 'custom':
-                  this.localRow.autoIncrement = false;
-                  this.localRow.default = Number.isNaN(+this.defaultValue.custom) ? `'${this.defaultValue.custom}'` : this.defaultValue.custom;
-                  break;
-               case 'expression':
-                  this.localRow.autoIncrement = false;
-                  this.localRow.default = this.defaultValue.expression;
-                  break;
-            }
-
-            this.localRow.onUpdate = this.defaultValue.onUpdate;
-         }
-
-         Object.keys(this.isInlineEditor).forEach(key => {
-            this.isInlineEditor = { ...this.isInlineEditor, [key]: false };
-         });
-
-         this.editingContent = null;
-         this.originalContent = null;
-         this.editingField = null;
-      },
-      checkLengthScale (e) {
-         e = (e) || window.event;
-         const charCode = (e.which) ? e.which : e.keyCode;
-
-         if (((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 44) || (charCode === 44 && e.target.value.includes(',')))
-            e.preventDefault();
-         else
-            return true;
-      },
-      hideDefaultModal () {
-         this.isDefaultModal = false;
-      }
+   defaultValue.value.onUpdate = localRow.value.onUpdate;
+   defaultValue.value.type = localRow.value.defaultType || 'noval';
+   if (defaultValue.value.type === 'custom') {
+      defaultValue.value.custom = localRow.value.default
+         ? localRow.value.default.includes('\'')
+            ? localRow.value.default.split('\'')[1]
+            : localRow.value.default
+         : '';
+   }
+   else if (defaultValue.value.type === 'expression') {
+      if (localRow.value.default.toUpperCase().includes('ON UPDATE'))
+         defaultValue.value.expression = localRow.value.default.replace(/ on update.*$/i, '');
+      else
+         defaultValue.value.expression = localRow.value.default;
    }
 };
+
+const editON = async (event: MouseEvent, content: string | number, field: keyof TableField) => {
+   if (field === 'length') {
+      if (['integer', 'float', 'binary', 'spatial'].includes(fieldType.value.group)) editingField.value = 'numLength';
+      else if (['string', 'unknown'].includes(fieldType.value.group)) editingField.value = 'charLength';
+      else if (['other'].includes(fieldType.value.group)) editingField.value = 'enumValues';
+      else if (['time'].includes(fieldType.value.group)) editingField.value = 'datePrecision';
+   }
+   else
+      editingField.value = field;
+
+   if (localRow.value.enumValues && field === 'length') {
+      editingContent.value = localRow.value.enumValues;
+      originalContent.value = localRow.value.enumValues;
+   }
+   else if (fieldType.value.scale && field === 'length') {
+      const scale = localRow.value.numScale !== null ? localRow.value.numScale : 0;
+      editingContent.value = `${content}, ${scale}`;
+      originalContent.value = `${content}, ${scale}`;
+   }
+   else {
+      editingContent.value = content;
+      originalContent.value = content;
+   }
+
+   const obj = { [field]: true };
+   isInlineEditor.value = { ...isInlineEditor.value, ...obj };
+
+   if (field === 'default')
+      isDefaultModal.value = true;
+   else {
+      await nextTick();
+      (event as MouseEvent & { target: HTMLInputElement }).target.blur();
+      await nextTick();
+      document.querySelector<HTMLInputElement>('.editable-field').focus();
+   }
+};
+
+const editOFF = () => {
+   if (editingField.value === 'name')
+      emit('rename-field', { old: localRow.value[editingField.value], new: editingContent.value });
+
+   if (editingField.value === 'numLength' && fieldType.value.scale) {
+      const [length, scale] = (editingContent.value as string).split(',');
+      localRow.value.numLength = +length;
+      localRow.value.numScale = scale ? +scale : null;
+   }
+   else
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (localRow.value as any)[editingField.value] = editingContent.value;
+
+   if (editingField.value === 'type' && editingContent.value !== originalContent.value) {
+      localRow.value.numLength = null;
+      localRow.value.numScale = null;
+      localRow.value.charLength = null;
+      localRow.value.datePrecision = null;
+      localRow.value.enumValues = '';
+
+      if (fieldType.value.length) {
+         if (['integer', 'float', 'binary', 'spatial'].includes(fieldType.value.group)) localRow.value.numLength = 11;
+         if (['string'].includes(fieldType.value.group)) localRow.value.charLength = 15;
+         if (['time'].includes(fieldType.value.group)) localRow.value.datePrecision = 0;
+         if (['other'].includes(fieldType.value.group)) localRow.value.enumValues = '\'valA\',\'valB\'';
+      }
+
+      if (!fieldType.value.collation)
+         localRow.value.collation = null;
+
+      if (!fieldType.value.unsigned)
+         localRow.value.unsigned = false;
+
+      if (!fieldType.value.zerofill)
+         localRow.value.zerofill = false;
+   }
+   else if (editingField.value === 'default') {
+      switch (defaultValue.value.type) {
+         case 'autoincrement':
+            localRow.value.autoIncrement = true;
+            break;
+         case 'noval':
+            localRow.value.autoIncrement = false;
+            localRow.value.default = null;
+            break;
+         case 'null':
+            localRow.value.autoIncrement = false;
+            localRow.value.default = 'NULL';
+            break;
+         case 'custom':
+            localRow.value.autoIncrement = false;
+            localRow.value.default = Number.isNaN(+defaultValue.value.custom) ? `'${defaultValue.value.custom}'` : defaultValue.value.custom;
+            break;
+         case 'expression':
+            localRow.value.autoIncrement = false;
+            localRow.value.default = defaultValue.value.expression;
+            break;
+      }
+
+      localRow.value.onUpdate = defaultValue.value.onUpdate;
+   }
+
+   Object.keys(isInlineEditor.value).forEach(key => {
+      isInlineEditor.value = { ...isInlineEditor.value, [key]: false };
+   });
+
+   editingContent.value = null;
+   originalContent.value = null;
+   editingField.value = null;
+};
+
+const checkLengthScale = (e: KeyboardEvent & { target: HTMLInputElement }) => {
+   e = (e) || window.event as KeyboardEvent & { target: HTMLInputElement };
+   const charCode = (e.which) ? e.which : e.code;
+
+   if (((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 44) || (charCode === 44 && e.target.value.includes(',')))
+      e.preventDefault();
+   else
+      return true;
+};
+
+const hideDefaultModal = () => {
+   isDefaultModal.value = false;
+};
+
+watch(localRow, () => {
+   initLocalRow();
+});
+
+watch(() => props.row, () => {
+   localRow.value = props.row;
+});
+
+watch(() => props.indexes, () => {
+   if (!canAutoincrement.value)
+      localRow.value.autoIncrement = false;
+
+   if (!isNullable.value)
+      localRow.value.nullable = false;
+});
+
+onMounted(() => {
+   localRow.value = props.row;
+   initLocalRow();
+   isInlineEditor.value.length = false;
+});
 </script>
 
 <style lang="scss" scoped>

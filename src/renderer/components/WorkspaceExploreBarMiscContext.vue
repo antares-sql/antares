@@ -4,7 +4,7 @@
       @close-context="closeContext"
    >
       <div
-         v-if="['procedure', 'function'].includes(selectedMisc.type)"
+         v-if="['procedure', 'routine', 'function'].includes(selectedMisc.type)"
          class="context-element"
          @click="runElementCheck"
       >
@@ -56,7 +56,7 @@
       </ConfirmModal>
       <ModalAskParameters
          v-if="isAskingParameters"
-         :local-routine="localElement"
+         :local-routine="(localElement as any)"
          :client="workspace.client"
          @confirm="runElement"
          @close="hideAskParamsModal"
@@ -64,324 +64,333 @@
    </BaseContextMenu>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, Prop, Ref, ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import BaseContextMenu from '@/components/BaseContextMenu';
-import ConfirmModal from '@/components/BaseConfirmModal';
-import ModalAskParameters from '@/components/ModalAskParameters';
+import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import ModalAskParameters from '@/components/ModalAskParameters.vue';
 import Triggers from '@/ipc-api/Triggers';
 import Routines from '@/ipc-api/Routines';
 import Functions from '@/ipc-api/Functions';
 import Schedulers from '@/ipc-api/Schedulers';
-import { storeToRefs } from 'pinia';
+import { EventInfos, FunctionInfos, IpcResponse, RoutineInfos, TriggerInfos } from 'common/interfaces/antares';
 
-export default {
-   name: 'WorkspaceExploreBarMiscContext',
-   components: {
-      BaseContextMenu,
-      ConfirmModal,
-      ModalAskParameters
-   },
-   props: {
-      contextEvent: MouseEvent,
-      selectedMisc: Object,
-      selectedSchema: String
-   },
-   emits: ['close-context', 'reload'],
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+const { t } = useI18n();
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const props = defineProps({
+   contextEvent: MouseEvent,
+   selectedMisc: Object as Prop<{ name:string; type:string; enabled?: boolean }>,
+   selectedSchema: String
+});
 
-      const {
-         getWorkspace,
-         changeBreadcrumbs,
-         addLoadingElement,
-         removeLoadingElement,
-         removeTabs,
-         newTab
-      } = workspacesStore;
+const emit = defineEmits(['close-context', 'reload']);
 
-      return {
-         addNotification,
-         selectedWorkspace,
-         getWorkspace,
-         changeBreadcrumbs,
-         addLoadingElement,
-         removeLoadingElement,
-         removeTabs,
-         newTab
-      };
-   },
-   data () {
-      return {
-         isDeleteModal: false,
-         isRunModal: false,
-         isAskingParameters: false,
-         localElement: {}
-      };
-   },
-   computed: {
-      workspace () {
-         return this.getWorkspace(this.selectedWorkspace);
-      },
-      customizations () {
-         return this.getWorkspace(this.selectedWorkspace).customizations;
-      },
-      deleteMessage () {
-         switch (this.selectedMisc.type) {
-            case 'trigger':
-               return this.$t('message.deleteTrigger');
-            case 'procedure':
-               return this.$t('message.deleteRoutine');
-            case 'function':
-            case 'triggerFunction':
-               return this.$t('message.deleteFunction');
-            case 'scheduler':
-               return this.$t('message.deleteScheduler');
-            default:
-               return '';
-         }
-      }
-   },
-   methods: {
-      showDeleteModal () {
-         this.isDeleteModal = true;
-      },
-      hideDeleteModal () {
-         this.isDeleteModal = false;
-      },
-      showAskParamsModal () {
-         this.isAskingParameters = true;
-      },
-      hideAskParamsModal () {
-         this.isAskingParameters = false;
-         this.closeContext();
-      },
-      closeContext () {
-         this.$emit('close-context');
-      },
-      async deleteMisc () {
-         try {
-            let res;
+const { addNotification } = useNotificationsStore();
+const workspacesStore = useWorkspacesStore();
 
-            switch (this.selectedMisc.type) {
-               case 'trigger':
-                  res = await Triggers.dropTrigger({
-                     uid: this.selectedWorkspace,
-                     schema: this.selectedSchema,
-                     trigger: this.selectedMisc.name
-                  });
-                  break;
-               case 'procedure':
-                  res = await Routines.dropRoutine({
-                     uid: this.selectedWorkspace,
-                     schema: this.selectedSchema,
-                     routine: this.selectedMisc.name
-                  });
-                  break;
-               case 'function':
-               case 'triggerFunction':
-                  res = await Functions.dropFunction({
-                     uid: this.selectedWorkspace,
-                     schema: this.selectedSchema,
-                     func: this.selectedMisc.name
-                  });
-                  break;
-               case 'scheduler':
-                  res = await Schedulers.dropScheduler({
-                     uid: this.selectedWorkspace,
-                     schema: this.selectedSchema,
-                     scheduler: this.selectedMisc.name
-                  });
-                  break;
-            }
+const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
-            const { status, response } = res;
+const {
+   getWorkspace,
+   addLoadingElement,
+   removeLoadingElement,
+   removeTabs,
+   newTab
+} = workspacesStore;
 
-            if (status === 'success') {
-               this.removeTabs({
-                  uid: this.selectedWorkspace,
-                  elementName: this.selectedMisc.name,
-                  elementType: this.selectedMisc.type,
-                  schema: this.selectedSchema
-               });
+const isDeleteModal = ref(false);
+const isAskingParameters = ref(false);
+const localElement: Ref<TriggerInfos | RoutineInfos | FunctionInfos | EventInfos> = ref(null);
 
-               this.closeContext();
-               this.$emit('reload');
-            }
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-      },
-      runElementCheck () {
-         if (this.selectedMisc.type === 'procedure')
-            this.runRoutineCheck();
-         else if (this.selectedMisc.type === 'function')
-            this.runFunctionCheck();
-      },
-      runElement (params) {
-         if (this.selectedMisc.type === 'procedure')
-            this.runRoutine(params);
-         else if (this.selectedMisc.type === 'function')
-            this.runFunction(params);
-      },
-      async runRoutineCheck () {
-         const params = {
-            uid: this.selectedWorkspace,
-            schema: this.selectedSchema,
-            routine: this.selectedMisc.name
-         };
+const workspace = computed(() => {
+   return getWorkspace(selectedWorkspace.value);
+});
 
-         try {
-            const { status, response } = await Routines.getRoutineInformations(params);
-            if (status === 'success')
-               this.localElement = response;
+const customizations = computed(() => {
+   return getWorkspace(selectedWorkspace.value).customizations;
+});
 
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         if (this.localElement.parameters.length)
-            this.showAskParamsModal();
-         else
-            this.runRoutine();
-      },
-      runRoutine (params) {
-         if (!params) params = [];
-
-         let sql;
-         switch (this.workspace.client) { // TODO: move in a better place
-            case 'maria':
-            case 'mysql':
-            case 'pg':
-               sql = `CALL ${this.localElement.name}(${params.join(',')})`;
-               break;
-            case 'mssql':
-               sql = `EXEC ${this.localElement.name} ${params.join(',')}`;
-               break;
-            default:
-               sql = `CALL \`${this.localElement.name}\`(${params.join(',')})`;
-         }
-
-         this.newTab({ uid: this.workspace.uid, content: sql, type: 'query', autorun: true });
-         this.closeContext();
-      },
-      async runFunctionCheck () {
-         const params = {
-            uid: this.selectedWorkspace,
-            schema: this.selectedSchema,
-            func: this.selectedMisc.name
-         };
-
-         try {
-            const { status, response } = await Functions.getFunctionInformations(params);
-            if (status === 'success')
-               this.localElement = response;
-            else
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         if (this.localElement.parameters.length)
-            this.showAskParamsModal();
-         else
-            this.runFunction();
-      },
-      runFunction (params) {
-         if (!params) params = [];
-
-         let sql;
-         switch (this.workspace.client) { // TODO: move in a better place
-            case 'maria':
-            case 'mysql':
-               sql = `SELECT \`${this.localElement.name}\` (${params.join(',')})`;
-               break;
-            case 'pg':
-               sql = `SELECT ${this.localElement.name}(${params.join(',')})`;
-               break;
-            case 'mssql':
-               sql = `SELECT ${this.localElement.name} ${params.join(',')}`;
-               break;
-            default:
-               sql = `SELECT \`${this.localElement.name}\` (${params.join(',')})`;
-         }
-
-         this.newTab({ uid: this.workspace.uid, content: sql, type: 'query', autorun: true });
-         this.closeContext();
-      },
-      async toggleTrigger () {
-         this.addLoadingElement({
-            name: this.selectedMisc.name,
-            schema: this.selectedSchema,
-            type: 'trigger'
-         });
-
-         try {
-            const { status, response } = await Triggers.toggleTrigger({
-               uid: this.selectedWorkspace,
-               schema: this.selectedSchema,
-               trigger: this.selectedMisc.name,
-               enabled: this.selectedMisc.enabled
-            });
-
-            if (status !== 'success')
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.removeLoadingElement({
-            name: this.selectedMisc.name,
-            schema: this.selectedSchema,
-            type: 'trigger'
-         });
-
-         this.closeContext();
-         this.$emit('reload');
-      },
-      async toggleScheduler () {
-         this.addLoadingElement({
-            name: this.selectedMisc.name,
-            schema: this.selectedSchema,
-            type: 'scheduler'
-         });
-
-         try {
-            const { status, response } = await Schedulers.toggleScheduler({
-               uid: this.selectedWorkspace,
-               schema: this.selectedSchema,
-               scheduler: this.selectedMisc.name,
-               enabled: this.selectedMisc.enabled
-            });
-
-            if (status !== 'success')
-               this.addNotification({ status: 'error', message: response });
-         }
-         catch (err) {
-            this.addNotification({ status: 'error', message: err.stack });
-         }
-
-         this.removeLoadingElement({
-            name: this.selectedMisc.name,
-            schema: this.selectedSchema,
-            type: 'scheduler'
-         });
-
-         this.closeContext();
-         this.$emit('reload');
-      }
+const deleteMessage = computed(() => {
+   switch (props.selectedMisc.type) {
+      case 'trigger':
+         return t('message.deleteTrigger');
+      case 'procedure':
+         return t('message.deleteRoutine');
+      case 'function':
+      case 'triggerFunction':
+         return t('message.deleteFunction');
+      case 'scheduler':
+         return t('message.deleteScheduler');
+      default:
+         return '';
    }
+});
+
+const showDeleteModal = () => {
+   isDeleteModal.value = true;
+};
+
+const hideDeleteModal = () => {
+   isDeleteModal.value = false;
+};
+
+const showAskParamsModal = () => {
+   isAskingParameters.value = true;
+};
+
+const hideAskParamsModal = () => {
+   isAskingParameters.value = false;
+   closeContext();
+};
+
+const closeContext = () => {
+   emit('close-context');
+};
+
+const deleteMisc = async () => {
+   try {
+      let res: IpcResponse;
+
+      switch (props.selectedMisc.type) {
+         case 'trigger':
+            res = await Triggers.dropTrigger({
+               uid: selectedWorkspace.value,
+               schema: props.selectedSchema,
+               trigger: props.selectedMisc.name
+            });
+            break;
+         case 'routine':
+         case 'procedure':
+            res = await Routines.dropRoutine({
+               uid: selectedWorkspace.value,
+               schema: props.selectedSchema,
+               routine: props.selectedMisc.name
+            });
+            break;
+         case 'function':
+         case 'triggerFunction':
+            res = await Functions.dropFunction({
+               uid: selectedWorkspace.value,
+               schema: props.selectedSchema,
+               func: props.selectedMisc.name
+            });
+            break;
+         case 'scheduler':
+            res = await Schedulers.dropScheduler({
+               uid: selectedWorkspace.value,
+               schema: props.selectedSchema,
+               scheduler: props.selectedMisc.name
+            });
+            break;
+      }
+
+      console.log(res);
+
+      const { status, response } = res;
+
+      if (status === 'success') {
+         removeTabs({
+            uid: selectedWorkspace.value,
+            elementName: props.selectedMisc.name,
+            elementType: props.selectedMisc.type,
+            schema: props.selectedSchema
+         });
+
+         closeContext();
+         emit('reload');
+      }
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+};
+
+const runElementCheck = () => {
+   if (['procedure', 'routine'].includes(props.selectedMisc.type))
+      runRoutineCheck();
+   else if (props.selectedMisc.type === 'function')
+      runFunctionCheck();
+};
+
+const runElement = (params: string[]) => {
+   if (props.selectedMisc.type === 'procedure')
+      runRoutine(params);
+   else if (props.selectedMisc.type === 'function')
+      runFunction(params);
+};
+
+const runRoutineCheck = async () => {
+   const params = {
+      uid: selectedWorkspace.value,
+      schema: props.selectedSchema,
+      routine: props.selectedMisc.name
+   };
+
+   try {
+      const { status, response } = await Routines.getRoutineInformations(params);
+      if (status === 'success')
+         localElement.value = response;
+
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   if ((localElement.value as RoutineInfos).parameters.length)
+      showAskParamsModal();
+   else
+      runRoutine();
+};
+
+const runRoutine = (params?: string[]) => {
+   if (!params) params = [];
+
+   let sql;
+   switch (workspace.value.client) { // TODO: move in a better place
+      case 'maria':
+      case 'mysql':
+      case 'pg':
+         sql = `CALL ${localElement.value.name}(${params.join(',')})`;
+         break;
+      // case 'mssql':
+      //    sql = `EXEC ${localElement.value.name} ${params.join(',')}`;
+      //    break;
+      default:
+         sql = `CALL \`${localElement.value.name}\`(${params.join(',')})`;
+   }
+
+   newTab({
+      uid: workspace.value.uid,
+      content: sql,
+      type: 'query',
+      schema: props.selectedSchema,
+      autorun: true
+   });
+   closeContext();
+};
+
+const runFunctionCheck = async () => {
+   const params = {
+      uid: selectedWorkspace.value,
+      schema: props.selectedSchema,
+      func: props.selectedMisc.name
+   };
+
+   try {
+      const { status, response } = await Functions.getFunctionInformations(params);
+      if (status === 'success')
+         localElement.value = response;
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   if ((localElement.value as FunctionInfos).parameters.length)
+      showAskParamsModal();
+   else
+      runFunction();
+};
+
+const runFunction = (params?: string[]) => {
+   if (!params) params = [];
+
+   let sql;
+   switch (workspace.value.client) { // TODO: move in a better place
+      case 'maria':
+      case 'mysql':
+         sql = `SELECT \`${localElement.value.name}\` (${params.join(',')})`;
+         break;
+      case 'pg':
+         sql = `SELECT ${localElement.value.name}(${params.join(',')})`;
+         break;
+      // case 'mssql':
+      //    sql = `SELECT ${localElement.value.name} ${params.join(',')}`;
+      //    break;
+      default:
+         sql = `SELECT \`${localElement.value.name}\` (${params.join(',')})`;
+   }
+
+   newTab({
+      uid: workspace.value.uid,
+      content: sql,
+      type: 'query',
+      schema: props.selectedSchema,
+      autorun: true
+   });
+   closeContext();
+};
+
+const toggleTrigger = async () => {
+   addLoadingElement({
+      name: props.selectedMisc.name,
+      schema: props.selectedSchema,
+      type: 'trigger'
+   });
+
+   try {
+      const { status, response } = await Triggers.toggleTrigger({
+         uid: selectedWorkspace.value,
+         schema: props.selectedSchema,
+         trigger: props.selectedMisc.name,
+         enabled: props.selectedMisc.enabled
+      });
+
+      if (status !== 'success')
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   removeLoadingElement({
+      name: props.selectedMisc.name,
+      schema: props.selectedSchema,
+      type: 'trigger'
+   });
+
+   closeContext();
+   emit('reload');
+};
+
+const toggleScheduler = async () => {
+   addLoadingElement({
+      name: props.selectedMisc.name,
+      schema: props.selectedSchema,
+      type: 'scheduler'
+   });
+
+   try {
+      const { status, response } = await Schedulers.toggleScheduler({
+         uid: selectedWorkspace.value,
+         schema: props.selectedSchema,
+         scheduler: props.selectedMisc.name,
+         enabled: props.selectedMisc.enabled
+      });
+
+      if (status !== 'success')
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   removeLoadingElement({
+      name: props.selectedMisc.name,
+      schema: props.selectedSchema,
+      type: 'scheduler'
+   });
+
+   closeContext();
+   emit('reload');
 };
 </script>

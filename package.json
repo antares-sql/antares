@@ -22,8 +22,8 @@
     "postinstall": "electron-builder install-app-deps && npm run devtools:install",
     "test:e2e": "npm run compile && npm run test:e2e-dry",
     "test:e2e-dry": "xvfb-maybe -- playwright test",
-    "lint": "eslint . --ext .js,.vue && stylelint \"./src/**/*.{css,scss,sass,vue}\"",
-    "lint:fix": "eslint . --ext .js,.vue --fix && stylelint \"./src/**/*.{css,scss,sass,vue}\" --fix",
+    "lint": "eslint . --ext .js,.ts,.vue && stylelint \"./src/**/*.{css,scss,sass,vue}\"",
+    "lint:fix": "eslint . --ext .js,.ts,.vue --fix && stylelint \"./src/**/*.{css,scss,sass,vue}\" --fix",
     "contributors:add": "all-contributors add",
     "contributors:generate": "all-contributors generate"
   },
@@ -150,6 +150,8 @@
     "@babel/preset-typescript": "~7.16.7",
     "@playwright/test": "~1.21.1",
     "@types/better-sqlite3": "~7.5.0",
+    "@types/leaflet": "~1.7.9",
+    "@types/marked": "~4.0.3",
     "@types/node": "~17.0.23",
     "@types/pg": "~8.6.5",
     "@typescript-eslint/eslint-plugin": "~5.18.0",
@@ -189,7 +191,7 @@
     "unzip-crx-3": "~0.2.0",
     "vue-eslint-parser": "~8.3.0",
     "vue-loader": "~16.8.3",
-    "webpack": "~5.60.0",
+    "webpack": "~5.72.0",
     "webpack-cli": "~4.9.1",
     "webpack-dev-server": "~4.4.0",
     "xvfb-maybe": "~0.2.1"

@@ -1,6 +1,6 @@
 <template>
    <ConfirmModal
-      :confirm-text="$t('word.confirm')"
+      :confirm-text="t('word.confirm')"
       size="medium"
       class="options-modal"
       @confirm="confirmParametersChange"
@@ -9,7 +9,7 @@
       <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-dots-horizontal mr-1" />
-            <span class="cut-text">{{ $t('word.parameters') }} "{{ func }}"</span>
+            <span class="cut-text">{{ t('word.parameters') }} "{{ func }}"</span>
          </div>
       </template>
       <template #body>
@@ -20,16 +20,16 @@
                      <div class="d-flex">
                         <button class="btn btn-dark btn-sm d-flex" @click="addParameter">
                            <i class="mdi mdi-24px mdi-plus mr-1" />
-                           <span>{{ $t('word.add') }}</span>
+                           <span>{{ t('word.add') }}</span>
                         </button>
                         <button
                            class="btn btn-dark btn-sm d-flex ml-2 mr-0"
-                           :title="$t('message.clearChanges')"
+                           :title="t('message.clearChanges')"
                            :disabled="!isChanged"
                            @click.prevent="clearChanges"
                         >
                            <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
-                           <span>{{ $t('word.clear') }}</span>
+                           <span>{{ t('word.clear') }}</span>
                         </button>
                      </div>
                   </div>
@@ -55,7 +55,7 @@
                         <div class="tile-action">
                            <button
                               class="btn btn-link remove-field p-0 mr-2"
-                              :title="$t('word.delete')"
+                              :title="t('word.delete')"
                               @click.prevent="removeParameter(param._antares_id)"
                            >
                               <i class="mdi mdi-close" />
@@ -74,7 +74,7 @@
                >
                   <div class="form-group">
                      <label class="form-label col-3">
-                        {{ $t('word.name') }}
+                        {{ t('word.name') }}
                      </label>
                      <div class="column">
                         <input
@@ -86,7 +86,7 @@
                   </div>
                   <div class="form-group">
                      <label class="form-label col-3">
-                        {{ $t('word.type') }}
+                        {{ t('word.type') }}
                      </label>
                      <div class="column">
                         <BaseSelect
@@ -102,7 +102,7 @@
                   </div>
                   <div v-if="customizations.parametersLength" class="form-group">
                      <label class="form-label col-3">
-                        {{ $t('word.length') }}
+                        {{ t('word.length') }}
                      </label>
                      <div class="column">
                         <input
@@ -115,7 +115,7 @@
                   </div>
                   <div v-if="customizations.functionContext" class="form-group">
                      <label class="form-label col-3">
-                        {{ $t('word.context') }}
+                        {{ t('word.context') }}
                      </label>
                      <div class="column">
                         <label class="form-radio">
@@ -150,11 +150,11 @@
                      <i class="mdi mdi-dots-horizontal mdi-48px" />
                   </div>
                   <p class="empty-title h5">
-                     {{ $t('message.thereAreNoParameters') }}
+                     {{ t('message.thereAreNoParameters') }}
                   </p>
                   <div class="empty-action">
                      <button class="btn btn-primary" @click="addParameter">
-                        {{ $t('message.createNewParameter') }}
+                        {{ t('message.createNewParameter') }}
                      </button>
                   </div>
                </div>
@@ -164,113 +164,118 @@
    </ConfirmModal>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, onMounted, onUnmounted, Ref, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { uidGen } from 'common/libs/uidGen';
-import ConfirmModal from '@/components/BaseConfirmModal';
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 
-export default {
-   name: 'WorkspaceTabPropsFunctionParamsModal',
-   components: {
-      ConfirmModal,
-      BaseSelect
-   },
-   props: {
-      localParameters: {
-         type: Array,
-         default: () => []
-      },
-      func: String,
-      workspace: Object
-   },
-   emits: ['hide', 'parameters-update'],
-   data () {
-      return {
-         parametersProxy: [],
-         isOptionsChanging: false,
-         selectedParam: '',
-         modalInnerHeight: 400,
-         i: 1
-      };
-   },
-   computed: {
-      selectedParamObj () {
-         return this.parametersProxy.find(param => param._antares_id === this.selectedParam);
-      },
-      isChanged () {
-         return JSON.stringify(this.localParameters) !== JSON.stringify(this.parametersProxy);
-      },
-      customizations () {
-         return this.workspace.customizations;
-      }
-   },
-   mounted () {
-      this.parametersProxy = JSON.parse(JSON.stringify(this.localParameters));
-      this.i = this.parametersProxy.length + 1;
+const { t } = useI18n();
 
-      if (this.parametersProxy.length)
-         this.resetSelectedID();
-
-      this.getModalInnerHeight();
-      window.addEventListener('resize', this.getModalInnerHeight);
+const props = defineProps({
+   localParameters: {
+      type: Array,
+      default: () => []
    },
-   unmounted () {
-      window.removeEventListener('resize', this.getModalInnerHeight);
-   },
-   methods: {
-      typeClass (type) {
-         if (type)
-            return `type-${type.toLowerCase().replaceAll(' ', '_').replaceAll('"', '')}`;
-         return '';
-      },
-      confirmParametersChange () {
-         this.$emit('parameters-update', this.parametersProxy);
-      },
-      selectParameter (event, uid) {
-         if (this.selectedParam !== uid && !event.target.classList.contains('remove-field'))
-            this.selectedParam = uid;
-      },
-      getModalInnerHeight () {
-         const modalBody = document.querySelector('.modal-body');
-         if (modalBody)
-            this.modalInnerHeight = modalBody.clientHeight - (parseFloat(getComputedStyle(modalBody).paddingTop) + parseFloat(getComputedStyle(modalBody).paddingBottom));
-      },
-      addParameter () {
-         const newUid = uidGen();
-         this.parametersProxy = [...this.parametersProxy, {
-            _antares_id: newUid,
-            name: `param${this.i++}`,
-            type: this.workspace.dataTypes[0].types[0].name,
-            context: 'IN',
-            length: ''
-         }];
+   func: String,
+   workspace: Object
+});
 
-         if (this.parametersProxy.length === 1)
-            this.resetSelectedID();
+const emit = defineEmits(['hide', 'parameters-update']);
 
-         setTimeout(() => {
-            this.$refs.parametersPanel.scrollTop = this.$refs.parametersPanel.scrollHeight + 60;
-            this.selectedParam = newUid;
-         }, 20);
-      },
-      removeParameter (uid) {
-         this.parametersProxy = this.parametersProxy.filter(param => param._antares_id !== uid);
+const parametersPanel: Ref<HTMLDivElement> = ref(null);
+const parametersProxy = ref([]);
+const selectedParam = ref('');
+const modalInnerHeight = ref(400);
+const i = ref(1);
 
-         if (this.parametersProxy.length && this.selectedParam === uid)
-            this.resetSelectedID();
-      },
-      clearChanges () {
-         this.parametersProxy = JSON.parse(JSON.stringify(this.localParameters));
-         this.i = this.parametersProxy.length + 1;
+const selectedParamObj = computed(() => {
+   return parametersProxy.value.find(param => param._antares_id === selectedParam.value);
+});
 
-         if (!this.parametersProxy.some(param => param.name === this.selectedParam))
-            this.resetSelectedID();
-      },
-      resetSelectedID () {
-         this.selectedParam = this.parametersProxy.length ? this.parametersProxy[0]._antares_id : '';
-      }
-   }
+const isChanged = computed(() => {
+   return JSON.stringify(props.localParameters) !== JSON.stringify(parametersProxy.value);
+});
+
+const customizations = computed(() => {
+   return props.workspace.customizations;
+});
+
+const typeClass = (type: string) => {
+   if (type)
+      return `type-${type.toLowerCase().replaceAll(' ', '_').replaceAll('"', '')}`;
+   return '';
 };
+
+const confirmParametersChange = () => {
+   emit('parameters-update', parametersProxy.value);
+};
+
+const selectParameter = (event: MouseEvent, uid: string) => {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   if (selectedParam.value !== uid && !(event.target as any).classList.contains('remove-field'))
+      selectedParam.value = uid;
+};
+
+const getModalInnerHeight = () => {
+   const modalBody = document.querySelector('.modal-body');
+   if (modalBody)
+      modalInnerHeight.value = modalBody.clientHeight - (parseFloat(getComputedStyle(modalBody).paddingTop) + parseFloat(getComputedStyle(modalBody).paddingBottom));
+};
+
+const addParameter = () => {
+   const newUid = uidGen();
+   parametersProxy.value = [...parametersProxy.value, {
+      _antares_id: newUid,
+      name: `param${i.value++}`,
+      type: props.workspace.dataTypes[0].types[0].name,
+      context: 'IN',
+      length: ''
+   }];
+
+   if (parametersProxy.value.length === 1)
+      resetSelectedID();
+
+   setTimeout(() => {
+      parametersPanel.value.scrollTop = parametersPanel.value.scrollHeight + 60;
+      selectedParam.value = newUid;
+   }, 20);
+};
+
+const removeParameter = (uid: string) => {
+   parametersProxy.value = parametersProxy.value.filter(param => param._antares_id !== uid);
+
+   if (parametersProxy.value.length && selectedParam.value === uid)
+      resetSelectedID();
+};
+
+const clearChanges = () => {
+   parametersProxy.value = JSON.parse(JSON.stringify(props.localParameters));
+   i.value = parametersProxy.value.length + 1;
+
+   if (!parametersProxy.value.some(param => param.name === selectedParam.value))
+      resetSelectedID();
+};
+
+const resetSelectedID = () => {
+   selectedParam.value = parametersProxy.value.length ? parametersProxy.value[0]._antares_id : '';
+};
+
+onMounted(() => {
+   parametersProxy.value = JSON.parse(JSON.stringify(props.localParameters));
+   i.value = parametersProxy.value.length + 1;
+
+   if (parametersProxy.value.length)
+      resetSelectedID();
+
+   getModalInnerHeight();
+   window.addEventListener('resize', getModalInnerHeight);
+});
+
+onUnmounted(() => {
+   window.removeEventListener('resize', getModalInnerHeight);
+});
 </script>
 
 <style lang="scss" scoped>

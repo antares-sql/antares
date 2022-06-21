@@ -62,116 +62,99 @@
    </Teleport>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, onBeforeUnmount, Ref, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import Schema from '@/ipc-api/Schema';
 import BaseSelect from '@/components/BaseSelect.vue';
 
-export default {
-   name: 'ModalEditSchema',
-   components: {
-      BaseSelect
-   },
-   props: {
-      selectedSchema: String
-   },
-   emits: ['close'],
-   setup () {
-      const { addNotification } = useNotificationsStore();
-      const workspacesStore = useWorkspacesStore();
+const props = defineProps({
+   selectedSchema: String
+});
 
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const emit = defineEmits(['close']);
 
-      const { getWorkspace, getDatabaseVariable } = workspacesStore;
+const { addNotification } = useNotificationsStore();
+const workspacesStore = useWorkspacesStore();
 
-      return {
-         addNotification,
-         selectedWorkspace,
-         getWorkspace,
-         getDatabaseVariable
-      };
-   },
-   data () {
-      return {
-         database: {
-            name: '',
-            prevName: '',
-            collation: ''
-         }
-      };
-   },
-   computed: {
-      collations () {
-         return this.getWorkspace(this.selectedWorkspace).collations;
-      },
-      defaultCollation () {
-         return this.getDatabaseVariable(this.selectedWorkspace, 'collation_server').value || '';
-      }
-   },
-   async created () {
-      let actualCollation;
+const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+
+const { getWorkspace, getDatabaseVariable } = workspacesStore;
+
+const firstInput: Ref<HTMLInputElement> = ref(null);
+const database = ref({
+   name: '',
+   prevName: '',
+   collation: '',
+   prevCollation: null
+});
+
+const collations = computed(() => getWorkspace(selectedWorkspace.value).collations);
+const defaultCollation = computed(() => (getDatabaseVariable(selectedWorkspace.value, 'collation_server').value || ''));
+
+const updateSchema = async () => {
+   if (database.value.collation !== database.value.prevCollation) {
       try {
-         const { status, response } = await Schema.getDatabaseCollation({ uid: this.selectedWorkspace, database: this.selectedSchema });
+         const { status, response } = await Schema.updateSchema({
+            uid: selectedWorkspace.value,
+            ...database.value
+         });
 
          if (status === 'success')
-            actualCollation = response;
-
+            closeModal();
          else
-            this.addNotification({ status: 'error', message: response });
+            addNotification({ status: 'error', message: response });
       }
       catch (err) {
-         this.addNotification({ status: 'error', message: err.stack });
-      }
-
-      this.database = {
-         name: this.selectedSchema,
-         prevName: this.selectedSchema,
-         collation: actualCollation || this.defaultCollation,
-         prevCollation: actualCollation || this.defaultCollation
-      };
-
-      window.addEventListener('keydown', this.onKey);
-
-      setTimeout(() => {
-         this.$refs.firstInput.focus();
-      }, 20);
-   },
-   beforeUnmount () {
-      window.removeEventListener('keydown', this.onKey);
-   },
-   methods: {
-      async updateSchema () {
-         if (this.database.collation !== this.database.prevCollation) {
-            try {
-               const { status, response } = await Schema.updateSchema({
-                  uid: this.selectedWorkspace,
-                  ...this.database
-               });
-
-               if (status === 'success')
-                  this.closeModal();
-               else
-                  this.addNotification({ status: 'error', message: response });
-            }
-            catch (err) {
-               this.addNotification({ status: 'error', message: err.stack });
-            }
-         }
-         else
-            this.closeModal();
-      },
-      closeModal () {
-         this.$emit('close');
-      },
-      onKey (e) {
-         e.stopPropagation();
-         if (e.key === 'Escape')
-            this.closeModal();
+         addNotification({ status: 'error', message: err.stack });
       }
    }
+   else closeModal();
 };
+
+const closeModal = () => emit('close');
+
+const onKey =(e: KeyboardEvent) => {
+   e.stopPropagation();
+   if (e.key === 'Escape')
+      closeModal();
+};
+
+(async () => {
+   let actualCollation;
+   try {
+      const { status, response } = await Schema.getDatabaseCollation({ uid: selectedWorkspace.value, database: props.selectedSchema });
+
+      if (status === 'success')
+         actualCollation = response;
+
+      else
+         addNotification({ status: 'error', message: response });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+
+   database.value = {
+      name: props.selectedSchema,
+      prevName: props.selectedSchema,
+      collation: actualCollation || defaultCollation.value,
+      prevCollation: actualCollation || defaultCollation.value
+   };
+
+   window.addEventListener('keydown', onKey);
+
+   setTimeout(() => {
+      firstInput.value.focus();
+   }, 20);
+})();
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+});
+
 </script>
 
 <style scoped>

@@ -9,67 +9,63 @@
    </div>
 </template>
 
-<script>
-export default {
-   name: 'BaseToast',
-   props: {
-      message: {
-         type: String,
-         default: ''
-      },
-      status: {
-         type: String,
-         default: ''
-      }
-   },
-   emits: ['close'],
-   data () {
-      return {
-         isVisible: false
-      };
-   },
-   computed: {
-      toastStatus () {
-         let className = '';
-         let iconName = '';
-         switch (this.status) {
-            case 'success':
-               className = 'toast-success';
-               iconName = 'mdi-check';
-               break;
-            case 'error':
-               className = 'toast-error';
-               iconName = 'mdi-alert-rhombus';
-               break;
-            case 'warning':
-               className = 'toast-warning';
-               iconName = 'mdi-alert';
-               break;
-            case 'primary':
-               className = 'toast-primary';
-               iconName = 'mdi-information-outline';
-               break;
-         }
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
 
-         return { className, iconName };
-      }
+const props = defineProps({
+   message: {
+      type: String,
+      default: ''
    },
-   watch: {
-      message: function () {
-         if (this.message)
-            this.isVisible = true;
-         else
-            this.isVisible = false;
-      }
-   },
-   methods: {
-      hideToast () {
-         this.isVisible = false;
-         this.$emit('close');
-      }
+   status: {
+      type: String,
+      default: ''
    }
+});
+
+const isVisible = ref(false);
+const message = ref(props.message);
+
+const emit = defineEmits(['close']);
+
+const toastStatus = computed(() => {
+   let className = '';
+   let iconName = '';
+   switch (props.status) {
+      case 'success':
+         className = 'toast-success';
+         iconName = 'mdi-check';
+         break;
+      case 'error':
+         className = 'toast-error';
+         iconName = 'mdi-alert-rhombus';
+         break;
+      case 'warning':
+         className = 'toast-warning';
+         iconName = 'mdi-alert';
+         break;
+      case 'primary':
+         className = 'toast-primary';
+         iconName = 'mdi-information-outline';
+         break;
+   }
+
+   return { className, iconName };
+});
+
+watch(message, () => {
+   if (message.value)
+      isVisible.value = true;
+   else
+      isVisible.value = false;
+});
+
+const hideToast = () => {
+   isVisible.value = false;
+   emit('close');
 };
 </script>
+
 <style scoped>
   .toast {
     display: flex;

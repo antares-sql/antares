@@ -4,7 +4,7 @@ import { builtinsTypes } from 'pg-types';
 import * as pg from 'pg';
 import * as pgAst from 'pgsql-ast-parser';
 import { AntaresCore } from '../AntaresCore';
-import * as dataTypes from 'common/data-types/postgresql';
+import dataTypes from 'common/data-types/postgresql';
 import SSH2Promise = require('ssh2-promise');
 import SSHConfig from 'ssh2-promise/lib/sshConfig';
 
