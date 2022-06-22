@@ -634,8 +634,11 @@ watch(resultsetIndex, () => {
    setLocalResults();
 });
 
-watch(() => props.isSelected, (val) => {
-   if (val) refreshScroller();
+watch(() => props.isSelected, async (val) => {
+   if (val) {
+      await nextTick();
+      refreshScroller();
+   }
 });
 
 onUpdated(() => {

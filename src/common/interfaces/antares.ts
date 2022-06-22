@@ -125,7 +125,7 @@ export interface TableField {
    alias: string;
    tableAlias: string;
    orgTable: string;
-   key?: 'pri' | 'uni';
+   key?: 'pri' | 'uni' | '';
 }
 
 export interface TableIndex {
