@@ -24,7 +24,7 @@
    </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineAsyncComponent } from 'vue';
 import { storeToRefs } from 'pinia';
 import { ipcRenderer } from 'electron';
@@ -33,20 +33,20 @@ import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import TheSettingBar from '@/components/TheSettingBar';
+import TheSettingBar from '@/components/TheSettingBar.vue';
 
 export default {
    name: 'App',
    components: {
-      TheTitleBar: defineAsyncComponent(() => import(/* webpackChunkName: "TheTitleBar" */'@/components/TheTitleBar')),
+      TheTitleBar: defineAsyncComponent(() => import(/* webpackChunkName: "TheTitleBar" */'@/components/TheTitleBar.vue')),
       TheSettingBar,
-      TheFooter: defineAsyncComponent(() => import(/* webpackChunkName: "TheFooter" */'@/components/TheFooter')),
-      TheNotificationsBoard: defineAsyncComponent(() => import(/* webpackChunkName: "TheNotificationsBoard" */'@/components/TheNotificationsBoard')),
-      Workspace: defineAsyncComponent(() => import(/* webpackChunkName: "Workspace" */'@/components/Workspace')),
-      WorkspaceAddConnectionPanel: defineAsyncComponent(() => import(/* webpackChunkName: "WorkspaceAddConnectionPanel" */'@/components/WorkspaceAddConnectionPanel')),
-      ModalSettings: defineAsyncComponent(() => import(/* webpackChunkName: "ModalSettings" */'@/components/ModalSettings')),
-      TheScratchpad: defineAsyncComponent(() => import(/* webpackChunkName: "TheScratchpad" */'@/components/TheScratchpad')),
-      BaseTextEditor: defineAsyncComponent(() => import(/* webpackChunkName: "BaseTextEditor" */'@/components/BaseTextEditor'))
+      TheFooter: defineAsyncComponent(() => import(/* webpackChunkName: "TheFooter" */'@/components/TheFooter.vue')),
+      TheNotificationsBoard: defineAsyncComponent(() => import(/* webpackChunkName: "TheNotificationsBoard" */'@/components/TheNotificationsBoard.vue')),
+      Workspace: defineAsyncComponent(() => import(/* webpackChunkName: "Workspace" */'@/components/Workspace.vue')),
+      WorkspaceAddConnectionPanel: defineAsyncComponent(() => import(/* webpackChunkName: "WorkspaceAddConnectionPanel" */'@/components/WorkspaceAddConnectionPanel.vue')),
+      ModalSettings: defineAsyncComponent(() => import(/* webpackChunkName: "ModalSettings" */'@/components/ModalSettings.vue')),
+      TheScratchpad: defineAsyncComponent(() => import(/* webpackChunkName: "TheScratchpad" */'@/components/TheScratchpad.vue')),
+      BaseTextEditor: defineAsyncComponent(() => import(/* webpackChunkName: "BaseTextEditor" */'@/components/BaseTextEditor.vue'))
    },
    setup () {
       const applicationStore = useApplicationStore();
@@ -98,7 +98,7 @@ export default {
          },
          {
             label: this.$t('message.selectAll'),
-            role: 'selectall'
+            role: 'selectAll'
          }
       ]);
 
@@ -106,11 +106,12 @@ export default {
          e.preventDefault();
          e.stopPropagation();
 
-         let node = e.target;
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         let node: any = e.target;
 
          while (node) {
             if (node.nodeName.match(/^(input|textarea)$/i) || node.isContentEditable) {
-               InputMenu.popup(getCurrentWindow());
+               InputMenu.popup({ window: getCurrentWindow() });
                break;
             }
             node = node.parentNode;
