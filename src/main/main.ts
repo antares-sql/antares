@@ -31,6 +31,7 @@ async function createMainWindow () {
       y: mainWindowState.y,
       minWidth: 900,
       minHeight: 550,
+      show: !isWindows,
       title: 'Antares SQL',
       icon: nativeImage.createFromDataURL(icon.default),
       webPreferences: {
@@ -118,6 +119,9 @@ else {
 
       mainWindow = await createMainWindow();
       createAppMenu();
+
+      if (isWindows)
+         mainWindow.show();
 
       if (isDevelopment)
          mainWindow.webContents.openDevTools();
