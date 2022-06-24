@@ -86,7 +86,7 @@ else {
 
    ipcMain.on('refresh-theme-settings', () => {
       const appTheme = persistentStore.get('application_theme');
-      if (isWindows) {
+      if (isWindows && mainWindow) {
          mainWindow.setTitleBarOverlay({
             color: appTheme === 'dark' ? '#3f3f3f' : '#fff',
             symbolColor: appTheme === 'dark' ? '#fff' : '#000'

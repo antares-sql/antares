@@ -64,12 +64,20 @@ export default {
       const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
       const { checkVersionUpdate } = applicationStore;
+      const { changeApplicationTheme } = settingsStore;
+
+      document.addEventListener('DOMContentLoaded', () => {
+         setTimeout(() => {
+            changeApplicationTheme(applicationTheme.value);// Forces persistentStore to save on file and mail process
+         }, 1000);
+      });
 
       return {
          isLoading,
          isSettingModal,
          isScratchpad,
          checkVersionUpdate,
+         changeApplicationTheme,
          connections,
          applicationTheme,
          disableBlur,
