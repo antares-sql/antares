@@ -320,11 +320,11 @@ onMounted(() => {
          return;
 
       const row = e.getDocumentPosition().row;
-      const breakpoints = e.editor.value.session.getBreakpoints(row, 0);
+      const breakpoints = e.editor.session.getBreakpoints(row, 0);
       if (typeof breakpoints[row] === typeof undefined)
-         e.editor.value.session.setBreakpoint(row);
+         e.editor.session.setBreakpoint(row);
       else
-         e.editor.value.session.clearBreakpoint(row);
+         e.editor.session.clearBreakpoint(row);
       e.stop();
    });
 
