@@ -308,6 +308,8 @@ export default defineComponent({
       };
 
       const adjustListPosition = () => {
+         if (!optionList.value) return;
+
          const element = el.value;
          let { left, top } = element.getBoundingClientRect();
          const { left: offsetLeft = 0, top: offsetTop = 0 } = props.dropdownOffsets;

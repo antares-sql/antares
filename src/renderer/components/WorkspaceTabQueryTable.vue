@@ -4,6 +4,7 @@
       class="vscroll no-outline"
       tabindex="0"
       :style="{'height': resultsSize+'px'}"
+      @blur="deselectRows"
       @keyup.delete="showDeleteConfirmModal"
       @keydown.esc="deselectRows"
    >
@@ -451,8 +452,10 @@ const selectAllRows = (e: KeyboardEvent) => {
 };
 
 const deselectRows = () => {
-   if (!isEditingRow.value)
+   if (!isEditingRow.value) {
       selectedRows.value = [];
+      selectedField.value = null;
+   }
 };
 
 const contextMenu = (event: MouseEvent, cell: any) => {
