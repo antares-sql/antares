@@ -2,7 +2,7 @@
    <Teleport to="#window-content">
       <div class="modal active modal-sm">
          <a class="modal-overlay" />
-         <div class="modal-container p-0">
+         <div ref="trapRef" class="modal-container p-0">
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
@@ -57,6 +57,9 @@
 
 <script setup lang="ts">
 import { Ref, ref } from 'vue';
+import { useFocusTrap } from '@/composables/useFocusTrap';
+
+const { trapRef } = useFocusTrap();
 
 const credentials = ref({
    user: '',

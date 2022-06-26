@@ -2,7 +2,7 @@
    <Teleport to="#window-content">
       <div class="modal active">
          <a class="modal-overlay" @click.stop="closeModal" />
-         <div class="modal-container p-0">
+         <div ref="trapRef" class="modal-container p-0">
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
@@ -105,6 +105,7 @@ import { storeToRefs } from 'pinia';
 import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
+import { useFocusTrap } from '@/composables/useFocusTrap';
 import Tables from '@/ipc-api/Tables';
 import FakerSelect from '@/components/FakerSelect.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
@@ -123,6 +124,8 @@ const workspacesStore = useWorkspacesStore();
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const { getWorkspace } = workspacesStore;
+
+const { trapRef } = useFocusTrap();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const localRow: Ref<{[key: string]: any}> = ref({});

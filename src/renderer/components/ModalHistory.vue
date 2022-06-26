@@ -2,7 +2,7 @@
    <Teleport to="#window-content">
       <div class="modal active">
          <a class="modal-overlay" @click.stop="closeModal" />
-         <div class="modal-container p-0 pb-4">
+         <div ref="trapRef" class="modal-container p-0 pb-4">
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
@@ -104,12 +104,15 @@ import * as moment from 'moment';
 import { ConnectionParams } from 'common/interfaces/antares';
 import { HistoryRecord, useHistoryStore } from '@/stores/history';
 import { useConnectionsStore } from '@/stores/connections';
+import { useFocusTrap } from '@/composables/useFocusTrap';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
 
 const { t } = useI18n();
 
 const { getHistoryByWorkspace, deleteQueryFromHistory } = useHistoryStore();
 const { getConnectionName } = useConnectionsStore();
+
+const { trapRef } = useFocusTrap();
 
 const props = defineProps({
    connection: Object as Prop<ConnectionParams>

@@ -2,7 +2,7 @@
    <Teleport to="#window-content">
       <div id="settings" class="modal active">
          <a class="modal-overlay c-hand" @click="closeModal" />
-         <div class="modal-container">
+         <div ref="trapRef" class="modal-container">
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
@@ -309,6 +309,7 @@ import { useI18n } from 'vue-i18n';
 import { useApplicationStore } from '@/stores/application';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
+import { useFocusTrap } from '@/composables/useFocusTrap';
 import { localesNames } from '@/i18n/supported-locales';
 import ModalSettingsUpdate from '@/components/ModalSettingsUpdate.vue';
 import ModalSettingsChangelog from '@/components/ModalSettingsChangelog.vue';
@@ -321,6 +322,8 @@ const { t, availableLocales } = useI18n();
 const applicationStore = useApplicationStore();
 const settingsStore = useSettingsStore();
 const workspacesStore = useWorkspacesStore();
+
+const { trapRef } = useFocusTrap({ disableAutofocus: true });
 
 const {
    selectedSettingTab,

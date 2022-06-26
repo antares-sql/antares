@@ -377,6 +377,7 @@ export default defineComponent({
             // fix position when the component is created and opened at the same time
             if (isOpen.value) {
                setTimeout(() => {
+                  deactivate();
                   adjustListPosition();
                }, 50);
             }

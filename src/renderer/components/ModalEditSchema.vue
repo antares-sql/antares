@@ -2,7 +2,7 @@
    <Teleport to="#window-content">
       <div class="modal active">
          <a class="modal-overlay" @click.stop="closeModal" />
-         <div class="modal-container p-0">
+         <div ref="trapRef" class="modal-container p-0">
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
@@ -67,6 +67,7 @@ import { computed, onBeforeUnmount, Ref, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
+import { useFocusTrap } from '@/composables/useFocusTrap';
 import Schema from '@/ipc-api/Schema';
 import BaseSelect from '@/components/BaseSelect.vue';
 
@@ -82,6 +83,8 @@ const workspacesStore = useWorkspacesStore();
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const { getWorkspace, getDatabaseVariable } = workspacesStore;
+
+const { trapRef } = useFocusTrap();
 
 const firstInput: Ref<HTMLInputElement> = ref(null);
 const database = ref({

@@ -2,7 +2,7 @@
    <Teleport to="#window-content">
       <div class="modal active">
          <a class="modal-overlay" @click.stop="closeModal" />
-         <div class="modal-container p-0">
+         <div ref="trapRef" class="modal-container p-0">
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
@@ -270,9 +270,10 @@ import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { SchemaInfos } from 'common/interfaces/antares';
-import { ExportState, TableParams } from 'common/interfaces/exporter';
+import { ExportOptions, ExportState, TableParams } from 'common/interfaces/exporter';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
+import { useFocusTrap } from '@/composables/useFocusTrap';
 import Application from '@/ipc-api/Application';
 import Schema from '@/ipc-api/Schema';
 import { Customizations } from 'common/interfaces/customizations';
@@ -290,6 +291,8 @@ const workspacesStore = useWorkspacesStore();
 
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
+const { trapRef } = useFocusTrap();
+
 const {
    getWorkspace,
    refreshSchema
@@ -300,11 +303,13 @@ const isRefreshing = ref(false);
 const progressPercentage = ref(0);
 const progressStatus = ref('');
 const tables: Ref<TableParams[]> = ref([]);
-const options = ref({
+const options: Ref<ExportOptions> = ref({
+   schema: props.selectedSchema,
    includes: {} as {[key: string]: boolean},
-   outputFormat: 'sql',
+   outputFile: '',
+   outputFormat: 'sql' as 'sql' | 'sql.zip',
    sqlInsertAfter: 250,
-   sqlInsertDivider: 'bytes'
+   sqlInsertDivider: 'bytes' as 'bytes' | 'rows'
 });
 const basePath = ref('');
 

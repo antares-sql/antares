@@ -1,6 +1,6 @@
 import { ipcRenderer } from 'electron';
 import { unproxify } from '../libs/unproxify';
-import { IpcResponse/*, EventInfos, QueryResult, RoutineInfos, TableInfos, TriggerInfos */ } from 'common/interfaces/antares';
+import { ClientCode, IpcResponse/*, EventInfos, QueryResult, RoutineInfos, TableInfos, TriggerInfos */ } from 'common/interfaces/antares';
 import { ExportOptions } from 'common/interfaces/exporter';
 import { ImportOptions } from 'common/interfaces/importer';
 
@@ -110,7 +110,7 @@ export default class {
       return ipcRenderer.invoke('raw-query', unproxify(params));
    }
 
-   static export (params: { uid: string; type: string; tables: string; options: ExportOptions }): Promise<IpcResponse> {
+   static export (params: ExportOptions & {uid: string; type: ClientCode}): Promise<IpcResponse> {
       return ipcRenderer.invoke('export', unproxify(params));
    }
 

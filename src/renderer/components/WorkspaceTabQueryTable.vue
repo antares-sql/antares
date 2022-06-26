@@ -5,6 +5,7 @@
       tabindex="0"
       :style="{'height': resultsSize+'px'}"
       @blur="deselectRows"
+      @focus="hasFocus = true"
       @keyup.delete="showDeleteConfirmModal"
       @keydown.esc="deselectRows"
    >
@@ -152,6 +153,7 @@ const resultsSize = ref(0);
 const localResults: Ref<QueryResult<any>[]> = ref([]);
 const isContext = ref(false);
 const isDeleteConfirmModal = ref(false);
+const hasFocus = ref(false);
 const contextEvent = ref(null);
 const selectedCell = ref(null);
 const selectedRows = ref([]);
@@ -455,6 +457,7 @@ const deselectRows = () => {
    if (!isEditingRow.value) {
       selectedRows.value = [];
       selectedField.value = null;
+      hasFocus.value = false;
    }
 };
 
@@ -517,6 +520,9 @@ const downloadTable = (format: 'csv' | 'json', filename: string) => {
 
 const onKey = async (e: KeyboardEvent) => {
    if (!props.isSelected)
+      return;
+
+   if (!hasFocus.value)
       return;
 
    if (isEditingRow.value)
@@ -626,7 +632,13 @@ const scrollToCell = (el: HTMLElement) => {
       scrollElement.value.scrollLeft = el.offsetLeft - scrollElement.value.clientWidth + el.clientWidth;
 };
 
-defineExpose({ applyUpdate, refreshScroller, resetSort, resizeResults, downloadTable });
+defineExpose({
+   applyUpdate,
+   refreshScroller,
+   resetSort,
+   resizeResults,
+   downloadTable
+});
 
 watch(() => props.results, () => {
    setLocalResults();

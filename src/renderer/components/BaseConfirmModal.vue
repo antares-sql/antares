@@ -3,7 +3,7 @@
       <Teleport to="#window-content">
          <div class="modal active" :class="modalSizeClass">
             <a class="modal-overlay" @click="hideModal" />
-            <div class="modal-container">
+            <div ref="trapRef" class="modal-container">
                <div v-if="hasHeader" class="modal-header pl-2">
                   <div class="modal-title h6">
                      <slot name="header" />
@@ -47,6 +47,7 @@
 </template>
 
 <script setup lang="ts">
+import { useFocusTrap } from '@/composables/useFocusTrap';
 import { computed, onBeforeUnmount, PropType, useSlots } from 'vue';
 
 const props = defineProps({
@@ -64,6 +65,8 @@ const props = defineProps({
 });
 const emit = defineEmits(['confirm', 'hide']);
 const slots = useSlots();
+
+const { trapRef } = useFocusTrap();
 
 const hasHeader = computed(() => !!slots.header);
 const hasBody = computed(() => !!slots.body);

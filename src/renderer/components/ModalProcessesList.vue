@@ -12,7 +12,7 @@
             @close-context="closeContext"
          />
          <a class="modal-overlay" @click.stop="closeModal" />
-         <div class="modal-container p-0 pb-4">
+         <div ref="trapRef" class="modal-container p-0 pb-4">
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
@@ -138,6 +138,7 @@ import { Component, computed, onBeforeUnmount, onMounted, onUpdated, Prop, Ref, 
 import { ConnectionParams } from 'common/interfaces/antares';
 import { arrayToFile } from '../libs/arrayToFile';
 import { useNotificationsStore } from '@/stores/notifications';
+import { useFocusTrap } from '@/composables/useFocusTrap';
 import Schema from '@/ipc-api/Schema';
 import { useConnectionsStore } from '@/stores/connections';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
@@ -146,6 +147,8 @@ import ModalProcessesListContext from '@/components/ModalProcessesListContext.vu
 
 const { addNotification } = useNotificationsStore();
 const { getConnectionName } = useConnectionsStore();
+
+const { trapRef } = useFocusTrap();
 
 const props = defineProps({
    connection: Object as Prop<ConnectionParams>

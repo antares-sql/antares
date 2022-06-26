@@ -7,13 +7,7 @@ export interface TableParams {
 
 export interface ExportOptions {
    schema: string;
-   includes: {
-      functions: boolean;
-      views: boolean;
-      triggers: boolean;
-      routines: boolean;
-      schedulers: boolean;
-   };
+   includes: {[key: string]: boolean};
    outputFormat: 'sql' | 'sql.zip';
    outputFile: string;
    sqlInsertAfter: number;
