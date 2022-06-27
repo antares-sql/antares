@@ -94,7 +94,7 @@ else {
       }
    });
 
-   ipcMain.on('change-window-title', (event, title: string) => {
+   ipcMain.on('change-window-title', (_, title: string) => {
       if (mainWindow) mainWindow.setTitle(title);
    });
 

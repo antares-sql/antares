@@ -125,7 +125,7 @@ const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const { getWorkspace } = workspacesStore;
 
-const { trapRef } = useFocusTrap();
+const { trapRef } = useFocusTrap({ disableAutofocus: true });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const localRow: Ref<{[key: string]: any}> = ref({});
@@ -274,6 +274,14 @@ const wrapNumber = (num: number) => {
 window.addEventListener('keydown', onKey);
 
 onMounted(() => {
+   setTimeout(() => {
+      const inputs = Array.from(document.querySelectorAll<HTMLInputElement>('.modal-container .form-input'));
+      if (inputs?.length) {
+         const firstEnabledInput = inputs.find((el) => !el.disabled);
+         firstEnabledInput?.focus();
+      }
+   }, 50);
+
    const rowObj: {[key: string]: unknown} = {};
 
    for (const field of props.fields) {
