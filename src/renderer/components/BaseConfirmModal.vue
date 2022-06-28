@@ -66,7 +66,7 @@ const props = defineProps({
 const emit = defineEmits(['confirm', 'hide']);
 const slots = useSlots();
 
-const { trapRef } = useFocusTrap();
+const { trapRef } = useFocusTrap({ disableAutofocus: true });
 
 const hasHeader = computed(() => !!slots.header);
 const hasBody = computed(() => !!slots.body);

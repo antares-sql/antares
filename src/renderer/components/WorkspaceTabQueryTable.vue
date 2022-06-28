@@ -339,6 +339,8 @@ const closeContext = () => {
 const showDeleteConfirmModal = (e: any) => {
    if (e && e.path && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.path[0].tagName))
       return;
+   if (selectedRows.value.length === 0) return;
+
    isDeleteConfirmModal.value = true;
 };
 
@@ -453,11 +455,12 @@ const selectAllRows = (e: KeyboardEvent) => {
    }, []);
 };
 
-const deselectRows = () => {
+const deselectRows = (e: Event) => {
    if (!isEditingRow.value) {
       selectedRows.value = [];
       selectedField.value = null;
-      hasFocus.value = false;
+      if (e.type === 'blur')
+         hasFocus.value = false;
    }
 };
 
