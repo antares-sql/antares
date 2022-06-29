@@ -170,6 +170,9 @@ export const useWorkspacesStore = defineStore('workspaces', {
                let dataTypes: TypesGroup[] = [];
                let indexTypes: string[] = [];
                let clientCustomizations: Customizations;
+               const { updateLastConnection } = connectionsStore;
+
+               updateLastConnection(connection.uid);
 
                switch (connection.client) {
                   case 'mysql':

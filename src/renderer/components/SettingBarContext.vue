@@ -3,6 +3,27 @@
       :context-event="contextEvent"
       @close-context="$emit('close-context')"
    >
+      <div
+         v-if="isPinned"
+         class="context-element"
+         @click="unpin"
+      >
+         <span class="d-flex"><i class="mdi mdi-18px mdi-pin-off text-light pr-1" /> {{ $t('word.unpin') }}</span>
+      </div>
+      <div
+         v-else
+         class="context-element"
+         @click="pin"
+      >
+         <span class="d-flex"><i class="mdi mdi-18px mdi-pin mdi-rotate-45 text-light pr-1" /> {{ $t('word.pin') }}</span>
+      </div>
+      <div
+         v-if="isConnected"
+         class="context-element"
+         @click="disconnect"
+      >
+         <span class="d-flex"><i class="mdi mdi-18px mdi-power text-light pr-1" /> {{ $t('word.disconnect') }}</span>
+      </div>
       <div class="context-element" @click="duplicateConnection">
          <span class="d-flex"><i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ $t('word.duplicate') }}</span>
       </div>
@@ -39,15 +60,26 @@ import BaseContextMenu from '@/components/BaseContextMenu.vue';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import { ConnectionParams } from 'common/interfaces/antares';
 
+const connectionsStore = useConnectionsStore();
+
 const {
    getConnectionName,
    addConnection,
-   deleteConnection
-} = useConnectionsStore();
+   deleteConnection,
+   pinConnection,
+   unpinConnection
+} = connectionsStore;
+
+const { pinnedConnections } = storeToRefs(connectionsStore);
+
 const workspacesStore = useWorkspacesStore();
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
-const { selectWorkspace } = workspacesStore;
+const {
+   selectWorkspace,
+   removeConnected: disconnectWorkspace,
+   getWorkspace
+} = workspacesStore;
 
 const props = defineProps({
    contextEvent: MouseEvent,
@@ -59,6 +91,8 @@ const emit = defineEmits(['close-context']);
 const isConfirmModal = ref(false);
 
 const connectionName = computed(() => getConnectionName(props.contextConnection.uid));
+const isConnected = computed(() => getWorkspace(props.contextConnection.uid).connectionStatus === 'connected');
+const isPinned = computed(() => pinnedConnections.value.has(props.contextConnection.uid));
 
 const confirmDeleteConnection = () => {
    if (selectedWorkspace.value === props.contextConnection.uid)
@@ -85,6 +119,21 @@ const showConfirmModal = () => {
 
 const hideConfirmModal = () => {
    isConfirmModal.value = false;
+   closeContext();
+};
+
+const pin = () => {
+   pinConnection(props.contextConnection.uid);
+   closeContext();
+};
+
+const unpin = () => {
+   unpinConnection(props.contextConnection.uid);
+   closeContext();
+};
+
+const disconnect = () => {
+   disconnectWorkspace(props.contextConnection.uid);
    closeContext();
 };
 

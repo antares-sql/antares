@@ -17,7 +17,9 @@ const persistentStore = new Store({
 
 export const useConnectionsStore = defineStore('connections', {
    state: () => ({
-      connections: persistentStore.get('connections', []) as ConnectionParams[]
+      connections: persistentStore.get('connections', []) as ConnectionParams[],
+      pinnedConnections: new Set([...persistentStore.get('pinnedConnections', []) as string[]]) as Set<string>,
+      lastConnections: persistentStore.get('lastConnections', {}) as {[k: string]: number}
    }),
    getters: {
       getConnectionName: state => (uid: string) => {
@@ -63,6 +65,18 @@ export const useConnectionsStore = defineStore('connections', {
       updateConnections (connections: ConnectionParams[]) {
          this.connections = connections;
          persistentStore.set('connections', this.connections);
+      },
+      pinConnection (uid: string) {
+         (this.pinnedConnections as Set<string>).add(uid);
+         persistentStore.set('pinnedConnections', [...this.pinnedConnections]);
+      },
+      unpinConnection (uid: string) {
+         (this.pinnedConnections as Set<string>).delete(uid);
+         persistentStore.set('pinnedConnections', [...this.pinnedConnections]);
+      },
+      updateLastConnection (uid: string) {
+         this.lastConnections[uid] = new Date().getTime();
+         persistentStore.set('lastConnections', this.lastConnections);
       }
    }
 });

@@ -70,7 +70,7 @@ const connectionsStore = useConnectionsStore();
 const workspacesStore = useWorkspacesStore();
 
 const { updateStatus } = storeToRefs(applicationStore);
-const { connections: getConnections } = storeToRefs(connectionsStore);
+const { connections: storedConnections, pinnedConnections, lastConnections } = storeToRefs(connectionsStore);
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const { showSettingModal, showScratchpad } = applicationStore;
@@ -85,12 +85,15 @@ const contextConnection: Ref<ConnectionParams> = ref(null);
 
 const connections = computed({
    get () {
-      return getConnections.value;
+      return storedConnections.value;
    },
    set (value: ConnectionParams[]) {
       updateConnections(value);
    }
 });
+
+const pinnedConnectionsArr = computed(() => storedConnections.value.filter(c => pinnedConnections.value.has(c.uid)));
+const unpinnedConnectionsArr = computed(() => storedConnections.value.filter(c => !pinnedConnections.value.has(c.uid)));
 
 const hasUpdates = computed(() => ['available', 'downloading', 'downloaded', 'link'].includes(updateStatus.value));
 
