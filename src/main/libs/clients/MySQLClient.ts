@@ -912,8 +912,15 @@ export class MySQLClient extends AntaresCore {
       return await this.raw(sql);
    }
 
-   async truncateTable (params: { schema: string; table: string }) {
-      const sql = `TRUNCATE TABLE \`${params.schema}\`.\`${params.table}\``;
+   async truncateTable (params: { schema: string; table: string; force: boolean }) {
+      let sql = `TRUNCATE TABLE \`${params.schema}\`.\`${params.table}\`;`;
+      if (params.force) {
+         sql = `
+            SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+            ${sql}
+            SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1);
+         `;
+      }
       return await this.raw(sql);
    }
 

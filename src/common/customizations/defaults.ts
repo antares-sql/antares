@@ -31,6 +31,7 @@ export const defaults: Customizations = {
    elementsWrapper: '',
    stringsWrapper: '"',
    tableAdd: false,
+   tableTruncateDisableFKCheck: false,
    viewAdd: false,
    triggerAdd: false,
    triggerFunctionAdd: false,

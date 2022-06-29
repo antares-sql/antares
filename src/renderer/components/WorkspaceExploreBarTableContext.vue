@@ -8,31 +8,31 @@
          class="context-element"
          @click="openTableSettingTab"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-tune-vertical-variant text-light pr-1" /> {{ $t('word.settings') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-tune-vertical-variant text-light pr-1" /> {{ t('word.settings') }}</span>
       </div>
       <div
          v-if="selectedTable && selectedTable.type === 'view' && customizations.viewSettings"
          class="context-element"
          @click="openViewSettingTab"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-tune-vertical-variant text-light pr-1" /> {{ $t('word.settings') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-tune-vertical-variant text-light pr-1" /> {{ t('word.settings') }}</span>
       </div>
       <div
          v-if="selectedTable && selectedTable.type === 'table'"
          class="context-element"
          @click="duplicateTable"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-table-multiple text-light pr-1" /> {{ $t('message.duplicateTable') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-table-multiple text-light pr-1" /> {{ t('message.duplicateTable') }}</span>
       </div>
       <div
          v-if="selectedTable && selectedTable.type === 'table'"
          class="context-element"
          @click="showEmptyModal"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-table-off text-light pr-1" /> {{ $t('message.emptyTable') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-table-off text-light pr-1" /> {{ t('message.emptyTable') }}</span>
       </div>
       <div class="context-element" @click="showDeleteModal">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-table-remove text-light pr-1" /> {{ $t('word.delete') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-table-remove text-light pr-1" /> {{ t('word.delete') }}</span>
       </div>
 
       <ConfirmModal
@@ -42,12 +42,17 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-table-off mr-1" /> <span class="cut-text">{{ $t('message.emptyTable') }}</span>
+               <i class="mdi mdi-24px mdi-table-off mr-1" /> <span class="cut-text">{{ t('message.emptyTable') }}</span>
             </div>
          </template>
          <template #body>
             <div class="mb-2">
-               {{ $t('message.emptyCorfirm') }} "<b>{{ selectedTable.name }}</b>"?
+               {{ t('message.emptyCorfirm') }} "<b>{{ selectedTable.name }}</b>"?
+            </div>
+            <div v-if="customizations.tableTruncateDisableFKCheck">
+               <label class="form-checkbox form-inline">
+                  <input v-model="forceTruncate" type="checkbox"><i class="form-icon" /> {{ t('message.disableFKChecks') }}
+               </label>
             </div>
          </template>
       </ConfirmModal>
@@ -59,12 +64,12 @@
          <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-table-remove mr-1" />
-               <span class="cut-text">{{ selectedTable.type === 'table' ? $t('message.deleteTable') : $t('message.deleteView') }}</span>
+               <span class="cut-text">{{ selectedTable.type === 'table' ? t('message.deleteTable') : t('message.deleteView') }}</span>
             </div>
          </template>
          <template #body>
             <div class="mb-2">
-               {{ $t('message.deleteCorfirm') }} "<b>{{ selectedTable.name }}</b>"?
+               {{ t('message.deleteCorfirm') }} "<b>{{ selectedTable.name }}</b>"?
             </div>
          </template>
       </ConfirmModal>
@@ -79,6 +84,9 @@ import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import Tables from '@/ipc-api/Tables';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
    contextEvent: MouseEvent,
@@ -103,6 +111,7 @@ const {
 
 const isDeleteModal = ref(false);
 const isEmptyModal = ref(false);
+const forceTruncate = ref(false);
 
 const workspace = computed(() => getWorkspace(selectedWorkspace.value));
 const customizations = computed(() => workspace.value && workspace.value.customizations ? workspace.value.customizations : null);
@@ -178,7 +187,8 @@ const emptyTable = async () => {
       const { status, response } = await Tables.truncateTable({
          uid: selectedWorkspace.value,
          table: props.selectedTable.name,
-         schema: props.selectedSchema
+         schema: props.selectedSchema,
+         force: forceTruncate.value
       });
 
       if (status === 'success')

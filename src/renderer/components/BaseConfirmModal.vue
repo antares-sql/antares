@@ -61,12 +61,16 @@ const props = defineProps({
       default: false
    },
    confirmText: String,
-   cancelText: String
+   cancelText: String,
+   disableAutofocus: {
+      type: Boolean,
+      default: false
+   }
 });
 const emit = defineEmits(['confirm', 'hide']);
 const slots = useSlots();
 
-const { trapRef } = useFocusTrap({ disableAutofocus: true });
+const { trapRef } = useFocusTrap({ disableAutofocus: props.disableAutofocus });
 
 const hasHeader = computed(() => !!slots.header);
 const hasBody = computed(() => !!slots.body);

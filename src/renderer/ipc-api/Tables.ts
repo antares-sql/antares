@@ -98,7 +98,7 @@ export default class {
       return ipcRenderer.invoke('duplicate-table', unproxify(params));
    }
 
-   static truncateTable (params: { uid: string; schema: string; table: string }): Promise<IpcResponse> {
+   static truncateTable (params: { uid: string; schema: string; table: string; force: boolean }): Promise<IpcResponse> {
       return ipcRenderer.invoke('truncate-table', unproxify(params));
    }
 

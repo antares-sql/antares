@@ -29,7 +29,13 @@ export interface Customizations {
    elementsWrapper: string;
    stringsWrapper: string;
    tableAdd?: boolean;
+   tableSettings?: boolean;
+   tableOptions?: boolean;
+   tableArray?: boolean;
+   tableRealCount?: boolean;
+   tableTruncateDisableFKCheck?: boolean;
    viewAdd?: boolean;
+   viewSettings?: boolean;
    triggerAdd?: boolean;
    triggerFunctionAdd?: boolean;
    routineAdd?: boolean;
@@ -41,11 +47,6 @@ export interface Customizations {
    schemaExport?: boolean;
    exportByChunks?: boolean;
    schemaImport?: boolean;
-   tableSettings?: boolean;
-   tableOptions?: boolean;
-   tableArray?: boolean;
-   tableRealCount?: boolean;
-   viewSettings?: boolean;
    triggerSettings?: boolean;
    triggerFunctionSettings?: boolean;
    routineSettings?: boolean;

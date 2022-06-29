@@ -457,8 +457,11 @@ const selectAllRows = (e: KeyboardEvent) => {
 
 const deselectRows = (e: Event) => {
    if (!isEditingRow.value) {
-      selectedRows.value = [];
+      if (!isDeleteConfirmModal.value)
+         selectedRows.value = [];
+
       selectedField.value = null;
+
       if (e.type === 'blur')
          hasFocus.value = false;
    }

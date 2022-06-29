@@ -28,6 +28,7 @@ export const customizations: Customizations = {
    elementsWrapper: '',
    stringsWrapper: '"',
    tableAdd: true,
+   tableTruncateDisableFKCheck: true,
    viewAdd: true,
    triggerAdd: true,
    routineAdd: true,

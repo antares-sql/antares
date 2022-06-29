@@ -70,6 +70,7 @@
          v-if="isTextareaEditor"
          :confirm-text="t('word.update')"
          size="medium"
+         :disable-autofocus="true"
          @confirm="editOFF"
          @hide="hideEditorModal"
       >

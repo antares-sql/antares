@@ -290,7 +290,8 @@ module.exports = {
       disableBlur: 'Disable blur',
       untrustedConnection: 'Untrusted connection',
       missingOrIncompleteTranslation: 'Missing or incomplete translation?',
-      findOutHowToContribute: 'Find out how to contribute'
+      findOutHowToContribute: 'Find out how to contribute',
+      disableFKChecks: 'Disable foreigh key checks'
    },
    faker: {
       address: 'Address',
