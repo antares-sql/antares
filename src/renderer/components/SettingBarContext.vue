@@ -3,6 +3,13 @@
       :context-event="contextEvent"
       @close-context="$emit('close-context')"
    >
+      <div
+         v-if="isConnected"
+         class="context-element"
+         @click="disconnect"
+      >
+         <span class="d-flex"><i class="mdi mdi-18px mdi-power text-light pr-1" /> {{ $t('word.disconnect') }}</span>
+      </div>
       <div class="context-element" @click="duplicateConnection">
          <span class="d-flex"><i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ $t('word.duplicate') }}</span>
       </div>
@@ -47,7 +54,11 @@ const {
 const workspacesStore = useWorkspacesStore();
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
-const { selectWorkspace } = workspacesStore;
+const {
+   selectWorkspace,
+   removeConnected: disconnectWorkspace,
+   getWorkspace
+} = workspacesStore;
 
 const props = defineProps({
    contextEvent: MouseEvent,
@@ -59,6 +70,7 @@ const emit = defineEmits(['close-context']);
 const isConfirmModal = ref(false);
 
 const connectionName = computed(() => getConnectionName(props.contextConnection.uid));
+const isConnected = computed(() => getWorkspace(props.contextConnection.uid).connectionStatus === 'connected');
 
 const confirmDeleteConnection = () => {
    if (selectedWorkspace.value === props.contextConnection.uid)
@@ -85,6 +97,11 @@ const showConfirmModal = () => {
 
 const hideConfirmModal = () => {
    isConfirmModal.value = false;
+   closeContext();
+};
+
+const disconnect = () => {
+   disconnectWorkspace(props.contextConnection.uid);
    closeContext();
 };
 
