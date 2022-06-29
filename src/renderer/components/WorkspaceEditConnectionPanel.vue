@@ -61,7 +61,7 @@
                            />
                         </div>
                      </div>
-                     <div v-if="connection.client === 'pg'" class="form-group columns">
+                     <div v-if="localConnection.client === 'pg'" class="form-group columns">
                         <div class="column col-4 col-sm-12">
                            <label class="form-label cut-text">{{ t('word.connectionString') }}</label>
                         </div>
