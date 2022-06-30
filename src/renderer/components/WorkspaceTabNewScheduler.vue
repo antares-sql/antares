@@ -281,7 +281,7 @@ originalScheduler.value = {
    state: 'DISABLE'
 };
 
-originalScheduler.value = JSON.parse(JSON.stringify(originalScheduler.value));
+localScheduler.value = { ...originalScheduler.value };
 
 setTimeout(() => {
    resizeQueryEditor();
