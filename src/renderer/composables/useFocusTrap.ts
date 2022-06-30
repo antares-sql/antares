@@ -60,11 +60,14 @@ const useFocusTrap = (args?: {disableAutofocus?: boolean}) => {
       focusableElements = (trapRef.value as HTMLElement).querySelectorAll(
          focusableElementsSelector
       );
-      $firstFocusable = focusableElements[0];
-      $lastFocusable = focusableElements[focusableElements.length - 1];
-      document.addEventListener('keydown', keyHandler);
-      isInitiated.value = true;
-      if (!localArgs.disableAutofocus) $firstFocusable.focus();
+
+      if (focusableElements.length) {
+         $firstFocusable = focusableElements[0];
+         $lastFocusable = focusableElements[focusableElements.length - 1];
+         document.addEventListener('keydown', keyHandler);
+         isInitiated.value = true;
+         if (!localArgs.disableAutofocus) $firstFocusable.focus();
+      }
    }
 
    function clearFocusTrap () {

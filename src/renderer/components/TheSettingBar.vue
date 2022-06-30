@@ -9,7 +9,7 @@
          />
          <ul class="settingbar-elements">
             <Draggable
-               v-model="connections"
+               v-model="pinnedConnectionsArr"
                :item-key="'uid'"
                @start="isDragging = true"
                @end="dragStop"
@@ -23,11 +23,26 @@
                      @contextmenu.prevent="contextMenu($event, element)"
                      @mouseover.self="tooltipPosition"
                   >
-                     <i class="settingbar-element-icon dbi" :class="`dbi-${element.client} ${getStatusBadge(element.uid)}`" />
+                     <i class="settingbar-element-icon dbi" :class="[`dbi-${element.client}`, getStatusBadge(element.uid), (pinnedConnections.has(element.uid) ? 'settingbar-element-pin' : false)]" />
                      <span v-if="!isDragging" class="ex-tooltip-content">{{ getConnectionName(element.uid) }}</span>
                   </li>
                </template>
             </Draggable>
+
+            <div v-if="pinnedConnectionsArr.length" class="divider" />
+
+            <li
+               v-for="connection in unpinnedConnectionsArr"
+               :key="connection.uid"
+               class="settingbar-element btn btn-link ex-tooltip"
+               :class="{'selected': connection.uid === selectedWorkspace}"
+               @click.stop="selectWorkspace(connection.uid)"
+               @contextmenu.prevent="contextMenu($event, connection)"
+               @mouseover.self="tooltipPosition"
+            >
+               <i class="settingbar-element-icon dbi" :class="[`dbi-${connection.client}`, getStatusBadge(connection.uid)]" />
+               <span v-if="!isDragging" class="ex-tooltip-content">{{ getConnectionName(connection.uid) }}</span>
+            </li>
             <li
                class="settingbar-element btn btn-link ex-tooltip"
                :class="{'selected': 'NEW' === selectedWorkspace}"
@@ -56,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, Ref, computed } from 'vue';
+import { ref, Ref, computed, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
@@ -74,7 +89,7 @@ const { connections: storedConnections, pinnedConnections, lastConnections } = s
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const { showSettingModal, showScratchpad } = applicationStore;
-const { getConnectionName, updateConnections } = connectionsStore;
+const { getConnectionName, updatePinnedConnections } = connectionsStore;
 const { getWorkspace, selectWorkspace } = workspacesStore;
 
 const isLinux = process.platform === 'linux';
@@ -83,17 +98,31 @@ const isDragging: Ref<boolean> = ref(false);
 const contextEvent: Ref<MouseEvent> = ref(null);
 const contextConnection: Ref<ConnectionParams> = ref(null);
 
-const connections = computed({
-   get () {
-      return storedConnections.value;
-   },
-   set (value: ConnectionParams[]) {
-      updateConnections(value);
+const pinnedConnectionsArr = computed({
+   get: () => [...pinnedConnections.value].map(c => storedConnections.value.find(sc => sc.uid === c)).filter(Boolean),
+   set: (value: ConnectionParams[]) => {
+      const pinnedUid = value.reduce((acc, curr) => {
+         acc.push(curr.uid);
+         return acc;
+      }, []);
+
+      updatePinnedConnections(pinnedUid);
    }
 });
 
-const pinnedConnectionsArr = computed(() => storedConnections.value.filter(c => pinnedConnections.value.has(c.uid)));
-const unpinnedConnectionsArr = computed(() => storedConnections.value.filter(c => !pinnedConnections.value.has(c.uid)));
+const unpinnedConnectionsArr = computed(() => {
+   return storedConnections.value
+      .filter(c => !pinnedConnections.value.has(c.uid))
+      .map(c => {
+         const connTime = lastConnections.value.find((lc) => lc.uid === c.uid)?.time || 0;
+         return { ...c, time: connTime };
+      })
+      .sort((a, b) => {
+         if (a.time < b.time) return 1;
+         else if (a.time > b.time) return -1;
+         return 0;
+      });
+});
 
 const hasUpdates = computed(() => ['available', 'downloading', 'downloaded', 'link'].includes(updateStatus.value));
 
@@ -129,13 +158,33 @@ const getStatusBadge = (uid: string) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const dragStop = (e: any) => { // TODO: temp
+const dragStop = (e: any) => {
    isDragging.value = false;
 
    setTimeout(() => {
       tooltipPosition(e.originalEvent.target.parentNode);
    }, 200);
 };
+
+watch(unpinnedConnectionsArr, (newVal, oldVal) => {
+   if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
+      setTimeout(() => {
+         const element = document.querySelector<HTMLElement>('.settingbar-element.selected');
+         if (element) {
+            const rect = element.getBoundingClientRect();
+            const elemTop = rect.top;
+            const elemBottom = rect.bottom;
+            const isVisible = (elemTop >= 0) && (elemBottom <= window.innerHeight);
+
+            if (!isVisible) {
+               element.setAttribute('tabindex', '-1');
+               element.focus();
+               element.removeAttribute('tabindex');
+            }
+         }
+      }, 50);
+   }
+});
 </script>
 
 <style lang="scss">
@@ -215,6 +264,20 @@ const dragStop = (e: any) => { // TODO: temp
 
           &.badge-update::after {
             bottom: initial;
+          }
+        }
+
+        .settingbar-element-pin{
+          margin: 0 auto;
+
+          &::before {
+            font: normal normal normal 14px/1 "Material Design Icons";
+            content: "\F0403";
+            transform: rotate(45deg);
+            opacity: .25;
+            bottom: -8px;
+            left: -4px;
+            position: absolute;
           }
         }
       }

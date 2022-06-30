@@ -148,6 +148,10 @@
     background: transparent;
   }
 
+  .divider {
+    border-top: 0.05rem solid rgba($body-font-color-dark, 0.1);
+  }
+
   .form-switch .form-icon::before {
     background: $bg-color-light-dark;
   }

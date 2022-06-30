@@ -3,6 +3,7 @@
   width: 42px;
   height: 42px;
   background-size: cover;
+  position: relative;
 
   &.dbi-mysql {
     background-image: url("../images/svg/mysql.svg");

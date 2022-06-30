@@ -19,7 +19,7 @@ export const useConnectionsStore = defineStore('connections', {
    state: () => ({
       connections: persistentStore.get('connections', []) as ConnectionParams[],
       pinnedConnections: new Set([...persistentStore.get('pinnedConnections', []) as string[]]) as Set<string>,
-      lastConnections: persistentStore.get('lastConnections', {}) as {[k: string]: number}
+      lastConnections: persistentStore.get('lastConnections', []) as {uid: string; time: number}[]
    }),
    getters: {
       getConnectionName: state => (uid: string) => {
@@ -52,6 +52,8 @@ export const useConnectionsStore = defineStore('connections', {
       deleteConnection (connection: ConnectionParams) {
          this.connections = (this.connections as ConnectionParams[]).filter(el => el.uid !== connection.uid);
          persistentStore.set('connections', this.connections);
+         (this.pinnedConnections as Set<string>).delete(connection.uid);
+         persistentStore.set('pinnedConnections', [...this.pinnedConnections]);
       },
       editConnection (connection: ConnectionParams) {
          const editedConnections = (this.connections as ConnectionParams[]).map(conn => {
@@ -66,6 +68,10 @@ export const useConnectionsStore = defineStore('connections', {
          this.connections = connections;
          persistentStore.set('connections', this.connections);
       },
+      updatePinnedConnections (pinned: string[]) {
+         this.pinnedConnections = new Set(pinned);
+         persistentStore.set('pinnedConnections', [...this.pinnedConnections]);
+      },
       pinConnection (uid: string) {
          (this.pinnedConnections as Set<string>).add(uid);
          persistentStore.set('pinnedConnections', [...this.pinnedConnections]);
@@ -75,7 +81,13 @@ export const useConnectionsStore = defineStore('connections', {
          persistentStore.set('pinnedConnections', [...this.pinnedConnections]);
       },
       updateLastConnection (uid: string) {
-         this.lastConnections[uid] = new Date().getTime();
+         const cIndex = (this.lastConnections as {uid: string; time: number}[]).findIndex((c) => c.uid === uid);
+
+         if (cIndex >= 0)
+            this.lastConnections[cIndex].time = new Date().getTime();
+         else
+            this.lastConnections.push({ uid, time: new Date().getTime() });
+
          persistentStore.set('lastConnections', this.lastConnections);
       }
    }

@@ -94,6 +94,10 @@
     background: transparent;
   }
 
+  .divider {
+    border-top: 0.05rem solid rgba($body-font-color-dark, 0.1);
+  }
+
   .tile {
     transition: background 0.2s;
 
