@@ -1,7 +1,7 @@
 {
   "name": "antares",
   "productName": "Antares",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "description": "A modern, fast and productivity driven SQL client with a focus in UX.",
   "license": "MIT",
   "repository": "https://github.com/antares-sql/antares.git",
@@ -162,7 +162,7 @@
     "chalk": "~4.1.2",
     "cross-env": "~7.0.2",
     "css-loader": "~6.5.0",
-    "electron": "~19.0.5",
+    "electron": "~19.0.7",
     "electron-builder": "~23.0.3",
     "eslint": "~7.32.0",
     "eslint-config-standard": "~16.0.3",
