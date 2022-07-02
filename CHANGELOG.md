@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.8](https://github.com/antares-sql/antares/compare/v0.5.7...v0.5.8) (2022-07-02)
+
+
+### Features
+
+* add max visible options prop ([067a6f3](https://github.com/antares-sql/antares/commit/067a6f350757c1e6b4df51f801ae832b47bd3484))
+* context shortcut to disconnect from left bar ([e97da37](https://github.com/antares-sql/antares/commit/e97da3710385690b85391938e40145a1591bc2e8))
+* **MySQL:** option to disable foreign key checks when empty a table ([902c29f](https://github.com/antares-sql/antares/commit/902c29ffa551bc3489fa1d9136ee926d135ea14f))
+
+
+### Bug Fixes
+
+* connection string field doesn't appear switching to postgre when editing a connection ([6573fe6](https://github.com/antares-sql/antares/commit/6573fe69aca2b99c7a700879fb0d0930e864cbe6))
+* ctrl+a on results doesn't work properly ([5f57a9f](https://github.com/antares-sql/antares/commit/5f57a9f60d281e24e5bee4330c081fa5d8651b36))
+* double context menu on table settings rows ([91d0735](https://github.com/antares-sql/antares/commit/91d0735a5f4861bc6ad13b9285ea7a9bd7be9538))
+* editor gutter pin not working ([cfd82c8](https://github.com/antares-sql/antares/commit/cfd82c8f419952879b386187eb146847098263fe))
+* error on modals missing focusable elements ([7702ca0](https://github.com/antares-sql/antares/commit/7702ca025fcae6209ae3851d0ccd25579f93e243))
+* exception on new scheduler tab ([a45d76e](https://github.com/antares-sql/antares/commit/a45d76e8b4ecdecf53438fe174f61ea32f4e10ac))
+* focus goes outside modals with tab key navigation ([e42c424](https://github.com/antares-sql/antares/commit/e42c424a13a6901414a1a1c4e2f68cb4ddef7d59))
+* reactivity problem on BaseVirtualScroll component ([45b2eb2](https://github.com/antares-sql/antares/commit/45b2eb2934b9f7a08f379ad4d7a44b1c89585449))
+* result table cells/rows not loses focus clicking outside ([0a3a482](https://github.com/antares-sql/antares/commit/0a3a4827dd75539666fa2c827415af3bfa224543))
+* **UI:** wrong tables scrollable height after switching tabs ([8f01740](https://github.com/antares-sql/antares/commit/8f01740475ea6d5d9b5eefabdbf27099df76f2cf))
+* **Windows:** white window buttons with dark theme ([a80d227](https://github.com/antares-sql/antares/commit/a80d22740045a61fd14fd5da401c0d123d54f4de))
+* **Windows:** Windows 7 style window frame at startup ([93ce619](https://github.com/antares-sql/antares/commit/93ce619782d58cfb8fb1ecce2ca2137a61ec6181))
+
 ### [0.5.7](https://github.com/antares-sql/antares/compare/v0.5.4...v0.5.7) (2022-06-19)
 
 
