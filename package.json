@@ -1,7 +1,7 @@
 {
   "name": "antares",
   "productName": "Antares",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "description": "A modern, fast and productivity driven SQL client with a focus in UX.",
   "license": "MIT",
   "repository": "https://github.com/antares-sql/antares.git",
@@ -179,7 +179,7 @@
     "progress-webpack-plugin": "~1.0.12",
     "rimraf": "~3.0.2",
     "sass": "~1.42.1",
-    "sass-loader": "~12.3.0",
+    "sass-loader": "~13.0.2",
     "standard-version": "~9.3.1",
     "style-loader": "~3.3.1",
     "stylelint": "~13.13.1",
