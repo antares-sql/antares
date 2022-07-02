@@ -5,6 +5,7 @@
     "./src/renderer/**/*", 
     "./src/common/interfaces/antares.ts"
   ],
+  "exclude": ["./src/renderer/libs/ext-language_tools.js"],
   "compilerOptions": {
     "baseUrl": "./",
     "target": "es2021",

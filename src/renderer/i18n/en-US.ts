@@ -293,7 +293,8 @@ module.exports = {
       untrustedConnection: 'Untrusted connection',
       missingOrIncompleteTranslation: 'Missing or incomplete translation?',
       findOutHowToContribute: 'Find out how to contribute',
-      disableFKChecks: 'Disable foreigh key checks'
+      disableFKChecks: 'Disable foreigh key checks',
+      allConnections: 'All connections'
    },
    faker: {
       address: 'Address',
