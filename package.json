@@ -120,6 +120,7 @@
     "@mdi/font": "~6.1.95",
     "@turf/helpers": "~6.5.0",
     "@vscode/vscode-languagedetection": "~1.0.21",
+    "@vueuse/core": "~8.7.5",
     "ace-builds": "~1.4.13",
     "better-sqlite3": "~7.5.0",
     "electron-log": "~4.4.1",
@@ -147,7 +148,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "~7.15.7",
     "@babel/preset-env": "~7.15.8",
-    "@babel/preset-typescript": "~7.16.7",
+    "@babel/preset-typescript": "~7.18.6",
     "@playwright/test": "~1.21.1",
     "@types/better-sqlite3": "~7.5.0",
     "@types/leaflet": "~1.7.9",
