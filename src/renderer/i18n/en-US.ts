@@ -294,7 +294,8 @@ module.exports = {
       missingOrIncompleteTranslation: 'Missing or incomplete translation?',
       findOutHowToContribute: 'Find out how to contribute',
       disableFKChecks: 'Disable foreigh key checks',
-      allConnections: 'All connections'
+      allConnections: 'All connections',
+      searchForConnections: 'Search for connections'
    },
    faker: {
       address: 'Address',

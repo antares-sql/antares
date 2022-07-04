@@ -253,6 +253,14 @@
                            >
                         </div>
                      </div>
+                     <div class="form-group columns">
+                        <div class="column col-4 col-sm-12" />
+                        <div class="column col-8 col-sm-12">
+                           <label class="form-checkbox form-inline">
+                              <input v-model="localConnection.untrustedConnection" type="checkbox"><i class="form-icon" /> {{ t('message.untrustedConnection') }}
+                           </label>
+                        </div>
+                     </div>
                   </fieldset>
                </form>
             </div>
@@ -416,12 +424,12 @@ const { editConnection } = useConnectionsStore();
 const { addNotification } = useNotificationsStore();
 const { connectWorkspace } = useWorkspacesStore();
 
-const clients = ref([
+const clients = [
    { name: 'MySQL', slug: 'mysql' },
    { name: 'MariaDB', slug: 'maria' },
    { name: 'PostgreSQL', slug: 'pg' },
    { name: 'SQLite', slug: 'sqlite' }
-]);
+];
 
 const firstInput: Ref<HTMLInputElement> = ref(null);
 const localConnection: Ref<ConnectionParams & { pgConnString: string }> = ref(null);

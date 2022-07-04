@@ -274,6 +274,12 @@
       background: rgba($bg-color-light-gray, 100%);
     }
   }
+  
+  .connection-block{  
+    &:hover {
+      background: $bg-color-light-gray;
+    }
+  }
 
   .context {
     color: $body-font-color-dark;

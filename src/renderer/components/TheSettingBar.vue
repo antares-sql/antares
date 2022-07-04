@@ -214,6 +214,19 @@ watch(unpinnedConnectionsArr, (newVal, oldVal) => {
       }, 50);
    }
 });
+
+watch(selectedWorkspace, (newVal, oldVal) => {
+   if (newVal !== oldVal) {
+      setTimeout(() => {
+         const element = document.querySelector<HTMLElement>('.settingbar-element.selected');
+         if (element) {
+            element.setAttribute('tabindex', '-1');
+            element.focus();
+            element.removeAttribute('tabindex');
+         }
+      }, 150);
+   }
+});
 </script>
 
 <style lang="scss">
