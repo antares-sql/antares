@@ -96,6 +96,12 @@
                            </div>
                         </div>
                      </div>
+                     <input
+                        readonly
+                        class="p-absolute"
+                        style="width: 1px; height: 1px; opacity: 0"
+                        type="text"
+                     ><!-- workaround for useFocusTrap $lastFocusable -->
                   </TransitionGroup>
                </div>
             </div>

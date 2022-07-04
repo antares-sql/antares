@@ -67,20 +67,22 @@ const { changeApplicationTheme } = settingsStore;
 
 const isAllConnectionsModal: Ref<boolean> = ref(false);
 
-document.addEventListener('DOMContentLoaded', () => {
-   setTimeout(() => {
-      changeApplicationTheme(applicationTheme.value);// Forces persistentStore to save on file and mail process
-   }, 1000);
-});
-
-window.addEventListener('keypress', (e: KeyboardEvent) => {
+const onKey = (e: KeyboardEvent) => {
    if (e.ctrlKey || e.metaKey) {
       if (e.code === 'Space') {
          isAllConnectionsModal.value = true;
          e.stopPropagation();
       }
    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+   setTimeout(() => {
+      changeApplicationTheme(applicationTheme.value);// Forces persistentStore to save on file and mail process
+   }, 1000);
 });
+
+window.addEventListener('keypress', onKey);
 
 onMounted(() => {
    ipcRenderer.send('check-for-updates');
@@ -126,7 +128,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-   window.removeEventListener('keydown', console.log);
+   window.removeEventListener('keydown', onKey);
 });
 </script>
 

@@ -295,7 +295,8 @@ module.exports = {
       findOutHowToContribute: 'Find out how to contribute',
       disableFKChecks: 'Disable foreigh key checks',
       allConnections: 'All connections',
-      searchForConnections: 'Search for connections'
+      searchForConnections: 'Search for connections',
+      disableScratchpad: 'Disable scratchpad'
    },
    faker: {
       address: 'Address',

@@ -71,7 +71,11 @@
 
       <div class="settingbar-bottom-elements">
          <ul class="settingbar-elements">
-            <li class="settingbar-element btn btn-link ex-tooltip" @click="showScratchpad">
+            <li
+               v-if="!disableScratchpad"
+               class="settingbar-element btn btn-link ex-tooltip"
+               @click="showScratchpad"
+            >
                <i class="settingbar-element-icon mdi mdi-24px mdi-notebook-edit-outline text-light" />
                <span class="ex-tooltip-content">{{ $t('word.scratchpad') }}</span>
             </li>
@@ -90,6 +94,7 @@ import { storeToRefs } from 'pinia';
 import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
+import { useSettingsStore } from '@/stores/settings';
 import * as Draggable from 'vuedraggable';
 import SettingBarContext from '@/components/SettingBarContext.vue';
 import { ConnectionParams } from 'common/interfaces/antares';
@@ -98,10 +103,12 @@ import { useElementBounding, useScroll } from '@vueuse/core';
 const applicationStore = useApplicationStore();
 const connectionsStore = useConnectionsStore();
 const workspacesStore = useWorkspacesStore();
+const settingsStore = useSettingsStore();
 
 const { updateStatus } = storeToRefs(applicationStore);
 const { connections: storedConnections, pinnedConnections, lastConnections } = storeToRefs(connectionsStore);
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const { disableScratchpad } = storeToRefs(settingsStore);
 
 const { showSettingModal, showScratchpad } = applicationStore;
 const { getConnectionName, updatePinnedConnections } = connectionsStore;
