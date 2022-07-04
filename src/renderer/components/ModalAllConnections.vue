@@ -156,7 +156,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, Ref, ref } from 'vue';
+import { computed, onBeforeUnmount, Ref, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { useFocusTrap } from '@/composables/useFocusTrap';
@@ -252,8 +252,8 @@ const confirmDeleteConnection = () => {
 };
 
 const onKey = (e: KeyboardEvent) => {
+   e.stopPropagation();
    if (e.key === 'Escape') {
-      e.stopPropagation();
       if ((e.target as HTMLInputElement).tagName === 'INPUT' && searchTerm.value.length > 0)
          searchTerm.value = '';
       else
@@ -261,7 +261,11 @@ const onKey = (e: KeyboardEvent) => {
    }
 };
 
-window.addEventListener('keydown', onKey, { capture: true });
+window.addEventListener('keydown', onKey);
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+});
 </script>
 
 <style lang="scss" scoped>
