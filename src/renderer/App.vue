@@ -73,6 +73,15 @@ document.addEventListener('DOMContentLoaded', () => {
    }, 1000);
 });
 
+window.addEventListener('keypress', (e: KeyboardEvent) => {
+   if (e.ctrlKey || e.metaKey) {
+      if (e.code === 'Space') {
+         isAllConnectionsModal.value = true;
+         e.stopPropagation();
+      }
+   }
+});
+
 onMounted(() => {
    ipcRenderer.send('check-for-updates');
    checkVersionUpdate();
