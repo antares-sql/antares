@@ -117,7 +117,7 @@
   "dependencies": {
     "@electron/remote": "~2.0.1",
     "@faker-js/faker": "~6.1.2",
-    "@mdi/font": "~6.1.95",
+    "@mdi/font": "~6.9.96",
     "@turf/helpers": "~6.5.0",
     "@vscode/vscode-languagedetection": "~1.0.21",
     "@vueuse/core": "~8.7.5",
