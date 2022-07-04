@@ -56,7 +56,8 @@ const useFocusTrap = (args?: {disableAutofocus?: boolean}) => {
    }
 
    function initFocusTrap () {
-      if (!trapRef.value || isInitiated.value) return;
+      if (!trapRef.value || (isInitiated.value)) return;
+
       focusableElements = (trapRef.value as HTMLElement).querySelectorAll(
          focusableElementsSelector
       );

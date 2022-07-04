@@ -332,7 +332,10 @@ const addField = () => {
       collation: defaultCollation.value,
       autoIncrement: false,
       onUpdate: '',
-      comment: ''
+      comment: '',
+      alias: '',
+      tableAlias: '',
+      orgTable: ''
    });
 
    setTimeout(() => {

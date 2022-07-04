@@ -125,9 +125,9 @@
 </template>
 
 <script setup lang="ts">
-import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
+import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Prop, Ref, ref, watch } from 'vue';
 import { Ace } from 'ace-builds';
-import { EventInfos } from 'common/interfaces/antares';
+import { ConnectionParams, EventInfos } from 'common/interfaces/antares';
 import { useI18n } from 'vue-i18n';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
@@ -141,7 +141,7 @@ const { t } = useI18n();
 
 const props = defineProps({
    tabUid: String,
-   connection: Object,
+   connection: Object as Prop<ConnectionParams>,
    tab: Object,
    isSelected: Boolean,
    schema: String

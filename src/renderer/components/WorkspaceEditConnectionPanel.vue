@@ -424,12 +424,12 @@ const { editConnection } = useConnectionsStore();
 const { addNotification } = useNotificationsStore();
 const { connectWorkspace } = useWorkspacesStore();
 
-const clients = ref([
+const clients = [
    { name: 'MySQL', slug: 'mysql' },
    { name: 'MariaDB', slug: 'maria' },
    { name: 'PostgreSQL', slug: 'pg' },
    { name: 'SQLite', slug: 'sqlite' }
-]);
+];
 
 const firstInput: Ref<HTMLInputElement> = ref(null);
 const localConnection: Ref<ConnectionParams & { pgConnString: string }> = ref(null);

@@ -94,6 +94,10 @@
     background: transparent;
   }
 
+  .divider {
+    border-top: 0.05rem solid rgba($body-font-color-dark, 0.1);
+  }
+
   .tile {
     transition: background 0.2s;
 
@@ -165,9 +169,7 @@
     }
 
     .settingbar-bottom-elements {
-      padding-top: 0.5rem;
       background: $bg-color-light-dark;
-      z-index: 1;
     }
 
     .settingbar-elements {
@@ -270,6 +272,12 @@
   .connection-panel {
     .panel {
       background: rgba($bg-color-light-gray, 100%);
+    }
+  }
+  
+  .connection-block{  
+    &:hover {
+      background: $bg-color-light-gray;
     }
   }
 

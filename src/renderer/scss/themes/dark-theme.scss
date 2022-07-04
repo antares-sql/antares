@@ -148,6 +148,10 @@
     background: transparent;
   }
 
+  .divider {
+    border-top: 0.05rem solid rgba($body-font-color-dark, 0.1);
+  }
+
   .form-switch .form-icon::before {
     background: $bg-color-light-dark;
   }
@@ -249,6 +253,12 @@
   .connection-panel {
     .panel {
       background: rgba($bg-color-light-dark, 50%);
+    }
+  }
+
+  .connection-block{  
+    &:hover {
+      background: $bg-color-light-dark;
     }
   }
 
@@ -396,9 +406,7 @@
     }
 
     .settingbar-bottom-elements {
-      padding-top: 0.5rem;
       background: $bg-color-light-dark;
-      z-index: 1;
     }
 
     .settingbar-elements {

@@ -170,6 +170,9 @@ export const useWorkspacesStore = defineStore('workspaces', {
                let dataTypes: TypesGroup[] = [];
                let indexTypes: string[] = [];
                let clientCustomizations: Customizations;
+               const { updateLastConnection } = connectionsStore;
+
+               updateLastConnection(connection.uid);
 
                switch (connection.client) {
                   case 'mysql':
@@ -715,44 +718,6 @@ export const useWorkspacesStore = defineStore('workspaces', {
          );
          persistentStore.set(uid, (this.workspaces as Workspace[]).find(workspace => workspace.uid === uid).tabs);
       },
-      // setTabFields ({ cUid, tUid, fields }: { cUid: string; tUid: string; fields: any }) {
-      //    this.workspaces = (this.workspaces as Workspace[]).map(workspace => {
-      //       if (workspace.uid === cUid) {
-      //          return {
-      //             ...workspace,
-      //             tabs: workspace.tabs.map(tab => {
-      //                if (tab.uid === tUid)
-      //                   return { ...tab, fields };
-      //                else
-      //                   return tab;
-      //             })
-      //          };
-      //       }
-      //       else
-      //          return workspace;
-      //    });
-
-      //    persistentStore.set(cUid, (this.workspaces as Workspace[]).find(workspace => workspace.uid === cUid).tabs);
-      // },
-      // setTabKeyUsage ({ cUid, tUid, keyUsage }: { cUid: string; tUid: string; keyUsage: any }) {
-      //    this.workspaces = (this.workspaces as Workspace[]).map(workspace => {
-      //       if (workspace.uid === cUid) {
-      //          return {
-      //             ...workspace,
-      //             tabs: workspace.tabs.map(tab => {
-      //                if (tab.uid === tUid)
-      //                   return { ...tab, keyUsage };
-      //                else
-      //                   return tab;
-      //             })
-      //          };
-      //       }
-      //       else
-      //          return workspace;
-      //    });
-
-      //    persistentStore.set(cUid, (this.workspaces as Workspace[]).find(workspace => workspace.uid === cUid).tabs);
-      // },
       setUnsavedChanges ({ uid, tUid, isChanged }: { uid: string; tUid: string; isChanged: boolean }) {
          this.workspaces = (this.workspaces as Workspace[]).map(workspace => {
             if (workspace.uid === uid) {

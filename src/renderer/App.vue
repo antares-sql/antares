@@ -2,7 +2,7 @@
    <div id="wrapper" :class="[`theme-${applicationTheme}`, !disableBlur || 'no-blur']">
       <TheTitleBar />
       <div id="window-content">
-         <TheSettingBar />
+         <TheSettingBar @show-connections-modal="isAllConnectionsModal = true" />
          <div id="main-content" class="container">
             <div class="columns col-gapless">
                <Workspace
@@ -21,13 +21,15 @@
             <BaseTextEditor class="d-none" value="" />
          </div>
       </div>
+      <ModalAllConnections v-if="isAllConnectionsModal" @close="isAllConnectionsModal = false" />
    </div>
 </template>
 
-<script lang="ts">
-import { defineAsyncComponent } from 'vue';
+<script setup lang="ts">
+import { defineAsyncComponent, onBeforeUnmount, onMounted, Ref, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { ipcRenderer } from 'electron';
+import { useI18n } from 'vue-i18n';
 import { Menu, getCurrentWindow } from '@electron/remote';
 import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
@@ -35,98 +37,99 @@ import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import TheSettingBar from '@/components/TheSettingBar.vue';
 
-export default {
-   name: 'App',
-   components: {
-      TheTitleBar: defineAsyncComponent(() => import(/* webpackChunkName: "TheTitleBar" */'@/components/TheTitleBar.vue')),
-      TheSettingBar,
-      TheFooter: defineAsyncComponent(() => import(/* webpackChunkName: "TheFooter" */'@/components/TheFooter.vue')),
-      TheNotificationsBoard: defineAsyncComponent(() => import(/* webpackChunkName: "TheNotificationsBoard" */'@/components/TheNotificationsBoard.vue')),
-      Workspace: defineAsyncComponent(() => import(/* webpackChunkName: "Workspace" */'@/components/Workspace.vue')),
-      WorkspaceAddConnectionPanel: defineAsyncComponent(() => import(/* webpackChunkName: "WorkspaceAddConnectionPanel" */'@/components/WorkspaceAddConnectionPanel.vue')),
-      ModalSettings: defineAsyncComponent(() => import(/* webpackChunkName: "ModalSettings" */'@/components/ModalSettings.vue')),
-      TheScratchpad: defineAsyncComponent(() => import(/* webpackChunkName: "TheScratchpad" */'@/components/TheScratchpad.vue')),
-      BaseTextEditor: defineAsyncComponent(() => import(/* webpackChunkName: "BaseTextEditor" */'@/components/BaseTextEditor.vue'))
-   },
-   setup () {
-      const applicationStore = useApplicationStore();
-      const connectionsStore = useConnectionsStore();
-      const settingsStore = useSettingsStore();
-      const workspacesStore = useWorkspacesStore();
+const { t } = useI18n();
 
-      const {
-         isLoading,
-         isSettingModal,
-         isScratchpad
-      } = storeToRefs(applicationStore);
-      const { connections } = storeToRefs(connectionsStore);
-      const { applicationTheme, disableBlur } = storeToRefs(settingsStore);
-      const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const TheTitleBar = defineAsyncComponent(() => import(/* webpackChunkName: "TheTitleBar" */'@/components/TheTitleBar.vue'));
+const TheFooter = defineAsyncComponent(() => import(/* webpackChunkName: "TheFooter" */'@/components/TheFooter.vue'));
+const TheNotificationsBoard = defineAsyncComponent(() => import(/* webpackChunkName: "TheNotificationsBoard" */'@/components/TheNotificationsBoard.vue'));
+const Workspace = defineAsyncComponent(() => import(/* webpackChunkName: "Workspace" */'@/components/Workspace.vue'));
+const WorkspaceAddConnectionPanel = defineAsyncComponent(() => import(/* webpackChunkName: "WorkspaceAddConnectionPanel" */'@/components/WorkspaceAddConnectionPanel.vue'));
+const ModalSettings = defineAsyncComponent(() => import(/* webpackChunkName: "ModalSettings" */'@/components/ModalSettings.vue'));
+const ModalAllConnections = defineAsyncComponent(() => import(/* webpackChunkName: "ModalAllConnections" */'@/components/ModalAllConnections.vue'));
+const TheScratchpad = defineAsyncComponent(() => import(/* webpackChunkName: "TheScratchpad" */'@/components/TheScratchpad.vue'));
+const BaseTextEditor = defineAsyncComponent(() => import(/* webpackChunkName: "BaseTextEditor" */'@/components/BaseTextEditor.vue'));
 
-      const { checkVersionUpdate } = applicationStore;
-      const { changeApplicationTheme } = settingsStore;
+const applicationStore = useApplicationStore();
+const connectionsStore = useConnectionsStore();
+const settingsStore = useSettingsStore();
+const workspacesStore = useWorkspacesStore();
 
-      document.addEventListener('DOMContentLoaded', () => {
-         setTimeout(() => {
-            changeApplicationTheme(applicationTheme.value);// Forces persistentStore to save on file and mail process
-         }, 1000);
-      });
+const {
+   isSettingModal,
+   isScratchpad
+} = storeToRefs(applicationStore);
+const { connections } = storeToRefs(connectionsStore);
+const { applicationTheme, disableBlur } = storeToRefs(settingsStore);
+const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
-      return {
-         isLoading,
-         isSettingModal,
-         isScratchpad,
-         checkVersionUpdate,
-         changeApplicationTheme,
-         connections,
-         applicationTheme,
-         disableBlur,
-         selectedWorkspace
-      };
-   },
-   mounted () {
-      ipcRenderer.send('check-for-updates');
-      this.checkVersionUpdate();
+const { checkVersionUpdate } = applicationStore;
+const { changeApplicationTheme } = settingsStore;
 
-      const InputMenu = Menu.buildFromTemplate([
-         {
-            label: this.$t('word.cut'),
-            role: 'cut'
-         },
-         {
-            label: this.$t('word.copy'),
-            role: 'copy'
-         },
-         {
-            label: this.$t('word.paste'),
-            role: 'paste'
-         },
-         {
-            type: 'separator'
-         },
-         {
-            label: this.$t('message.selectAll'),
-            role: 'selectAll'
-         }
-      ]);
+const isAllConnectionsModal: Ref<boolean> = ref(false);
 
-      document.body.addEventListener('contextmenu', (e) => {
-         e.preventDefault();
+const onKey = (e: KeyboardEvent) => {
+   if (e.ctrlKey || e.metaKey) {
+      if (e.code === 'Space') {
+         isAllConnectionsModal.value = true;
          e.stopPropagation();
-
-         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-         let node: any = e.target;
-
-         while (node) {
-            if (node.nodeName.match(/^(input|textarea)$/i) || node.isContentEditable) {
-               InputMenu.popup({ window: getCurrentWindow() });
-               break;
-            }
-            node = node.parentNode;
-         }
-      });
+      }
    }
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+   setTimeout(() => {
+      changeApplicationTheme(applicationTheme.value);// Forces persistentStore to save on file and mail process
+   }, 1000);
+});
+
+window.addEventListener('keypress', onKey);
+
+onMounted(() => {
+   ipcRenderer.send('check-for-updates');
+   checkVersionUpdate();
+
+   const InputMenu = Menu.buildFromTemplate([
+      {
+         label: t('word.cut'),
+         role: 'cut'
+      },
+      {
+         label: t('word.copy'),
+         role: 'copy'
+      },
+      {
+         label: t('word.paste'),
+         role: 'paste'
+      },
+      {
+         type: 'separator'
+      },
+      {
+         label: t('message.selectAll'),
+         role: 'selectAll'
+      }
+   ]);
+
+   document.body.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let node: any = e.target;
+
+      while (node) {
+         if (node.nodeName.match(/^(input|textarea)$/i) || node.isContentEditable) {
+            InputMenu.popup({ window: getCurrentWindow() });
+            break;
+         }
+         node = node.parentNode;
+      }
+   });
+});
+
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+});
 </script>
 
 <style lang="scss">

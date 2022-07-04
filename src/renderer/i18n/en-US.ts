@@ -139,7 +139,9 @@ module.exports = {
       commit: 'Commit',
       rollback: 'Rollback',
       connectionString: 'Connection string',
-      contributors: 'Contributors'
+      contributors: 'Contributors',
+      pin: 'Pin',
+      unpin: 'Unpin'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -291,7 +293,10 @@ module.exports = {
       untrustedConnection: 'Untrusted connection',
       missingOrIncompleteTranslation: 'Missing or incomplete translation?',
       findOutHowToContribute: 'Find out how to contribute',
-      disableFKChecks: 'Disable foreigh key checks'
+      disableFKChecks: 'Disable foreigh key checks',
+      allConnections: 'All connections',
+      searchForConnections: 'Search for connections',
+      disableScratchpad: 'Disable scratchpad'
    },
    faker: {
       address: 'Address',

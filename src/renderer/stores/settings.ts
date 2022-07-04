@@ -23,7 +23,8 @@ export const useSettingsStore = defineStore('settings', {
       editorTheme: persistentStore.get('editor_theme', defaultEditorTheme) as string,
       editorFontSize: persistentStore.get('editor_font_size', 'medium') as EditorFontSize,
       restoreTabs: persistentStore.get('restore_tabs', true) as boolean,
-      disableBlur: persistentStore.get('disable_blur', false) as boolean
+      disableBlur: persistentStore.get('disable_blur', false) as boolean,
+      disableScratchpad: persistentStore.get('disable_scratchpad', false) as boolean
    }),
    actions: {
       changeLocale (locale: string) {
@@ -75,6 +76,10 @@ export const useSettingsStore = defineStore('settings', {
       changeDisableBlur (val: boolean) {
          this.disableBlur = val;
          persistentStore.set('disable_blur', this.disableBlur);
+      },
+      changeDisableScratchpad (val: boolean) {
+         this.disableScratchpad = val;
+         persistentStore.set('disable_scratchpad', this.disableScratchpad);
       }
    }
 });

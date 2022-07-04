@@ -411,12 +411,12 @@ const workspacesStore = useWorkspacesStore();
 
 const { connectWorkspace, selectWorkspace } = workspacesStore;
 
-const clients = ref([
+const clients = [
    { name: 'MySQL', slug: 'mysql' },
    { name: 'MariaDB', slug: 'maria' },
    { name: 'PostgreSQL', slug: 'pg' },
    { name: 'SQLite', slug: 'sqlite' }
-]);
+];
 
 const connection = ref({
    name: '',

@@ -1,6 +1,6 @@
 <template>
    <div id="settingbar">
-      <div class="settingbar-top-elements">
+      <div ref="sidebarConnections" class="settingbar-top-elements">
          <SettingBarContext
             v-if="isContext"
             :context-event="contextEvent"
@@ -9,7 +9,7 @@
          />
          <ul class="settingbar-elements">
             <Draggable
-               v-model="connections"
+               v-model="pinnedConnectionsArr"
                :item-key="'uid'"
                @start="isDragging = true"
                @end="dragStop"
@@ -23,11 +23,40 @@
                      @contextmenu.prevent="contextMenu($event, element)"
                      @mouseover.self="tooltipPosition"
                   >
-                     <i class="settingbar-element-icon dbi" :class="`dbi-${element.client} ${getStatusBadge(element.uid)}`" />
-                     <span v-if="!isDragging" class="ex-tooltip-content">{{ getConnectionName(element.uid) }}</span>
+                     <i class="settingbar-element-icon dbi" :class="[`dbi-${element.client}`, getStatusBadge(element.uid), (pinnedConnections.has(element.uid) ? 'settingbar-element-pin' : false)]" />
+                     <span v-if="!isDragging && !isScrolling" class="ex-tooltip-content">{{ getConnectionName(element.uid) }}</span>
                   </li>
                </template>
             </Draggable>
+
+            <div v-if="pinnedConnectionsArr.length" class="divider" />
+
+            <li
+               v-for="connection in unpinnedConnectionsArr"
+               :key="connection.uid"
+               class="settingbar-element btn btn-link ex-tooltip"
+               :class="{'selected': connection.uid === selectedWorkspace}"
+               @click.stop="selectWorkspace(connection.uid)"
+               @contextmenu.prevent="contextMenu($event, connection)"
+               @mouseover.self="tooltipPosition"
+            >
+               <i class="settingbar-element-icon dbi" :class="[`dbi-${connection.client}`, getStatusBadge(connection.uid)]" />
+               <span v-if="!isDragging && !isScrolling" class="ex-tooltip-content">{{ getConnectionName(connection.uid) }}</span>
+            </li>
+         </ul>
+      </div>
+
+      <div class="settingbar-middle-elements">
+         <ul class="settingbar-elements">
+            <li
+               v-if="isScrollable"
+               class="settingbar-element btn btn-link ex-tooltip"
+               @click="emit('show-connections-modal')"
+               @mouseover.self="tooltipPosition"
+            >
+               <i class="settingbar-element-icon mdi mdi-24px mdi-dots-horizontal text-light" />
+               <span class="ex-tooltip-content">{{ $t('message.allConnections') }} (CTRL+Space)</span>
+            </li>
             <li
                class="settingbar-element btn btn-link ex-tooltip"
                :class="{'selected': 'NEW' === selectedWorkspace}"
@@ -42,7 +71,11 @@
 
       <div class="settingbar-bottom-elements">
          <ul class="settingbar-elements">
-            <li class="settingbar-element btn btn-link ex-tooltip" @click="showScratchpad">
+            <li
+               v-if="!disableScratchpad"
+               class="settingbar-element btn btn-link ex-tooltip"
+               @click="showScratchpad"
+            >
                <i class="settingbar-element-icon mdi mdi-24px mdi-notebook-edit-outline text-light" />
                <span class="ex-tooltip-content">{{ $t('word.scratchpad') }}</span>
             </li>
@@ -56,40 +89,68 @@
 </template>
 
 <script setup lang="ts">
-import { ref, Ref, computed } from 'vue';
+import { ref, Ref, computed, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
+import { useSettingsStore } from '@/stores/settings';
 import * as Draggable from 'vuedraggable';
 import SettingBarContext from '@/components/SettingBarContext.vue';
 import { ConnectionParams } from 'common/interfaces/antares';
+import { useElementBounding, useScroll } from '@vueuse/core';
 
 const applicationStore = useApplicationStore();
 const connectionsStore = useConnectionsStore();
 const workspacesStore = useWorkspacesStore();
+const settingsStore = useSettingsStore();
 
 const { updateStatus } = storeToRefs(applicationStore);
-const { connections: getConnections } = storeToRefs(connectionsStore);
+const { connections: storedConnections, pinnedConnections, lastConnections } = storeToRefs(connectionsStore);
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const { disableScratchpad } = storeToRefs(settingsStore);
 
 const { showSettingModal, showScratchpad } = applicationStore;
-const { getConnectionName, updateConnections } = connectionsStore;
+const { getConnectionName, updatePinnedConnections } = connectionsStore;
 const { getWorkspace, selectWorkspace } = workspacesStore;
 
+const emit = defineEmits(['show-connections-modal']);
+
 const isLinux = process.platform === 'linux';
+
+const sidebarConnections: Ref<HTMLDivElement> = ref(null);
 const isContext: Ref<boolean> = ref(false);
 const isDragging: Ref<boolean> = ref(false);
+const isScrollable: Ref<boolean> = ref(false);
+const isScrolling = ref(useScroll(sidebarConnections)?.isScrolling);
 const contextEvent: Ref<MouseEvent> = ref(null);
 const contextConnection: Ref<ConnectionParams> = ref(null);
+const sidebarConnectionsHeight = ref(useElementBounding(sidebarConnections)?.height);
 
-const connections = computed({
-   get () {
-      return getConnections.value;
-   },
-   set (value: ConnectionParams[]) {
-      updateConnections(value);
+const pinnedConnectionsArr = computed({
+   get: () => [...pinnedConnections.value].map(c => storedConnections.value.find(sc => sc.uid === c)).filter(Boolean),
+   set: (value: ConnectionParams[]) => {
+      const pinnedUid = value.reduce((acc, curr) => {
+         acc.push(curr.uid);
+         return acc;
+      }, []);
+
+      updatePinnedConnections(pinnedUid);
    }
+});
+
+const unpinnedConnectionsArr = computed(() => {
+   return storedConnections.value
+      .filter(c => !pinnedConnections.value.has(c.uid))
+      .map(c => {
+         const connTime = lastConnections.value.find((lc) => lc.uid === c.uid)?.time || 0;
+         return { ...c, time: connTime };
+      })
+      .sort((a, b) => {
+         if (a.time < b.time) return 1;
+         else if (a.time > b.time) return -1;
+         return 0;
+      });
 });
 
 const hasUpdates = computed(() => ['available', 'downloading', 'downloaded', 'link'].includes(updateStatus.value));
@@ -101,11 +162,14 @@ const contextMenu = (event: MouseEvent, connection: ConnectionParams) => {
 };
 
 const tooltipPosition = (e: Event) => {
-   const el = e.target ? e.target : e;
-   const fromTop = isLinux
-      ? window.scrollY + (el as HTMLElement).getBoundingClientRect().top + ((el as HTMLElement).offsetHeight / 4)
-      : window.scrollY + (el as HTMLElement).getBoundingClientRect().top - ((el as HTMLElement).offsetHeight / 4);
-   (el as HTMLElement).querySelector<HTMLElement>('.ex-tooltip-content').style.top = `${fromTop}px`;
+   const el = (e.target ? e.target : e) as unknown as HTMLElement;
+   const tooltip = el.querySelector<HTMLElement>('.ex-tooltip-content');
+   if (tooltip) {
+      const fromTop = isLinux
+         ? window.scrollY + el.getBoundingClientRect().top + (el.offsetHeight / 4)
+         : window.scrollY + el.getBoundingClientRect().top - (el.offsetHeight / 4);
+      tooltip.style.top = `${fromTop}px`;
+   }
 };
 
 const getStatusBadge = (uid: string) => {
@@ -126,13 +190,50 @@ const getStatusBadge = (uid: string) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const dragStop = (e: any) => { // TODO: temp
+const dragStop = (e: any) => {
    isDragging.value = false;
 
    setTimeout(() => {
       tooltipPosition(e.originalEvent.target.parentNode);
    }, 200);
 };
+
+watch(sidebarConnectionsHeight, (value) => {
+   isScrollable.value = value < sidebarConnections.value.scrollHeight;
+});
+
+watch(unpinnedConnectionsArr, (newVal, oldVal) => {
+   if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
+      setTimeout(() => {
+         const element = document.querySelector<HTMLElement>('.settingbar-element.selected');
+         if (element) {
+            const rect = element.getBoundingClientRect();
+            const elemTop = rect.top;
+            const elemBottom = rect.bottom;
+            const isVisible = (elemTop >= 0) && (elemBottom <= window.innerHeight);
+
+            if (!isVisible) {
+               element.setAttribute('tabindex', '-1');
+               element.focus();
+               element.removeAttribute('tabindex');
+            }
+         }
+      }, 50);
+   }
+});
+
+watch(selectedWorkspace, (newVal, oldVal) => {
+   if (newVal !== oldVal) {
+      setTimeout(() => {
+         const element = document.querySelector<HTMLElement>('.settingbar-element.selected');
+         if (element) {
+            element.setAttribute('tabindex', '-1');
+            element.focus();
+            element.removeAttribute('tabindex');
+         }
+      }, 150);
+   }
+});
 </script>
 
 <style lang="scss">
@@ -141,7 +242,7 @@ const dragStop = (e: any) => { // TODO: temp
     height: calc(100vh - #{$excluding-size});
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+   //  justify-content: space-between;
     align-items: center;
     padding: 0;
     z-index: 9;
@@ -149,7 +250,7 @@ const dragStop = (e: any) => { // TODO: temp
     .settingbar-top-elements {
       overflow-x: hidden;
       overflow-y: overlay;
-      max-height: calc((100vh - 3.5rem) - #{$excluding-size});
+      // max-height: calc((100vh - 3.5rem) - #{$excluding-size});
 
       &::-webkit-scrollbar {
         width: 3px;
@@ -157,8 +258,8 @@ const dragStop = (e: any) => { // TODO: temp
     }
 
     .settingbar-bottom-elements {
-      padding-top: 0.5rem;
       z-index: 1;
+      margin-top: auto;
     }
 
     .settingbar-elements {
@@ -212,6 +313,21 @@ const dragStop = (e: any) => { // TODO: temp
 
           &.badge-update::after {
             bottom: initial;
+          }
+        }
+
+        .settingbar-element-pin{
+          margin: 0 auto;
+
+          &::before {
+            font: normal normal normal 14px/1 "Material Design Icons";
+            content: "\F0403";
+            color: $body-font-color-dark;
+            transform: rotate(45deg);
+            opacity: .25;
+            bottom: -8px;
+            left: -4px;
+            position: absolute;
           }
         }
       }
