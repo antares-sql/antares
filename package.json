@@ -117,7 +117,7 @@
   "dependencies": {
     "@electron/remote": "~2.0.1",
     "@faker-js/faker": "~6.1.2",
-    "@mdi/font": "~6.1.95",
+    "@mdi/font": "~6.9.96",
     "@turf/helpers": "~6.5.0",
     "@vscode/vscode-languagedetection": "~1.0.21",
     "@vueuse/core": "~8.7.5",
@@ -141,7 +141,7 @@
     "sql-formatter": "~4.0.2",
     "ssh2-promise": "~1.0.2",
     "v-mask": "~2.3.0",
-    "vue": "~3.2.33",
+    "vue": "~3.2.37",
     "vue-i18n": "~9.1.9",
     "vuedraggable": "~4.1.0"
   },
@@ -176,7 +176,7 @@
     "mini-css-extract-plugin": "~2.4.5",
     "node-loader": "~2.0.0",
     "playwright": "~1.21.1",
-    "playwright-core": "~1.21.1",
+    "playwright-core": "~1.23.1",
     "progress-webpack-plugin": "~1.0.12",
     "rimraf": "~3.0.2",
     "sass": "~1.42.1",
