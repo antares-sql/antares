@@ -117,7 +117,7 @@
   "dependencies": {
     "@electron/remote": "~2.0.1",
     "@faker-js/faker": "~6.1.2",
-    "@mdi/font": "~6.1.95",
+    "@mdi/font": "~6.9.96",
     "@turf/helpers": "~6.5.0",
     "@vscode/vscode-languagedetection": "~1.0.21",
     "@vueuse/core": "~8.7.5",
@@ -141,13 +141,13 @@
     "sql-formatter": "~4.0.2",
     "ssh2-promise": "~1.0.2",
     "v-mask": "~2.3.0",
-    "vue": "~3.2.33",
+    "vue": "~3.2.37",
     "vue-i18n": "~9.1.9",
     "vuedraggable": "~4.1.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "~7.15.7",
-    "@babel/preset-env": "~7.15.8",
+    "@babel/preset-env": "~7.18.6",
     "@babel/preset-typescript": "~7.16.7",
     "@playwright/test": "~1.21.1",
     "@types/better-sqlite3": "~7.5.0",
