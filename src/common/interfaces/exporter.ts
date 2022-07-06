@@ -7,6 +7,12 @@ export interface TableParams {
 
 export interface ExportOptions {
    schema: string;
+   tables: {
+      table: string;
+      includeStructure: boolean;
+      includeContent: boolean;
+      includeDropStatement: boolean;
+   }[];
    includes: {[key: string]: boolean};
    outputFormat: 'sql' | 'sql.zip';
    outputFile: string;

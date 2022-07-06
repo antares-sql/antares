@@ -269,8 +269,8 @@ import * as moment from 'moment';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
-import { SchemaInfos } from 'common/interfaces/antares';
-import { ExportOptions, ExportState, TableParams } from 'common/interfaces/exporter';
+import { ClientCode, SchemaInfos } from 'common/interfaces/antares';
+import { ExportOptions, ExportState } from 'common/interfaces/exporter';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import { useFocusTrap } from '@/composables/useFocusTrap';
@@ -302,11 +302,15 @@ const isExporting = ref(false);
 const isRefreshing = ref(false);
 const progressPercentage = ref(0);
 const progressStatus = ref('');
-const tables: Ref<TableParams[]> = ref([]);
-const options: Ref<ExportOptions> = ref({
+const tables: Ref<{
+   table: string;
+   includeStructure: boolean;
+   includeContent: boolean;
+   includeDropStatement: boolean;
+}[]> = ref([]);
+const options: Ref<Partial<ExportOptions>> = ref({
    schema: props.selectedSchema,
    includes: {} as {[key: string]: boolean},
-   outputFile: '',
    outputFormat: 'sql' as 'sql' | 'sql.zip',
    sqlInsertAfter: 250,
    sqlInsertDivider: 'bytes' as 'bytes' | 'rows'
@@ -353,7 +357,7 @@ const startExport = async () => {
       outputFile: dumpFilePath.value,
       tables: [...tables.value],
       ...options.value
-   };
+   } as ExportOptions & { uid: string; type: ClientCode };
 
    try {
       const { status, response } = await Schema.export(params);
