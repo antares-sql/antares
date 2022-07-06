@@ -317,6 +317,11 @@ onBeforeUnmount(() => {
    cursor: pointer;
    transition: all .2s;
    border-radius: $border-radius;
+   outline: none;
+
+   &:focus {
+      box-shadow: 0 0 3px .1rem rgba($primary-color, 80%);
+   }
 
    &:hover {
       .all-connections-buttons {
