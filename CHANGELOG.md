@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.9](https://github.com/antares-sql/antares/compare/v0.5.8...v0.5.9) (2022-07-06)
+
+
+### Features
+
+* ability to pin/unpin and delete connections from the "all connections" modal ([8e70570](https://github.com/antares-sql/antares/commit/8e705706aecc5c9790329e63e61a1c02fa5d0342))
+* connections sorted by last usage by default and option to pin them ([36e98e0](https://github.com/antares-sql/antares/commit/36e98e0742657e25df7768aa5b3b7cb350df5509))
+* ctrl/cmd+space to open all connections modal ([a9a4344](https://github.com/antares-sql/antares/commit/a9a4344a71cc0f8f156b839733f6ddc200a26268))
+* modal with all connections ([a703dcc](https://github.com/antares-sql/antares/commit/a703dcc53eb920117bc346a3c21f0c729c0ad96d))
+* option to disable scratchpad ([56b0a48](https://github.com/antares-sql/antares/commit/56b0a4815c6f54eef164d849f6ca25af1e142b16))
+* search form in all connections modal ([ec5ab73](https://github.com/antares-sql/antares/commit/ec5ab73b19d99e9971ae87e5f0a8d1bd1c34ef00))
+
+
+### Bug Fixes
+
+* error on export schema ([cf9c7c6](https://github.com/antares-sql/antares/commit/cf9c7c600aa915cef1ec3777866badb7ab1312ee))
+* missing option for untrusted ssl connection on connections edit panel ([71a5b5c](https://github.com/antares-sql/antares/commit/71a5b5c8285fb777c43e7f6516006bfe9f52591c))
+
+
+### Improvements
+
+* **UI:** improved focus visibility for buttons ([d2eb31a](https://github.com/antares-sql/antares/commit/d2eb31a63d612323f8738eded1e1ce7b23554001))
+
 ### [0.5.8](https://github.com/antares-sql/antares/compare/v0.5.7...v0.5.8) (2022-07-02)
 
 
