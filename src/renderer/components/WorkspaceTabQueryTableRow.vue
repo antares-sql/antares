@@ -194,9 +194,9 @@
 import { computed, onBeforeUnmount, Prop, ref, Ref, watch, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import * as moment from 'moment';
-import { ModelOperations } from '@vscode/vscode-languagedetection';
 import { mimeFromHex } from 'common/libs/mimeFromHex';
 import { formatBytes } from 'common/libs/formatBytes';
+import { langDetector } from 'common/libs/langDetector';
 import { bufferToBase64 } from 'common/libs/bufferToBase64';
 import hexToBinary, { HexChar } from 'common/libs/hexToBinary';
 import {
@@ -604,19 +604,19 @@ watch(() => props.fields, () => {
 });
 
 watch(isTextareaEditor, (val) => {
-   if (val) {
-      const modelOperations = new ModelOperations();
-      (async () => {
-         const detected = await modelOperations.runModel(editingContent.value);
-         const filteredLanguages = detected.filter(dLang =>
-            availableLanguages.value.some(aLang => aLang.id === dLang.languageId) &&
-               dLang.confidence > 0.1
-         );
+   if (val)
+      editorMode.value = langDetector(editingContent.value);
+      // const modelOperations = new ModelOperations();
+      // (async () => {
+      //    const detected = await modelOperations.runModel(editingContent.value);
+      //    const filteredLanguages = detected.filter(dLang =>
+      //       availableLanguages.value.some(aLang => aLang.id === dLang.languageId) &&
+      //          dLang.confidence > 0.1
+      //    );
 
-         if (filteredLanguages.length)
-            editorMode.value = availableLanguages.value.find(lang => lang.id === filteredLanguages[0].languageId).slug;
-      })();
-   }
+   //    if (filteredLanguages.length)
+   //       editorMode.value = availableLanguages.value.find(lang => lang.id === filteredLanguages[0].languageId).slug;
+   // })();
 });
 
 watch(() => props.selected, (isSelected) => {
