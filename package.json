@@ -129,7 +129,7 @@
     "encoding": "~0.1.13",
     "leaflet": "~1.7.1",
     "marked": "~4.0.0",
-    "moment": "~2.29.1",
+    "moment": "~2.29.4",
     "mysql2": "~2.3.2",
     "pg": "~8.7.1",
     "pg-query-stream": "~4.2.3",
