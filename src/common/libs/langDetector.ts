@@ -132,9 +132,19 @@ function isHTML (str: string) {
       'wbr'
    ];
    const doc = new DOMParser().parseFromString(str, 'text/html');
+   const lowerStr = str.toLowerCase();
    if (Array.from(doc.body.childNodes).some(node => node.nodeType === 1))
-      return tags.some((tag) => str.includes(`<${tag}>`));
+      return tags.some((tag) => lowerStr.includes(`<${tag}>`));
 
+   return false;
+}
+
+function isSVG (str: string) {
+   const doc = new DOMParser().parseFromString(str, 'text/xml');
+   const lowerStr = str.toLowerCase();
+   const errorNode = doc.querySelector('parsererror');
+   if (!errorNode)
+      return lowerStr.includes('<svg');
    return false;
 }
 
@@ -144,7 +154,7 @@ function isXML (str: string) {
    return !errorNode;
 }
 
-function isMarkdown (str: string) {
+function isMD (str: string) {
    const mdChecks = [
       '# ',
       '`',
@@ -168,15 +178,15 @@ function isMarkdown (str: string) {
 export function langDetector (str: string) {
    if (!str.trim().length)
       return 'text';
-
    if (isJSON(str))
       return 'json';
    if (isHTML(str))
       return 'html';
+   if (isSVG(str))
+      return 'svg';
    if (isXML(str))
       return 'xml';
-   if (isMarkdown(str))
+   if (isMD(str))
       return 'markdown';
-
    return 'text';
 }

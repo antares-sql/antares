@@ -2,6 +2,7 @@
    <ConfirmModal
       :confirm-text="t('word.confirm')"
       size="400"
+      :disable-autofocus="true"
       @confirm="confirmOptionsChange"
       @hide="$emit('hide')"
    >
