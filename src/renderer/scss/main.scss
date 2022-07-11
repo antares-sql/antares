@@ -264,6 +264,12 @@ option:checked {
   border: none;
 }
 
+.tooltip:hover {
+  &::after {
+    opacity: 1;
+  }
+}
+
 .badge {
   &[data-badge],
   &:not([data-badge]) {
