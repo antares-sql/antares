@@ -606,17 +606,6 @@ watch(() => props.fields, () => {
 watch(isTextareaEditor, (val) => {
    if (val)
       editorMode.value = langDetector(editingContent.value);
-      // const modelOperations = new ModelOperations();
-      // (async () => {
-      //    const detected = await modelOperations.runModel(editingContent.value);
-      //    const filteredLanguages = detected.filter(dLang =>
-      //       availableLanguages.value.some(aLang => aLang.id === dLang.languageId) &&
-      //          dLang.confidence > 0.1
-      //    );
-
-   //    if (filteredLanguages.length)
-   //       editorMode.value = availableLanguages.value.find(lang => lang.id === filteredLanguages[0].languageId).slug;
-   // })();
 });
 
 watch(() => props.selected, (isSelected) => {

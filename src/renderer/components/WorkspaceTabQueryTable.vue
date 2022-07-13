@@ -272,6 +272,8 @@ const getSchema = (index: number) => {
 };
 
 const getPrimaryValue = (row: any) => {
+   if (!primaryField.value) return null;
+
    const primaryFieldName = Object.keys(row).find(prop => [
       primaryField.value.alias,
       primaryField.value.name,
@@ -321,7 +323,7 @@ const updateField = (payload: { field: string; type: string; content: any }, row
    });
 
    const params = {
-      primary: primaryField.value.name,
+      primary: primaryField.value?.name,
       schema: getSchema(resultsetIndex.value),
       table: getTable(resultsetIndex.value),
       id: getPrimaryValue(orgRow),
