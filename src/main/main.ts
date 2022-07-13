@@ -1,10 +1,11 @@
-import { app, BrowserWindow, /* session, */ nativeImage, Menu, ipcMain } from 'electron';
+import { app, BrowserWindow, globalShortcut, nativeImage, Menu, ipcMain } from 'electron';
 import * as path from 'path';
 import * as Store from 'electron-store';
 import * as windowStateKeeper from 'electron-window-state';
 import * as remoteMain from '@electron/remote/main';
 
 import ipcHandlers from './ipc-handlers';
+import { shortcuts } from 'common/shortcuts';
 
 Store.initRenderer();
 const persistentStore = new Store({ name: 'settings' });
@@ -141,6 +142,27 @@ else {
          const extensionPath = path.resolve(__dirname, `../../misc/${antares.devtoolsId}`);
          window.webContents.session.loadExtension(extensionPath, { allowFileAccess: true }).catch(console.error);
       }
+   });
+
+   app.on('browser-window-focus', () => {
+      // Send registered shortcut events to window
+      for (const shortcut of shortcuts) {
+         globalShortcut.register(shortcut.keys, () => {
+            mainWindow.webContents.send(shortcut.event);
+            if (isDevelopment) console.log('EVENT:', shortcut);
+         });
+      }
+
+      // Main process shortcuts
+      if (isDevelopment) {
+         globalShortcut.register('CommandOrControl+F12', () => {
+            mainWindow.webContents.openDevTools();
+         });
+      }
+   });
+
+   app.on('browser-window-blur', () => {
+      globalShortcut.unregisterAll();
    });
 }
 

@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, onBeforeUnmount, onMounted, Ref, ref } from 'vue';
+import { defineAsyncComponent, onMounted, Ref, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { ipcRenderer } from 'electron';
 import { useI18n } from 'vue-i18n';
@@ -67,22 +67,15 @@ const { changeApplicationTheme } = settingsStore;
 
 const isAllConnectionsModal: Ref<boolean> = ref(false);
 
-const onKey = (e: KeyboardEvent) => {
-   if (e.ctrlKey || e.metaKey) {
-      if (e.code === 'Space') {
-         isAllConnectionsModal.value = true;
-         e.stopPropagation();
-      }
-   }
-};
+ipcRenderer.on('open-connections-modal', () => {
+   isAllConnectionsModal.value = true;
+});
 
 document.addEventListener('DOMContentLoaded', () => {
    setTimeout(() => {
       changeApplicationTheme(applicationTheme.value);// Forces persistentStore to save on file and mail process
    }, 1000);
 });
-
-window.addEventListener('keypress', onKey);
 
 onMounted(() => {
    ipcRenderer.send('check-for-updates');
@@ -125,10 +118,6 @@ onMounted(() => {
          node = node.parentNode;
       }
    });
-});
-
-onBeforeUnmount(() => {
-   window.removeEventListener('keydown', onKey);
 });
 </script>
 
