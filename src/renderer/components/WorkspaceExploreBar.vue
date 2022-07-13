@@ -235,17 +235,7 @@ const refresh = async () => {
    }
 };
 
-const explorebarSearch = (e: KeyboardEvent) => {
-   if (e.code === 'Backspace') {
-      e.preventDefault();
-      if (searchTerm.value.length)
-         searchTerm.value = searchTerm.value.slice(0, -1);
-      else
-         return;
-   }
-   else if (e.key.length > 1)// Prevent non-alphanumerics
-      return;
-
+const explorebarSearch = () => {
    searchInput.value.focus();
 };
 
