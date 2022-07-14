@@ -47,10 +47,11 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue']);
 
 const cursorPosition = ref(0);
-const fields = ref([]);
+const lastTableFields = ref([]);
 const customCompleter = ref([]);
 const id = ref(uidGen());
 const lastSchema: Ref<string> = ref(null);
+const fields: Ref<{name: string; type: string}[]> = ref([]);
 
 const tables = computed(() => {
    return props.workspace
@@ -61,11 +62,24 @@ const tables = computed(() => {
          }, []).map(table => {
             return {
                name: table.name as string,
-               type: table.type as string,
-               fields: []
+               type: table.type as string
             };
          })
       : [];
+});
+
+const tablesInQuery = computed(() => {
+   const words = props.modelValue
+      .replaceAll(/[.'"`]/g, ' ')
+      .split(' ')
+      .filter(Boolean);
+
+   const includedTables = tables.value.reduce((acc, curr) => {
+      acc.push(curr.name);
+      return acc;
+   }, [] as string[]).filter((t) => words.includes(t));
+
+   return includedTables;
 });
 
 const triggers = computed(() => {
@@ -150,11 +164,11 @@ const lastWord = computed(() => {
 
 const isLastWordATable = computed(() => /\w+\.\w*/gm.test(lastWord.value));
 
-const fieldsCompleter = computed(() => {
+const tableFieldsCompleter = computed(() => {
    return {
       getCompletions: (editor: never, session: never, pos: never, prefix: never, callback: (err: null, response: ace.Ace.Completion[]) => void) => {
          const completions: ace.Ace.Completion[] = [];
-         fields.value.forEach(field => {
+         lastTableFields.value.forEach(field => {
             completions.push({
                value: field,
                meta: 'column',
@@ -175,7 +189,8 @@ const setCustomCompleter = () => {
             ...triggers.value,
             ...procedures.value,
             ...functions.value,
-            ...schedulers.value
+            ...schedulers.value,
+            ...fields.value
          ].forEach(el => {
             completions.push({
                value: el.name,
@@ -193,6 +208,29 @@ const setCustomCompleter = () => {
 watch(() => props.modelValue, () => {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    cursorPosition.value = (editor.value.session as any).doc.positionToIndex(editor.value.getCursorPosition());
+});
+
+watch(() => tablesInQuery.value.length, () => {
+   const localFields: {name: string; type: string}[] = [];
+   tablesInQuery.value.forEach(async table => {
+      const params = {
+         uid: props.workspace.uid,
+         schema: props.schema,
+         table: table
+      };
+
+      const { response } = await Tables.getTableColumns(params);
+
+      response.forEach((field: { name: string }) => {
+         localFields.push({
+            name: field.name,
+            type: 'column'
+         });
+      });
+   });
+
+   fields.value = localFields;
+   setCustomCompleter();
 });
 
 watch(editorTheme, () => {
@@ -289,8 +327,8 @@ onMounted(() => {
 
                   Tables.getTableColumns(params).then(res => {
                      if (res.response.length)
-                        fields.value = res.response.map((field: { name: string }) => field.name);
-                     editor.value.completers = [fieldsCompleter.value];
+                        lastTableFields.value = res.response.map((field: { name: string }) => field.name);
+                     editor.value.completers = [tableFieldsCompleter.value];
                      editor.value.execCommand('startAutocomplete');
                   }).catch(console.log);
                }

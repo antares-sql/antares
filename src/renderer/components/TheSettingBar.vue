@@ -55,7 +55,7 @@
                @mouseover.self="tooltipPosition"
             >
                <i class="settingbar-element-icon mdi mdi-24px mdi-dots-horizontal text-light" />
-               <span class="ex-tooltip-content">{{ $t('message.allConnections') }} (CTRL+Space)</span>
+               <span class="ex-tooltip-content">{{ $t('message.allConnections') }} (Shift+CTRL+Space)</span>
             </li>
             <li
                class="settingbar-element btn btn-link ex-tooltip"

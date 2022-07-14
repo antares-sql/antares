@@ -7,7 +7,7 @@ interface ShortcutRecord {
 export const shortcuts: ShortcutRecord[] = [
    {
       event: 'open-connections-modal',
-      keys: 'CommandOrControl+Space',
+      keys: 'Shift+CommandOrControl+Space',
       description: 'Show all connections'
    }
 ];
