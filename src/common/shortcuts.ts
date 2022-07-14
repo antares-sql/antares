@@ -1,13 +1,44 @@
 interface ShortcutRecord {
    event: string;
-   keys: Electron.Accelerator;
+   keys: Electron.Accelerator[];
    description: string;
 }
 
-export const shortcuts: ShortcutRecord[] = [
+const shortcuts: ShortcutRecord[] = [
+   {
+      event: 'open-new-tab',
+      keys: ['CommandOrControl+T'],
+      description: 'Open a new query tab'
+   },
+   {
+      event: 'close-tab',
+      keys: ['CommandOrControl+W'],
+      description: 'Close tab'
+   },
+   {
+      event: 'next-tab',
+      keys: ['Alt+CommandOrControl+Right', 'CommandOrControl+PageDown'],
+      description: 'Next tab'
+   },
+   {
+      event: 'prev-tab',
+      keys: ['Alt+CommandOrControl+Left', 'CommandOrControl+PageUp'],
+      description: 'Previous tab'
+   },
    {
       event: 'open-connections-modal',
-      keys: 'Shift+CommandOrControl+Space',
+      keys: ['Shift+CommandOrControl+Space'],
       description: 'Show all connections'
    }
 ];
+
+for (let i = 1; i <= 9; i++) {
+   shortcuts.push(
+      {
+         event: `select-tab-${i}`,
+         keys: [`CommandOrControl+${i}`],
+         description: `Select tab number ${i}`
+      });
+}
+
+export { shortcuts };

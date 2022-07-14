@@ -470,7 +470,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, Prop, ref, watch } from 'vue';
+import { ipcRenderer } from 'electron';
+import { computed, onMounted, Prop, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import * as Draggable from 'vuedraggable';
 import Connection from '@/ipc-api/Connection';
@@ -575,39 +576,6 @@ const getSelectedTab = () => {
    return workspace.value.tabs.find(tab => tab.uid === selectedTab.value);
 };
 
-const onKey = (e: KeyboardEvent) => {
-   e.stopPropagation();
-
-   if (!isSelected.value)
-      return;
-
-   if ((e.ctrlKey || e.metaKey) && e.key === 't' && !e.altKey) { // CTRL|Command + t
-      addQueryTab();
-   }
-
-   if ((e.ctrlKey || e.metaKey) && e.key === 'w' && !e.altKey) { // CTRL|Command + w
-      const currentTab = getSelectedTab();
-      if (currentTab)
-         closeTab(currentTab);
-   }
-
-   // select next tab
-   if (e.altKey && (e.ctrlKey || e.metaKey) && e.key === 'ArrowRight')
-      selectNextTab({ uid: props.connection.uid });
-
-   // select prev tab
-   if (e.altKey && (e.ctrlKey || e.metaKey) && e.key === 'ArrowLeft')
-      selectPrevTab({ uid: props.connection.uid });
-
-   // select tab by index (range 1-9). CTRL|CMD number
-   if ((e.ctrlKey || e.metaKey) && !e.altKey && e.keyCode >= 49 && e.keyCode <= 57) {
-      const newIndex = parseInt(e.key) - 1;
-
-      if (workspace.value.tabs[newIndex])
-         selectTab({ uid: props.connection.uid, tab: workspace.value.tabs[newIndex].uid });
-   }
-};
-
 const openAsPermanentTab = (tab: WorkspaceTab) => {
    const permanentTabs = {
       table: 'data',
@@ -667,15 +635,42 @@ const cutText = (string: string) => {
 };
 
 (async () => {
-   window.addEventListener('keydown', onKey);
    await addWorkspace(props.connection.uid);
    const isInitiated = await Connection.checkConnection(props.connection.uid);
    if (isInitiated)
       connectWorkspace(props.connection);
 })();
 
-onBeforeUnmount(() => {
-   window.removeEventListener('keydown', onKey);
+onMounted(() => {
+   ipcRenderer.on('open-new-tab', () => {
+      if (!isSelected.value) return;
+      addQueryTab();
+   });
+
+   ipcRenderer.on('close-tab', () => {
+      if (!isSelected.value) return;
+      const currentTab = getSelectedTab();
+      if (currentTab)
+         closeTab(currentTab);
+   });
+
+   ipcRenderer.on('next-tab', () => {
+      if (!isSelected.value) return;
+      selectNextTab({ uid: props.connection.uid });
+   });
+
+   ipcRenderer.on('prev-tab', () => {
+      if (!isSelected.value) return;
+      selectPrevTab({ uid: props.connection.uid });
+   });
+
+   for (let i = 1; i <= 9; i++) {
+      ipcRenderer.on(`select-tab-${i}`, () => {
+         if (!isSelected.value) return;
+         if (workspace.value.tabs[i-1])
+            selectTab({ uid: props.connection.uid, tab: workspace.value.tabs[i-1].uid });
+      });
+   }
 });
 </script>
 

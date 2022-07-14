@@ -147,10 +147,12 @@ else {
    app.on('browser-window-focus', () => {
       // Send registered shortcut events to window
       for (const shortcut of shortcuts) {
-         globalShortcut.register(shortcut.keys, () => {
-            mainWindow.webContents.send(shortcut.event);
-            if (isDevelopment) console.log('EVENT:', shortcut);
-         });
+         for (const key of shortcut.keys) {
+            globalShortcut.register(key, () => {
+               mainWindow.webContents.send(shortcut.event);
+               if (isDevelopment) console.log('EVENT:', shortcut);
+            });
+         }
       }
 
       // Main process shortcuts
