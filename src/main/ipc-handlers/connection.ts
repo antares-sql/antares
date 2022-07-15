@@ -55,6 +55,7 @@ export default (connections: {[key: string]: antares.Client}) => {
 
       try {
          const connection = await ClientsFactory.getClient({
+            uid: conn.uid,
             client: conn.client,
             params
          });
@@ -128,6 +129,7 @@ export default (connections: {[key: string]: antares.Client}) => {
 
       try {
          const connection = ClientsFactory.getClient({
+            uid: conn.uid,
             client: conn.client,
             params,
             poolSize: 5
