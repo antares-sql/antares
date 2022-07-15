@@ -1,11 +1,14 @@
 import * as antares from 'common/interfaces/antares';
+import { webContents } from 'electron';
 import mysql from 'mysql2/promise';
 import * as pg from 'pg';
 import SSH2Promise from 'ssh2-promise';
 
-const queryLogger = (sql: string) => {
+const queryLogger = ({ sql, cUid }: {sql: string; cUid: string}) => {
    // Remove comments, newlines and multiple spaces
    const escapedSql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '').replace(/\s\s+/g, ' ');
+   const mainWindow = webContents.fromId(1);
+   mainWindow.send('query-log', { cUid, sql: escapedSql });
    console.log(escapedSql);
 };
 
@@ -14,15 +17,17 @@ const queryLogger = (sql: string) => {
  */
 export class AntaresCore {
    _client: antares.ClientCode;
+   protected _cUid: string
    protected _params: mysql.ConnectionOptions | pg.ClientConfig | { databasePath: string; readonly: boolean};
    protected _poolSize: number;
    protected _ssh?: SSH2Promise;
-   protected _logger: (sql: string) => void;
+   protected _logger: (args: {sql: string; cUid: string}) => void;
    protected _queryDefaults: antares.QueryBuilderObject;
    protected _query: antares.QueryBuilderObject;
 
    constructor (args: antares.ClientParams) {
       this._client = args.client;
+      this._cUid = args.uid;
       this._params = args.params;
       this._poolSize = args.poolSize || undefined;
       this._logger = args.logger || queryLogger;

@@ -71,6 +71,10 @@ ipcRenderer.on('open-connections-modal', () => {
    isAllConnectionsModal.value = true;
 });
 
+ipcRenderer.on('query-log', (e, sql: string) => {
+   console.log(sql);
+});
+
 document.addEventListener('DOMContentLoaded', () => {
    setTimeout(() => {
       changeApplicationTheme(applicationTheme.value);// Forces persistentStore to save on file and mail process

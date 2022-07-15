@@ -586,7 +586,7 @@ export class SQLiteClient extends AntaresCore {
    }
 
    async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {
-      if (process.env.NODE_ENV === 'development') this._logger(sql);// TODO: replace BLOB content with a placeholder
+      if (process.env.NODE_ENV === 'development') this._logger({ cUid: this._cUid, sql });// TODO: replace BLOB content with a placeholder
 
       args = {
          nest: false,
