@@ -305,6 +305,11 @@
     }
   }
 
+  .query-console {
+    border-top: 1px solid #444;
+    background-color: $bg-color-dark;
+  }
+
   .tile {
     transition: background 0.2s;
 

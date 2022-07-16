@@ -372,6 +372,8 @@ const resize = (e: MouseEvent) => {
    editorHeight.value = localEditorHeight;
 };
 
+const resizeResults = () => queryTable.value.resizeResults();
+
 const onWindowResize = (e: MouseEvent) => {
    const el = queryEditor.value.$el;
    const queryFooterHeight = queryAreaFooter.value.clientHeight;
@@ -386,7 +388,7 @@ const onWindowResize = (e: MouseEvent) => {
 const stopResize = () => {
    window.removeEventListener('mousemove', resize);
    if (queryTable.value && results.value.length)
-      queryTable.value.resizeResults();
+      resizeResults();
 
    if (queryEditor.value)
       queryEditor.value.editor.resize();
@@ -475,6 +477,8 @@ const rollbackTab = async () => {
 
    isQuering.value = false;
 };
+
+defineExpose({ resizeResults });
 
 query.value = props.tab.content as string;
 selectedSchema.value = props.tab.schema || breadcrumbsSchema.value;

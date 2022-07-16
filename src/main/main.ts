@@ -155,9 +155,11 @@ else {
          }
       }
 
-      // Main process shortcuts
-      if (isDevelopment) {
-         globalShortcut.register('CommandOrControl+F12', () => {
+      if (isDevelopment) { // Dev shortcuts
+         globalShortcut.register('Shift+CommandOrControl+F5', () => {
+            mainWindow.reload();
+         });
+         globalShortcut.register('Shift+CommandOrControl+F12', () => {
             mainWindow.webContents.openDevTools();
          });
       }

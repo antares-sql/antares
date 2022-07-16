@@ -141,7 +141,8 @@ module.exports = {
       connectionString: 'Connection string',
       contributors: 'Contributors',
       pin: 'Pin',
-      unpin: 'Unpin'
+      unpin: 'Unpin',
+      console: 'Console'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -296,7 +297,8 @@ module.exports = {
       disableFKChecks: 'Disable foreigh key checks',
       allConnections: 'All connections',
       searchForConnections: 'Search for connections',
-      disableScratchpad: 'Disable scratchpad'
+      disableScratchpad: 'Disable scratchpad',
+      reportABug: 'Report a bug'
    },
    faker: {
       address: 'Address',

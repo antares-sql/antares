@@ -10,6 +10,7 @@ import { VueMaskDirective } from 'v-mask';
 import { useApplicationStore } from '@/stores/application';
 import { useSettingsStore } from '@/stores/settings';
 import { useNotificationsStore } from '@/stores/notifications';
+import { useConsoleStore } from '@/stores/console';
 
 import App from '@/App.vue';
 import i18n from '@/i18n';
@@ -34,6 +35,11 @@ i18n.global.locale = locale;
 // IPC exceptions
 ipcRenderer.on('unhandled-exception', (event, error) => {
    useNotificationsStore().addNotification({ status: 'error', message: error.message });
+});
+
+// IPC query logs
+ipcRenderer.on('query-log', (event, logRecord) => {
+   useConsoleStore().putLog(logRecord);
 });
 
 // IPC app updates

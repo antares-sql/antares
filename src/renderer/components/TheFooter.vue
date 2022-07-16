@@ -11,14 +11,30 @@
 
       <div class="footer-right-elements">
          <ul class="footer-elements">
+            <li
+               v-if="workspace !== 'NEW'"
+               class="footer-element footer-link"
+               @click="toggleConsole"
+            >
+               <i class="mdi mdi-18px mdi-console-line mr-1" />
+               <small>{{ t('word.console') }}</small>
+            </li>
             <li class="footer-element footer-link" @click="openOutside('https://www.paypal.com/paypalme/fabiodistasio')">
                <i class="mdi mdi-18px mdi-coffee mr-1" />
-               <small>{{ $t('word.donate') }}</small>
+               <small>{{ t('word.donate') }}</small>
             </li>
-            <li class="footer-element footer-link" @click="openOutside('https://github.com/antares-sql/antares/issues')">
+            <li
+               class="footer-element footer-link"
+               :title="t('message.reportABug')"
+               @click="openOutside('https://github.com/antares-sql/antares/issues')"
+            >
                <i class="mdi mdi-18px mdi-bug" />
             </li>
-            <li class="footer-element footer-link" @click="showSettingModal('about')">
+            <li
+               class="footer-element footer-link"
+               :title="t('word.about')"
+               @click="showSettingModal('about')"
+            >
                <i class="mdi mdi-18px mdi-information-outline" />
             </li>
          </ul>
@@ -29,9 +45,13 @@
 <script setup lang="ts">
 import { shell } from 'electron';
 import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
 import { useApplicationStore } from '@/stores/application';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import { computed, ComputedRef } from 'vue';
+import { useConsoleStore } from '@/stores/console';
+
+const { t } = useI18n();
 
 interface DatabaseInfos {// TODO: temp
    name: string;
@@ -44,6 +64,7 @@ const applicationStore = useApplicationStore();
 const workspacesStore = useWorkspacesStore();
 
 const { getSelected: workspace } = storeToRefs(workspacesStore);
+const { toggleConsole } = useConsoleStore();
 
 const { showSettingModal } = applicationStore;
 const { getWorkspace } = workspacesStore;

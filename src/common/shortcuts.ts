@@ -29,6 +29,11 @@ const shortcuts: ShortcutRecord[] = [
       event: 'open-connections-modal',
       keys: ['Shift+CommandOrControl+Space'],
       description: 'Show all connections'
+   },
+   {
+      event: 'toggle-console',
+      keys: ['CommandOrControl+F12', 'CommandOrControl+`'],
+      description: 'Toggle console'
    }
 ];
 

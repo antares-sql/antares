@@ -71,10 +71,6 @@ ipcRenderer.on('open-connections-modal', () => {
    isAllConnectionsModal.value = true;
 });
 
-ipcRenderer.on('query-log', (e, sql: string) => {
-   console.log(sql);
-});
-
 document.addEventListener('DOMContentLoaded', () => {
    setTimeout(() => {
       changeApplicationTheme(applicationTheme.value);// Forces persistentStore to save on file and mail process
@@ -155,10 +151,10 @@ onMounted(() => {
     .connection-panel-wrapper {
       height: calc(100vh - #{$excluding-size});
       width: 100%;
-      padding-top: 15vh;
+      padding-top: 2rem;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
+      align-items: center;
       overflow: auto;
     }
   }
