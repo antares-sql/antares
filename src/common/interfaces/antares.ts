@@ -25,7 +25,7 @@ export interface IpcResponse<T = any> {
  */
 export interface ClientParams {
    client: ClientCode;
-   uid: string;
+   uid?: string;
    params:
       mysql.ConnectionOptions & {schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean}
       | pg.ClientConfig & {schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean}

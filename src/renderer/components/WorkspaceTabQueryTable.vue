@@ -118,6 +118,7 @@ import { storeToRefs } from 'pinia';
 import { uidGen } from 'common/libs/uidGen';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
+import { useConsoleStore } from '@/stores/console';
 import { arrayToFile } from '../libs/arrayToFile';
 import { TEXT, LONG_TEXT, BLOB } from 'common/fieldTypes';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
@@ -132,9 +133,12 @@ import { TableUpdateParams } from 'common/interfaces/tableApis';
 const { t } = useI18n();
 
 const settingsStore = useSettingsStore();
+const consoleStore = useConsoleStore();
 const { getWorkspace } = useWorkspacesStore();
 
 const { dataTabLimit: pageSize } = storeToRefs(settingsStore);
+
+const { consoleHeight } = storeToRefs(consoleStore);
 
 const props = defineProps({
    results: Array as Prop<QueryResult[]>,
@@ -298,8 +302,13 @@ const resizeResults = () => {
       const el = tableWrapper.value;
 
       if (el) {
+         let sizeToSubtract = 0;
          const footer = document.getElementById('footer');
-         const size = window.innerHeight - el.getBoundingClientRect().top - footer.offsetHeight;
+         if (footer) sizeToSubtract += footer.offsetHeight;
+
+         sizeToSubtract += consoleHeight.value;
+
+         const size = window.innerHeight - el.getBoundingClientRect().top - sizeToSubtract;
          resultsSize.value = size;
       }
       resultTable.value.updateWindow();
@@ -662,6 +671,10 @@ watch(() => props.isSelected, async (val) => {
       await nextTick();
       refreshScroller();
    }
+});
+
+watch(consoleHeight, () => {
+   resizeResults();
 });
 
 onUpdated(() => {

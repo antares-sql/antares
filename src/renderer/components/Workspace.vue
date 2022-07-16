@@ -451,9 +451,11 @@
                :schema="tab.schema"
             />
          </template>
+         <WorkspaceQueryConsole v-if="isConsoleOpen" :uid="workspace.uid" />
       </div>
-      <div v-else class="connection-panel-wrapper">
+      <div v-else class="connection-panel-wrapper p-relative">
          <WorkspaceEditConnectionPanel :connection="connection" />
+         <WorkspaceQueryConsole v-if="isConsoleOpen" :uid="workspace.uid" />
       </div>
       <ModalProcessesList
          v-if="isProcessesModal"
@@ -476,6 +478,7 @@ import { storeToRefs } from 'pinia';
 import * as Draggable from 'vuedraggable';
 import Connection from '@/ipc-api/Connection';
 import { useWorkspacesStore, WorkspaceTab } from '@/stores/workspaces';
+import { useConsoleStore } from '@/stores/console';
 import { ConnectionParams } from 'common/interfaces/antares';
 
 import WorkspaceEmptyState from '@/components/WorkspaceEmptyState.vue';
@@ -483,6 +486,7 @@ import WorkspaceExploreBar from '@/components/WorkspaceExploreBar.vue';
 import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPanel.vue';
 import WorkspaceTabQuery from '@/components/WorkspaceTabQuery.vue';
 import WorkspaceTabTable from '@/components/WorkspaceTabTable.vue';
+import WorkspaceQueryConsole from '@/components/WorkspaceQueryConsole.vue';
 
 import WorkspaceTabNewTable from '@/components/WorkspaceTabNewTable.vue';
 import WorkspaceTabNewView from '@/components/WorkspaceTabNewView.vue';
@@ -517,6 +521,8 @@ const {
    selectNextTab,
    selectPrevTab
 } = workspacesStore;
+
+const { isConsoleOpen } = storeToRefs(useConsoleStore());
 
 const props = defineProps({
    connection: Object as Prop<ConnectionParams>
@@ -680,8 +686,9 @@ onMounted(() => {
   margin: 0;
 
   .workspace-tabs {
-    overflow: hidden;
+    overflow-y: hidden;
     height: calc(100vh - #{$excluding-size});
+    position: relative;
 
     .tab-block {
       margin-top: 0;
