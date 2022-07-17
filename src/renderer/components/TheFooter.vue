@@ -14,7 +14,7 @@
             <li
                v-if="workspace.connectionStatus === 'connected' "
                class="footer-element footer-link"
-               @click="toggleConsole"
+               @click="toggleConsole()"
             >
                <i class="mdi mdi-18px mdi-console-line mr-1" />
                <small>{{ t('word.console') }}</small>

@@ -457,7 +457,7 @@
                :schema="tab.schema"
             />
          </template>
-         <WorkspaceQueryConsole v-if="isConsoleOpen" :uid="workspace.uid" />
+         <WorkspaceQueryConsole v-if="isConsoleOpen(workspace.uid)" :uid="workspace.uid" />
       </div>
       <div v-else class="connection-panel-wrapper p-relative">
          <WorkspaceEditConnectionPanel :connection="connection" />

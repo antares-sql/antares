@@ -1,5 +1,6 @@
 import { ipcRenderer } from 'electron';
 import { defineStore } from 'pinia';
+import { useWorkspacesStore } from './workspaces';
 const logsSize = 1000;
 
 export interface ConsoleRecord {
@@ -11,11 +12,16 @@ export interface ConsoleRecord {
 export const useConsoleStore = defineStore('console', {
    state: () => ({
       records: [] as ConsoleRecord[],
-      consoleHeight: 0,
-      isConsoleOpen: false
+      consolesHeight: new Map<string, number>(),
+      consolesOpened: new Set([])
    }),
    getters: {
-      getLogsByWorkspace: state => (uid: string) => state.records.filter(r => r.cUid === uid)
+      getLogsByWorkspace: state => (uid: string) => state.records.filter(r => r.cUid === uid),
+      isConsoleOpen: state => (uid: string) => state.consolesOpened.has(uid),
+      consoleHeight: state => {
+         const uid = useWorkspacesStore().getSelected;
+         return state.consolesHeight.get(uid) || 0;
+      }
    },
    actions: {
       putLog (record: ConsoleRecord) {
@@ -24,23 +30,30 @@ export const useConsoleStore = defineStore('console', {
          if (this.records.length > logsSize)
             this.records = this.records.slice(0, logsSize);
       },
+      openConsole () {
+         const uid = useWorkspacesStore().getSelected;
+         this.consolesOpened.add(uid);
+         this.consolesHeight.set(uid, 250);
+      },
+      closeConsole () {
+         const uid = useWorkspacesStore().getSelected;
+         this.consolesOpened.delete(uid);
+         this.consolesHeight.set(uid, 0);
+      },
       resizeConsole (height: number) {
-         if (height < 30) {
-            this.consoleHeight = 0;
-            this.isConsoleOpen = false;
-         }
+         const uid = useWorkspacesStore().getSelected;
+         if (height < 30)
+            this.closeConsole();
          else
-            this.consoleHeight = height;
+            this.consolesHeight.set(uid, height);
       },
       toggleConsole () {
-         if (this.isConsoleOpen) {
-            this.isConsoleOpen = false;
-            this.consoleHeight = 0;
-         }
-         else {
-            this.isConsoleOpen = true;
-            this.consoleHeight = 250;
-         }
+         const uid = useWorkspacesStore().getSelected;
+
+         if (this.consolesOpened.has(uid))
+            this.closeConsole();
+         else
+            this.openConsole();
       }
    }
 });
