@@ -99,6 +99,8 @@ import { Ace } from 'ace-builds';
 import { useI18n } from 'vue-i18n';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
+import { storeToRefs } from 'pinia';
+import { useConsoleStore } from '@/stores/console';
 import BaseLoader from '@/components/BaseLoader.vue';
 import QueryEditor from '@/components/QueryEditor.vue';
 import Functions from '@/ipc-api/Functions';
@@ -116,6 +118,7 @@ const props = defineProps({
 
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
+const { consoleHeight } = storeToRefs(useConsoleStore());
 
 const {
    getWorkspace,
@@ -189,8 +192,12 @@ const clearChanges = () => {
 
 const resizeQueryEditor = () => {
    if (queryEditor.value) {
+      let sizeToSubtract = 0;
       const footer = document.getElementById('footer');
-      const size = window.innerHeight - queryEditor.value.$el.getBoundingClientRect().top - footer.offsetHeight;
+      if (footer) sizeToSubtract += footer.offsetHeight;
+      sizeToSubtract += consoleHeight.value;
+
+      const size = window.innerHeight - queryEditor.value.$el.getBoundingClientRect().top - sizeToSubtract;
       editorHeight.value = size;
       queryEditor.value.editor.resize();
    }
@@ -211,6 +218,18 @@ originalFunction.value = {
    language: customizations.value.triggerFunctionlanguages.length ? customizations.value.triggerFunctionlanguages[0] : null,
    name: ''
 };
+
+watch(() => props.isSelected, (val) => {
+   if (val) changeBreadcrumbs({ schema: props.schema });
+});
+
+watch(isChanged, (val) => {
+   setUnsavedChanges({ uid: props.connection.uid, tUid: props.tabUid, isChanged: val });
+});
+
+watch(consoleHeight, () => {
+   resizeQueryEditor();
+});
 
 localFunction.value = JSON.parse(JSON.stringify(originalFunction.value));
 
@@ -237,13 +256,5 @@ onUnmounted(() => {
 
 onBeforeUnmount(() => {
    window.removeEventListener('keydown', onKey);
-});
-
-watch(() => props.isSelected, (val) => {
-   if (val) changeBreadcrumbs({ schema: props.schema });
-});
-
-watch(isChanged, (val) => {
-   setUnsavedChanges({ uid: props.connection.uid, tUid: props.tabUid, isChanged: val });
 });
 </script>

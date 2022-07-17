@@ -12,6 +12,7 @@
       <div class="workspace-query-runner column col-12">
          <QueryEditor
             v-show="isSelected"
+            id="query-editor"
             ref="queryEditor"
             v-model="query"
             :auto-focus="true"
@@ -187,18 +188,20 @@
 import { Component, computed, onBeforeUnmount, onMounted, Prop, ref, Ref, watch } from 'vue';
 import { Ace } from 'ace-builds';
 import { useI18n } from 'vue-i18n';
+import { storeToRefs } from 'pinia';
 import { format } from 'sql-formatter';
 import { ConnectionParams } from 'common/interfaces/antares';
 import { useHistoryStore } from '@/stores/history';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
+import { useResultTables } from '@/composables/useResultTables';
+import { useConsoleStore } from '@/stores/console';
 import Schema from '@/ipc-api/Schema';
 import QueryEditor from '@/components/QueryEditor.vue';
 import BaseLoader from '@/components/BaseLoader.vue';
 import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable.vue';
 import WorkspaceTabQueryEmptyState from '@/components/WorkspaceTabQueryEmptyState.vue';
 import ModalHistory from '@/components/ModalHistory.vue';
-import { useResultTables } from '@/composables/useResultTables';
 import BaseSelect from '@/components/BaseSelect.vue';
 
 const { t } = useI18n();
@@ -222,6 +225,8 @@ const {
 const { saveHistory } = useHistoryStore();
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
+
+const { consoleHeight } = storeToRefs(useConsoleStore());
 
 const {
    getWorkspace,
@@ -365,7 +370,7 @@ const resize = (e: MouseEvent) => {
    const el = queryEditor.value.$el;
    const queryFooterHeight = queryAreaFooter.value.clientHeight;
    const bottom = e.pageY || resizer.value.getBoundingClientRect().bottom;
-   const maxHeight = window.innerHeight - 100 - queryFooterHeight;
+   const maxHeight = window.innerHeight - 100 - queryFooterHeight - consoleHeight.value;
    let localEditorHeight = bottom - el.getBoundingClientRect().top;
    if (localEditorHeight > maxHeight) localEditorHeight = maxHeight;
    if (localEditorHeight < 50) localEditorHeight = 50;
@@ -375,6 +380,7 @@ const resize = (e: MouseEvent) => {
 const resizeResults = () => queryTable.value.resizeResults();
 
 const onWindowResize = (e: MouseEvent) => {
+   if (!queryEditor.value) return;
    const el = queryEditor.value.$el;
    const queryFooterHeight = queryAreaFooter.value.clientHeight;
    const bottom = e.pageY || resizer.value.getBoundingClientRect().bottom;

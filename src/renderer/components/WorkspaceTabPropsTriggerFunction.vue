@@ -84,8 +84,10 @@
 import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
 import { Ace } from 'ace-builds';
 import { useI18n } from 'vue-i18n';
+import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
+import { useConsoleStore } from '@/stores/console';
 import BaseLoader from '@/components/BaseLoader.vue';
 import QueryEditor from '@/components/QueryEditor.vue';
 import Functions from '@/ipc-api/Functions';
@@ -104,6 +106,7 @@ const props = defineProps({
 
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
+const { consoleHeight } = storeToRefs(useConsoleStore());
 
 const {
    getWorkspace,
@@ -209,8 +212,12 @@ const clearChanges = () => {
 
 const resizeQueryEditor = () => {
    if (queryEditor.value) {
+      let sizeToSubtract = 0;
       const footer = document.getElementById('footer');
-      const size = window.innerHeight - queryEditor.value.$el.getBoundingClientRect().top - footer.offsetHeight;
+      if (footer) sizeToSubtract += footer.offsetHeight;
+      sizeToSubtract += consoleHeight.value;
+
+      const size = window.innerHeight - queryEditor.value.$el.getBoundingClientRect().top - sizeToSubtract;
       editorHeight.value = size;
       queryEditor.value.editor.resize();
    }
@@ -240,6 +247,10 @@ watch(() => props.function, async () => {
       queryEditor.value.editor.session.setValue(localFunction.value.sql);
       lastFunction.value = props.function;
    }
+});
+
+watch(consoleHeight, () => {
+   resizeQueryEditor();
 });
 
 watch(() => props.isSelected, (val) => {

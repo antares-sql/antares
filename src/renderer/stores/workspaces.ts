@@ -100,6 +100,15 @@ export const useWorkspacesStore = defineStore('workspaces', {
       getSelected: state => {
          if (!state.workspaces.length) return 'NEW';
          if (state.selectedWorkspace) return state.selectedWorkspace;
+         const connectionsStore = useConnectionsStore();
+         if (connectionsStore.lastConnections.length) {
+            return connectionsStore.lastConnections.sort((a, b) => {
+               if (a.time < b.time) return 1;
+               else if (a.time > b.time) return -1;
+               return 0;
+            })[0].uid;
+         }
+
          return state.workspaces[0].uid;
       },
       getWorkspace: state => (uid: string) => {

@@ -179,6 +179,8 @@
 import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
 import { Ace } from 'ace-builds';
 import Functions from '@/ipc-api/Functions';
+import { storeToRefs } from 'pinia';
+import { useConsoleStore } from '@/stores/console';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseLoader from '@/components/BaseLoader.vue';
@@ -200,6 +202,7 @@ const props = defineProps({
 
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
+const { consoleHeight } = storeToRefs(useConsoleStore());
 
 const {
    getWorkspace,
@@ -274,8 +277,12 @@ const clearChanges = () => {
 
 const resizeQueryEditor = () => {
    if (queryEditor.value) {
+      let sizeToSubtract = 0;
       const footer = document.getElementById('footer');
-      const size = window.innerHeight - queryEditor.value.$el.getBoundingClientRect().top - footer.offsetHeight;
+      if (footer) sizeToSubtract += footer.offsetHeight;
+      sizeToSubtract += consoleHeight.value;
+
+      const size = window.innerHeight - queryEditor.value.$el.getBoundingClientRect().top - sizeToSubtract;
       editorHeight.value = size;
       queryEditor.value.editor.resize();
    }
@@ -309,6 +316,10 @@ watch(() => props.isSelected, (val) => {
 
 watch(isChanged, (val) => {
    setUnsavedChanges({ uid: props.connection.uid, tUid: props.tabUid, isChanged: val });
+});
+
+watch(consoleHeight, () => {
+   resizeQueryEditor();
 });
 
 originalFunction.value = {

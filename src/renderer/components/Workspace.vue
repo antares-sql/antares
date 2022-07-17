@@ -279,6 +279,12 @@
                            <span>{{ $t('message.processesList') }}</span>
                         </a>
                      </li>
+                     <li class="menu-item">
+                        <a class="c-hand p-vcentered" @click="toggleConsole">
+                           <i class="mdi mdi-console-line mr-1 tool-icon" />
+                           <span>{{ $t('word.console') }}</span>
+                        </a>
+                     </li>
                      <li
                         v-if="workspace.customizations.variables"
                         class="menu-item"
@@ -455,7 +461,6 @@
       </div>
       <div v-else class="connection-panel-wrapper p-relative">
          <WorkspaceEditConnectionPanel :connection="connection" />
-         <WorkspaceQueryConsole v-if="isConsoleOpen" :uid="workspace.uid" />
       </div>
       <ModalProcessesList
          v-if="isProcessesModal"
@@ -522,7 +527,10 @@ const {
    selectPrevTab
 } = workspacesStore;
 
-const { isConsoleOpen } = storeToRefs(useConsoleStore());
+const consoleStore = useConsoleStore();
+
+const { isConsoleOpen } = storeToRefs(consoleStore);
+const { toggleConsole } = consoleStore;
 
 const props = defineProps({
    connection: Object as Prop<ConnectionParams>

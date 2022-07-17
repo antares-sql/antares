@@ -12,7 +12,7 @@
       <div class="footer-right-elements">
          <ul class="footer-elements">
             <li
-               v-if="workspace !== 'NEW'"
+               v-if="workspace.connectionStatus === 'connected' "
                class="footer-element footer-link"
                @click="toggleConsole"
             >
@@ -63,14 +63,15 @@ interface DatabaseInfos {// TODO: temp
 const applicationStore = useApplicationStore();
 const workspacesStore = useWorkspacesStore();
 
-const { getSelected: workspace } = storeToRefs(workspacesStore);
+const { getSelected: workspaceUid } = storeToRefs(workspacesStore);
 const { toggleConsole } = useConsoleStore();
 
 const { showSettingModal } = applicationStore;
 const { getWorkspace } = workspacesStore;
 
+const workspace = computed(() => getWorkspace(workspaceUid.value));
 const version: ComputedRef<DatabaseInfos> = computed(() => {
-   return getWorkspace(workspace.value) ? getWorkspace(workspace.value).version : null;
+   return getWorkspace(workspaceUid.value) ? workspace.value.version : null;
 });
 
 const versionString = computed(() => {
