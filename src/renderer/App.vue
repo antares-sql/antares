@@ -151,10 +151,10 @@ onMounted(() => {
     .connection-panel-wrapper {
       height: calc(100vh - #{$excluding-size});
       width: 100%;
-      padding-top: 2rem;
+      padding-top: 10vh;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       overflow: auto;
     }
   }

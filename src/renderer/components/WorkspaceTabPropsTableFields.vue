@@ -126,8 +126,10 @@
 
 <script setup lang="ts">
 import { Component, computed, onMounted, onUnmounted, onUpdated, Prop, ref, Ref, watch } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { useWorkspacesStore } from '@/stores/workspaces';
+import { useConsoleStore } from '@/stores/console';
 import * as Draggable from 'vuedraggable';
 import TableRow from '@/components/WorkspaceTabPropsTableRow.vue';
 import TableContext from '@/components/WorkspaceTabPropsTableContext.vue';
@@ -150,8 +152,11 @@ const props = defineProps({
 const emit = defineEmits(['add-new-index', 'add-to-index', 'rename-field', 'duplicate-field', 'remove-field']);
 
 const workspacesStore = useWorkspacesStore();
+const consoleStore = useConsoleStore();
 
 const { getWorkspace } = workspacesStore;
+
+const { consoleHeight } = storeToRefs(consoleStore);
 
 const tableWrapper: Ref<HTMLDivElement> = ref(null);
 const propTable: Ref<HTMLDivElement> = ref(null);
@@ -172,8 +177,13 @@ const resizeResults = () => {
       const el = tableWrapper.value;
 
       if (el) {
+         let sizeToSubtract = 0;
          const footer = document.getElementById('footer');
-         const size = window.innerHeight - el.getBoundingClientRect().top - footer.offsetHeight;
+         if (footer) sizeToSubtract += footer.offsetHeight;
+
+         sizeToSubtract += consoleHeight.value;
+
+         const size = window.innerHeight - el.getBoundingClientRect().top - sizeToSubtract;
          resultsSize.value = size;
       }
    }
@@ -214,6 +224,10 @@ const getForeigns = (field: string) => {
 
 watch(fieldsLength, () => {
    refreshScroller();
+});
+
+watch(consoleHeight, () => {
+   resizeResults();
 });
 
 onUpdated(() => {

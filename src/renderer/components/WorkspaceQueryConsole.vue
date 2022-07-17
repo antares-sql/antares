@@ -14,13 +14,14 @@
       >
          <div class="query-console-header">
             <div>{{ t('word.console') }}</div>
-            <i class="mdi mdi-close c-hand" @click="resizeConsole(0)" />
+            <button class="btn btn-clear mr-1" @click="resizeConsole(0)" />
          </div>
          <div ref="queryConsoleBody" class="query-console-body">
             <div
                v-for="(wLog, i) in workspaceLogs"
                :key="i"
                class="query-console-log"
+               tabindex="0"
             >
                <span class="type-datetime">{{ moment(wLog.date).format('YYYY-MM-DD HH:mm:ss') }}</span>: <span class="type-string">{{ wLog.sql }}</span>
             </div>
@@ -136,7 +137,8 @@ onMounted(() => {
             padding: 1px 3px;
             user-select: text;
             border-radius: $border-radius;
-            &:hover {
+            &:hover,
+            &:focus {
                background: $bg-color-gray;
             }
          }
