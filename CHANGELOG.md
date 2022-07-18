@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.10](https://github.com/antares-sql/antares/compare/v0.5.9...v0.5.10) (2022-07-18)
+
+
+### Features
+
+* context menu to copy queries from console ([c21bd60](https://github.com/antares-sql/antares/commit/c21bd6075c1203607c05e45b76233d57e3008190))
+* Ctrl+PgUp & Ctrl+PgDn to navigate between tabs ([abf8298](https://github.com/antares-sql/antares/commit/abf829867e567354e534cff3e02a6d43f4c7a262))
+* field names suggestion for tables in the query ([b71f04e](https://github.com/antares-sql/antares/commit/b71f04e5aa3c37eaa160dfbc76d1b84789e3543e))
+* initial console implementation ([6a6f43a](https://github.com/antares-sql/antares/commit/6a6f43a718561e0abd2cb89048b7fe45d08736ae))
+* ipc event channel to send logs to renderer ([f12a04b](https://github.com/antares-sql/antares/commit/f12a04b0524f1172334c89afeb27675c19ff68d2))
+* open/close console on single connection ([44647f5](https://github.com/antares-sql/antares/commit/44647f5b5508965bf5a7264add89e175c725e877))
+
+
+### Bug Fixes
+
+* exception on QueryEditor with null modelValue ([9bc9adb](https://github.com/antares-sql/antares/commit/9bc9adb7cff19b86a99491d968485a4cd7b47b99))
+* fields content language detection not working properly ([a91fa8f](https://github.com/antares-sql/antares/commit/a91fa8ff54bbf1f8475666efd3a268a3a4f07f0c))
+* **Linux:** ctrl+space shortcut not working ([ed3d35f](https://github.com/antares-sql/antares/commit/ed3d35f1319a1e2edcb8104f2045a71b9e9754a2))
+* unable to delete by select all in left bar search, closes [#368](https://github.com/antares-sql/antares/issues/368) ([7725faf](https://github.com/antares-sql/antares/commit/7725fafe852479720fa619ced0970f2fa0099191))
+* unable to update data on tables missing primary or unique key ([e0946f0](https://github.com/antares-sql/antares/commit/e0946f04f792d25c187ea56d4714bdacc016ada3))
+
+
+### Improvements
+
+* improved resize of text editor resizing console height ([3f9e6d8](https://github.com/antares-sql/antares/commit/3f9e6d85ca445eea1028effa32418eee4980f87d))
+* **UI:** improved visibility of explore bar tooltips ([f312cf5](https://github.com/antares-sql/antares/commit/f312cf5f855deddd562c26d1835f78d16499b93b))
+
 ### [0.5.9](https://github.com/antares-sql/antares/compare/v0.5.8...v0.5.9) (2022-07-06)
 
 
