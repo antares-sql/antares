@@ -412,6 +412,8 @@ watch(() => props.schema, () => {
 watch(() => props.table, () => {
    if (props.isSelected) {
       page.value = 1;
+      filters.value = [];
+      isSearch.value = false;
       approximateCount.value = 0;
       sortParams.value = {} as { field: string; dir: 'asc' | 'desc'};
       getTableData();
