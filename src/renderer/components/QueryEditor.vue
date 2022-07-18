@@ -69,6 +69,7 @@ const tables = computed(() => {
 });
 
 const tablesInQuery = computed(() => {
+   if (!props.modelValue) return [];
    const words = props.modelValue
       .replaceAll(/[.'"`]/g, ' ')
       .split(' ')
