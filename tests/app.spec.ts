@@ -23,8 +23,8 @@ test('main window elements visibility', async () => {
    const visibleSelectors = [
       // '#titlebar',
       '#window-content',
-      '#settingbar',
-      '#footer'
+      '#settingbar'
+      // '#footer'
    ];
 
    for (const selector of visibleSelectors)

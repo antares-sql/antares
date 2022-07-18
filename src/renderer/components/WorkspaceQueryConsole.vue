@@ -24,7 +24,7 @@
                tabindex="0"
                @contextmenu.prevent="contextMenu($event, wLog)"
             >
-               <span class="type-datetime">{{ moment(wLog.date).format('YYYY-MM-DD HH:mm:ss') }}</span>: <span class="type-string">{{ wLog.sql }}</span>
+               <span class="type-datetime">{{ moment(wLog.date).format('HH:mm:ss') }}</span>: <code class="query-console-log-sql">{{ wLog.sql }}</code>
             </div>
          </div>
       </div>
@@ -156,15 +156,18 @@ onMounted(() => {
          display: flex;
          flex-direction: column;
          max-height: 100%;
-         padding: 0 6px;
+         padding: 0 6px 3px;
 
          .query-console-log {
             padding: 1px 3px;
-            user-select: text;
+            margin: 1px 0;
             border-radius: $border-radius;
-            &:hover,
-            &:focus {
-               background: $bg-color-gray;
+
+            .query-console-log-sql {
+               font-size: 95%;
+               opacity: .8;
+               font-weight: 700;
+               user-select: text;
             }
          }
       }
