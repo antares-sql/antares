@@ -22,12 +22,22 @@
                :key="i"
                class="query-console-log"
                tabindex="0"
+               @contextmenu.prevent="contextMenu($event, wLog)"
             >
                <span class="type-datetime">{{ moment(wLog.date).format('YYYY-MM-DD HH:mm:ss') }}</span>: <span class="type-string">{{ wLog.sql }}</span>
             </div>
          </div>
       </div>
    </div>
+   <BaseContextMenu
+      v-if="isContext"
+      :context-event="contextEvent"
+      @close-context="isContext = false"
+   >
+      <div class="context-element" @click="copyQuery">
+         <span class="d-flex"><i class="mdi mdi-18px mdi-content-copy text-light pr-1" /> {{ $t('word.copy') }}</span>
+      </div>
+   </BaseContextMenu>
 </template>
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, Ref, watch } from 'vue';
@@ -35,6 +45,7 @@ import { useI18n } from 'vue-i18n';
 import * as moment from 'moment';
 import { useConsoleStore } from '@/stores/console';
 import { storeToRefs } from 'pinia';
+import BaseContextMenu from '@/components/BaseContextMenu.vue';
 
 const { t } = useI18n();
 
@@ -53,6 +64,9 @@ const queryConsoleBody: Ref<HTMLInputElement> = ref(null);
 const resizer: Ref<HTMLInputElement> = ref(null);
 const localHeight = ref(250);
 const isHover = ref(false);
+const isContext = ref(false);
+const contextQuery: Ref<string> = ref(null);
+const contextEvent: Ref<MouseEvent> = ref(null);
 
 const resize = (e: MouseEvent) => {
    const el = queryConsole.value;
@@ -70,6 +84,17 @@ const stopResize = () => {
    resizeConsole(localHeight.value);
    window.removeEventListener('mousemove', resize);
    window.removeEventListener('mouseup', stopResize);
+};
+
+const contextMenu = (event: MouseEvent, wLog: {date: Date; sql: string}) => {
+   contextEvent.value = event;
+   contextQuery.value = wLog.sql;
+   isContext.value = true;
+};
+
+const copyQuery = () => {
+   navigator.clipboard.writeText(contextQuery.value);
+   isContext.value = false;
 };
 
 watch(workspaceLogs, async () => {

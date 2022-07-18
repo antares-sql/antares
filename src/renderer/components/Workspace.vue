@@ -583,7 +583,7 @@ watch(queryTabs, (newVal, oldVal) => {
 });
 
 const addQueryTab = () => {
-   newTab({ uid: props.connection.uid, type: 'query' });
+   newTab({ uid: props.connection.uid, type: 'query', schema: workspace.value.breadcrumbs.schema });
 };
 
 const getSelectedTab = () => {
