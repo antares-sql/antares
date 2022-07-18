@@ -9,7 +9,7 @@ const queryLogger = ({ sql, cUid }: {sql: string; cUid: string}) => {
    const escapedSql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '').replace(/\s\s+/g, ' ');
    const mainWindow = webContents.fromId(1);
    mainWindow.send('query-log', { cUid, sql: escapedSql, date: new Date() });
-   console.log(escapedSql);
+   if (process.env.NODE_ENV === 'development') console.log(escapedSql);
 };
 
 /**

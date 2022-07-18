@@ -1536,7 +1536,7 @@ export class MySQLClient extends AntaresCore {
    }
 
    async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {
-      if (process.env.NODE_ENV === 'development') this._logger({ cUid: this._cUid, sql });
+      this._logger({ cUid: this._cUid, sql });
 
       args = {
          nest: false,
