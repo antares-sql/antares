@@ -125,7 +125,7 @@ import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
 import WorkspaceTabQueryTableRow from '@/components/WorkspaceTabQueryTableRow.vue';
 import TableContext from '@/components/WorkspaceTabQueryTableContext.vue';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
-import moment from 'moment';
+import * as moment from 'moment';
 import { useI18n } from 'vue-i18n';
 import { TableField, QueryResult } from 'common/interfaces/antares';
 import { TableUpdateParams } from 'common/interfaces/tableApis';
