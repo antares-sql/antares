@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.11](https://github.com/antares-sql/antares/compare/v0.5.10...v0.5.11) (2022-07-19)
+
+
+### Bug Fixes
+
+* console events disabled in production ([0b1aa3d](https://github.com/antares-sql/antares/commit/0b1aa3dd299db641df3d4c56c7ee56a187fc3ab3))
+* filter persists switching temporary table tabs ([bf768c3](https://github.com/antares-sql/antares/commit/bf768c380087b65604b5b571a9858a7f07bd681d))
+* unable to edit table fields content on tables with datetime fields ([91e0630](https://github.com/antares-sql/antares/commit/91e06305133c97ea02dcfdc4e739a4b0a7e7049d))
+
 ### [0.5.10](https://github.com/antares-sql/antares/compare/v0.5.9...v0.5.10) (2022-07-18)
 
 
