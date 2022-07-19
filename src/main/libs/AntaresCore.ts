@@ -7,8 +7,10 @@ import SSH2Promise from 'ssh2-promise';
 const queryLogger = ({ sql, cUid }: {sql: string; cUid: string}) => {
    // Remove comments, newlines and multiple spaces
    const escapedSql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '').replace(/\s\s+/g, ' ');
-   const mainWindow = webContents.fromId(1);
-   mainWindow.send('query-log', { cUid, sql: escapedSql, date: new Date() });
+   if (webContents) {
+      const mainWindow = webContents.fromId(1);
+      mainWindow.send('query-log', { cUid, sql: escapedSql, date: new Date() });
+   }
    if (process.env.NODE_ENV === 'development') console.log(escapedSql);
 };
 
