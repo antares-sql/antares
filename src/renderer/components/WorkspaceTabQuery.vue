@@ -294,6 +294,10 @@ watch(selectedSchema, () => {
 const runQuery = async (query: string) => {
    if (!query || isQuering.value) return;
    isQuering.value = true;
+
+   const selectedQuery = queryEditor.value.editor.getSelectedText();
+   if (selectedQuery) query = selectedQuery;
+
    clearTabData();
    queryTable.value.resetSort();
 
