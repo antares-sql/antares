@@ -28,6 +28,15 @@
          </div>
       </div>
       <div
+         v-if="selectedRows.length === 1 && selectedCell.isEditable && mode === 'table'"
+         class="context-element"
+         @click="duplicateRow"
+      >
+         <span class="d-flex">
+            <i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ t('word.duplicate') }}
+         </span>
+      </div>
+      <div
          v-if="selectedRows.length === 1 && selectedCell.isEditable"
          class="context-element"
          @click="setNull"
@@ -49,6 +58,7 @@
 </template>
 
 <script setup lang="ts">
+import { Prop } from 'vue';
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
 import { useI18n } from 'vue-i18n';
 
@@ -57,10 +67,18 @@ const { t } = useI18n();
 defineProps({
    contextEvent: MouseEvent,
    selectedRows: Array,
-   selectedCell: Object
+   selectedCell: Object,
+   mode: String as Prop<'table' | 'query'>
 });
 
-const emit = defineEmits(['show-delete-modal', 'close-context', 'set-null', 'copy-cell', 'copy-row']);
+const emit = defineEmits([
+   'show-delete-modal',
+   'close-context',
+   'set-null',
+   'copy-cell',
+   'copy-row',
+   'duplicate-row'
+]);
 
 const showConfirmModal = () => {
    emit('show-delete-modal');
@@ -82,6 +100,11 @@ const copyCell = () => {
 
 const copyRow = () => {
    emit('copy-row');
+   closeContext();
+};
+
+const duplicateRow = () => {
+   emit('duplicate-row');
    closeContext();
 };
 </script>

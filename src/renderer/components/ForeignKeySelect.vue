@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, Ref, ref } from 'vue';
+import { computed, Ref, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import Tables from '@/ipc-api/Tables';
 import { useNotificationsStore } from '@/stores/notifications';
@@ -40,7 +40,7 @@ const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const editField: Ref<HTMLSelectElement> = ref(null);
 const foreignList = ref([]);
-const currentValue = ref(props.modelValue);
+const currentValue = ref(null);
 
 const isValidDefault = computed(() => {
    if (!foreignList.value.length) return true;
@@ -65,6 +65,10 @@ const cutText = (val: string) => {
    if (typeof val !== 'string') return val;
    return val.length > 15 ? `${val.substring(0, 15)}...` : val;
 };
+
+watch(() => props.modelValue, () => {
+   currentValue.value = props.modelValue;
+});
 
 let foreignDesc: string | false;
 const params = {

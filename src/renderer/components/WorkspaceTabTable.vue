@@ -153,12 +153,14 @@
             :element-type="elementType"
             @update-field="updateField"
             @delete-selected="deleteSelected"
+            @duplicate-row="showFakerModal"
             @hard-sort="hardSort"
          />
       </div>
       <ModalFakerRows
          v-if="isFakerModal"
          :fields="fields"
+         :row-to-duplicate="rowToDuplicate"
          :key-usage="keyUsage"
          :tab-uid="tabUid"
          @hide="hideFakerModal"
@@ -224,6 +226,7 @@ const filters = ref([]);
 const page = ref(1);
 const pageProxy = ref(1);
 const approximateCount = ref(0);
+const rowToDuplicate = ref(null);
 
 const workspace = computed(() => {
    return getWorkspace(props.connection.uid);
@@ -329,13 +332,16 @@ const pageChange = (direction: 'prev' | 'next') => {
       page.value--;
 };
 
-const showFakerModal = () => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const showFakerModal = (row?: any) => {
    if (isQuering.value) return;
    isFakerModal.value = true;
+   rowToDuplicate.value = row;
 };
 
 const hideFakerModal = () => {
    isFakerModal.value = false;
+   rowToDuplicate.value = null;
 };
 
 const onKey = (e: KeyboardEvent) => {

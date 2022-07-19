@@ -14,10 +14,12 @@
          :context-event="contextEvent"
          :selected-rows="selectedRows"
          :selected-cell="selectedCell"
+         :mode="mode"
          @show-delete-modal="showDeleteConfirmModal"
          @set-null="setNull"
          @copy-cell="copyCell"
          @copy-row="copyRow"
+         @duplicate-row="duplicateRow"
          @close-context="closeContext"
       />
       <ul v-if="resultsWithRows.length > 1" class="tab tab-block result-tabs">
@@ -143,12 +145,17 @@ const { consoleHeight } = storeToRefs(consoleStore);
 const props = defineProps({
    results: Array as Prop<QueryResult[]>,
    connUid: String,
-   mode: String,
+   mode: String as Prop<'table' | 'query'>,
    isSelected: Boolean,
    elementType: { type: String, default: 'table' }
 });
 
-const emit = defineEmits(['update-field', 'delete-selected', 'hard-sort']);
+const emit = defineEmits([
+   'update-field',
+   'delete-selected',
+   'hard-sort',
+   'duplicate-row'
+]);
 
 const resultTable: Ref<Component & {updateWindow: () => void}> = ref(null);
 const tableWrapper: Ref<HTMLDivElement> = ref(null);
@@ -410,6 +417,13 @@ const copyRow = () => {
    const rowToCopy = JSON.parse(JSON.stringify(row));
    delete rowToCopy._antares_id;
    navigator.clipboard.writeText(JSON.stringify(rowToCopy));
+};
+
+const duplicateRow = () => {
+   const row = localResults.value.find((row: any) => selectedRows.value.includes(row._antares_id));
+   const rowToDuplicate = JSON.parse(JSON.stringify(row));
+   delete rowToDuplicate._antares_id;
+   emit('duplicate-row', rowToDuplicate);
 };
 
 const applyUpdate = (params: TableUpdateParams) => {

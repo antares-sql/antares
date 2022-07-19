@@ -113,6 +113,8 @@ import BaseSelect from '@/components/BaseSelect.vue';
 const props = defineProps({
    tabUid: [String, Number],
    fields: Array as Prop<TableField[]>,
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   rowToDuplicate: Object as Prop<any>,
    keyUsage: Array as Prop<TableForeign[]>
 });
 
@@ -284,44 +286,57 @@ onMounted(() => {
 
    const rowObj: {[key: string]: unknown} = {};
 
-   for (const field of props.fields) {
-      let fieldDefault;
+   if (!props.rowToDuplicate) {
+      // Set default values
+      for (const field of props.fields) {
+         let fieldDefault;
 
-      if (field.default === 'NULL') fieldDefault = null;
-      else {
-         if ([...NUMBER, ...FLOAT].includes(field.type))
-            fieldDefault = !field.default || Number.isNaN(+field.default.replaceAll('\'', '')) ? null : +field.default.replaceAll('\'', '');
-         else if ([...TEXT, ...LONG_TEXT].includes(field.type)) {
-            fieldDefault = field.default
-               ? field.default.includes('\'')
-                  ? field.default.split('\'')[1]
-                  : field.default
-               : '';
-         }
-         else if ([...TIME, ...DATE].includes(field.type))
-            fieldDefault = field.default;
-         else if (BIT.includes(field.type))
-            fieldDefault = field.default?.replaceAll('\'', '').replaceAll('b', '');
-         else if (DATETIME.includes(field.type)) {
-            if (field.default && ['current_timestamp', 'now()'].some(term => field.default.toLowerCase().includes(term))) {
-               let datePrecision = '';
-               for (let i = 0; i < field.datePrecision; i++)
-                  datePrecision += i === 0 ? '.S' : 'S';
-               fieldDefault = moment().format(`YYYY-MM-DD HH:mm:ss${datePrecision}`);
+         if (field.default === 'NULL') fieldDefault = null;
+         else {
+            if ([...NUMBER, ...FLOAT].includes(field.type))
+               fieldDefault = !field.default || Number.isNaN(+field.default.replaceAll('\'', '')) ? null : +field.default.replaceAll('\'', '');
+            else if ([...TEXT, ...LONG_TEXT].includes(field.type)) {
+               fieldDefault = field.default
+                  ? field.default.includes('\'')
+                     ? field.default.split('\'')[1]
+                     : field.default
+                  : '';
             }
+            else if ([...TIME, ...DATE].includes(field.type))
+               fieldDefault = field.default;
+            else if (BIT.includes(field.type))
+               fieldDefault = field.default?.replaceAll('\'', '').replaceAll('b', '');
+            else if (DATETIME.includes(field.type)) {
+               if (field.default && ['current_timestamp', 'now()'].some(term => field.default.toLowerCase().includes(term))) {
+                  let datePrecision = '';
+                  for (let i = 0; i < field.datePrecision; i++)
+                     datePrecision += i === 0 ? '.S' : 'S';
+                  fieldDefault = moment().format(`YYYY-MM-DD HH:mm:ss${datePrecision}`);
+               }
+               else
+                  fieldDefault = field.default;
+            }
+            else if (field.enumValues)
+               fieldDefault = field.enumValues.replaceAll('\'', '').split(',');
             else
                fieldDefault = field.default;
          }
-         else if (field.enumValues)
-            fieldDefault = field.enumValues.replaceAll('\'', '').split(',');
-         else
-            fieldDefault = field.default;
+
+         rowObj[field.name] = { value: fieldDefault };
+
+         if (field.autoIncrement || !!field.onUpdate)// Disable by default auto increment or "on update" fields
+            fieldsToExclude.value = [...fieldsToExclude.value, field.name];
       }
+   }
+   else {
+      // Set values to duplicate
+      for (const field of props.fields) {
+         if (typeof props.rowToDuplicate[field.name] !== 'object')
+            rowObj[field.name] = { value: props.rowToDuplicate[field.name] };
 
-      rowObj[field.name] = { value: fieldDefault };
-
-      if (field.autoIncrement || !!field.onUpdate)// Disable by default auto increment or "on update" fields
-         fieldsToExclude.value = [...fieldsToExclude.value, field.name];
+         if (field.autoIncrement || !!field.onUpdate)// Disable by default auto increment or "on update" fields
+            fieldsToExclude.value = [...fieldsToExclude.value, field.name];
+      }
    }
 
    localRow.value = { ...rowObj };
