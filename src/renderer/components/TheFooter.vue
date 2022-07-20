@@ -12,7 +12,7 @@
       <div class="footer-right-elements">
          <ul class="footer-elements">
             <li
-               v-if="workspace.connectionStatus === 'connected' "
+               v-if="workspace?.connectionStatus === 'connected' "
                class="footer-element footer-link"
                @click="toggleConsole()"
             >

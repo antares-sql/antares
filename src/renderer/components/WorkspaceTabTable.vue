@@ -163,6 +163,8 @@
          :row-to-duplicate="rowToDuplicate"
          :key-usage="keyUsage"
          :tab-uid="tabUid"
+         :schema="schema"
+         :table="table"
          @hide="hideFakerModal"
          @reload="reloadTable"
       />
@@ -237,7 +239,7 @@ const customizations = computed(() => {
 });
 
 const isTable = computed(() => {
-   return !!workspace.value.breadcrumbs.table;
+   return !workspace.value.breadcrumbs.view;
 });
 
 const fields = computed(() => {
@@ -355,7 +357,7 @@ const onKey = (e: KeyboardEvent) => {
             pageChange('next');
          if (e.key === 'ArrowLeft')
             pageChange('prev');
-         if (e.key === 'f') // f
+         if (e.key === 'f')
             isSearch.value = !isSearch.value;
       }
    }

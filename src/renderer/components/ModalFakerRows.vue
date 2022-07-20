@@ -112,6 +112,8 @@ import BaseSelect from '@/components/BaseSelect.vue';
 
 const props = defineProps({
    tabUid: [String, Number],
+   schema: String,
+   table: String,
    fields: Array as Prop<TableField[]>,
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    rowToDuplicate: Object as Prop<any>,
@@ -125,8 +127,6 @@ const workspacesStore = useWorkspacesStore();
 
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
-const { getWorkspace } = workspacesStore;
-
 const { trapRef } = useFocusTrap({ disableAutofocus: true });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -136,7 +136,6 @@ const nInserts = ref(1);
 const isInserting = ref(false);
 const fakerLocale = ref('en');
 
-const workspace = computed(() => getWorkspace(selectedWorkspace.value));
 const foreignKeys = computed(() => props.keyUsage.map(key => key.field));
 const hasFakes = computed(() => Object.keys(localRow.value).some(field => 'group' in localRow.value[field] && localRow.value[field].group !== 'manual'));
 
@@ -222,8 +221,8 @@ const insertRows = async () => {
    try {
       const { status, response } = await Tables.insertTableFakeRows({
          uid: selectedWorkspace.value,
-         schema: workspace.value.breadcrumbs.schema,
-         table: workspace.value.breadcrumbs.table,
+         schema: props.schema,
+         table: props.table,
          row: rowToInsert,
          repeat: nInserts.value,
          fields: fieldTypes,

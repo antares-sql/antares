@@ -560,7 +560,8 @@ setTimeout(() => {
 .connection-panel {
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 1rem;
+  margin-bottom: .5rem;
+  margin-top: 1.5rem;
 
   .panel {
     min-width: 450px;

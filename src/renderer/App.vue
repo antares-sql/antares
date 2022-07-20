@@ -10,7 +10,7 @@
                   :key="connection.uid"
                   :connection="connection"
                />
-               <div class="connection-panel-wrapper">
+               <div class="connection-panel-wrapper p-relative">
                   <WorkspaceAddConnectionPanel v-if="selectedWorkspace === 'NEW'" />
                </div>
             </div>
