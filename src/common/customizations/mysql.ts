@@ -25,7 +25,7 @@ export const customizations: Customizations = {
    functions: true,
    schedulers: true,
    // Settings
-   elementsWrapper: '',
+   elementsWrapper: '`',
    stringsWrapper: '"',
    tableAdd: true,
    tableTruncateDisableFKCheck: true,
