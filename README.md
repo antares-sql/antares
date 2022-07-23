@@ -13,7 +13,7 @@ Antares is an SQL client based on [Electron.js](https://github.com/electron/elec
 Our target is to support as many databases as possible, and all major operating systems, including the ARM versions.  
 
 **At the moment this application is in development state, many features will come in future updates**, and supports only MySQL/MariaDB, PostgreSQL and SQLite.  
-At the moment, however, there are all the features necessary to have a pleasant database management experience, so give it a chance and send us your feedback, we would really appreciate it.  
+However, there are all the features necessary to have a pleasant database management experience, so give it a chance and send us your feedback, we would really appreciate it.  
 We are actively working on it, hoping to provide new cool features, improvements and fixes as soon as possible.  
 
 🔗 If you are curious to try Antares you can download and install the [latest release](https://github.com/Fabio286/antares/releases/latest).  
@@ -40,20 +40,20 @@ We are actively working on it, hoping to provide new cool features, improvements
 
 Why are we developing an SQL client when there are a lot of them on the market?  
 The main goal is to develop a **forever 100% free (without paid premium feature)**, full featured, as possible community driven, cross platform and open source alternative, empowered by JavaScript ecosystem.  
-A modern application created with minimalism and simplicity in mind, with features in the right places, not hundreds of tiny buttons, nested tabs or submenu; productivity comes first.  
+A modern application created with minimalism and simplicity in mind, with features in the right places, not hundreds of tiny buttons, nested tabs or submenues; productivity comes first.  
 
 ## Installation
 
 Based on your operating system you can have one or more distribution formats to choose based on your preferences.  
-Since Antares SQL is a free software we haven't a budget to spend in annual licenses or certificates. This can result that on some platforms you need some additional passages to install this app.
+Since Antares SQL is a free software we don't have a budget to spend on annual licenses or certificates. This can result that on some platforms you might need to put in some additional work to install this app.
 
 ### Linux
 
-On Linux you can simply download and run `.AppImage` distributions, install from Snap Store or from AUR.
+On Linux you can simply download and run the `.AppImage` distribution, install from Snap Store or from AUR.
 
 ### Windows
 
-On Windows you can choose between Microsoft Store and download `.exe` distribution. The latter lacks of a certificate, so to install you need to click on "More info" and then "Run anyway" on SmartScreen prompt.
+On Windows you can choose between downloading the app from Microsoft Store or downloading the `.exe` from our [website](https://antares-sql.app/download.html) or [this github repo](https://github.com/Fabio286/antares/releases/latest). Distributions that are not from Microsoft Store are not signed with a certificate, so to install you need to click on "More info" and then "Run anyway" on SmartScreen prompt.
 
 ### MacOS
 
