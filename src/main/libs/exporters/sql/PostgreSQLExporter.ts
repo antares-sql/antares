@@ -1,13 +1,11 @@
 import * as antares from 'common/interfaces/antares';
 import * as exporter from 'common/interfaces/exporter';
 import { SqlExporter } from './SqlExporter';
-import { BLOB, BIT, DATE, DATETIME, FLOAT, NUMBER, TEXT_SEARCH } from 'common/fieldTypes';
-import hexToBinary, { HexChar } from 'common/libs/hexToBinary';
-import * as moment from 'moment';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as QueryStream from 'pg-query-stream';
 import { PostgreSQLClient } from '../../clients/PostgreSQLClient';
+import { valueToSqlString } from 'common/libs/sqlUtils';
 
 export default class PostgreSQLExporter extends SqlExporter {
    constructor (client: PostgreSQLClient, tables: exporter.TableParams[], options: exporter.ExportOptions) {
@@ -223,47 +221,7 @@ SET row_security = off;\n\n\n`;
                const column = columns[i];
                const val = row[column.name];
 
-               if (val === null) sqlInsertString += 'NULL';
-               else if (DATE.includes(column.type)) {
-                  sqlInsertString += moment(val).isValid()
-                     ? this.escapeAndQuote(moment(val).format('YYYY-MM-DD'))
-                     : val;
-               }
-               else if (DATETIME.includes(column.type)) {
-                  let datePrecision = '';
-                  for (let i = 0; i < column.datePrecision; i++)
-                     datePrecision += i === 0 ? '.S' : 'S';
-
-                  sqlInsertString += moment(val).isValid()
-                     ? this.escapeAndQuote(moment(val).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`))
-                     : this.escapeAndQuote(val);
-               }
-               else if ('isArray' in column) {
-                  let parsedVal;
-                  if (Array.isArray(val))
-                     parsedVal = JSON.stringify(val).replaceAll('[', '{').replaceAll(']', '}');
-                  else
-                     parsedVal = typeof val === 'string' ? val.replaceAll('[', '{').replaceAll(']', '}') : '';
-                  sqlInsertString += `'${parsedVal}'`;
-               }
-               else if (TEXT_SEARCH.includes(column.type))
-                  sqlInsertString += `'${val.replaceAll('\'', '\'\'')}'`;
-               else if (BIT.includes(column.type))
-                  sqlInsertString += `b'${hexToBinary(Buffer.from(val).toString('hex') as undefined as HexChar[])}'`;
-               else if (BLOB.includes(column.type))
-                  sqlInsertString += `decode('${val.toString('hex').toUpperCase()}', 'hex')`;
-               else if (NUMBER.includes(column.type))
-                  sqlInsertString += val;
-               else if (FLOAT.includes(column.type))
-                  sqlInsertString += parseFloat(val);
-               else if (val === '') sqlInsertString += '\'\'';
-               else {
-                  sqlInsertString += typeof val === 'string'
-                     ? this.escapeAndQuote(val)
-                     : typeof val === 'object'
-                        ? this.escapeAndQuote(JSON.stringify(val))
-                        : val;
-               }
+               sqlInsertString += valueToSqlString({ val, client: 'pg', field: column });
 
                if (parseInt(i) !== columns.length - 1)
                   sqlInsertString += ', ';

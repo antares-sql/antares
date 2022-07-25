@@ -136,7 +136,7 @@
 <script setup lang="ts">
 import { Component, computed, onBeforeUnmount, onMounted, onUpdated, Prop, Ref, ref } from 'vue';
 import { ConnectionParams } from 'common/interfaces/antares';
-import { arrayToFile } from '../libs/arrayToFile';
+import { exportRows } from '../libs/exportRows';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import Schema from '@/ipc-api/Schema';
@@ -312,7 +312,7 @@ const closeModal = () => emit('close');
 
 const downloadTable = (format: 'csv' | 'json') => {
    if (!sortedResults.value) return;
-   arrayToFile({
+   exportRows({
       type: format,
       content: sortedResults.value,
       filename: 'processes'

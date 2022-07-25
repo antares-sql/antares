@@ -105,6 +105,9 @@
                      <li class="menu-item">
                         <a class="c-hand" @click="downloadTable('csv')">CSV</a>
                      </li>
+                     <li class="menu-item">
+                        <a class="c-hand" @click="downloadTable('sql')">SQL INSERT</a>
+                     </li>
                   </ul>
                </div>
             </div>
@@ -375,7 +378,7 @@ const setRefreshInterval = () => {
    }
 };
 
-const downloadTable = (format: 'csv' | 'json') => {
+const downloadTable = (format: 'csv' | 'json' | 'sql') => {
    queryTable.value.downloadTable(format, props.table);
 };
 

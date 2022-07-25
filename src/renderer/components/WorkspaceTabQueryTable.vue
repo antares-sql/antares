@@ -121,7 +121,7 @@ import { uidGen } from 'common/libs/uidGen';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import { useConsoleStore } from '@/stores/console';
-import { arrayToFile } from '../libs/arrayToFile';
+import { exportRows } from '../libs/exportRows';
 import { TEXT, LONG_TEXT, BLOB } from 'common/fieldTypes';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
 import WorkspaceTabQueryTableRow from '@/components/WorkspaceTabQueryTableRow.vue';
@@ -177,6 +177,7 @@ const selectedField = ref(null);
 const isEditingRow = ref(false);
 
 const workspaceSchema = computed(() => getWorkspace(props.connUid).breadcrumbs.schema);
+const workspaceClient = computed(() => getWorkspace(props.connUid).client);
 
 const primaryField = computed(() => {
    const primaryFields = fields.value.filter(field => field.key === 'pri');
@@ -534,7 +535,7 @@ const selectResultset = (index: number) => {
    resultsetIndex.value = index;
 };
 
-const downloadTable = (format: 'csv' | 'json', filename: string) => {
+const downloadTable = (format: 'csv' | 'json' | 'sql', table: string) => {
    if (!sortedResults.value) return;
 
    const rows = JSON.parse(JSON.stringify(sortedResults.value)).map((row: any) => {
@@ -542,10 +543,14 @@ const downloadTable = (format: 'csv' | 'json', filename: string) => {
       return row;
    });
 
-   arrayToFile({
+   exportRows({
       type: format,
       content: rows,
-      filename
+      fields: fieldsObj.value as {
+         [key: string]: {type: string; datePrecision: number};
+      },
+      client: workspaceClient.value,
+      table
    });
 };
 

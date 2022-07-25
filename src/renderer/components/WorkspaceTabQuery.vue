@@ -112,6 +112,9 @@
                      <li class="menu-item">
                         <a class="c-hand" @click="downloadTable('csv')">CSV</a>
                      </li>
+                     <li class="menu-item">
+                        <a class="c-hand" @click="downloadTable('sql')">SQL INSERT</a>
+                     </li>
                   </ul>
                </div>
                <div class="input-group pr-2" :title="t('message.commitMode')">
@@ -446,7 +449,7 @@ const clear = () => {
    clearTabData();
 };
 
-const downloadTable = (format: 'csv' | 'json') => {
+const downloadTable = (format: 'csv' | 'json' | 'sql') => {
    queryTable.value.downloadTable(format, `${props.tab.type}-${props.tab.index}`);
 };
 

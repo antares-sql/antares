@@ -4,7 +4,7 @@ import { InsertRowsParams } from 'common/interfaces/tableApis';
 import { ipcMain } from 'electron';
 import { faker } from '@faker-js/faker';
 import * as moment from 'moment';
-import { sqlEscaper } from 'common/libs/sqlEscaper';
+import { sqlEscaper } from 'common/libs/sqlUtils';
 import { TEXT, LONG_TEXT, ARRAY, TEXT_SEARCH, NUMBER, FLOAT, BLOB, BIT, DATE, DATETIME } from 'common/fieldTypes';
 import customizations from 'common/customizations';
 

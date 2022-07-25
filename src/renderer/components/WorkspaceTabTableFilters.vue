@@ -97,7 +97,9 @@ const removeRow = (i: number) => {
 };
 
 const doFilter = () => {
-   const clausoles = rows.value.filter(el => el.active).map(el => createClausole(el));
+   const clausoles = rows.value
+      .filter(el => el.active)
+      .map(el => createClausole(el));
    emit('filter', clausoles);
 };
 

@@ -1,12 +1,8 @@
 import * as exporter from 'common/interfaces/exporter';
 import * as mysql from 'mysql2/promise';
 import { SqlExporter } from './SqlExporter';
-import { BLOB, BIT, DATE, DATETIME, FLOAT, SPATIAL, IS_MULTI_SPATIAL, NUMBER } from 'common/fieldTypes';
-import hexToBinary, { HexChar } from 'common/libs/hexToBinary';
-import { getArrayDepth } from 'common/libs/getArrayDepth';
-import * as moment from 'moment';
-import { lineString, point, polygon } from '@turf/helpers';
 import { MySQLClient } from '../../clients/MySQLClient';
+import { valueToSqlString } from 'common/libs/sqlUtils';
 
 export default class MysqlExporter extends SqlExporter {
    protected _client: MySQLClient;
@@ -122,54 +118,7 @@ ${footer}
                const column = notGeneratedColumns[i];
                const val = row[column.name];
 
-               if (val === null) sqlInsertString += 'NULL';
-               else if (DATE.includes(column.type)) {
-                  sqlInsertString += moment(val).isValid()
-                     ? this.escapeAndQuote(moment(val).format('YYYY-MM-DD'))
-                     : val;
-               }
-               else if (DATETIME.includes(column.type)) {
-                  let datePrecision = '';
-                  for (let i = 0; i < column.datePrecision; i++)
-                     datePrecision += i === 0 ? '.S' : 'S';
-
-                  sqlInsertString += moment(val).isValid()
-                     ? this.escapeAndQuote(moment(val).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`))
-                     : this.escapeAndQuote(val);
-               }
-               else if (BIT.includes(column.type))
-                  sqlInsertString += `b'${hexToBinary(Buffer.from(val).toString('hex') as undefined as HexChar[])}'`;
-               else if (BLOB.includes(column.type))
-                  sqlInsertString += `X'${val.toString('hex').toUpperCase()}'`;
-               else if (NUMBER.includes(column.type))
-                  sqlInsertString += val;
-               else if (FLOAT.includes(column.type))
-                  sqlInsertString += parseFloat(val);
-               else if (SPATIAL.includes(column.type)) {
-                  let geoJson;
-                  if (IS_MULTI_SPATIAL.includes(column.type)) {
-                     const features = [];
-                     for (const element of val)
-                        features.push(this._getGeoJSON(element));
-
-                     geoJson = {
-                        type: 'FeatureCollection',
-                        features
-                     };
-                  }
-                  else
-                     geoJson = this._getGeoJSON(val);
-
-                  sqlInsertString += `ST_GeomFromGeoJSON('${JSON.stringify(geoJson)}')`;
-               }
-               else if (val === '') sqlInsertString += '\'\'';
-               else {
-                  sqlInsertString += typeof val === 'string'
-                     ? this.escapeAndQuote(val)
-                     : typeof val === 'object'
-                        ? this.escapeAndQuote(JSON.stringify(val))
-                        : val;
-               }
+               sqlInsertString += valueToSqlString({ val, client: 'mysql', field: column });
 
                if (parseInt(i) !== notGeneratedColumns.length - 1)
                   sqlInsertString += ', ';
@@ -435,17 +384,4 @@ CREATE TABLE \`${view.Name}\`(
 
       return `'${escapedVal}'`;
    }
-
-   /* eslint-disable @typescript-eslint/no-explicit-any */
-   _getGeoJSON (val: any) {
-      if (Array.isArray(val)) {
-         if (getArrayDepth(val) === 1)
-            return lineString(val.reduce((acc, curr) => [...acc, [curr.x, curr.y]], []));
-         else
-            return polygon(val.map(arr => arr.reduce((acc: any, curr: any) => [...acc, [curr.x, curr.y]], [])));
-      }
-      else
-         return point([val.x, val.y]);
-   }
-   /* eslint-enable @typescript-eslint/no-explicit-any */
 }

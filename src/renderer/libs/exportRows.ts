@@ -1,7 +1,14 @@
-export const arrayToFile = (args: {
-   type: 'csv' | 'json';
+import { ClientCode } from 'common/interfaces/antares';
+import { jsonToSqlInsert } from 'common/libs/sqlUtils';
+
+export const exportRows = (args: {
+   type: 'csv' | 'json'| 'sql';
    content: object[];
-   filename: string;
+   table: string;
+   client?: ClientCode;
+   fields?: {
+      [key: string]: {type: string; datePrecision: number};
+   };
 }) => {
    let mime;
    let content;
@@ -20,6 +27,23 @@ export const arrayToFile = (args: {
          content = csv.join('\n');
          break;
       }
+      case 'sql': {
+         mime = 'text/sql';
+         const sql = [];
+
+         for (const row of args.content) {
+            sql.push(jsonToSqlInsert({
+               json: row,
+               client:
+               args.client,
+               fields: args.fields,
+               table: args.table
+            }));
+         }
+
+         content = sql.join('\n');
+         break;
+      }
       case 'json':
          mime = 'application/json';
          content = JSON.stringify(args.content, null, 3);
@@ -30,7 +54,7 @@ export const arrayToFile = (args: {
 
    const file = new Blob([content], { type: mime });
    const downloadLink = document.createElement('a');
-   downloadLink.download = `${args.filename}.${args.type}`;
+   downloadLink.download = `${args.table}.${args.type}`;
    downloadLink.href = window.URL.createObjectURL(file);
    downloadLink.style.display = 'none';
    document.body.appendChild(downloadLink);
