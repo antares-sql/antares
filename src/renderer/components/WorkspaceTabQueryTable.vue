@@ -132,6 +132,7 @@ import { useI18n } from 'vue-i18n';
 import { TableField, QueryResult } from 'common/interfaces/antares';
 import { TableUpdateParams } from 'common/interfaces/tableApis';
 import { jsonToSqlInsert } from 'common/libs/sqlUtils';
+import { unproxify } from '@/libs/unproxify';
 
 const { t } = useI18n();
 
@@ -415,20 +416,38 @@ const copyCell = () => {
 };
 
 const copyRow = (format: string) => {
-   const row = localResults.value.find((row: any) => selectedRows.value.includes(row._antares_id));
-   const rowToCopy = JSON.parse(JSON.stringify(row));
-   delete rowToCopy._antares_id;
+   let contentToCopy;
+
+   if (selectedRows.value.length === 1) {
+      const row = localResults.value.find((row: any) => selectedRows.value.includes(row._antares_id));
+      const rowToCopy = unproxify(row);
+      delete rowToCopy._antares_id;
+      contentToCopy = rowToCopy;
+   }
+   else {
+      contentToCopy = unproxify(localResults.value).filter((row: any) => selectedRows.value.includes(row._antares_id)).map((row: any) => {
+         delete row._antares_id;
+         return row;
+      });
+   }
+
    if (format === 'json')
-      navigator.clipboard.writeText(JSON.stringify(rowToCopy));
+      navigator.clipboard.writeText(JSON.stringify(contentToCopy));
    else if (format === 'sql') {
-      navigator.clipboard.writeText(jsonToSqlInsert({
-         json: rowToCopy,
-         client: workspaceClient.value,
-         fields: fieldsObj.value as {
-            [key: string]: {type: string; datePrecision: number};
-         },
-         table: getTable(resultsetIndex.value)
-      }));
+      const sqlInserts = [];
+      if (!Array.isArray(contentToCopy)) contentToCopy = [contentToCopy];
+
+      for (const row of contentToCopy) {
+         sqlInserts.push(jsonToSqlInsert({
+            json: row,
+            client: workspaceClient.value,
+            fields: fieldsObj.value as {
+               [key: string]: {type: string; datePrecision: number};
+            },
+            table: getTable(resultsetIndex.value)
+         }));
+      }
+      navigator.clipboard.writeText(sqlInserts.join('\n'));
    }
 };
 

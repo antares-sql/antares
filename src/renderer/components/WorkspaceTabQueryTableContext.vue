@@ -3,7 +3,7 @@
       :context-event="contextEvent"
       @close-context="closeContext"
    >
-      <div v-if="selectedRows.length === 1" class="context-element">
+      <div class="context-element">
          <span class="d-flex"><i class="mdi mdi-18px mdi-content-copy text-light pr-1" /> {{ t('word.copy') }}</span>
          <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
          <div class="context-submenu">
@@ -16,22 +16,14 @@
                   <i class="mdi mdi-18px mdi-numeric-0 mdi-rotate-90 text-light pr-1" /> {{ t('word.cell', 1) }}
                </span>
             </div>
-            <div
-               v-if="selectedRows.length === 1"
-               class="context-element"
-               @click="copyRow('json')"
-            >
+            <div class="context-element" @click="copyRow('json')">
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', 1) }} (JSON)
+                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', selectedRows.length) }} (JSON)
                </span>
             </div>
-            <div
-               v-if="selectedRows.length === 1"
-               class="context-element"
-               @click="copyRow('sql')"
-            >
+            <div class="context-element" @click="copyRow('sql')">
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', 1) }} (SQL INSERT)
+                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', selectedRows.length) }} (SQL INSERT)
                </span>
             </div>
          </div>
