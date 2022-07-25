@@ -315,7 +315,7 @@ const downloadTable = (format: 'csv' | 'json') => {
    exportRows({
       type: format,
       content: sortedResults.value,
-      filename: 'processes'
+      table: 'processes'
    });
 };
 

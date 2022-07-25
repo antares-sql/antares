@@ -131,6 +131,7 @@ import * as moment from 'moment';
 import { useI18n } from 'vue-i18n';
 import { TableField, QueryResult } from 'common/interfaces/antares';
 import { TableUpdateParams } from 'common/interfaces/tableApis';
+import { jsonToSqlInsert } from 'common/libs/sqlUtils';
 
 const { t } = useI18n();
 
@@ -413,11 +414,22 @@ const copyCell = () => {
    navigator.clipboard.writeText(valueToCopy);
 };
 
-const copyRow = () => {
+const copyRow = (format: string) => {
    const row = localResults.value.find((row: any) => selectedRows.value.includes(row._antares_id));
    const rowToCopy = JSON.parse(JSON.stringify(row));
    delete rowToCopy._antares_id;
-   navigator.clipboard.writeText(JSON.stringify(rowToCopy));
+   if (format === 'json')
+      navigator.clipboard.writeText(JSON.stringify(rowToCopy));
+   else if (format === 'sql') {
+      navigator.clipboard.writeText(jsonToSqlInsert({
+         json: rowToCopy,
+         client: workspaceClient.value,
+         fields: fieldsObj.value as {
+            [key: string]: {type: string; datePrecision: number};
+         },
+         table: getTable(resultsetIndex.value)
+      }));
+   }
 };
 
 const duplicateRow = () => {

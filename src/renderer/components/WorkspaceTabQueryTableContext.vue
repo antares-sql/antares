@@ -19,10 +19,19 @@
             <div
                v-if="selectedRows.length === 1"
                class="context-element"
-               @click="copyRow"
+               @click="copyRow('json')"
             >
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', 1) }}
+                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', 1) }} (JSON)
+               </span>
+            </div>
+            <div
+               v-if="selectedRows.length === 1"
+               class="context-element"
+               @click="copyRow('sql')"
+            >
+               <span class="d-flex">
+                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', 1) }} (SQL INSERT)
                </span>
             </div>
          </div>
@@ -98,8 +107,8 @@ const copyCell = () => {
    closeContext();
 };
 
-const copyRow = () => {
-   emit('copy-row');
+const copyRow = (format: string) => {
+   emit('copy-row', format);
    closeContext();
 };
 
