@@ -167,7 +167,9 @@ onMounted(() => {
                font-size: 95%;
                opacity: .8;
                font-weight: 700;
-               user-select: text;
+               &:hover {
+                  user-select: text;
+               }
             }
          }
       }
