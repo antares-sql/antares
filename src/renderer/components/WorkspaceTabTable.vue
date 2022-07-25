@@ -82,7 +82,7 @@
                   v-if="isTable"
                   class="btn btn-dark btn-sm"
                   :disabled="isQuering"
-                  @click="showFakerModal"
+                  @click="showFakerModal()"
                >
                   <i class="mdi mdi-24px mdi-playlist-plus mr-1" />
                   <span>{{ $tc('message.insertRow', 2) }}</span>
@@ -339,6 +339,7 @@ const pageChange = (direction: 'prev' | 'next') => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const showFakerModal = (row?: any) => {
+   console.log(row);
    if (isQuering.value) return;
    isFakerModal.value = true;
    rowToDuplicate.value = row;

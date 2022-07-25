@@ -45,7 +45,7 @@ const currentValue = ref(null);
 const isValidDefault = computed(() => {
    if (!foreignList.value.length) return true;
    if (props.modelValue === null) return false;
-   return foreignList.value.some(foreign => foreign.foreign_column.toString() === props.modelValue.toString());
+   return foreignList.value.some(foreign => foreign.foreign_column.toString() === props.modelValue?.toString());
 });
 
 const foreigns = computed(() => {
