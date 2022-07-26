@@ -18,7 +18,8 @@ We are actively working on it, hoping to provide new cool features, improvements
 
 🔗 If you are curious to try Antares you can download and install the [latest release](https://github.com/Fabio286/antares/releases/latest).  
 👁 To stay tuned for new releases [follow Antares SQL](https://twitter.com/AntaresSQL) on Twitter.  
-🌟 Don't forget to **leave a star** if you appreciate this project.
+🌟 Don't forget to **leave a star** if you appreciate this project.  
+🗳️ Poll: **[Which is the main OS you use Antares on?](https://github.com/antares-sql/antares/discussions/379)**
 
 ## Current key features
 
@@ -49,7 +50,7 @@ Since Antares SQL is a free software we don't have a budget to spend on annual l
 
 ### Linux
 
-On Linux you can simply download and run the `.AppImage` distribution, install from Snap Store or from AUR.
+On Linux you can simply download and run the `.AppImage` distribution, install from Snap Store, from AUR or from our [PPA repository](https://github.com/antares-sql/antares-ppa).
 
 ### Windows
 
