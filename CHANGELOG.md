@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.12](https://github.com/antares-sql/antares/compare/v0.5.11...v0.5.12) (2022-07-26)
+
+
+### Features
+
+* ability to copy multiple selected rows ([9551afb](https://github.com/antares-sql/antares/commit/9551afbd2d7e525c81f28e98e788b92609ce9de4))
+* context menu option to duplicate a table row ([985e5d3](https://github.com/antares-sql/antares/commit/985e5d352793d1b3e1981d004b6f494bfbb049bf))
+* copy row as SQL INSERT ([d3da15a](https://github.com/antares-sql/antares/commit/d3da15aa1377dcba73927047563f1d0c2d1284ca))
+* execute selected query ([7890263](https://github.com/antares-sql/antares/commit/78902639ebb29a8c53f8aa0d2045c74e0646febc))
+* export table content as SQL INSERT ([f3b5de3](https://github.com/antares-sql/antares/commit/f3b5de38c4abfd2c1d738e179fc22e6c8b6f9080))
+
+
+### Bug Fixes
+
+* disable ctrl+alt+(left/right) shortcut on linux ([8ecaedb](https://github.com/antares-sql/antares/commit/8ecaedbf6c2fc0dc56ff2177a87dd6ede74bdd22))
+* error on schema export ([1d151e9](https://github.com/antares-sql/antares/commit/1d151e9349fd97576ccd8ef7f88ca789a1f28b65))
+* issue with logger on import/export ([cb038b3](https://github.com/antares-sql/antares/commit/cb038b374a4fe85ad569e42eee7af123c925e775))
+* missing defaults on insert row window ([1ead76c](https://github.com/antares-sql/antares/commit/1ead76c02889f48bd91cae702820b082ca2ff54b))
+* missing table on insert new records on session restored tabs ([8c83b3f](https://github.com/antares-sql/antares/commit/8c83b3f1447354ec63b2a308db05ad4d54659aa7))
+* **MySQL:** missing quoted identifier for column names in table filter, closes [#380](https://github.com/antares-sql/antares/issues/380) ([eb60899](https://github.com/antares-sql/antares/commit/eb60899e6e17879c79a7ee7108061e9aca8596f7))
+* prevent ctrl+a in console ([a00c19d](https://github.com/antares-sql/antares/commit/a00c19d3003cd43d3ee6e3132728122bb2b24c97))
+
 ### [0.5.11](https://github.com/antares-sql/antares/compare/v0.5.10...v0.5.11) (2022-07-19)
 
 
