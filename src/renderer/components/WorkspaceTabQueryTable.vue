@@ -449,6 +449,18 @@ const copyRow = (format: string) => {
       }
       navigator.clipboard.writeText(sqlInserts.join('\n'));
    }
+   else if (format === 'csv') {
+      const csv = [];
+      if (!Array.isArray(contentToCopy)) contentToCopy = [contentToCopy];
+
+      if (contentToCopy.length)
+         csv.push(Object.keys(contentToCopy[0]).join(';'));
+
+      for (const row of contentToCopy)
+         csv.push(Object.values(row).map(col => typeof col === 'string' ? `"${col}"` : col).join(';'));
+
+      navigator.clipboard.writeText(csv.join('\n'));
+   }
 };
 
 const duplicateRow = () => {

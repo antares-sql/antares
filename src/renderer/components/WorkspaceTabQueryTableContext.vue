@@ -21,6 +21,11 @@
                   <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', selectedRows.length) }} (JSON)
                </span>
             </div>
+            <div class="context-element" @click="copyRow('csv')">
+               <span class="d-flex">
+                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', selectedRows.length) }} (CSV)
+               </span>
+            </div>
             <div class="context-element" @click="copyRow('sql')">
                <span class="d-flex">
                   <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', selectedRows.length) }} (SQL INSERT)
