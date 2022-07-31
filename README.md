@@ -54,7 +54,7 @@ On Linux you can simply download and run the `.AppImage` distribution, install f
 
 ### Windows
 
-On Windows you can choose between downloading the app from Microsoft Store or downloading the `.exe` from our [website](https://antares-sql.app/download.html) or [this github repo](https://github.com/Fabio286/antares/releases/latest). Distributions that are not from Microsoft Store are not signed with a certificate, so to install you need to click on "More info" and then "Run anyway" on SmartScreen prompt.
+On Windows you can choose between downloading the app from Microsoft Store or downloading the `.exe` from our [website](https://antares-sql.app/downloads) or [this github repo](https://github.com/Fabio286/antares/releases/latest). Distributions that are not from Microsoft Store are not signed with a certificate, so to install you need to click on "More info" and then "Run anyway" on SmartScreen prompt.
 
 ### MacOS
 
