@@ -1,6 +1,5 @@
 import * as antares from 'common/interfaces/antares';
 import * as mysql from 'mysql2';
-import { builtinsTypes } from 'pg-types';
 import * as pg from 'pg';
 import * as pgAst from 'pgsql-ast-parser';
 import { AntaresCore } from '../AntaresCore';
@@ -19,6 +18,68 @@ pg.types.setTypeParser(1114, pgToString); // timestamp
 pg.types.setTypeParser(1184, pgToString); // timestamptz
 pg.types.setTypeParser(1266, pgToString); // timetz
 
+// from pg-types
+type builtinsTypes =
+   'BOOL' |
+   'BYTEA' |
+   'CHAR' |
+   'INT8' |
+   'INT2' |
+   'INT4' |
+   'REGPROC' |
+   'TEXT' |
+   'OID' |
+   'TID' |
+   'XID' |
+   'CID' |
+   'JSON' |
+   'XML' |
+   'PG_NODE_TREE' |
+   'SMGR' |
+   'PATH' |
+   'POLYGON' |
+   'CIDR' |
+   'FLOAT4' |
+   'FLOAT8' |
+   'ABSTIME' |
+   'RELTIME' |
+   'TINTERVAL' |
+   'CIRCLE' |
+   'MACADDR8' |
+   'MONEY' |
+   'MACADDR' |
+   'INET' |
+   'ACLITEM' |
+   'BPCHAR' |
+   'VARCHAR' |
+   'DATE' |
+   'TIME' |
+   'TIMESTAMP' |
+   'TIMESTAMPTZ' |
+   'INTERVAL' |
+   'TIMETZ' |
+   'BIT' |
+   'VARBIT' |
+   'NUMERIC' |
+   'REFCURSOR' |
+   'REGPROCEDURE' |
+   'REGOPER' |
+   'REGOPERATOR' |
+   'REGCLASS' |
+   'REGTYPE' |
+   'UUID' |
+   'TXID_SNAPSHOT' |
+   'PG_LSN' |
+   'PG_NDISTINCT' |
+   'PG_DEPENDENCIES' |
+   'TSVECTOR' |
+   'TSQUERY' |
+   'GTSVECTOR' |
+   'REGCONFIG' |
+   'REGDICTIONARY' |
+   'JSONB' |
+   'REGNAMESPACE' |
+   'REGROLE';
 export class PostgreSQLClient extends AntaresCore {
    private _schema?: string;
    private _runningConnections: Map<string, number>;

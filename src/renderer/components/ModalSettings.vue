@@ -315,7 +315,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, Ref, ref } from 'vue';
+import { onBeforeUnmount, Ref, ref, computed } from 'vue';
 import { shell } from 'electron';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
@@ -328,7 +328,6 @@ import ModalSettingsUpdate from '@/components/ModalSettingsUpdate.vue';
 import ModalSettingsChangelog from '@/components/ModalSettingsChangelog.vue';
 import BaseTextEditor from '@/components/BaseTextEditor.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
-import { computed } from '@vue/reactivity';
 
 const { t, availableLocales } = useI18n();
 
