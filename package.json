@@ -149,7 +149,7 @@
     "@babel/eslint-parser": "~7.15.7",
     "@babel/preset-env": "~7.15.8",
     "@babel/preset-typescript": "~7.16.7",
-    "@playwright/test": "~1.21.1",
+    "@playwright/test": "~1.24.2",
     "@types/better-sqlite3": "~7.5.0",
     "@types/leaflet": "~1.7.9",
     "@types/marked": "~4.0.3",
