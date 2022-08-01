@@ -117,7 +117,7 @@
   "dependencies": {
     "@electron/remote": "~2.0.1",
     "@faker-js/faker": "~6.1.2",
-    "@mdi/font": "~6.9.96",
+    "@mdi/font": "~7.0.96",
     "@turf/helpers": "~6.5.0",
     "@vueuse/core": "~8.7.5",
     "ace-builds": "~1.8.1",
