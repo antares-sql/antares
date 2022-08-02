@@ -44,8 +44,7 @@ In this folder is located the structure of Vue frontend application.
 
 ## Build
 
-The command to build Antares SQL locally is `npm run build:local`.  
-`build` command (without `:local`) is used exclusively by the GitHub Action.
+The command to build Antares SQL locally is `npm run build`. 
 
 ## Conventions
 
