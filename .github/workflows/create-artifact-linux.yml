@@ -18,7 +18,7 @@ jobs:
       - name: npm install & build
         run: |
           npm install
-          npm run build:local
+          npm run build
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
