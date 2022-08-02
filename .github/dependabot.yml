@@ -6,7 +6,8 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    dependency-type: "production"
+    allow:
+      - dependency-type: "production"
     directory: "/"
     schedule:
       interval: "monthly" 
