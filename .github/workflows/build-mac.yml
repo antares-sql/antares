@@ -1,6 +1,7 @@
 name: Build/release [MAC]
 
-on: push
+on: 
+  workflow_dispatch: {}
 
 jobs:
   release:
