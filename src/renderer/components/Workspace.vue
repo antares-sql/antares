@@ -31,7 +31,7 @@
                   >
                      <i class="mdi mdi-18px mdi-code-tags mr-1" />
                      <span>
-                        <span>{{ cutText(element.content || 'Query') }} #{{ element.index }}</span>
+                        <span>{{ cutText(element.content || 'Query', 20, true) }} #{{ element.index }}</span>
                         <span
                            class="btn btn-clear"
                            :title="$t('word.close')"
@@ -48,7 +48,7 @@
                   >
                      <i class="mdi mdi-18px mr-1" :class="element.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
                      <span :title="`${$t('word.data').toUpperCase()}: ${$tc(`word.${element.elementType}`)}`">
-                        <span class=" text-italic">{{ cutText(element.elementName) }}</span>
+                        <span class=" text-italic">{{ cutText(element.elementName, 20, true) }}</span>
                         <span
                            class="btn btn-clear"
                            :title="$t('word.close')"
@@ -61,7 +61,7 @@
                   <a v-else-if="element.type === 'data'" class="tab-link">
                      <i class="mdi mdi-18px mr-1" :class="element.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
                      <span :title="`${$t('word.data').toUpperCase()}: ${$tc(`word.${element.elementType}`)}`">
-                        {{ cutText(element.elementName) }}
+                        {{ cutText(element.elementName, 20, true) }}
                         <span
                            class="btn btn-clear"
                            :title="$t('word.close')"
@@ -95,7 +95,7 @@
                   >
                      <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
                      <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${element.elementType}`)}`">
-                        {{ cutText(element.elementName) }}
+                        {{ cutText(element.elementName, 20, true) }}
                         <span
                            class="btn btn-clear"
                            :title="$t('word.close')"
@@ -112,7 +112,7 @@
                   >
                      <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
                      <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.view`)}`">
-                        {{ cutText(element.elementName) }}
+                        {{ cutText(element.elementName, 20, true) }}
                         <span
                            class="btn btn-clear"
                            :title="$t('word.close')"
@@ -232,7 +232,7 @@
                   >
                      <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
                      <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${element.elementType}`)}`">
-                        <span class=" text-italic">{{ cutText(element.elementName) }}</span>
+                        <span class=" text-italic">{{ cutText(element.elementName, 20, true) }}</span>
                         <span
                            class="btn btn-clear"
                            :title="$t('word.close')"
@@ -249,7 +249,7 @@
                   >
                      <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
                      <span :title="`${$t('word.settings').toUpperCase()}: ${$tc(`word.${element.elementType}`)}`">
-                        {{ cutText(element.elementName) }}
+                        {{ cutText(element.elementName, 20, true) }}
                         <span
                            class="btn btn-clear"
                            :title="$t('word.close')"
@@ -485,6 +485,7 @@ import Connection from '@/ipc-api/Connection';
 import { useWorkspacesStore, WorkspaceTab } from '@/stores/workspaces';
 import { useConsoleStore } from '@/stores/console';
 import { ConnectionParams } from 'common/interfaces/antares';
+import { useFilters } from '@/composables/useFilters';
 
 import WorkspaceEmptyState from '@/components/WorkspaceEmptyState.vue';
 import WorkspaceExploreBar from '@/components/WorkspaceExploreBar.vue';
@@ -511,6 +512,7 @@ import WorkspaceTabPropsScheduler from '@/components/WorkspaceTabPropsScheduler.
 import ModalProcessesList from '@/components/ModalProcessesList.vue';
 import ModalDiscardChanges from '@/components/ModalDiscardChanges.vue';
 
+const { cutText } = useFilters();
 const workspacesStore = useWorkspacesStore();
 
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
@@ -638,14 +640,6 @@ const addWheelEvent = () => {
       });
       hasWheelEvent.value = true;
    }
-};
-
-const cutText = (string: string) => {
-   const limit = 20;
-   const escapedString = string.replace(/\s{2,}/g, ' ');
-   if (escapedString.length > limit)
-      return `${escapedString.substr(0, limit)}...`;
-   return escapedString;
 };
 
 (async () => {

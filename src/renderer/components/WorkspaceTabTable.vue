@@ -189,6 +189,9 @@ import WorkspaceTabTableFilters from '@/components/WorkspaceTabTableFilters.vue'
 import ModalFakerRows from '@/components/ModalFakerRows.vue';
 import { ConnectionParams } from 'common/interfaces/antares';
 import { TableFilterClausole } from 'common/interfaces/tableApis';
+import { useFilters } from '@/composables/useFilters';
+
+const { localeString } = useFilters();
 
 const { t } = useI18n();
 
@@ -396,11 +399,6 @@ const resizeScroller = () => {
 const updateFilters = (clausoles: TableFilterClausole[]) => {
    filters.value = clausoles;
    getTableData();
-};
-
-const localeString = (val: number | null) => {
-   if (val !== null)
-      return val.toLocaleString();
 };
 
 const hasApproximately = computed(() => {

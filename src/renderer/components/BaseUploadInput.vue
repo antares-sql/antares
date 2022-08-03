@@ -4,7 +4,7 @@
          <i class="mdi mdi-folder-open mr-1" />{{ message }}
       </span>
       <span class="text-ellipsis file-uploader-value">
-         {{ lastPart(modelValue) }}
+         {{ lastPart(modelValue, 19) }}
       </span>
       <i
          v-if="modelValue"
@@ -24,6 +24,9 @@
 
 <script setup lang="ts">
 import { uidGen } from 'common/libs/uidGen';
+import { useFilters } from '@/composables/useFilters';
+
+const { lastPart } = useFilters();
 
 defineProps({
    message: {
@@ -42,15 +45,6 @@ const id = uidGen();
 
 const clear = () => {
    emit('clear');
-};
-
-const lastPart = (string: string) => {
-   if (!string) return '';
-
-   string = string.split(/[/\\]+/).pop();
-   if (string.length >= 19)
-      string = `...${string.slice(-19)}`;
-   return string;
 };
 </script>
 

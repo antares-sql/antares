@@ -21,6 +21,7 @@ import { useWorkspacesStore } from '@/stores/workspaces';
 import { TEXT, LONG_TEXT } from 'common/fieldTypes';
 import BaseSelect from '@/components/BaseSelect.vue';
 import { TableField } from 'common/interfaces/antares';
+import { useFilters } from '@/composables/useFilters';
 
 const props = defineProps({
    modelValue: [String, Number],
@@ -35,6 +36,7 @@ const emit = defineEmits(['update:modelValue', 'blur']);
 
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
+const { cutText } = useFilters();
 
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
@@ -53,17 +55,12 @@ const foreigns = computed(() => {
    if (!isValidDefault.value)
       list.push({ value: props.modelValue, label: props.modelValue === null ? 'NULL' : props.modelValue });
    for (const row of foreignList.value)
-      list.push({ value: row.foreign_column, label: `${row.foreign_column} ${cutText('foreign_description' in row ? ` - ${row.foreign_description}` : '')}` });
+      list.push({ value: row.foreign_column, label: `${row.foreign_column} ${cutText('foreign_description' in row ? ` - ${row.foreign_description}` : '', 15)}` });
    return list;
 });
 
 const onChange = (opt: HTMLSelectElement) => {
    emit('update:modelValue', opt.value);
-};
-
-const cutText = (val: string) => {
-   if (typeof val !== 'string') return val;
-   return val.length > 15 ? `${val.substring(0, 15)}...` : val;
 };
 
 watch(() => props.modelValue, () => {

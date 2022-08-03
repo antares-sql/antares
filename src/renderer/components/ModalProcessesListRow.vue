@@ -12,7 +12,7 @@
             class="cell-content"
             :class="`${isNull(col)} type-${typeof col === 'number' ? 'int' : 'varchar'}`"
             @dblclick="dblClick(cKey)"
-         >{{ cutText(col) }}</span>
+         >{{ cutText(col, 250) }}</span>
       </div>
       <ConfirmModal
          v-if="isInfoModal"
@@ -48,6 +48,9 @@
 import { Ref, ref } from 'vue';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import TextEditor from '@/components/BaseTextEditor.vue';
+import { useFilters } from '@/composables/useFilters';
+
+const { cutText } = useFilters();
 
 const props = defineProps({
    row: Object
@@ -77,11 +80,6 @@ const dblClick = (col: string) => {
    if (col !== 'info') return;
    emit('stop-refresh');
    isInfoModal.value = true;
-};
-
-const cutText = (val: string | number) => {
-   if (typeof val !== 'string') return val;
-   return val.length > 250 ? `${val.substring(0, 250)}[...]` : val;
 };
 
 </script>

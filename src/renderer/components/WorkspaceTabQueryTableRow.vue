@@ -19,7 +19,7 @@
                class="cell-content"
                :class="`${isNull(col)} ${typeClass(fields[cKey].type)}`"
                @dblclick="editON(cKey)"
-            >{{ cutText(typeFormat(col, fields[cKey].type.toLowerCase(), fields[cKey].length) as string) }}</span>
+            >{{ cutText(typeFormat(col, fields[cKey].type.toLowerCase(), fields[cKey].length) as string, 250) }}</span>
             <ForeignKeySelect
                v-else-if="isForeignKey(cKey)"
                v-model="editingContent"
@@ -221,9 +221,11 @@ import TextEditor from '@/components/BaseTextEditor.vue';
 import BaseMap from '@/components/BaseMap.vue';
 import ForeignKeySelect from '@/components/ForeignKeySelect.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import { useFilters } from '@/composables/useFilters';
 import { QueryForeign, TableField } from 'common/interfaces/antares';
 
 const { t } = useI18n();
+const { cutText } = useFilters();
 
 const props = defineProps({
    row: Object,
@@ -544,11 +546,6 @@ const onKey = (e: KeyboardEvent) => {
       editingField.value = null;
       emit('stop-editing', editingField.value);
    }
-};
-
-const cutText = (val: string) => {
-   if (typeof val !== 'string') return val;
-   return val.length > 128 ? `${val.substring(0, 128)}[...]` : val;
 };
 
 const typeFormat = (val: string | number | Date | number[], type: string, precision?: number | false) => {

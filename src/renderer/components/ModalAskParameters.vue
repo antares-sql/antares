@@ -52,6 +52,9 @@ import { computed, PropType, Ref, ref } from 'vue';
 import { NUMBER, FLOAT } from 'common/fieldTypes';
 import { FunctionInfos, RoutineInfos } from 'common/interfaces/antares';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import { useFilters } from '@/composables/useFilters';
+
+const { wrapNumber } = useFilters();
 
 const props = defineProps({
    localRoutine: Object as PropType<RoutineInfos | FunctionInfos>,
@@ -104,11 +107,6 @@ const onKey = (e: KeyboardEvent) => {
    e.stopPropagation();
    if (e.key === 'Escape')
       closeModal();
-};
-
-const wrapNumber = (num: number) => {
-   if (!num) return '';
-   return `(${num})`;
 };
 
 window.addEventListener('keydown', onKey);
