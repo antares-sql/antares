@@ -1,4 +1,4 @@
-module.exports = {
+export const esES = {
    word: {
       edit: 'Editar',
       save: 'Guardar',

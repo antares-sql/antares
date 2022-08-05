@@ -1,4 +1,4 @@
-module.exports = {
+export const enUS = {
    word: {
       edit: 'Edit',
       save: 'Save',

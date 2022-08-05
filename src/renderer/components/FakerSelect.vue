@@ -4,7 +4,7 @@
          v-model="selectedGroup"
          class="form-select"
          :options="[{name: 'manual'}, ...fakerGroups]"
-         :option-label="(opt: any) => opt.name === 'manual' ? $t('message.manualValue') : $t(`faker.${opt.name}`)"
+         :option-label="(opt: any) => opt.name === 'manual' ? t('message.manualValue') : t(`faker.${opt.name}`)"
          option-track-by="name"
          :disabled="!isChecked"
          style="flex-grow: 0;"
@@ -15,7 +15,7 @@
          v-if="selectedGroup !== 'manual'"
          v-model="selectedMethod"
          :options="fakerMethods"
-         :option-label="(opt: any) => $t(`faker.${opt.name}`)"
+         :option-label="(opt: any) => t(`faker.${opt.name}`)"
          option-track-by="name"
          class="form-select"
          :disabled="!isChecked"
@@ -41,7 +41,7 @@
       <BaseUploadInput
          v-else-if="inputProps().type === 'file'"
          :model-value="selectedValue"
-         :message="$t('word.browse')"
+         :message="t('word.browse')"
          @clear="clearValue"
          @change="filesChange($event)"
       />
@@ -92,6 +92,9 @@ import BaseUploadInput from '@/components/BaseUploadInput.vue';
 import ForeignKeySelect from '@/components/ForeignKeySelect.vue';
 import FakerMethods from 'common/FakerMethods';
 import BaseSelect from '@/components/BaseSelect.vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
    type: String,

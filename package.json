@@ -64,7 +64,7 @@
       "target": [
         {
           "target": "deb",
-          "arch":[
+          "arch": [
             "x64",
             "armv7l",
             "arm64"
@@ -120,7 +120,7 @@
   "dependencies": {
     "@electron/remote": "~2.0.1",
     "@faker-js/faker": "~6.1.2",
-    "@mdi/font": "~6.9.96",
+    "@mdi/font": "~7.0.96",
     "@turf/helpers": "~6.5.0",
     "@vueuse/core": "~8.7.5",
     "ace-builds": "~1.8.1",
@@ -141,11 +141,11 @@
     "pinia": "~2.0.13",
     "source-map-support": "~0.5.20",
     "spectre.css": "~0.5.9",
-    "sql-formatter": "~4.0.2",
+    "sql-formatter": "~8.2.0",
     "ssh2-promise": "~1.0.2",
     "v-mask": "~2.3.0",
     "vue": "~3.2.37",
-    "vue-i18n": "~9.1.9",
+    "vue-i18n": "~9.2.0",
     "vuedraggable": "~4.1.0"
   },
   "devDependencies": {

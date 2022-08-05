@@ -35,7 +35,7 @@
       @close-context="isContext = false"
    >
       <div class="context-element" @click="copyQuery">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-content-copy text-light pr-1" /> {{ $t('word.copy') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-content-copy text-light pr-1" /> {{ t('word.copy') }}</span>
       </div>
    </BaseContextMenu>
 </template>

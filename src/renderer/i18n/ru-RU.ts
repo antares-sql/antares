@@ -1,4 +1,4 @@
-module.exports = {
+export const ruRU = {
    word: {
       edit: 'Редактировать',
       save: 'Сохранить',

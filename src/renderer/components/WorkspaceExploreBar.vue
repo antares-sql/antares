@@ -15,18 +15,18 @@
                <i
                   v-if="customizations.schemas"
                   class="mdi mdi-18px mdi-database-plus c-hand mr-2"
-                  :title="$t('message.createNewSchema')"
+                  :title="t('message.createNewSchema')"
                   @click="showNewDBModal"
                />
                <i
                   class="mdi mdi-18px mdi-refresh c-hand mr-2"
                   :class="{'rotate':isRefreshing}"
-                  :title="$t('word.refresh')"
+                  :title="t('word.refresh')"
                   @click="refresh"
                />
                <i
                   class="mdi mdi-18px mdi-power c-hand"
-                  :title="$t('word.disconnect')"
+                  :title="t('word.disconnect')"
                   @click="disconnectWorkspace(connection.uid)"
                />
             </span>
@@ -38,7 +38,7 @@
                   v-model="searchTerm"
                   class="form-input input-sm"
                   type="text"
-                  :placeholder="$t('message.searchForElements')"
+                  :placeholder="t('message.searchForElements')"
                >
                <i v-if="!searchTerm" class="form-icon mdi mdi-magnify mdi-18px" />
                <i
@@ -133,6 +133,9 @@ import TableContext from '@/components/WorkspaceExploreBarTableContext.vue';
 import MiscContext from '@/components/WorkspaceExploreBarMiscContext.vue';
 import MiscFolderContext from '@/components/WorkspaceExploreBarMiscFolderContext.vue';
 import ModalNewSchema from '@/components/ModalNewSchema.vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
    connection: Object,

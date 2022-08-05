@@ -1,7 +1,7 @@
 <template>
    <ConfirmModal
-      :confirm-text="$t('word.run')"
-      :cancel-text="$t('word.cancel')"
+      :confirm-text="t('word.run')"
+      :cancel-text="t('word.cancel')"
       size="400"
       @confirm="runRoutine"
       @hide="closeModal"
@@ -9,7 +9,7 @@
       <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-play mr-1" />
-            <span class="cut-text">{{ $t('word.parameters') }}: {{ localRoutine.name }}</span>
+            <span class="cut-text">{{ t('word.parameters') }}: {{ localRoutine.name }}</span>
          </div>
       </template>
       <template #body>
@@ -53,6 +53,9 @@ import { NUMBER, FLOAT } from 'common/fieldTypes';
 import { FunctionInfos, RoutineInfos } from 'common/interfaces/antares';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import { useFilters } from '@/composables/useFilters';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const { wrapNumber } = useFilters();
 

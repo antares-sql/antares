@@ -51,7 +51,7 @@
             class="btn btn-sm btn-primary mr-0 ml-2"
             type="submit"
          >
-            {{ $t('word.filter') }}
+            {{ t('word.filter') }}
          </button>
          <button
             class="btn btn-sm btn-dark mr-0 ml-2"
@@ -71,6 +71,9 @@ import customizations from 'common/customizations';
 import { NUMBER, FLOAT } from 'common/fieldTypes';
 import BaseSelect from '@/components/BaseSelect.vue';
 import { TableFilterClausole } from 'common/interfaces/tableApis';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
    fields: Array as Prop<TableField[]>,
