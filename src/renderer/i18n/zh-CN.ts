@@ -1,4 +1,4 @@
-module.exports = {
+export const zhCN = {
    word: {
       edit: '编辑',
       save: '保存',

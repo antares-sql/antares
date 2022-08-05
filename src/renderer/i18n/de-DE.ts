@@ -1,4 +1,4 @@
-module.exports = {
+export const deDE = {
    word: {
       edit: 'Bearbeiten',
       save: 'Speichern',

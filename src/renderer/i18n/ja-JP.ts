@@ -1,4 +1,4 @@
-module.exports = {
+export const jaJP = {
    word: {
       edit: '編集',
       save: '保存',

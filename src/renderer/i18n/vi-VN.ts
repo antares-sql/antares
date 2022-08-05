@@ -1,4 +1,4 @@
-module.exports = {
+export const viVN = {
    word: {
       edit: 'Chỉnh sửa',
       save: 'Lưu',
