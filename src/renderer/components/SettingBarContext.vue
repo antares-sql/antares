@@ -8,27 +8,27 @@
          class="context-element"
          @click="unpin"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-pin-off text-light pr-1" /> {{ $t('word.unpin') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-pin-off text-light pr-1" /> {{ t('word.unpin') }}</span>
       </div>
       <div
          v-else
          class="context-element"
          @click="pin"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-pin mdi-rotate-45 text-light pr-1" /> {{ $t('word.pin') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-pin mdi-rotate-45 text-light pr-1" /> {{ t('word.pin') }}</span>
       </div>
       <div
          v-if="isConnected"
          class="context-element"
          @click="disconnect"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-power text-light pr-1" /> {{ $t('word.disconnect') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-power text-light pr-1" /> {{ t('word.disconnect') }}</span>
       </div>
       <div class="context-element" @click="duplicateConnection">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ $t('word.duplicate') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ t('word.duplicate') }}</span>
       </div>
       <div class="context-element" @click="showConfirmModal">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ $t('word.delete') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ t('word.delete') }}</span>
       </div>
 
       <ConfirmModal
@@ -38,12 +38,12 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-server-remove mr-1" /> {{ $t('message.deleteConnection') }}
+               <i class="mdi mdi-24px mdi-server-remove mr-1" /> {{ t('message.deleteConnection') }}
             </div>
          </template>
          <template #body>
             <div class="mb-2">
-               {{ $t('message.deleteCorfirm') }} <b>{{ connectionName }}</b>?
+               {{ t('message.deleteCorfirm') }} <b>{{ connectionName }}</b>?
             </div>
          </template>
       </ConfirmModal>

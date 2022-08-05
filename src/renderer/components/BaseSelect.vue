@@ -431,6 +431,12 @@ export default defineComponent({
     width: 100%;
   }
 
+  &__item-text {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
   &__list-wrapper {
     cursor: pointer;
     position: fixed;

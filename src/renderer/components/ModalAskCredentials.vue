@@ -6,7 +6,7 @@
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
-                     <i class="mdi mdi-24px mdi-key-variant mr-1" /> {{ $t('word.credentials') }}
+                     <i class="mdi mdi-24px mdi-key-variant mr-1" /> {{ t('word.credentials') }}
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -16,7 +16,7 @@
                   <form class="form-horizontal">
                      <div class="form-group">
                         <div class="col-3">
-                           <label class="form-label">{{ $t('word.user') }}</label>
+                           <label class="form-label">{{ t('word.user') }}</label>
                         </div>
                         <div class="col-9">
                            <input
@@ -29,7 +29,7 @@
                      </div>
                      <div class="form-group">
                         <div class="col-3">
-                           <label class="form-label">{{ $t('word.password') }}</label>
+                           <label class="form-label">{{ t('word.password') }}</label>
                         </div>
                         <div class="col-9">
                            <input
@@ -44,10 +44,10 @@
             </div>
             <div class="modal-footer">
                <button class="btn btn-primary mr-2" @click.stop="sendCredentials">
-                  {{ $t('word.send') }}
+                  {{ t('word.send') }}
                </button>
                <button class="btn btn-link" @click.stop="closeModal">
-                  {{ $t('word.close') }}
+                  {{ t('word.close') }}
                </button>
             </div>
          </div>
@@ -58,6 +58,9 @@
 <script setup lang="ts">
 import { Ref, ref } from 'vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const { trapRef } = useFocusTrap();
 

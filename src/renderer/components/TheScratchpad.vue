@@ -1,14 +1,14 @@
 <template>
    <ConfirmModal
-      :confirm-text="$t('word.update')"
-      :cancel-text="$t('word.close')"
+      :confirm-text="t('word.update')"
+      :cancel-text="t('word.close')"
       size="large"
       :hide-footer="true"
       @hide="hideScratchpad"
    >
       <template #header>
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-notebook-edit-outline mr-1" /> {{ $t('word.scratchpad') }}
+            <i class="mdi mdi-24px mdi-notebook-edit-outline mr-1" /> {{ t('word.scratchpad') }}
          </div>
       </template>
       <template #body>
@@ -22,7 +22,7 @@
                   :show-line-numbers="false"
                />
             </div>
-            <small class="text-gray">{{ $t('message.markdownSupported') }}</small>
+            <small class="text-gray">{{ t('message.markdownSupported') }}</small>
          </div>
       </template>
    </ConfirmModal>
@@ -35,6 +35,9 @@ import { useApplicationStore } from '@/stores/application';
 import { useScratchpadStore } from '@/stores/scratchpad';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import TextEditor from '@/components/BaseTextEditor.vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const applicationStore = useApplicationStore();
 const scratchpadStore = useScratchpadStore();

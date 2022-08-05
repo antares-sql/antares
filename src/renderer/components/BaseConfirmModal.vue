@@ -31,13 +31,13 @@
                      class="btn btn-primary mr-2"
                      @click.stop="confirmModal"
                   >
-                     {{ confirmText || $t('word.confirm') }}
+                     {{ confirmText || t('word.confirm') }}
                   </button>
                   <button
                      class="btn btn-link"
                      @click="hideModal"
                   >
-                     {{ cancelText || $t('word.cancel') }}
+                     {{ cancelText || t('word.cancel') }}
                   </button>
                </div>
             </div>
@@ -49,6 +49,9 @@
 <script setup lang="ts">
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import { computed, onBeforeUnmount, PropType, useSlots } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
    size: {

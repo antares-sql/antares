@@ -328,8 +328,9 @@ import ModalSettingsUpdate from '@/components/ModalSettingsUpdate.vue';
 import ModalSettingsChangelog from '@/components/ModalSettingsChangelog.vue';
 import BaseTextEditor from '@/components/BaseTextEditor.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import { AvailableLocale } from '@/i18n';
 
-const { t, AvailableLocale } = useI18n();
+const { t } = useI18n();
 
 const applicationStore = useApplicationStore();
 const settingsStore = useSettingsStore();
@@ -448,7 +449,7 @@ ORDER BY
     employee.id ASC;
 `;
 
-const localLocale: Ref<string> = ref(null);
+const localLocale: Ref<AvailableLocale> = ref(null);
 const localPageSize: Ref<number> = ref(null);
 const localTimeout: Ref<number> = ref(null);
 const localEditorTheme: Ref<string> = ref(null);
@@ -456,7 +457,7 @@ const selectedTab: Ref<string> = ref('general');
 
 const locales = computed(() => {
    const locales = [];
-   for (const locale of AvailableLocale)
+   for (const locale of Object.keys(localesNames))
       locales.push({ code: locale, name: localesNames[locale] });
 
    return locales;
@@ -516,7 +517,7 @@ const toggleLineWrap = () => {
    changeLineWrap(!selectedLineWrap.value);
 };
 
-localLocale.value = selectedLocale.value as string;
+localLocale.value = selectedLocale.value;
 localPageSize.value = pageSize.value as number;
 localTimeout.value = notificationsTimeout.value as number;
 localEditorTheme.value = editorTheme.value as string;
@@ -536,6 +537,12 @@ onBeforeUnmount(() => {
 
     .modal-body {
       overflow: hidden;
+
+      .tab-link{
+         overflow: hidden;
+         white-space: nowrap;
+         text-overflow: ellipsis;
+      }
 
       .panel-body {
         min-height: calc(25vh - 70px);

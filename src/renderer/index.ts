@@ -2,10 +2,10 @@
 import { ipcRenderer } from 'electron';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
+import { VueMaskDirective } from 'v-mask';
 import '@mdi/font/css/materialdesignicons.css';
 import 'leaflet/dist/leaflet.css';
 import '@/scss/main.scss';
-import { VueMaskDirective } from 'v-mask';
 
 import { useApplicationStore } from '@/stores/application';
 import { useSettingsStore } from '@/stores/settings';
@@ -13,7 +13,7 @@ import { useNotificationsStore } from '@/stores/notifications';
 import { useConsoleStore } from '@/stores/console';
 
 import App from '@/App.vue';
-import i18n from '@/i18n';
+import { i18n } from '@/i18n';
 
 // https://github.com/probil/v-mask/issues/498#issuecomment-827027834
 const vMaskV2 = VueMaskDirective;

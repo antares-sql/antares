@@ -64,7 +64,7 @@
       "target": [
         {
           "target": "deb",
-          "arch":[
+          "arch": [
             "x64",
             "armv7l",
             "arm64"

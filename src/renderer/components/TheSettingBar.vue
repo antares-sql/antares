@@ -55,7 +55,7 @@
                @mouseover.self="tooltipPosition"
             >
                <i class="settingbar-element-icon mdi mdi-24px mdi-dots-horizontal text-light" />
-               <span class="ex-tooltip-content">{{ $t('message.allConnections') }} (Shift+CTRL+Space)</span>
+               <span class="ex-tooltip-content">{{ t('message.allConnections') }} (Shift+CTRL+Space)</span>
             </li>
             <li
                class="settingbar-element btn btn-link ex-tooltip"
@@ -64,7 +64,7 @@
                @mouseover.self="tooltipPosition"
             >
                <i class="settingbar-element-icon mdi mdi-24px mdi-plus text-light" />
-               <span class="ex-tooltip-content">{{ $t('message.addConnection') }}</span>
+               <span class="ex-tooltip-content">{{ t('message.addConnection') }}</span>
             </li>
          </ul>
       </div>
@@ -77,11 +77,11 @@
                @click="showScratchpad"
             >
                <i class="settingbar-element-icon mdi mdi-24px mdi-notebook-edit-outline text-light" />
-               <span class="ex-tooltip-content">{{ $t('word.scratchpad') }}</span>
+               <span class="ex-tooltip-content">{{ t('word.scratchpad') }}</span>
             </li>
             <li class="settingbar-element btn btn-link ex-tooltip" @click="showSettingModal('general')">
                <i class="settingbar-element-icon mdi mdi-24px mdi-cog text-light" :class="{' badge badge-update': hasUpdates}" />
-               <span class="ex-tooltip-content">{{ $t('word.settings') }}</span>
+               <span class="ex-tooltip-content">{{ t('word.settings') }}</span>
             </li>
          </ul>
       </div>
@@ -99,6 +99,9 @@ import * as Draggable from 'vuedraggable';
 import SettingBarContext from '@/components/SettingBarContext.vue';
 import { ConnectionParams } from 'common/interfaces/antares';
 import { useElementBounding, useScroll } from '@vueuse/core';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const applicationStore = useApplicationStore();
 const connectionsStore = useConnectionsStore();

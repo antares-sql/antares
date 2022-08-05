@@ -26,27 +26,27 @@
             :class="{'loading': updateStatus === 'checking'}"
             @click="checkForUpdates"
          >
-            {{ $t('message.checkForUpdates') }}
+            {{ t('message.checkForUpdates') }}
          </button>
          <button
             v-else-if="updateStatus === 'downloaded'"
             class="btn btn-primary"
             @click="restartToUpdate"
          >
-            {{ $t('message.restartToInstall') }}
+            {{ t('message.restartToInstall') }}
          </button>
          <button
             v-else-if="updateStatus === 'link'"
             class="btn btn-primary"
             @click="openOutside('https://antares-sql.app/download.html')"
          >
-            {{ $t('message.goToDownloadPage') }}
+            {{ t('message.goToDownloadPage') }}
          </button>
       </div>
       <div class="form-group mt-4">
          <label class="form-switch d-inline-block disabled" @click.prevent="toggleAllowPrerelease">
             <input type="checkbox" :checked="allowPrerelease">
-            <i class="form-icon" /> {{ $t('message.includeBetaUpdates') }}
+            <i class="form-icon" /> {{ t('message.includeBetaUpdates') }}
          </label>
       </div>
    </div>

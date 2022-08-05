@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <i class="mdi mdi-24px mdi-database-edit mr-1" />
-                     <span class="cut-text">{{ $t('message.editSchema') }}</span>
+                     <span class="cut-text">{{ t('message.editSchema') }}</span>
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -17,7 +17,7 @@
                   <form class="form-horizontal">
                      <div class="form-group">
                         <div class="col-3">
-                           <label class="form-label">{{ $t('word.name') }}</label>
+                           <label class="form-label">{{ t('word.name') }}</label>
                         </div>
                         <div class="col-9">
                            <input
@@ -26,14 +26,14 @@
                               class="form-input"
                               type="text"
                               required
-                              :placeholder="$t('message.schemaName')"
+                              :placeholder="t('message.schemaName')"
                               readonly
                            >
                         </div>
                      </div>
                      <div class="form-group">
                         <div class="col-3">
-                           <label class="form-label">{{ $t('word.collation') }}</label>
+                           <label class="form-label">{{ t('word.collation') }}</label>
                         </div>
                         <div class="col-9">
                            <BaseSelect
@@ -43,7 +43,7 @@
                               option-label="collation"
                               option-track-by="collation"
                            />
-                           <small>{{ $t('message.serverDefault') }}: {{ defaultCollation }}</small>
+                           <small>{{ t('message.serverDefault') }}: {{ defaultCollation }}</small>
                         </div>
                      </div>
                   </form>
@@ -51,10 +51,10 @@
             </div>
             <div class="modal-footer">
                <button class="btn btn-primary mr-2" @click.stop="updateSchema">
-                  {{ $t('word.update') }}
+                  {{ t('word.update') }}
                </button>
                <button class="btn btn-link" @click.stop="closeModal">
-                  {{ $t('word.close') }}
+                  {{ t('word.close') }}
                </button>
             </div>
          </div>
@@ -70,6 +70,9 @@ import { useWorkspacesStore } from '@/stores/workspaces';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import Schema from '@/ipc-api/Schema';
 import BaseSelect from '@/components/BaseSelect.vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
    selectedSchema: String

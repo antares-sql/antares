@@ -16,15 +16,15 @@
       </div>
       <ConfirmModal
          v-if="isInfoModal"
-         :confirm-text="$t('word.update')"
-         :cancel-text="$t('word.close')"
+         :confirm-text="t('word.update')"
+         :cancel-text="t('word.close')"
          size="medium"
          :hide-footer="true"
          @hide="hideInfoModal"
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-information-outline mr-1" /> {{ $t('message.processInfo') }}
+               <i class="mdi mdi-24px mdi-information-outline mr-1" /> {{ t('message.processInfo') }}
             </div>
          </template>
          <template #body>
@@ -49,6 +49,9 @@ import { Ref, ref } from 'vue';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import TextEditor from '@/components/BaseTextEditor.vue';
 import { useFilters } from '@/composables/useFilters';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const { cutText } = useFilters();
 

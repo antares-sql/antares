@@ -4,7 +4,7 @@
       @close-context="closeContext"
    >
       <div class="context-element">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-plus text-light pr-1" /> {{ $t('word.add') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-plus text-light pr-1" /> {{ t('word.add') }}</span>
          <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
          <div class="context-submenu">
             <div
@@ -12,49 +12,49 @@
                class="context-element"
                @click="openCreateTableTab"
             >
-               <span class="d-flex"><i class="mdi mdi-18px mdi-table text-light pr-1" /> {{ $t('word.table') }}</span>
+               <span class="d-flex"><i class="mdi mdi-18px mdi-table text-light pr-1" /> {{ t('word.table') }}</span>
             </div>
             <div
                v-if="workspace.customizations.viewAdd"
                class="context-element"
                @click="openCreateViewTab"
             >
-               <span class="d-flex"><i class="mdi mdi-18px mdi-table-eye text-light pr-1" /> {{ $t('word.view') }}</span>
+               <span class="d-flex"><i class="mdi mdi-18px mdi-table-eye text-light pr-1" /> {{ t('word.view') }}</span>
             </div>
             <div
                v-if="workspace.customizations.triggerAdd"
                class="context-element"
                @click="openCreateTriggerTab"
             >
-               <span class="d-flex"><i class="mdi mdi-18px mdi-table-cog text-light pr-1" /> {{ $tc('word.trigger', 1) }}</span>
+               <span class="d-flex"><i class="mdi mdi-18px mdi-table-cog text-light pr-1" /> {{ t('word.trigger', 1) }}</span>
             </div>
             <div
                v-if="workspace.customizations.routineAdd"
                class="context-element"
                @click="openCreateRoutineTab"
             >
-               <span class="d-flex"><i class="mdi mdi-18px mdi-sync-circle pr-1" /> {{ $tc('word.storedRoutine', 1) }}</span>
+               <span class="d-flex"><i class="mdi mdi-18px mdi-sync-circle pr-1" /> {{ t('word.storedRoutine', 1) }}</span>
             </div>
             <div
                v-if="workspace.customizations.functionAdd"
                class="context-element"
                @click="openCreateFunctionTab"
             >
-               <span class="d-flex"><i class="mdi mdi-18px mdi-arrow-right-bold-box pr-1" /> {{ $tc('word.function', 1) }}</span>
+               <span class="d-flex"><i class="mdi mdi-18px mdi-arrow-right-bold-box pr-1" /> {{ t('word.function', 1) }}</span>
             </div>
             <div
                v-if="workspace.customizations.triggerFunctionAdd"
                class="context-element"
                @click="openCreateTriggerFunctionTab"
             >
-               <span class="d-flex"><i class="mdi mdi-18px mdi-cog-clockwise pr-1" /> {{ $tc('word.triggerFunction', 1) }}</span>
+               <span class="d-flex"><i class="mdi mdi-18px mdi-cog-clockwise pr-1" /> {{ t('word.triggerFunction', 1) }}</span>
             </div>
             <div
                v-if="workspace.customizations.schedulerAdd"
                class="context-element"
                @click="openCreateSchedulerTab"
             >
-               <span class="d-flex"><i class="mdi mdi-18px mdi-calendar-clock text-light pr-1" /> {{ $tc('word.scheduler', 1) }}</span>
+               <span class="d-flex"><i class="mdi mdi-18px mdi-calendar-clock text-light pr-1" /> {{ t('word.scheduler', 1) }}</span>
             </div>
          </div>
       </div>
@@ -63,28 +63,28 @@
          class="context-element"
          @click="showExportSchemaModal"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-database-arrow-down text-light pr-1" /> {{ $t('word.export') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-database-arrow-down text-light pr-1" /> {{ t('word.export') }}</span>
       </div>
       <div
          v-if="workspace.customizations.schemaImport"
          class="context-element"
          @click="initImport"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-database-arrow-up text-light pr-1" /> {{ $t('word.import') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-database-arrow-up text-light pr-1" /> {{ t('word.import') }}</span>
       </div>
       <div
          v-if="workspace.customizations.schemaEdit"
          class="context-element"
          @click="showEditModal"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-database-edit text-light pr-1" /> {{ $t('word.edit') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-database-edit text-light pr-1" /> {{ t('word.edit') }}</span>
       </div>
       <div
          v-if="workspace.customizations.schemaDrop"
          class="context-element"
          @click="showDeleteModal"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-database-remove text-light pr-1" /> {{ $t('word.delete') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-database-remove text-light pr-1" /> {{ t('word.delete') }}</span>
       </div>
 
       <ConfirmModal
@@ -95,12 +95,12 @@
          <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-database-remove mr-1" />
-               <span class="cut-text">{{ $t('message.deleteSchema') }}</span>
+               <span class="cut-text">{{ t('message.deleteSchema') }}</span>
             </div>
          </template>
          <template #body>
             <div class="mb-2">
-               {{ $t('message.deleteCorfirm') }} "<b>{{ selectedSchema }}</b>"?
+               {{ t('message.deleteCorfirm') }} "<b>{{ selectedSchema }}</b>"?
             </div>
          </template>
       </ConfirmModal>
@@ -135,6 +135,9 @@ import ModalExportSchema from '@/components/ModalExportSchema.vue';
 import ModalImportSchema from '@/components/ModalImportSchema.vue';
 import Schema from '@/ipc-api/Schema';
 import Application from '@/ipc-api/Application';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
    contextEvent: MouseEvent,

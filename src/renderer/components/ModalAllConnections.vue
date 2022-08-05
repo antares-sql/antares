@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <i class="mdi mdi-24px mdi-apps mr-1" />
-                     <span class="cut-text">{{ $t('message.allConnections') }}</span>
+                     <span class="cut-text">{{ t('message.allConnections') }}</span>
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />

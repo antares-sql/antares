@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <i class="mdi mdi-24px mdi-database-arrow-up mr-1" />
-                     <span class="cut-text">{{ $t('message.importSchema') }}</span>
+                     <span class="cut-text">{{ t('message.importSchema') }}</span>
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -15,7 +15,7 @@
             <div class="modal-body pb-0">
                {{ sqlFile }}
                <div v-if="queryErrors.length > 0" class="mt-2">
-                  <label>{{ $tc('message.importQueryErrors', queryErrors.length) }}</label>
+                  <label>{{ t('message.importQueryErrors', queryErrors.length) }}</label>
                   <textarea
                      v-model="formattedQueryErrors"
                      class="form-input"
@@ -28,7 +28,7 @@
                <div class="column col modal-progress-wrapper text-left">
                   <div class="import-progress">
                      <span class="progress-status">
-                        {{ progressPercentage }}% - {{ progressStatus }} - {{ $tc('message.executedQueries', queryCount) }}
+                        {{ progressPercentage }}% - {{ progressStatus }} - {{ t('message.executedQueries', queryCount) }}
                      </span>
                      <progress
                         class="progress d-block"
@@ -39,7 +39,7 @@
                </div>
                <div class="column col-auto px-0">
                   <button class="btn btn-link" @click.stop="closeModal">
-                     {{ completed ? $t('word.close') : $t('word.cancel') }}
+                     {{ completed ? t('word.close') : t('word.cancel') }}
                   </button>
                </div>
             </div>
@@ -57,8 +57,8 @@ import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import Schema from '@/ipc-api/Schema';
-import { useI18n } from 'vue-i18n';
 import { ImportState } from 'common/interfaces/importer';
+import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
