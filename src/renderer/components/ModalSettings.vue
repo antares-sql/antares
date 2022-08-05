@@ -329,7 +329,7 @@ import ModalSettingsChangelog from '@/components/ModalSettingsChangelog.vue';
 import BaseTextEditor from '@/components/BaseTextEditor.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 
-const { t, availableLocales } = useI18n();
+const { t, AvailableLocale } = useI18n();
 
 const applicationStore = useApplicationStore();
 const settingsStore = useSettingsStore();
@@ -456,7 +456,7 @@ const selectedTab: Ref<string> = ref('general');
 
 const locales = computed(() => {
    const locales = [];
-   for (const locale of availableLocales)
+   for (const locale of AvailableLocale)
       locales.push({ code: locale, name: localesNames[locale] });
 
    return locales;

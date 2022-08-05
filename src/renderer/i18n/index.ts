@@ -29,10 +29,10 @@ type NestedPartial<T> = {
    [K in keyof T]?: T[K] extends Array<infer R> ? Array<NestedPartial<R>> : (T[K] extends unknown ? unknown : NestedPartial<T[K]>)
 };
 
-type MessageSchema = typeof enUS
-type AvailableLocales = keyof typeof messages
+export type MessageSchema = typeof enUS
+export type AvailableLocale = keyof typeof messages
 
-const i18n = createI18n<[NestedPartial<MessageSchema>], AvailableLocales>({
+const i18n = createI18n<[NestedPartial<MessageSchema>], AvailableLocale>({
    fallbackLocale: 'en-US',
    legacy: false,
    messages
