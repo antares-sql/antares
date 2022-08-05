@@ -2,6 +2,7 @@ import { createI18n } from 'vue-i18n';
 
 const i18n = createI18n({
    fallbackLocale: 'en-US',
+   legacy: false,
    messages: {
       'en-US': require('./en-US'),
       'it-IT': require('./it-IT'),
