@@ -1,4 +1,4 @@
-module.exports = {
+export const ptBR = {
    word: {
       edit: 'Editar',
       save: 'Salvar',

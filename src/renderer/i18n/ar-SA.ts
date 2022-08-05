@@ -1,4 +1,4 @@
-module.exports = {
+export const arSA = {
    word: {
       edit: 'تعديل',
       save: 'حفظ',

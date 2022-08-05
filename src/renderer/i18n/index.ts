@@ -1,19 +1,40 @@
 import { createI18n } from 'vue-i18n';
+import { enUS } from './en-US';
+import { itIT } from './it-IT';
+import { arSA } from './ar-SA';
+import { esES } from './es-ES';
+import { frFR } from './fr-FR';
+import { ptBR } from './pt-BR';
+import { deDE } from './de-DE';
+import { viVN } from './vi-VN';
+import { jaJP } from './ja-JP';
+import { zhCN } from './zh-CN';
+import { ruRU } from './ru-RU';
 
-const i18n = createI18n({
+const messages = {
+   'en-US': enUS,
+   'it-IT': itIT,
+   'ar-SA': arSA,
+   'es-ES': esES,
+   'fr-FR': frFR,
+   'pt-BR': ptBR,
+   'de-DE': deDE,
+   'vi-VN': viVN,
+   'ja-JP': jaJP,
+   'zh-CN': zhCN,
+   'ru-RU': ruRU
+};
+
+type NestedPartial<T> = {
+   [K in keyof T]?: T[K] extends Array<infer R> ? Array<NestedPartial<R>> : (T[K] extends unknown ? unknown : NestedPartial<T[K]>)
+};
+
+export type MessageSchema = typeof enUS
+export type AvailableLocale = keyof typeof messages
+
+const i18n = createI18n<[NestedPartial<MessageSchema>], AvailableLocale>({
    fallbackLocale: 'en-US',
-   messages: {
-      'en-US': require('./en-US'),
-      'it-IT': require('./it-IT'),
-      'ar-SA': require('./ar-SA'),
-      'es-ES': require('./es-ES'),
-      'fr-FR': require('./fr-FR'),
-      'pt-BR': require('./pt-BR'),
-      'de-DE': require('./de-DE'),
-      'vi-VN': require('./vi-VN'),
-      'ja-JP': require('./ja-JP'),
-      'zh-CN': require('./zh-CN'),
-      'ru-RU': require('./ru-RU')
-   }
+   legacy: false,
+   messages
 });
 export default i18n;

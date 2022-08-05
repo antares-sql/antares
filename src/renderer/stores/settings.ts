@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ipcRenderer } from 'electron';
-import i18n from '@/i18n';
+import i18n, { AvailableLocale } from '@/i18n';
 import * as Store from 'electron-store';
 const persistentStore = new Store({ name: 'settings' });
 const isDarkTheme = window.matchMedia('(prefers-color-scheme: dark)');
@@ -12,7 +12,7 @@ export type ApplicationTheme = 'light' | 'dark';
 
 export const useSettingsStore = defineStore('settings', {
    state: () => ({
-      locale: persistentStore.get('locale', 'en-US') as string,
+      locale: persistentStore.get('locale', 'en-US') as AvailableLocale,
       allowPrerelease: persistentStore.get('allow_prerelease', true) as boolean,
       explorebarSize: persistentStore.get('explorebar_size', null) as number,
       notificationsTimeout: persistentStore.get('notifications_timeout', 5) as number,
@@ -27,7 +27,7 @@ export const useSettingsStore = defineStore('settings', {
       disableScratchpad: persistentStore.get('disable_scratchpad', false) as boolean
    }),
    actions: {
-      changeLocale (locale: string) {
+      changeLocale (locale: AvailableLocale) {
          this.locale = locale;
          i18n.global.locale = locale;
          persistentStore.set('locale', this.locale);
