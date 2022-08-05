@@ -142,7 +142,8 @@ module.exports = {
       contributors: 'Contributors',
       pin: 'Pin',
       unpin: 'Unpin',
-      console: 'Console'
+      console: 'Console',
+      shortcuts: 'Shortcuts'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',

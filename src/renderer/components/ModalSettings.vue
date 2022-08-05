@@ -31,6 +31,13 @@
                            <a class="tab-link">{{ t('word.themes') }}</a>
                         </li>
                         <li
+                           class="tab-item c-hand"
+                           :class="{'active': selectedTab === 'shortcuts'}"
+                           @click="selectTab('shortcuts')"
+                        >
+                           <a class="tab-link">{{ t('word.shortcuts') }}</a>
+                        </li>
+                        <li
                            v-if="updateStatus !== 'disabled'"
                            class="tab-item c-hand"
                            :class="{'active': selectedTab === 'update'}"
