@@ -192,14 +192,14 @@ export class MySQLClient extends AntaresCore {
 
       // ANSI_QUOTES check
       const [response] = await connection.query<mysql.RowDataPacket[]>('SHOW GLOBAL VARIABLES LIKE \'%sql_mode%\'');
-      const sqlMode = response[0]?.Value?.split(',');
-      const hasAnsiQuotes = sqlMode.includes('ANSI_QUOTES');
+      const sqlMode: string[] = response[0]?.Value?.split(',');
+      const hasAnsiQuotes = sqlMode.includes('ANSI') || sqlMode.includes('ANSI_QUOTES');
 
       if (this._params.readonly)
          await connection.query('SET SESSION TRANSACTION READ ONLY');
 
       if (hasAnsiQuotes)
-         await connection.query(`SET SESSION sql_mode = "${sqlMode.filter((m: string) => m !== 'ANSI_QUOTES').join(',')}"`);
+         await connection.query(`SET SESSION sql_mode = '${sqlMode.filter((m: string) => !['ANSI', 'ANSI_QUOTES'].includes(m)).join(',')}'`);
 
       return connection;
    }
@@ -219,18 +219,18 @@ export class MySQLClient extends AntaresCore {
 
       // ANSI_QUOTES check
       const [res] = await connection.query<mysql.RowDataPacket[]>('SHOW GLOBAL VARIABLES LIKE \'%sql_mode%\'');
-      const sqlMode = res[0]?.Value?.split(',');
-      const hasAnsiQuotes = sqlMode.includes('ANSI_QUOTES');
+      const sqlMode: string[] = res[0]?.Value?.split(',');
+      const hasAnsiQuotes = sqlMode.includes('ANSI') || sqlMode.includes('ANSI_QUOTES');
 
       if (hasAnsiQuotes)
-         await connection.query(`SET SESSION sql_mode = "${sqlMode.filter((m: string) => m !== 'ANSI_QUOTES').join(',')}"`);
+         await connection.query(`SET SESSION sql_mode = '${sqlMode.filter((m: string) => !['ANSI', 'ANSI_QUOTES'].includes(m)).join(',')}'`);
 
       connection.on('connection', conn => {
          if (this._params.readonly)
             conn.query('SET SESSION TRANSACTION READ ONLY');
 
          if (hasAnsiQuotes)
-            conn.query(`SET SESSION sql_mode = "${sqlMode.filter((m: string) => m !== 'ANSI_QUOTES').join(',')}"`);
+            conn.query(`SET SESSION sql_mode = '${sqlMode.filter((m: string) => !['ANSI', 'ANSI_QUOTES'].includes(m)).join(',')}'`);
       });
 
       return connection;
@@ -1397,7 +1397,7 @@ export class MySQLClient extends AntaresCore {
    }
 
    async getVersion () {
-      const sql = 'SHOW VARIABLES LIKE "%vers%"';
+      const sql = 'SHOW VARIABLES LIKE \'%vers%\'';
       const { rows } = await this.raw(sql);
 
       return rows.reduce((acc, curr) => {
