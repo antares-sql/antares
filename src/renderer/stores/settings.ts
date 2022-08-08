@@ -2,7 +2,9 @@ import { defineStore } from 'pinia';
 import { ipcRenderer } from 'electron';
 import { i18n, AvailableLocale } from '@/i18n';
 import * as Store from 'electron-store';
-const persistentStore = new Store({ name: 'settings' });
+import { ShortcutRecord, shortcuts as defaultShortcuts } from 'common/shortcuts';
+const settingsStore = new Store({ name: 'settings' });
+const shortcutsStore = new Store({ name: 'shortcuts' });
 const isDarkTheme = window.matchMedia('(prefers-color-scheme: dark)');
 const defaultAppTheme = isDarkTheme.matches ? 'dark' : 'light';
 const defaultEditorTheme = isDarkTheme.matches ? 'twilight' : 'sqlserver';
@@ -12,74 +14,75 @@ export type ApplicationTheme = 'light' | 'dark';
 
 export const useSettingsStore = defineStore('settings', {
    state: () => ({
-      locale: persistentStore.get('locale', 'en-US') as AvailableLocale,
-      allowPrerelease: persistentStore.get('allow_prerelease', true) as boolean,
-      explorebarSize: persistentStore.get('explorebar_size', null) as number,
-      notificationsTimeout: persistentStore.get('notifications_timeout', 5) as number,
-      dataTabLimit: persistentStore.get('data_tab_limit', 1000) as number,
-      autoComplete: persistentStore.get('auto_complete', true) as boolean,
-      lineWrap: persistentStore.get('line_wrap', true) as boolean,
-      applicationTheme: persistentStore.get('application_theme', defaultAppTheme) as ApplicationTheme,
-      editorTheme: persistentStore.get('editor_theme', defaultEditorTheme) as string,
-      editorFontSize: persistentStore.get('editor_font_size', 'medium') as EditorFontSize,
-      restoreTabs: persistentStore.get('restore_tabs', true) as boolean,
-      disableBlur: persistentStore.get('disable_blur', false) as boolean,
-      disableScratchpad: persistentStore.get('disable_scratchpad', false) as boolean
+      locale: settingsStore.get('locale', 'en-US') as AvailableLocale,
+      allowPrerelease: settingsStore.get('allow_prerelease', true) as boolean,
+      explorebarSize: settingsStore.get('explorebar_size', null) as number,
+      notificationsTimeout: settingsStore.get('notifications_timeout', 5) as number,
+      dataTabLimit: settingsStore.get('data_tab_limit', 1000) as number,
+      autoComplete: settingsStore.get('auto_complete', true) as boolean,
+      lineWrap: settingsStore.get('line_wrap', true) as boolean,
+      applicationTheme: settingsStore.get('application_theme', defaultAppTheme) as ApplicationTheme,
+      editorTheme: settingsStore.get('editor_theme', defaultEditorTheme) as string,
+      editorFontSize: settingsStore.get('editor_font_size', 'medium') as EditorFontSize,
+      restoreTabs: settingsStore.get('restore_tabs', true) as boolean,
+      disableBlur: settingsStore.get('disable_blur', false) as boolean,
+      disableScratchpad: settingsStore.get('disable_scratchpad', false) as boolean,
+      shortcuts: shortcutsStore.get('shortcuts', defaultShortcuts) as ShortcutRecord[]
    }),
    actions: {
       changeLocale (locale: AvailableLocale) {
          this.locale = locale;
          i18n.global.locale = locale;
-         persistentStore.set('locale', this.locale);
+         settingsStore.set('locale', this.locale);
       },
       changePageSize (limit: number) {
          this.dataTabLimit = limit;
-         persistentStore.set('data_tab_limit', this.dataTabLimit);
+         settingsStore.set('data_tab_limit', this.dataTabLimit);
       },
       changeAllowPrerelease (allow: boolean) {
          this.allowPrerelease = allow;
-         persistentStore.set('allow_prerelease', this.allowPrerelease);
+         settingsStore.set('allow_prerelease', this.allowPrerelease);
       },
       updateNotificationsTimeout (timeout: number) {
          this.notificationsTimeout = timeout;
-         persistentStore.set('notifications_timeout', this.notificationsTimeout);
+         settingsStore.set('notifications_timeout', this.notificationsTimeout);
       },
       changeExplorebarSize (size: number) {
          this.explorebarSize = size;
-         persistentStore.set('explorebar_size', this.explorebarSize);
+         settingsStore.set('explorebar_size', this.explorebarSize);
       },
       changeAutoComplete (val: boolean) {
          this.autoComplete = val;
-         persistentStore.set('auto_complete', this.autoComplete);
+         settingsStore.set('auto_complete', this.autoComplete);
       },
       changeLineWrap (val: boolean) {
          this.lineWrap = val;
-         persistentStore.set('line_wrap', this.lineWrap);
+         settingsStore.set('line_wrap', this.lineWrap);
       },
       changeApplicationTheme (theme: string) {
          this.applicationTheme = theme;
-         persistentStore.set('application_theme', this.applicationTheme);
+         settingsStore.set('application_theme', this.applicationTheme);
          ipcRenderer.send('refresh-theme-settings');
       },
       changeEditorTheme (theme: string) {
          this.editorTheme = theme;
-         persistentStore.set('editor_theme', this.editorTheme);
+         settingsStore.set('editor_theme', this.editorTheme);
       },
       changeEditorFontSize (size: EditorFontSize) {
          this.editorFontSize = size;
-         persistentStore.set('editor_font_size', this.editorFontSize);
+         settingsStore.set('editor_font_size', this.editorFontSize);
       },
       changeRestoreTabs (val: boolean) {
          this.restoreTabs = val;
-         persistentStore.set('restore_tabs', this.restoreTabs);
+         settingsStore.set('restore_tabs', this.restoreTabs);
       },
       changeDisableBlur (val: boolean) {
          this.disableBlur = val;
-         persistentStore.set('disable_blur', this.disableBlur);
+         settingsStore.set('disable_blur', this.disableBlur);
       },
       changeDisableScratchpad (val: boolean) {
          this.disableScratchpad = val;
-         persistentStore.set('disable_scratchpad', this.disableScratchpad);
+         settingsStore.set('disable_scratchpad', this.disableScratchpad);
       }
    }
 });

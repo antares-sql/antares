@@ -5,12 +5,21 @@ const shortcutsStore = new Store({ name: 'shortcuts' });
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 export class ShortcutRegister {
-   shortcuts: ShortcutRecord[];
+   private _shortcuts: ShortcutRecord[];
    private _mainWindow: BrowserWindow;
 
    constructor (args: { mainWindow: BrowserWindow }) {
       this._mainWindow = args.mainWindow;
       this.shortcuts = shortcutsStore.get('shortcuts', defaultShortcuts) as ShortcutRecord[];
+   }
+
+   get shortcuts () {
+      return this._shortcuts;
+   }
+
+   private set shortcuts (value: ShortcutRecord[]) {
+      this._shortcuts = value;
+      shortcutsStore.set('shortcuts', value);
    }
 
    init () {
@@ -39,10 +48,10 @@ export class ShortcutRegister {
 
    updateShortcuts (shortcuts: ShortcutRecord[]) {
       this.shortcuts = shortcuts;
+      this.reload();
    }
 
    restoreDefaults () {
-      shortcutsStore.set('shortcuts', defaultShortcuts);
       this.shortcuts = defaultShortcuts;
       this.reload();
    }
