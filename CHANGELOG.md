@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.13](https://github.com/antares-sql/antares/compare/v0.5.12...v0.5.13) (2022-08-09)
+
+
+### Features
+
+* copy row as CSV, closes [#394](https://github.com/antares-sql/antares/issues/394) ([1c3d7aa](https://github.com/antares-sql/antares/commit/1c3d7aa30bb9c2bd900a764ee6b97960729e9263))
+* new macos icon ([0bfa14e](https://github.com/antares-sql/antares/commit/0bfa14e1c90320578597df030941530b670a4131))
+
+
+### Bug Fixes
+
+* **MySQL:** error with ANSI sql_mode ([f64a12a](https://github.com/antares-sql/antares/commit/f64a12a8e9c5f764c3a692f1a032736e008058b5))
+* set legacy: false ([104b7c9](https://github.com/antares-sql/antares/commit/104b7c928b9c2abfc056880f16c606a0b1fa7c67))
+
 ### [0.5.12](https://github.com/antares-sql/antares/compare/v0.5.11...v0.5.12) (2022-07-26)
 
 
