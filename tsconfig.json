@@ -3,8 +3,8 @@
     "./tests/**/*", 
     "./src/main/**/*", 
     "./src/renderer/**/*", 
-    "./src/common/interfaces/antares.ts"
-, "src/common/libs/jsonToSql.ts"  ],
+    "./src/common/**/*", 
+  ],
   "exclude": ["./src/renderer/libs/ext-language_tools.js"],
   "compilerOptions": {
     "baseUrl": "./",

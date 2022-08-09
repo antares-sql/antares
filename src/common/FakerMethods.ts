@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default class {
    static get _methods () {
       return [
@@ -180,7 +181,7 @@ export default class {
             acc[curr.group] = new Set(curr.types);
 
          return acc;
-      }, {});
+      }, {} as any);
 
       const groupsArr = [];
 
@@ -198,12 +199,12 @@ export default class {
       });
    }
 
-   static getGroupsByType (type) {
+   static getGroupsByType (type: string) {
       if (!type) return [];
       return this.getGroups().filter(group => group.types.includes(type));
    }
 
-   static getMethods ({ type, group }) {
+   static getMethods ({ type, group }: {type: string; group: string}) {
       return this._methods.filter(method => method.group === group && method.types.includes(type)).sort((a, b) => {
          if (a.name < b.name)
             return -1;
