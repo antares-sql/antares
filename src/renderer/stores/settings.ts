@@ -2,12 +2,13 @@ import { defineStore } from 'pinia';
 import { ipcRenderer } from 'electron';
 import { i18n, AvailableLocale } from '@/i18n';
 import * as Store from 'electron-store';
-import { ShortcutRecord, shortcuts as defaultShortcuts } from 'common/shortcuts';
+import { ShortcutRecord, shortcuts } from 'common/shortcuts';
 const settingsStore = new Store({ name: 'settings' });
 const shortcutsStore = new Store({ name: 'shortcuts' });
 const isDarkTheme = window.matchMedia('(prefers-color-scheme: dark)');
 const defaultAppTheme = isDarkTheme.matches ? 'dark' : 'light';
 const defaultEditorTheme = isDarkTheme.matches ? 'twilight' : 'sqlserver';
+const defaultShortcuts = shortcuts.filter(s => s.os.includes(process.platform));
 
 export type EditorFontSize = 'small' | 'medium' | 'large';
 export type ApplicationTheme = 'light' | 'dark';

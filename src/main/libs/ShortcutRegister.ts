@@ -1,8 +1,9 @@
 import { BrowserWindow, globalShortcut } from 'electron';
 import * as Store from 'electron-store';
-import { ShortcutRecord, shortcuts as defaultShortcuts } from 'common/shortcuts';
+import { ShortcutRecord, shortcuts } from 'common/shortcuts';
 const shortcutsStore = new Store({ name: 'shortcuts' });
 const isDevelopment = process.env.NODE_ENV !== 'production';
+const defaultShortcuts = shortcuts.filter(s => s.os.includes(process.platform));
 
 export class ShortcutRegister {
    private _shortcuts: ShortcutRecord[];

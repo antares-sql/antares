@@ -299,7 +299,13 @@ export const enUS = {
       allConnections: 'All connections',
       searchForConnections: 'Search for connections',
       disableScratchpad: 'Disable scratchpad',
-      reportABug: 'Report a bug'
+      reportABug: 'Report a bug',
+      nextTab: 'Next tab',
+      previousTab: 'Previous tab',
+      selectTabNumber: 'Select tab number {param}',
+      toggleConsole: 'Toggle console',
+      addShortcut: 'Add shortcut',
+      restoreDefaults: 'Restore defaults'
    },
    faker: {
       address: 'Address',

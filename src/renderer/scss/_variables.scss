@@ -28,13 +28,14 @@ $settingbar-width: 3rem;
 $explorebar-width: 14rem;
 $footer-height: 1.5rem;
 
-@function get-excluding-size(){
-   @if $platform == linux{
-      @return $footer-height;
-   }
-   @else {
-      @return $footer-height + $titlebar-height;
-   }
+@function get-excluding-size() {
+  @if $platform == linux {
+    @return $footer-height;
+  }
+
+  @else {
+    @return $footer-height + $titlebar-height;
+  }
 }
 
 $excluding-size: get-excluding-size();

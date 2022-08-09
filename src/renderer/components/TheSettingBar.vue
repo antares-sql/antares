@@ -245,7 +245,7 @@ watch(selectedWorkspace, (newVal, oldVal) => {
     height: calc(100vh - #{$excluding-size});
     display: flex;
     flex-direction: column;
-   //  justify-content: space-between;
+    //  justify-content: space-between;
     align-items: center;
     padding: 0;
     z-index: 9;
@@ -319,7 +319,7 @@ watch(selectedWorkspace, (newVal, oldVal) => {
           }
         }
 
-        .settingbar-element-pin{
+        .settingbar-element-pin {
           margin: 0 auto;
 
           &::before {
@@ -327,7 +327,7 @@ watch(selectedWorkspace, (newVal, oldVal) => {
             content: "\F0403";
             color: $body-font-color-dark;
             transform: rotate(45deg);
-            opacity: .25;
+            opacity: 0.25;
             bottom: -8px;
             left: -4px;
             position: absolute;
