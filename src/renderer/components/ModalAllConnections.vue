@@ -126,7 +126,7 @@
                         key="trick"
                         readonly
                         class="p-absolute"
-                        style="width: 1px; height: 1px; opacity: 0"
+                        style="width: 1px; height: 1px; opacity: 0;"
                         type="text"
                      >
                      <!-- workaround for useFocusTrap $lastFocusable -->
@@ -270,89 +270,87 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .vscroll {
-   height: 1000px;
-   overflow: auto;
-   overflow-anchor: none;
+  height: 1000px;
+  overflow: auto;
+  overflow-anchor: none;
 }
 
 .column-resizable {
-
-   &:hover,
-   &:active {
-      resize: horizontal;
-      overflow: hidden;
-   }
+  &:hover,
+  &:active {
+    resize: horizontal;
+    overflow: hidden;
+  }
 }
 
 .table-column-title {
-   display: flex;
-   align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .sort-icon {
-   font-size: 0.7rem;
-   line-height: 1;
-   margin-left: 0.2rem;
+  font-size: 0.7rem;
+  line-height: 1;
+  margin-left: 0.2rem;
 }
 
 .modal {
-   align-items: flex-start;
+  align-items: flex-start;
 
-   .modal-container {
-      max-width: 75vw;
-      margin-top: 10vh;
+  .modal-container {
+    max-width: 75vw;
+    margin-top: 10vh;
 
-      .modal-body {
-         height: 80vh;
-      }
-   }
+    .modal-body {
+      height: 80vh;
+    }
+  }
 }
 
 .connections-search {
-   display: flex;
-   justify-content: space-around;
+  display: flex;
+  justify-content: space-around;
 }
 
 .connection-block {
-   cursor: pointer;
-   transition: all .2s;
-   border-radius: $border-radius;
-   outline: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: $border-radius;
+  outline: none;
 
-   &:focus {
-      box-shadow: 0 0 3px .1rem rgba($primary-color, 80%);
-   }
+  &:focus {
+    box-shadow: 0 0 3px 0.1rem rgba($primary-color, 80%);
+  }
 
-   &:hover {
-      .all-connections-buttons {
-
-         .all-connections-delete,
-         .all-connections-pinned,
-         .all-connections-pin {
-            opacity: .5;
-         }
-      }
-   }
-
-   .all-connections-buttons {
-      .all-connections-pinned {
-         opacity: .3;
-         transition: opacity .2s;
-
-         &:hover {
-            opacity: 1;
-         }
-      }
-
+  &:hover {
+    .all-connections-buttons {
       .all-connections-delete,
+      .all-connections-pinned,
       .all-connections-pin {
-         opacity: 0;
-         transition: opacity .2s;
-
-         &:hover {
-            opacity: 1;
-         }
+        opacity: 0.5;
       }
-   }
+    }
+  }
+
+  .all-connections-buttons {
+    .all-connections-pinned {
+      opacity: 0.3;
+      transition: opacity 0.2s;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    .all-connections-delete,
+    .all-connections-pin {
+      opacity: 0;
+      transition: opacity 0.2s;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
 }
 </style>

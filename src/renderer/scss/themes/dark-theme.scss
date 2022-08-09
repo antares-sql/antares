@@ -256,7 +256,7 @@
     }
   }
 
-  .connection-block{  
+  .connection-block {
     &:hover {
       background: $bg-color-light-dark;
     }
@@ -308,13 +308,13 @@
   .query-console {
     border-top: 1px solid #444;
     background-color: $bg-color-dark;
-    
+
     .query-console-log {
       &:hover,
       &:focus {
-         background: $bg-color-gray;
+        background: $bg-color-gray;
       }
-   }
+    }
   }
 
   .tile {

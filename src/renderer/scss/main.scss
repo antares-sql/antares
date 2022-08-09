@@ -362,8 +362,9 @@ option:checked {
 .accordion-body {
   max-height: 5000rem !important;
 }
+
 .btn {
-  &:focus{
+  &:focus {
     box-shadow: 0 0 3px 1px rgba($primary-color, 90%);
   }
 

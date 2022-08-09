@@ -119,61 +119,62 @@ onMounted(() => {
 });
 </script>
 <style lang="scss" scoped>
-.query-console-wrapper{
-   width: 100%;
-   z-index: 9;
-   margin-top: auto;
-   position: absolute;
-   bottom: 0;
+.query-console-wrapper {
+  width: 100%;
+  z-index: 9;
+  margin-top: auto;
+  position: absolute;
+  bottom: 0;
 
-   .query-console-resizer{
-      height: 4px;
-      top: -1px;
-      width: 100%;
-      cursor: ns-resize;
-      position: absolute;
-      z-index: 99;
-      transition: background 0.2s;
+  .query-console-resizer {
+    height: 4px;
+    top: -1px;
+    width: 100%;
+    cursor: ns-resize;
+    position: absolute;
+    z-index: 99;
+    transition: background 0.2s;
 
-      &:hover {
-         background: rgba($primary-color, 50%);
+    &:hover {
+      background: rgba($primary-color, 50%);
+    }
+  }
+
+  .query-console {
+    padding: 0;
+    padding-bottom: $footer-height;
+
+    .query-console-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px;
+      font-weight: 700;
+    }
+
+    .query-console-body {
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      max-height: 100%;
+      padding: 0 6px 3px;
+
+      .query-console-log {
+        padding: 1px 3px;
+        margin: 1px 0;
+        border-radius: $border-radius;
+
+        .query-console-log-sql {
+          font-size: 95%;
+          opacity: 0.8;
+          font-weight: 700;
+
+          &:hover {
+            user-select: text;
+          }
+        }
       }
-   }
-
-   .query-console {
-      padding: 0;
-      padding-bottom: $footer-height;
-      .query-console-header {
-         display: flex;
-         justify-content: space-between;
-         align-items: center;
-         padding: 4px;
-         font-weight: 700;
-      }
-
-      .query-console-body {
-         overflow: auto;
-         display: flex;
-         flex-direction: column;
-         max-height: 100%;
-         padding: 0 6px 3px;
-
-         .query-console-log {
-            padding: 1px 3px;
-            margin: 1px 0;
-            border-radius: $border-radius;
-
-            .query-console-log-sql {
-               font-size: 95%;
-               opacity: .8;
-               font-weight: 700;
-               &:hover {
-                  user-select: text;
-               }
-            }
-         }
-      }
-   }
-
+    }
+  }
 }
 </style>

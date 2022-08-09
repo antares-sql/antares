@@ -538,10 +538,10 @@ onBeforeUnmount(() => {
     .modal-body {
       overflow: hidden;
 
-      .tab-link{
-         overflow: hidden;
-         white-space: nowrap;
-         text-overflow: ellipsis;
+      .tab-link {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
 
       .panel-body {
