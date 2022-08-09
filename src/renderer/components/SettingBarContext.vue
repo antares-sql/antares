@@ -54,11 +54,14 @@
 import { computed, Prop, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { uidGen } from 'common/libs/uidGen';
+import { useI18n } from 'vue-i18n';
 import { useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import { ConnectionParams } from 'common/interfaces/antares';
+
+const { t } = useI18n();
 
 const connectionsStore = useConnectionsStore();
 
