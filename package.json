@@ -79,6 +79,7 @@
           ]
         }
       ],
+      "icon": "assets/linux",
       "category": "Development"
     },
     "appImage": {
