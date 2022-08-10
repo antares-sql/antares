@@ -1,4 +1,3 @@
-import { ipcRenderer } from 'electron';
 import { defineStore } from 'pinia';
 import { useWorkspacesStore } from './workspaces';
 const logsSize = 1000;
@@ -56,8 +55,4 @@ export const useConsoleStore = defineStore('console', {
             this.openConsole();
       }
    }
-});
-
-ipcRenderer.on('toggle-console', () => {
-   useConsoleStore().toggleConsole();
 });

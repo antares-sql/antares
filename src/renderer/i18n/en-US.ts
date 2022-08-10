@@ -305,7 +305,10 @@ export const enUS = {
       selectTabNumber: 'Select tab number {param}',
       toggleConsole: 'Toggle console',
       addShortcut: 'Add shortcut',
-      restoreDefaults: 'Restore defaults'
+      restoreDefaults: 'Restore defaults',
+      restoreDefaultsQuestion: 'Do you confirm to restore default values?',
+      registerAShortcut: 'Register a shortcut',
+      deleteShortcut: 'Delete shortcut'
    },
    faker: {
       address: 'Address',

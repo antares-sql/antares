@@ -1,6 +1,7 @@
 import { BrowserWindow, globalShortcut } from 'electron';
 import * as Store from 'electron-store';
 import { ShortcutRecord, shortcuts } from 'common/shortcuts';
+
 const shortcutsStore = new Store({ name: 'shortcuts' });
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const defaultShortcuts = shortcuts.filter(s => s.os.includes(process.platform));
@@ -8,10 +9,18 @@ const defaultShortcuts = shortcuts.filter(s => s.os.includes(process.platform));
 export class ShortcutRegister {
    private _shortcuts: ShortcutRecord[];
    private _mainWindow: BrowserWindow;
+   private static _instance: ShortcutRegister;
 
-   constructor (args: { mainWindow: BrowserWindow }) {
+   private constructor (args: { mainWindow: BrowserWindow }) {
       this._mainWindow = args.mainWindow;
       this.shortcuts = shortcutsStore.get('shortcuts', defaultShortcuts) as ShortcutRecord[];
+   }
+
+   public static getInstance (args: { mainWindow: BrowserWindow }) {
+      if (!ShortcutRegister._instance)
+         ShortcutRegister._instance = new ShortcutRegister(args);
+
+      return ShortcutRegister._instance;
    }
 
    get shortcuts () {
@@ -40,6 +49,8 @@ export class ShortcutRegister {
             }
          }
       }
+
+      this._mainWindow.webContents.send('update-shortcuts', this.shortcuts);
    }
 
    reload () {

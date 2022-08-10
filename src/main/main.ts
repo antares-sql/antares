@@ -122,7 +122,7 @@ else {
       mainWindow = await createMainWindow();
       createAppMenu();
 
-      shortCutRegister = new ShortcutRegister({ mainWindow });
+      shortCutRegister = ShortcutRegister.getInstance({ mainWindow });
 
       if (isWindows)
          mainWindow.show();
