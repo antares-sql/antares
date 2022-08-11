@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.14](https://github.com/antares-sql/antares/compare/v0.5.13...v0.5.14) (2022-08-09)
+
+
+### Bug Fixes
+
+* unable to open settingbar context menu ([44eb507](https://github.com/antares-sql/antares/commit/44eb507a12bad028a4fa8a8bb0f6442a3e8dde91))
+
 ### [0.5.13](https://github.com/antares-sql/antares/compare/v0.5.12...v0.5.13) (2022-08-09)
 
 
