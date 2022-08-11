@@ -14,17 +14,20 @@
                @start="isDragging = true"
                @end="dragStop"
             >
-               <template #item="{element}">
+               <template #item="{ element }">
                   <li
                      :draggable="true"
-                     class="settingbar-element btn btn-link ex-tooltip"
-                     :class="{'selected': element.uid === selectedWorkspace}"
+                     class="settingbar-element btn btn-link"
+                     :class="{ 'selected': element.uid === selectedWorkspace }"
+                     :title="getConnectionName(element.uid)"
                      @click.stop="selectWorkspace(element.uid)"
                      @contextmenu.prevent="contextMenu($event, element)"
-                     @mouseover.self="tooltipPosition"
                   >
-                     <i class="settingbar-element-icon dbi" :class="[`dbi-${element.client}`, getStatusBadge(element.uid), (pinnedConnections.has(element.uid) ? 'settingbar-element-pin' : false)]" />
-                     <span v-if="!isDragging && !isScrolling" class="ex-tooltip-content">{{ getConnectionName(element.uid) }}</span>
+                     <i
+                        class="settingbar-element-icon dbi"
+                        :class="[`dbi-${element.client}`, getStatusBadge(element.uid), (pinnedConnections.has(element.uid) ? 'settingbar-element-pin' : false)]"
+                     />
+                     <small class="settingbar-element-name">{{ getConnectionName(element.uid) }}</small>
                   </li>
                </template>
             </Draggable>
@@ -34,14 +37,17 @@
             <li
                v-for="connection in unpinnedConnectionsArr"
                :key="connection.uid"
-               class="settingbar-element btn btn-link ex-tooltip"
-               :class="{'selected': connection.uid === selectedWorkspace}"
+               class="settingbar-element btn btn-link"
+               :class="{ 'selected': connection.uid === selectedWorkspace }"
+               :title="getConnectionName(connection.uid)"
                @click.stop="selectWorkspace(connection.uid)"
                @contextmenu.prevent="contextMenu($event, connection)"
-               @mouseover.self="tooltipPosition"
             >
-               <i class="settingbar-element-icon dbi" :class="[`dbi-${connection.client}`, getStatusBadge(connection.uid)]" />
-               <span v-if="!isDragging && !isScrolling" class="ex-tooltip-content">{{ getConnectionName(connection.uid) }}</span>
+               <i
+                  class="settingbar-element-icon dbi"
+                  :class="[`dbi-${connection.client}`, getStatusBadge(connection.uid)]"
+               />
+               <small class="settingbar-element-name">{{ getConnectionName(connection.uid) }}</small>
             </li>
          </ul>
       </div>
@@ -50,21 +56,19 @@
          <ul class="settingbar-elements">
             <li
                v-if="isScrollable"
-               class="settingbar-element btn btn-link ex-tooltip"
+               class="settingbar-element btn btn-link"
+               :title="t('message.allConnections')"
                @click="emit('show-connections-modal')"
-               @mouseover.self="tooltipPosition"
             >
                <i class="settingbar-element-icon mdi mdi-24px mdi-dots-horizontal text-light" />
-               <span class="ex-tooltip-content">{{ t('message.allConnections') }} (Shift+CTRL+Space)</span>
             </li>
             <li
-               class="settingbar-element btn btn-link ex-tooltip"
-               :class="{'selected': 'NEW' === selectedWorkspace}"
+               class="settingbar-element btn btn-link"
+               :class="{ 'selected': 'NEW' === selectedWorkspace }"
+               :title="t('message.addConnection')"
                @click="selectWorkspace('NEW')"
-               @mouseover.self="tooltipPosition"
             >
                <i class="settingbar-element-icon mdi mdi-24px mdi-plus text-light" />
-               <span class="ex-tooltip-content">{{ t('message.addConnection') }}</span>
             </li>
          </ul>
       </div>
@@ -73,15 +77,21 @@
          <ul class="settingbar-elements">
             <li
                v-if="!disableScratchpad"
-               class="settingbar-element btn btn-link ex-tooltip"
+               class="settingbar-element btn btn-link"
+               :title="t('word.scratchpad')"
                @click="showScratchpad"
             >
                <i class="settingbar-element-icon mdi mdi-24px mdi-notebook-edit-outline text-light" />
-               <span class="ex-tooltip-content">{{ t('word.scratchpad') }}</span>
             </li>
-            <li class="settingbar-element btn btn-link ex-tooltip" @click="showSettingModal('general')">
-               <i class="settingbar-element-icon mdi mdi-24px mdi-cog text-light" :class="{' badge badge-update': hasUpdates}" />
-               <span class="ex-tooltip-content">{{ t('word.settings') }}</span>
+            <li
+               class="settingbar-element btn btn-link"
+               :title="t('word.settings')"
+               @click="showSettingModal('general')"
+            >
+               <i
+                  class="settingbar-element-icon mdi mdi-24px mdi-cog text-light"
+                  :class="{ ' badge badge-update': hasUpdates }"
+               />
             </li>
          </ul>
       </div>
@@ -98,7 +108,7 @@ import { useSettingsStore } from '@/stores/settings';
 import * as Draggable from 'vuedraggable';
 import SettingBarContext from '@/components/SettingBarContext.vue';
 import { ConnectionParams } from 'common/interfaces/antares';
-import { useElementBounding, useScroll } from '@vueuse/core';
+import { useElementBounding } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -125,7 +135,6 @@ const sidebarConnections: Ref<HTMLDivElement> = ref(null);
 const isContext: Ref<boolean> = ref(false);
 const isDragging: Ref<boolean> = ref(false);
 const isScrollable: Ref<boolean> = ref(false);
-const isScrolling = ref(useScroll(sidebarConnections)?.isScrolling);
 const contextEvent: Ref<MouseEvent> = ref(null);
 const contextConnection: Ref<ConnectionParams> = ref(null);
 const sidebarConnectionsHeight = ref(useElementBounding(sidebarConnections)?.height);
@@ -240,32 +249,32 @@ watch(selectedWorkspace, (newVal, oldVal) => {
 </script>
 
 <style lang="scss">
-  #settingbar {
-    width: $settingbar-width;
-    height: calc(100vh - #{$excluding-size});
-    display: flex;
-    flex-direction: column;
-    //  justify-content: space-between;
-    align-items: center;
-    padding: 0;
-    z-index: 9;
+#settingbar {
+   width: $settingbar-width;
+   height: calc(100vh - #{$excluding-size});
+   display: flex;
+   flex-direction: column;
+   //  justify-content: space-between;
+   align-items: center;
+   padding: 0;
+   z-index: 9;
 
-    .settingbar-top-elements {
+   .settingbar-top-elements {
       overflow-x: hidden;
       overflow-y: overlay;
       // max-height: calc((100vh - 3.5rem) - #{$excluding-size});
 
       &::-webkit-scrollbar {
-        width: 3px;
+         width: 3px;
       }
-    }
+   }
 
-    .settingbar-bottom-elements {
+   .settingbar-bottom-elements {
       z-index: 1;
       margin-top: auto;
-    }
+   }
 
-    .settingbar-elements {
+   .settingbar-elements {
       list-style: none;
       text-align: center;
       width: $settingbar-width;
@@ -273,101 +282,84 @@ watch(selectedWorkspace, (newVal, oldVal) => {
       margin: 0;
 
       .settingbar-element {
-        height: $settingbar-width;
-        width: 100%;
-        margin: 0;
-        opacity: 0.5;
-        transition: opacity 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        border-radius: 0;
-        padding: 0;
+         height: $settingbar-width;
+         width: 100%;
+         margin: 0;
+         opacity: 0.6;
+         transition: opacity 0.2s;
+         display: flex;
+         align-items: center;
+         justify-content: flex-start;
+         border-radius: 0;
+         padding: 0;
+         position: relative;
 
-        &:hover {
-          opacity: 1;
-        }
+         &:hover {
+            opacity: 1;
+         }
 
-        &.selected {
-          opacity: 1;
+         &.selected {
+            opacity: 1;
 
-          &::before {
-            height: $settingbar-width;
-          }
-        }
+            &::before {
+               height: $settingbar-width;
+            }
+         }
 
-        &::before {
-          content: "";
-          height: 0;
-          width: 3px;
-          transition: height 0.2s;
-          background-color: $primary-color;
-          border-radius: $border-radius;
-        }
+         &::before {
+            content: "";
+            height: 0;
+            width: 3px;
+            transition: height 0.2s;
+            background-color: $primary-color;
+            border-radius: $border-radius;
+         }
 
-        .settingbar-element-icon {
-          margin: 0 auto;
+         .settingbar-element-icon {
+            margin: 0 auto;
 
-          &.badge::after {
-            bottom: -10px;
-            right: 0;
+            &.badge::after {
+               top: 5px;
+               right: -4px;
+               position: absolute;
+            }
+
+            &.badge-update::after {
+               bottom: initial;
+            }
+         }
+
+         .settingbar-element-name {
+            font-size: 65%;
+            bottom: 5px;
+            left: 7px;
             position: absolute;
-          }
+            font-style: normal;
+            display: block;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            width: calc($settingbar-width - 15px);
+            text-align: left;
+            line-height: 1.1;
+            color: rgba($body-font-color-dark, 0.8);
+         }
 
-          &.badge-update::after {
-            bottom: initial;
-          }
-        }
+         .settingbar-element-pin {
+            margin: 0 auto;
 
-        .settingbar-element-pin {
-          margin: 0 auto;
-
-          &::before {
-            font: normal normal normal 14px/1 "Material Design Icons";
-            content: "\F0403";
-            color: $body-font-color-dark;
-            transform: rotate(45deg);
-            opacity: 0.25;
-            bottom: -8px;
-            left: -4px;
-            position: absolute;
-          }
-        }
+            &::before {
+               font: normal normal normal 14px/1 "Material Design Icons";
+               content: "\F0403";
+               color: $body-font-color-dark;
+               transform: rotate(45deg);
+               opacity: 0.25;
+               top: -8px;
+               left: -10px;
+               position: absolute;
+            }
+         }
       }
-    }
-  }
-
-  .ex-tooltip {// Because both overflow-x: visible and overflow-y:auto are evil!!!
-    .ex-tooltip-content {
-      z-index: 999;
-      visibility: hidden;
-      opacity: 0;
-      display: block;
-      position: absolute;
-      text-align: center;
-      margin: 0 0 0 calc(#{$settingbar-width} - 5px);
-      left: 0;
-      padding: 0.2rem 0.4rem;
-      font-size: 0.7rem;
-      background: rgba(48, 55, 66, 0.95);
-      border-radius: $border-radius;
-      color: #fff;
-      max-width: 320px;
-      pointer-events: none;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      transition: opacity 0.2s;
-    }
-
-    &.sortable-chosen {
-      .ex-tooltip-content {
-        opacity: 0 !important;
-      }
-    }
-
-    &:hover:not(.selected) .ex-tooltip-content {
-      visibility: visible;
-      opacity: 1;
-    }
-  }
+   }
+}
 </style>

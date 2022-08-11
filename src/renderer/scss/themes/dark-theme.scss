@@ -1,3 +1,5 @@
+/* stylelint-disable selector-class-pattern */
+/* stylelint-disable function-no-unknown */
 .theme-dark {
   color: $body-font-color-dark;
   background: $body-bg-dark;
@@ -7,10 +9,10 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba($color: #fff, $alpha: 0.5);
+    background: rgba($color: #fff, $alpha: 50%);
 
     &:hover {
-      background: rgba($color: #fff, $alpha: 1);
+      background: rgba($color: #fff, $alpha: 100%);
     }
   }
 
@@ -25,7 +27,7 @@
     background-color: $bg-color-gray;
   }
 
-  // Override Spectre.css
+  /* Override Spectre.css */
   .menu {
     background: $bg-color-light-dark;
 
@@ -79,7 +81,7 @@
   .modal {
     .modal-overlay,
     &.active .modal-overlay {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgb(255 255 255 / 15%);
     }
 
     .modal-container,
@@ -100,12 +102,16 @@
 
   .form-select,
   .form-input,
-  .form-select:not([multiple]):not([size]),
+  .form-select:not([multiple], [size]),
   .form-checkbox .form-icon,
   .form-radio .form-icon {
     border-color: $bg-color-light-dark;
     background-color: $bg-color-gray;
     color: $body-font-color-dark;
+  }
+
+  .form-select:not([multiple], [size]) {
+    background-color: $bg-color-gray !important;
   }
 
   .form-input.is-error,
@@ -117,7 +123,7 @@
     background: $bg-color-gray;
   }
 
-  .form-select:not([multiple]):not([size]):focus {
+  .form-select:not([multiple], [size]):focus {
     border-color: $primary-color;
   }
 
@@ -161,7 +167,7 @@
     color: rgba($body-font-color-dark, 0.7);
   }
 
-  // Antares
+  /* Antares */
   .workspace {
     .workspace-explorebar {
       background: $bg-color-gray;
@@ -191,7 +197,7 @@
           &:hover,
           &.selected {
             color: $body-font-color-dark;
-            background: rgba($color: #fff, $alpha: 0.05);
+            background: rgba($color: #fff, $alpha: 5%);
           }
         }
       }
@@ -238,12 +244,12 @@
           &:focus,
           &.selected {
             box-shadow: inset 0 0 0 2px darken($body-font-color-dark, 40%);
-            background-color: rgba($color: #000, $alpha: 0.3);
+            background-color: rgba($color: #000, $alpha: 30%);
           }
 
           .editable-field {
             box-shadow: inset 0 0 0 2px darken($body-font-color-dark, 40%);
-            background-color: rgba($color: #000, $alpha: 0.3);
+            background-color: rgba($color: #000, $alpha: 30%);
           }
         }
       }
@@ -264,7 +270,7 @@
 
   .bg-checkered {
     background-image:
-      linear-gradient(to right, rgba(192, 192, 192, 0.75), rgba(192, 192, 192, 0.75)),
+      linear-gradient(to right, rgb(192 192 192 / 75%), rgb(192 192 192 / 75%)),
       linear-gradient(to right, black 50%, white 50%),
       linear-gradient(to bottom, black 50%, white 50%);
     background-blend-mode: normal, difference, normal;
@@ -385,7 +391,7 @@
       .titlebar-element {
         &:hover {
           opacity: 1;
-          background: rgba($color: #fff, $alpha: 0.1);
+          background: rgba($color: #fff, $alpha: 10%);
         }
 
         &.close-button:hover {
@@ -430,14 +436,7 @@
 
       .settingbar-element {
         .settingbar-element-icon {
-          &.badge::after {
-            bottom: -10px;
-            right: 0;
-            position: absolute;
-          }
-
           &.badge-update::after {
-            bottom: initial;
             background: $primary-color;
           }
         }
@@ -447,7 +446,7 @@
 
   .ex-tooltip {
     .ex-tooltip-content {
-      background: rgba(48, 55, 66, 0.95);
+      background: rgb(48 55 66 / 95%);
       color: #fff;
     }
   }
@@ -460,7 +459,7 @@
       .footer-element {
         &.footer-link {
           &:hover {
-            background: rgba($color: #fff, $alpha: 0.1);
+            background: rgba($color: #fff, $alpha: 10%);
           }
         }
       }

@@ -1,13 +1,14 @@
+/* stylelint-disable function-no-unknown */
 .theme-light {
   ::-webkit-scrollbar-track {
     background: #fff;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba($color: $bg-color-light-dark, $alpha: 0.5);
+    background: rgba($color: $bg-color-light-dark, $alpha: 50%);
 
     &:hover {
-      background: rgba($color: $bg-color-light-dark, $alpha: 1);
+      background: rgba($color: $bg-color-light-dark, $alpha: 100%);
     }
   }
 
@@ -38,7 +39,7 @@
     .menu-item a {
       &:hover {
         color: $body-font-color;
-        background: rgba($color: #000, $alpha: 0.1);
+        background: rgba($color: #000, $alpha: 10%);
       }
     }
   }
@@ -148,7 +149,7 @@
       .titlebar-element {
         &:hover {
           opacity: 1;
-          background: rgba($color: rgb(172, 172, 172), $alpha: 0.3);
+          background: rgba($color: rgb(172 172 172), $alpha: 30%);
         }
 
         &.close-button:hover {
@@ -193,14 +194,7 @@
 
       .settingbar-element {
         .settingbar-element-icon {
-          &.badge::after {
-            bottom: -10px;
-            right: 0;
-            position: absolute;
-          }
-
           &.badge-update::after {
-            bottom: initial;
             background: $primary-color;
           }
         }
@@ -210,7 +204,7 @@
 
   .ex-tooltip {
     .ex-tooltip-content {
-      background: rgba(48, 55, 66, 0.95);
+      background: rgb(48 55 66 / 95%);
       color: #fff;
     }
   }
@@ -228,7 +222,7 @@
         .menu-item {
           &:hover,
           &.selected {
-            background: rgba($color: #000, $alpha: 0.05);
+            background: rgba($color: #000, $alpha: 5%);
           }
         }
 
@@ -365,7 +359,7 @@
       .footer-element {
         &.footer-link {
           &:hover {
-            background: rgba($color: #fff, $alpha: 0.1);
+            background: rgba($color: #fff, $alpha: 10%);
           }
         }
       }
