@@ -1,8 +1,8 @@
-export const shortcutEvents: { [key: string]: { l18n: string; l18nParam?: string | number }} = {
-   'open-new-tab': { l18n: 'message.openNewTab' },
-   'close-tab': { l18n: 'message.closeTab' },
-   'next-tab': { l18n: 'message.nextTab' },
-   'prev-tab': { l18n: 'message.previousTab' },
+export const shortcutEvents: { [key: string]: { l18n: string; l18nParam?: string | number; context?: 'tab' }} = {
+   'open-new-tab': { l18n: 'message.openNewTab', context: 'tab' },
+   'close-tab': { l18n: 'message.closeTab', context: 'tab' },
+   'next-tab': { l18n: 'message.nextTab', context: 'tab' },
+   'prev-tab': { l18n: 'message.previousTab', context: 'tab' },
    'open-connections-modal': { l18n: 'message.allConnections' },
    'toggle-console': { l18n: 'message.toggleConsole' }
 };

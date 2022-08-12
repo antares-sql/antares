@@ -308,7 +308,8 @@ export const enUS = {
       restoreDefaults: 'Restore defaults',
       restoreDefaultsQuestion: 'Do you confirm to restore default values?',
       registerAShortcut: 'Register a shortcut',
-      deleteShortcut: 'Delete shortcut'
+      deleteShortcut: 'Delete shortcut',
+      invalidShortcutMessage: 'Invalid combination, continue to type'
    },
    faker: {
       address: 'Address',

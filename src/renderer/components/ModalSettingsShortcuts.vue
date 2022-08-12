@@ -118,7 +118,7 @@ const parseKeys = (keys: {[key: number]: string}[]) => {
             `<code class="text-bold">${sk}</code>`
          )))
       .join('+')
-      .replaceAll('CommandOrControl', isMacOS ? 'CMD' : 'CTRL')
+      .replaceAll('CommandOrControl', isMacOS ? '`Command' : 'Control')
    ).join(', ');
 };
 

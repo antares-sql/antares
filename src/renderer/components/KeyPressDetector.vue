@@ -33,6 +33,9 @@ const keyboardEvent: Ref<KeyboardEvent> = ref(null);
 
 const pressedKeys = computed(() => {
    const keys: string[] = [];
+   const singleKeysToIgnore = ['Dead', 'Backspace', 'ArrotLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+   const specialKeys = ['Control', 'Alt', 'AltGraph', 'Shift', 'Meta', 'CapsLock', 'ContextMenu', 'Escape'];
+   const keysFromCode = ['Space', 'Minus', 'Equal', 'Slash', 'Quote', 'Semicolon', 'Comma', 'Period', 'Backslash'];
 
    if (keyboardEvent.value) {
       if (keyboardEvent.value.altKey)
@@ -40,12 +43,43 @@ const pressedKeys = computed(() => {
       if (keyboardEvent.value.ctrlKey)
          keys.push('Control');
       if (keyboardEvent.value.metaKey && isMacOS)
-         keys.push('Meta');
-      if (keyboardEvent.value.shiftKey)
+         keys.push('Command');
+      if (keyboardEvent.value.shiftKey && keys.length)
          keys.push('Shift');
       if (keyboardEvent.value.code) {
-         if (!['Control', 'Alt', 'AltGraph', 'Shift', 'Meta', 'CapsLock', 'ContextMenu'].includes(keyboardEvent.value.key))
-            keys.push(keyboardEvent.value.code.replace('Digit', '').replace('Key', ''));
+         if (keys.length === 0 && (keyboardEvent.value.key.length === 1 || singleKeysToIgnore.includes(keyboardEvent.value.key)))
+            return t('message.invalidShortcutMessage');
+         else if (!specialKeys.includes(keyboardEvent.value.key)) {
+            if (keyboardEvent.value.key === 'Dead') {
+               keys.push(keyboardEvent.value.code
+                  .replace('Digit', '')
+                  .replace('Key', '')
+                  .replace('Quote', '\'')
+                  .replace('Backquote', '`'));
+            }
+            else if (keysFromCode.includes(keyboardEvent.value.code) || keyboardEvent.value.code.includes('Digit')) {
+               keys.push(keyboardEvent.value.code
+                  .replace('Quote', '\'')
+                  .replace('Semicolon', ';')
+                  .replace('Slash', '/')
+                  .replace('Backslash', '\\')
+                  .replace('Comma', ',')
+                  .replace('Period', '.')
+                  .replace('Minus', '-')
+                  .replace('Equal', '=')
+                  .replace('Digit', '')
+                  .replace('Key', ''));
+            }
+            else {
+               keys.push(keyboardEvent.value.key.length === 1
+                  ? keyboardEvent.value.key.toUpperCase()
+                  : keyboardEvent.value.key
+                     .replace('Arrow', '')
+               );
+            }
+         }
+         else
+            return t('message.invalidShortcutMessage');
       }
    }
 
