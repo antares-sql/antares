@@ -35,7 +35,7 @@ const pressedKeys = computed(() => {
    const keys: string[] = [];
    const singleKeysToIgnore = ['Dead', 'Backspace', 'ArrotLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
    const specialKeys = ['Control', 'Alt', 'AltGraph', 'Shift', 'Meta', 'CapsLock', 'ContextMenu', 'Escape'];
-   const keysFromCode = ['Space', 'Minus', 'Equal', 'Slash', 'Quote', 'Semicolon', 'Comma', 'Period', 'Backslash'];
+   const keysFromCode = ['Space', 'Minus', 'Equal', 'Slash', 'Quote', 'Semicolon', 'Comma', 'Period', 'Backslash', 'BracketLeft', 'BracketRight'];
 
    if (keyboardEvent.value) {
       if (keyboardEvent.value.altKey)
@@ -63,6 +63,8 @@ const pressedKeys = computed(() => {
                   .replace('Semicolon', ';')
                   .replace('Slash', '/')
                   .replace('Backslash', '\\')
+                  .replace('BracketLeft', '[')
+                  .replace('BracketRight', ']')
                   .replace('Comma', ',')
                   .replace('Period', '.')
                   .replace('Minus', '-')

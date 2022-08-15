@@ -1,4 +1,3 @@
-
 @mixin type-colors($types) {
   @each $type, $color in $types {
     .type-#{$type} {

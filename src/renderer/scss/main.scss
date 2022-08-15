@@ -1,3 +1,4 @@
+/* stylelint-disable selector-class-pattern */
 @import "~spectre.css/src/variables";
 @import "variables";
 @import "transitions";
@@ -108,7 +109,7 @@ option:checked {
 
       > div {
         padding: 0.1rem 0.2rem;
-        min-width: -webkit-fill-available;
+        min-width: fill-available;
       }
     }
 
@@ -167,13 +168,13 @@ option:checked {
   width: 100%;
 }
 
-// Scrollbars
+/* Scrollbars */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
-// Animations
+/* Animations */
 @keyframes rotation {
   from {
     transform: rotate(0deg);
@@ -210,15 +211,14 @@ option:checked {
   }
 
   .modal-overlay {
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    background: rgb(255 255 255 / 10%);
+    box-shadow: 0 8px 32px 0 rgb(31 38 135 / 37%);
   }
 }
 
 #wrapper:not(.no-blur) {
   .modal-overlay {
     backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
   }
 }
 
@@ -330,7 +330,7 @@ option:checked {
   z-index: 401 !important;
   border: 1px solid transparent;
   border-radius: $border-radius;
-  box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 8px 17px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
 }
 
 .select__option--selected {
@@ -409,7 +409,7 @@ option:checked {
   }
 }
 
-// Ace Editor
+/* Ace Editor */
 .ace_editor {
   &.ace_autocomplete {
     border-radius: $border-radius;

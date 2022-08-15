@@ -114,7 +114,6 @@ function startRenderer (callback) {
    });
 
    const server = new WebpackDevServer(compiler, {
-      hot: true,
       port: 9080,
       client: {
          overlay: true,
