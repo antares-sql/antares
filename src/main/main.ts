@@ -130,6 +130,24 @@ else {
       if (isDevelopment)
          mainWindow.webContents.openDevTools();
 
+      app.on('browser-window-focus', () => {
+      // Send registered shortcut events to window
+         shortCutRegister.init();
+
+         if (isDevelopment) { // Dev shortcuts
+            globalShortcut.register('Shift+CommandOrControl+F5', () => {
+               mainWindow.reload();
+            });
+            globalShortcut.register('Shift+CommandOrControl+F12', () => {
+               mainWindow.webContents.openDevTools();
+            });
+         }
+      });
+
+      app.on('browser-window-blur', () => {
+         shortCutRegister.unregister();
+      });
+
       process.on('uncaughtException', error => {
          mainWindow.webContents.send('unhandled-exception', error);
       });
@@ -145,24 +163,6 @@ else {
          const extensionPath = path.resolve(__dirname, `../../misc/${antares.devtoolsId}`);
          window.webContents.session.loadExtension(extensionPath, { allowFileAccess: true }).catch(console.error);
       }
-   });
-
-   app.on('browser-window-focus', () => {
-      // Send registered shortcut events to window
-      shortCutRegister.init();
-
-      if (isDevelopment) { // Dev shortcuts
-         globalShortcut.register('Shift+CommandOrControl+F5', () => {
-            mainWindow.reload();
-         });
-         globalShortcut.register('Shift+CommandOrControl+F12', () => {
-            mainWindow.webContents.openDevTools();
-         });
-      }
-   });
-
-   app.on('browser-window-blur', () => {
-      shortCutRegister.unregister();
    });
 }
 
