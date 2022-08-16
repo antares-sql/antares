@@ -3,6 +3,10 @@ export const shortcutEvents: { [key: string]: { l18n: string; l18nParam?: string
    'close-tab': { l18n: 'message.closeTab', context: 'tab' },
    'next-tab': { l18n: 'message.nextTab', context: 'tab' },
    'prev-tab': { l18n: 'message.previousTab', context: 'tab' },
+   'format-query': { l18n: 'message.formatQuery', context: 'tab' },
+   'kill-query': { l18n: 'message.killQuery', context: 'tab' },
+   'query-history': { l18n: 'message.queryHistory', context: 'tab' },
+   'clear-query': { l18n: 'message.clearQuery', context: 'tab' },
    'open-all-connections': { l18n: 'message.openAllConnections' },
    'toggle-console': { l18n: 'message.toggleConsole' },
    'save-content': { l18n: 'message.saveContent' },
@@ -31,6 +35,26 @@ const shortcuts: ShortcutRecord[] = [
    {
       event: 'save-content',
       keys: ['CommandOrControl+S'],
+      os: ['darwin', 'linux', 'win32']
+   },
+   {
+      event: 'kill-query',
+      keys: ['CommandOrControl+K'],
+      os: ['darwin', 'linux', 'win32']
+   },
+   {
+      event: 'format-query',
+      keys: ['CommandOrControl+B'],
+      os: ['darwin', 'linux', 'win32']
+   },
+   {
+      event: 'clear-query',
+      keys: ['CommandOrControl+Alt+W'],
+      os: ['darwin', 'linux', 'win32']
+   },
+   {
+      event: 'query-history',
+      keys: ['CommandOrControl+G'],
       os: ['darwin', 'linux', 'win32']
    },
    {

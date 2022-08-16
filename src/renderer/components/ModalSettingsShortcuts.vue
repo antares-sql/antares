@@ -42,7 +42,7 @@
                      v-html="parseKeys(shortcut.keys)"
                   />
                   <div class="td py-1 pr-2">
-                     <button class="shortcut-button btn btn-link btn-sm d-flex p-0 px-1 mr-2">
+                     <button class="shortcut-button btn btn-link btn-sm d-flex p-0 px-1 mr-2" @click="showEditModal({...shortcut, index: i})">
                         <span>{{ t('word.edit') }}</span><i class="mdi mdi-pencil ml-1" />
                      </button>
                      <button class="shortcut-button btn btn-link btn-sm d-flex p-0 px-1" @click="showDeleteModal(shortcut)">
@@ -90,6 +90,41 @@
       </ConfirmModal>
 
       <ConfirmModal
+         v-if="isConfirmEditModal"
+         :disable-autofocus="true"
+         :confirm-text="t('word.save')"
+         :close-on-confirm="false"
+         @confirm="editShortcut"
+         @hide="closeEditModal"
+      >
+         <template #header>
+            <div class="d-flex">
+               <i class="mdi mdi-24px mdi-plus mr-1" /> {{ t('message.editShortcut') }}
+            </div>
+         </template>
+         <template #body>
+            <div class="mb-2">
+               <div class="form-group">
+                  <label class="form-label">{{ t('word.event') }}</label>
+                  <BaseSelect
+                     v-model="shortcutToEdit.event"
+                     class="form-select"
+                     :options="eventOptions"
+                     :disabled="true"
+                  />
+               </div>
+            </div>
+            <div class="mb-2">
+               <div class="form-group">
+                  <label class="form-label">{{ t('word.key', 2) }}</label>
+                  <KeyPressDetector v-model="shortcutToEdit.keys[0]" />
+               </div>
+            </div>
+            <small v-if="doesShortcutExists" class="text-warning">{{ t('message.shortcutAlreadyExists') }}</small>
+         </template>
+      </ConfirmModal>
+
+      <ConfirmModal
          v-if="isConfirmDeleteModal"
          :disable-autofocus="true"
          @confirm="deleteShortcut"
@@ -106,6 +141,7 @@
             </div>
          </template>
       </ConfirmModal>
+
       <ConfirmModal
          v-if="isConfirmRestoreModal"
          :disable-autofocus="true"
@@ -143,11 +179,13 @@ const isMacOS = process.platform === 'darwin';
 
 const isConfirmRestoreModal = ref(false);
 const isConfirmAddModal = ref(false);
+const isConfirmEditModal = ref(false);
 const isConfirmDeleteModal = ref(false);
 const doesShortcutExists = ref(false);
 const shortcutToAdd: Ref<ShortcutRecord> = ref({ event: undefined, keys: [], os: [process.platform] });
-const typedShortcut = ref('');
+const shortcutToEdit: Ref<ShortcutRecord & { index: number }> = ref(null);
 const shortcutToDelete: Ref<ShortcutRecord> = ref(null);
+const typedShortcut = ref('');
 
 const settingsStore = useSettingsStore();
 const { shortcuts } = storeToRefs(settingsStore);
@@ -171,7 +209,7 @@ const parseKeys = (keys: {[key: number]: string}[]) => {
             `<code class="text-bold">${sk}</code>`
          )))
       .join('+')
-      .replaceAll('CommandOrControl', isMacOS ? '`Command' : 'Control')
+      .replaceAll('CommandOrControl', isMacOS ? 'Command' : 'Control')
    ).join(', ');
 };
 
@@ -192,9 +230,36 @@ const closeAddModal = () => {
    isConfirmAddModal.value = false;
 };
 
+const showEditModal = (shortcut: ShortcutRecord & { index: number }) => {
+   shortcut = {
+      ...shortcut,
+      keys: [shortcut.keys[0].replaceAll('CommandOrControl', isMacOS ? 'Command' : 'Control')]
+   };
+   shortcutToEdit.value = shortcut;
+   isConfirmEditModal.value = true;
+};
+
+const editShortcut = () => {
+   const index = shortcutToEdit.value.index;
+   delete shortcutToEdit.value.index;
+   shortcutToEdit.value.index = undefined;
+
+   shortcuts.value[index] = shortcutToEdit.value;
+
+   isConfirmEditModal.value = false;
+   return Application.updateShortcuts(shortcuts.value);
+};
+
+const closeEditModal = () => {
+   typedShortcut.value = '';
+   doesShortcutExists.value = false;
+   shortcutToEdit.value = null;
+   isConfirmEditModal.value = false;
+};
+
 const addShortcut = () => {
    if (!typedShortcut.value.length || doesShortcutExists.value) return;
-   shortcutToAdd.value.keys = [typedShortcut.value.replaceAll(isMacOS ? '`Command' : 'Control', 'CommandOrControl')];
+   shortcutToAdd.value.keys = [typedShortcut.value.replaceAll(isMacOS ? 'Command' : 'Control', 'CommandOrControl')];
    const filteredShortcuts = [shortcutToAdd.value, ...shortcuts.value];
 
    isConfirmAddModal.value = false;
@@ -218,7 +283,7 @@ const deleteShortcut = () => {
 watch(typedShortcut, () => {
    doesShortcutExists.value = shortcuts.value.some(s => (
       s.keys.some(k => (
-         k.replaceAll('CommandOrControl', isMacOS ? '`Command' : 'Control') === typedShortcut.value
+         k.replaceAll('CommandOrControl', isMacOS ? 'Command' : 'Control') === typedShortcut.value
       ))
    ));
 });

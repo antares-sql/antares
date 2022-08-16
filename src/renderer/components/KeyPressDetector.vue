@@ -13,7 +13,7 @@
    </div>
 </template>
 <script setup lang="ts">
-import { computed, Ref, ref, watch } from 'vue';
+import { computed, PropType, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Application from '@/ipc-api/Application';
 
@@ -23,8 +23,8 @@ const emit = defineEmits(['update:modelValue']);
 
 const isMacOS = process.platform === 'darwin';
 
-defineProps({
-   modelValue: String
+const props = defineProps({
+   modelValue: String as PropType<string | Electron.Accelerator>
 });
 
 const isFocus = ref(false);
@@ -36,7 +36,9 @@ const pressedKeys = computed(() => {
    const specialKeys = ['Control', 'Alt', 'AltGraph', 'Shift', 'Meta', 'CapsLock', 'ContextMenu', 'Escape'];
    const keysFromCode = ['Space', 'Minus', 'Equal', 'Slash', 'Quote', 'Semicolon', 'Comma', 'Period', 'Backslash', 'BracketLeft', 'BracketRight'];
 
-   if (keyboardEvent.value) {
+   if (props.modelValue && !keyboardEvent.value)
+      return props.modelValue;
+   else if (keyboardEvent.value) {
       if (keyboardEvent.value.altKey)
          keys.push('Alt');
       if (keyboardEvent.value.ctrlKey)

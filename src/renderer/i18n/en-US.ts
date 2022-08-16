@@ -305,17 +305,21 @@ export const enUS = {
       selectTabNumber: 'Select tab number {param}',
       toggleConsole: 'Toggle console',
       addShortcut: 'Add shortcut',
+      editShortcut: 'Edit shortcut',
+      deleteShortcut: 'Delete shortcut',
       restoreDefaults: 'Restore defaults',
       restoreDefaultsQuestion: 'Do you confirm to restore default values?',
       registerAShortcut: 'Register a shortcut',
-      deleteShortcut: 'Delete shortcut',
       invalidShortcutMessage: 'Invalid combination, continue to type',
       shortcutAlreadyExists: 'Shortcut already exists',
       saveContent: 'Save content',
       openAllConnections: 'Open all connections',
       openSettings: 'Open settings',
       openScratchpad: 'Open scratchpad',
-      runOrReload: 'Run or reload'
+      runOrReload: 'Run or reload',
+      formatQuery: 'Format query',
+      queryHistory: 'Query history',
+      clearQuery: 'Clear query'
    },
    faker: {
       address: 'Address',
