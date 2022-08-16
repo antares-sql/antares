@@ -1,8 +1,7 @@
 <template>
    <div class="p-relative">
-      <KeyPressDetector />
       <div class="shortcuts-tools pb-2 px-2">
-         <button class="btn btn-dark btn-sm d-flex ml-2">
+         <button class="btn btn-dark btn-sm d-flex ml-2" @click="showAddModal">
             <i class="mdi mdi-24px mdi-plus mr-1" /><span>{{ t('message.addShortcut') }}</span>
          </button>
          <button class="btn btn-dark btn-sm d-flex ml-2" @click="isConfirmRestoreModal = true">
@@ -57,7 +56,42 @@
    </div>
    <Teleport to="#window-content">
       <ConfirmModal
+         v-if="isConfirmAddModal"
+         :disable-autofocus="true"
+         :confirm-text="t('word.save')"
+         :close-on-confirm="false"
+         @confirm="addShortcut"
+         @hide="closeAddModal"
+      >
+         <template #header>
+            <div class="d-flex">
+               <i class="mdi mdi-24px mdi-plus mr-1" /> {{ t('message.addShortcut') }}
+            </div>
+         </template>
+         <template #body>
+            <div class="mb-2">
+               <div class="form-group">
+                  <label class="form-label">{{ t('word.event') }}</label>
+                  <BaseSelect
+                     v-model="shortcutToAdd.event"
+                     class="form-select"
+                     :options="eventOptions"
+                  />
+               </div>
+            </div>
+            <div class="mb-2">
+               <div class="form-group">
+                  <label class="form-label">{{ t('word.key', 2) }}</label>
+                  <KeyPressDetector v-model="typedShortcut" />
+               </div>
+            </div>
+            <small v-if="doesShortcutExists" class="text-warning">{{ t('message.shortcutAlreadyExists') }}</small>
+         </template>
+      </ConfirmModal>
+
+      <ConfirmModal
          v-if="isConfirmDeleteModal"
+         :disable-autofocus="true"
          @confirm="deleteShortcut"
          @hide="isConfirmDeleteModal = false"
       >
@@ -74,6 +108,7 @@
       </ConfirmModal>
       <ConfirmModal
          v-if="isConfirmRestoreModal"
+         :disable-autofocus="true"
          @confirm="restoreDefaults"
          @hide="isConfirmRestoreModal = false"
       >
@@ -91,7 +126,7 @@
    </Teleport>
 </template>
 <script setup lang="ts">
-import { Ref, ref } from 'vue';
+import { Ref, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { useSettingsStore } from '@/stores/settings';
@@ -99,17 +134,35 @@ import KeyPressDetector from './KeyPressDetector.vue';
 import Application from '@/ipc-api/Application';
 import { shortcutEvents, ShortcutRecord } from 'common/shortcuts';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseSelect from '@/components/BaseSelect.vue';
+import { computed } from '@vue/reactivity';
 
 const { t } = useI18n();
 
 const isMacOS = process.platform === 'darwin';
 
 const isConfirmRestoreModal = ref(false);
+const isConfirmAddModal = ref(false);
 const isConfirmDeleteModal = ref(false);
+const doesShortcutExists = ref(false);
+const shortcutToAdd: Ref<ShortcutRecord> = ref({ event: undefined, keys: [], os: [process.platform] });
+const typedShortcut = ref('');
 const shortcutToDelete: Ref<ShortcutRecord> = ref(null);
 
 const settingsStore = useSettingsStore();
 const { shortcuts } = storeToRefs(settingsStore);
+
+const eventOptions = computed(() => {
+   return Object.keys(shortcutEvents)
+      .map(key => {
+         return { value: key, label: t(shortcutEvents[key].l18n, { param: shortcutEvents[key].l18nParam }) };
+      })
+      .sort((a, b) => {
+         if (a.label < b.label) return -1;
+         if (a.label > b.label) return 1;
+         return 0;
+      });
+});
 
 const parseKeys = (keys: {[key: number]: string}[]) => {
    return (keys as string[]).map(k => (
@@ -127,6 +180,27 @@ const restoreDefaults = () => {
    return Application.restoreDefaultShortcuts();
 };
 
+const showAddModal = () => {
+   shortcutToAdd.value.event = eventOptions.value[0].value;
+   isConfirmAddModal.value = true;
+};
+
+const closeAddModal = () => {
+   typedShortcut.value = '';
+   doesShortcutExists.value = false;
+   shortcutToAdd.value = { event: undefined, keys: [], os: [process.platform] };
+   isConfirmAddModal.value = false;
+};
+
+const addShortcut = () => {
+   if (!typedShortcut.value.length || doesShortcutExists.value) return;
+   shortcutToAdd.value.keys = [typedShortcut.value.replaceAll(isMacOS ? '`Command' : 'Control', 'CommandOrControl')];
+   const filteredShortcuts = [shortcutToAdd.value, ...shortcuts.value];
+
+   isConfirmAddModal.value = false;
+   return Application.updateShortcuts(filteredShortcuts);
+};
+
 const showDeleteModal = (shortcut: ShortcutRecord) => {
    isConfirmDeleteModal.value = true;
    shortcutToDelete.value = shortcut;
@@ -134,11 +208,20 @@ const showDeleteModal = (shortcut: ShortcutRecord) => {
 
 const deleteShortcut = () => {
    const filteredShortcuts = shortcuts.value.filter(s => (
-      shortcutToDelete.value.event !== s.event && shortcutToDelete.value.keys !== s.keys
+      shortcutToDelete.value.keys.toString() !== s.keys.toString()
    ));
 
-   Application.updateShortcuts(filteredShortcuts);
+   isConfirmDeleteModal.value = false;
+   return Application.updateShortcuts(filteredShortcuts);
 };
+
+watch(typedShortcut, () => {
+   doesShortcutExists.value = shortcuts.value.some(s => (
+      s.keys.some(k => (
+         k.replaceAll('CommandOrControl', isMacOS ? '`Command' : 'Control') === typedShortcut.value
+      ))
+   ));
+});
 </script>
 <style lang="scss" scoped>
   .table {

@@ -67,7 +67,7 @@ const { changeApplicationTheme } = settingsStore;
 
 const isAllConnectionsModal: Ref<boolean> = ref(false);
 
-ipcRenderer.on('open-connections-modal', () => {
+ipcRenderer.on('open-all-connections', () => {
    isAllConnectionsModal.value = true;
 });
 

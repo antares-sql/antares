@@ -1,10 +1,9 @@
 <template>
-   <div class="form-group has-icon-right p-2 m-0">
+   <div class="form-group has-icon-right m-0">
       <input
          class="form-input"
          type="text"
          :value="pressedKeys"
-         readonly
          :placeholder="t('message.registerAShortcut')"
          @focus="isFocus = true"
          @blur="isFocus = false"
@@ -94,8 +93,9 @@ const onKey = (e: KeyboardEvent) => {
    keyboardEvent.value = e;
 };
 
-watch(pressedKeys, () => {
-   emit('update:modelValue', pressedKeys.value);
+watch(pressedKeys, (value) => {
+   if (value !== t('message.invalidShortcutMessage'))
+      emit('update:modelValue', pressedKeys.value);
 });
 
 watch(isFocus, (val) => {
@@ -108,10 +108,13 @@ watch(isFocus, (val) => {
 <style lang="scss" scoped>
 .has-icon-right {
    .form-input {
-      padding-right: 1.4rem;
+      padding-right: 1.8rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      caret-color: transparent;
    }
    .form-icon {
-      right: 0.8rem;
+      right: 0.4rem;
    }
 }
 </style>

@@ -309,7 +309,13 @@ export const enUS = {
       restoreDefaultsQuestion: 'Do you confirm to restore default values?',
       registerAShortcut: 'Register a shortcut',
       deleteShortcut: 'Delete shortcut',
-      invalidShortcutMessage: 'Invalid combination, continue to type'
+      invalidShortcutMessage: 'Invalid combination, continue to type',
+      shortcutAlreadyExists: 'Shortcut already exists',
+      saveContent: 'Save content',
+      openAllConnections: 'Open all connections',
+      openSettings: 'Open settings',
+      openScratchpad: 'Open scratchpad',
+      runOrReload: 'Run or reload'
    },
    faker: {
       address: 'Address',

@@ -3,13 +3,18 @@ export const shortcutEvents: { [key: string]: { l18n: string; l18nParam?: string
    'close-tab': { l18n: 'message.closeTab', context: 'tab' },
    'next-tab': { l18n: 'message.nextTab', context: 'tab' },
    'prev-tab': { l18n: 'message.previousTab', context: 'tab' },
-   'open-connections-modal': { l18n: 'message.allConnections' },
-   'toggle-console': { l18n: 'message.toggleConsole' }
+   'open-all-connections': { l18n: 'message.openAllConnections' },
+   'toggle-console': { l18n: 'message.toggleConsole' },
+   'save-content': { l18n: 'message.saveContent' },
+   'run-or-reload': { l18n: 'message.runOrReload' },
+   'create-connection': { l18n: 'message.createNewConnection' },
+   'open-settings': { l18n: 'message.openSettings' },
+   'open-scratchpad': { l18n: 'message.openScratchpad' }
 };
 
 interface ShortcutRecord {
    event: string;
-   keys: Electron.Accelerator[];
+   keys: Electron.Accelerator[] | string[];
    /** Needed for default shortcuts */
    os: NodeJS.Platform[];
 }
@@ -18,6 +23,16 @@ interface ShortcutRecord {
  * Default shortcuts
  */
 const shortcuts: ShortcutRecord[] = [
+   {
+      event: 'run-or-reload',
+      keys: ['F5'],
+      os: ['darwin', 'linux', 'win32']
+   },
+   {
+      event: 'save-content',
+      keys: ['CommandOrControl+S'],
+      os: ['darwin', 'linux', 'win32']
+   },
    {
       event: 'open-new-tab',
       keys: ['CommandOrControl+T'],
@@ -49,7 +64,7 @@ const shortcuts: ShortcutRecord[] = [
       os: ['linux', 'win32']
    },
    {
-      event: 'open-connections-modal',
+      event: 'open-all-connections',
       keys: ['Shift+CommandOrControl+Space'],
       os: ['darwin', 'linux', 'win32']
    },
