@@ -28,11 +28,24 @@ export function useFilters () {
       return `(${num})`;
    };
 
+   const parseKeys = (keys: {[key: number]: string}[]) => {
+      const isMacOS = process.platform === 'darwin';
+      return (keys as string[]).map(k => (
+         k.split('+')
+            .map(sk => (
+               `<code class="text-bold">${sk}</code>`
+            )))
+         .join('+')
+         .replaceAll('CommandOrControl', isMacOS ? 'Command' : 'Control')
+      ).join(', ');
+   };
+
    return {
       cutText,
       formatDate,
       wrapNumber,
       lastPart,
-      localeString
+      localeString,
+      parseKeys
    };
 }

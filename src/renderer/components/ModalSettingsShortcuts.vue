@@ -172,6 +172,9 @@ import { shortcutEvents, ShortcutRecord } from 'common/shortcuts';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import { computed } from '@vue/reactivity';
+import { useFilters } from '@/composables/useFilters';
+
+const { parseKeys } = useFilters();
 
 const { t } = useI18n();
 
@@ -201,17 +204,6 @@ const eventOptions = computed(() => {
          return 0;
       });
 });
-
-const parseKeys = (keys: {[key: number]: string}[]) => {
-   return (keys as string[]).map(k => (
-      k.split('+')
-         .map(sk => (
-            `<code class="text-bold">${sk}</code>`
-         )))
-      .join('+')
-      .replaceAll('CommandOrControl', isMacOS ? 'Command' : 'Control')
-   ).join(', ');
-};
 
 const restoreDefaults = () => {
    isConfirmRestoreModal.value = false;
