@@ -134,7 +134,7 @@ export const ptBR = {
       aborted: 'Abortado',
       disabled: 'Inativo',
       enable: 'Ativo',
-      disable: 'Disable',
+      disable: 'Desativar',
       commit: 'Enviar',
       rollback: 'Reverter',
       connectionString: 'String da conexão',
@@ -285,7 +285,15 @@ export const ptBR = {
       ourputFormat: 'Formato da saída',
       singleFile: 'Arquivo {ext} único',
       zipCompressedFile: 'Arquivo compactado {ext} ZIP',
-      disableBlur: 'Desabilitar Blur'
+      disableBlur: 'Desabilitar Blur',
+      untrustedConnection: 'Conexão insegura',	
+      missingOrIncompleteTranslation: 'Tradução incorreta ou incompleta?',	
+      findOutHowToContribute: 'Saiba como contribuir',	
+      disableFKChecks: 'Desativar verificação de chave estrangeira',	
+      allConnections: 'Todas as conexões',	
+      searchForConnections: 'Procurar por conexões',	
+      disableScratchpad: 'Desativar bloco de notas',	
+      reportABug: 'Reportar um problema'
    },
    faker: {
       address: 'Endereço',
