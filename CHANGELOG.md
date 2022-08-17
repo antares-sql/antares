@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.15](https://github.com/antares-sql/antares/compare/v0.5.14...v0.5.15) (2022-08-17)
+
+
+### Features
+
+* ability to add new shortcuts ([d044a02](https://github.com/antares-sql/antares/commit/d044a02cb79a9d06aadc34cdbf6e81da84360559))
+* ability to edit shortcuts ([8eb127e](https://github.com/antares-sql/antares/commit/8eb127e45838bc01ba12f0740fec077fcd975532))
+* added more events in shortcuts setting ([5043faf](https://github.com/antares-sql/antares/commit/5043fafa934844ebc2f59cabcec830c6a4d5ca8e))
+* delete shortcuts and restore defaults ([c22413f](https://github.com/antares-sql/antares/commit/c22413fde9dfe5501a5f220070cfe552a318c70b))
+* dynamic shortcut suggestions on empty query tabs ([4df14c3](https://github.com/antares-sql/antares/commit/4df14c3693955bd7801b4b99103fca85f00f3e8c))
+* list of available shortcuts in settings window ([44bb75b](https://github.com/antares-sql/antares/commit/44bb75bc60d7d31bbd99a9ba57f30fd354f7581c))
+* **UI:** connection name on left bar, closes [#382](https://github.com/antares-sql/antares/issues/382) [#414](https://github.com/antares-sql/antares/issues/414) ([4887753](https://github.com/antares-sql/antares/commit/48877534d1a41d351b267c0dab925046ca984179))
+* **UI:** shortcuts setting UI improved ([49b63bc](https://github.com/antares-sql/antares/commit/49b63bc6f28fc6031e6a892d0a48cd35ae2f26cd))
+
+
+### Bug Fixes
+
+* startup exception ([c50d17e](https://github.com/antares-sql/antares/commit/c50d17e82b7fd337d4037ddf646cd1a8fc765bae))
+
+
+### Improvements
+
+* improved keypress detector ([0f219cf](https://github.com/antares-sql/antares/commit/0f219cf9b796b4369c609fb0e8e3b84346a30b07))
+* **translation:** updated italian translation ([c05be83](https://github.com/antares-sql/antares/commit/c05be8304f3cf299cf338f67c00184305e022919))
+
 ### [0.5.14](https://github.com/antares-sql/antares/compare/v0.5.13...v0.5.14) (2022-08-09)
 
 
