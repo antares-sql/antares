@@ -5,12 +5,13 @@ import * as windowStateKeeper from 'electron-window-state';
 import * as remoteMain from '@electron/remote/main';
 
 import ipcHandlers from './ipc-handlers';
-import { shortcuts } from 'common/shortcuts';
+import { ShortcutRegister } from './libs/ShortcutRegister';
 
 Store.initRenderer();
-const persistentStore = new Store({ name: 'settings' });
+const settingsStore = new Store({ name: 'settings' });
 
-const appTheme = persistentStore.get('application_theme');
+let shortCutRegister: ShortcutRegister;
+const appTheme = settingsStore.get('application_theme');
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const isMacOS = process.platform === 'darwin';
 const isLinux = process.platform === 'linux';
@@ -86,7 +87,7 @@ else {
    ipcHandlers();
 
    ipcMain.on('refresh-theme-settings', () => {
-      const appTheme = persistentStore.get('application_theme');
+      const appTheme = settingsStore.get('application_theme');
       if (isWindows && mainWindow) {
          mainWindow.setTitleBarOverlay({
             color: appTheme === 'dark' ? '#3f3f3f' : '#fff',
@@ -121,11 +122,31 @@ else {
       mainWindow = await createMainWindow();
       createAppMenu();
 
+      shortCutRegister = ShortcutRegister.getInstance({ mainWindow });
+
       if (isWindows)
          mainWindow.show();
 
       if (isDevelopment)
          mainWindow.webContents.openDevTools();
+
+      app.on('browser-window-focus', () => {
+      // Send registered shortcut events to window
+         shortCutRegister.init();
+
+         if (isDevelopment) { // Dev shortcuts
+            globalShortcut.register('Shift+CommandOrControl+F5', () => {
+               mainWindow.reload();
+            });
+            globalShortcut.register('Shift+CommandOrControl+F12', () => {
+               mainWindow.webContents.openDevTools();
+            });
+         }
+      });
+
+      app.on('browser-window-blur', () => {
+         shortCutRegister.unregister();
+      });
 
       process.on('uncaughtException', error => {
          mainWindow.webContents.send('unhandled-exception', error);
@@ -142,33 +163,6 @@ else {
          const extensionPath = path.resolve(__dirname, `../../misc/${antares.devtoolsId}`);
          window.webContents.session.loadExtension(extensionPath, { allowFileAccess: true }).catch(console.error);
       }
-   });
-
-   app.on('browser-window-focus', () => {
-      // Send registered shortcut events to window
-      for (const shortcut of shortcuts) {
-         if (shortcut.os.includes(process.platform)) {
-            for (const key of shortcut.keys) {
-               globalShortcut.register(key, () => {
-                  mainWindow.webContents.send(shortcut.event);
-                  if (isDevelopment) console.log('EVENT:', shortcut);
-               });
-            }
-         }
-      }
-
-      if (isDevelopment) { // Dev shortcuts
-         globalShortcut.register('Shift+CommandOrControl+F5', () => {
-            mainWindow.reload();
-         });
-         globalShortcut.register('Shift+CommandOrControl+F12', () => {
-            mainWindow.webContents.openDevTools();
-         });
-      }
-   });
-
-   app.on('browser-window-blur', () => {
-      globalShortcut.unregisterAll();
    });
 }
 

@@ -3,11 +3,6 @@
       v-show="isSelected"
       class="workspace-query-tab column col-12 columns col-gapless no-outline p-0"
       tabindex="0"
-      @keydown.f5="runQuery(query)"
-      @keydown.k="killTabQuery"
-      @keydown.ctrl.alt.w="clear"
-      @keydown.ctrl.b="beautify"
-      @keydown.ctrl.g="openHistoryModal"
    >
       <div class="workspace-query-runner column col-12">
          <QueryEditor
@@ -40,7 +35,6 @@
                      class="btn btn-primary btn-sm"
                      :class="{'loading':isQuering}"
                      :disabled="!query"
-                     title="F5"
                      @click="runQuery(query)"
                   >
                      <i class="mdi mdi-24px mdi-play pr-1" />
@@ -68,7 +62,6 @@
                <button
                   class="btn btn-link btn-sm mr-0"
                   :disabled="!query || isQuering"
-                  title="CTRL+W"
                   @click="clear()"
                >
                   <i class="mdi mdi-24px mdi-delete-sweep pr-1" />
@@ -80,7 +73,6 @@
                <button
                   class="btn btn-dark btn-sm"
                   :disabled="!query || isQuering"
-                  title="CTRL+B"
                   @click="beautify()"
                >
                   <i class="mdi mdi-24px mdi-brush pr-1" />
@@ -89,7 +81,6 @@
                <button
                   class="btn btn-dark btn-sm"
                   :disabled="isQuering"
-                  title="CTRL+G"
                   @click="openHistoryModal()"
                >
                   <i class="mdi mdi-24px mdi-history pr-1" />
@@ -206,6 +197,7 @@ import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable.vue';
 import WorkspaceTabQueryEmptyState from '@/components/WorkspaceTabQueryEmptyState.vue';
 import ModalHistory from '@/components/ModalHistory.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import { ipcRenderer } from 'electron';
 
 const { t } = useI18n();
 
@@ -427,7 +419,8 @@ const beautify = () => {
       const formattedQuery = format(query.value, {
          language,
          uppercase: true
-      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
       queryEditor.value.editor.session.setValue(formattedQuery);
    }
 };
@@ -499,11 +492,46 @@ selectedSchema.value = props.tab.schema || breadcrumbsSchema.value;
 if (!databaseSchemas.value.includes(selectedSchema.value))
    selectedSchema.value = null;
 
-// window.addEventListener('keydown', onKey);
 window.addEventListener('resize', onWindowResize);
+
+const reloadListener = () => {
+   const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
+   if (props.isSelected && !hasModalOpen)
+      runQuery(query.value);
+};
+
+const formatListener = () => {
+   const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
+   if (props.isSelected && !hasModalOpen)
+      beautify();
+};
+
+const killQueryListener = () => {
+   const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
+   if (props.isSelected && !hasModalOpen)
+      killTabQuery();
+};
+
+const clearQueryListener = () => {
+   const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
+   if (props.isSelected && !hasModalOpen)
+      clear();
+};
+
+const historyListener = () => {
+   const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
+   if (props.isSelected && !hasModalOpen)
+      openHistoryModal();
+};
 
 onMounted(() => {
    const localResizer = resizer.value;
+
+   ipcRenderer.on('run-or-reload', reloadListener);
+   ipcRenderer.on('format-query', formatListener);
+   ipcRenderer.on('kill-query', killQueryListener);
+   ipcRenderer.on('clear-query', clearQueryListener);
+   ipcRenderer.on('query-history', historyListener);
 
    localResizer.addEventListener('mousedown', (e: MouseEvent) => {
       e.preventDefault();
@@ -518,12 +546,17 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
    window.removeEventListener('resize', onWindowResize);
-   // window.removeEventListener('keydown', onKey);
    const params = {
       uid: props.connection.uid,
       tabUid: props.tab.uid
    };
    Schema.destroyConnectionToCommit(params);
+
+   ipcRenderer.removeListener('run-or-reload', reloadListener);
+   ipcRenderer.removeListener('format-query', formatListener);
+   ipcRenderer.removeListener('kill-query', killQueryListener);
+   ipcRenderer.removeListener('clear-query', clearQueryListener);
+   ipcRenderer.removeListener('query-history', historyListener);
 });
 </script>
 

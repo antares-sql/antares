@@ -42,6 +42,10 @@ ipcRenderer.on('query-log', (event, logRecord) => {
    useConsoleStore().putLog(logRecord);
 });
 
+ipcRenderer.on('toggle-console', () => {
+   useConsoleStore().toggleConsole();
+});
+
 // IPC app updates
 ipcRenderer.on('checking-for-update', () => {
    useApplicationStore().updateStatus = 'checking';
@@ -84,4 +88,8 @@ ipcRenderer.on('toggle-preferences', () => {
 ipcRenderer.on('open-updates-preferences', () => {
    useApplicationStore().showSettingModal('update');
    ipcRenderer.send('check-for-updates');
+});
+
+ipcRenderer.on('update-shortcuts', (event, shortcuts) => {
+   useSettingsStore().updateShortcuts(shortcuts);
 });

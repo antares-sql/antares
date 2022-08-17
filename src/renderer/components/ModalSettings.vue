@@ -31,6 +31,13 @@
                            <a class="tab-link">{{ t('word.themes') }}</a>
                         </li>
                         <li
+                           class="tab-item c-hand"
+                           :class="{'active': selectedTab === 'shortcuts'}"
+                           @click="selectTab('shortcuts')"
+                        >
+                           <a class="tab-link">{{ t('word.shortcuts') }}</a>
+                        </li>
+                        <li
                            v-if="updateStatus !== 'disabled'"
                            class="tab-item c-hand"
                            :class="{'active': selectedTab === 'update'}"
@@ -282,6 +289,9 @@
                      </div>
                   </div>
 
+                  <div v-show="selectedTab === 'shortcuts'" class="panel-body py-4">
+                     <ModalSettingsShortcuts />
+                  </div>
                   <div v-show="selectedTab === 'update'" class="panel-body py-4">
                      <ModalSettingsUpdate />
                   </div>
@@ -326,6 +336,7 @@ import { useFocusTrap } from '@/composables/useFocusTrap';
 import { localesNames } from '@/i18n/supported-locales';
 import ModalSettingsUpdate from '@/components/ModalSettingsUpdate.vue';
 import ModalSettingsChangelog from '@/components/ModalSettingsChangelog.vue';
+import ModalSettingsShortcuts from '@/components/ModalSettingsShortcuts.vue';
 import BaseTextEditor from '@/components/BaseTextEditor.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import { AvailableLocale } from '@/i18n';

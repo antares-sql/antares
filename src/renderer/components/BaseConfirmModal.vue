@@ -68,6 +68,10 @@ const props = defineProps({
    disableAutofocus: {
       type: Boolean,
       default: false
+   },
+   closeOnConfirm: {
+      type: Boolean,
+      default: true
    }
 });
 const emit = defineEmits(['confirm', 'hide']);
@@ -90,7 +94,7 @@ const modalSizeClass = computed(() => {
 
 const confirmModal = () => {
    emit('confirm');
-   hideModal();
+   if (props.closeOnConfirm) hideModal();
 };
 
 const hideModal = () => {

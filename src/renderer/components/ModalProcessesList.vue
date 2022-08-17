@@ -29,7 +29,7 @@
                         <button
                            class="btn btn-dark btn-sm mr-0 pr-1 d-flex"
                            :class="{'loading':isQuering}"
-                           :title="`${t('word.refresh')} (F5)`"
+                           :title="`${t('word.refresh')}`"
                            @click="getProcessesList"
                         >
                            <i v-if="!+autorefreshTimer" class="mdi mdi-24px mdi-refresh mr-1" />
@@ -135,6 +135,7 @@
 
 <script setup lang="ts">
 import { Component, computed, onBeforeUnmount, onMounted, onUpdated, Prop, Ref, ref } from 'vue';
+import { ipcRenderer } from 'electron';
 import { ConnectionParams } from 'common/interfaces/antares';
 import { exportRows } from '../libs/exportRows';
 import { useNotificationsStore } from '@/stores/notifications';
@@ -326,9 +327,9 @@ const onKey = (e:KeyboardEvent) => {
    e.stopPropagation();
    if (e.key === 'Escape')
       closeModal();
-   if (e.key === 'F5')
-      getProcessesList();
 };
+
+ipcRenderer.on('run-or-reload', getProcessesList);
 
 window.addEventListener('keydown', onKey, { capture: true });
 
@@ -348,6 +349,8 @@ onBeforeUnmount(() => {
    window.removeEventListener('keydown', onKey, { capture: true });
    window.removeEventListener('resize', resizeResults);
    clearInterval(refreshInterval.value);
+
+   ipcRenderer.removeListener('run-or-reload', getProcessesList);
 });
 
 defineExpose({ refreshScroller });

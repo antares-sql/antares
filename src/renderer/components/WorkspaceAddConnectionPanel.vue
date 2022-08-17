@@ -553,7 +553,7 @@ setDefaults();
 
 setTimeout(() => {
    if (firstInput.value) firstInput.value.focus();
-}, 20);
+}, 200);
 </script>
 
 <style lang="scss" scoped>

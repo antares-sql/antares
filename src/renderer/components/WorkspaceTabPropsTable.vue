@@ -7,7 +7,6 @@
                   class="btn btn-primary btn-sm"
                   :disabled="!isChanged"
                   :class="{'loading':isSaving}"
-                  title="CTRL+S"
                   @click="saveChanges"
                >
                   <i class="mdi mdi-24px mdi-content-save mr-1" />
@@ -173,7 +172,7 @@
 </template>
 
 <script setup lang="ts">
-import { Component, computed, onBeforeUnmount, Ref, ref, watch } from 'vue';
+import { Component, computed, onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue';
 import { AlterTableParams, TableField, TableForeign, TableIndex, TableInfos, TableOptions } from 'common/interfaces/antares';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
@@ -186,6 +185,7 @@ import BaseSelect from '@/components/BaseSelect.vue';
 import WorkspaceTabPropsTableFields from '@/components/WorkspaceTabPropsTableFields.vue';
 import WorkspaceTabPropsTableIndexesModal from '@/components/WorkspaceTabPropsTableIndexesModal.vue';
 import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTableForeignModal.vue';
+import { ipcRenderer } from 'electron';
 
 const { t } = useI18n();
 
@@ -646,14 +646,10 @@ const foreignsUpdate = (foreigns: TableForeign[]) => {
    localKeyUsage.value = foreigns;
 };
 
-const onKey = (e: KeyboardEvent) => {
-   if (props.isSelected) {
-      e.stopPropagation();
-      if (e.ctrlKey && e.key === 's') { // CTRL + S
-         if (isChanged.value)
-            saveChanges();
-      }
-   }
+const saveContentListener = () => {
+   const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
+   if (props.isSelected && !hasModalOpen && isChanged.value)
+      saveChanges();
 };
 
 watch(() => props.schema, () => {
@@ -684,9 +680,12 @@ watch(isChanged, (val) => {
 });
 
 getFieldsData();
-window.addEventListener('keydown', onKey);
+
+onMounted(() => {
+   ipcRenderer.on('save-content', saveContentListener);
+});
 
 onBeforeUnmount(() => {
-   window.removeEventListener('keydown', onKey);
+   ipcRenderer.removeListener('save-content', saveContentListener);
 });
 </script>

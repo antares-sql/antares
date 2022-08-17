@@ -142,7 +142,8 @@ export const enUS = {
       contributors: 'Contributors',
       pin: 'Pin',
       unpin: 'Unpin',
-      console: 'Console'
+      console: 'Console',
+      shortcuts: 'Shortcuts'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -298,7 +299,30 @@ export const enUS = {
       allConnections: 'All connections',
       searchForConnections: 'Search for connections',
       disableScratchpad: 'Disable scratchpad',
-      reportABug: 'Report a bug'
+      reportABug: 'Report a bug',
+      nextTab: 'Next tab',
+      previousTab: 'Previous tab',
+      selectTabNumber: 'Select tab number {param}',
+      toggleConsole: 'Toggle console',
+      addShortcut: 'Add shortcut',
+      editShortcut: 'Edit shortcut',
+      deleteShortcut: 'Delete shortcut',
+      restoreDefaults: 'Restore defaults',
+      restoreDefaultsQuestion: 'Do you confirm to restore default values?',
+      registerAShortcut: 'Register a shortcut',
+      invalidShortcutMessage: 'Invalid combination, continue to type',
+      shortcutAlreadyExists: 'Shortcut already exists',
+      saveContent: 'Save content',
+      openAllConnections: 'Open all connections',
+      openSettings: 'Open settings',
+      openScratchpad: 'Open scratchpad',
+      runOrReload: 'Run or reload',
+      formatQuery: 'Format query',
+      queryHistory: 'Query history',
+      clearQuery: 'Clear query',
+      openFilter: 'Open filter',
+      nextResultsPage: 'Next results page',
+      previousResultsPage: 'Previous results page'
    },
    faker: {
       address: 'Address',

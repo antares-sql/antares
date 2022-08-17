@@ -343,6 +343,7 @@ watch(selectedWorkspace, (newVal, oldVal) => {
             text-align: left;
             line-height: 1.1;
             color: rgba($body-font-color-dark, 0.8);
+            text-align: center;
          }
 
          .settingbar-element-pin {

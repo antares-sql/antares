@@ -7,7 +7,6 @@
                   class="btn btn-primary btn-sm"
                   :disabled="!isChanged"
                   :class="{'loading':isSaving}"
-                  title="CTRL+S"
                   @click="saveChanges"
                >
                   <i class="mdi mdi-24px mdi-content-save mr-1" />
@@ -136,6 +135,7 @@ import QueryEditor from '@/components/QueryEditor.vue';
 import WorkspaceTabPropsSchedulerTimingModal from '@/components/WorkspaceTabPropsSchedulerTimingModal.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import Schedulers from '@/ipc-api/Schedulers';
+import { ipcRenderer } from 'electron';
 
 const { t } = useI18n();
 
@@ -295,14 +295,10 @@ const timingUpdate = (options: EventInfos) => {
    localScheduler.value = options;
 };
 
-const onKey = (e: KeyboardEvent) => {
-   if (props.isSelected) {
-      e.stopPropagation();
-      if (e.ctrlKey && e.key === 's') { // CTRL + S
-         if (isChanged.value)
-            saveChanges();
-      }
-   }
+const saveContentListener = () => {
+   const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
+   if (props.isSelected && !hasModalOpen && isChanged.value)
+      saveChanges();
 };
 
 watch(() => props.schema, async () => {
@@ -345,11 +341,12 @@ watch(consoleHeight, () => {
 (async () => {
    await getSchedulerData();
    queryEditor.value.editor.session.setValue(localScheduler.value.sql);
-   window.addEventListener('keydown', onKey);
 })();
 
 onMounted(() => {
    window.addEventListener('resize', resizeQueryEditor);
+
+   ipcRenderer.on('save-content', saveContentListener);
 });
 
 onUnmounted(() => {
@@ -357,7 +354,7 @@ onUnmounted(() => {
 });
 
 onBeforeUnmount(() => {
-   window.removeEventListener('keydown', onKey);
+   ipcRenderer.removeListener('save-content', saveContentListener);
 });
 
 </script>

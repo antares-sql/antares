@@ -7,7 +7,6 @@
                   class="btn btn-primary btn-sm"
                   :disabled="!isChanged"
                   :class="{'loading':isSaving}"
-                  title="CTRL+S"
                   @click="saveChanges"
                >
                   <i class="mdi mdi-24px mdi-content-save mr-1" />
@@ -112,6 +111,7 @@ import BaseLoader from '@/components/BaseLoader.vue';
 import QueryEditor from '@/components/QueryEditor.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import Views from '@/ipc-api/Views';
+import { ipcRenderer } from 'electron';
 
 const { t } = useI18n();
 
@@ -245,14 +245,10 @@ const resizeQueryEditor = () => {
    }
 };
 
-const onKey = (e: KeyboardEvent) => {
-   if (props.isSelected) {
-      e.stopPropagation();
-      if (e.ctrlKey && e.key === 's') { // CTRL + S
-         if (isChanged.value)
-            saveChanges();
-      }
-   }
+const saveContentListener = () => {
+   const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
+   if (props.isSelected && !hasModalOpen && isChanged.value)
+      saveChanges();
 };
 
 watch(() => props.schema, async () => {
@@ -288,11 +284,12 @@ watch(isChanged, (val) => {
 (async () => {
    await getViewData();
    queryEditor.value.editor.session.setValue(localView.value.sql);
-   window.addEventListener('keydown', onKey);
 })();
 
 onMounted(() => {
    window.addEventListener('resize', resizeQueryEditor);
+
+   ipcRenderer.on('save-content', saveContentListener);
 });
 
 onUnmounted(() => {
@@ -300,6 +297,6 @@ onUnmounted(() => {
 });
 
 onBeforeUnmount(() => {
-   window.removeEventListener('keydown', onKey);
+   ipcRenderer.removeListener('save-content', saveContentListener);
 });
 </script>
