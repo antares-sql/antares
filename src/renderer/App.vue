@@ -67,10 +67,6 @@ const { changeApplicationTheme } = settingsStore;
 
 const isAllConnectionsModal: Ref<boolean> = ref(false);
 
-ipcRenderer.on('open-all-connections', () => {
-   isAllConnectionsModal.value = true;
-});
-
 document.addEventListener('DOMContentLoaded', () => {
    setTimeout(() => {
       changeApplicationTheme(applicationTheme.value);// Forces persistentStore to save on file and mail process
@@ -78,6 +74,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 onMounted(() => {
+   ipcRenderer.on('open-all-connections', () => {
+      isAllConnectionsModal.value = true;
+   });
+
+   ipcRenderer.on('open-scratchpad', () => {
+      isScratchpad.value = true;
+   });
+
+   ipcRenderer.on('open-settings', () => {
+      isSettingModal.value = true;
+   });
+
+   ipcRenderer.on('create-connection', () => {
+      workspacesStore.selectWorkspace('NEW');
+   });
+
    ipcRenderer.send('check-for-updates');
    checkVersionUpdate();
 

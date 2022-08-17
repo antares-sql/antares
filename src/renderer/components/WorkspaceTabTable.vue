@@ -8,7 +8,7 @@
                      <button
                         class="btn btn-dark btn-sm mr-0 pr-1"
                         :class="{'loading':isQuering}"
-                        :title="`${t('word.refresh')} (F5)`"
+                        :title="`${t('word.refresh')}`"
                         @click="reloadTable"
                      >
                         <i v-if="!+autorefreshTimer" class="mdi mdi-24px mdi-refresh mr-1" />
@@ -35,7 +35,7 @@
                   <button
                      class="btn btn-dark btn-sm mr-0"
                      :disabled="isQuering || page === 1"
-                     title="CTRL+ᐊ"
+                     :title="t('message.previousResultsPage')"
                      @click="pageChange('prev')"
                   >
                      <i class="mdi mdi-24px mdi-skip-previous" />
@@ -61,7 +61,7 @@
                   <button
                      class="btn btn-dark btn-sm mr-0"
                      :disabled="isQuering || (results.length && results[0].rows.length < limit)"
-                     title="CTRL+ᐅ"
+                     :title="t('message.nextResultsPage')"
                      @click="pageChange('next')"
                   >
                      <i class="mdi mdi-24px mdi-skip-next" />
@@ -72,7 +72,7 @@
 
                <button
                   class="btn btn-sm"
-                  :title="`${t('word.filter')} (CTRL+F)`"
+                  :title="t('word.filter')"
                   :class="{'btn-primary': isSearch, 'btn-dark': !isSearch}"
                   @click="isSearch = !isSearch"
                >
@@ -190,6 +190,7 @@ import ModalFakerRows from '@/components/ModalFakerRows.vue';
 import { ConnectionParams } from 'common/interfaces/antares';
 import { TableFilterClausole } from 'common/interfaces/tableApis';
 import { useFilters } from '@/composables/useFilters';
+import { ipcRenderer } from 'electron';
 
 const { localeString } = useFilters();
 
@@ -342,7 +343,6 @@ const pageChange = (direction: 'prev' | 'next') => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const showFakerModal = (row?: any) => {
-   console.log(row);
    if (isQuering.value) return;
    isFakerModal.value = true;
    rowToDuplicate.value = row;
@@ -351,23 +351,6 @@ const showFakerModal = (row?: any) => {
 const hideFakerModal = () => {
    isFakerModal.value = false;
    rowToDuplicate.value = null;
-};
-
-const onKey = (e: KeyboardEvent) => {
-   if (props.isSelected) {
-      e.stopPropagation();
-      if (e.key === 'F5')
-         reloadTable();
-
-      if (e.ctrlKey || e.metaKey) {
-         if (e.key === 'ArrowRight')
-            pageChange('next');
-         if (e.key === 'ArrowLeft')
-            pageChange('prev');
-         if (e.key === 'f')
-            isSearch.value = !isSearch.value;
-      }
-   }
 };
 
 const setRefreshInterval = () => {
@@ -399,6 +382,30 @@ const resizeScroller = () => {
 const updateFilters = (clausoles: TableFilterClausole[]) => {
    filters.value = clausoles;
    getTableData();
+};
+
+const reloadListener = () => {
+   const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
+   if (props.isSelected && !hasModalOpen)
+      reloadTable();
+};
+
+const openFilterListener = () => {
+   const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
+   if (props.isSelected && !hasModalOpen)
+      isSearch.value = !isSearch.value;
+};
+
+const nextPageListener = () => {
+   const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
+   if (props.isSelected && !hasModalOpen)
+      pageChange('next');
+};
+
+const prevPageListener = () => {
+   const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
+   if (props.isSelected && !hasModalOpen)
+      pageChange('prev');
 };
 
 const hasApproximately = computed(() => {
@@ -457,10 +464,17 @@ watch(isSearch, (val) => {
 });
 
 getTableData();
-window.addEventListener('keydown', onKey);
+
+ipcRenderer.on('run-or-reload', reloadListener);
+ipcRenderer.on('open-filter', openFilterListener);
+ipcRenderer.on('next-page', nextPageListener);
+ipcRenderer.on('prev-page', prevPageListener);
 
 onBeforeUnmount(() => {
-   window.removeEventListener('keydown', onKey);
    clearInterval(refreshInterval.value);
+   ipcRenderer.removeListener('run-or-reload', reloadListener);
+   ipcRenderer.removeListener('open-filter', openFilterListener);
+   ipcRenderer.removeListener('next-page', nextPageListener);
+   ipcRenderer.removeListener('prev-page', prevPageListener);
 });
 </script>

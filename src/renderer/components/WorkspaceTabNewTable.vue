@@ -7,7 +7,6 @@
                   class="btn btn-primary btn-sm"
                   :disabled="!isChanged || !isValid"
                   :class="{'loading':isSaving}"
-                  title="CTRL+S"
                   @click="saveChanges"
                >
                   <i class="mdi mdi-24px mdi-content-save mr-1" />
@@ -175,6 +174,7 @@ import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTa
 import WorkspaceTabNewTableEmptyState from '@/components/WorkspaceTabNewTableEmptyState.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import { ConnectionParams, TableField, TableForeign, TableIndex, TableOptions } from 'common/interfaces/antares';
+import { ipcRenderer } from 'electron';
 
 const { t } = useI18n();
 
@@ -420,14 +420,10 @@ const foreignsUpdate = (foreigns: TableForeign[]) => {
    localKeyUsage.value = foreigns;
 };
 
-const onKey = (e: KeyboardEvent) => {
-   if (props.isSelected) {
-      e.stopPropagation();
-      if (e.ctrlKey && e.key === 's') { // CTRL + S
-         if (isChanged.value)
-            saveChanges();
-      }
-   }
+const saveContentListener = () => {
+   const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
+   if (props.isSelected && !hasModalOpen && isChanged.value)
+      saveChanges();
 };
 
 watch(() => props.isSelected, (val) => {
@@ -447,11 +443,12 @@ tableOptions.value = {
 };
 
 localOptions.value = JSON.parse(JSON.stringify(tableOptions.value));
-window.addEventListener('keydown', onKey);
 
 onMounted(() => {
    if (props.isSelected)
       changeBreadcrumbs({ schema: props.schema });
+
+   ipcRenderer.on('save-content', saveContentListener);
 
    setTimeout(() => {
       firstInput.value.focus();
@@ -459,6 +456,6 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-   window.removeEventListener('keydown', onKey);
+   ipcRenderer.removeListener('save-content', saveContentListener);
 });
 </script>

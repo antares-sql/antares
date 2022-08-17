@@ -319,7 +319,10 @@ export const enUS = {
       runOrReload: 'Run or reload',
       formatQuery: 'Format query',
       queryHistory: 'Query history',
-      clearQuery: 'Clear query'
+      clearQuery: 'Clear query',
+      openFilter: 'Open filter',
+      nextResultsPage: 'Next results page',
+      previousResultsPage: 'Previous results page'
    },
    faker: {
       address: 'Address',

@@ -8,6 +8,9 @@ export const shortcutEvents: { [key: string]: { l18n: string; l18nParam?: string
    'query-history': { l18n: 'message.queryHistory', context: 'tab' },
    'clear-query': { l18n: 'message.clearQuery', context: 'tab' },
    'open-all-connections': { l18n: 'message.openAllConnections' },
+   'open-filter': { l18n: 'message.openFilter' },
+   'next-page': { l18n: 'message.nextResultsPage' },
+   'prev-page': { l18n: 'message.previousResultsPage' },
    'toggle-console': { l18n: 'message.toggleConsole' },
    'save-content': { l18n: 'message.saveContent' },
    'run-or-reload': { l18n: 'message.runOrReload' },
@@ -86,6 +89,21 @@ const shortcuts: ShortcutRecord[] = [
       event: 'prev-tab',
       keys: ['CommandOrControl+PageUp'],
       os: ['linux', 'win32']
+   },
+   {
+      event: 'open-filter',
+      keys: ['CommandOrControl+F'],
+      os: ['darwin', 'linux', 'win32']
+   },
+   {
+      event: 'next-page',
+      keys: ['CommandOrControl+Right'],
+      os: ['darwin', 'linux', 'win32']
+   },
+   {
+      event: 'prev-page',
+      keys: ['CommandOrControl+Left'],
+      os: ['darwin', 'linux', 'win32']
    },
    {
       event: 'open-all-connections',

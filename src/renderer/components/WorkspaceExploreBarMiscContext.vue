@@ -188,8 +188,6 @@ const deleteMisc = async () => {
             break;
       }
 
-      console.log(res);
-
       const { status, response } = res;
 
       if (status === 'success') {
