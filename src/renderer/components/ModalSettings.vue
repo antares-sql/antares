@@ -395,7 +395,29 @@ const contributors = process.env.APP_CONTRIBUTORS;
 const appLogo = require('../images/logo.svg');
 const darkPreview = require('../images/dark.png');
 const lightPreview = require('../images/light.png');
-const editorThemes= [
+const exampleQuery = `-- This is an example
+SELECT 
+    employee.id,
+    employee.first_name,
+    employee.last_name,
+    SUM(DATEDIFF("SECOND", call.start, call.end)) AS call_duration
+FROM call
+INNER JOIN employee ON call.employee_id = employee.id
+GROUP BY
+    employee.id,
+    employee.first_name,
+    employee.last_name
+ORDER BY
+    employee.id ASC;
+`;
+
+const localLocale: Ref<AvailableLocale> = ref(null);
+const localPageSize: Ref<number> = ref(null);
+const localTimeout: Ref<number> = ref(null);
+const localEditorTheme: Ref<string> = ref(null);
+const selectedTab: Ref<string> = ref('general');
+
+const editorThemes = computed(() => [
    {
       group: t('word.light'),
       themes: [
@@ -443,28 +465,7 @@ const editorThemes= [
          { code: 'vibrant_ink', name: 'Vibrant Ink' }
       ]
    }
-];
-const exampleQuery = `-- This is an example
-SELECT 
-    employee.id,
-    employee.first_name,
-    employee.last_name,
-    SUM(DATEDIFF("SECOND", call.start, call.end)) AS call_duration
-FROM call
-INNER JOIN employee ON call.employee_id = employee.id
-GROUP BY
-    employee.id,
-    employee.first_name,
-    employee.last_name
-ORDER BY
-    employee.id ASC;
-`;
-
-const localLocale: Ref<AvailableLocale> = ref(null);
-const localPageSize: Ref<number> = ref(null);
-const localTimeout: Ref<number> = ref(null);
-const localEditorTheme: Ref<string> = ref(null);
-const selectedTab: Ref<string> = ref('general');
+]);
 
 const locales = computed(() => {
    const locales = [];
