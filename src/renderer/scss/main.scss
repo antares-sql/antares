@@ -109,7 +109,8 @@ option:checked {
 
       > div {
         padding: 0.1rem 0.2rem;
-        min-width: fill-available;
+        /* stylelint-disable-next-line value-no-vendor-prefix */
+        min-width: -webkit-fill-available;
       }
     }
 
