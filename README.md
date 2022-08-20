@@ -34,6 +34,7 @@ We are actively working on it, hoping to provide new cool features, improvements
 - SSH tunnel support.
 - Manual commit mode.
 - Import and export database dumps.
+- Customizable keyboard shortcuts.
 - Dark and light theme.
 - Editor themes.
 
