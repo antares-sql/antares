@@ -611,7 +611,7 @@ const onKey = async (e: KeyboardEvent) => {
       selectAllRows(e);
 
    // row navigation stuff
-   if ((e.code.includes('Arrow') || e.code === 'Tab') && sortedResults.value.length > 0 && !e.altKey) {
+   if (!(e.ctrlKey || e.metaKey) && (e.code.includes('Arrow') || e.code === 'Tab') && sortedResults.value.length > 0 && !e.altKey) {
       e.preventDefault();
 
       const aviableFields= Object.keys(sortedResults.value[0]).slice(0, -1); // removes _antares_id

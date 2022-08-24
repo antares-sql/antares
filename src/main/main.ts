@@ -1,16 +1,14 @@
-import { app, BrowserWindow, globalShortcut, nativeImage, Menu, ipcMain } from 'electron';
+import { app, BrowserWindow, nativeImage, ipcMain } from 'electron';
 import * as path from 'path';
 import * as Store from 'electron-store';
 import * as windowStateKeeper from 'electron-window-state';
 import * as remoteMain from '@electron/remote/main';
 
 import ipcHandlers from './ipc-handlers';
-import { ShortcutRegister } from './libs/ShortcutRegister';
+import { OsMenu, ShortcutRegister } from './libs/ShortcutRegister';
 
 Store.initRenderer();
 const settingsStore = new Store({ name: 'settings' });
-
-let shortCutRegister: ShortcutRegister;
 const appTheme = settingsStore.get('application_theme');
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const isMacOS = process.platform === 'darwin';
@@ -122,31 +120,11 @@ else {
       mainWindow = await createMainWindow();
       createAppMenu();
 
-      shortCutRegister = ShortcutRegister.getInstance({ mainWindow });
-
       if (isWindows)
          mainWindow.show();
 
       if (isDevelopment)
          mainWindow.webContents.openDevTools();
-
-      app.on('browser-window-focus', () => {
-      // Send registered shortcut events to window
-         shortCutRegister.init();
-
-         if (isDevelopment) { // Dev shortcuts
-            globalShortcut.register('Shift+CommandOrControl+F5', () => {
-               mainWindow.reload();
-            });
-            globalShortcut.register('Shift+CommandOrControl+F12', () => {
-               mainWindow.webContents.openDevTools();
-            });
-         }
-      });
-
-      app.on('browser-window-blur', () => {
-         shortCutRegister.unregister();
-      });
 
       process.on('uncaughtException', error => {
          mainWindow.webContents.send('unhandled-exception', error);
@@ -167,10 +145,8 @@ else {
 }
 
 function createAppMenu () {
-   let menu: Electron.Menu = null;
-
-   if (isMacOS) {
-      menu = Menu.buildFromTemplate([
+   const menuTemplate: OsMenu = {
+      darwin: [
          {
             label: app.name,
             submenu: [
@@ -201,10 +177,11 @@ function createAppMenu () {
          {
             role: 'windowMenu'
          }
-      ]);
-   }
+      ]
+   };
 
-   Menu.setApplicationMenu(menu);
+   const shortCutRegister = ShortcutRegister.getInstance({ mainWindow, menuTemplate, mode: 'local' });
+   shortCutRegister.init();
 }
 
 function saveWindowState () {
