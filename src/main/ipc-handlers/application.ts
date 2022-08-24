@@ -1,4 +1,4 @@
-import { app, ipcMain, dialog, BrowserWindow } from 'electron';
+import { app, ipcMain, dialog } from 'electron';
 import { ShortcutRegister } from '../libs/ShortcutRegister';
 
 export default () => {
@@ -15,26 +15,22 @@ export default () => {
    });
 
    ipcMain.handle('resotre-default-shortcuts', () => {
-      const mainWindow = BrowserWindow.getAllWindows()[0];
-      const shortCutRegister = ShortcutRegister.getInstance({ mainWindow });
+      const shortCutRegister = ShortcutRegister.getInstance();
       shortCutRegister.restoreDefaults();
    });
 
    ipcMain.handle('reload-shortcuts', () => {
-      const mainWindow = BrowserWindow.getAllWindows()[0];
-      const shortCutRegister = ShortcutRegister.getInstance({ mainWindow });
+      const shortCutRegister = ShortcutRegister.getInstance();
       shortCutRegister.reload();
    });
 
    ipcMain.handle('update-shortcuts', (event, shortcuts) => {
-      const mainWindow = BrowserWindow.getAllWindows()[0];
-      const shortCutRegister = ShortcutRegister.getInstance({ mainWindow });
+      const shortCutRegister = ShortcutRegister.getInstance();
       shortCutRegister.updateShortcuts(shortcuts);
    });
 
    ipcMain.handle('unregister-shortcuts', () => {
-      const mainWindow = BrowserWindow.getAllWindows()[0];
-      const shortCutRegister = ShortcutRegister.getInstance({ mainWindow });
+      const shortCutRegister = ShortcutRegister.getInstance();
       shortCutRegister.unregister();
    });
 };

@@ -26,9 +26,14 @@ export class ShortcutRegister {
       this.shortcuts = shortcutsStore.get('shortcuts', defaultShortcuts) as ShortcutRecord[];
    }
 
-   public static getInstance (args: { mainWindow: BrowserWindow; menuTemplate: OsMenu; mode: ShortcutMode }) {
-      if (!ShortcutRegister._instance)
-         ShortcutRegister._instance = new ShortcutRegister(args);
+   public static getInstance (args?: { mainWindow?: BrowserWindow; menuTemplate?: OsMenu; mode?: ShortcutMode }) {
+      if (!ShortcutRegister._instance && args.menuTemplate !== undefined && args.mode !== undefined) {
+         ShortcutRegister._instance = new ShortcutRegister({
+            mainWindow: args.mainWindow,
+            menuTemplate: args.menuTemplate,
+            mode: args.mode
+         });
+      }
 
       return ShortcutRegister._instance;
    }
