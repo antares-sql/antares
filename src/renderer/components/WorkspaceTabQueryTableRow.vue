@@ -442,7 +442,7 @@ const editOFF = () => {
    let content;
    if (!BLOB.includes(editingType.value)) {
       if ([...DATETIME, ...TIME].includes(editingType.value)) {
-         if (editingContent.value.substring(editingContent.value.length - 1) === '.')
+         if (editingContent.value !== null && editingContent.value.substring(editingContent.value.length - 1) === '.')
             editingContent.value = editingContent.value.slice(0, -1);
       }
 

@@ -177,7 +177,10 @@ export default (connections: {[key: string]: antares.Client}) => {
                if (typeof orgRow[key] === 'string')
                   orgRow[key] = `'${orgRow[key]}'`;
 
-               orgRow[key] = `= ${orgRow[key]}`;
+               if (orgRow[key] === null)
+                  orgRow[key] = `IS ${orgRow[key]}`;
+               else
+                  orgRow[key] = `= ${orgRow[key]}`;
             }
 
             await connections[params.uid]
