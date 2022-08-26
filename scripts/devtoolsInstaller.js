@@ -1,4 +1,5 @@
-// @ts-check
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 const fs = require('fs');
 const path = require('path');
 const https = require('https');

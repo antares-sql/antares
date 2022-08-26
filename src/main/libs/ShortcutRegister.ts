@@ -19,9 +19,9 @@ export class ShortcutRegister {
    private _mode: ShortcutMode;
    private static _instance: ShortcutRegister;
 
-   private constructor (args: { mainWindow: BrowserWindow; menuTemplate: OsMenu; mode: ShortcutMode }) {
+   private constructor (args: { mainWindow: BrowserWindow; menuTemplate?: OsMenu; mode: ShortcutMode }) {
       this._mainWindow = args.mainWindow;
-      this._menuTemplate = args.menuTemplate;
+      this._menuTemplate = args.menuTemplate || {};
       this._mode = args.mode;
       this.shortcuts = shortcutsStore.get('shortcuts', defaultShortcuts) as ShortcutRecord[];
    }

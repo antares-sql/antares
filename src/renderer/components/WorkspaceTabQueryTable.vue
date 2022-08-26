@@ -377,7 +377,7 @@ const deleteSelected = () => {
    });
 
    const params = {
-      primary: primaryField.value.name,
+      primary: primaryField.value?.name,
       schema: getSchema(resultsetIndex.value),
       table: getTable(resultsetIndex.value),
       rows
@@ -389,7 +389,7 @@ const setNull = () => {
    const row = localResults.value.find((row: any) => selectedRows.value.includes(row._antares_id));
 
    const params = {
-      primary: primaryField.value.name,
+      primary: primaryField.value?.name,
       schema: getSchema(resultsetIndex.value),
       table: getTable(resultsetIndex.value),
       id: getPrimaryValue(row),
