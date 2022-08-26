@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.16](https://github.com/antares-sql/antares/compare/v0.5.15...v0.5.16) (2022-08-26)
+
+
+### Bug Fixes
+
+* CTRL+Right/Left not working on text editor, closes [#427](https://github.com/antares-sql/antares/issues/427) ([ffc645b](https://github.com/antares-sql/antares/commit/ffc645ba5efb1c52670096e4f8c7f992b7335dae))
+* issue updating datetime cells with null value, closes [#423](https://github.com/antares-sql/antares/issues/423) ([ebc325a](https://github.com/antares-sql/antares/commit/ebc325ae0c656dca2eb8f7544ab271beaee9b47e))
+* ts exceptions ([df68114](https://github.com/antares-sql/antares/commit/df681147aaf0bfca69f3ffdc474cc1846541b1d8))
+* **UI:** editor themes group not visible in select element ([9dc700e](https://github.com/antares-sql/antares/commit/9dc700e13ea65bb8c6feac4ff4ffeadd32053614))
+* **UI:** wrong position of fields resizable area ([c90ab0e](https://github.com/antares-sql/antares/commit/c90ab0e8807ff30a9ab58e9aa3515cf427dd6e86))
+* unable to set null or delete rows without primary key ([39326eb](https://github.com/antares-sql/antares/commit/39326eb52e038728b5419d4a8de8024c7ead3002))
+
 ### [0.5.15](https://github.com/antares-sql/antares/compare/v0.5.14...v0.5.15) (2022-08-17)
 
 
