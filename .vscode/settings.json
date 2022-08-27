@@ -7,7 +7,8 @@
       "SQLite",
       "Windows",
       "translation",
-      "Linux"
+      "Linux",
+      "MacOS"
    ],
    "svg.preview.background": "transparent"
 }
