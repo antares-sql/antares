@@ -1,4 +1,4 @@
-name: Create artifact [MACOS]
+name: Create artifact [MAC]
 
 on: 
   workflow_dispatch: {}
@@ -23,7 +23,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: linux-build
+          name: macos-build
           retention-days: 3
           path: |
             build
