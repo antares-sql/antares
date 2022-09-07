@@ -217,7 +217,7 @@ const runElementCheck = () => {
 };
 
 const runElement = (params: string[]) => {
-   if (props.selectedMisc.type === 'procedure')
+   if (['procedure', 'routine'].includes(props.selectedMisc.type))
       runRoutine(params);
    else if (props.selectedMisc.type === 'function')
       runFunction(params);
