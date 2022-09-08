@@ -326,7 +326,7 @@
                v-if="tab.type ==='query'"
                :tab-uid="tab.uid"
                :tab="tab"
-               :is-selected="selectedTab === tab.uid"
+               :is-selected="selectedTab === tab.uid && isSelected"
                :connection="connection"
             />
             <WorkspaceTabTable
@@ -334,7 +334,7 @@
                v-once
                :tab-uid="tab.uid"
                :connection="connection"
-               :is-selected="selectedTab === tab.uid"
+               :is-selected="selectedTab === tab.uid && isSelected"
                :table="tab.elementName"
                :schema="tab.schema"
                :element-type="tab.elementType"
@@ -344,14 +344,14 @@
                :tab-uid="tab.uid"
                :tab="tab"
                :connection="connection"
-               :is-selected="selectedTab === tab.uid"
+               :is-selected="selectedTab === tab.uid && isSelected"
                :schema="tab.schema"
             />
             <WorkspaceTabPropsTable
                v-else-if="tab.type === 'table-props'"
                :tab-uid="tab.uid"
                :connection="connection"
-               :is-selected="selectedTab === tab.uid"
+               :is-selected="selectedTab === tab.uid && isSelected"
                :table="tab.elementName"
                :schema="tab.schema"
             />
@@ -360,13 +360,13 @@
                :tab-uid="tab.uid"
                :tab="tab"
                :connection="connection"
-               :is-selected="selectedTab === tab.uid"
+               :is-selected="selectedTab === tab.uid && isSelected"
                :schema="tab.schema"
             />
             <WorkspaceTabPropsView
                v-else-if="tab.type === 'view-props'"
                :tab-uid="tab.uid"
-               :is-selected="selectedTab === tab.uid"
+               :is-selected="selectedTab === tab.uid && isSelected"
                :connection="connection"
                :view="tab.elementName"
                :schema="tab.schema"
@@ -376,7 +376,7 @@
                :tab-uid="tab.uid"
                :tab="tab"
                :connection="connection"
-               :is-selected="selectedTab === tab.uid"
+               :is-selected="selectedTab === tab.uid && isSelected"
                :trigger="tab.elementName"
                :schema="tab.schema"
             />
@@ -384,7 +384,7 @@
                v-else-if="['temp-trigger-props', 'trigger-props'].includes(tab.type)"
                :tab-uid="tab.uid"
                :connection="connection"
-               :is-selected="selectedTab === tab.uid"
+               :is-selected="selectedTab === tab.uid && isSelected"
                :trigger="tab.elementName"
                :schema="tab.schema"
             />
@@ -393,7 +393,7 @@
                :tab-uid="tab.uid"
                :tab="tab"
                :connection="connection"
-               :is-selected="selectedTab === tab.uid"
+               :is-selected="selectedTab === tab.uid && isSelected"
                :trigger="tab.elementName"
                :schema="tab.schema"
             />
@@ -401,7 +401,7 @@
                v-else-if="['temp-trigger-function-props', 'trigger-function-props'].includes(tab.type)"
                :tab-uid="tab.uid"
                :connection="connection"
-               :is-selected="selectedTab === tab.uid"
+               :is-selected="selectedTab === tab.uid && isSelected"
                :function="tab.elementName"
                :schema="tab.schema"
             />
@@ -410,7 +410,7 @@
                :tab-uid="tab.uid"
                :tab="tab"
                :connection="connection"
-               :is-selected="selectedTab === tab.uid"
+               :is-selected="selectedTab === tab.uid && isSelected"
                :trigger="tab.elementName"
                :schema="tab.schema"
             />
@@ -418,7 +418,7 @@
                v-else-if="['temp-routine-props', 'routine-props'].includes(tab.type)"
                :tab-uid="tab.uid"
                :connection="connection"
-               :is-selected="selectedTab === tab.uid"
+               :is-selected="selectedTab === tab.uid && isSelected"
                :routine="tab.elementName"
                :schema="tab.schema"
             />
@@ -427,7 +427,7 @@
                :tab-uid="tab.uid"
                :tab="tab"
                :connection="connection"
-               :is-selected="selectedTab === tab.uid"
+               :is-selected="selectedTab === tab.uid && isSelected"
                :trigger="tab.elementName"
                :schema="tab.schema"
             />
@@ -435,7 +435,7 @@
                v-else-if="['temp-function-props', 'function-props'].includes(tab.type)"
                :tab-uid="tab.uid"
                :connection="connection"
-               :is-selected="selectedTab === tab.uid"
+               :is-selected="selectedTab === tab.uid && isSelected"
                :function="tab.elementName"
                :schema="tab.schema"
             />
@@ -444,7 +444,7 @@
                :tab-uid="tab.uid"
                :tab="tab"
                :connection="connection"
-               :is-selected="selectedTab === tab.uid"
+               :is-selected="selectedTab === tab.uid && isSelected"
                :trigger="tab.elementName"
                :schema="tab.schema"
             />
@@ -452,7 +452,7 @@
                v-else-if="['temp-scheduler-props', 'scheduler-props'].includes(tab.type)"
                :tab-uid="tab.uid"
                :connection="connection"
-               :is-selected="selectedTab === tab.uid"
+               :is-selected="selectedTab === tab.uid && isSelected"
                :scheduler="tab.elementName"
                :schema="tab.schema"
             />
