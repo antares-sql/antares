@@ -34,6 +34,12 @@ const {
    lineWrap
 } = storeToRefs(settingsStore);
 
+const sizes = {
+   small: '12px',
+   medium: '14px',
+   large: '16px'
+};
+
 const props = defineProps({
    modelValue: String,
    workspace: Object as Prop<Workspace>,
@@ -240,12 +246,6 @@ watch(editorTheme, () => {
 });
 
 watch(editorFontSize, () => {
-   const sizes = {
-      small: '12px',
-      medium: '14px',
-      large: '16px'
-   };
-
    if (editor.value) {
       editor.value.setOptions({
          fontSize: sizes[editorFontSize.value]
@@ -305,7 +305,8 @@ onMounted(() => {
       enableBasicAutocompletion: true,
       wrap: lineWrap.value,
       enableSnippets: true,
-      enableLiveAutocompletion: autoComplete.value
+      enableLiveAutocompletion: autoComplete.value,
+      fontSize: sizes[editorFontSize.value]
    });
 
    if (!baseCompleter.value.length)
