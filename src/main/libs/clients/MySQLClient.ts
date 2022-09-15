@@ -940,7 +940,7 @@ export class MySQLClient extends AntaresCore {
 
       return {
          algorithm: algorithm[0]['Create View'].match(/(?<=CREATE ALGORITHM=).*?(?=\s)/gs)[0],
-         definer: viewInfo[0].DEFINER,
+         definer: viewInfo[0].DEFINER.split('@').map((str: string) => `\`${str}\``).join('@'),
          security: viewInfo[0].SECURITY_TYPE,
          updateOption: viewInfo[0].CHECK_OPTION === 'NONE' ? '' : viewInfo[0].CHECK_OPTION,
          sql: viewInfo[0].VIEW_DEFINITION,
