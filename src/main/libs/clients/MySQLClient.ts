@@ -1588,7 +1588,8 @@ export class MySQLClient extends AntaresCore {
          let timeStop: Date;
          let keysArr: antares.QueryForeign[] = [];
 
-         const { rows, report, fields, keys, duration } = await new Promise((resolve, reject) => {
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         const { rows, report, fields, keys, duration }: any = await new Promise((resolve, reject) => {
             connection.query({ sql: query, nestTables }).then(async ([response, fields]) => {
                timeStop = new Date();
                const queryResult = response;

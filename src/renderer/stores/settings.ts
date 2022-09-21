@@ -10,7 +10,7 @@ const isDarkTheme = window.matchMedia('(prefers-color-scheme: dark)');
 const defaultAppTheme = isDarkTheme.matches ? 'dark' : 'light';
 const defaultEditorTheme = isDarkTheme.matches ? 'twilight' : 'sqlserver';
 
-export type EditorFontSize = 'small' | 'medium' | 'large';
+export type EditorFontSize = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge';
 export type ApplicationTheme = 'light' | 'dark';
 
 export const useSettingsStore = defineStore('settings', {

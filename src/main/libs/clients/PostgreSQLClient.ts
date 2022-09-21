@@ -1426,7 +1426,8 @@ export class PostgreSQLClient extends AntaresCore {
          let timeStop: Date;
          let keysArr: antares.QueryForeign[] = [];
 
-         const { rows, report, fields, keys, duration } = await new Promise((resolve, reject) => {
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         const { rows, report, fields, keys, duration }: any = await new Promise((resolve, reject) => {
             (async () => {
                try {
                   const res = await connection.query({ rowMode: args.nest ? 'array' : null, text: query });

@@ -35,9 +35,12 @@ const {
 } = storeToRefs(settingsStore);
 
 const sizes = {
+   xsmall: '10px',
    small: '12px',
    medium: '14px',
-   large: '16px'
+   large: '16px',
+   xlarge: '18px',
+   xxlarge: '20px'
 };
 
 const props = defineProps({

@@ -239,7 +239,7 @@
                            <div class="column col-12 h6 text-uppercase mb-2 mt-4">
                               {{ t('message.editorTheme') }}
                            </div>
-                           <div class="column col-6 h5 mb-4">
+                           <div class="column col-5 h5 mb-4">
                               <BaseSelect
                                  v-model="localEditorTheme"
                                  class="form-select"
@@ -251,28 +251,49 @@
                                  @change="changeEditorTheme(localEditorTheme)"
                               />
                            </div>
-                           <div class="column col-6 mb-4">
+                           <div class="column col-7 mb-4">
                               <div class="btn-group btn-group-block">
+                                 <button
+                                    class="btn btn-dark cut-text"
+                                    :class="{'active': editorFontSize === 'xsmall'}"
+                                    @click="changeEditorFontSize('xsmall')"
+                                 >
+                                    10px
+                                 </button>
                                  <button
                                     class="btn btn-dark cut-text"
                                     :class="{'active': editorFontSize === 'small'}"
                                     @click="changeEditorFontSize('small')"
                                  >
-                                    {{ t('word.small') }}
+                                    12px
                                  </button>
                                  <button
                                     class="btn btn-dark cut-text"
                                     :class="{'active': editorFontSize === 'medium'}"
                                     @click="changeEditorFontSize('medium')"
                                  >
-                                    {{ t('word.medium') }}
+                                    14px
                                  </button>
                                  <button
                                     class="btn btn-dark cut-text"
                                     :class="{'active': editorFontSize === 'large'}"
                                     @click="changeEditorFontSize('large')"
                                  >
-                                    {{ t('word.large') }}
+                                    16px
+                                 </button>
+                                 <button
+                                    class="btn btn-dark cut-text"
+                                    :class="{'active': editorFontSize === 'xlarge'}"
+                                    @click="changeEditorFontSize('xlarge')"
+                                 >
+                                    18px
+                                 </button>
+                                 <button
+                                    class="btn btn-dark cut-text"
+                                    :class="{'active': editorFontSize === 'xxlarge'}"
+                                    @click="changeEditorFontSize('xxlarge')"
+                                 >
+                                    20px
                                  </button>
                               </div>
                            </div>

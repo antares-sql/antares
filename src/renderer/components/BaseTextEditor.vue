@@ -51,14 +51,17 @@ watch(editorTheme, () => {
 
 watch(editorFontSize, () => {
    const sizes = {
-      small: 12,
-      medium: 14,
-      large: 16
+      xsmall: '10px',
+      small: '12px',
+      medium: '14px',
+      large: '16px',
+      xlarge: '18px',
+      xxlarge: '20px'
    };
 
    if (editor) {
       editor.setOptions({
-         fontSize: sizes[editorFontSize.value as undefined as 'small' | 'medium' | 'large']
+         fontSize: sizes[editorFontSize.value]
       });
    }
 });

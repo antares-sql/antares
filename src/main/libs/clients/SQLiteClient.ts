@@ -628,7 +628,8 @@ export class SQLiteClient extends AntaresCore {
          let timeStop;
          const keysArr: antares.QueryForeign[] = [];
 
-         const { rows, report, fields, keys, duration } = await new Promise((resolve, reject) => {
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         const { rows, report, fields, keys, duration }: any = await new Promise((resolve, reject) => {
             (async () => {
                let queryRunResult: sqlite.RunResult;
                // eslint-disable-next-line @typescript-eslint/no-explicit-any
