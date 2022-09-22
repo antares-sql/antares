@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.17](https://github.com/antares-sql/antares/compare/v0.5.16...v0.5.17) (2022-09-22)
+
+
+### Features
+
+* added more editor font sizes, closes [#440](https://github.com/antares-sql/antares/issues/440) ([d114f8a](https://github.com/antares-sql/antares/commit/d114f8a65164f702b23175095e6fc2b021e0e038))
+
+
+### Bug Fixes
+
+* "run or reload" shortcut triggers on all connections open ([01f607c](https://github.com/antares-sql/antares/commit/01f607cd40c18ab0f9761b2a05705a966aaae43a))
+* cant run procedures with parameters from leftbar ([efe134a](https://github.com/antares-sql/antares/commit/efe134a059700ca87333dc6e66166d6ec8d289e8))
+* editor font size doesn't change on new tabs, fixes [#442](https://github.com/antares-sql/antares/issues/442) ([84168d1](https://github.com/antares-sql/antares/commit/84168d1d75460acc2c844bfece7d85f0c977e74c))
+* empty definer when editing a view, fixes [#437](https://github.com/antares-sql/antares/issues/437) ([498a9b4](https://github.com/antares-sql/antares/commit/498a9b48e25ee061960f5f649c953cdaf6ff1a58))
+* **MacOS:** empty options on macos menubar ([a142d3c](https://github.com/antares-sql/antares/commit/a142d3c4d77e31375dfbea148eec54ce1f635192))
+
 ### [0.5.16](https://github.com/antares-sql/antares/compare/v0.5.15...v0.5.16) (2022-08-26)
 
 
