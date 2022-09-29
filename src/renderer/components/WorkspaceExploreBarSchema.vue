@@ -25,7 +25,6 @@
             <ul class="menu menu-nav pt-0">
                <li
                   v-for="table of filteredTables"
-                  :ref="breadcrumbs.schema === database.name && [breadcrumbs.table, breadcrumbs.view].includes(table.name) ? 'explorebarSelected' : ''"
                   :key="table.name"
                   class="menu-item"
                   :class="{'selected': breadcrumbs.schema === database.name && [breadcrumbs.table, breadcrumbs.view].includes(table.name)}"
@@ -69,7 +68,6 @@
                         <li
                            v-for="trigger of filteredTriggers"
                            :key="trigger.name"
-                           :ref="breadcrumbs.schema === database.name && breadcrumbs.trigger === trigger.name ? 'explorebarSelected' : ''"
                            class="menu-item"
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.trigger === trigger.name}"
                            @mousedown.left="selectMisc({schema: database.name, misc: trigger, type: 'trigger'})"
@@ -111,7 +109,6 @@
                         <li
                            v-for="(routine, i) of filteredProcedures"
                            :key="`${routine.name}-${i}`"
-                           :ref="breadcrumbs.schema === database.name && breadcrumbs.routine === routine.name ? 'explorebarSelected' : ''"
                            class="menu-item"
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.routine === routine.name}"
                            @mousedown.left="selectMisc({schema: database.name, misc: routine, type: 'routine'})"
@@ -145,7 +142,6 @@
                         <li
                            v-for="(func, i) of filteredTriggerFunctions"
                            :key="`${func.name}-${i}`"
-                           :ref="breadcrumbs.schema === database.name && breadcrumbs.triggerFunction === func.name ? 'explorebarSelected' : ''"
                            class="menu-item"
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.triggerFunction === func.name}"
                            @mousedown.left="selectMisc({schema: database.name, misc: func, type: 'triggerFunction'})"
@@ -179,7 +175,6 @@
                         <li
                            v-for="(func, i) of filteredFunctions"
                            :key="`${func.name}-${i}`"
-                           :ref="breadcrumbs.schema === database.name && breadcrumbs.function === func.name ? 'explorebarSelected' : ''"
                            class="menu-item"
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.function === func.name}"
                            @mousedown.left="selectMisc({schema: database.name, misc: func, type: 'function'})"
@@ -213,7 +208,6 @@
                         <li
                            v-for="scheduler of filteredSchedulers"
                            :key="scheduler.name"
-                           :ref="breadcrumbs.schema === database.name && breadcrumbs.scheduler === scheduler.name ? 'explorebarSelected' : ''"
                            class="menu-item"
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.scheduler === scheduler.name}"
                            @mousedown.left="selectMisc({schema: database.name, misc: scheduler, type: 'scheduler'})"
@@ -281,7 +275,6 @@ const {
 } = workspacesStore;
 
 const schemaAccordion: Ref<HTMLDetailsElement> = ref(null);
-const explorebarSelected: Ref<HTMLElement[]> = ref(null);
 const isLoading = ref(false);
 
 const searchTerm = computed(() => {
@@ -340,7 +333,8 @@ const maxSize = computed(() => {
 watch(breadcrumbs, (newVal, oldVal) => {
    if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
       setTimeout(() => {
-         const element = explorebarSelected.value ? explorebarSelected.value[0] : null;
+         const element = document.querySelector<HTMLElement>('.workspace-explorebar-database .selected');
+
          if (element) {
             const rect = element.getBoundingClientRect();
             const elemTop = rect.top;
@@ -353,7 +347,7 @@ watch(breadcrumbs, (newVal, oldVal) => {
                element.removeAttribute('tabindex');
             }
          }
-      }, 50);
+      }, 100);
    }
 });
 
