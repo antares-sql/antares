@@ -322,7 +322,8 @@ export const enUS = {
       clearQuery: 'Clear query',
       openFilter: 'Open filter',
       nextResultsPage: 'Next results page',
-      previousResultsPage: 'Previous results page'
+      previousResultsPage: 'Previous results page',
+      fillCell: 'Fill cell'
    },
    faker: {
       address: 'Address',

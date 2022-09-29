@@ -43,6 +43,16 @@
          </span>
       </div>
       <div
+         v-if="selectedRows.length === 1 && selectedCell.isEditable && mode === 'table'"
+         class="context-element"
+         @click="duplicateRow"
+      >
+         <span class="d-flex">
+            <i class="mdi mdi-18px mdi-auto-fix text-light pr-1" /> {{ t('message.fillCell') }}
+         </span>
+         <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
+      </div>
+      <div
          v-if="selectedRows.length === 1 && selectedCell.isEditable"
          class="context-element"
          @click="setNull"
