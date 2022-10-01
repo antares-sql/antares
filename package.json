@@ -137,7 +137,7 @@
     "mysql2": "~2.3.2",
     "pg": "~8.7.1",
     "pg-connection-string": "~2.5.0",
-    "pg-query-stream": "~4.2.3",
+    "pg-query-stream": "~4.2.4",
     "pgsql-ast-parser": "~7.2.1",
     "pinia": "~2.0.13",
     "source-map-support": "~0.5.20",
