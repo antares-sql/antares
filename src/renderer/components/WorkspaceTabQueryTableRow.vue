@@ -18,6 +18,7 @@
                v-if="!isInlineEditor[cKey] && fields[cKey]"
                class="cell-content"
                :class="`${isNull(col)} ${typeClass(fields[cKey].type)}`"
+               :title="typeFormat(col, fields[cKey].type.toLowerCase(), fields[cKey].length)"
                @dblclick="editON(cKey)"
             >{{ cutText(typeFormat(col, fields[cKey].type.toLowerCase(), fields[cKey].length) as string, 250) }}</span>
             <ForeignKeySelect
