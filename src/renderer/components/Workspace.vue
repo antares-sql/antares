@@ -638,6 +638,8 @@ const hideProcessesModal = () => {
 const addWheelEvent = () => {
    if (!hasWheelEvent.value) {
       tabWrap.value.$el.addEventListener('wheel', (e: WheelEvent) => {
+         if (e.deltaX !== 0) return; // If trackpad horizontal scroll
+
          if (e.deltaY > 0) tabWrap.value.$el.scrollLeft += 50;
          else tabWrap.value.$el.scrollLeft -= 50;
       });
