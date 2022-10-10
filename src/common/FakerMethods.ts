@@ -140,7 +140,7 @@ export default class {
          { name: 'arrayElement', group: 'random', types: ['string'] },
          { name: 'arrayElements', group: 'random', types: ['string'] },
          { name: 'objectElement', group: 'random', types: ['string'] },
-         { name: 'uuid', group: 'random', types: ['string'] },
+         { name: 'uuid', group: 'random', types: ['string', 'uuid'] },
          { name: 'boolean', group: 'random', types: ['string'] },
          { name: 'word', group: 'random', types: ['string'] },
          { name: 'words', group: 'random', types: ['string'] },
