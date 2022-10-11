@@ -87,7 +87,7 @@
 
 <script setup lang="ts">
 import { computed, PropType, Ref, ref, watch } from 'vue';
-import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
+import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT, UUID } from 'common/fieldTypes';
 import BaseUploadInput from '@/components/BaseUploadInput.vue';
 import ForeignKeySelect from '@/components/ForeignKeySelect.vue';
 import FakerMethods from 'common/FakerMethods';
@@ -126,6 +126,8 @@ const fakerGroups = computed(() => {
       localType.value = 'datetime';
    else if (TIME.includes(props.type))
       localType.value = 'time';
+   else if (UUID.includes(props.type))
+      localType.value = 'uuid';
    else
       localType.value = 'none';
 

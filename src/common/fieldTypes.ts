@@ -86,6 +86,14 @@ export const BIT = [
    'BIT VARYING'
 ];
 
+export const BINARY = [
+   'BINARY'
+];
+
+export const UUID = [
+   'UUID'
+];
+
 export const SPATIAL = [
    'POINT',
    'LINESTRING',

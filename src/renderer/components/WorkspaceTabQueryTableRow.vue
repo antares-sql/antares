@@ -212,6 +212,7 @@ import {
    DATETIME,
    BLOB,
    BIT,
+   BINARY,
    HAS_TIMEZONE,
    SPATIAL,
    IS_MULTI_SPATIAL
@@ -379,6 +380,9 @@ const editON = async (field: string) => {
 
    const content = props.row[field];
    const type = props.fields[field].type.toUpperCase();
+
+   if (BINARY.includes(type)) return;
+
    originalContent.value = typeFormat(content, type, props.fields[field].length);
    editingType.value = type;
    editingField.value = field;
@@ -581,6 +585,9 @@ const typeFormat = (val: string | number | Date | number[], type: string, precis
       const bitString = hexToBinary(hex);
       return parseInt(bitString).toString().padStart(Number(precision), '0');
    }
+
+   if (BINARY.includes(type))
+      return Buffer.from(val as number[]).toString('hex');
 
    if (ARRAY.includes(type)) {
       if (Array.isArray(val))
