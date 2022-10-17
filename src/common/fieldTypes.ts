@@ -78,6 +78,7 @@ export const BLOB = [
    'TINYBLOB',
    'MEDIUMBLOB',
    'LONGBLOB',
+   'LONG_BLOB',
    'BYTEA'
 ];
 
