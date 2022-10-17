@@ -5,7 +5,7 @@ import { ipcMain } from 'electron';
 import { faker } from '@faker-js/faker';
 import * as moment from 'moment';
 import { sqlEscaper } from 'common/libs/sqlUtils';
-import { TEXT, LONG_TEXT, ARRAY, TEXT_SEARCH, NUMBER, FLOAT, BLOB, BIT, DATE, DATETIME } from 'common/fieldTypes';
+import { TEXT, LONG_TEXT, ARRAY, TEXT_SEARCH, NUMBER, FLOAT, BLOB, BIT, DATE, DATETIME, BOOLEAN } from 'common/fieldTypes';
 import customizations from 'common/customizations';
 
 export default (connections: {[key: string]: antares.Client}) => {
@@ -152,6 +152,18 @@ export default (connections: {[key: string]: antares.Client}) => {
          else if (BIT.includes(params.type)) {
             escapedParam = `b'${sqlEscaper(params.content)}'`;
             reload = true;
+         }
+         else if (BOOLEAN.includes(params.type)) {
+            switch (connections[params.uid]._client) {
+               case 'mysql':
+               case 'maria':
+               case 'pg':
+                  escapedParam = params.content;
+                  break;
+               case 'sqlite':
+                  escapedParam = Number(params.content === 'true');
+                  break;
+            }
          }
          else if (params.content === null)
             escapedParam = 'NULL';
