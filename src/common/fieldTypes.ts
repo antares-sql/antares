@@ -78,12 +78,21 @@ export const BLOB = [
    'TINYBLOB',
    'MEDIUMBLOB',
    'LONGBLOB',
+   'LONG_BLOB',
    'BYTEA'
 ];
 
 export const BIT = [
    'BIT',
    'BIT VARYING'
+];
+
+export const BINARY = [
+   'BINARY'
+];
+
+export const UUID = [
+   'UUID'
 ];
 
 export const SPATIAL = [

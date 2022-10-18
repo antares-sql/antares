@@ -469,7 +469,12 @@ export class MySQLClient extends AntaresCore {
          .orderBy({ ORDINAL_POSITION: 'ASC' })
          .run<TableColumnsResult>();
 
-      const { rows: fields } = await this.raw<antares.QueryResult<CreateTableResult>>(`SHOW CREATE TABLE \`${schema}\`.\`${table}\``);
+      let fields: CreateTableResult[] = [];
+      try {
+         const { rows } = await this.raw<antares.QueryResult<CreateTableResult>>(`SHOW CREATE TABLE \`${schema}\`.\`${table}\``);
+         fields = rows;
+      }
+      catch (_) {}
 
       const remappedFields = fields.map(row => {
          if (!row['Create Table']) return false;

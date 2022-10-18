@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.18](https://github.com/antares-sql/antares/compare/v0.5.17...v0.5.18) (2022-10-14)
+
+
+### Features
+
+* **PostgreSQL:** UUID random generation option on UUID fields, closes [#424](https://github.com/antares-sql/antares/issues/424) ([a521274](https://github.com/antares-sql/antares/commit/a521274d01031c1411bbbb136369802d43368089))
+
+
+### Bug Fixes
+
+* auto-scroll on sidebar not working, fixes [#447](https://github.com/antares-sql/antares/issues/447) ([dd9c089](https://github.com/antares-sql/antares/commit/dd9c089d27c61ab76d49887c7de2849cbb6e88a6))
+* trackpad horizontal scroll on tabs not working properly ([ba5a1b6](https://github.com/antares-sql/antares/commit/ba5a1b68ab2d56777a5c94eede26e9bded5819e6))
+
 ### [0.5.17](https://github.com/antares-sql/antares/compare/v0.5.16...v0.5.17) (2022-09-22)
 
 
