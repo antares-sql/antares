@@ -18,6 +18,7 @@
          @show-delete-modal="showDeleteConfirmModal"
          @set-null="setNull"
          @copy-cell="copyCell"
+         @fill-cell="fillCell"
          @copy-row="copyRow"
          @duplicate-row="duplicateRow"
          @close-context="closeContext"
@@ -122,7 +123,7 @@ import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import { useConsoleStore } from '@/stores/console';
 import { exportRows } from '../libs/exportRows';
-import { TEXT, LONG_TEXT, BLOB } from 'common/fieldTypes';
+import { TEXT, LONG_TEXT, BLOB, DATE, DATETIME, TIME } from 'common/fieldTypes';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
 import WorkspaceTabQueryTableRow from '@/components/WorkspaceTabQueryTableRow.vue';
 import TableContext from '@/components/WorkspaceTabQueryTableContext.vue';
@@ -133,6 +134,7 @@ import { TableField, QueryResult } from 'common/interfaces/antares';
 import { TableUpdateParams } from 'common/interfaces/tableApis';
 import { jsonToSqlInsert } from 'common/libs/sqlUtils';
 import { unproxify } from '@/libs/unproxify';
+import faker from '@faker-js/faker';
 
 const { t } = useI18n();
 
@@ -461,6 +463,51 @@ const copyRow = (format: string) => {
 
       navigator.clipboard.writeText(csv.join('\n'));
    }
+};
+
+const fillCell = (event: { name: string; group: string; type: string }) => {
+   const row = localResults.value.find((row: any) => selectedRows.value.includes(row._antares_id));
+   let fakeValue;
+   let datePrecision = '';
+
+   for (let i = 0; i < selectedCell.value.length; i++)
+      datePrecision += i === 0 ? '.S' : 'S';
+
+   if (event.group === 'custom') {
+      if (event.type === 'time' && event.name === 'now')
+         fakeValue = moment().format(`HH:mm:ss${datePrecision}`);
+      else if (event.type === 'time' && event.name === 'random')
+         fakeValue = moment(faker.date.recent()).format(`HH:mm:ss${datePrecision}`);
+      else if (event.type === 'datetime' && event.name === 'now')
+         fakeValue = moment().format(`YYYY-MM-DD HH:mm:ss${datePrecision}`);
+   }
+   else {
+      fakeValue = (faker as any)[event.group][event.name]();
+      if (['string', 'number'].includes(typeof fakeValue)) {
+         if (typeof fakeValue === 'number')
+            fakeValue = String(fakeValue);
+
+         if (selectedCell.value.length)
+            fakeValue = fakeValue.substring(0, selectedCell.value.length);
+      }
+      else if ([...DATE, ...DATETIME].includes(selectedCell.value.type))
+         fakeValue = moment(fakeValue).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`);
+      else if (TIME.includes(selectedCell.value.type))
+         fakeValue = moment(fakeValue).format(`HH:mm:ss${datePrecision}`);
+   }
+
+   const params = {
+      primary: primaryField.value?.name,
+      schema: getSchema(resultsetIndex.value),
+      table: getTable(resultsetIndex.value),
+      id: getPrimaryValue(row),
+      row,
+      orgRow: row,
+      field: selectedCell.value.field,
+      content: fakeValue
+   };
+
+   emit('update-field', params);
 };
 
 const duplicateRow = () => {

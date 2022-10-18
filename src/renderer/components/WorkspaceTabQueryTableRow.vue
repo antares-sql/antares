@@ -11,7 +11,12 @@
          :class="{selected: selectedCell === cKey}"
          @click="selectRow($event, cKey)"
 
-         @contextmenu.prevent="openContext($event, { id: row._antares_id, orgField: cKey })"
+         @contextmenu.prevent="openContext($event, {
+            id: row._antares_id,
+            orgField: cKey,
+            type: fields[cKey].type,
+            length: fields[cKey].charLength || fields[cKey].length
+         })"
       >
          <template v-if="cKey !== '_antares_id'">
             <span
@@ -530,7 +535,14 @@ const getKeyUsage = (keyName: string) => {
    return props.keyUsage.find(key => key.field === keyName);
 };
 
-const openContext = (event: MouseEvent, payload: { id: string; field?: string; orgField: string; isEditable?: boolean }) => {
+const openContext = (event: MouseEvent, payload: {
+   id: string;
+   field?: string;
+   orgField: string;
+   isEditable?: boolean;
+   type: string;
+   length: number | false;
+}) => {
    payload.field = props.fields[payload.orgField].name;// Ensures field name only
    payload.isEditable = isEditable.value;
    emit('contextmenu', event, payload);

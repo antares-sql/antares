@@ -389,6 +389,7 @@ export const enUS = {
       collation: 'Collation',
       engine: 'Engine',
       past: 'Past',
+      now: 'Now',
       future: 'Future',
       between: 'Between',
       recent: 'Recent',
