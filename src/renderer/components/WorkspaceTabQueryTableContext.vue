@@ -120,7 +120,8 @@ const fakerMethods = {
       { name: 'exampleEmail', group: 'internet' },
       { name: 'ip', group: 'internet' },
       { name: 'domainName', group: 'internet' },
-      { name: 'color', group: 'internet' }
+      { name: 'color', group: 'internet' },
+      { name: 'uuid', group: 'random' }
    ],
    number: [
       { name: 'number', group: 'random' }
