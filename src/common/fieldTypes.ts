@@ -29,7 +29,6 @@ export const NUMBER = [
    'SMALLINT',
    'MEDIUMINT',
    'BIGINT',
-   'DECIMAL',
    'NUMERIC',
    'INTEGER',
    'SMALLSERIAL',

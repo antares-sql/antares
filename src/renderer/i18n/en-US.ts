@@ -322,7 +322,8 @@ export const enUS = {
       clearQuery: 'Clear query',
       openFilter: 'Open filter',
       nextResultsPage: 'Next results page',
-      previousResultsPage: 'Previous results page'
+      previousResultsPage: 'Previous results page',
+      fillCell: 'Fill cell'
    },
    faker: {
       address: 'Address',
@@ -388,6 +389,7 @@ export const enUS = {
       collation: 'Collation',
       engine: 'Engine',
       past: 'Past',
+      now: 'Now',
       future: 'Future',
       between: 'Between',
       recent: 'Recent',
