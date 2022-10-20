@@ -466,12 +466,15 @@ const copyRow = (format: string) => {
 };
 
 const fillCell = (event: { name: string; group: string; type: string }) => {
+   console.log(event);
    const row = localResults.value.find((row: any) => selectedRows.value.includes(row._antares_id));
    let fakeValue;
    let datePrecision = '';
 
-   for (let i = 0; i < selectedCell.value.length; i++)
-      datePrecision += i === 0 ? '.S' : 'S';
+   if (['datetime', 'time'].includes(event.group)) {
+      for (let i = 0; i < selectedCell.value.length; i++)
+         datePrecision += i === 0 ? '.S' : 'S';
+   }
 
    if (event.group === 'custom') {
       if (event.type === 'time' && event.name === 'now')
@@ -488,7 +491,7 @@ const fillCell = (event: { name: string; group: string; type: string }) => {
             fakeValue = String(fakeValue);
 
          if (selectedCell.value.length)
-            fakeValue = fakeValue.substring(0, selectedCell.value.length);
+            fakeValue = fakeValue.substring(0, selectedCell.value.length < 1024 ? Number(selectedCell.value.length) : 1024);
       }
       else if ([...DATE, ...DATETIME].includes(selectedCell.value.type))
          fakeValue = moment(fakeValue).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`);
