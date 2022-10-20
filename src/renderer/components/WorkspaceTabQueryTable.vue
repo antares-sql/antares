@@ -466,7 +466,6 @@ const copyRow = (format: string) => {
 };
 
 const fillCell = (event: { name: string; group: string; type: string }) => {
-   console.log(event);
    const row = localResults.value.find((row: any) => selectedRows.value.includes(row._antares_id));
    let fakeValue;
    let datePrecision = '';
