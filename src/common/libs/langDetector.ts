@@ -176,7 +176,7 @@ function isMD (str: string) {
 }
 
 export function langDetector (str: string) {
-   if (!str.trim().length)
+   if (!str || !str.trim().length)
       return 'text';
    if (isJSON(str))
       return 'json';
