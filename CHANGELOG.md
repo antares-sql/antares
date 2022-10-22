@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.19](https://github.com/antares-sql/antares/compare/v0.5.18...v0.5.19) (2022-10-22)
+
+
+### Features
+
+* context menu option to fill cell with random values ([0a2124f](https://github.com/antares-sql/antares/commit/0a2124f2c2bdadc7c753db11d1e29f8acb9ddcac))
+* uuid fill for string cells ([24edc82](https://github.com/antares-sql/antares/commit/24edc82b1be7299a09df18611b2a0ba361a6b46f))
+
+
+### Bug Fixes
+
+* app stuck inserting a random value if field length high ([440f74d](https://github.com/antares-sql/antares/commit/440f74dfc1f4942ba585b9bdae7517fe6ab04a81))
+* error joining tables with different schema ([88408da](https://github.com/antares-sql/antares/commit/88408da745e45c70de977bc4270e5f61825be65f))
+* **SQLite:** save boolean as integer to improve compativility, fixes [#463](https://github.com/antares-sql/antares/issues/463) ([d52b7af](https://github.com/antares-sql/antares/commit/d52b7af2978bc8beafd2d22078c72abb62e9e532))
+* unable to edit text fields if value is NULL, fixes [#466](https://github.com/antares-sql/antares/issues/466) ([8621ca5](https://github.com/antares-sql/antares/commit/8621ca5333b5c51dc7a2ea1fcc0c5ec7f752a00a))
+
 ### [0.5.18](https://github.com/antares-sql/antares/compare/v0.5.17...v0.5.18) (2022-10-14)
 
 
