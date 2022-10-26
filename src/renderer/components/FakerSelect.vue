@@ -7,7 +7,7 @@
          :option-label="(opt: any) => opt.name === 'manual' ? t('message.manualValue') : t(`faker.${opt.name}`)"
          option-track-by="name"
          :disabled="!isChecked"
-         style="flex-grow: 0;"
+         :style="'flex-grow: 0;'"
          @change="onChange"
       />
 
@@ -87,7 +87,7 @@
 
 <script setup lang="ts">
 import { computed, PropType, Ref, ref, watch } from 'vue';
-import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT, UUID } from 'common/fieldTypes';
+import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT, UUID, IS_BIGINT } from 'common/fieldTypes';
 import BaseUploadInput from '@/components/BaseUploadInput.vue';
 import ForeignKeySelect from '@/components/ForeignKeySelect.vue';
 import FakerMethods from 'common/FakerMethods';
@@ -146,8 +146,12 @@ const inputProps = () => {
    if ([...TEXT, ...LONG_TEXT].includes(props.type))
       return { type: 'text', mask: false };
 
-   if ([...NUMBER, ...FLOAT].includes(props.type))
-      return { type: 'number', mask: false };
+   if ([...NUMBER, ...FLOAT].includes(props.type)) {
+      if (IS_BIGINT.includes(props.type))
+         return { type: 'text', mask: false };
+      else
+         return { type: 'number', mask: false };
+   }
 
    if (TIME.includes(props.type)) {
       let timeMask = '##:##:##';

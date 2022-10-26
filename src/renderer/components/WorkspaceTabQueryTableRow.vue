@@ -220,7 +220,8 @@ import {
    BINARY,
    HAS_TIMEZONE,
    SPATIAL,
-   IS_MULTI_SPATIAL
+   IS_MULTI_SPATIAL,
+   IS_BIGINT
 } from 'common/fieldTypes';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import TextEditor from '@/components/BaseTextEditor.vue';
@@ -281,8 +282,12 @@ const inputProps = computed(() => {
    if ([...TEXT, ...LONG_TEXT].includes(editingType.value))
       return { type: 'text', mask: false };
 
-   if ([...NUMBER, ...FLOAT].includes(editingType.value))
-      return { type: 'number', mask: false };
+   if ([...NUMBER, ...FLOAT].includes(editingType.value)) {
+      if (IS_BIGINT.includes(editingType.value))
+         return { type: 'text', mask: false };
+      else
+         return { type: 'number', mask: false };
+   }
 
    if (TIME.includes(editingType.value)) {
       let timeMask = '##:##:##';

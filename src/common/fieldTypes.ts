@@ -47,6 +47,12 @@ export const FLOAT = [
    'MONEY'
 ];
 
+export const IS_BIGINT = [
+   'BIGINT',
+   'BIGSERIAL',
+   'DOUBLE PRECISION'
+];
+
 export const BOOLEAN = [
    'BOOL',
    'BOOLEAN'
