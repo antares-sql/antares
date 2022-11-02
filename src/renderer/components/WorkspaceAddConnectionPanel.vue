@@ -415,7 +415,8 @@ const clients = [
    { name: 'MySQL', slug: 'mysql' },
    { name: 'MariaDB', slug: 'maria' },
    { name: 'PostgreSQL', slug: 'pg' },
-   { name: 'SQLite', slug: 'sqlite' }
+   { name: 'SQLite', slug: 'sqlite' },
+   { name: 'FirebirdSQL', slug: 'firebird' }
 ];
 
 const connection = ref({

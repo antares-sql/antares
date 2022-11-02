@@ -8,9 +8,10 @@ import SSHConfig from 'ssh2-promise/lib/sshConfig';
 import { MySQLClient } from '../../main/libs/clients/MySQLClient';
 import { PostgreSQLClient } from '../../main/libs/clients/PostgreSQLClient';
 import { SQLiteClient } from '../../main/libs/clients/SQLiteClient';
+import { FirebirdSQLClient } from 'src/main/libs/clients/FirebirdSQLClient';
 
-export type Client = MySQLClient | PostgreSQLClient | SQLiteClient
-export type ClientCode = 'mysql' | 'maria' | 'pg' | 'sqlite'
+export type Client = MySQLClient | PostgreSQLClient | SQLiteClient | FirebirdSQLClient
+export type ClientCode = 'mysql' | 'maria' | 'pg' | 'sqlite' | 'firebird'
 export type Exporter = MysqlExporter | PostgreSQLExporter
 export type Importer = MySQLImporter | PostgreSQLImporter
 
