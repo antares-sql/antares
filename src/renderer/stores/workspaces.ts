@@ -200,6 +200,11 @@ export const useWorkspacesStore = defineStore('workspaces', {
                      indexTypes = require('common/index-types/sqlite').default;
                      clientCustomizations = customizations.sqlite;
                      break;
+                  case 'firebird':
+                     dataTypes = require('common/data-types/firebird').default;
+                     indexTypes = require('common/index-types/firebird').default;
+                     clientCustomizations = customizations.firebird;
+                     break;
                }
 
                const { status, response: version } = await Schema.getVersion(connection.uid);

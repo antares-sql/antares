@@ -1,15 +1,34 @@
+import * as path from 'path';
 import * as antares from 'common/interfaces/antares';
 import * as firebird from 'node-firebird';
 import { AntaresCore } from '../AntaresCore';
 import dataTypes from 'common/data-types/sqlite';
 import { NUMBER, FLOAT, TIME, DATETIME } from 'common/fieldTypes';
-import { promisify } from 'util';
 
 export class FirebirdSQLClient extends AntaresCore {
    private _schema?: string;
    private _connectionsToCommit: Map<string, firebird.Database>;
    protected _connection?: firebird.Database;
    _params: firebird.Options;
+
+   private types: {[key: number]: string} ={
+      452: 'CHAR', // Array of char
+      448: 'VARCHAR',
+      500: 'SMALLINT',
+      496: 'INTEGER',
+      482: 'FLOAT',
+      480: 'DOUBLE',
+      530: 'DOUBLE PRECISION',
+      510: 'TIMESTAMP',
+      520: 'BLOB',
+      540: 'ARRAY',
+      550: 'QUAD',
+      560: 'TIME',
+      570: 'DATE',
+      580: 'BIGINT',
+      32764: 'BOOLEAN', // >= 3.0
+      32766: 'NULL' // >= 2.5
+   }
 
    constructor (args: antares.ClientParams) {
       super(args);
@@ -46,141 +65,151 @@ export class FirebirdSQLClient extends AntaresCore {
    }
 
    async getStructure (schemas: Set<string>) {
-      /* eslint-disable camelcase */
       interface ShowTableResult {
-         Db?: string;
-         type: string;
-         name: string;
-         tbl_name: string;
-         rootpage:4;
-         sql: string;
+         FORMAT: number;
+         NAME: string;
+         TYPE: string;
+         DESCRIPTION: string | null;
       }
 
-      type ShowTriggersResult = ShowTableResult
-      /* eslint-enable camelcase */
+      // type ShowTriggersResult = ShowTableResult
 
-      const { rows: databases } = await this.raw<antares.QueryResult<{ name: string}>>('SELECT * FROM pragma_database_list');
+      const { rows: databases } = await this.raw<antares.QueryResult<{ NAME: string}>>('SELECT rdb$get_context(\'SYSTEM\', \'DB_NAME\') as name FROM rdb$database');
 
-      const filteredDatabases = databases;
+      const filteredDatabases = databases.map(db => {
+         return { name: path.basename(db.NAME) };
+      });
 
       const tablesArr: ShowTableResult[] = [];
-      const triggersArr: ShowTriggersResult[] = [];
+      // const triggersArr: ShowTriggersResult[] = [];
       let schemaSize = 0;
 
       for (const db of filteredDatabases) {
-         if (!schemas.has(db.name)) continue;
+         // if (!schemas.has(db.name)) continue;
 
-         let { rows: tables } = await this.raw<antares.QueryResult<ShowTableResult>>(`
-            SELECT * 
-            FROM "${db.name}".sqlite_master 
-            WHERE type IN ('table', 'view') 
-            AND name NOT LIKE 'sqlite\\_%' ESCAPE '\\'
-            ORDER BY name
+         const { rows: tables } = await this.raw<antares.QueryResult<ShowTableResult>>(`
+            SELECT 
+               rdb$relation_name AS name,
+               rdb$format AS format,
+               rdb$description AS description,
+               'table' AS type
+            FROM RDB$RELATIONS a
+            WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0 
+            AND RDB$RELATION_TYPE = 0         
          `);
-         if (tables.length) {
-            tables = tables.map(table => {
-               table.Db = db.name;
-               return table;
-            });
-            tablesArr.push(...tables);
-         }
 
-         let { rows: triggers } = await this.raw<antares.QueryResult<ShowTriggersResult>>(`SELECT * FROM "${db.name}".sqlite_master WHERE type='trigger'`);
-         if (triggers.length) {
-            triggers = triggers.map(trigger => {
-               trigger.Db = db.name;
-               return trigger;
-            });
-            triggersArr.push(...triggers);
-         }
+         tablesArr.push(...tables);
       }
 
       return filteredDatabases.map(db => {
-         if (schemas.has(db.name)) {
-            // TABLES
-            const remappedTables = tablesArr.filter(table => table.Db === db.name).map(table => {
-               const tableSize = 0;
-               schemaSize += tableSize;
-
-               return {
-                  name: table.name,
-                  type: table.type,
-                  rows: false,
-                  size: false
-               };
-            });
-
-            // TRIGGERS
-            const remappedTriggers = triggersArr.filter(trigger => trigger.Db === db.name).map(trigger => {
-               return {
-                  name: trigger.name,
-                  table: trigger.tbl_name
-               };
-            });
+         // TABLES
+         const remappedTables = tablesArr.map(table => {
+            const tableSize = 0;
+            schemaSize += tableSize;
 
             return {
-               name: db.name,
-               size: schemaSize,
-               tables: remappedTables,
-               functions: [],
-               procedures: [],
-               triggers: remappedTriggers,
-               schedulers: []
+               name: table.NAME.trim(),
+               type: table.TYPE.trim(),
+               rows: false,
+               size: false
             };
-         }
-         else {
-            return {
-               name: db.name,
-               size: 0,
-               tables: [],
-               functions: [],
-               procedures: [],
-               triggers: [],
-               schedulers: []
-            };
-         }
+         });
+
+         // TRIGGERS
+         // const remappedTriggers = triggersArr.filter(trigger => trigger.Db === db.name).map(trigger => {
+         //    return {
+         //       name: trigger.name,
+         //       table: trigger.tbl_name
+         //    };
+         // });
+
+         return {
+            name: db.name,
+            size: schemaSize,
+            tables: remappedTables,
+            functions: [],
+            procedures: [],
+            triggers: [],
+            schedulers: []
+         };
       });
    }
 
    async getTableColumns ({ schema, table }: { schema: string; table: string }) {
       interface TableColumnsResult {
-         cid: number;
-         name: string;
-         type: string;
-         notnull: 0 | 1;
-         // eslint-disable-next-line camelcase
-         dflt_value: string;
-         pk: 0 | 1;
+         POSITION: number;
+         DESCRIPTION?: string;
+         /* eslint-disable camelcase */
+         FIELD_NAME: string;
+         FIELD_TYPE: string;
+         NOT_NULL: 0 | 1;
+         DEFAULT_VALUE: string;
+         FIELD_LENGTH: number;
+         FIELD_PRECISION: number;
+         FIELD_SCALE: number;
+         /* eslint-enable camelcase */
+         SUBTYPE: string;
+         COLLATION: string;
+         CHARSET: string;
       }
-      const { rows: fields } = await this.raw<antares.QueryResult<TableColumnsResult>>(`SELECT * FROM "${schema}".pragma_table_info('${table}')`);
+
+      const { rows: fields } = await this.raw<antares.QueryResult<TableColumnsResult>>(`
+         SELECT 
+            r.RDB$FIELD_NAME AS field_name,
+            r.RDB$DESCRIPTION AS description,
+            r.RDB$DEFAULT_VALUE AS default_value,
+            r.RDB$NULL_FLAG AS not_null,
+            f.RDB$FIELD_LENGTH AS field_length,
+            f.RDB$FIELD_PRECISION AS field_precision,
+            f.RDB$FIELD_SCALE AS field_scale,
+            CASE f.RDB$FIELD_TYPE
+               WHEN 261 THEN 'BLOB'
+               WHEN 14 THEN 'CHAR'
+               WHEN 40 THEN 'CSTRING'
+               WHEN 11 THEN 'D_FLOAT'
+               WHEN 27 THEN 'DOUBLE'
+               WHEN 10 THEN 'FLOAT'
+               WHEN 16 THEN 'INT64'
+               WHEN 8 THEN 'INTEGER'
+               WHEN 9 THEN 'QUAD'
+               WHEN 7 THEN 'SMALLINT'
+               WHEN 12 THEN 'DATE'
+               WHEN 13 THEN 'TIME'
+               WHEN 35 THEN 'TIMESTAMP'
+               WHEN 37 THEN 'VARCHAR'
+               ELSE 'UNKNOWN'
+            END AS field_type,
+            f.RDB$FIELD_SUB_TYPE AS subtype,
+            -- coll.RDB$COLLATION_NAME AS collation,
+            cset.RDB$CHARACTER_SET_NAME AS charset
+         FROM RDB$RELATION_FIELDS r
+         LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME
+         -- LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$COLLATION_ID
+         LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID = cset.RDB$CHARACTER_SET_ID
+         WHERE r.RDB$RELATION_NAME='${table}'
+         ORDER BY r.RDB$FIELD_POSITION;
+      `);
 
       return fields.map(field => {
-         const [type, length]: [string, number?] = field.type.includes('(')
-            ? field.type.replace(')', '').split('(').map((el: string | number) => {
-               if (!isNaN(Number(el))) el = Number(el);
-               return el;
-            }) as [string, number?]
-            : [field.type, null];
-
          return {
-            name: field.name,
+            name: field.FIELD_NAME.trim(),
             key: null,
-            type: type.trim(),
+            type: field.FIELD_TYPE.trim(),
             schema: schema,
             table: table,
-            numPrecision: [...NUMBER, ...FLOAT].includes(type) ? length : null,
+            numPrecision: field.FIELD_PRECISION,
             datePrecision: null,
-            charLength: ![...NUMBER, ...FLOAT].includes(type) ? length : null,
-            nullable: !field.notnull,
+            charLength: field.FIELD_LENGTH,
+            nullable: !field.NOT_NULL,
             unsigned: null,
             zerofill: null,
-            order: typeof field.cid === 'string' ? +field.cid + 1 : field.cid + 1,
-            default: field.dflt_value,
-            charset: null,
+            order: field.POSITION,
+            default: field.DEFAULT_VALUE,
+            charset: field.CHARSET,
             collation: null,
             autoIncrement: false,
             onUpdate: null,
-            comment: ''
+            comment: field.DESCRIPTION?.trim()
          };
       });
    }
@@ -393,17 +422,17 @@ export class FirebirdSQLClient extends AntaresCore {
    }
 
    async duplicateTable (params: { schema: string; table: string }) { // TODO: retrive table informations and create a copy
-      const sql = `CREATE TABLE "${params.schema}"."${params.table}_copy" AS SELECT * FROM "${params.schema}"."${params.table}"`;
+      const sql = `CREATE TABLE '${params.table}_copy' AS SELECT * FROM '${params.table}'`;
       return await this.raw(sql);
    }
 
    async truncateTable (params: { schema: string; table: string }) {
-      const sql = `DELETE FROM "${params.schema}"."${params.table}"`;
+      const sql = `DELETE FROM '${params.table}'`;
       return await this.raw(sql);
    }
 
    async dropTable (params: { schema: string; table: string }) {
-      const sql = `DROP TABLE "${params.schema}"."${params.table}"`;
+      const sql = `DROP TABLE '${params.table}'`;
       return await this.raw(sql);
    }
 
@@ -420,7 +449,7 @@ export class FirebirdSQLClient extends AntaresCore {
    }
 
    async dropView (params: { schema: string; view: string }) {
-      const sql = `DROP VIEW "${params.schema}"."${params.view}"`;
+      const sql = `DROP VIEW '${params.view}'`;
       return await this.raw(sql);
    }
 
@@ -435,7 +464,7 @@ export class FirebirdSQLClient extends AntaresCore {
    }
 
    async createView (params: antares.CreateViewParams) {
-      const sql = `CREATE VIEW "${params.schema}"."${params.name}" AS ${params.sql}`;
+      const sql = `CREATE VIEW '${params.name}' AS ${params.sql}`;
       return await this.raw(sql);
    }
 
@@ -489,15 +518,19 @@ export class FirebirdSQLClient extends AntaresCore {
    }
 
    async getVersion () {
-      const os = require('os');
-      const sql = 'SELECT sqlite_version() AS version';
+      const sql = `
+         SELECT 
+            rdb$get_context('SYSTEM', 'ENGINE_VERSION') as version,
+            rdb$get_context('SYSTEM', 'NETWORK_PROTOCOL') as protocol,
+            RDB$GET_CONTEXT('SYSTEM', 'CLIENT_ADDRESS') AS address
+         FROM rdb$database`;
       const { rows } = await this.raw(sql);
 
       return {
          number: rows[0].version,
-         name: 'SQLite',
-         arch: process.arch,
-         os: `${os.type()} ${os.release()}`
+         name: 'Firebird SQL',
+         arch: rows[0].protocol,
+         os: rows[0].address
       };
    }
 
@@ -509,37 +542,40 @@ export class FirebirdSQLClient extends AntaresCore {
       return null;
    }
 
-   async commitTab (tabUid: string) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         connection.prepare('COMMIT').run();
-         return this.destroyConnectionToCommit(tabUid);
-      }
-   }
+   // async commitTab (tabUid: string) {
+   //    const connection = this._connectionsToCommit.get(tabUid);
+   //    if (connection) {
+   //       connection.prepare('COMMIT').run();
+   //       return this.destroyConnectionToCommit(tabUid);
+   //    }
+   // }
 
-   async rollbackTab (tabUid: string) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         connection.prepare('ROLLBACK').run();
-         return this.destroyConnectionToCommit(tabUid);
-      }
-   }
+   // async rollbackTab (tabUid: string) {
+   //    const connection = this._connectionsToCommit.get(tabUid);
+   //    if (connection) {
+   //       connection.prepare('ROLLBACK').run();
+   //       return this.destroyConnectionToCommit(tabUid);
+   //    }
+   // }
 
-   destroyConnectionToCommit (tabUid: string) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         connection.close();
-         this._connectionsToCommit.delete(tabUid);
-      }
-   }
+   // destroyConnectionToCommit (tabUid: string) {
+   //    const connection = this._connectionsToCommit.get(tabUid);
+   //    if (connection) {
+   //       connection.close();
+   //       this._connectionsToCommit.delete(tabUid);
+   //    }
+   // }
 
    getSQL () {
+      // LIMIT
+      const limitRaw = this._query.limit ? ` first ${this._query.limit}` : '';
+
       // SELECT
       const selectArray = this._query.select.reduce(this._reducer, []);
       let selectRaw = '';
 
       if (selectArray.length)
-         selectRaw = selectArray.length ? `SELECT ${selectArray.join(', ')} ` : 'SELECT * ';
+         selectRaw = selectArray.length ? `SELECT${limitRaw||''} ${selectArray.join(', ')} ` : `SELECT${limitRaw||''} * `;
 
       // FROM
       let fromRaw = '';
@@ -549,7 +585,7 @@ export class FirebirdSQLClient extends AntaresCore {
       else if (Object.keys(this._query.insert).length)
          fromRaw = 'INTO';
 
-      fromRaw += this._query.from ? ` ${this._query.schema ? `"${this._query.schema}".` : ''}"${this._query.from}" ` : '';
+      fromRaw += this._query.from ? ` ${this._query.from} ` : '';
 
       // WHERE
       const whereArray = this._query.where
@@ -579,16 +615,24 @@ export class FirebirdSQLClient extends AntaresCore {
       const orderByArray = this._query.orderBy.reduce(this._reducer, []);
       const orderByRaw = orderByArray.length ? `ORDER BY ${orderByArray.join(', ')} ` : '';
 
-      // LIMIT
-      const limitRaw = this._query.limit ? `LIMIT ${this._query.limit} ` : '';
-
       // OFFSET
       const offsetRaw = this._query.offset ? `OFFSET ${this._query.offset} ` : '';
 
-      return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}${offsetRaw}${insertRaw}`;
+      return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${offsetRaw}${insertRaw}`;
    }
 
    async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {
+      interface FieldData {
+         type: number;
+         nullable: boolean;
+         subType: number;
+         scale: number;
+         length: number;
+         field: string;
+         relation: string;
+         alias: string;
+       }
+
       this._logger({ cUid: this._cUid, sql });
 
       args = {
@@ -604,7 +648,6 @@ export class FirebirdSQLClient extends AntaresCore {
          sql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '');// Remove comments
 
       const resultsArr = [];
-      const paramsArr = [];
       const queries = args.split
          ? sql.split(/((?:[^;'"]*(?:"(?:\\.|[^"])*"|'(?:\\.|[^'])*')[^;'"]*)+)|;/gm)
             .filter(Boolean)
@@ -641,22 +684,44 @@ export class FirebirdSQLClient extends AntaresCore {
          const { rows, report, fields, keys, duration }: any = await new Promise((resolve, reject) => {
             (async () => {
                let queryResult;
+               let remappedFields;
 
                try {
                   queryResult = await new Promise<unknown[]>((resolve, reject) => {
-                     connection.query(query, [], (err, res) => {
+                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                     (connection as any).query(query, [], (err: any, res: any, fields: FieldData[]) => { // <- fields is not natively typed or documented
                         if (err) reject(err);
                         else {
                            const remappedResponse = [];
 
                            for (const row of res) {
                               for (const key in row) {
+                                 const fieldData = fields.find(({ alias }) => alias === key);
+
+                                 if (fieldData.type === 520 && fieldData.subType === 1)// TODO: handle BLOB subType 1
+                                    row[key] = row[key]?.toString();
+
                                  if (Buffer.isBuffer(row[key]))
                                     row[key] = row[key].toString('binary');
                               }
 
                               remappedResponse.push(row);
                            }
+
+                           // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                           remappedFields = fields.map((field: any) => {
+                              return {
+                                 name: field.alias,
+                                 alias: field.alias,
+                                 orgName: field.field,
+                                 schema: args.schema,
+                                 table: field.relation,
+                                 tableAlias: field.relation,
+                                 orgTable: field.relation,
+                                 type: this.types[field.type],
+                                 length: field.length
+                              };
+                           });
 
                            resolve(remappedResponse);
                         }
@@ -668,8 +733,6 @@ export class FirebirdSQLClient extends AntaresCore {
                }
 
                timeStop = new Date();
-
-               const remappedFields = [];
 
                // if (args.details) {
 

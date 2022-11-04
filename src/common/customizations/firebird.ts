@@ -20,7 +20,7 @@ export const customizations: Customizations = {
    variables: false,
    // Structure
    schemas: false,
-   tables: false,
+   tables: true,
    views: false,
    triggers: false,
    triggerFunctions: false,
@@ -29,7 +29,7 @@ export const customizations: Customizations = {
    schedulers: false,
    // Settings
    elementsWrapper: '',
-   stringsWrapper: '"',
+   stringsWrapper: '\'',
    tableAdd: false,
    tableTruncateDisableFKCheck: false,
    viewAdd: false,
