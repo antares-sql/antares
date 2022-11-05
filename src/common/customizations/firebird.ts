@@ -90,5 +90,6 @@ export const customizations: Customizations = {
    triggerFunctionlanguages: null,
    parametersLength: false,
    languages: null,
-   readOnlyMode: false
+   readOnlyMode: false,
+   blobAsText: true
 };

@@ -3,7 +3,6 @@ import * as antares from 'common/interfaces/antares';
 import * as firebird from 'node-firebird';
 import { AntaresCore } from '../AntaresCore';
 import dataTypes from 'common/data-types/sqlite';
-import { NUMBER, FLOAT, TIME, DATETIME } from 'common/fieldTypes';
 
 export class FirebirdSQLClient extends AntaresCore {
    private _schema?: string;
@@ -49,7 +48,7 @@ export class FirebirdSQLClient extends AntaresCore {
 
    async getConnection () {
       return new Promise<firebird.Database>((resolve, reject) => {
-         firebird.attach(this._params, (err, db) => {
+         firebird.attach({ ...this._params, blobAsText: true }, (err, db) => {
             if (err) reject(err);
             else resolve(db);
          });
@@ -64,7 +63,7 @@ export class FirebirdSQLClient extends AntaresCore {
       return null;
    }
 
-   async getStructure (schemas: Set<string>) {
+   async getStructure (_schemas: Set<string>) {
       interface ShowTableResult {
          FORMAT: number;
          NAME: string;
@@ -527,10 +526,10 @@ export class FirebirdSQLClient extends AntaresCore {
       const { rows } = await this.raw(sql);
 
       return {
-         number: rows[0].version,
+         number: rows[0].VERSION,
          name: 'Firebird SQL',
-         arch: rows[0].protocol,
-         os: rows[0].address
+         arch: rows[0].PROTOCOL,
+         os: rows[0].ADDRESS
       };
    }
 
@@ -696,12 +695,9 @@ export class FirebirdSQLClient extends AntaresCore {
 
                            for (const row of res) {
                               for (const key in row) {
-                                 const fieldData = fields.find(({ alias }) => alias === key);
-
-                                 if (fieldData.type === 520 && fieldData.subType === 1)// TODO: handle BLOB subType 1
-                                    row[key] = row[key]?.toString();
-
                                  if (Buffer.isBuffer(row[key]))
+                                    row[key] = row[key].toString('binary');
+                                 else if (typeof row[key] === 'function')
                                     row[key] = row[key].toString('binary');
                               }
 
