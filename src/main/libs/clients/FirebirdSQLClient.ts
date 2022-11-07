@@ -43,7 +43,10 @@ export class FirebirdSQLClient extends AntaresCore {
    }
 
    async connect () {
-      this._connection = await this.getConnection();
+      if (!this._poolSize)
+         this._connection = await this.getConnection();
+      else
+         this._connection = await this.getConnectionPool();
    }
 
    async getConnection () {
@@ -55,8 +58,18 @@ export class FirebirdSQLClient extends AntaresCore {
       });
    }
 
+   async getConnectionPool () {
+      const pool = firebird.pool(this._poolSize, { ...this._params, blobAsText: true });
+      return new Promise<firebird.Database>((resolve, reject) => {
+         pool.get((err, db) => {
+            if (err) reject(err);
+            else resolve(db);
+         });
+      });
+   }
+
    destroy () {
-      return this._connection.detach();
+      return (this._connection as firebird.Database).detach();
    }
 
    use (): void {
@@ -726,6 +739,7 @@ export class FirebirdSQLClient extends AntaresCore {
                }
                catch (err) {
                   reject(err);
+                  this._connection.detach();
                }
 
                timeStop = new Date();
