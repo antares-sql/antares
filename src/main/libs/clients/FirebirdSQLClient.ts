@@ -6,6 +6,7 @@ import dataTypes from 'common/data-types/sqlite';
 
 export class FirebirdSQLClient extends AntaresCore {
    private _schema?: string;
+   private _runningConnections: Map<string, number>;
    private _connectionsToCommit: Map<string, firebird.Database>;
    protected _connection?: firebird.Database;
    _params: firebird.Options;
@@ -69,7 +70,7 @@ export class FirebirdSQLClient extends AntaresCore {
    }
 
    destroy () {
-      return (this._connection as firebird.Database).detach();
+      return this._connection.detach();
    }
 
    use (): void {
@@ -84,7 +85,11 @@ export class FirebirdSQLClient extends AntaresCore {
          DESCRIPTION: string | null;
       }
 
-      // type ShowTriggersResult = ShowTableResult
+      interface ShowTriggersResult {
+         NAME: string;
+         RELATION: string;
+         SOURCE: string;
+      }
 
       const { rows: databases } = await this.raw<antares.QueryResult<{ NAME: string}>>('SELECT rdb$get_context(\'SYSTEM\', \'DB_NAME\') as name FROM rdb$database');
 
@@ -93,10 +98,11 @@ export class FirebirdSQLClient extends AntaresCore {
       });
 
       const tablesArr: ShowTableResult[] = [];
-      // const triggersArr: ShowTriggersResult[] = [];
+      const triggersArr: ShowTriggersResult[] = [];
       let schemaSize = 0;
 
-      for (const db of filteredDatabases) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      for (const _db of filteredDatabases) {
          // if (!schemas.has(db.name)) continue;
 
          const { rows: tables } = await this.raw<antares.QueryResult<ShowTableResult>>(`
@@ -111,6 +117,17 @@ export class FirebirdSQLClient extends AntaresCore {
          `);
 
          tablesArr.push(...tables);
+
+         const { rows: triggers } = await this.raw<antares.QueryResult<ShowTriggersResult>>(`
+            SELECT
+               RDB$TRIGGER_NAME as name,
+               RDB$RELATION_NAME as relation,
+               RDB$TRIGGER_SOURCE as source
+            FROM RDB$TRIGGERS
+            WHERE RDB$SYSTEM_FLAG=0;
+         `);
+
+         triggersArr.push(...triggers);
       }
 
       return filteredDatabases.map(db => {
@@ -128,12 +145,13 @@ export class FirebirdSQLClient extends AntaresCore {
          });
 
          // TRIGGERS
-         // const remappedTriggers = triggersArr.filter(trigger => trigger.Db === db.name).map(trigger => {
-         //    return {
-         //       name: trigger.name,
-         //       table: trigger.tbl_name
-         //    };
-         // });
+         const remappedTriggers = triggersArr.map(trigger => {
+            return {
+               name: trigger.NAME,
+               table: trigger.RELATION,
+               statement: trigger.SOURCE
+            };
+         });
 
          return {
             name: db.name,
@@ -141,7 +159,7 @@ export class FirebirdSQLClient extends AntaresCore {
             tables: remappedTables,
             functions: [],
             procedures: [],
-            triggers: [],
+            triggers: remappedTriggers,
             schedulers: []
          };
       });
@@ -226,65 +244,52 @@ export class FirebirdSQLClient extends AntaresCore {
       });
    }
 
-   async getTableApproximateCount ({ schema, table }: { schema: string; table: string }): Promise<number> {
-      const { rows } = await this.raw(`SELECT COUNT(*) AS count FROM "${schema}"."${table}"`);
+   async getTableApproximateCount ({ table }: { schema: string; table: string }): Promise<number> {
+      const { rows } = await this.raw(`SELECT COUNT(*) AS nRows FROM "${table}"`);
 
-      return rows.length ? rows[0].count : 0;
+      return rows.length ? rows[0].NROWS : 0;
    }
 
    async getTableOptions ({ table }: { table: string }) {
       return { name: table };
    }
 
-   async getTableIndexes ({ schema, table }: { schema: string; table: string }) {
-      interface TableColumnsResult {
-         type: string;
-         name: string;
-         // eslint-disable-next-line camelcase
-         tbl_name: string;
-         rootpage:4;
-         sql: string;
-      }
-
+   async getTableIndexes ({ table }: { schema: string; table: string }) {
       interface ShowIndexesResult {
-         seq: number;
-         name: string;
-         unique: 0 | 1;
-         origin: string;
-         partial: 0 | 1;
+         INDEX_NAME: string;
+         FIELD_NAME: string;
+         TABLE_NAME: string;
+         INDEX_TYPE: string;
+         INDEX_UNIQUE: number;
       }
 
       const remappedIndexes = [];
-      const { rows: primaryKeys } = await this.raw<antares.QueryResult<TableColumnsResult>>(`SELECT * FROM "${schema}".pragma_table_info('${table}') WHERE pk != 0`);
 
-      for (const key of primaryKeys) {
+      const { rows: indexes } = await this.raw<antares.QueryResult<ShowIndexesResult>>(`
+         SELECT
+            ix.rdb$index_name AS INDEX_NAME,
+            sg.rdb$field_name AS FIELD_NAME,
+            rc.rdb$relation_name AS TABLE_NAME,
+            rc.rdb$constraint_type AS INDEX_TYPE,
+            ix.RDB$UNIQUE_FLAG AS INDEX_UNIQUE
+         FROM
+            rdb$indices ix
+            LEFT JOIN rdb$index_segments sg ON ix.rdb$index_name = sg.rdb$index_name
+            LEFT JOIN rdb$relation_constraints rc ON rc.rdb$index_name = ix.rdb$index_name
+         WHERE
+            rc.rdb$relation_name = '${table}'
+      `);
+
+      for (const index of indexes) {
          remappedIndexes.push({
-            name: 'PRIMARY',
-            column: key.name,
+            name: index.INDEX_NAME.trim(),
+            column: index.FIELD_NAME.trim(),
             indexType: null as never,
-            type: 'PRIMARY',
+            type: index.INDEX_TYPE.trim(),
             cardinality: null as never,
             comment: '',
             indexComment: ''
          });
-      }
-
-      const { rows: indexes } = await this.raw<antares.QueryResult<ShowIndexesResult>>(`SELECT * FROM "${schema}".pragma_index_list('${table}');`);
-
-      for (const index of indexes) {
-         const { rows: details } = await this.raw(`SELECT * FROM "${schema}".pragma_index_info('${index.name}');`);
-
-         for (const detail of details) {
-            remappedIndexes.push({
-               name: index.name,
-               column: detail.name,
-               indexType: null as never,
-               type: index.unique === 1 ? 'UNIQUE' : 'INDEX',
-               cardinality: null as never,
-               comment: '',
-               indexComment: ''
-            });
-         }
       }
 
       return remappedIndexes;
@@ -293,30 +298,57 @@ export class FirebirdSQLClient extends AntaresCore {
    async getKeyUsage ({ schema, table }: { schema: string; table: string }) {
       /* eslint-disable camelcase */
       interface KeyResult {
-         from: string;
-         id: number;
-         table: string;
-         to: string;
-         on_update: string;
-         on_delete: string;
+         PKTABLE_NAME: string;
+         PKCOLUMN_NAME: string;
+         FKTABLE_NAME: string;
+         FKCOLUMN_NAME: string;
+         KEY_SEQ: number;
+         UPDATE_RULE: string;
+         DELETE_RULE: string;
+         PK_NAME: string;
+         FK_NAME: string;
       }
       /* eslint-enable camelcase */
 
-      const { rows } = await this.raw<antares.QueryResult<KeyResult>>(`SELECT * FROM "${schema}".pragma_foreign_key_list('${table}');`);
+      const { rows } = await this.raw<antares.QueryResult<KeyResult>>(`
+         SELECT 
+            PK.RDB$RELATION_NAME as PKTABLE_NAME,
+            ISP.RDB$FIELD_NAME as PKCOLUMN_NAME,
+            FK.RDB$RELATION_NAME as FKTABLE_NAME,
+            ISF.RDB$FIELD_NAME as FKCOLUMN_NAME,
+            (ISP.RDB$FIELD_POSITION + 1) as KEY_SEQ,
+            RC.RDB$UPDATE_RULE as UPDATE_RULE,
+            RC.RDB$DELETE_RULE as DELETE_RULE,
+            PK.RDB$CONSTRAINT_NAME as PK_NAME,
+            FK.RDB$CONSTRAINT_NAME as FK_NAME
+         FROM
+            RDB$RELATION_CONSTRAINTS PK,
+            RDB$RELATION_CONSTRAINTS FK,
+            RDB$REF_CONSTRAINTS RC,
+            RDB$INDEX_SEGMENTS ISP,
+            RDB$INDEX_SEGMENTS ISF
+         WHERE FK.RDB$RELATION_NAME = '${table}' 
+            and FK.RDB$CONSTRAINT_NAME = RC.RDB$CONSTRAINT_NAME 
+            and PK.RDB$CONSTRAINT_NAME = RC.RDB$CONST_NAME_UQ 
+            and ISP.RDB$INDEX_NAME = PK.RDB$INDEX_NAME 
+            and ISF.RDB$INDEX_NAME = FK.RDB$INDEX_NAME 
+            and ISP.RDB$FIELD_POSITION = ISF.RDB$FIELD_POSITION 
+         ORDER BY 1, 5 
+      `);
 
       return rows.map(field => {
          return {
             schema: schema,
             table: table,
-            field: field.from,
-            position: field.id + 1,
+            field: field.FKCOLUMN_NAME.trim(),
+            position: field.KEY_SEQ,
             constraintPosition: null,
-            constraintName: field.id,
+            constraintName: field.FK_NAME.trim(),
             refSchema: schema,
-            refTable: field.table,
-            refField: field.to,
-            onUpdate: field.on_update,
-            onDelete: field.on_delete
+            refTable: field.PKTABLE_NAME.trim(),
+            refField: field.PKCOLUMN_NAME.trim(),
+            onUpdate: field.UPDATE_RULE.trim(),
+            onDelete: field.DELETE_RULE.trim()
          };
       });
    }
@@ -582,12 +614,15 @@ export class FirebirdSQLClient extends AntaresCore {
       // LIMIT
       const limitRaw = this._query.limit ? ` first ${this._query.limit}` : '';
 
+      // OFFSET
+      const offsetRaw = this._query.offset ? ` skip ${this._query.offset}` : '';
+
       // SELECT
       const selectArray = this._query.select.reduce(this._reducer, []);
       let selectRaw = '';
 
       if (selectArray.length)
-         selectRaw = selectArray.length ? `SELECT${limitRaw||''} ${selectArray.join(', ')} ` : `SELECT${limitRaw||''} * `;
+         selectRaw = selectArray.length ? `SELECT${limitRaw||''}${offsetRaw||''} ${selectArray.join(', ')} ` : `SELECT${limitRaw||''}${offsetRaw||''} * `;
 
       // FROM
       let fromRaw = '';
@@ -627,10 +662,7 @@ export class FirebirdSQLClient extends AntaresCore {
       const orderByArray = this._query.orderBy.reduce(this._reducer, []);
       const orderByRaw = orderByArray.length ? `ORDER BY ${orderByArray.join(', ')} ` : '';
 
-      // OFFSET
-      const offsetRaw = this._query.offset ? `OFFSET ${this._query.offset} ` : '';
-
-      return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${offsetRaw}${insertRaw}`;
+      return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${insertRaw}`;
    }
 
    async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {
@@ -660,6 +692,7 @@ export class FirebirdSQLClient extends AntaresCore {
          sql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '');// Remove comments
 
       const resultsArr = [];
+      let paramsArr = [];
       const queries = args.split
          ? sql.split(/((?:[^;'"]*(?:"(?:\\.|[^"])*"|'(?:\\.|[^'])*')[^;'"]*)+)|;/gm)
             .filter(Boolean)
@@ -690,52 +723,114 @@ export class FirebirdSQLClient extends AntaresCore {
          if (!query) continue;
          const timeStart = new Date();
          let timeStop;
-         const keysArr: antares.QueryForeign[] = [];
+         let keysArr: antares.QueryForeign[] = [];
 
          // eslint-disable-next-line @typescript-eslint/no-explicit-any
          const { rows, report, fields, keys, duration }: any = await new Promise((resolve, reject) => {
             (async () => {
                let queryResult;
-               let remappedFields;
+               let remappedFields: {
+                  name: string;
+                  alias: string;
+                  orgName: string;
+                  schema: string;
+                  table: string;
+                  tableAlias: string;
+                  orgTable: string;
+                  type: string;
+                  length: number;
+                  key?: string;
+              }[];
 
                try {
                   queryResult = await new Promise<unknown[]>((resolve, reject) => {
                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                     (connection as any).query(query, [], (err: any, res: any, fields: FieldData[]) => { // <- fields is not natively typed or documented
+                     (connection as any).query(query, [], async (err: any, res: any, fields: FieldData[]) => { // <- fields is not natively typed or documented
                         if (err) reject(err);
                         else {
                            const remappedResponse = [];
 
-                           for (const row of res) {
-                              for (const key in row) {
-                                 if (Buffer.isBuffer(row[key]))
-                                    row[key] = row[key].toString('binary');
-                                 else if (typeof row[key] === 'function')
-                                    row[key] = row[key].toString('binary');
-                              }
+                           if (res) {
+                              for (const row of res) {
+                                 for (const key in row) {
+                                    if (Buffer.isBuffer(row[key]))
+                                       row[key] = row[key].toString('binary');
+                                    else if (typeof row[key] === 'function')
+                                       row[key] = row[key].toString('binary');
+                                 }
 
-                              remappedResponse.push(row);
+                                 remappedResponse.push(row);
+                              }
                            }
 
-                           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                           remappedFields = fields.map((field: any) => {
-                              return {
-                                 name: field.alias,
-                                 alias: field.alias,
-                                 orgName: field.field,
-                                 schema: args.schema,
-                                 table: field.relation,
-                                 tableAlias: field.relation,
-                                 orgTable: field.relation,
-                                 type: this.types[field.type],
-                                 length: field.length
-                              };
-                           });
+                           if (fields) {
+                              remappedFields = fields.map(field => {
+                                 return {
+                                    name: field.alias,
+                                    alias: field.alias,
+                                    orgName: field.field,
+                                    schema: args.schema,
+                                    table: field.relation,
+                                    tableAlias: field.relation,
+                                    orgTable: field.relation,
+                                    type: this.types[field.type],
+                                    length: field.length,
+                                    key: undefined as string
+                                 };
+                              });
+                           }
 
                            resolve(remappedResponse);
                         }
                      });
                   });
+
+                  if (args.details) {
+                     if (remappedFields.length) {
+                        paramsArr = remappedFields.map(field => {
+                           return {
+                              table: field.orgTable,
+                              schema: field.schema
+                           };
+                        }).filter((val, i, arr) => arr.findIndex(el => el.table === val.table) === i);
+
+                        for (const paramObj of paramsArr) {
+                           if (!paramObj.table || !paramObj.schema) continue;
+
+                           try { // Column details
+                              const indexes = await this.getTableIndexes(paramObj);
+                              remappedFields = remappedFields.map(field => {
+                                 const fieldIndex = indexes.find(i => i.column === field.name);
+                                 if (fieldIndex) {
+                                    const key = fieldIndex.type === 'PRIMARY KEY' ? 'pri' : fieldIndex.type === 'UNIQUE' ? 'uni' : 'fk';
+                                    field = { ...field, key };
+                                 }
+
+                                 return field;
+                              });
+                           }
+                           catch (err) {
+                              if (args.autocommit) {
+                                 this._connection.detach();
+                                 this._runningConnections.delete(args.tabUid);
+                              }
+                              reject(err);
+                           }
+
+                           try { // Key usage (foreign keys)
+                              const response = await this.getKeyUsage(paramObj);
+                              keysArr = keysArr ? [...keysArr, ...response] : response;
+                           }
+                           catch (err) {
+                              if (args.autocommit) {
+                                 this._connection.detach();
+                                 this._runningConnections.delete(args.tabUid);
+                              }
+                              reject(err);
+                           }
+                        }
+                     }
+                  }
                }
                catch (err) {
                   reject(err);
@@ -743,10 +838,6 @@ export class FirebirdSQLClient extends AntaresCore {
                }
 
                timeStop = new Date();
-
-               // if (args.details) {
-
-               // }
 
                resolve({
                   duration: timeStop.getTime() - timeStart.getTime(),

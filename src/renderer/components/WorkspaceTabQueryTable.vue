@@ -272,6 +272,8 @@ const keyName = (key: string) => {
          return 'UNIQUE';
       case 'mul':
          return 'INDEX';
+      case 'fk':
+         return 'FOREIGN KEY';
       default:
          return 'UNKNOWN ' + key;
    }

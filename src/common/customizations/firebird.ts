@@ -22,7 +22,7 @@ export const customizations: Customizations = {
    schemas: false,
    tables: true,
    views: false,
-   triggers: false,
+   triggers: true,
    triggerFunctions: false,
    routines: false,
    functions: false,
