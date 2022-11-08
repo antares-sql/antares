@@ -17,9 +17,12 @@
 
   &.key-mul,
   &.key-INDEX,
-  &.key-fk,
   &.key-KEY {
     color: limegreen;
+  }
+
+  &.key-fk {
+    color: chocolate;
   }
 
   &.key-FULLTEXT {

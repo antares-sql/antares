@@ -44,7 +44,7 @@ export const customizations: Customizations = {
    schemaExport: false,
    exportByChunks: false,
    schemaImport: false,
-   tableSettings: false,
+   tableSettings: true,
    tableOptions: false,
    tableArray: false,
    tableRealCount: false,

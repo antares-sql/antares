@@ -323,11 +323,13 @@ const getFieldsData = async () => {
       const { status, response } = await Tables.getTableIndexes(params);
 
       if (status === 'success') {
-         const indexesObj = response.reduce((acc: {[key: string]: TableIndex[]}, curr: TableIndex) => {
-            acc[curr.name] = acc[curr.name] || [];
-            acc[curr.name].push(curr);
-            return acc;
-         }, {});
+         const indexesObj = response
+            .filter((index: TableIndex) => index.type !== 'FOREIGN KEY')
+            .reduce((acc: {[key: string]: TableIndex[]}, curr: TableIndex) => {
+               acc[curr.name] = acc[curr.name] || [];
+               acc[curr.name].push(curr);
+               return acc;
+            }, {});
 
          originalIndexes.value = Object.keys(indexesObj).map(index => {
             return {

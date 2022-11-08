@@ -77,6 +77,7 @@ export class FirebirdSQLClient extends AntaresCore {
       return null;
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    async getStructure (_schemas: Set<string>) {
       interface ShowTableResult {
          FORMAT: number;
@@ -466,17 +467,17 @@ export class FirebirdSQLClient extends AntaresCore {
    }
 
    async duplicateTable (params: { schema: string; table: string }) { // TODO: retrive table informations and create a copy
-      const sql = `CREATE TABLE '${params.table}_copy' AS SELECT * FROM '${params.table}'`;
+      const sql = `CREATE TABLE "${params.table}_copy" AS SELECT * FROM "${params.table}"`;
       return await this.raw(sql);
    }
 
    async truncateTable (params: { schema: string; table: string }) {
-      const sql = `DELETE FROM '${params.table}'`;
+      const sql = `DELETE FROM "${params.table}"`;
       return await this.raw(sql);
    }
 
    async dropTable (params: { schema: string; table: string }) {
-      const sql = `DROP TABLE '${params.table}'`;
+      const sql = `DROP TABLE "${params.table}"`;
       return await this.raw(sql);
    }
 
@@ -586,29 +587,29 @@ export class FirebirdSQLClient extends AntaresCore {
       return null;
    }
 
-   // async commitTab (tabUid: string) {
-   //    const connection = this._connectionsToCommit.get(tabUid);
-   //    if (connection) {
-   //       connection.prepare('COMMIT').run();
-   //       return this.destroyConnectionToCommit(tabUid);
-   //    }
-   // }
+   async commitTab (tabUid: string) {
+      // const connection = this._connectionsToCommit.get(tabUid);
+      // if (connection) {
+      //    connection.prepare('COMMIT').run();
+      //    return this.destroyConnectionToCommit(tabUid);
+      // }
+   }
 
-   // async rollbackTab (tabUid: string) {
-   //    const connection = this._connectionsToCommit.get(tabUid);
-   //    if (connection) {
-   //       connection.prepare('ROLLBACK').run();
-   //       return this.destroyConnectionToCommit(tabUid);
-   //    }
-   // }
+   async rollbackTab (tabUid: string) {
+      // const connection = this._connectionsToCommit.get(tabUid);
+      // if (connection) {
+      //    connection.prepare('ROLLBACK').run();
+      //    return this.destroyConnectionToCommit(tabUid);
+      // }
+   }
 
-   // destroyConnectionToCommit (tabUid: string) {
-   //    const connection = this._connectionsToCommit.get(tabUid);
-   //    if (connection) {
-   //       connection.close();
-   //       this._connectionsToCommit.delete(tabUid);
-   //    }
-   // }
+   destroyConnectionToCommit (tabUid: string) {
+      // const connection = this._connectionsToCommit.get(tabUid);
+      // if (connection) {
+      //    connection.close();
+      //    this._connectionsToCommit.delete(tabUid);
+      // }
+   }
 
    getSQL () {
       // LIMIT
@@ -755,8 +756,26 @@ export class FirebirdSQLClient extends AntaresCore {
                                  for (const key in row) {
                                     if (Buffer.isBuffer(row[key]))
                                        row[key] = row[key].toString('binary');
-                                    else if (typeof row[key] === 'function')
-                                       row[key] = row[key].toString('binary');
+                                    else if (typeof row[key] === 'function') {
+                                       const result = await new Promise((resolve, reject) => {
+                                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                          row[key]((err: any, _name: string, event: any) => {
+                                             if (err)
+                                                return reject(err);
+
+                                             const buffArr: Buffer[] = [];
+                                             event.on('data', (chunk: Buffer) => {
+                                                buffArr.push(chunk);
+                                             });
+
+                                             event.on('end', () => {
+                                                resolve(Buffer.concat(buffArr));
+                                             });
+                                          });
+                                       });
+
+                                       row[key] = result;
+                                    }
                                  }
 
                                  remappedResponse.push(row);
