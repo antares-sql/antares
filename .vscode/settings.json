@@ -8,7 +8,8 @@
       "Windows",
       "translation",
       "Linux",
-      "MacOS"
+      "MacOS",
+      "deps"
    ],
    "svg.preview.background": "transparent"
 }

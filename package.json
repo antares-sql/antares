@@ -125,7 +125,7 @@
     "@turf/helpers": "~6.5.0",
     "@vueuse/core": "~8.7.5",
     "ace-builds": "~1.8.1",
-    "better-sqlite3": "~7.5.1",
+    "better-sqlite3": "~7.6.2",
     "electron-log": "~4.4.1",
     "electron-store": "~8.0.1",
     "electron-updater": "~4.6.5",
