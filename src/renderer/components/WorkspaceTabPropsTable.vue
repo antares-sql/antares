@@ -300,7 +300,7 @@ const getFieldsData = async () => {
                field.defaultType = 'noval';
             else if (field.default === 'NULL')
                field.defaultType = 'null';
-            else if (isNaN(+field.default) && field.default.charAt(0) !== '\'')
+            else if (typeof field.default === 'string' && isNaN(+field.default) && field.default.charAt(0) !== '\'')
                field.defaultType = 'expression';
             else {
                field.defaultType = 'custom';

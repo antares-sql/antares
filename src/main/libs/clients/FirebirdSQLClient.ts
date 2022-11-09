@@ -3,6 +3,7 @@ import * as antares from 'common/interfaces/antares';
 import * as firebird from 'node-firebird';
 import { AntaresCore } from '../AntaresCore';
 import dataTypes from 'common/data-types/sqlite';
+import { FLOAT, NUMBER } from 'common/fieldTypes';
 
 export class FirebirdSQLClient extends AntaresCore {
    private _schema?: string;
@@ -168,21 +169,43 @@ export class FirebirdSQLClient extends AntaresCore {
 
    async getTableColumns ({ schema, table }: { schema: string; table: string }) {
       interface TableColumnsResult {
-         POSITION: number;
          DESCRIPTION?: string;
          /* eslint-disable camelcase */
          FIELD_NAME: string;
          FIELD_TYPE: string;
+         FIELD_POSITION: number;
          NOT_NULL: 0 | 1;
-         DEFAULT_VALUE: string;
+         DEFAULT_VALUE: Buffer;
+         DEFAULT_SOURCE: string;
          FIELD_LENGTH: number;
          FIELD_PRECISION: number;
          FIELD_SCALE: number;
          /* eslint-enable camelcase */
-         SUBTYPE: string;
+         SUBTYPE: number;
+         EXTERNAL_TYPE: number;
          COLLATION: string;
          CHARSET: string;
       }
+
+      /*
+      FIELD_SUB_TYPE
+
+      BLOB
+         0 - untyped
+         1 - text
+         2 - BLR
+         3 - access control list
+         4 - reserved for future use
+         5 - encoded table metadata description
+         6 - for storing the details of a cross-database transaction that ends abnormally
+      CHAR
+         0 - untyped data
+         1 - fixed binary data
+      NUMERIC FIELD
+         0 or NULL - the data type matches the value in the RDB$FIELD_TYPE field
+         1 - NUMERIC
+         2 - DECIMAL
+      */
 
       const { rows: fields } = await this.raw<antares.QueryResult<TableColumnsResult>>(`
          SELECT 
@@ -190,17 +213,20 @@ export class FirebirdSQLClient extends AntaresCore {
             r.RDB$DESCRIPTION AS description,
             r.RDB$DEFAULT_VALUE AS default_value,
             r.RDB$NULL_FLAG AS not_null,
+            r.RDB$FIELD_POSITION AS field_position,
             f.RDB$FIELD_LENGTH AS field_length,
             f.RDB$FIELD_PRECISION AS field_precision,
             f.RDB$FIELD_SCALE AS field_scale,
+            f.RDB$EXTERNAL_TYPE AS external_type,
+            r.RDB$DEFAULT_SOURCE AS default_source,
             CASE f.RDB$FIELD_TYPE
                WHEN 261 THEN 'BLOB'
                WHEN 14 THEN 'CHAR'
                WHEN 40 THEN 'CSTRING'
                WHEN 11 THEN 'D_FLOAT'
-               WHEN 27 THEN 'DOUBLE'
+               WHEN 27 THEN 'DOUBLE PRECISION'
                WHEN 10 THEN 'FLOAT'
-               WHEN 16 THEN 'INT64'
+               WHEN 16 THEN 'BIGINT'
                WHEN 8 THEN 'INTEGER'
                WHEN 9 THEN 'QUAD'
                WHEN 7 THEN 'SMALLINT'
@@ -222,20 +248,31 @@ export class FirebirdSQLClient extends AntaresCore {
       `);
 
       return fields.map(field => {
+         const defaultValue = field.DEFAULT_SOURCE ? field.DEFAULT_SOURCE.replace('DEFAULT ', '') : null;
+         let fieldType = field.FIELD_TYPE.trim();
+
+         if ([...NUMBER, ...FLOAT].includes(fieldType)) {
+            if (field.SUBTYPE === 1)
+               fieldType = 'NUMERIC';
+            else if (field.SUBTYPE === 2)
+               fieldType = 'DECIMAL';
+         }
+
          return {
             name: field.FIELD_NAME.trim(),
             key: null,
-            type: field.FIELD_TYPE.trim(),
+            type: fieldType,
             schema: schema,
             table: table,
-            numPrecision: field.FIELD_PRECISION,
-            datePrecision: null,
-            charLength: field.FIELD_LENGTH,
+            numPrecision: field.FIELD_PRECISION ? field.FIELD_PRECISION : null,
+            numScale: Math.abs(field.FIELD_SCALE),
+            datePrecision: field.FIELD_NAME.trim() === 'TIMESTAMP' ? 4 : null,
+            charLength: ![...NUMBER, ...FLOAT].includes(fieldType) ? field.FIELD_LENGTH : null,
             nullable: !field.NOT_NULL,
             unsigned: null,
             zerofill: null,
-            order: field.POSITION,
-            default: field.DEFAULT_VALUE,
+            order: field.FIELD_POSITION+1,
+            default: defaultValue,
             charset: field.CHARSET,
             collation: null,
             autoIncrement: false,
@@ -784,6 +821,15 @@ export class FirebirdSQLClient extends AntaresCore {
 
                            if (fields) {
                               remappedFields = fields.map(field => {
+                                 let fieldType = this.types[field.type];
+
+                                 if ([...NUMBER, ...FLOAT].includes(fieldType)) {
+                                    if (field.subType === 1)
+                                       fieldType = 'NUMERIC';
+                                    else if (field.subType === 2)
+                                       fieldType = 'DECIMAL';
+                                 }
+
                                  return {
                                     name: field.alias,
                                     alias: field.alias,
@@ -792,8 +838,8 @@ export class FirebirdSQLClient extends AntaresCore {
                                     table: field.relation,
                                     tableAlias: field.relation,
                                     orgTable: field.relation,
-                                    type: this.types[field.type],
-                                    length: field.length,
+                                    type: fieldType,
+                                    length: fieldType === 'TIMESTAMP' ? 4 : field.length,
                                     key: undefined as string
                                  };
                               });

@@ -6,21 +6,21 @@ export default [
       types: [
          {
             name: 'SMALLINT',
-            length: true,
+            length: false,
             collation: false,
             unsigned: true,
             zerofill: true
          },
          {
             name: 'INTEGER',
-            length: true,
+            length: false,
             collation: false,
             unsigned: true,
             zerofill: true
          },
          {
             name: 'BIGINT',
-            length: true,
+            length: false,
             collation: false,
             unsigned: true,
             zerofill: true
@@ -33,6 +33,7 @@ export default [
          {
             name: 'DECIMAL',
             length: true,
+            scale: true,
             collation: false,
             unsigned: false,
             zerofill: false
@@ -40,20 +41,21 @@ export default [
          {
             name: 'NUMERIC',
             length: true,
+            scale: true,
             collation: false,
             unsigned: false,
             zerofill: false
          },
          {
             name: 'FLOAT',
-            length: true,
+            length: false,
             collation: false,
             unsigned: false,
             zerofill: false
          },
          {
             name: 'DOUBLE PRECISION',
-            length: true,
+            length: false,
             collation: false,
             unsigned: false,
             zerofill: false
@@ -110,7 +112,7 @@ export default [
          },
          {
             name: 'TIMESTAMP',
-            length: true,
+            length: false,
             collation: false,
             unsigned: false,
             zerofill: false

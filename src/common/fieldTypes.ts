@@ -35,7 +35,8 @@ export const NUMBER = [
    'SERIAL',
    'BIGSERIAL',
    'OID',
-   'XID'
+   'XID',
+   'INT64'
 ];
 
 export const FLOAT = [

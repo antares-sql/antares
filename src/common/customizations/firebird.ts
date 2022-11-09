@@ -58,7 +58,7 @@ export const customizations: Customizations = {
    foreigns: false,
    sortableFields: false,
    unsigned: false,
-   nullable: false,
+   nullable: true,
    nullablePrimary: false,
    zerofill: false,
    autoIncrement: false,
