@@ -8,11 +8,11 @@ import { FLOAT, NUMBER } from 'common/fieldTypes';
 export class FirebirdSQLClient extends AntaresCore {
    private _schema?: string;
    private _runningConnections: Map<string, number>;
-   private _connectionsToCommit: Map<string, firebird.Database>;
+   private _connectionsToCommit: Map<string, firebird.Transaction>;
    protected _connection?: firebird.Database;
    _params: firebird.Options;
 
-   private types: {[key: number]: string} ={
+   private _types: {[key: number]: string} ={
       452: 'CHAR', // Array of char
       448: 'VARCHAR',
       500: 'SMALLINT',
@@ -22,7 +22,7 @@ export class FirebirdSQLClient extends AntaresCore {
       530: 'DOUBLE PRECISION',
       510: 'TIMESTAMP',
       520: 'BLOB',
-      540: 'ARRAY',
+      540: 'VARCHAR', // ARRAY ???
       550: 'QUAD',
       560: 'TIME',
       570: 'DATE',
@@ -36,6 +36,29 @@ export class FirebirdSQLClient extends AntaresCore {
 
       this._schema = null;
       this._connectionsToCommit = new Map();
+   }
+
+   private _getType (type: string, subType?: number) {
+      let fieldType = type.trim();
+
+      if ([...NUMBER, ...FLOAT].includes(fieldType)) {
+         if (subType === 1)
+            fieldType = 'NUMERIC';
+         else if (subType === 2)
+            fieldType = 'DECIMAL';
+      }
+
+      if (fieldType === 'BLOB') {
+         if (subType === 1)
+            fieldType = 'BLOB-TEXT';
+      }
+
+      if (fieldType === 'CHAR') {
+         if (subType === 1)
+            fieldType = 'CHAR-BINARY';
+      }
+
+      return fieldType;
    }
 
    getTypeInfo (type: string): antares.TypeInformations {
@@ -170,7 +193,6 @@ export class FirebirdSQLClient extends AntaresCore {
    async getTableColumns ({ schema, table }: { schema: string; table: string }) {
       interface TableColumnsResult {
          DESCRIPTION?: string;
-         /* eslint-disable camelcase */
          FIELD_NAME: string;
          FIELD_TYPE: string;
          FIELD_POSITION: number;
@@ -180,10 +202,9 @@ export class FirebirdSQLClient extends AntaresCore {
          FIELD_LENGTH: number;
          FIELD_PRECISION: number;
          FIELD_SCALE: number;
-         /* eslint-enable camelcase */
-         SUBTYPE: number;
          EXTERNAL_TYPE: number;
-         COLLATION: string;
+         SUBTYPE: number;
+         COLLATION?: string;
          CHARSET: string;
       }
 
@@ -209,16 +230,16 @@ export class FirebirdSQLClient extends AntaresCore {
 
       const { rows: fields } = await this.raw<antares.QueryResult<TableColumnsResult>>(`
          SELECT 
-            r.RDB$FIELD_NAME AS field_name,
-            r.RDB$DESCRIPTION AS description,
-            r.RDB$DEFAULT_VALUE AS default_value,
-            r.RDB$NULL_FLAG AS not_null,
-            r.RDB$FIELD_POSITION AS field_position,
-            f.RDB$FIELD_LENGTH AS field_length,
-            f.RDB$FIELD_PRECISION AS field_precision,
-            f.RDB$FIELD_SCALE AS field_scale,
-            f.RDB$EXTERNAL_TYPE AS external_type,
-            r.RDB$DEFAULT_SOURCE AS default_source,
+            r.RDB$FIELD_NAME AS FIELD_NAME,
+            r.RDB$DESCRIPTION AS DESCRIPTION,
+            r.RDB$DEFAULT_VALUE AS DEFAULT_VALUE,
+            r.RDB$NULL_FLAG AS NOT_NULL,
+            r.RDB$FIELD_POSITION AS FIELD_POSITION,
+            f.RDB$FIELD_LENGTH AS FIELD_LENGTH,
+            f.RDB$FIELD_PRECISION AS FIELD_PRECISION,
+            f.RDB$FIELD_SCALE AS FIELD_SCALE,
+            f.RDB$EXTERNAL_TYPE AS EXTERNAL_TYPE,
+            r.RDB$DEFAULT_SOURCE AS DEFAULT_SOURCE,
             CASE f.RDB$FIELD_TYPE
                WHEN 261 THEN 'BLOB'
                WHEN 14 THEN 'CHAR'
@@ -235,10 +256,10 @@ export class FirebirdSQLClient extends AntaresCore {
                WHEN 35 THEN 'TIMESTAMP'
                WHEN 37 THEN 'VARCHAR'
                ELSE 'UNKNOWN'
-            END AS field_type,
-            f.RDB$FIELD_SUB_TYPE AS subtype,
-            -- coll.RDB$COLLATION_NAME AS collation,
-            cset.RDB$CHARACTER_SET_NAME AS charset
+            END AS FIELD_TYPE,
+            f.RDB$FIELD_SUB_TYPE AS SUBTYPE,
+            -- coll.RDB$COLLATION_NAME AS COLLATION,
+            cset.RDB$CHARACTER_SET_NAME AS CHARSET
          FROM RDB$RELATION_FIELDS r
          LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME
          -- LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$COLLATION_ID
@@ -249,14 +270,7 @@ export class FirebirdSQLClient extends AntaresCore {
 
       return fields.map(field => {
          const defaultValue = field.DEFAULT_SOURCE ? field.DEFAULT_SOURCE.replace('DEFAULT ', '') : null;
-         let fieldType = field.FIELD_TYPE.trim();
-
-         if ([...NUMBER, ...FLOAT].includes(fieldType)) {
-            if (field.SUBTYPE === 1)
-               fieldType = 'NUMERIC';
-            else if (field.SUBTYPE === 2)
-               fieldType = 'DECIMAL';
-         }
+         const fieldType = this._getType(field.FIELD_TYPE, field.SUBTYPE);
 
          return {
             name: field.FIELD_NAME.trim(),
@@ -625,27 +639,23 @@ export class FirebirdSQLClient extends AntaresCore {
    }
 
    async commitTab (tabUid: string) {
-      // const connection = this._connectionsToCommit.get(tabUid);
-      // if (connection) {
-      //    connection.prepare('COMMIT').run();
-      //    return this.destroyConnectionToCommit(tabUid);
-      // }
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection) {
+         connection.commit();
+         return this.destroyConnectionToCommit(tabUid);
+      }
    }
 
    async rollbackTab (tabUid: string) {
-      // const connection = this._connectionsToCommit.get(tabUid);
-      // if (connection) {
-      //    connection.prepare('ROLLBACK').run();
-      //    return this.destroyConnectionToCommit(tabUid);
-      // }
+      const connection = this._connectionsToCommit.get(tabUid);
+      if (connection) {
+         connection.rollback();
+         return this.destroyConnectionToCommit(tabUid);
+      }
    }
 
    destroyConnectionToCommit (tabUid: string) {
-      // const connection = this._connectionsToCommit.get(tabUid);
-      // if (connection) {
-      //    connection.close();
-      //    this._connectionsToCommit.delete(tabUid);
-      // }
+      this._connectionsToCommit.delete(tabUid);
    }
 
    getSQL () {
@@ -737,21 +747,21 @@ export class FirebirdSQLClient extends AntaresCore {
             .map(q => q.trim())
          : [sql];
 
-      let connection: firebird.Database;
+      let connection: firebird.Database | firebird.Transaction;
 
       if (!args.autocommit && args.tabUid) { // autocommit OFF
          if (this._connectionsToCommit.has(args.tabUid))
             connection = this._connectionsToCommit.get(args.tabUid);
-
          else {
             connection = await this.getConnection();
-            await new Promise((resolve, reject) => {
-               connection.query('BEGIN TRANSACTION', [], (err, res) => {
+            const transaction = await new Promise<firebird.Transaction>((resolve, reject) => {
+               (connection as firebird.Database).transaction(firebird.ISOLATION_READ_COMMITED, (err, transaction) => {
                   if (err) reject(err);
-                  else resolve(res);
+                  else resolve(transaction);
                });
             });
-            this._connectionsToCommit.set(args.tabUid, connection);
+            connection = transaction;
+            this._connectionsToCommit.set(args.tabUid, transaction);
          }
       }
       else// autocommit ON
@@ -821,14 +831,7 @@ export class FirebirdSQLClient extends AntaresCore {
 
                            if (fields) {
                               remappedFields = fields.map(field => {
-                                 let fieldType = this.types[field.type];
-
-                                 if ([...NUMBER, ...FLOAT].includes(fieldType)) {
-                                    if (field.subType === 1)
-                                       fieldType = 'NUMERIC';
-                                    else if (field.subType === 2)
-                                       fieldType = 'DECIMAL';
-                                 }
+                                 const fieldType = this._getType(this._types[field.type], field.subType);
 
                                  return {
                                     name: field.alias,

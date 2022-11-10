@@ -89,5 +89,4 @@ export interface Customizations {
    parametersLength?: boolean;
    languages?: string[];
    readOnlyMode?: boolean;
-   blobAsText: boolean;
 }

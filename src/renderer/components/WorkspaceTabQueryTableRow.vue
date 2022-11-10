@@ -243,8 +243,7 @@ const props = defineProps({
    itemHeight: Number,
    elementType: { type: String, default: 'table' },
    selected: { type: Boolean, default: false },
-   selectedCell: { type: String, default: null },
-   blobAsText: { type: Boolean, default: false }
+   selectedCell: { type: String, default: null }
 });
 
 const emit = defineEmits(['update-field', 'select-row', 'contextmenu', 'start-editing', 'stop-editing']);
@@ -319,7 +318,7 @@ const inputProps = computed(() => {
       return { type: 'text', mask: datetimeMask };
    }
 
-   if (BLOB.includes(editingType.value) && !props.blobAsText)
+   if (BLOB.includes(editingType.value))
       return { type: 'file', mask: false };
 
    if (BOOLEAN.includes(editingType.value))
@@ -399,7 +398,7 @@ const editON = async (field: string) => {
    editingField.value = field;
    editingLength.value = props.fields[field].length;
 
-   if ([...LONG_TEXT, ...ARRAY, ...TEXT_SEARCH].includes(type) || (BLOB.includes(type) && props.blobAsText)) {
+   if ([...LONG_TEXT, ...ARRAY, ...TEXT_SEARCH].includes(type)) {
       isTextareaEditor.value = true;
       editingContent.value = typeFormat(content, type);
       emit('start-editing', field);
@@ -416,7 +415,7 @@ const editON = async (field: string) => {
       return;
    }
 
-   if (BLOB.includes(type) && !props.blobAsText) {
+   if (BLOB.includes(type)) {
       isBlobEditor.value = true;
       editingContent.value = content || '';
       fileToUpload.value = null;
@@ -455,7 +454,7 @@ const editOFF = () => {
 
    isInlineEditor.value[editingField.value] = false;
    let content;
-   if (!BLOB.includes(editingType.value) || (BLOB.includes(editingType.value) && props.blobAsText)) {
+   if (!BLOB.includes(editingType.value)) {
       if ([...DATETIME, ...TIME].includes(editingType.value)) {
          if (editingContent.value !== null && editingContent.value.substring(editingContent.value.length - 1) === '.')
             editingContent.value = editingContent.value.slice(0, -1);
@@ -589,7 +588,7 @@ const typeFormat = (val: string | number | Date | number[], type: string, precis
       return moment(val).isValid() ? moment(val).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`) : val;
    }
 
-   if (BLOB.includes(type) && !props.blobAsText) {
+   if (BLOB.includes(type)) {
       const buff = Buffer.from(val as string);
       if (!buff.length) return '';
 

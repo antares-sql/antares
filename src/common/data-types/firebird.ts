@@ -78,6 +78,13 @@ export default [
             collation: true,
             unsigned: false,
             zerofill: false
+         },
+         {
+            name: 'BLOB-TEXT',
+            length: false,
+            collation: true,
+            unsigned: false,
+            zerofill: false
          }
       ]
    },
@@ -86,7 +93,14 @@ export default [
       types: [
          {
             name: 'BLOB',
-            length: true,
+            length: false,
+            collation: false,
+            unsigned: false,
+            zerofill: false
+         },
+         {
+            name: 'CHAR-BINARY',
+            length: false,
             collation: false,
             unsigned: false,
             zerofill: false

@@ -10,7 +10,8 @@ export const LONG_TEXT = [
    'MEDIUMTEXT',
    'LONGTEXT',
    'JSON',
-   'VARBINARY'
+   'VARBINARY',
+   'BLOB-TEXT'
 ];
 
 export const ARRAY = [
@@ -85,7 +86,8 @@ export const BLOB = [
    'MEDIUMBLOB',
    'LONGBLOB',
    'LONG_BLOB',
-   'BYTEA'
+   'BYTEA',
+   'CHAR-BINARY'
 ];
 
 export const BIT = [

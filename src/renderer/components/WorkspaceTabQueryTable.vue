@@ -81,7 +81,6 @@
                   :fields="fieldsObj"
                   :key-usage="keyUsage"
                   :element-type="elementType"
-                  :blob-as-text="blobAsText"
                   :class="{'selected': selectedRows.includes(row._antares_id)}"
                   :selected="selectedRows.includes(row._antares_id)"
                   :selected-cell="selectedRows.length === 1 && selectedRows.includes(row._antares_id) ? selectedField : null"
@@ -183,7 +182,6 @@ const isEditingRow = ref(false);
 
 const workspaceSchema = computed(() => getWorkspace(props.connUid).breadcrumbs.schema);
 const workspaceClient = computed(() => getWorkspace(props.connUid).client);
-const blobAsText = computed(() => getWorkspace(props.connUid).customizations.blobAsText);
 
 const primaryField = computed(() => {
    const primaryFields = fields.value.filter(field => field.key === 'pri');

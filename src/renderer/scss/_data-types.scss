@@ -26,6 +26,8 @@
     "macaddr8": $string-color,
     "uuid": $string-color,
     "regproc": $string-color,
+    "blob-text": $string-color,
+
     "int": $number-color,
     "tinyint": $number-color,
     "smallint": $number-color,
@@ -44,6 +46,7 @@
     "double_precision": $number-color,
     "oid": $number-color,
     "xid": $number-color,
+
     "money": $number-color,
     "number": $number-color,
     "datetime": $date-color,
@@ -54,9 +57,12 @@
     "timestamp": $date-color,
     "timestamp_without_time_zone": $date-color,
     "timestamp_with_time_zone": $date-color,
+
     "bit": $bit-color,
     "bit_varying": $bit-color,
+
     "binary": $blob-color,
+    "char-binary": $blob-color,
     "varbinary": $blob-color,
     "blob": $blob-color,
     "tinyblob": $blob-color,
@@ -65,10 +71,12 @@
     "longblob": $blob-color,
     "long_blob": $blob-color,
     "bytea": $blob-color,
+
     "enum": $enum-color,
     "set": $enum-color,
     "bool": $enum-color,
     "boolean": $enum-color,
+
     "interval": $array-color,
     "array": $array-color,
     "anyarray": $array-color,
@@ -85,6 +93,7 @@
     "geomcollection": $array-color,
     "geometrycollection": $array-color,
     "aclitem": $array-color,
+
     "unknown": $unknown-color,
   )
 );
