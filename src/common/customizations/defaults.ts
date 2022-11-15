@@ -1,10 +1,14 @@
 import { Customizations } from '../interfaces/customizations';
 
+// Everything OFF
 export const defaults: Customizations = {
    // Defaults
    defaultPort: null,
    defaultUser: null,
    defaultDatabase: null,
+   dataTypes: [],
+   indexTypes: [],
+   foreignActions: [],
    // Core
    database: false,
    collations: false,
@@ -45,7 +49,6 @@ export const defaults: Customizations = {
    exportByChunks: false,
    schemaImport: false,
    tableSettings: false,
-   tableOptions: false,
    tableArray: false,
    tableRealCount: false,
    viewSettings: false,

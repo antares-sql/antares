@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as antares from 'common/interfaces/antares';
 import * as firebird from 'node-firebird';
 import { AntaresCore } from '../AntaresCore';
-import dataTypes from 'common/data-types/sqlite';
+import dataTypes from 'common/data-types/firebird';
 import { FLOAT, NUMBER } from 'common/fieldTypes';
 
 export class FirebirdSQLClient extends AntaresCore {
@@ -65,6 +65,27 @@ export class FirebirdSQLClient extends AntaresCore {
       return dataTypes
          .reduce((acc, group) => [...acc, ...group.types], [])
          .filter(_type => _type.name === type.toUpperCase())[0];
+   }
+
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   protected _reducer (acc: string[], curr: any) {
+      const type = typeof curr;
+
+      switch (type) {
+         case 'number':
+         case 'string':
+            return [...acc, curr];
+         case 'object':
+            if (Array.isArray(curr))
+               return [...acc, ...curr];
+            else {
+               const clausoles = [];
+               for (const key in curr)
+                  clausoles.push(`"${key}" ${curr[key]}`);
+
+               return clausoles;
+            }
+      }
    }
 
    async connect () {
@@ -337,7 +358,7 @@ export class FirebirdSQLClient extends AntaresCore {
             name: index.INDEX_NAME.trim(),
             column: index.FIELD_NAME.trim(),
             indexType: null as never,
-            type: index.INDEX_TYPE.trim(),
+            type: index.INDEX_TYPE.trim() === 'PRIMARY KEY' ? 'PRIMARY' : index.INDEX_TYPE.trim(),
             cardinality: null as never,
             comment: '',
             indexComment: ''
@@ -411,7 +432,6 @@ export class FirebirdSQLClient extends AntaresCore {
 
    async createTable (params: antares.CreateTableParams) {
       const {
-         schema,
          fields,
          foreigns,
          indexes,
@@ -419,10 +439,9 @@ export class FirebirdSQLClient extends AntaresCore {
       } = params;
       const newColumns: string[] = [];
       const newIndexes: string[] = [];
-      const manageIndexes: string[] = [];
       const newForeigns: string[] = [];
 
-      let sql = `CREATE TABLE "${schema}"."${options.name}"`;
+      let sql = `CREATE TABLE "${options.name}"`;
 
       // ADD FIELDS
       fields.forEach(field => {
@@ -431,11 +450,8 @@ export class FirebirdSQLClient extends AntaresCore {
 
          newColumns.push(`"${field.name}" 
             ${field.type.toUpperCase()}${length ? `(${length})` : ''} 
-            ${field.unsigned ? 'UNSIGNED' : ''} 
-            ${field.nullable ? 'NULL' : 'NOT NULL'}
-            ${field.autoIncrement ? 'AUTO_INCREMENT' : ''}
             ${field.default !== null ? `DEFAULT ${field.default || '\'\''}` : ''}
-            ${field.onUpdate ? `ON UPDATE ${field.onUpdate}` : ''}`);
+            ${field.nullable ? '' : 'NOT NULL'}`);
       });
 
       // ADD INDEX
@@ -443,19 +459,23 @@ export class FirebirdSQLClient extends AntaresCore {
          const fields = index.fields.map(field => `"${field}"`).join(',');
          const type = index.type;
 
-         if (type === 'PRIMARY')
-            newIndexes.push(`PRIMARY KEY (${fields})`);
-         else
-            manageIndexes.push(`CREATE ${type === 'UNIQUE' ? type : ''} INDEX "${index.name}" ON "${options.name}" (${fields})`);
+         newIndexes.push(`CONSTRAINT "${index.name}" ${type === 'PRIMARY' ? 'PRIMARY KEY' : type} (${fields})`);
       });
 
       // ADD FOREIGN KEYS
       foreigns.forEach(foreign => {
-         newForeigns.push(`CONSTRAINT "${foreign.constraintName}" FOREIGN KEY ("${foreign.field}") REFERENCES "${foreign.refTable}" ("${foreign.refField}") ON UPDATE ${foreign.onUpdate} ON DELETE ${foreign.onDelete}`);
+         newForeigns.push(`
+            ADD CONSTRAINT "${foreign.constraintName}" 
+            FOREIGN KEY ("${foreign.field}") REFERENCES "${foreign.refTable}" ("${foreign.refField}") 
+            ${foreign.onUpdate !== 'RESTRICT' ? `ON UPDATE ${foreign.onUpdate}` : ''}
+            ${foreign.onDelete !== 'RESTRICT' ? `ON DELETE ${foreign.onDelete}` : ''}
+         `);
       });
 
-      sql = `${sql} (${[...newColumns, ...newIndexes, ...newForeigns].join(', ')})`;
-      if (manageIndexes.length) sql = `${sql}; ${manageIndexes.join(';')}`;
+      sql = `${sql} (${[...newColumns, ...newIndexes].join(', ')})`;
+
+      if (newForeigns.length)
+         sql = `${sql}; ALTER TABLE "${options.name}" ${newForeigns.join(';')}`;
 
       return await this.raw(sql);
    }
@@ -463,58 +483,111 @@ export class FirebirdSQLClient extends AntaresCore {
    async alterTable (params: antares.AlterTableParams) {
       const {
          table,
-         schema,
          additions,
          deletions,
          changes,
-         tableStructure
+         indexChanges,
+         foreignChanges
       } = params;
 
-      try {
-         await this.raw('BEGIN TRANSACTION');
-         await this.raw('PRAGMA foreign_keys = 0');
+      let sql = `ALTER TABLE "${table}" `;
+      const alterColumns: string[] = [];
+      const newForeigns: string[] = [];
 
-         const tmpName = `Antares_${table}_tmp`;
-         await this.raw(`CREATE TABLE "${tmpName}" AS SELECT * FROM "${table}"`);
-         await this.dropTable(params);
+      // OPTIONS
+      // if ('comment' in options) alterColumns.push(`COMMENT='${options.comment}'`);
+      // if ('engine' in options) alterColumns.push(`ENGINE=${options.engine}`);
+      // if ('autoIncrement' in options) alterColumns.push(`AUTO_INCREMENT=${+options.autoIncrement}`);
+      // if ('collation' in options) alterColumns.push(`COLLATE='${options.collation}'`);
 
-         const createTableParams = {
-            schema: schema,
-            fields: tableStructure.fields,
-            foreigns: tableStructure.foreigns,
-            indexes: tableStructure.indexes.filter(index => !index.name.includes('sqlite_autoindex')),
-            options: { name: tableStructure.name }
-         };
-         await this.createTable(createTableParams);
-         const insertFields = createTableParams.fields
-            .filter(field => {
-               return (
-                  additions.every(add => add.name !== field.name) &&
-                  deletions.every(del => del.name !== field.name)
-               );
-            })
-            .reduce((acc, curr) => {
-               acc.push(`"${curr.name}"`);
-               return acc;
-            }, []);
+      // ADD FIELDS
+      additions.forEach(addition => {
+         const typeInfo = this.getTypeInfo(addition.type);
+         const length = typeInfo.length ? addition.enumValues || addition.numLength || addition.charLength || addition.datePrecision : false;
 
-         const selectFields = insertFields.map(field => {
-            const renamedField = changes.find(change => `"${change.name}"` === field);
-            if (renamedField)
-               return `"${renamedField.orgName}"`;
-            return field;
-         });
+         alterColumns.push(`ADD "${addition.name}" 
+            ${addition.type.toUpperCase()}${length ? `(${length})` : ''} 
+            ${addition.default !== null ? `DEFAULT ${addition.default || '\'\''}` : ''}
+            ${addition.nullable ? '' : 'NOT NULL'}`);
+      });
 
-         await this.raw(`INSERT INTO "${createTableParams.options.name}" (${insertFields.join(',')}) SELECT ${selectFields.join(',')} FROM "${tmpName}"`);
+      // ADD INDEX
+      indexChanges.additions.forEach(addition => {
+         const fields = addition.fields.map(field => `"${field}"`).join(',');
+         const type = addition.type;
 
-         await this.dropTable({ schema: schema, table: tmpName });
-         await this.raw('PRAGMA foreign_keys = 1');
-         await this.raw('COMMIT');
-      }
-      catch (err) {
-         await this.raw('ROLLBACK');
-         return Promise.reject(err);
-      }
+         alterColumns.push(`ADD CONSTRAINT "${addition.name}" ${type === 'PRIMARY' ? 'PRIMARY KEY' : type} (${fields})`);
+      });
+
+      // ADD FOREIGN KEYS
+      foreignChanges.additions.forEach(foreign => {
+         newForeigns.push(`
+            ADD CONSTRAINT "${foreign.constraintName}" 
+            FOREIGN KEY ("${foreign.field}") REFERENCES "${foreign.refTable}" ("${foreign.refField}") 
+            ${foreign.onUpdate !== 'RESTRICT' ? `ON UPDATE ${foreign.onUpdate}` : ''}
+            ${foreign.onDelete !== 'RESTRICT' ? `ON DELETE ${foreign.onDelete}` : ''}
+         `);
+      });
+
+      // CHANGE FIELDS
+      changes.forEach(change => {
+         const typeInfo = this.getTypeInfo(change.type);
+         const length = typeInfo.length ? change.enumValues || change.numLength || change.charLength || change.datePrecision : false;
+
+         if (change.orgName !== change.name)
+            alterColumns.push(`ALTER COLUMN "${change.orgName}" TO "${change.name}"`);
+
+         alterColumns.push(`ALTER COLUMN "${change.name}" TYPE ${change.type.toUpperCase()}${length ? `(${length}${change.numScale ? `,${change.numScale}` : ''})` : ''}`);
+
+         if (change.default !== null)
+            alterColumns.push(`ALTER COLUMN "${change.name}" SET DEFAULT ${change.default || '\'\''}`);
+
+         alterColumns.push(`ALTER COLUMN "${change.name}" ${!change.nullable ? 'SET ' : 'DROP '} NOT NULL`);
+         // TODO: position
+      });
+
+      // CHANGE INDEX
+      indexChanges.changes.forEach(change => {
+         alterColumns.push(`DROP CONSTRAINT "${change.oldName}"`);
+         const fields = change.fields.map(field => `"${field}"`).join(',');
+         const type = change.type;
+
+         alterColumns.push(`ADD CONSTRAINT "${change.name}" ${type === 'PRIMARY' ? 'PRIMARY KEY' : type} (${fields})`);
+      });
+
+      // CHANGE FOREIGN KEYS
+      foreignChanges.changes.forEach(change => {
+         alterColumns.push(`DROP CONSTRAINT "${change.oldName}"`);
+         alterColumns.push(`
+            ADD CONSTRAINT "${change.constraintName}" 
+            FOREIGN KEY ("${change.field}") REFERENCES "${change.refTable}" ("${change.refField}") 
+            ${change.onUpdate !== 'RESTRICT' ? `ON UPDATE ${change.onUpdate}` : ''}
+            ${change.onDelete !== 'RESTRICT' ? `ON DELETE ${change.onDelete}` : ''}
+         `);
+      });
+
+      // DROP FIELDS
+      deletions.forEach(deletion => {
+         alterColumns.push(`DROP "${deletion.name}"`);
+      });
+
+      // DROP INDEX
+      indexChanges.deletions.forEach(deletion => {
+         alterColumns.push(`DROP CONSTRAINT "${deletion.name}"`);
+      });
+
+      // DROP FOREIGN KEYS
+      foreignChanges.deletions.forEach(deletion => {
+         alterColumns.push(`DROP CONSTRAINT "${deletion.constraintName}"`);
+      });
+
+      if (alterColumns.length)
+         sql += alterColumns.join(', ');
+
+      if (newForeigns.length)
+         sql = `${sql}; ALTER TABLE "${table}" ${newForeigns.join(';')}`;
+
+      return await this.raw(sql);
    }
 
    async duplicateTable (params: { schema: string; table: string }) { // TODO: retrive table informations and create a copy
@@ -660,10 +733,10 @@ export class FirebirdSQLClient extends AntaresCore {
 
    getSQL () {
       // LIMIT
-      const limitRaw = this._query.limit ? ` first ${this._query.limit}` : '';
+      const limitRaw = this._query.limit ? ` FIRST ${this._query.limit}` : '';
 
       // OFFSET
-      const offsetRaw = this._query.offset ? ` skip ${this._query.offset}` : '';
+      const offsetRaw = this._query.offset ? ` SKIP ${this._query.offset}` : '';
 
       // SELECT
       const selectArray = this._query.select.reduce(this._reducer, []);
@@ -680,7 +753,7 @@ export class FirebirdSQLClient extends AntaresCore {
       else if (Object.keys(this._query.insert).length)
          fromRaw = 'INTO';
 
-      fromRaw += this._query.from ? ` ${this._query.from} ` : '';
+      fromRaw += this._query.from ? ` "${this._query.from}" ` : '';
 
       // WHERE
       const whereArray = this._query.where
@@ -696,7 +769,7 @@ export class FirebirdSQLClient extends AntaresCore {
       let insertRaw = '';
 
       if (this._query.insert.length) {
-         const fieldsList = Object.keys(this._query.insert[0]);
+         const fieldsList = Object.keys(this._query.insert[0]).map(col => '"' + col + '"');
          const rowsList = this._query.insert.map(el => `(${Object.values(el).join(', ')})`);
 
          insertRaw = `(${fieldsList.join(', ')}) VALUES ${rowsList.join(', ')} `;
@@ -710,7 +783,7 @@ export class FirebirdSQLClient extends AntaresCore {
       const orderByArray = this._query.orderBy.reduce(this._reducer, []);
       const orderByRaw = orderByArray.length ? `ORDER BY ${orderByArray.join(', ')} ` : '';
 
-      return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${insertRaw}`;
+      return `${selectRaw}${updateRaw ? `UPDATE${' '+limitRaw||''}` : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${' '+(this._query.delete ? ` ROWS ${this._query.limit}` : '')||''}${insertRaw}`;
    }
 
    async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {
@@ -878,10 +951,10 @@ export class FirebirdSQLClient extends AntaresCore {
                               });
                            }
                            catch (err) {
-                              if (args.autocommit) {
-                                 this._connection.detach();
+                              if (args.autocommit)
                                  this._runningConnections.delete(args.tabUid);
-                              }
+
+                              this.destroy();
                               reject(err);
                            }
 
@@ -890,10 +963,10 @@ export class FirebirdSQLClient extends AntaresCore {
                               keysArr = keysArr ? [...keysArr, ...response] : response;
                            }
                            catch (err) {
-                              if (args.autocommit) {
-                                 this._connection.detach();
+                              if (args.autocommit)
                                  this._runningConnections.delete(args.tabUid);
-                              }
+
+                              this.destroy();
                               reject(err);
                            }
                         }
@@ -902,7 +975,7 @@ export class FirebirdSQLClient extends AntaresCore {
                }
                catch (err) {
                   reject(err);
-                  this._connection.detach();
+                  this.destroy();
                }
 
                timeStop = new Date();

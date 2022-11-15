@@ -217,11 +217,7 @@ export class SQLiteClient extends AntaresCore {
          remappedIndexes.push({
             name: 'PRIMARY',
             column: key.name,
-            indexType: null as never,
-            type: 'PRIMARY',
-            cardinality: null as never,
-            comment: '',
-            indexComment: ''
+            type: 'PRIMARY'
          });
       }
 

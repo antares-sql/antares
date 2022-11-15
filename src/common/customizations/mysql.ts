@@ -1,5 +1,6 @@
 import { Customizations } from '../interfaces/customizations';
 import { defaults } from './defaults';
+import mysqlTypes from '../data-types/mysql';
 
 export const customizations: Customizations = {
    ...defaults,
@@ -7,6 +8,19 @@ export const customizations: Customizations = {
    defaultPort: 3306,
    defaultUser: 'root',
    defaultDatabase: null,
+   dataTypes: mysqlTypes,
+   indexTypes: [
+      'PRIMARY',
+      'INDEX',
+      'UNIQUE',
+      'FULLTEXT'
+   ],
+   foreignActions: [
+      'RESTRICT',
+      'CASCADE',
+      'SET NULL',
+      'NO ACTION'
+   ],
    // Core
    connectionSchema: true,
    collations: true,

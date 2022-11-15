@@ -176,8 +176,6 @@ export const useWorkspacesStore = defineStore('workspaces', {
                   : workspace);
             }
             else {
-               let dataTypes: TypesGroup[] = [];
-               let indexTypes: string[] = [];
                let clientCustomizations: Customizations;
                const { updateLastConnection } = connectionsStore;
 
@@ -186,26 +184,20 @@ export const useWorkspacesStore = defineStore('workspaces', {
                switch (connection.client) {
                   case 'mysql':
                   case 'maria':
-                     dataTypes = require('common/data-types/mysql').default;
-                     indexTypes = require('common/index-types/mysql').default;
                      clientCustomizations = customizations.mysql;
                      break;
                   case 'pg':
-                     dataTypes = require('common/data-types/postgresql').default;
-                     indexTypes = require('common/index-types/postgresql').default;
                      clientCustomizations = customizations.pg;
                      break;
                   case 'sqlite':
-                     dataTypes = require('common/data-types/sqlite').default;
-                     indexTypes = require('common/index-types/sqlite').default;
                      clientCustomizations = customizations.sqlite;
                      break;
                   case 'firebird':
-                     dataTypes = require('common/data-types/firebird').default;
-                     indexTypes = require('common/index-types/firebird').default;
                      clientCustomizations = customizations.firebird;
                      break;
                }
+               const dataTypes = clientCustomizations.dataTypes;
+               const indexTypes = clientCustomizations.indexTypes;
 
                const { status, response: version } = await Schema.getVersion(connection.uid);
 

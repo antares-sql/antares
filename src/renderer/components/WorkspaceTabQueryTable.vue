@@ -271,7 +271,7 @@ const keyName = (key: string) => {
       case 'mul':
          return 'INDEX';
       case 'fk':
-         return 'FOREIGN KEY';
+         return 'REFERENCES';
       default:
          return 'UNKNOWN ' + key;
    }

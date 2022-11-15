@@ -501,8 +501,8 @@ const editOFF = () => {
       localRow.value.enumValues = '';
 
       if (fieldType.value.length) {
-         if (['integer', 'float', 'binary', 'spatial'].includes(fieldType.value.group)) localRow.value.numLength = 11;
-         if (['string'].includes(fieldType.value.group)) localRow.value.charLength = 15;
+         if (['integer', 'float', 'binary', 'spatial'].includes(fieldType.value.group)) localRow.value.numLength = 10;
+         if (['string'].includes(fieldType.value.group)) localRow.value.charLength = 20;
          if (['time'].includes(fieldType.value.group)) localRow.value.datePrecision = 0;
          if (['other'].includes(fieldType.value.group)) localRow.value.enumValues = '\'valA\',\'valB\'';
       }

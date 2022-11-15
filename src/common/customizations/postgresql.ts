@@ -1,5 +1,6 @@
 import { Customizations } from '../interfaces/customizations';
 import { defaults } from './defaults';
+import postgresqlTypes from '../data-types/postgresql';
 
 export const customizations: Customizations = {
    ...defaults,
@@ -7,6 +8,18 @@ export const customizations: Customizations = {
    defaultPort: 5432,
    defaultUser: 'postgres',
    defaultDatabase: 'postgres',
+   dataTypes: postgresqlTypes,
+   indexTypes: [
+      'PRIMARY',
+      'INDEX',
+      'UNIQUE'
+   ],
+   foreignActions: [
+      'RESTRICT',
+      'CASCADE',
+      'SET NULL',
+      'NO ACTION'
+   ],
    // Core
    database: true,
    sslConnection: true,

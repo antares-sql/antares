@@ -531,9 +531,10 @@ const clearChanges = () => {
 };
 
 const addField = () => {
+   const uid = uidGen();
    localFields.value.push({
-      _antares_id: uidGen(),
-      name: `${t('word.field', 1)}_${++newFieldsCounter.value}`,
+      _antares_id: uid,
+      name: `${t('word.field', 1)}_${uid.substring(0, 4)}`,
       key: '',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       type: (workspace.value.dataTypes[0] as any).types[0].name,

@@ -227,10 +227,11 @@ export default (connections: {[key: string]: antares.Client}) => {
          }).join(',');
 
          try {
-            const result = await connections[params.uid]
+            const result: unknown = await connections[params.uid]
                .schema(params.schema)
                .delete(params.table)
                .where({ [params.primary]: `IN (${idString})` })
+               .limit(params.rows.length)
                .run();
 
             return { status: 'success', response: result };
@@ -289,6 +290,7 @@ export default (connections: {[key: string]: antares.Client}) => {
                            break;
                         case 'pg':
                         case 'sqlite':
+                        case 'firebird':
                            escapedParam = `'${params.row[key].value.replaceAll('\'', '\'\'')}'`;
                            break;
                      }
