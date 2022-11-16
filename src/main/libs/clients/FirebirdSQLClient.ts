@@ -203,8 +203,8 @@ export class FirebirdSQLClient extends AntaresCore {
          // TRIGGERS
          const remappedTriggers = triggersArr.map(trigger => {
             return {
-               name: trigger.NAME,
-               table: trigger.RELATION,
+               name: trigger.NAME.trim(),
+               table: trigger.RELATION.trim(),
                statement: trigger.SOURCE
             };
          });
@@ -651,23 +651,49 @@ export class FirebirdSQLClient extends AntaresCore {
       return await this.raw(sql);
    }
 
-   async getTriggerInformations ({ schema, trigger }: { schema: string; trigger: string }) {
-      const sql = `SELECT "sql" FROM "${schema}".sqlite_master WHERE "type"='trigger' AND name='${trigger}'`;
+   async getTriggerInformations ({ trigger }: { schema: string; trigger: string }) {
+      const sql = `
+         SELECT
+            RDB$TRIGGER_NAME as name,
+            RDB$RELATION_NAME as relation,
+            RDB$TRIGGER_SOURCE as sql,
+            RDB$TRIGGER_TYPE as type
+         FROM RDB$TRIGGERS
+         WHERE RDB$SYSTEM_FLAG=0
+         AND RDB$TRIGGER_NAME = '${trigger}';
+      `;
       const results = await this.raw(sql);
+
+      const eventsMap = new Map([
+         [1, ['INSERT']],
+         [2, ['INSERT']],
+         [3, ['UPDATE']],
+         [4, ['UPDATE']],
+         [5, ['DELETE']],
+         [6, ['DELETE']],
+         [17, ['INSERT', 'UPDATE']],
+         [18, ['INSERT', 'UPDATE']],
+         [25, ['INSERT', 'DELETE']],
+         [26, ['INSERT', 'DELETE']],
+         [27, ['UPDATE', 'DELETE']],
+         [28, ['UPDATE', 'DELETE']],
+         [113, ['INSERT', 'UPDATE', 'DELETE']],
+         [114, ['INSERT', 'UPDATE', 'DELETE']]
+      ]);
 
       return results.rows.map(row => {
          return {
-            sql: row.sql.match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
+            sql: row.SQL.match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
             name: trigger,
-            table: row.sql.match(/(?<=ON `).*?(?=`)/gs)[0],
-            activation: row.sql.match(/(BEFORE|AFTER)/gs)[0],
-            event: row.sql.match(/(INSERT|UPDATE|DELETE)/gs)[0]
+            table: row.RELATION.trim(),
+            activation: row.TYPE%2 ? 'BEFORE' : 'AFTER',
+            event: eventsMap.get(row.TYPE)
          };
       })[0];
    }
 
    async dropTrigger (params: { schema: string; trigger: string }) {
-      const sql = `DROP TRIGGER \`${params.schema}\`.\`${params.trigger}\``;
+      const sql = `DROP TRIGGER  "${params.trigger}"`;
       return await this.raw(sql);
    }
 
@@ -687,13 +713,19 @@ export class FirebirdSQLClient extends AntaresCore {
    }
 
    async createTrigger (params: antares.CreateTriggerParams) {
-      const sql = `CREATE ${params.definer ? `DEFINER=${params.definer} ` : ''}TRIGGER \`${params.schema}\`.\`${params.name}\` ${params.activation} ${params.event} ON \`${params.table}\` FOR EACH ROW ${params.sql}`;
+      const eventsString = Array.isArray(params.event) ? params.event.join(' OR ') : params.event;
+
+      const sql = `
+         CREATE TRIGGER "${params.name}" FOR "${params.table}"
+         ${params.activation} ${eventsString}
+         AS ${params.sql}
+      `;
       return await this.raw(sql, { split: false });
    }
 
    async getEngines () {
       return {
-         name: 'SQLite',
+         name: 'Firebird',
          support: 'YES',
          comment: '',
          isDefault: true
@@ -954,7 +986,7 @@ export class FirebirdSQLClient extends AntaresCore {
                   });
 
                   if (args.details) {
-                     if (remappedFields.length) {
+                     if (remappedFields?.length) {
                         paramsArr = remappedFields.map(field => {
                            return {
                               table: field.orgTable,
@@ -978,8 +1010,10 @@ export class FirebirdSQLClient extends AntaresCore {
                               });
                            }
                            catch (err) {
-                              if (args.autocommit)
+                              if (args.autocommit) {
                                  this._runningConnections.delete(args.tabUid);
+                                 (connection as firebird.Database).detach();
+                              }
 
                               this.destroy();
                               reject(err);
@@ -990,8 +1024,10 @@ export class FirebirdSQLClient extends AntaresCore {
                               keysArr = keysArr ? [...keysArr, ...response] : response;
                            }
                            catch (err) {
-                              if (args.autocommit)
+                              if (args.autocommit) {
                                  this._runningConnections.delete(args.tabUid);
+                                 (connection as firebird.Database).detach();
+                              }
 
                               this.destroy();
                               reject(err);
@@ -1003,6 +1039,8 @@ export class FirebirdSQLClient extends AntaresCore {
                catch (err) {
                   reject(err);
                   this.destroy();
+                  if (args.autocommit)
+                     (connection as firebird.Database).detach();
                }
 
                timeStop = new Date();
@@ -1020,7 +1058,8 @@ export class FirebirdSQLClient extends AntaresCore {
          resultsArr.push({ rows, report, fields, keys, duration });
       }
 
-      (connection as firebird.Database).detach();
+      if (args.autocommit)
+         (connection as firebird.Database).detach();
 
       const result = resultsArr.length === 1 ? resultsArr[0] : resultsArr;
 

@@ -48,6 +48,9 @@ export const customizations: Customizations = {
    tableSettings: true,
    viewAdd: true,
    viewSettings: true,
+   triggerAdd: true,
+   triggerMultipleEvents: true,
+   triggerSql: 'BEGIN\r\n\r\nEND',
    indexes: true,
    foreigns: true,
    nullable: true

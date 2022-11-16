@@ -275,7 +275,13 @@ const saveContentListener = () => {
 };
 
 watch(() => props.isSelected, (val) => {
-   if (val) changeBreadcrumbs({ schema: props.schema });
+   if (val) {
+      changeBreadcrumbs({ schema: props.schema });
+
+      setTimeout(() => {
+         resizeQueryEditor();
+      }, 50);
+   }
 });
 
 watch(isChanged, (val) => {
