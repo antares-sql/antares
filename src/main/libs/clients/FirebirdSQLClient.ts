@@ -615,20 +615,24 @@ export class FirebirdSQLClient extends AntaresCore {
       return await this.raw(sql);
    }
 
-   async getViewInformations ({ schema, view }: { schema: string; view: string }) {
-      const sql = `SELECT "sql" FROM "${schema}".sqlite_master WHERE "type"='view' AND name='${view}'`;
+   async getViewInformations ({ view }: { schema: string; view: string }) {
+      const sql = `
+         SELECT rdb$view_source as sql
+         FROM rdb$relations
+         WHERE rdb$relation_name = '${view}'
+      `;
       const results = await this.raw(sql);
 
       return results.rows.map(row => {
          return {
-            sql: row.sql.match(/(?<=AS ).*?$/gs)[0],
+            sql: row.SQL,
             name: view
          };
       })[0];
    }
 
    async dropView (params: { schema: string; view: string }) {
-      const sql = `DROP VIEW '${params.view}'`;
+      const sql = `DROP VIEW "${params.view}"`;
       return await this.raw(sql);
    }
 
@@ -643,7 +647,7 @@ export class FirebirdSQLClient extends AntaresCore {
    }
 
    async createView (params: antares.CreateViewParams) {
-      const sql = `CREATE VIEW '${params.name}' AS ${params.sql}`;
+      const sql = `CREATE VIEW "${params.name}" AS ${params.sql}`;
       return await this.raw(sql);
    }
 

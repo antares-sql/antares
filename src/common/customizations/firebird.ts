@@ -46,6 +46,8 @@ export const customizations: Customizations = {
    stringsWrapper: '\'',
    tableAdd: true,
    tableSettings: true,
+   viewAdd: true,
+   viewSettings: true,
    indexes: true,
    foreigns: true,
    nullable: true
