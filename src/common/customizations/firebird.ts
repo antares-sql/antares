@@ -37,7 +37,7 @@ export const customizations: Customizations = {
    // Structure
    schemas: false,
    tables: true,
-   views: false,
+   views: true,
    triggers: true,
    routines: false,
    functions: false,

@@ -9,7 +9,7 @@ export class FirebirdSQLClient extends AntaresCore {
    private _schema?: string;
    private _runningConnections: Map<string, number>;
    private _connectionsToCommit: Map<string, firebird.Transaction>;
-   protected _connection?: firebird.Database;
+   protected _connection?: firebird.Database | firebird.ConnectionPool;
    _params: firebird.Options;
 
    private _types: {[key: number]: string} ={
@@ -92,7 +92,7 @@ export class FirebirdSQLClient extends AntaresCore {
       if (!this._poolSize)
          this._connection = await this.getConnection();
       else
-         this._connection = await this.getConnectionPool();
+         this._connection = this.getConnectionPool();
    }
 
    async getConnection () {
@@ -104,18 +104,21 @@ export class FirebirdSQLClient extends AntaresCore {
       });
    }
 
-   async getConnectionPool () {
+   getConnectionPool () {
       const pool = firebird.pool(this._poolSize, { ...this._params, blobAsText: true });
-      return new Promise<firebird.Database>((resolve, reject) => {
-         pool.get((err, db) => {
-            if (err) reject(err);
-            else resolve(db);
-         });
-      });
+      // return new Promise<firebird.Database>((resolve, reject) => {
+      //    pool.get((err, db) => {
+      //       if (err) reject(err);
+      //       else resolve(db);
+      //    });
+      // });
+
+      return pool;
    }
 
    destroy () {
-      return this._connection.detach();
+      if (this._poolSize)
+         return (this._connection as firebird.ConnectionPool).destroy();
    }
 
    use (): void {
@@ -162,7 +165,14 @@ export class FirebirdSQLClient extends AntaresCore {
             AND RDB$RELATION_TYPE = 0         
          `);
 
-         tablesArr.push(...tables);
+         const { rows: views } = await this.raw<antares.QueryResult<ShowTableResult>>(`
+            SELECT 
+               DISTINCT RDB$VIEW_NAME AS name,
+               'view' AS type
+            FROM RDB$VIEW_RELATIONS    
+         `);
+
+         tablesArr.push(...tables, ...views);
 
          const { rows: triggers } = await this.raw<antares.QueryResult<ShowTriggersResult>>(`
             SELECT
@@ -821,12 +831,14 @@ export class FirebirdSQLClient extends AntaresCore {
          : [sql];
 
       let connection: firebird.Database | firebird.Transaction;
+      const isPool = this._poolSize;
 
       if (!args.autocommit && args.tabUid) { // autocommit OFF
          if (this._connectionsToCommit.has(args.tabUid))
             connection = this._connectionsToCommit.get(args.tabUid);
          else {
             connection = await this.getConnection();
+
             const transaction = await new Promise<firebird.Transaction>((resolve, reject) => {
                (connection as firebird.Database).transaction(firebird.ISOLATION_READ_COMMITED, (err, transaction) => {
                   if (err) reject(err);
@@ -837,8 +849,19 @@ export class FirebirdSQLClient extends AntaresCore {
             this._connectionsToCommit.set(args.tabUid, transaction);
          }
       }
-      else// autocommit ON
-         connection = this._connection;
+      else { // autocommit ON
+         if (isPool) {
+            const pool = this._connection as firebird.ConnectionPool;
+            connection = await new Promise<firebird.Database>((resolve, reject) => {
+               pool.get((err, db) => {
+                  if (err) reject(err);
+                  else resolve(db);
+               });
+            });
+         }
+         else
+            connection = this._connection as firebird.Database;
+      }
 
       for (const query of queries) {
          if (!query) continue;
@@ -992,6 +1015,8 @@ export class FirebirdSQLClient extends AntaresCore {
 
          resultsArr.push({ rows, report, fields, keys, duration });
       }
+
+      (connection as firebird.Database).detach();
 
       const result = resultsArr.length === 1 ? resultsArr[0] : resultsArr;
 
