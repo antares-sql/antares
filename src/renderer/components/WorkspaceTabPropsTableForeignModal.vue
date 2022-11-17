@@ -113,7 +113,7 @@
                      </div>
                   </div>
                   <div class="form-group">
-                     <label class="form-label col-3 pt-0">
+                     <label class="form-label col-3">
                         {{ t('message.referenceTable') }}
                      </label>
                      <div class="column">
@@ -219,13 +219,8 @@ const foreignProxy = ref([]);
 const selectedForeignID = ref('');
 const modalInnerHeight = ref(400);
 const refFields = ref({} as {[key: string]: TableField[]});
-const foreignActions = [
-   'RESTRICT',
-   'CASCADE',
-   'SET NULL',
-   'NO ACTION'
-];
 
+const foreignActions = computed(() => props.workspace.customizations.foreignActions);
 const selectedForeignObj = computed(() => foreignProxy.value.find(foreign => foreign._antares_id === selectedForeignID.value));
 const isChanged = computed(() => JSON.stringify(props.localKeyUsage) !== JSON.stringify(foreignProxy.value));
 
@@ -254,16 +249,17 @@ const getModalInnerHeight = () => {
 };
 
 const addForeign = () => {
+   const uid = uidGen();
    foreignProxy.value = [...foreignProxy.value, {
-      _antares_id: uidGen(),
-      constraintName: `FK_${uidGen()}`,
+      _antares_id: uid,
+      constraintName: `FK_${uid.substring(0, 4)}`,
       refSchema: props.schema,
       table: props.table,
       refTable: '',
       field: '',
       refField: '',
-      onUpdate: foreignActions[0],
-      onDelete: foreignActions[0]
+      onUpdate: foreignActions.value[0],
+      onDelete: foreignActions.value[0]
    }];
 
    if (foreignProxy.value.length === 1)
@@ -271,6 +267,7 @@ const addForeign = () => {
 
    setTimeout(() => {
       indexesPanel.value.scrollTop = indexesPanel.value.scrollHeight + 60;
+      selectedForeignID.value = uid;
    }, 20);
 };
 

@@ -5,6 +5,7 @@
       "MySQL",
       "PostgreSQL",
       "SQLite",
+      "Firebird SQL",
       "Windows",
       "translation",
       "Linux",

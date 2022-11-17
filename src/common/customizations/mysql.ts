@@ -1,5 +1,6 @@
 import { Customizations } from '../interfaces/customizations';
 import { defaults } from './defaults';
+import mysqlTypes from '../data-types/mysql';
 
 export const customizations: Customizations = {
    ...defaults,
@@ -7,6 +8,19 @@ export const customizations: Customizations = {
    defaultPort: 3306,
    defaultUser: 'root',
    defaultDatabase: null,
+   dataTypes: mysqlTypes,
+   indexTypes: [
+      'PRIMARY',
+      'INDEX',
+      'UNIQUE',
+      'FULLTEXT'
+   ],
+   foreignActions: [
+      'RESTRICT',
+      'CASCADE',
+      'SET NULL',
+      'NO ACTION'
+   ],
    // Core
    connectionSchema: true,
    collations: true,
@@ -29,6 +43,7 @@ export const customizations: Customizations = {
    stringsWrapper: '"',
    tableAdd: true,
    tableTruncateDisableFKCheck: true,
+   tableDuplicate: true,
    viewAdd: true,
    triggerAdd: true,
    routineAdd: true,
@@ -51,7 +66,6 @@ export const customizations: Customizations = {
    unsigned: true,
    nullable: true,
    zerofill: true,
-   tableOptions: true,
    autoIncrement: true,
    comment: true,
    collation: true,
@@ -64,6 +78,7 @@ export const customizations: Customizations = {
    procedureDataAccess: true,
    procedureSql: 'BEGIN\r\n\r\nEND',
    procedureContext: true,
+   procedureContextValues: ['IN', 'OUT', 'INOUT'],
    triggerSql: 'BEGIN\r\n\r\nEND',
    functionDeterministic: true,
    functionDataAccess: true,

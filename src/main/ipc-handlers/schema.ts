@@ -97,7 +97,7 @@ export default (connections: {[key: string]: antares.Client}) => {
 
    ipcMain.handle('get-engines', async (event, uid) => {
       try {
-         const result = await connections[uid].getEngines();
+         const result: unknown = await connections[uid].getEngines();
 
          return { status: 'success', response: result };
       }

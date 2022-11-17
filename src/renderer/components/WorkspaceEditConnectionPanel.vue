@@ -428,7 +428,8 @@ const clients = [
    { name: 'MySQL', slug: 'mysql' },
    { name: 'MariaDB', slug: 'maria' },
    { name: 'PostgreSQL', slug: 'pg' },
-   { name: 'SQLite', slug: 'sqlite' }
+   { name: 'SQLite', slug: 'sqlite' },
+   { name: 'Firebird SQL (experimental)', slug: 'firebird' }
 ];
 
 const firstInput: Ref<HTMLInputElement> = ref(null);

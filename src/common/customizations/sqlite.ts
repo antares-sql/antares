@@ -1,8 +1,21 @@
 import { Customizations } from '../interfaces/customizations';
 import { defaults } from './defaults';
+import sqliteTypes from '../data-types/sqlite';
 
 export const customizations: Customizations = {
    ...defaults,
+   dataTypes: sqliteTypes,
+   indexTypes: [
+      'PRIMARY',
+      'INDEX',
+      'UNIQUE'
+   ],
+   foreignActions: [
+      'RESTRICT',
+      'CASCADE',
+      'SET NULL',
+      'NO ACTION'
+   ],
    // Core
    fileConnection: true,
    // Structure
@@ -14,6 +27,7 @@ export const customizations: Customizations = {
    elementsWrapper: '"',
    stringsWrapper: '\'',
    tableAdd: true,
+   tableDuplicate: true,
    viewAdd: true,
    triggerAdd: true,
    schemaEdit: false,

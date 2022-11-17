@@ -61,7 +61,11 @@ export default (connections: {[key: string]: antares.Client}) => {
          });
          await connection.connect();
 
-         await connection.select('1+1').run();
+         if (conn.client === 'firebird')
+            connection.raw('SELECT rdb$get_context(\'SYSTEM\', \'DB_NAME\') FROM rdb$database');
+         else
+            await connection.select('1+1').run();
+
          connection.destroy();
 
          return { status: 'success' };

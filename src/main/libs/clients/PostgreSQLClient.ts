@@ -540,11 +540,7 @@ export class PostgreSQLClient extends AntaresCore {
          return {
             name: row.constraint_name,
             column: row.column_name,
-            indexType: null as null,
-            type: row.constraint_type,
-            cardinality: null as null,
-            comment: '',
-            indexComment: ''
+            type: row.constraint_type
          };
       });
    }

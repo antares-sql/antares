@@ -351,6 +351,9 @@ const runRoutine = (params?: string[]) => {
       case 'pg':
          sql = `CALL ${originalRoutine.value.name}(${params.join(',')})`;
          break;
+      case 'firebird':
+         sql = `EXECUTE PROCEDURE "${originalRoutine.value.name}"(${params.join(',')})`;
+         break;
       case 'mssql':
          sql = `EXEC ${originalRoutine.value.name} ${params.join(',')}`;
          break;

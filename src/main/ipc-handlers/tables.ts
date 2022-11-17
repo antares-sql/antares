@@ -105,6 +105,7 @@ export default (connections: {[key: string]: antares.Client}) => {
                   break;
                case 'pg':
                case 'sqlite':
+               case 'firebird':
                   escapedParam = `'${params.content.replaceAll('\'', '\'\'')}'`;
                   break;
             }
@@ -124,6 +125,7 @@ export default (connections: {[key: string]: antares.Client}) => {
                      escapedParam = `0x${fileBlob.toString('hex')}`;
                      break;
                   case 'pg':
+                  case 'firebird':
                      fileBlob = fs.readFileSync(params.content);
                      escapedParam = `decode('${fileBlob.toString('hex')}', 'hex')`;
                      break;
@@ -141,6 +143,7 @@ export default (connections: {[key: string]: antares.Client}) => {
                      escapedParam = '\'\'';
                      break;
                   case 'pg':
+                  case 'firebird':
                      escapedParam = 'decode(\'\', \'hex\')';
                      break;
                   case 'sqlite':
@@ -158,6 +161,7 @@ export default (connections: {[key: string]: antares.Client}) => {
                case 'mysql':
                case 'maria':
                case 'pg':
+               case 'firebird':
                   escapedParam = params.content;
                   break;
                case 'sqlite':
@@ -223,10 +227,11 @@ export default (connections: {[key: string]: antares.Client}) => {
          }).join(',');
 
          try {
-            const result = await connections[params.uid]
+            const result: unknown = await connections[params.uid]
                .schema(params.schema)
                .delete(params.table)
                .where({ [params.primary]: `IN (${idString})` })
+               .limit(params.rows.length)
                .run();
 
             return { status: 'success', response: result };
@@ -285,6 +290,7 @@ export default (connections: {[key: string]: antares.Client}) => {
                            break;
                         case 'pg':
                         case 'sqlite':
+                        case 'firebird':
                            escapedParam = `'${params.row[key].value.replaceAll('\'', '\'\'')}'`;
                            break;
                      }
@@ -382,7 +388,20 @@ export default (connections: {[key: string]: antares.Client}) => {
          if (description)
             query.select(`LEFT(${description}, 20) AS foreign_description`);
 
-         const results = await query.run();
+         const results = await query.run<{[key: string]: string}>();
+
+         const parsedResults: {[key: string]: string}[] = [];
+
+         for (const row of results.rows) {
+            const remappedRow: {[key: string]: string} = {};
+
+            for (const key in row)
+               remappedRow[key.toLowerCase()] = row[key];// Thanks Firebird -.-
+
+            parsedResults.push(remappedRow);
+         }
+
+         results.rows = parsedResults;
 
          return { status: 'success', response: results };
       }

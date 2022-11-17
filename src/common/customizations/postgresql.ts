@@ -1,5 +1,6 @@
 import { Customizations } from '../interfaces/customizations';
 import { defaults } from './defaults';
+import postgresqlTypes from '../data-types/postgresql';
 
 export const customizations: Customizations = {
    ...defaults,
@@ -7,6 +8,18 @@ export const customizations: Customizations = {
    defaultPort: 5432,
    defaultUser: 'postgres',
    defaultDatabase: 'postgres',
+   dataTypes: postgresqlTypes,
+   indexTypes: [
+      'PRIMARY',
+      'INDEX',
+      'UNIQUE'
+   ],
+   foreignActions: [
+      'RESTRICT',
+      'CASCADE',
+      'SET NULL',
+      'NO ACTION'
+   ],
    // Core
    database: true,
    sslConnection: true,
@@ -26,6 +39,7 @@ export const customizations: Customizations = {
    elementsWrapper: '"',
    stringsWrapper: '\'',
    tableAdd: true,
+   tableDuplicate: true,
    viewAdd: true,
    triggerAdd: true,
    triggerFunctionAdd: true,
@@ -47,6 +61,7 @@ export const customizations: Customizations = {
    tableArray: true,
    procedureSql: '$procedure$\r\n\r\n$procedure$',
    procedureContext: true,
+   procedureContextValues: ['IN', 'OUT', 'INOUT'],
    procedureLanguage: true,
    functionSql: '$function$\r\n\r\n$function$',
    triggerFunctionSql: '$function$\r\nBEGIN\r\n\r\nEND\r\n$function$',

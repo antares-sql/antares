@@ -12,7 +12,7 @@
 Antares is an SQL client based on [Electron.js](https://github.com/electron/electron) and [Vue.js](https://github.com/vuejs/vue) that aims to become a useful tool, especially for developers.  
 Our target is to support as many databases as possible, and all major operating systems, including the ARM versions.  
 
-**At the moment this application is in development state, many features will come in future updates**, and supports only MySQL/MariaDB, PostgreSQL and SQLite.  
+**At the moment this application is in development state, many features will come in future updates**, and supports only MySQL/MariaDB, PostgreSQL, SQLite and Firebird SQL.  
 However, there are all the features necessary to have a pleasant database management experience, so give it a chance and send us your feedback, we would really appreciate it.  
 We are actively working on it, hoping to provide new cool features, improvements and fixes as soon as possible.  
 
@@ -84,8 +84,8 @@ This is a roadmap with major features will come in near future.
 - [x] MySQL/MariaDB
 - [x] PostgreSQL
 - [x] SQLite
-- [ ] MSSQL
-- [ ] OracleDB
+- [x] Firebird SQL
+- [ ] SQL Server
 - [ ] More...
 
 ### Operating Systems

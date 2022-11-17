@@ -1,8 +1,13 @@
+import { TypesGroup } from './antares';
+
 export interface Customizations {
    // Defaults
    defaultPort?: number;
    defaultUser?: string;
    defaultDatabase?: string;
+   dataTypes?: TypesGroup[];
+   indexTypes?: string[];
+   foreignActions?: string[];
    // Core
    database?: boolean;
    collations?: boolean;
@@ -30,7 +35,7 @@ export interface Customizations {
    stringsWrapper: string;
    tableAdd?: boolean;
    tableSettings?: boolean;
-   tableOptions?: boolean;
+   tableDuplicate?: boolean;
    tableArray?: boolean;
    tableRealCount?: boolean;
    tableTruncateDisableFKCheck?: boolean;
@@ -71,6 +76,7 @@ export interface Customizations {
    procedureDataAccess?: boolean;
    procedureSql?: string;
    procedureContext?: boolean;
+   procedureContextValues?: string[];
    procedureLanguage?: boolean;
    functionDeterministic?: boolean;
    functionDataAccess?: boolean;

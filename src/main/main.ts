@@ -123,8 +123,8 @@ else {
       if (isWindows)
          mainWindow.show();
 
-      if (isDevelopment)
-         mainWindow.webContents.openDevTools();
+      // if (isDevelopment)
+      //    mainWindow.webContents.openDevTools();
 
       process.on('uncaughtException', error => {
          mainWindow.webContents.send('unhandled-exception', error);

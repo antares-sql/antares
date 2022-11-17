@@ -92,7 +92,7 @@
                         <BaseSelect
                            v-model="selectedIndexObj.type"
                            :options="indexTypes"
-                           :option-disabled="(opt: any) => opt === 'PRIMARY'"
+                           :option-disabled="(opt: any) => opt === 'PRIMARY' && hasPrimary"
                            class="form-select"
                         />
                      </div>
@@ -160,6 +160,7 @@ const modalInnerHeight = ref(400);
 
 const selectedIndexObj = computed(() => indexesProxy.value.find(index => index._antares_id === selectedIndexID.value));
 const isChanged = computed(() => JSON.stringify(props.localIndexes) !== JSON.stringify(indexesProxy.value));
+const hasPrimary = computed(() => indexesProxy.value.some(index => ['PRIMARY', 'PRIMARY KEY'].includes(index.type)));
 
 const confirmIndexesChange = () => {
    indexesProxy.value = indexesProxy.value.filter(index => index.fields.length);
@@ -179,15 +180,12 @@ const getModalInnerHeight = () => {
 };
 
 const addIndex = () => {
+   const uid = uidGen();
    indexesProxy.value = [...indexesProxy.value, {
-      _antares_id: uidGen(),
-      name: 'NEW_INDEX',
+      _antares_id: uid,
+      name: `INDEX_${uid.substring(0, 4)}`,
       fields: [],
-      type: 'INDEX',
-      comment: '',
-      indexType: 'BTREE',
-      indexComment: '',
-      cardinality: 0
+      type: props.workspace.customizations.primaryAsIndex ? props.indexTypes[0] : props.indexTypes[1]
    }];
 
    if (indexesProxy.value.length === 1)
@@ -195,6 +193,7 @@ const addIndex = () => {
 
    setTimeout(() => {
       indexesPanel.value.scrollTop = indexesPanel.value.scrollHeight + 60;
+      selectedIndexID.value = uid;
    }, 20);
 };
 

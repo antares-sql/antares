@@ -300,7 +300,7 @@ const getFieldsData = async () => {
                field.defaultType = 'noval';
             else if (field.default === 'NULL')
                field.defaultType = 'null';
-            else if (isNaN(+field.default) && field.default.charAt(0) !== '\'')
+            else if (typeof field.default === 'string' && isNaN(+field.default) && field.default.charAt(0) !== '\'')
                field.defaultType = 'expression';
             else {
                field.defaultType = 'custom';
@@ -323,11 +323,13 @@ const getFieldsData = async () => {
       const { status, response } = await Tables.getTableIndexes(params);
 
       if (status === 'success') {
-         const indexesObj = response.reduce((acc: {[key: string]: TableIndex[]}, curr: TableIndex) => {
-            acc[curr.name] = acc[curr.name] || [];
-            acc[curr.name].push(curr);
-            return acc;
-         }, {});
+         const indexesObj = response
+            .filter((index: TableIndex) => index.type !== 'FOREIGN KEY')
+            .reduce((acc: {[key: string]: TableIndex[]}, curr: TableIndex) => {
+               acc[curr.name] = acc[curr.name] || [];
+               acc[curr.name].push(curr);
+               return acc;
+            }, {});
 
          originalIndexes.value = Object.keys(indexesObj).map(index => {
             return {
@@ -529,9 +531,10 @@ const clearChanges = () => {
 };
 
 const addField = () => {
+   const uid = uidGen();
    localFields.value.push({
-      _antares_id: uidGen(),
-      name: `${t('word.field', 1)}_${++newFieldsCounter.value}`,
+      _antares_id: uid,
+      name: `${t('word.field', 1)}_${uid.substring(0, 4)}`,
       key: '',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       type: (workspace.value.dataTypes[0] as any).types[0].name,

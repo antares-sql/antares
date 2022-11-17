@@ -1,10 +1,14 @@
 import { Customizations } from '../interfaces/customizations';
 
+// Everything OFF
 export const defaults: Customizations = {
    // Defaults
    defaultPort: null,
    defaultUser: null,
    defaultDatabase: null,
+   dataTypes: [],
+   indexTypes: [],
+   foreignActions: [],
    // Core
    database: false,
    collations: false,
@@ -45,9 +49,9 @@ export const defaults: Customizations = {
    exportByChunks: false,
    schemaImport: false,
    tableSettings: false,
-   tableOptions: false,
    tableArray: false,
    tableRealCount: false,
+   tableDuplicate: false,
    viewSettings: false,
    triggerSettings: false,
    triggerFunctionSettings: false,
@@ -73,6 +77,7 @@ export const defaults: Customizations = {
    procedureDataAccess: false,
    procedureSql: null,
    procedureContext: false,
+   procedureContextValues: [],
    procedureLanguage: false,
    functionDeterministic: false,
    functionDataAccess: false,

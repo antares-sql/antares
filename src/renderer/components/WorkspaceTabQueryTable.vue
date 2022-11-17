@@ -270,6 +270,8 @@ const keyName = (key: string) => {
          return 'UNIQUE';
       case 'mul':
          return 'INDEX';
+      case 'fk':
+         return 'REFERENCES';
       default:
          return 'UNKNOWN ' + key;
    }

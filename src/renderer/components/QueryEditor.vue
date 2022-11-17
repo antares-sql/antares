@@ -240,7 +240,9 @@ watch(() => tablesInQuery.value.length, () => {
    });
 
    fields.value = localFields;
-   setCustomCompleter();
+   setTimeout(() => {
+      setCustomCompleter();
+   }, 100);
 });
 
 watch(editorTheme, () => {

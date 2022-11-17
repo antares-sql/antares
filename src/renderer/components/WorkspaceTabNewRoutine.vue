@@ -291,7 +291,7 @@ watch(consoleHeight, () => {
 });
 
 originalRoutine.value = {
-   sql: customizations.value.functionSql,
+   sql: customizations.value.procedureSql,
    language: customizations.value.languages ? customizations.value.languages[0] : null,
    name: '',
    definer: '',
