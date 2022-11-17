@@ -27,6 +27,7 @@ export const customizations: Customizations = {
    elementsWrapper: '"',
    stringsWrapper: '\'',
    tableAdd: true,
+   tableDuplicate: true,
    viewAdd: true,
    triggerAdd: true,
    schemaEdit: false,

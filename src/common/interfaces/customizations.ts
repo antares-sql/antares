@@ -35,6 +35,7 @@ export interface Customizations {
    stringsWrapper: string;
    tableAdd?: boolean;
    tableSettings?: boolean;
+   tableDuplicate?: boolean;
    tableArray?: boolean;
    tableRealCount?: boolean;
    tableTruncateDisableFKCheck?: boolean;
@@ -75,6 +76,7 @@ export interface Customizations {
    procedureDataAccess?: boolean;
    procedureSql?: string;
    procedureContext?: boolean;
+   procedureContextValues?: string[];
    procedureLanguage?: boolean;
    functionDeterministic?: boolean;
    functionDataAccess?: boolean;

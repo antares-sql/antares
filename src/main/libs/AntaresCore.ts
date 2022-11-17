@@ -16,7 +16,7 @@ const queryLogger = ({ sql, cUid }: {sql: string; cUid: string}) => {
 /**
  * As Simple As Possible Query Builder Core
  */
-export class AntaresCore {
+export abstract class AntaresCore {
    _client: antares.ClientCode;
    protected _cUid: string
    protected _params: mysql.ConnectionOptions | pg.ClientConfig | { databasePath: string; readonly: boolean};

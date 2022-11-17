@@ -105,15 +105,7 @@ export class FirebirdSQLClient extends AntaresCore {
    }
 
    getConnectionPool () {
-      const pool = firebird.pool(this._poolSize, { ...this._params, blobAsText: true });
-      // return new Promise<firebird.Database>((resolve, reject) => {
-      //    pool.get((err, db) => {
-      //       if (err) reject(err);
-      //       else resolve(db);
-      //    });
-      // });
-
-      return pool;
+      return firebird.pool(this._poolSize, { ...this._params, blobAsText: true });
    }
 
    destroy () {
@@ -127,16 +119,23 @@ export class FirebirdSQLClient extends AntaresCore {
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
    async getStructure (_schemas: Set<string>) {
-      interface ShowTableResult {
+      interface TableResult {
          FORMAT: number;
          NAME: string;
          TYPE: string;
          DESCRIPTION: string | null;
       }
 
-      interface ShowTriggersResult {
+      interface TriggersResult {
          NAME: string;
          RELATION: string;
+         SOURCE: string;
+      }
+
+      interface ProcedureResult {
+         NAME: string;
+         COMMENT: string;
+         DEFINER: string;
          SOURCE: string;
       }
 
@@ -146,15 +145,16 @@ export class FirebirdSQLClient extends AntaresCore {
          return { name: path.basename(db.NAME) };
       });
 
-      const tablesArr: ShowTableResult[] = [];
-      const triggersArr: ShowTriggersResult[] = [];
+      const tablesArr: TableResult[] = [];
+      const triggersArr: TriggersResult[] = [];
+      const proceduresArr: ProcedureResult[] = [];
       let schemaSize = 0;
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       for (const _db of filteredDatabases) {
          // if (!schemas.has(db.name)) continue;
 
-         const { rows: tables } = await this.raw<antares.QueryResult<ShowTableResult>>(`
+         const { rows: tables } = await this.raw<antares.QueryResult<TableResult>>(`
             SELECT 
                rdb$relation_name AS name,
                rdb$format AS format,
@@ -165,7 +165,7 @@ export class FirebirdSQLClient extends AntaresCore {
             AND RDB$RELATION_TYPE = 0         
          `);
 
-         const { rows: views } = await this.raw<antares.QueryResult<ShowTableResult>>(`
+         const { rows: views } = await this.raw<antares.QueryResult<TableResult>>(`
             SELECT 
                DISTINCT RDB$VIEW_NAME AS name,
                'view' AS type
@@ -174,16 +174,30 @@ export class FirebirdSQLClient extends AntaresCore {
 
          tablesArr.push(...tables, ...views);
 
-         const { rows: triggers } = await this.raw<antares.QueryResult<ShowTriggersResult>>(`
+         const { rows: triggers } = await this.raw<antares.QueryResult<TriggersResult>>(`
             SELECT
                RDB$TRIGGER_NAME as name,
                RDB$RELATION_NAME as relation,
                RDB$TRIGGER_SOURCE as source
             FROM RDB$TRIGGERS
-            WHERE RDB$SYSTEM_FLAG=0;
+            WHERE RDB$SYSTEM_FLAG=0
+            ORDER BY RDB$TRIGGER_NAME;
          `);
 
          triggersArr.push(...triggers);
+
+         const { rows: procedures } = await this.raw(`
+            SELECT 
+               RDB$PROCEDURE_NAME AS NAME, 
+               RDB$DESCRIPTION AS COMMENT, 
+               RDB$PROCEDURE_SOURCE AS SOURCE, 
+               RDB$OWNER_NAME AS DEFINER
+               FROM RDB$PROCEDURES 
+            WHERE RDB$SYSTEM_FLAG=0
+            ORDER BY RDB$PROCEDURE_NAME;
+         `);
+
+         proceduresArr.push(...procedures);
       }
 
       return filteredDatabases.map(db => {
@@ -209,12 +223,21 @@ export class FirebirdSQLClient extends AntaresCore {
             };
          });
 
+         // PROCEDURES
+         const remappedProcedures = proceduresArr.map(procedure => {
+            return {
+               name: procedure.NAME.trim(),
+               definer: procedure.DEFINER,
+               comment: procedure.COMMENT?.trim()
+            };
+         });
+
          return {
             name: db.name,
             size: schemaSize,
             tables: remappedTables,
             functions: [],
-            procedures: [],
+            procedures: remappedProcedures,
             triggers: remappedTriggers,
             schedulers: []
          };
@@ -600,9 +623,10 @@ export class FirebirdSQLClient extends AntaresCore {
       return await this.raw(sql);
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    async duplicateTable (params: { schema: string; table: string }) { // TODO: retrive table informations and create a copy
-      const sql = `CREATE TABLE "${params.table}_copy" AS SELECT * FROM "${params.table}"`;
-      return await this.raw(sql);
+      // const sql = `CREATE TABLE "${params.table}_copy" AS SELECT * FROM "${params.table}"`;
+      // return await this.raw(sql);
    }
 
    async truncateTable (params: { schema: string; table: string }) {
@@ -720,6 +744,153 @@ export class FirebirdSQLClient extends AntaresCore {
          ${params.activation} ${eventsString}
          AS ${params.sql}
       `;
+      return await this.raw(sql, { split: false });
+   }
+
+   async getRoutineInformations ({ routine }: { schema: string; routine: string }) {
+      interface ProcedureResult {
+         NAME: string;
+         COMMENT: string;
+         DEFINER: string;
+         SOURCE: string;
+         SECURITY: boolean;
+      }
+
+      interface ProcedureParamsResult {
+         PARAMETER_NAME: string;
+         FIELD_TYPE: string;
+         FIELD_LENGTH: string;
+         FIELD_PRECISION: string;
+         FIELD_SCALE: string;
+         CONTEXT: string;
+      }
+
+      const { rows: [procedure] } = await this.raw<antares.QueryResult<ProcedureResult>>(`
+         SELECT 
+            RDB$PROCEDURE_NAME AS NAME, 
+            RDB$DESCRIPTION AS COMMENT, 
+            RDB$PROCEDURE_SOURCE AS SOURCE, 
+            RDB$OWNER_NAME AS DEFINER,
+            RDB$SQL_SECURITY AS SECURITY
+         FROM RDB$PROCEDURES 
+         WHERE RDB$SYSTEM_FLAG = 0
+         AND RDB$PROCEDURE_NAME = '${routine}';
+      `);
+
+      if (procedure) {
+         const { rows: parameters } = await this.raw<antares.QueryResult<ProcedureParamsResult>>(`
+            SELECT 
+               p.RDB$PARAMETER_NAME AS PARAMETER_NAME,
+               p.RDB$PARAMETER_TYPE AS CONTEXT,
+               CASE f.RDB$FIELD_TYPE
+                  WHEN 261 THEN 'BLOB'
+                  WHEN 14 THEN 'CHAR'
+                  WHEN 40 THEN 'CSTRING'
+                  WHEN 11 THEN 'D_FLOAT'
+                  WHEN 27 THEN 'DOUBLE PRECISION'
+                  WHEN 10 THEN 'FLOAT'
+                  WHEN 16 THEN 'BIGINT'
+                  WHEN 8 THEN 'INTEGER'
+                  WHEN 9 THEN 'QUAD'
+                  WHEN 7 THEN 'SMALLINT'
+                  WHEN 12 THEN 'DATE'
+                  WHEN 13 THEN 'TIME'
+                  WHEN 35 THEN 'TIMESTAMP'
+                  WHEN 37 THEN 'VARCHAR'
+                  ELSE 'UNKNOWN'
+               END AS FIELD_TYPE,
+               f.RDB$FIELD_LENGTH AS FIELD_LENGTH,
+               f.RDB$FIELD_PRECISION AS FIELD_PRECISION,
+               f.RDB$FIELD_SCALE AS FIELD_SCALE
+            FROM RDB$PROCEDURE_PARAMETERS p
+            JOIN RDB$FIELDS f ON f.RDB$FIELD_NAME = p.RDB$FIELD_SOURCE
+            WHERE p.RDB$SYSTEM_FLAG = 0
+            AND RDB$PROCEDURE_NAME = '${routine}'
+            ORDER BY p.RDB$PARAMETER_TYPE, p.RDB$PARAMETER_NUMBER
+         `);
+
+         const remappedParams = parameters.map(param => {
+            const length = this.getTypeInfo(param.FIELD_TYPE.trim()).length ? param.FIELD_LENGTH || param.FIELD_PRECISION : null;
+            return {
+               name: param.PARAMETER_NAME.trim(),
+               type: param.FIELD_TYPE.trim(),
+               length: length,
+               context: param.CONTEXT ? 'OUT' : 'IN'
+            };
+         });
+
+         return {
+            definer: procedure.DEFINER,
+            sql: procedure.SOURCE,
+            parameters: remappedParams || [],
+            name: procedure.NAME.trim(),
+            comment: '',
+            security: procedure.SECURITY === false ? 'INVOKER' : 'DEFINER',
+            deterministic: false,
+            dataAccess: 'CONTAINS SQL'
+         };
+      }
+      else {
+         return {
+            definer: null,
+            sql: '',
+            parameters: [],
+            name: routine,
+            comment: '',
+            security: 'DEFINER',
+            deterministic: false,
+            dataAccess: 'CONTAINS SQL'
+         };
+      }
+   }
+
+   async dropRoutine (params: { routine: string }) {
+      const sql = `DROP PROCEDURE "${params.routine}"`;
+      return await this.raw(sql);
+   }
+
+   async alterRoutine ({ routine }: {routine: antares.AlterRoutineParams}) {
+      const tempProcedure = Object.assign({}, routine);
+      tempProcedure.name = `Antares_${tempProcedure.name}_tmp`;
+
+      try {
+         await this.createRoutine(tempProcedure);
+         await this.dropRoutine({ routine: tempProcedure.name });
+         await this.dropRoutine({ routine: routine.oldName });
+         await this.createRoutine(routine);
+      }
+      catch (err) {
+         return Promise.reject(err);
+      }
+   }
+
+   async createRoutine (params: antares.CreateRoutineParams) {
+      const inParams = 'parameters' in params
+         ? params.parameters
+            .filter(param => param.context === 'IN')
+            .reduce((acc: string[], curr) => {
+               acc.push(`"${curr.name}" ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
+               return acc;
+            }, []).join(',')
+         : '';
+
+      const ourParams = 'parameters' in params
+         ? params.parameters
+            .filter(param => param.context === 'OUT')
+            .reduce((acc: string[], curr) => {
+               acc.push(`"${curr.name}" ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
+               return acc;
+            }, []).join(',')
+         : '';
+
+      const sql = `
+         CREATE PROCEDURE "${params.name}"(${inParams})
+         ${ourParams ? `RETURNS (${ourParams})` : ''}
+         SQL SECURITY ${params.security}
+         AS 
+            ${params.sql}
+         `;
+
       return await this.raw(sql, { split: false });
    }
 

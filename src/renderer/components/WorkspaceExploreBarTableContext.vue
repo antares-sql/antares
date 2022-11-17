@@ -18,7 +18,7 @@
          <span class="d-flex"><i class="mdi mdi-18px mdi-tune-vertical-variant text-light pr-1" /> {{ t('word.settings') }}</span>
       </div>
       <div
-         v-if="selectedTable && selectedTable.type === 'table'"
+         v-if="selectedTable && selectedTable.type === 'table' && customizations.tableDuplicate"
          class="context-element"
          @click="duplicateTable"
       >

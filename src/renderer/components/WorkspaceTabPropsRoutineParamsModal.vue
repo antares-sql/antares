@@ -118,29 +118,17 @@
                         {{ t('word.context') }}
                      </label>
                      <div class="column">
-                        <label class="form-radio">
+                        <label
+                           v-for="condext in customizations.procedureContextValues"
+                           :key="condext"
+                           class="form-radio"
+                        >
                            <input
                               v-model="selectedParamObj.context"
                               type="radio"
                               name="context"
-                              value="IN"
-                           > <i class="form-icon" /> IN
-                        </label>
-                        <label class="form-radio">
-                           <input
-                              v-model="selectedParamObj.context"
-                              type="radio"
-                              value="OUT"
-                              name="context"
-                           > <i class="form-icon" /> OUT
-                        </label>
-                        <label class="form-radio">
-                           <input
-                              v-model="selectedParamObj.context"
-                              type="radio"
-                              value="INOUT"
-                              name="context"
-                           > <i class="form-icon" /> INOUT
+                              :value="condext"
+                           > <i class="form-icon" /> {{ condext }}
                         </label>
                      </div>
                   </div>
