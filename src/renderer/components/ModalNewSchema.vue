@@ -39,6 +39,7 @@
                               v-model="database.collation"
                               class="form-select"
                               :options="collations"
+                              :max-visible-options="1000"
                               option-label="collation"
                               option-track-by="collation"
                            />
@@ -142,7 +143,7 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .modal-container {
     max-width: 360px;
   }

@@ -103,6 +103,7 @@
                   <BaseSelect
                      v-model="localOptions.collation"
                      :options="workspace.collations"
+                     :max-visible-options="1000"
                      option-label="collation"
                      option-track-by="collation"
                      class="form-select"

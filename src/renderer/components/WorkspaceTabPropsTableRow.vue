@@ -212,6 +212,7 @@
                :options="collations"
                option-label="collation"
                option-track-by="collation"
+               :max-visible-options="1000"
                class="form-select small-select pl-1 pr-4 editable-field"
                @blur="editOFF"
             />
