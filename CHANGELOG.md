@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.0](https://github.com/antares-sql/antares/compare/v0.5.19...v0.6.0) (2022-11-18)
+
+
+### Features
+
+* **Firebird SQL:** connections pool ([76df631](https://github.com/antares-sql/antares/commit/76df6319c242ea42f93d4e5d811d96ec2c282aa8))
+* **Firebird SQL:** display table content and query results ([95bb41e](https://github.com/antares-sql/antares/commit/95bb41e9db255a780aae1ae32ce4a53ee3bab20e))
+* **Firebird SQL:** manual commit mode ([27566c1](https://github.com/antares-sql/antares/commit/27566c1dfae55f72d3f870c50410e5ecda256037))
+* **Firebird SQL:** procedure add/edit/delete support ([ae312ef](https://github.com/antares-sql/antares/commit/ae312efbbc3a9941380477b9849bdd8edc5b9fbf))
+* **Firebird SQL:** support to blob fields ([0827a04](https://github.com/antares-sql/antares/commit/0827a04d61af75b4366394e5f0289df461d02c98))
+* **Firebird SQL:** support to indexes and foreign keys ([2c8509f](https://github.com/antares-sql/antares/commit/2c8509ff4173fbebeff92ab472a37edd3d80a2ac))
+* **Firebird SQL:** table add/edit/delete support ([1b5cc31](https://github.com/antares-sql/antares/commit/1b5cc315dddca6b753fb6fe6e196e29441ffed79))
+* **Firebird SQL:** trigger add/edit/delete support ([8e422e3](https://github.com/antares-sql/antares/commit/8e422e3f07323f388523621a05f0403a87f19e47))
+* **Firebird SQL:** view add/edit/delete support ([7d1967a](https://github.com/antares-sql/antares/commit/7d1967a60977b2ce1095a37b7135f429a83f163d))
+* support to text blob fields ([e6f6a02](https://github.com/antares-sql/antares/commit/e6f6a022d1a5bbc3f5303f635a2115813601c61a))
+
+
+### Bug Fixes
+
+* **Firebird SQL:** connection pool issue ([7ff8e21](https://github.com/antares-sql/antares/commit/7ff8e2149ef911a235b4a1dcc329775af1d2a72b))
+* incomplete list of collations, fixes [#478](https://github.com/antares-sql/antares/issues/478) ([1c1403f](https://github.com/antares-sql/antares/commit/1c1403f58641f7b5f8a7c29fc430673ffa88f969))
+* loss of precision updating BIGINT values, fixes [#467](https://github.com/antares-sql/antares/issues/467) ([d190a2d](https://github.com/antares-sql/antares/commit/d190a2dd61040d1748dfb97403f9d56015d938fe))
+
 ### [0.5.19](https://github.com/antares-sql/antares/compare/v0.5.18...v0.5.19) (2022-10-22)
 
 
