@@ -55,20 +55,7 @@
                               <div class="panel-subtitle">
                                  {{ clients.get(connection.client) || connection.client }}
                               </div>
-                              <div class="all-connections-buttons p-absolute d-flex" style="top: 0; right: 0;">
-                                 <i
-                                    v-if="connection.isPinned"
-                                    class="all-connections-pinned mdi mdi-18px"
-                                    :class="connectionHover === connection.uid ? 'mdi-pin-off' : 'mdi-pin'"
-                                    :title="t('word.unpin')"
-                                    @click.stop="unpinConnection(connection.uid)"
-                                 />
-                                 <i
-                                    v-else
-                                    class="all-connections-pin mdi mdi-18px mdi-pin mdi-rotate-45"
-                                    :title="t('word.pin')"
-                                    @click.stop="pinConnection(connection.uid)"
-                                 />
+                              <div class="all-connections-buttons p-absolute d-flex" :style="'top: 0; right: 0;'">
                                  <i
                                     class="all-connections-delete mdi mdi-delete mdi-18px ml-2"
                                     :title="t('word.delete')"
@@ -126,7 +113,7 @@
                         key="trick"
                         readonly
                         class="p-absolute"
-                        style="width: 1px; height: 1px; opacity: 0;"
+                        :style="'width: 1px; height: 1px; opacity: 0;'"
                         type="text"
                      >
                      <!-- workaround for useFocusTrap $lastFocusable -->
@@ -171,15 +158,12 @@ const connectionsStore = useConnectionsStore();
 const workspacesStore = useWorkspacesStore();
 
 const { connections,
-   pinnedConnections,
    lastConnections
 } = storeToRefs(connectionsStore);
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const {
    getConnectionName,
-   pinConnection,
-   unpinConnection,
    deleteConnection
 } = connectionsStore;
 const { selectWorkspace } = workspacesStore;
@@ -206,13 +190,10 @@ const sortedConnections = computed(() => {
          const connTime = lastConnections.value.find((lc) => lc.uid === c.uid)?.time || 0;
          return {
             ...c,
-            time: connTime,
-            isPinned: pinnedConnections.value.has(c.uid)
+            time: connTime
          };
       })
       .sort((a, b) => {
-         if (a.isPinned < b.isPinned) return 1;
-         if (a.isPinned > b.isPinned) return -1;
          if (a.time < b.time) return 1;
          if (a.time > b.time) return -1;
          return 0;
