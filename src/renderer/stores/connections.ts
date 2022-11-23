@@ -90,8 +90,17 @@ export const useConnectionsStore = defineStore('connections', {
             isFolder: true,
             uid: uidGen('F'),
             name: '',
-            color: 'orange',
+            color: '#e36929',
             connections: params.connections
+         });
+         persistentStore.set('connectionsOrder', this.connectionsOrder);
+      },
+      addToFolder (params: {folder: string; connection: string}) {
+         this.connectionsOrder = this.connectionsOrder.map((conn: SidebarElement) => {
+            if (conn.uid === params.folder)
+               conn.connections.push(params.connection);
+
+            return conn;
          });
          persistentStore.set('connectionsOrder', this.connectionsOrder);
       },
@@ -100,7 +109,6 @@ export const useConnectionsStore = defineStore('connections', {
          persistentStore.set('connections', this.connections);
 
          this.connectionsOrder = (this.connectionsOrder as SidebarElement[]).filter(el => el.uid !== connection.uid);
-         console.log(connection.uid, this.connectionsOrder);
          persistentStore.set('connectionsOrder', this.connectionsOrder);
       },
       editConnection (connection: ConnectionParams) {
@@ -117,6 +125,29 @@ export const useConnectionsStore = defineStore('connections', {
          persistentStore.set('connections', this.connections);
       },
       updateConnectionsOrder (connections: SidebarElement[]) {
+         const invalidElements = connections.reduce<{index: number; uid: string}[]>((acc, curr, i) => {
+            if (typeof curr === 'string')
+               acc.push({ index: i, uid: curr });
+
+            return acc;
+         }, []);
+
+         if (!invalidElements.length) return;
+
+         invalidElements.forEach(el => {
+            const connIndex = connections.findIndex(conn => conn.uid === el.uid);
+            const conn = connections[connIndex];
+
+            if (connIndex === -1) return;
+
+            connections.splice(connIndex, 1);// Delete olt object
+            connections.splice(el.index, 1, { // Move to new position
+               isFolder: false,
+               client: conn.client,
+               uid: conn.uid
+            });
+         });
+
          this.connectionsOrder = connections;
          persistentStore.set('connectionsOrder', this.connectionsOrder);
       },

@@ -8,28 +8,20 @@
       :swap-threshold="0.3"
       @start="emit('start', $event)"
       @end="emit('end', $event)"
-      @move="emit('move', $event)"
       @change="emit('update:modelValue', localList)"
    >
       <template #item="{ element }">
          <li
             v-if="element.isFolder || !folderedConnections.includes(element.uid)"
             :draggable="true"
-            class="settingbar-element btn btn-link"
-            :class="{ 'selected': element.uid === selectedWorkspace }"
             @dragstart="draggedElement = element.uid"
-            @dragend="coveredElement = false"
+            @dragend="dragEnd"
             @contextmenu.prevent="emit('context', $event, element)"
          >
             <div
                v-if="!element.isFolder && !folderedConnections.includes(element.uid)"
-               class="p-relative"
-               :style="`
-                  width: 100%;
-                  height: 100%;
-                  display: flex;
-                  align-items: center;
-               `"
+               class="settingbar-element btn btn-link"
+               :class="{ 'selected': element.uid === selectedWorkspace }"
                :title="getConnectionName(element.uid)"
                @click.stop="selectWorkspace(element.uid)"
             >
@@ -43,25 +35,25 @@
                   @dragleave="coveredElement = false"
                   @change="createFolder"
                />
-               <i
-                  class="settingbar-element-icon dbi"
-                  :class="[`dbi-${element.client}`, getStatusBadge(element.uid)]"
-               />
-               <small class="settingbar-element-name">{{ getConnectionName(element.uid) }}</small>
+               <i v-if="coveredElement === element.uid && draggedElement !== coveredElement" class="settingbar-element-icon mdi mdi-folder-plus mdi-36px" />
+               <template v-else>
+                  <i
+                     class="settingbar-element-icon dbi"
+                     :class="[`dbi-${element.client}`, getStatusBadge(element.uid)]"
+                  />
+                  <small class="settingbar-element-name">{{ getConnectionName(element.uid) }}</small>
+               </template>
             </div>
-            <div
+            <SettingBarConnectionsFolder
                v-else-if="element.isFolder"
-               class="p-relative"
-               :style="`
-                  width: 100%;
-                  height: 100%;
-                  display: flex;
-                  align-items: center;
-               `"
-            >
-               <i class="settingbar-element-icon mdi mdi-folder mdi-36px" />
-               <small class="settingbar-element-name">{{ element.name }}</small>
-            </div>
+               :folder="element"
+               :covered-element="coveredElement"
+               :dragged-element="draggedElement"
+               @select-workspace="selectWorkspace"
+               @covered="coveredElement = element.uid"
+               @uncovered="coveredElement = false"
+               @folder-sort="emit('update:modelValue', localList)"
+            />
          </li>
       </template>
    </Draggable>
@@ -72,6 +64,7 @@ import { storeToRefs } from 'pinia';
 import * as Draggable from 'vuedraggable';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
+import SettingBarConnectionsFolder from '@/components/SettingBarConnectionsFolder.vue';
 
 const workspacesStore = useWorkspacesStore();
 const connectionsStore = useConnectionsStore();
@@ -107,9 +100,13 @@ const folderedConnections = computed(() => {
    }, []);
 });
 
+const dragEnd = () => {
+   coveredElement.value = false;
+   draggedElement.value = false;
+};
+
 const createFolder = ({ added }: {added: { element: SidebarElement }}) => {
    if (typeof coveredElement.value === 'string' && !added.element.isFolder) {
-      console.log('added', added.element);
       // Create folder
       addFolder({
          after: coveredElement.value,
@@ -146,7 +143,7 @@ watch(() => props.modelValue, (value) => {
 });
 
 </script>
-<style scoped lang="scss">
+<style lang="scss">
 .drag-area {
   background-color: transparent;
   z-index: 10;
@@ -158,16 +155,20 @@ watch(() => props.modelValue, (value) => {
   transition: all .2s;
 
   &.folder-preview {
-   border: 1px dashed;
-   border-radius: 5px;
-   left: 5px;
-   top: 5px;
-   right: 5px;
-   bottom: 5px;
+      border: 2px dotted;
+      border-radius: 15px;
+      left: 5px;
+      top: 5px;
+      right: 5px;
+      bottom: 5px;
   }
 
    li {
       display: none!important;
    }
+}
+
+.ghost {
+   background-color: rgba($primary-color, 20%);
 }
 </style>

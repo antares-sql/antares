@@ -28,7 +28,7 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-server-remove mr-1" /> {{ t(contextConnection.isFolder ? 'message.deleteFolder' : 'message.deleteConnection') }}
+               <i class="mdi mdi-24px mr-1" :class="[contextConnection.isFolder ? 'mdi-folder-remove' : 'mdi-server-remove']" /> {{ t(contextConnection.isFolder ? 'message.deleteFolder' : 'message.deleteConnection') }}
             </div>
          </template>
          <template #body>
