@@ -1,6 +1,7 @@
 <template>
    <div
-      class="settingbar-element btn btn-link p-1"
+      class="settingbar-element folder btn btn-link p-1"
+      :class="[{ 'selected-inside': hasSelectedInside && !isOpen }]"
       :style="isOpen ? `height: auto; opacity: 1;` : null"
       :title="folder.name"
    >
@@ -8,22 +9,29 @@
          class="folder-container"
          :item-key="((item: string) => localList.indexOf(item))"
          :class="[{'opened': isOpen}]"
-         :style="[`background: ${folder.color};`, isOpen ? `max-height: ${60*(folder.connections.length+1)}px` : 'max-height: 60px']"
+         :style="[
+            `background: ${folder.color};`,
+            isOpen ? `max-height: ${60*(folder.connections.length+1)}px` : 'max-height: 60px',
+            !isOpen ? `overflow: hidden;` : ''
+         ]"
          :list="localList"
          ghost-class="ghost"
-         :group="{ name: 'connections' }"
+         :group="{ name: 'connections', put: folderDrag ? undefined : 'clone' }"
+         @start="dragStart"
+         @end="dragStop"
       >
          <template #header>
             <div
                v-if="!isOpen"
                class="folder-overlay"
-               @click="isOpen = true"
+               @click="openFolder"
+               @contextmenu.stop="emit('context', {event: $event, content: folder})"
             />
             <div
                v-if="isOpen"
                class="folder-icon"
                :style="`color: ${folder.color};`"
-               @click="isOpen = false"
+               @click="closeFolder"
             >
                <i class="folder-icon-open mdi mdi-folder-open mdi-36px" />
                <i class="folder-icon-close mdi mdi-folder mdi-36px" />
@@ -33,13 +41,13 @@
             <div
                :key="element"
                class="folder-element"
-
                :class="{ 'selected': element === selectedWorkspace }"
                @click="emit('select-workspace', element)"
+               @contextmenu.stop="emit('context', {event: $event, content: getConnectionByUid(element)})"
             >
                <i
                   class="folder-element-icon dbi"
-                  :class="[`dbi-${getConnectionByUid(element).client}`, getStatusBadge(getConnectionByUid(element).uid)]"
+                  :class="[`dbi-${getConnectionByUid(element)?.client}`, getStatusBadge(getConnectionByUid(element).uid)]"
                />
                <small v-if="isOpen" class="folder-element-name">{{ getConnectionName(element) }}</small>
             </div>
@@ -50,6 +58,7 @@
          class="drag-area"
          :class="[{'folder-preview': coveredElement === folder.uid && draggedElement !== coveredElement}]"
          :list="dummyNested"
+         :swap-threshold="1"
          @dragenter="emit('covered')"
          @dragleave="emit('uncovered')"
          @change="addIntoFolder"
@@ -73,10 +82,16 @@ const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 const { getWorkspace } = workspacesStore;
 const { getConnectionByUid, getConnectionName, addToFolder } = connectionsStore;
 
+const foldersOpened = JSON.parse(localStorage.getItem('opened-folders')) || [];
+
 const props = defineProps({
    folder: {
       type: Object as PropType<SidebarElement>,
       required: true
+   },
+   folderDrag: {
+      type: Boolean,
+      default: false
    },
    draggedElement: {
       type: [String, Boolean] as PropType<string | false>,
@@ -88,11 +103,13 @@ const props = defineProps({
    }
 });
 
-const emit = defineEmits(['covered', 'uncovered', 'select-workspace', 'folder-sort']);
+const emit = defineEmits(['context', 'covered', 'uncovered', 'select-workspace', 'folder-sort', 'folder-drag']);
 
-const isOpen = ref(false);
+const isOpen = ref(foldersOpened.includes(props.folder.uid));
 const localList = ref(props.folder.connections);
 const dummyNested = ref([]);
+
+const hasSelectedInside = computed(() => localList.value.includes(selectedWorkspace.value));
 
 const foldersUid = computed(() => folders.value.reduce<string[]>((acc, curr) => {
    acc.push(curr.uid);
@@ -127,17 +144,57 @@ const getStatusBadge = (uid: string) => {
    }
 };
 
+const openFolder = () => {
+   isOpen.value = true;
+   const opened: string[] = JSON.parse(localStorage.getItem('opened-folders')) || [];
+   opened.push(props.folder.uid);
+   localStorage.setItem('opened-folders', JSON.stringify(opened));
+};
+
+const closeFolder = () => {
+   isOpen.value = false;
+   let opened: string[] = JSON.parse(localStorage.getItem('opened-folders')) || [];
+   opened = opened.filter(uid => uid !== props.folder.uid);
+   localStorage.setItem('opened-folders', JSON.stringify(opened));
+};
+
+const dragStart = () => {
+   emit('folder-drag', true);
+};
+
+const dragStop = () => {
+   emit('folder-drag', false);
+};
+
 watch(() => dummyNested.value.length, () => {
    dummyNested.value = [];
 });
-
-watch(localList, () => {
-   emit('folder-sort');
-}, { deep: true });
-
 </script>
 <style lang="scss" scoped>
-.folder-container{
+.folder {
+   position: relative;
+   &.selected-inside {
+      opacity: 1!important;
+
+      &::after {
+         height: 2.5rem;
+         position: absolute;
+      }
+   }
+
+   &::after {
+      content: "";
+      height: 0;
+      width: 3px;
+      transition: height 0.2s;
+      background-color: rgba($color: #fff, $alpha: 0.8);
+      border-radius: $border-radius;
+      position: absolute;
+      left: 0;
+   }
+}
+
+.folder-container {
    display: grid;
    grid-template-columns: auto auto;
    grid-template-rows: 50%;
@@ -146,19 +203,79 @@ watch(localList, () => {
    height: 100%;
    width: 100%;
    border-radius: 15px;
-   overflow: hidden;
    transition: background .3s;
+
+   &::before {
+      content: "";
+      height: 0;
+      width: 3px;
+      transition: height 0.2s;
+      background-color: rgba($color: #fff, $alpha: 0.8);
+      border-radius: $border-radius;
+      position: absolute;
+      left: -11px;
+   }
+
+   .folder-element-icon {
+      margin: 0 auto;
+
+      &.badge::after {
+         top: 10px;
+         right: 0px;
+         position: absolute;
+         display: none;
+      }
+
+      &.badge-update::after {
+         bottom: initial;
+      }
+   }
 
    &.opened {
       gap: 4px 6px;
       grid-template-columns: auto;
       grid-template-rows: auto;
       background: rgba($color: #fff, $alpha: 0.1)!important;
-      transition: max-height .3s;
+      transition: max-height .1s;
 
       .folder-element {
          opacity: .6;
          height: 2.5rem;
+
+         &.selected {
+            opacity: 1;
+
+            &::before {
+               height: 2.5rem;
+               position: absolute;
+            }
+         }
+
+         &::before {
+            content: "";
+            height: 0;
+            width: 3px;
+            transition: height 0.2s;
+            background-color: rgba($color: #fff, $alpha: 0.8);
+            border-radius: $border-radius;
+            position: absolute;
+            left: -11px;
+         }
+
+         .folder-element-icon {
+            margin: 0 auto;
+
+            &.badge::after {
+               top: 14px;
+               right: -4px;
+               position: absolute;
+               display: block;
+            }
+
+            &.badge-update::after {
+               bottom: initial;
+            }
+         }
       }
 
       .folder-icon {
@@ -209,8 +326,18 @@ watch(localList, () => {
       position: relative;
       transition: opacity .2s;
 
+      &.ghost {
+         margin:0 ;
+         margin-bottom: 3px;
+         height: 2.5rem;
+      }
+
       &:hover, &.selected {
          opacity: 1;
+      }
+
+      .folder-element-icon {
+         transition: margin .2s;
       }
 
       .folder-element-name {
@@ -224,6 +351,7 @@ watch(localList, () => {
          white-space: nowrap;
          text-overflow: ellipsis;
          line-height: 1;
+         transition: bottom .2s;
       }
    }
 
@@ -234,6 +362,54 @@ watch(localList, () => {
             width: 21px;
             height: 21px;
          }
+      }
+   }
+}
+
+.ghost {
+   border-radius: 15px!important;
+   background: rgba($color: #fff, $alpha: 0.1);
+
+   &.folder-element {
+      height: $settingbar-width;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 4px;
+      position: relative;
+      transition: opacity .2s;
+
+      &:hover, &.selected {
+         opacity: 1;
+      }
+
+      .folder-element-icon {
+         margin: 0 auto;
+
+         &.badge::after {
+            top: 5px;
+            right: -4px;
+            position: absolute;
+         }
+
+         &.badge-update::after {
+            bottom: initial;
+         }
+      }
+
+      .folder-element-name {
+         position: absolute;
+         max-width: 90%;
+         bottom: 5px;
+         text-align: center;
+         font-size: 65%;
+         font-style: normal;
+         display: block;
+         overflow: hidden;
+         white-space: nowrap;
+         text-overflow: ellipsis;
+         line-height: 1;
       }
    }
 }

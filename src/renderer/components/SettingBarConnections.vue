@@ -4,7 +4,6 @@
       item-key="'uid'"
       ghost-class="ghost"
       :group="{ name: 'connections', pull: 'clone' }"
-      class="pb-1"
       :swap-threshold="0.3"
       @start="emit('start', $event)"
       @end="emit('end', $event)"
@@ -14,6 +13,7 @@
          <li
             v-if="element.isFolder || !folderedConnections.includes(element.uid)"
             :draggable="true"
+            :class="{'folder': element.isFolder}"
             @dragstart="draggedElement = element.uid"
             @dragend="dragEnd"
             @contextmenu.prevent="emit('context', $event, element)"
@@ -37,22 +37,28 @@
                />
                <i v-if="coveredElement === element.uid && draggedElement !== coveredElement" class="settingbar-element-icon mdi mdi-folder-plus mdi-36px" />
                <template v-else>
-                  <i
-                     class="settingbar-element-icon dbi"
-                     :class="[`dbi-${element.client}`, getStatusBadge(element.uid)]"
-                  />
-                  <small class="settingbar-element-name">{{ getConnectionName(element.uid) }}</small>
+                  <div class="settingbar-element-icon-wrapper">
+                     <i
+                        class="settingbar-element-icon dbi"
+                        :class="[`dbi-${element.client}`, getStatusBadge(element.uid)]"
+                     />
+                     <small class="settingbar-element-name">{{ getConnectionName(element.uid) }}</small>
+                  </div>
                </template>
             </div>
             <SettingBarConnectionsFolder
                v-else-if="element.isFolder"
+               :key="element.uid"
                :folder="element"
                :covered-element="coveredElement"
                :dragged-element="draggedElement"
+               :folder-drag="folderDrag"
                @select-workspace="selectWorkspace"
                @covered="coveredElement = element.uid"
                @uncovered="coveredElement = false"
                @folder-sort="emit('update:modelValue', localList)"
+               @folder-drag="folderDrag = $event"
+               @context="emit('context', $event.event, $event.content)"
             />
          </li>
       </template>
@@ -88,6 +94,7 @@ const localList = ref(props.modelValue);
 const dummyNested = ref([]);
 const draggedElement: Ref<string | false> = ref(false);
 const coveredElement: Ref<string | false> = ref(false);
+const folderDrag = ref(false);
 
 const foldersUid = computed(() => folders.value.reduce<string[]>((acc, curr) => {
    acc.push(curr.uid);
@@ -140,6 +147,7 @@ watch(() => dummyNested.value.length, () => {
 
 watch(() => props.modelValue, (value) => {
    localList.value = value;
+   folderDrag.value = false;// Prenent some edge cases
 });
 
 </script>
@@ -168,7 +176,32 @@ watch(() => props.modelValue, (value) => {
    }
 }
 
-.ghost {
-   background-color: rgba($primary-color, 20%);
+.ghost:not(.folder) {
+   height: $settingbar-width;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   padding: 4px;
+   position: relative;
+   transition: opacity .2s;
+
+   .settingbar-element {
+      border-radius: 15px!important;
+      background: rgba($color: #fff, $alpha: 0.1);
+
+      .settingbar-element-name {
+         position: absolute;
+         bottom: 5px;
+         left: 3px!important;
+         text-align: center!important;
+         font-size: 65%;
+         font-style: normal;
+         display: block;
+         overflow: hidden;
+         white-space: nowrap;
+         text-overflow: ellipsis;
+         line-height: 1;
+      }
+   }
 }
 </style>

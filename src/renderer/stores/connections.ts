@@ -132,21 +132,32 @@ export const useConnectionsStore = defineStore('connections', {
             return acc;
          }, []);
 
-         if (!invalidElements.length) return;
+         if (invalidElements.length) {
+            invalidElements.forEach(el => {
+               let connIndex = connections.findIndex(conn => conn.uid === el.uid);
+               const conn = connections[connIndex];
 
-         invalidElements.forEach(el => {
-            const connIndex = connections.findIndex(conn => conn.uid === el.uid);
-            const conn = connections[connIndex];
+               if (connIndex === -1) return;
 
-            if (connIndex === -1) return;
+               connections.splice(el.index, 1, { // Move to new position
+                  isFolder: false,
+                  client: conn.client,
+                  uid: conn.uid
+               });
 
-            connections.splice(connIndex, 1);// Delete olt object
-            connections.splice(el.index, 1, { // Move to new position
-               isFolder: false,
-               client: conn.client,
-               uid: conn.uid
+               connIndex = connections.findIndex(conn => conn.uid === el.uid);
+               connections.splice(connIndex, 1);// Delete old object
             });
-         });
+         }
+
+         // Clear empty folders
+         const emptyFolders = connections.reduce<string[]>((acc, curr) => {
+            if (curr.connections && curr.connections.length === 0)
+               acc.push(curr.uid);
+            return acc;
+         }, []);
+
+         connections = connections.filter(el => !emptyFolders.includes(el.uid));
 
          this.connectionsOrder = connections;
          persistentStore.set('connectionsOrder', this.connectionsOrder);
