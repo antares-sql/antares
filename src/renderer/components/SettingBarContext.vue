@@ -17,6 +17,9 @@
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ t('word.duplicate') }}</span>
       </div>
+      <div class="context-element" @click.stop="showAppearenceModal">
+         <span class="d-flex"><i class="mdi mdi-18px mdi-brush-variant text-light pr-1" /> {{ t('word.appearence') }}</span>
+      </div>
       <div class="context-element" @click="showConfirmModal">
          <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ t('word.delete') }}</span>
       </div>
@@ -37,6 +40,11 @@
             </div>
          </template>
       </ConfirmModal>
+      <ModalFolderAppearence
+         v-if="isFolderEdit"
+         :folder="contextConnection"
+         @close="hideAppearenceModal"
+      />
    </BaseContextMenu>
 </template>
 
@@ -49,6 +57,7 @@ import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import ModalFolderAppearence from '@/components/ModalFolderAppearence.vue';
 
 const { t } = useI18n();
 
@@ -78,6 +87,8 @@ const props = defineProps({
 const emit = defineEmits(['close-context']);
 
 const isConfirmModal = ref(false);
+const isFolderEdit = ref(false);
+const isConnectionEdit = ref(false);
 
 const connectionName = computed(() => props.contextConnection.name || getConnectionName(props.contextConnection.uid) || t('word.folder', 1));
 const isConnected = computed(() => getWorkspace(props.contextConnection.uid)?.connectionStatus === 'connected');
@@ -98,6 +109,19 @@ const duplicateConnection = () => {
    };
 
    addConnection(connectionCopy);
+   closeContext();
+};
+
+const showAppearenceModal = () => {
+   if (props.contextConnection.isFolder)
+      isFolderEdit.value = true;
+   else
+      isFolderEdit.value = true;
+};
+
+const hideAppearenceModal = () => {
+   isConnectionEdit.value = false;
+   isFolderEdit.value = false;
    closeContext();
 };
 

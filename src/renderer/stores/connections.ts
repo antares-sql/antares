@@ -12,6 +12,7 @@ export interface SidebarElement {
    connections?: string[];
    color?: string;
    name?: string;
+   icon?: null | string;
 }
 
 if (!key)
@@ -80,7 +81,8 @@ export const useConnectionsStore = defineStore('connections', {
          this.connectionsOrder.push({
             isFolder: false,
             uid: connection.uid,
-            client: connection.client
+            client: connection.client,
+            icon: null
          });
          persistentStore.set('connectionsOrder', this.connectionsOrder);
       },
@@ -90,7 +92,7 @@ export const useConnectionsStore = defineStore('connections', {
             isFolder: true,
             uid: uidGen('F'),
             name: '',
-            color: '#e36929',
+            color: '#E36929',
             connections: params.connections
          });
          persistentStore.set('connectionsOrder', this.connectionsOrder);
@@ -109,6 +111,22 @@ export const useConnectionsStore = defineStore('connections', {
          persistentStore.set('connections', this.connections);
 
          this.connectionsOrder = (this.connectionsOrder as SidebarElement[]).filter(el => el.uid !== connection.uid);
+         this.connectionsOrder = (this.connectionsOrder as SidebarElement[]).map(el => { // Removes connection from folders
+            if (el.isFolder && el.connections.includes(connection.uid))
+               el.connections = el.connections.filter(uid => uid !== connection.uid);
+
+            return el;
+         });
+
+         // Clear empty folders
+         const emptyFolders = (this.connectionsOrder as SidebarElement[]).reduce<string[]>((acc, curr) => {
+            if (curr.connections && curr.connections.length === 0)
+               acc.push(curr.uid);
+            return acc;
+         }, []);
+
+         this.connectionsOrder = (this.connectionsOrder as SidebarElement[]).filter(el => !emptyFolders.includes(el.uid));
+
          persistentStore.set('connectionsOrder', this.connectionsOrder);
       },
       editConnection (connection: ConnectionParams) {
@@ -117,7 +135,6 @@ export const useConnectionsStore = defineStore('connections', {
             return conn;
          });
          this.connections = editedConnections;
-         this.selected_conection = {};
          persistentStore.set('connections', this.connections);
       },
       updateConnections (connections: ConnectionParams[]) {
@@ -161,6 +178,13 @@ export const useConnectionsStore = defineStore('connections', {
 
          this.connectionsOrder = connections;
          persistentStore.set('connectionsOrder', this.connectionsOrder);
+      },
+      updateConnectionOrder (element: SidebarElement) {
+         this.connectionsOrder = (this.connectionsOrder as SidebarElement[]).map(el => {
+            if (el.uid === element.uid)
+               el = element;
+            return el;
+         });
       },
       updateLastConnection (uid: string) {
          const cIndex = (this.lastConnections as {uid: string; time: number}[]).findIndex((c) => c.uid === uid);

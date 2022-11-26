@@ -241,6 +241,7 @@ watch(() => dummyNested.value.length, () => {
       .folder-element {
          opacity: .6;
          height: 2.5rem;
+         background: transparent;
 
          &.selected {
             opacity: 1;
@@ -325,6 +326,8 @@ watch(() => dummyNested.value.length, () => {
       margin-bottom: 3px;
       position: relative;
       transition: opacity .2s;
+      background: $bg-color-light-dark;
+      border-radius: 8px;
 
       &.ghost {
          margin:0 ;

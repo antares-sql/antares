@@ -144,7 +144,9 @@ export const enUS = {
       unpin: 'Unpin',
       console: 'Console',
       shortcuts: 'Shortcuts',
-      folder: 'Folder | Folders'
+      folder: 'Folder | Folders',
+      appearence: 'Appearence',
+      color: 'Color'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -325,6 +327,8 @@ export const enUS = {
       nextResultsPage: 'Next results page',
       previousResultsPage: 'Previous results page',
       fillCell: 'Fill cell',
+      editFolder: 'Edit folder',
+      folderName: 'Folder name',
       deleteFolder: 'Delete folder'
    },
    faker: {
