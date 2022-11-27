@@ -146,7 +146,9 @@ export const enUS = {
       shortcuts: 'Shortcuts',
       folder: 'Folder | Folders',
       appearence: 'Appearence',
-      color: 'Color'
+      color: 'Color',
+      label: 'Label',
+      icon: 'Icon'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -329,7 +331,8 @@ export const enUS = {
       fillCell: 'Fill cell',
       editFolder: 'Edit folder',
       folderName: 'Folder name',
-      deleteFolder: 'Delete folder'
+      deleteFolder: 'Delete folder',
+      editConnectionAppearence: 'Edit connection appearence'
    },
    faker: {
       address: 'Address',

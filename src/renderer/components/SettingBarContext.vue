@@ -45,6 +45,11 @@
          :folder="contextConnection"
          @close="hideAppearenceModal"
       />
+      <ModalConnectionAppearence
+         v-if="isConnectionEdit"
+         :connection="contextConnection"
+         @close="hideAppearenceModal"
+      />
    </BaseContextMenu>
 </template>
 
@@ -58,6 +63,7 @@ import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import ModalFolderAppearence from '@/components/ModalFolderAppearence.vue';
+import ModalConnectionAppearence from '@/components/ModalConnectionAppearence.vue';
 
 const { t } = useI18n();
 
@@ -116,7 +122,7 @@ const showAppearenceModal = () => {
    if (props.contextConnection.isFolder)
       isFolderEdit.value = true;
    else
-      isFolderEdit.value = true;
+      isConnectionEdit.value = true;
 };
 
 const hideAppearenceModal = () => {

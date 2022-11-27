@@ -71,6 +71,7 @@ export const useConnectionsStore = defineStore('connections', {
             return connectionsOrder;
          }
       },
+      getConnectionOrderByUid: state => (uid:string) => state.connectionsOrder.find(connection => connection.uid === uid),
       getFolders: state => state.connectionsOrder.filter(conn => conn.isFolder)
    },
    actions: {
@@ -159,7 +160,9 @@ export const useConnectionsStore = defineStore('connections', {
                connections.splice(el.index, 1, { // Move to new position
                   isFolder: false,
                   client: conn.client,
-                  uid: conn.uid
+                  uid: conn.uid,
+                  icon: conn.icon,
+                  name: conn.name
                });
 
                connIndex = connections.findIndex(conn => conn.uid === el.uid);
@@ -185,6 +188,7 @@ export const useConnectionsStore = defineStore('connections', {
                el = element;
             return el;
          });
+         persistentStore.set('connectionsOrder', this.connectionsOrder);
       },
       updateLastConnection (uid: string) {
          const cIndex = (this.lastConnections as {uid: string; time: number}[]).findIndex((c) => c.uid === uid);

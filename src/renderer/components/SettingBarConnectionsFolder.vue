@@ -43,13 +43,13 @@
                class="folder-element"
                :class="{ 'selected': element === selectedWorkspace }"
                @click="emit('select-workspace', element)"
-               @contextmenu.stop="emit('context', {event: $event, content: getConnectionByUid(element)})"
+               @contextmenu.stop="emit('context', {event: $event, content: getConnectionOrderByUid(element)})"
             >
                <i
                   class="folder-element-icon dbi"
-                  :class="[`dbi-${getConnectionByUid(element)?.client}`, getStatusBadge(getConnectionByUid(element).uid)]"
+                  :class="[getConnectionOrderByUid(element).icon ? `mdi ${getConnectionOrderByUid(element).icon}`: `dbi-${getConnectionOrderByUid(element).client}`, getStatusBadge(element)]"
                />
-               <small v-if="isOpen" class="folder-element-name">{{ getConnectionName(element) }}</small>
+               <small v-if="isOpen" class="folder-element-name">{{ getConnectionOrderByUid(element).name || getConnectionName(element) }}</small>
             </div>
          </template>
       </Draggable>
@@ -80,7 +80,7 @@ const { getFolders: folders } = storeToRefs(connectionsStore);
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const { getWorkspace } = workspacesStore;
-const { getConnectionByUid, getConnectionName, addToFolder } = connectionsStore;
+const { getConnectionOrderByUid, getConnectionName, addToFolder } = connectionsStore;
 
 const foldersOpened = JSON.parse(localStorage.getItem('opened-folders')) || [];
 
@@ -265,6 +265,8 @@ watch(() => dummyNested.value.length, () => {
 
          .folder-element-icon {
             margin: 0 auto;
+            font-size: 36px;
+            display: flex;
 
             &.badge::after {
                top: 14px;
@@ -364,6 +366,7 @@ watch(() => dummyNested.value.length, () => {
          .folder-element-icon {
             width: 21px;
             height: 21px;
+            font-size: 16px;
          }
       }
    }
@@ -389,6 +392,7 @@ watch(() => dummyNested.value.length, () => {
 
       .folder-element-icon {
          margin: 0 auto;
+         font-size: 36px;
 
          &.badge::after {
             top: 5px;

@@ -87,20 +87,20 @@ const { updateConnectionOrder } = connectionsStore;
 
 const colorPalette = [
    { name: 'default', hex: '#E36929' },
-   { name: 'grapefruit', hex: '#ED5565' },
+   { name: 'grape-fruit', hex: '#ED5565' },
    { name: 'rose', hex: '#E3242B' },
    { name: 'fire', hex: '#FDA50F' },
    { name: 'sunflower', hex: '#FFCE54' },
    { name: 'moss', hex: '#8A985E' },
-   { name: 'grass', hex: '#A0D468' },
+   { name: 'grass', hex: '#6DCD05' },
    { name: 'emerald', hex: '#038835' },
    { name: 'mint', hex: '#48CFAD' },
    { name: 'aqua', hex: '#4FC1E9' },
-   { name: 'royalblue', hex: '#4169E1' },
-   { name: 'bluejeans', hex: '#5D9CEC' },
+   { name: 'roya-lblue', hex: '#4169E1' },
+   { name: 'blue-jeans', hex: '#5D9CEC' },
    { name: 'stone', hex: '#59788E' },
    { name: 'lavander', hex: '#AC92EC' },
-   { name: 'pinkrose', hex: '#EC87C0' },
+   { name: 'pink-rose', hex: '#EC87C0' },
    { name: 'smoke', hex: '#BEBDB8' },
    { name: 'slate', hex: '#757C88' }
 ];

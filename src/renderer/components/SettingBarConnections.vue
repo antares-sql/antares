@@ -40,9 +40,9 @@
                   <div class="settingbar-element-icon-wrapper">
                      <i
                         class="settingbar-element-icon dbi"
-                        :class="[`dbi-${element.client}`, getStatusBadge(element.uid)]"
+                        :class="[element.icon ? `mdi ${element.icon} mdi-36px`: `dbi-${element.client}`, getStatusBadge(element.uid)]"
                      />
-                     <small class="settingbar-element-name">{{ getConnectionName(element.uid) }}</small>
+                     <small class="settingbar-element-name">{{ element.name || getConnectionName(element.uid) }}</small>
                   </div>
                </template>
             </div>
@@ -203,5 +203,9 @@ watch(() => props.modelValue, (value) => {
          line-height: 1;
       }
    }
+}
+
+.settingbar-element-icon {
+   display: flex;
 }
 </style>
