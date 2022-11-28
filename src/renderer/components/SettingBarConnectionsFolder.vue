@@ -393,6 +393,9 @@ watch(() => dummyNested.value.length, () => {
       .folder-element-icon {
          margin: 0 auto;
          font-size: 36px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
 
          &.badge::after {
             top: 5px;

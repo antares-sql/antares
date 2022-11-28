@@ -71,8 +71,11 @@ export const useConnectionsStore = defineStore('connections', {
             return connectionsOrder;
          }
       },
-      getConnectionOrderByUid: state => (uid:string) => state.connectionsOrder.find(connection => connection.uid === uid),
-      getFolders: state => state.connectionsOrder.filter(conn => conn.isFolder)
+      getConnectionOrderByUid: state => (uid:string) => state.connectionsOrder
+         .find(connection => connection.uid === uid),
+      getFolders: state => state.connectionsOrder.filter(conn => conn.isFolder),
+      getConnectionFolder: state => (uid:string) => state.connectionsOrder
+         .find(folder => folder.isFolder && folder.connections.includes(uid))
    },
    actions: {
       addConnection (connection: ConnectionParams) {

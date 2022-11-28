@@ -1,5 +1,9 @@
 <template>
-   <div id="footer" class="text-light">
+   <div
+      id="footer"
+      :class="[lightColors.includes(footerColor) ? 'text-dark' : 'text-light']"
+      :style="`background-color: ${footerColor};`"
+   >
       <div class="footer-left-elements">
          <ul class="footer-elements">
             <li class="footer-element">
@@ -50,6 +54,7 @@ import { useApplicationStore } from '@/stores/application';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import { computed, ComputedRef } from 'vue';
 import { useConsoleStore } from '@/stores/console';
+import { useConnectionsStore } from '@/stores/connections';
 
 const { t } = useI18n();
 
@@ -62,14 +67,19 @@ interface DatabaseInfos {// TODO: temp
 
 const applicationStore = useApplicationStore();
 const workspacesStore = useWorkspacesStore();
+const connectionsStore = useConnectionsStore();
+
+const lightColors = ['#FFCE54', '#FDA50F', '#BEBDB8', '#48CFAD'];
 
 const { getSelected: workspaceUid } = storeToRefs(workspacesStore);
 const { toggleConsole } = useConsoleStore();
 
 const { showSettingModal } = applicationStore;
 const { getWorkspace } = workspacesStore;
+const { getConnectionFolder } = connectionsStore;
 
 const workspace = computed(() => getWorkspace(workspaceUid.value));
+const footerColor = computed(() => getConnectionFolder(workspaceUid.value)?.color || '#E36929');
 const version: ComputedRef<DatabaseInfos> = computed(() => {
    return getWorkspace(workspaceUid.value) ? workspace.value.version : null;
 });
