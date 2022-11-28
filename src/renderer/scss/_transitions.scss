@@ -43,6 +43,14 @@
   animation: jump-down-in 0.2s reverse;
 }
 
+.flip-list-move {
+  transition: transform 0.5s;
+}
+
+.no-move {
+  transition: transform 0s;
+}
+
 .pulse {
   animation-name: pulse;
   animation-duration: 2s;

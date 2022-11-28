@@ -8,47 +8,10 @@
             @close-context="isContext = false"
          />
          <ul class="settingbar-elements">
-            <Draggable
-               v-model="pinnedConnectionsArr"
-               :item-key="'uid'"
-               @start="isDragging = true"
-               @end="dragStop"
-            >
-               <template #item="{ element }">
-                  <li
-                     :draggable="true"
-                     class="settingbar-element btn btn-link"
-                     :class="{ 'selected': element.uid === selectedWorkspace }"
-                     :title="getConnectionName(element.uid)"
-                     @click.stop="selectWorkspace(element.uid)"
-                     @contextmenu.prevent="contextMenu($event, element)"
-                  >
-                     <i
-                        class="settingbar-element-icon dbi"
-                        :class="[`dbi-${element.client}`, getStatusBadge(element.uid), (pinnedConnections.has(element.uid) ? 'settingbar-element-pin' : false)]"
-                     />
-                     <small class="settingbar-element-name">{{ getConnectionName(element.uid) }}</small>
-                  </li>
-               </template>
-            </Draggable>
-
-            <div v-if="pinnedConnectionsArr.length" class="divider" />
-
-            <li
-               v-for="connection in unpinnedConnectionsArr"
-               :key="connection.uid"
-               class="settingbar-element btn btn-link"
-               :class="{ 'selected': connection.uid === selectedWorkspace }"
-               :title="getConnectionName(connection.uid)"
-               @click.stop="selectWorkspace(connection.uid)"
-               @contextmenu.prevent="contextMenu($event, connection)"
-            >
-               <i
-                  class="settingbar-element-icon dbi"
-                  :class="[`dbi-${connection.client}`, getStatusBadge(connection.uid)]"
-               />
-               <small class="settingbar-element-name">{{ getConnectionName(connection.uid) }}</small>
-            </li>
+            <SettingBarConnections
+               v-model="connectionsArr"
+               @context="contextMenu"
+            />
          </ul>
       </div>
 
@@ -56,19 +19,31 @@
          <ul class="settingbar-elements">
             <li
                v-if="isScrollable"
+               v-tooltip="{
+                  strategy: 'fixed',
+                  placement: 'right',
+                  content: t('message.allConnections')
+               }"
                class="settingbar-element btn btn-link"
-               :title="t('message.allConnections')"
                @click="emit('show-connections-modal')"
             >
-               <i class="settingbar-element-icon mdi mdi-24px mdi-dots-horizontal text-light" />
+               <div class="settingbar-element-icon-wrapper">
+                  <i class="settingbar-element-icon mdi mdi-24px mdi-dots-horizontal text-light" />
+               </div>
             </li>
             <li
+               v-tooltip="{
+                  strategy: 'fixed',
+                  placement: 'right',
+                  content: t('message.addConnection')
+               }"
                class="settingbar-element btn btn-link"
                :class="{ 'selected': 'NEW' === selectedWorkspace }"
-               :title="t('message.addConnection')"
                @click="selectWorkspace('NEW')"
             >
-               <i class="settingbar-element-icon mdi mdi-24px mdi-plus text-light" />
+               <div class="settingbar-element-icon-wrapper">
+                  <i class="settingbar-element-icon mdi mdi-24px mdi-plus text-light" />
+               </div>
             </li>
          </ul>
       </div>
@@ -77,15 +52,23 @@
          <ul class="settingbar-elements">
             <li
                v-if="!disableScratchpad"
+               v-tooltip="{
+                  strategy: 'fixed',
+                  placement: 'right',
+                  content: t('word.scratchpad')
+               }"
                class="settingbar-element btn btn-link"
-               :title="t('word.scratchpad')"
                @click="showScratchpad"
             >
                <i class="settingbar-element-icon mdi mdi-24px mdi-notebook-edit-outline text-light" />
             </li>
             <li
+               v-tooltip="{
+                  strategy: 'fixed',
+                  placement: 'right',
+                  content: t('word.settings')
+               }"
                class="settingbar-element btn btn-link"
-               :title="t('word.settings')"
                @click="showSettingModal('general')"
             >
                <i
@@ -102,16 +85,16 @@
 import { ref, Ref, computed, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useApplicationStore } from '@/stores/application';
-import { useConnectionsStore } from '@/stores/connections';
+import { useConnectionsStore, SidebarElement } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import { useSettingsStore } from '@/stores/settings';
-import * as Draggable from 'vuedraggable';
 import SettingBarContext from '@/components/SettingBarContext.vue';
-import { ConnectionParams } from 'common/interfaces/antares';
+import SettingBarConnections from '@/components/SettingBarConnections.vue';
 import { useElementBounding } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
+localStorage.setItem('opened-folders', '[]');
 
 const applicationStore = useApplicationStore();
 const connectionsStore = useConnectionsStore();
@@ -119,119 +102,40 @@ const workspacesStore = useWorkspacesStore();
 const settingsStore = useSettingsStore();
 
 const { updateStatus } = storeToRefs(applicationStore);
-const { connections: storedConnections, pinnedConnections, lastConnections } = storeToRefs(connectionsStore);
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const { getConnectionsOrder: connectionsOrder } = storeToRefs(connectionsStore);
 const { disableScratchpad } = storeToRefs(settingsStore);
 
 const { showSettingModal, showScratchpad } = applicationStore;
-const { getConnectionName, updatePinnedConnections } = connectionsStore;
-const { getWorkspace, selectWorkspace } = workspacesStore;
+const { updateConnectionsOrder } = connectionsStore;
+const { selectWorkspace } = workspacesStore;
 
 const emit = defineEmits(['show-connections-modal']);
 
-const isLinux = process.platform === 'linux';
-
 const sidebarConnections: Ref<HTMLDivElement> = ref(null);
 const isContext: Ref<boolean> = ref(false);
-const isDragging: Ref<boolean> = ref(false);
 const isScrollable: Ref<boolean> = ref(false);
 const contextEvent: Ref<MouseEvent> = ref(null);
-const contextConnection: Ref<ConnectionParams> = ref(null);
+const contextConnection: Ref<SidebarElement> = ref(null);
 const sidebarConnectionsHeight = ref(useElementBounding(sidebarConnections)?.height);
 
-const pinnedConnectionsArr = computed({
-   get: () => [...pinnedConnections.value].map(c => storedConnections.value.find(sc => sc.uid === c)).filter(Boolean),
-   set: (value: ConnectionParams[]) => {
-      const pinnedUid = value.reduce((acc, curr) => {
-         acc.push(curr.uid);
-         return acc;
-      }, []);
-
-      updatePinnedConnections(pinnedUid);
+const connectionsArr = computed({
+   get: () => connectionsOrder.value,
+   set: (value: SidebarElement[]) => {
+      updateConnectionsOrder(value);
    }
-});
-
-const unpinnedConnectionsArr = computed(() => {
-   return storedConnections.value
-      .filter(c => !pinnedConnections.value.has(c.uid))
-      .map(c => {
-         const connTime = lastConnections.value.find((lc) => lc.uid === c.uid)?.time || 0;
-         return { ...c, time: connTime };
-      })
-      .sort((a, b) => {
-         if (a.time < b.time) return 1;
-         else if (a.time > b.time) return -1;
-         return 0;
-      });
 });
 
 const hasUpdates = computed(() => ['available', 'downloading', 'downloaded', 'link'].includes(updateStatus.value));
 
-const contextMenu = (event: MouseEvent, connection: ConnectionParams) => {
+const contextMenu = (event: MouseEvent, connection: SidebarElement) => {
    contextEvent.value = event;
    contextConnection.value = connection;
    isContext.value = true;
 };
 
-const tooltipPosition = (e: Event) => {
-   const el = (e.target ? e.target : e) as unknown as HTMLElement;
-   const tooltip = el.querySelector<HTMLElement>('.ex-tooltip-content');
-   if (tooltip) {
-      const fromTop = isLinux
-         ? window.scrollY + el.getBoundingClientRect().top + (el.offsetHeight / 4)
-         : window.scrollY + el.getBoundingClientRect().top - (el.offsetHeight / 4);
-      tooltip.style.top = `${fromTop}px`;
-   }
-};
-
-const getStatusBadge = (uid: string) => {
-   if (getWorkspace(uid)) {
-      const status = getWorkspace(uid).connectionStatus;
-
-      switch (status) {
-         case 'connected':
-            return 'badge badge-connected';
-         case 'connecting':
-            return 'badge badge-connecting';
-         case 'failed':
-            return 'badge badge-failed';
-         default:
-            return '';
-      }
-   }
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const dragStop = (e: any) => {
-   isDragging.value = false;
-
-   setTimeout(() => {
-      tooltipPosition(e.originalEvent.target.parentNode);
-   }, 200);
-};
-
 watch(sidebarConnectionsHeight, (value) => {
    isScrollable.value = value < sidebarConnections.value.scrollHeight;
-});
-
-watch(unpinnedConnectionsArr, (newVal, oldVal) => {
-   if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
-      setTimeout(() => {
-         const element = document.querySelector<HTMLElement>('.settingbar-element.selected');
-         if (element) {
-            const rect = element.getBoundingClientRect();
-            const elemTop = rect.top;
-            const elemBottom = rect.bottom;
-            const isVisible = (elemTop >= 0) && (elemBottom <= window.innerHeight);
-
-            if (!isVisible) {
-               element.setAttribute('tabindex', '-1');
-               element.focus();
-               element.removeAttribute('tabindex');
-            }
-         }
-      }, 50);
-   }
 });
 
 watch(selectedWorkspace, (newVal, oldVal) => {
@@ -281,6 +185,10 @@ watch(selectedWorkspace, (newVal, oldVal) => {
       padding: 0;
       margin: 0;
 
+      li {
+         margin: 0;
+      }
+
       .settingbar-element {
          height: $settingbar-width;
          width: 100%;
@@ -289,7 +197,7 @@ watch(selectedWorkspace, (newVal, oldVal) => {
          transition: opacity 0.2s;
          display: flex;
          align-items: center;
-         justify-content: flex-start;
+         justify-content: center;
          border-radius: 0;
          padding: 0;
          position: relative;
@@ -302,7 +210,7 @@ watch(selectedWorkspace, (newVal, oldVal) => {
             opacity: 1;
 
             &::before {
-               height: $settingbar-width;
+               height: calc(#{$settingbar-width} - 0.4rem);
             }
          }
 
@@ -311,53 +219,56 @@ watch(selectedWorkspace, (newVal, oldVal) => {
             height: 0;
             width: 3px;
             transition: height 0.2s;
-            background-color: $primary-color;
+            background-color: rgba($color: #fff, $alpha: 0.8);
             border-radius: $border-radius;
          }
 
-         .settingbar-element-icon {
-            margin: 0 auto;
+         .settingbar-element-icon-wrapper{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
 
-            &.badge::after {
-               top: 5px;
-               right: -4px;
-               position: absolute;
+            .settingbar-element-icon {
+               &.badge::after {
+                  top: 10px;
+                  right: -6px;
+                  position: absolute;
+               }
+
+               &.badge-update::after {
+                  bottom: initial;
+               }
             }
 
-            &.badge-update::after {
-               bottom: initial;
+            .settingbar-element-name {
+               font-size: 65%;
+               max-width: 90%;
+               font-style: normal;
+               display: block;
+               overflow: hidden;
+               white-space: nowrap;
+               text-overflow: ellipsis;
+               width: calc($settingbar-width - 15px);
+               line-height: 1.1;
+               color: rgba($body-font-color-dark, 0.8);
+               text-align: center;
             }
-         }
 
-         .settingbar-element-name {
-            font-size: 65%;
-            bottom: 5px;
-            left: 7px;
-            position: absolute;
-            font-style: normal;
-            display: block;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            width: calc($settingbar-width - 15px);
-            text-align: left;
-            line-height: 1.1;
-            color: rgba($body-font-color-dark, 0.8);
-            text-align: center;
-         }
+            .settingbar-element-pin {// <- Dead
+               margin: 0 auto;
 
-         .settingbar-element-pin {
-            margin: 0 auto;
-
-            &::before {
-               font: normal normal normal 14px/1 "Material Design Icons";
-               content: "\F0403";
-               color: $body-font-color-dark;
-               transform: rotate(45deg);
-               opacity: 0.25;
-               top: -8px;
-               left: -10px;
-               position: absolute;
+               &::before {
+                  font: normal normal normal 14px/1 "Material Design Icons";
+                  content: "\F0403";
+                  color: $body-font-color-dark;
+                  transform: rotate(45deg);
+                  opacity: 0.25;
+                  top: -8px;
+                  left: -10px;
+                  position: absolute;
+               }
             }
          }
       }

@@ -3,7 +3,9 @@ import { ipcRenderer } from 'electron';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { VueMaskDirective } from 'v-mask';
+import * as FloatingVue from 'floating-vue';
 import '@mdi/font/css/materialdesignicons.css';
+import 'floating-vue/dist/style.css';
 import 'leaflet/dist/leaflet.css';
 import '@/scss/main.scss';
 
@@ -27,6 +29,7 @@ createApp(App)
    .directive('mask', vMaskV3)
    .use(createPinia())
    .use(i18n)
+   .use(FloatingVue)
    .mount('#app');
 
 const { locale } = useSettingsStore();

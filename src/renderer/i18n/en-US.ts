@@ -143,7 +143,12 @@ export const enUS = {
       pin: 'Pin',
       unpin: 'Unpin',
       console: 'Console',
-      shortcuts: 'Shortcuts'
+      shortcuts: 'Shortcuts',
+      folder: 'Folder | Folders',
+      appearence: 'Appearence',
+      color: 'Color',
+      label: 'Label',
+      icon: 'Icon'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -323,7 +328,11 @@ export const enUS = {
       openFilter: 'Open filter',
       nextResultsPage: 'Next results page',
       previousResultsPage: 'Previous results page',
-      fillCell: 'Fill cell'
+      fillCell: 'Fill cell',
+      editFolder: 'Edit folder',
+      folderName: 'Folder name',
+      deleteFolder: 'Delete folder',
+      editConnectionAppearence: 'Edit connection appearence'
    },
    faker: {
       address: 'Address',

@@ -30,7 +30,7 @@
          >
             <i class="mdi mdi-24px mdi-refresh" />
          </div>
-         <div v-if="isWindows" style="width: 140px;" />
+         <div v-if="isWindows" :style="'width: 140px;'" />
       </div>
    </div>
 </template>
@@ -67,7 +67,7 @@ const windowTitle = computed(() => {
 
    const connectionName = getConnectionName(selectedWorkspace.value);
    const workspace = getWorkspace(selectedWorkspace.value);
-   const breadcrumbs = Object.values(workspace.breadcrumbs).filter(breadcrumb => breadcrumb) || [workspace.client];
+   const breadcrumbs = workspace ? Object.values(workspace.breadcrumbs).filter(breadcrumb => breadcrumb) || [workspace.client] : [];
 
    return [connectionName, ...breadcrumbs].join(' • ');
 });
