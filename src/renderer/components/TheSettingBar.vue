@@ -19,8 +19,12 @@
          <ul class="settingbar-elements">
             <li
                v-if="isScrollable"
+               v-tooltip="{
+                  strategy: 'fixed',
+                  placement: 'right',
+                  content: t('message.allConnections')
+               }"
                class="settingbar-element btn btn-link"
-               :title="t('message.allConnections')"
                @click="emit('show-connections-modal')"
             >
                <div class="settingbar-element-icon-wrapper">
@@ -28,9 +32,13 @@
                </div>
             </li>
             <li
+               v-tooltip="{
+                  strategy: 'fixed',
+                  placement: 'right',
+                  content: t('message.addConnection')
+               }"
                class="settingbar-element btn btn-link"
                :class="{ 'selected': 'NEW' === selectedWorkspace }"
-               :title="t('message.addConnection')"
                @click="selectWorkspace('NEW')"
             >
                <div class="settingbar-element-icon-wrapper">
@@ -44,15 +52,23 @@
          <ul class="settingbar-elements">
             <li
                v-if="!disableScratchpad"
+               v-tooltip="{
+                  strategy: 'fixed',
+                  placement: 'right',
+                  content: t('word.scratchpad')
+               }"
                class="settingbar-element btn btn-link"
-               :title="t('word.scratchpad')"
                @click="showScratchpad"
             >
                <i class="settingbar-element-icon mdi mdi-24px mdi-notebook-edit-outline text-light" />
             </li>
             <li
+               v-tooltip="{
+                  strategy: 'fixed',
+                  placement: 'right',
+                  content: t('word.settings')
+               }"
                class="settingbar-element btn btn-link"
-               :title="t('word.settings')"
                @click="showSettingModal('general')"
             >
                <i

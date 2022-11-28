@@ -1,9 +1,14 @@
 <template>
    <div
+      v-tooltip="{
+         strategy: 'fixed',
+         placement: 'right',
+         content: folder.name,
+         disabled: isOpen || !folder.name
+      }"
       class="settingbar-element folder btn btn-link p-1"
       :class="[{ 'selected-inside': hasSelectedInside && !isOpen }]"
       :style="isOpen ? `height: auto; opacity: 1;` : null"
-      :title="folder.name"
    >
       <Draggable
          class="folder-container"
@@ -40,6 +45,11 @@
          <template #item="{ element }">
             <div
                :key="element"
+               v-tooltip="{
+                  strategy: 'fixed',
+                  placement: 'right',
+                  content: getConnectionName(element)
+               }"
                class="folder-element"
                :class="{ 'selected': element === selectedWorkspace }"
                @click="emit('select-workspace', element)"

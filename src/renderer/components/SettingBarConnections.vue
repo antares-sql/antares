@@ -20,9 +20,15 @@
          >
             <div
                v-if="!element.isFolder && !folderedConnections.includes(element.uid)"
+               v-tooltip="{
+                  strategy: 'fixed',
+                  placement: 'right',
+                  content: getConnectionName(element.uid)
+               }"
                class="settingbar-element btn btn-link"
                :class="{ 'selected': element.uid === selectedWorkspace }"
-               :title="getConnectionName(element.uid)"
+               placement="right"
+               strategy="fixed"
                @click.stop="selectWorkspace(element.uid)"
             >
                <!-- Creates a new folder -->
