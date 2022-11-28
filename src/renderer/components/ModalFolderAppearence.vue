@@ -96,7 +96,7 @@ const colorPalette = [
    { name: 'emerald', hex: '#038835' },
    { name: 'mint', hex: '#48CFAD' },
    { name: 'aqua', hex: '#4FC1E9' },
-   { name: 'roya-lblue', hex: '#4169E1' },
+   { name: 'royal-lblue', hex: '#4169E1' },
    { name: 'blue-jeans', hex: '#5D9CEC' },
    { name: 'stone', hex: '#59788E' },
    { name: 'lavander', hex: '#AC92EC' },

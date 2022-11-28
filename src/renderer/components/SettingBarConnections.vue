@@ -48,7 +48,7 @@
             </div>
             <SettingBarConnectionsFolder
                v-else-if="element.isFolder"
-               :key="element.uid"
+               :key="`${element.uid}-${element.connections.length}`"
                :folder="element"
                :covered-element="coveredElement"
                :dragged-element="draggedElement"

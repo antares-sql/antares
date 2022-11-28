@@ -47,9 +47,9 @@
             >
                <i
                   class="folder-element-icon dbi"
-                  :class="[getConnectionOrderByUid(element).icon ? `mdi ${getConnectionOrderByUid(element).icon}`: `dbi-${getConnectionOrderByUid(element).client}`, getStatusBadge(element)]"
+                  :class="[getConnectionOrderByUid(element)?.icon ? `mdi ${getConnectionOrderByUid(element).icon}`: `dbi-${getConnectionOrderByUid(element)?.client}`, getStatusBadge(element)]"
                />
-               <small v-if="isOpen" class="folder-element-name">{{ getConnectionOrderByUid(element).name || getConnectionName(element) }}</small>
+               <small v-if="isOpen" class="folder-element-name">{{ getConnectionOrderByUid(element)?.name || getConnectionName(element) }}</small>
             </div>
          </template>
       </Draggable>

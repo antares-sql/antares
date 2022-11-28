@@ -111,16 +111,12 @@ export const useConnectionsStore = defineStore('connections', {
          persistentStore.set('connectionsOrder', this.connectionsOrder);
       },
       deleteConnection (connection: SidebarElement | ConnectionParams) {
-         this.connections = (this.connections as SidebarElement[]).filter(el => el.uid !== connection.uid);
-         persistentStore.set('connections', this.connections);
-
-         this.connectionsOrder = (this.connectionsOrder as SidebarElement[]).filter(el => el.uid !== connection.uid);
          this.connectionsOrder = (this.connectionsOrder as SidebarElement[]).map(el => { // Removes connection from folders
             if (el.isFolder && el.connections.includes(connection.uid))
                el.connections = el.connections.filter(uid => uid !== connection.uid);
-
             return el;
          });
+         this.connectionsOrder = (this.connectionsOrder as SidebarElement[]).filter(el => el.uid !== connection.uid);
 
          // Clear empty folders
          const emptyFolders = (this.connectionsOrder as SidebarElement[]).reduce<string[]>((acc, curr) => {
@@ -130,8 +126,10 @@ export const useConnectionsStore = defineStore('connections', {
          }, []);
 
          this.connectionsOrder = (this.connectionsOrder as SidebarElement[]).filter(el => !emptyFolders.includes(el.uid));
-
          persistentStore.set('connectionsOrder', this.connectionsOrder);
+
+         this.connections = (this.connections as SidebarElement[]).filter(el => el.uid !== connection.uid);
+         persistentStore.set('connections', this.connections);
       },
       editConnection (connection: ConnectionParams) {
          const editedConnections = (this.connections as ConnectionParams[]).map(conn => {
