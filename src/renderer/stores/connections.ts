@@ -165,7 +165,7 @@ export const useConnectionsStore = defineStore('connections', {
                   name: conn.name
                });
 
-               connIndex = connections.findIndex(conn => conn.uid === el.uid);
+               connIndex = connections.findIndex((conn, i) => conn.uid === el.uid && i !== el.index);
                connections.splice(connIndex, 1);// Delete old object
             });
          }
