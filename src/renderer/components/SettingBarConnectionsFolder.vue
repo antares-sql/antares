@@ -179,6 +179,8 @@ const dragStop = () => {
 watch(() => dummyNested.value.length, () => {
    dummyNested.value = [];
 });
+
+emit('folder-sort');// To apply changes on component key change
 </script>
 <style lang="scss" scoped>
 .folder {
@@ -211,6 +213,7 @@ watch(() => dummyNested.value.length, () => {
    gap: 4px;
    padding: 4px;
    height: 100%;
+   overflow: hidden;
    width: 100%;
    border-radius: 15px;
    transition: background .3s;
@@ -251,6 +254,8 @@ watch(() => dummyNested.value.length, () => {
       .folder-element {
          opacity: .6;
          height: 2.5rem;
+         max-width: initial;
+         max-height: initial;
          background: transparent;
 
          &.selected {
@@ -335,6 +340,8 @@ watch(() => dummyNested.value.length, () => {
       display: flex;
       align-items: flex-start;
       justify-content: center;
+      max-width: 23px;
+      max-height: 23px;
       margin-bottom: 3px;
       position: relative;
       transition: opacity .2s;
