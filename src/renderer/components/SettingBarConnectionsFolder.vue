@@ -17,7 +17,7 @@
          :style="[
             `background: ${folder.color};`,
             isOpen ? `max-height: ${60*(folder.connections.length+1)}px` : 'max-height: 60px',
-            !isOpen ? `overflow: hidden;` : ''
+            !isOpen || folderDrag ? `overflow: hidden;` : ''
          ]"
          :list="localList"
          ghost-class="ghost"
@@ -213,7 +213,6 @@ emit('folder-sort');// To apply changes on component key change
    gap: 4px;
    padding: 4px;
    height: 100%;
-   overflow: hidden;
    width: 100%;
    border-radius: 15px;
    transition: background .3s;

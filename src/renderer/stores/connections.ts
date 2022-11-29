@@ -110,7 +110,6 @@ export const useConnectionsStore = defineStore('connections', {
 
             return conn;
          });
-         console.log(this.connectionsOrder);
          persistentStore.set('connectionsOrder', this.connectionsOrder);
          this.clearEmptyFolders();
       },
