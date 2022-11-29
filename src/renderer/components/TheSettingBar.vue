@@ -103,11 +103,11 @@ const settingsStore = useSettingsStore();
 
 const { updateStatus } = storeToRefs(applicationStore);
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
-const { getConnectionsOrder: connectionsOrder } = storeToRefs(connectionsStore);
+const { connectionsOrder } = storeToRefs(connectionsStore);
 const { disableScratchpad } = storeToRefs(settingsStore);
 
 const { showSettingModal, showScratchpad } = applicationStore;
-const { updateConnectionsOrder } = connectionsStore;
+const { updateConnectionsOrder, initConnectionsOrder } = connectionsStore;
 const { selectWorkspace } = workspacesStore;
 
 const emit = defineEmits(['show-connections-modal']);
@@ -150,6 +150,9 @@ watch(selectedWorkspace, (newVal, oldVal) => {
       }, 150);
    }
 });
+
+if (!connectionsArr.value.length)
+   initConnectionsOrder();
 </script>
 
 <style lang="scss">

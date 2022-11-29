@@ -56,23 +56,6 @@ export const useConnectionsStore = defineStore('connections', {
 
          return connectionName;
       },
-      getConnectionsOrder: state => {
-         if (state.connectionsOrder.length)
-            return state.connectionsOrder;
-         else {
-            const connectionsOrder = state.connections.map<SidebarElement>(conn => {
-               return {
-                  isFolder: false,
-                  uid: conn.uid,
-                  client: conn.client,
-                  icon: null,
-                  name: null
-               };
-            });
-            persistentStore.set('connectionsOrder', connectionsOrder);
-            return connectionsOrder;
-         }
-      },
       getConnectionOrderByUid: state => (uid:string) => state.connectionsOrder
          .find(connection => connection.uid === uid),
       getFolders: state => state.connectionsOrder.filter(conn => conn.isFolder),
@@ -88,12 +71,14 @@ export const useConnectionsStore = defineStore('connections', {
             isFolder: false,
             uid: connection.uid,
             client: connection.client,
-            icon: null
+            icon: null,
+            name: null
          });
          persistentStore.set('connectionsOrder', this.connectionsOrder);
       },
       addFolder (params: {after: string; connections: [string, string]}) {
          const index = this.connectionsOrder.findIndex((conn: SidebarElement) => conn.uid === params.after);
+
          this.connectionsOrder.splice(index, 0, {
             isFolder: true,
             uid: uidGen('F'),
@@ -136,6 +121,18 @@ export const useConnectionsStore = defineStore('connections', {
       updateConnections (connections: ConnectionParams[]) {
          this.connections = connections;
          persistentStore.set('connections', this.connections);
+      },
+      initConnectionsOrder () {
+         this.connectionsOrder = (this.connections as ConnectionParams[]).map<SidebarElement>(conn => {
+            return {
+               isFolder: false,
+               uid: conn.uid,
+               client: conn.client,
+               icon: null,
+               name: null
+            };
+         });
+         persistentStore.set('connectionsOrder', this.connectionsOrder);
       },
       updateConnectionsOrder (connections: SidebarElement[]) {
          const invalidElements = connections.reduce<{index: number; uid: string}[]>((acc, curr, i) => {
