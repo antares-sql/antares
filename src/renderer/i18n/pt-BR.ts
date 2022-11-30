@@ -142,7 +142,12 @@ export const ptBR = {
       pin: 'Fixar',	
       unpin: 'Desafixar',	
       console: 'Console',	
-      shortcuts: 'Atalhos'
+      shortcuts: 'Atalhos',
+      folder: 'Pasta | Pastas',
+      appearence: 'Aparência',
+      color: 'Cor',
+      label: 'Rótulo',
+      icon: 'Icone'
    },
    message: {
       appWelcome: 'Bem vindo ao Antares SQL Client!',
@@ -320,7 +325,12 @@ export const ptBR = {
       clearQuery: 'Limpar consulta',	
       openFilter: 'Abrir Filtro',	
       nextResultsPage: 'Próxima página de resultados',	
-      previousResultsPage: 'Página de resultados anterior'
+      previousResultsPage: 'Página de resultados anterior',
+      fillCell: 'Preencher Célula',
+      editFolder: 'Editar Pasta',
+      folderName: 'Nome da pasta',
+      deleteFolder: 'Apagar Pasta',
+      editConnectionAppearence: 'Editar aparência da conexão'
    },
    faker: {
       address: 'Endereço',
