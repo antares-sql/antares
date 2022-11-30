@@ -7,7 +7,7 @@
          {{ t('message.noOpenTabs') }}
       </p>
       <div class="empty-action">
-         <button class="btn btn-gray d-flex" @click="emit('new-tab')">
+         <button class="btn btn-primary d-flex" @click="emit('new-tab')">
             <i class="mdi mdi-24px mdi-tab-plus mr-2" />
             {{ t('message.openNewTab') }}
          </button>
