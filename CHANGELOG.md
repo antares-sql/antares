@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.7.0](https://github.com/antares-sql/antares/compare/v0.6.0...v0.7.0) (2022-11-30)
+
+
+### Features
+
+* **UI:** connections customization ([212b2bd](https://github.com/antares-sql/antares/commit/212b2bdba933db1af22967a057d64f41c96b9930))
+* **UI:** folders customization ([72accb7](https://github.com/antares-sql/antares/commit/72accb7b0e62977dde2c82312aee5b9d025e5182))
+* **UI:** folders implementation ([ece6c64](https://github.com/antares-sql/antares/commit/ece6c6401def4a9b42280f23efaa038b9ad98de8))
+* **UI:** footer color based on folder color ([4fe9dfc](https://github.com/antares-sql/antares/commit/4fe9dfc4d7ca19a798b8a8a74d979ab88aebeaac))
+* **UI:** new settimgbar tooltips ([6728964](https://github.com/antares-sql/antares/commit/672896414e901635c83ca037663e355a31ce013b))
+
+
+### Bug Fixes
+
+* deletion of connections inside folder ([b06bafe](https://github.com/antares-sql/antares/commit/b06bafe06c060233ebe901979b9fc4455a25cb89))
+* missing sidebar data after update ([0a1f50a](https://github.com/antares-sql/antares/commit/0a1f50a9b92c9705784b93f14be40a01a78cb0da))
+* **UI:** folder to folder drag glitches ([0fca70e](https://github.com/antares-sql/antares/commit/0fca70ebec1af3d594db4e1ce159e52e12224850))
+* **UI:** wrong copnnection icons color with light theme ([d010d5a](https://github.com/antares-sql/antares/commit/d010d5aa8f07a5def1183567ee767fd144696ed3))
+* wrong position moving elements outside folder ([7af178a](https://github.com/antares-sql/antares/commit/7af178a1e400876e6c45dbe31a198a12d29227a8))
+
 ## [0.6.0](https://github.com/antares-sql/antares/compare/v0.5.19...v0.6.0) (2022-11-18)
 
 
