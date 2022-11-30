@@ -45,7 +45,7 @@ const workspace = computed(() => {
 changeBreadcrumbs({ schema: workspace.value.breadcrumbs.schema });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .empty {
     height: 100%;
     border-radius: 0;
