@@ -216,6 +216,7 @@ emit('folder-sort');// To apply changes on component key change
    width: 100%;
    border-radius: 15px;
    transition: background .3s;
+   color: $body-font-color-dark;
 
    &::before {
       content: "";

@@ -180,4 +180,16 @@ onBeforeUnmount(() => {
          }
      }
   }
+
+  .theme-light {
+      .icons-wrapper {
+         .dbi {
+            filter: invert(100%) opacity(.8);
+
+            &.selected {
+               outline-color: #1c96d6;
+            }
+         }
+      }
+  }
 </style>

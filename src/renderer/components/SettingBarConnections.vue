@@ -213,5 +213,6 @@ watch(() => props.modelValue, (value) => {
 
 .settingbar-element-icon {
    display: flex;
+   color: $body-font-color-dark;
 }
 </style>
