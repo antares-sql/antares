@@ -190,6 +190,7 @@ if (!connectionsArr.value.length)
 
       li {
          margin: 0;
+         background: $bg-color-light-dark;
       }
 
       .settingbar-element {
