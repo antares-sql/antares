@@ -121,7 +121,7 @@ app.on('ready', async () => {
       mainWindow.show();
 
    // if (isDevelopment)
-   mainWindow.webContents.openDevTools();
+   //    mainWindow.webContents.openDevTools();
 
    process.on('uncaughtException', error => {
       mainWindow.webContents.send('unhandled-exception', error);
