@@ -258,6 +258,14 @@ emit('folder-sort');// To apply changes on component key change
          max-height: initial;
          background: transparent;
 
+         &.ghost {
+            background: $bg-color-light-dark;
+            &.selected::before {
+               height: 0;
+               position: absolute;
+            }
+         }
+
          &.selected {
             opacity: 1;
 

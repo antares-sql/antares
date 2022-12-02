@@ -191,6 +191,17 @@ if (!connectionsArr.value.length)
       li {
          margin: 0;
          background: $bg-color-light-dark;
+
+         &.ghost {
+            border-radius: $border-radius;
+
+            .settingbar-element {
+               &.selected::before {
+                  height: 0;
+                  width: 0;
+               }
+            }
+         }
       }
 
       .settingbar-element {
