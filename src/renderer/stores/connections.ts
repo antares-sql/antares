@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
 import * as Store from 'electron-store';
-import * as crypto from 'crypto';
 import { ConnectionParams } from 'common/interfaces/antares';
 import { uidGen } from 'common/libs/uidGen';
-const key = localStorage.getItem('key');
+import Application from '@/ipc-api/Application';
+const oldKey = localStorage.getItem('key');
 
 export interface SidebarElement {
    isFolder: boolean;
@@ -15,16 +15,28 @@ export interface SidebarElement {
    icon?: null | string;
 }
 
-if (!key)
-   localStorage.setItem('key', crypto.randomBytes(16).toString('hex'));
-else
-   localStorage.setItem('key', key);
+const key = Application.getKey();
 
 const persistentStore = new Store({
-   name: 'connections',
+   name: 'new-connections',
    encryptionKey: key,
    clearInvalidConfig: true
 });
+
+if (oldKey) { // From old to new
+   const oldPersistentStore = new Store({
+      name: 'connections',
+      encryptionKey: oldKey,
+      clearInvalidConfig: true
+   });
+
+   const connections = oldPersistentStore.get('connections', []);
+   const connectionsOrder = oldPersistentStore.get('connectionsOrder', []);
+
+   persistentStore.set('connections', connections);
+   persistentStore.set('connectionsOrder', connectionsOrder);
+   localStorage.removeItem('key');
+}
 
 export const useConnectionsStore = defineStore('connections', {
    state: () => ({

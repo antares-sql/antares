@@ -3,6 +3,10 @@ import { ipcRenderer, OpenDialogOptions, OpenDialogReturnValue } from 'electron'
 import { unproxify } from '../libs/unproxify';
 
 export default class {
+   static getKey () {
+      return ipcRenderer.sendSync('get-key');
+   }
+
    static showOpenDialog (options: OpenDialogOptions): Promise<OpenDialogReturnValue> {
       return ipcRenderer.invoke('show-open-dialog', unproxify(options));
    }
