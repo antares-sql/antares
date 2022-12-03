@@ -115,8 +115,25 @@ export const useConnectionsStore = defineStore('connections', {
             if (conn.uid === connection.uid) return connection;
             return conn;
          });
+
          this.connections = editedConnections;
          persistentStore.set('connections', this.connections);
+
+         const editedConnectionsOrder = (this.connectionsOrder as SidebarElement[]).map(conn => {
+            if (conn.uid === connection.uid) {
+               return {
+                  isFolder: false,
+                  uid: connection.uid,
+                  client: connection.client,
+                  icon: conn.icon,
+                  name: conn.name
+               };
+            }
+            return conn;
+         });
+
+         this.connectionsOrder = editedConnectionsOrder;
+         persistentStore.set('connectionsOrder', this.connectionsOrder);
       },
       updateConnections (connections: ConnectionParams[]) {
          this.connections = connections;
