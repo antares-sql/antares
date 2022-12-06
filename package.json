@@ -137,7 +137,7 @@
     "moment": "~2.29.4",
     "mysql2": "~2.3.2",
     "node-firebird": "~1.1.4",
-    "pg": "~8.7.1",
+    "pg": "~8.8.0",
     "pg-connection-string": "~2.5.0",
     "pg-query-stream": "~4.2.3",
     "pgsql-ast-parser": "~7.2.1",
