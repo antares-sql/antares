@@ -37,6 +37,7 @@ async function createMainWindow () {
       webPreferences: {
          nodeIntegration: true,
          contextIsolation: false,
+         devTools: isDevelopment,
          spellcheck: false
       },
       autoHideMenuBar: true,

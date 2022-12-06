@@ -1047,7 +1047,7 @@ export class FirebirdSQLClient extends AntaresCore {
             connection = await this.getConnection();
 
             const transaction = await new Promise<firebird.Transaction>((resolve, reject) => {
-               (connection as firebird.Database).transaction(firebird.ISOLATION_READ_COMMITED, (err, transaction) => {
+               (connection as firebird.Database).transaction(firebird.ISOLATION_READ_COMMITTED, (err, transaction) => {
                   if (err) reject(err);
                   else resolve(transaction);
                });
