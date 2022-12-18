@@ -10,6 +10,7 @@ import { viVN } from './vi-VN';
 import { jaJP } from './ja-JP';
 import { zhCN } from './zh-CN';
 import { ruRU } from './ru-RU';
+import { idID } from './id-ID';
 
 const messages = {
    'en-US': enUS,
@@ -22,7 +23,8 @@ const messages = {
    'vi-VN': viVN,
    'ja-JP': jaJP,
    'zh-CN': zhCN,
-   'ru-RU': ruRU
+   'ru-RU': ruRU,
+   'id-RU': idID
 };
 
 type NestedPartial<T> = {
