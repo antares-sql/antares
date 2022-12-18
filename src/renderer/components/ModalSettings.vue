@@ -86,7 +86,7 @@
                                     />
                                  </div>
                                  <div class="col-4 col-sm-12 px-2 p-vcentered">
-                                    <small class="d-block" style="line-height: 1.1; font-size: 70%;">
+                                    <small class="d-block" :style="'line-height: 1.1; font-size: 70%;'">
                                        {{ t('message.missingOrIncompleteTranslation') }}<br>
                                        <a class="text-bold c-hand" @click="openOutside('https://github.com/antares-sql/antares/wiki/Translate-Antares')">{{ t('message.findOutHowToContribute') }}</a>
                                     </small>
@@ -192,6 +192,19 @@
                                  <div class="col-3 col-sm-12">
                                     <label class="form-switch d-inline-block" @click.prevent="toggleLineWrap">
                                        <input type="checkbox" :checked="selectedLineWrap">
+                                       <i class="form-icon" />
+                                    </label>
+                                 </div>
+                              </div>
+                              <div class="form-group column col-12 mb-0">
+                                 <div class="col-5 col-sm-12">
+                                    <label class="form-label">
+                                       {{ t('message.executeSelectedQuery') }}
+                                    </label>
+                                 </div>
+                                 <div class="col-3 col-sm-12">
+                                    <label class="form-switch d-inline-block" @click.prevent="toggleExecuteSelected">
+                                       <input type="checkbox" :checked="selectedExecuteSelected">
                                        <i class="form-icon" />
                                     </label>
                                  </div>
@@ -379,6 +392,7 @@ const {
    dataTabLimit: pageSize,
    autoComplete: selectedAutoComplete,
    lineWrap: selectedLineWrap,
+   executeSelected: selectedExecuteSelected,
    notificationsTimeout,
    restoreTabs,
    disableBlur,
@@ -398,6 +412,7 @@ const {
    changeDisableScratchpad,
    changeAutoComplete,
    changeLineWrap,
+   changeExecuteSelected,
    changeApplicationTheme,
    changeEditorTheme,
    changeEditorFontSize,
@@ -548,6 +563,10 @@ const toggleAutoComplete = () => {
 
 const toggleLineWrap = () => {
    changeLineWrap(!selectedLineWrap.value);
+};
+
+const toggleExecuteSelected = () => {
+   changeExecuteSelected(!selectedExecuteSelected.value);
 };
 
 localLocale.value = selectedLocale.value;

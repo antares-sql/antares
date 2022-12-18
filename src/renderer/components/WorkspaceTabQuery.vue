@@ -198,6 +198,7 @@ import WorkspaceTabQueryEmptyState from '@/components/WorkspaceTabQueryEmptyStat
 import ModalHistory from '@/components/ModalHistory.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import { ipcRenderer } from 'electron';
+import { useSettingsStore } from '@/stores/settings';
 
 const { t } = useI18n();
 
@@ -222,6 +223,7 @@ const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
 
 const { consoleHeight } = storeToRefs(useConsoleStore());
+const { executeSelected } = storeToRefs(useSettingsStore());
 
 const {
    getWorkspace,
@@ -290,8 +292,10 @@ const runQuery = async (query: string) => {
    if (!query || isQuering.value) return;
    isQuering.value = true;
 
-   const selectedQuery = queryEditor.value.editor.getSelectedText();
-   if (selectedQuery) query = selectedQuery;
+   if (executeSelected.value) {
+      const selectedQuery = queryEditor.value.editor.getSelectedText();
+      if (selectedQuery) query = selectedQuery;
+   }
 
    clearTabData();
    queryTable.value.resetSort();

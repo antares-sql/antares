@@ -22,6 +22,7 @@ export const useSettingsStore = defineStore('settings', {
       dataTabLimit: settingsStore.get('data_tab_limit', 1000) as number,
       autoComplete: settingsStore.get('auto_complete', true) as boolean,
       lineWrap: settingsStore.get('line_wrap', true) as boolean,
+      executeSelected: settingsStore.get('execute_selected', true) as boolean,
       applicationTheme: settingsStore.get('application_theme', defaultAppTheme) as ApplicationTheme,
       editorTheme: settingsStore.get('editor_theme', defaultEditorTheme) as string,
       editorFontSize: settingsStore.get('editor_font_size', 'medium') as EditorFontSize,
@@ -59,6 +60,10 @@ export const useSettingsStore = defineStore('settings', {
       changeLineWrap (val: boolean) {
          this.lineWrap = val;
          settingsStore.set('line_wrap', this.lineWrap);
+      },
+      changeExecuteSelected (val: boolean) {
+         this.executeSelected = val;
+         settingsStore.set('execute_selected', this.executeSelected);
       },
       changeApplicationTheme (theme: string) {
          this.applicationTheme = theme;

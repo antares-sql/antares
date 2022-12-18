@@ -332,7 +332,8 @@ export const enUS = {
       editFolder: 'Edit folder',
       folderName: 'Folder name',
       deleteFolder: 'Delete folder',
-      editConnectionAppearence: 'Edit connection appearence'
+      editConnectionAppearence: 'Edit connection appearence',
+      executeSelectedQuery: 'Execute selected query'
    },
    faker: {
       address: 'Address',
