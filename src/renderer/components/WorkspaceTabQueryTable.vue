@@ -465,6 +465,42 @@ const copyRow = (format: string) => {
 
       navigator.clipboard.writeText(csv.join('\n'));
    }
+   else if (format === 'html') {
+      const arrayContent = new Array<string[]>();
+      if (!Array.isArray(contentToCopy)) contentToCopy = [contentToCopy];
+
+      for (const row of contentToCopy)
+         arrayContent.push(Object.values(row));
+
+      const htmlContent = createHtmlTable(arrayContent);
+      const htmlBlob = new Blob([htmlContent.outerHTML], { type: 'text/html' });
+      const textBlob = new Blob([arrayContent.map(row => row.join(' ')).join('\n')], { type: 'text/plain' });
+      const data = [new ClipboardItem({
+         'text/plain': textBlob,
+         'text/html': htmlBlob
+      })];
+
+      navigator.clipboard.write(data);
+   }
+};
+
+const createHtmlTable = (tableData: Array<string[]>) => {
+   const table = document.createElement('table');
+   const tableBody = document.createElement('tbody');
+   tableData.forEach(function (rowData: Array<string>) {
+      const row = document.createElement('tr');
+
+      rowData.forEach(function (cellData: string) {
+         const cell = document.createElement('td');
+         cell.appendChild(document.createTextNode(cellData));
+         row.appendChild(cell);
+      });
+
+      tableBody.appendChild(row);
+   });
+
+   table.appendChild(tableBody);
+   return table;
 };
 
 const fillCell = (event: { name: string; group: string; type: string }) => {

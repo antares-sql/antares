@@ -16,6 +16,11 @@
                   <i class="mdi mdi-18px mdi-numeric-0 mdi-rotate-90 text-light pr-1" /> {{ t('word.cell', 1) }}
                </span>
             </div>
+            <div class="context-element" @click="copyRow('html')">
+               <span class="d-flex">
+                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', selectedRows.length) }} (Table)
+               </span>
+            </div>
             <div class="context-element" @click="copyRow('json')">
                <span class="d-flex">
                   <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', selectedRows.length) }} (JSON)
