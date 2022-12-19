@@ -24,7 +24,7 @@ const messages = {
    'ja-JP': jaJP,
    'zh-CN': zhCN,
    'ru-RU': ruRU,
-   'id-RU': idID
+   'id-ID': idID
 };
 
 type NestedPartial<T> = {
