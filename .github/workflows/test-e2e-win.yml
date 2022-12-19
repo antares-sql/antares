@@ -1,4 +1,4 @@
-name: Test end-to-end [LINUX]
+name: Test end-to-end [WINDOWS]
 
 on: push
 
