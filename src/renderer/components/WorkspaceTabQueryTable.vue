@@ -474,7 +474,7 @@ const copyRow = (format: string) => {
 
       const htmlContent = createHtmlTable(arrayContent);
       const htmlBlob = new Blob([htmlContent.outerHTML], { type: 'text/html' });
-      const textBlob = new Blob([arrayContent.map(row => row.join(' ')).join('\n')], { type: 'text/plain' });
+      const textBlob = new Blob([arrayContent.map(row => row.join('\t')).join('\n')], { type: 'text/plain' });
       const data = [new ClipboardItem({
          'text/plain': textBlob,
          'text/html': htmlBlob
