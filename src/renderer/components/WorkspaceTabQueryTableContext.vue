@@ -18,7 +18,7 @@
             </div>
             <div class="context-element" @click="copyRow('html')">
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', selectedRows.length) }} (Table)
+                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', selectedRows.length) }} ({{ t('word.table') }})
                </span>
             </div>
             <div class="context-element" @click="copyRow('json')">
