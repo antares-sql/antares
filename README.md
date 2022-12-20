@@ -141,7 +141,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center"><a href="https://github.com/fredatgithub"><img src="https://avatars.githubusercontent.com/u/6720055?v=4?s=100" width="100px;" alt="fred"/><br /><sub><b>fred</b></sub></a><br /><a href="#translation-fredatgithub" title="Translation">🌍</a></td>
       <td align="center"><a href="https://github.com/xak666"><img src="https://avatars.githubusercontent.com/u/38811437?v=4?s=100" width="100px;" alt="xaka_xak"/><br /><sub><b>xaka_xak</b></sub></a><br /><a href="#translation-xak666" title="Translation">🌍</a></td>
       <td align="center"><a href="https://codepen.io/theo-billardey"><img src="https://avatars.githubusercontent.com/u/48206778?v=4?s=100" width="100px;" alt="Théo Billardey"/><br /><sub><b>Théo Billardey</b></sub></a><br /><a href="#translation-brdtheo" title="Translation">🌍</a></td>
-      <td align="center"><a href="http://yaskur.net"><img src="https://avatars.githubusercontent.com/u/9539970?v=4?s=100" width="100px;" alt="Muhammad Dyas Yaskur"/><br /><sub><b>Muhammad Dyas Yaskur</b></sub></a><br /><a href="#translation-dyaskur" title="Translation">🌍</a></td>
+      <td align="center"><a href="http://yaskur.net"><img src="https://avatars.githubusercontent.com/u/9539970?v=4?s=100" width="100px;" alt="Muhammad Dyas Yaskur"/><br /><sub><b>Muhammad Dyas Yaskur</b></sub></a><br /><a href="#translation-dyaskur" title="Translation">🌍</a> <a href="https://github.com/antares-sql/antares/commits?author=dyaskur" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
