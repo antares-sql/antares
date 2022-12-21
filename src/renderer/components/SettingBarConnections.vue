@@ -26,7 +26,7 @@
                   content: getConnectionName(element.uid)
                }"
                class="settingbar-element btn btn-link"
-               :class="{ 'selected': element.uid === selectedWorkspace }"
+               :class="{ 'selected': element.uid === selectedWorkspace && coveredElement !== element.uid }"
                placement="right"
                strategy="fixed"
                @click.stop="selectWorkspace(element.uid)"
