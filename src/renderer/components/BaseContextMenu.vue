@@ -1,5 +1,5 @@
 <template>
-   <div class="context" :class="{'bottom': isBottom}">
+   <div class="context" :class="[{ 'bottom': isBottom }, { 'right': isRight }]">
       <a
          class="context-overlay"
          @click="close"
@@ -19,9 +19,10 @@
 import { computed, onBeforeUnmount, onMounted, Ref, ref } from 'vue';
 
 const contextContent: Ref<HTMLDivElement> = ref(null);
-const contextSize: Ref<DOMRect> = ref(null);
+const contextSize: Ref<{height: number; width: number; subHeight?: number; subWidth?: number}> = ref(null);
 const isBottom: Ref<boolean> = ref(false);
-const props = defineProps<{contextEvent: MouseEvent}>();
+const isRight: Ref<boolean> = ref(false);
+const props = defineProps<{ contextEvent: MouseEvent }>();
 const emit = defineEmits(['close-context']);
 
 const position = computed(() => {
@@ -39,8 +40,16 @@ const position = computed(() => {
             isBottom.value = true;
          }
 
-         if (clientX + contextSize.value.width + 5 >= window.innerWidth)
+         if (clientY + contextSize.value.subHeight + contextSize.value.height >= window.innerHeight)
+            isBottom.value = true;
+
+         if (clientX + contextSize.value.width + 5 >= window.innerWidth) {
             leftCord = `${clientX - contextSize.value.width}px`;
+            isRight.value = true;
+         }
+
+         if (clientX + contextSize.value.subWidth + contextSize.value.width >= window.innerWidth)
+            isRight.value = true;
       }
    }
 
@@ -62,8 +71,20 @@ const onKey = (e: KeyboardEvent) => {
 window.addEventListener('keydown', onKey);
 
 onMounted(() => {
-   if (contextContent.value)
+   if (contextContent.value) {
       contextSize.value = contextContent.value.getBoundingClientRect();
+
+      const submenus = contextContent.value.querySelectorAll<HTMLDivElement>('.context-submenu');
+
+      for (const submenu of submenus) {
+         const submenuSize = submenu.getBoundingClientRect();
+
+         if (!contextSize.value.subHeight || submenuSize.height > contextSize.value.subHeight)
+            contextSize.value.subHeight = submenuSize.height;
+         if (!contextSize.value.subWidth || submenuSize.width > contextSize.value.subWidth)
+            contextSize.value.subWidth = submenuSize.width;
+      }
+   }
 });
 
 onBeforeUnmount(() => {
@@ -73,88 +94,94 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 .context {
-  display: flex;
-  font-size: 16px;
-  z-index: 400;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  position: fixed;
-  height: 100vh;
-  right: 0;
-  top: 0;
-  left: 0;
-  bottom: 0;
+   display: flex;
+   font-size: 16px;
+   z-index: 400;
+   justify-content: center;
+   align-items: center;
+   overflow: hidden;
+   position: fixed;
+   height: 100vh;
+   right: 0;
+   top: 0;
+   left: 0;
+   bottom: 0;
 
-  &:not(.bottom) .context-submenu {
-    top: -0.2rem;
-  }
+   &:not(.bottom) .context-submenu {
+      top: -0.2rem;
+   }
 
-  &.bottom .context-submenu {
-    bottom: -0.2rem;
-  }
+   &.bottom .context-submenu {
+      bottom: -0.2rem;
+   }
 
-  .context-container {
-    min-width: 100px;
-    z-index: 10;
-    padding: 0;
-    background: #1d1d1d;
-    border-radius: $border-radius;
-    border: 1px solid $bg-color-light-dark;
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    pointer-events: initial;
+   &:not(.right) .context-submenu {
+      left: 100%;
+   }
 
-    .context-element {
-      display: flex;
-      align-items: center;
-      margin: 0.2rem;
-      padding: 0.1rem 0.3rem;
+   &.right .context-submenu {
+      right: 100%;
+   }
+
+   .context-container {
+      min-width: 100px;
+      z-index: 10;
+      padding: 0;
+      background: #1d1d1d;
       border-radius: $border-radius;
-      cursor: pointer;
-      justify-content: space-between;
-      position: relative;
-      white-space: nowrap;
+      border: 1px solid $bg-color-light-dark;
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      pointer-events: initial;
 
-      .context-submenu {
-        border-radius: $border-radius;
-        border: 1px solid $bg-color-light-dark;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.2s;
-        position: absolute;
-        left: 100%;
-        min-width: 100px;
-        background: #1d1d1d;
+      .context-element {
+         display: flex;
+         align-items: center;
+         margin: 0.2rem;
+         padding: 0.1rem 0.3rem;
+         border-radius: $border-radius;
+         cursor: pointer;
+         justify-content: space-between;
+         position: relative;
+         white-space: nowrap;
+
+         .context-submenu {
+            border-radius: $border-radius;
+            border: 1px solid $bg-color-light-dark;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s;
+            position: absolute;
+            min-width: 100px;
+            background: #1d1d1d;
+         }
+
+         &:hover {
+            .context-submenu {
+               display: block;
+               visibility: visible;
+               opacity: 1;
+            }
+         }
       }
+   }
 
-      &:hover {
-        .context-submenu {
-          display: block;
-          visibility: visible;
-          opacity: 1;
-        }
-      }
-    }
-  }
-
-  .context-overlay {
-    background: transparent;
-    bottom: 0;
-    cursor: default;
-    display: block;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-  }
+   .context-overlay {
+      background: transparent;
+      bottom: 0;
+      cursor: default;
+      display: block;
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+   }
 }
 
 .disabled {
-  pointer-events: none;
-  filter: grayscale(100%);
-  opacity: 0.5;
+   pointer-events: none;
+   filter: grayscale(100%);
+   opacity: 0.5;
 }
-
 </style>
