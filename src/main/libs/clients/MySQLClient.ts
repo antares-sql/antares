@@ -225,6 +225,9 @@ export class MySQLClient extends AntaresCore {
       if (hasAnsiQuotes)
          await connection.query(`SET SESSION sql_mode = '${sqlMode.filter((m: string) => !['ANSI', 'ANSI_QUOTES'].includes(m)).join(',')}'`);
 
+      if (this._params.readonly)
+         await connection.query('SET SESSION TRANSACTION READ ONLY');
+
       connection.on('connection', conn => {
          if (this._params.readonly)
             conn.query('SET SESSION TRANSACTION READ ONLY');
