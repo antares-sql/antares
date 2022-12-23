@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.1](https://github.com/antares-sql/antares/compare/v0.7.0...v0.7.1) (2022-12-23)
+
+
+### Features
+
+* Copy rows as html table, so we can paste it to spreadsheet ([c32f463](https://github.com/antares-sql/antares/commit/c32f463ea5ac3f54cba32929f77442f1e0ba934a))
+* option to disable selected query execution, closes [#477](https://github.com/antares-sql/antares/issues/477) ([1bd26ce](https://github.com/antares-sql/antares/commit/1bd26ceaa68fe66f26c76b3b60fa6eeccea91729))
+
+
+### Bug Fixes
+
+*  bahasa indonesia typos ([897795d](https://github.com/antares-sql/antares/commit/897795ddbb4ade2652b0471f18288b8b3aaf0eb9))
+* connection default icon not change after client change ([a6bdf69](https://github.com/antares-sql/antares/commit/a6bdf69a281c8614c41274b6dc2f3563aa89c57e))
+* context submenu outside view when near the edge, fixes [#506](https://github.com/antares-sql/antares/issues/506) ([c08946e](https://github.com/antares-sql/antares/commit/c08946e932884e5f0253df2545f98315ab7e5219))
+* **i18n:** add missing keys for french translation ([fd129a2](https://github.com/antares-sql/antares/commit/fd129a2ad1c3401372c9172b38f4406254d134df))
+* **MySQL:** not every connection gets read-only option ([843c15e](https://github.com/antares-sql/antares/commit/843c15e428c4a0412f19a93ab05d2fcbb60da09b))
+* **UI:** white background dragging connections inside folder on Linux ([dd971d7](https://github.com/antares-sql/antares/commit/dd971d70e04faf0d5b239586b12e4a9a42407433))
+* white background dragging connections or tabs on Linux, fixes [#486](https://github.com/antares-sql/antares/issues/486) ([669d7e8](https://github.com/antares-sql/antares/commit/669d7e8d4d062ed5bdafe1d5cde8ec51a2f68b26))
+
 ## [0.7.0](https://github.com/antares-sql/antares/compare/v0.6.0...v0.7.0) (2022-11-30)
 
 
