@@ -1613,7 +1613,7 @@ export class MySQLClient extends AntaresCore {
                      if (!field || Array.isArray(field))
                         return undefined;
 
-                     const type = this._getType(field);
+                     const type = this._getType(field as undefined);
 
                      return {
                         name: field.orgName,
