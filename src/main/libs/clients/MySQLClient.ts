@@ -148,10 +148,11 @@ export class MySQLClient extends AntaresCore {
       if (this._params.ssh) {
          try {
             if (this._params.ssh.password === '') delete this._params.ssh.password;
+            if (this._params.ssh.passphrase === '') delete this._params.ssh.passphrase;
 
             this._ssh = new SSH2Promise({
                ...this._params.ssh,
-               keepaliveInterval: 20000,
+               keepaliveInterval: 30*60*1000,
                debug: process.env.NODE_ENV !== 'production' ? (s) => console.log(s) : null
             });
 

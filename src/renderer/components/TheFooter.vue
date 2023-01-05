@@ -10,6 +10,18 @@
                <i class="mdi mdi-18px mdi-database mr-1" />
                <small>{{ versionString }}</small>
             </li>
+            <li v-if="connectionInfos && connectionInfos.readonly" class="footer-element">
+               <i class="mdi mdi-18px mdi-lock mr-1" />
+               <small>{{ t('message.readOnlyMode') }}</small>
+            </li>
+            <li v-if="connectionInfos && connectionInfos.ssl" class="footer-element">
+               <i class="mdi mdi-18px mdi-shield-key mr-1" />
+               <small>SSL</small>
+            </li>
+            <li v-if="connectionInfos && connectionInfos.ssh" class="footer-element">
+               <i class="mdi mdi-18px mdi-console-network mr-1" />
+               <small>SSH</small>
+            </li>
          </ul>
       </div>
 
@@ -76,10 +88,11 @@ const { toggleConsole } = useConsoleStore();
 
 const { showSettingModal } = applicationStore;
 const { getWorkspace } = workspacesStore;
-const { getConnectionFolder } = connectionsStore;
+const { getConnectionFolder, getConnectionByUid } = connectionsStore;
 
 const workspace = computed(() => getWorkspace(workspaceUid.value));
 const footerColor = computed(() => getConnectionFolder(workspaceUid.value)?.color || '#E36929');
+const connectionInfos = computed(() => getConnectionByUid(workspaceUid.value));
 const version: ComputedRef<DatabaseInfos> = computed(() => {
    return getWorkspace(workspaceUid.value) ? workspace.value.version : null;
 });
