@@ -99,7 +99,7 @@
                            </div>
                            <div class="panel-footer text-center py-0">
                               <div v-if="connection.ssl" class="chip bg-success mt-2">
-                                 <i class="mdi mdi-lock mdi-18px mr-1" />
+                                 <i class="mdi mdi-shield-key mdi-18px mr-1" />
                                  SSL
                               </div>
                               <div v-if="connection.ssh" class="chip bg-success mt-2">

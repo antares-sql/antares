@@ -208,7 +208,7 @@
   },
   "overrides": {
     "ssh2-promise": {
-      "ssh2": "~1.11.0"
+      "ssh2": "github:Fabio286/ssh2"
     }
   }
 }
