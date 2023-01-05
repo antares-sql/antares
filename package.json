@@ -123,7 +123,7 @@
     "@faker-js/faker": "~6.1.2",
     "@mdi/font": "~7.0.96",
     "@turf/helpers": "~6.5.0",
-    "@vueuse/core": "~8.7.5",
+    "@vueuse/core": "~9.10.0",
     "ace-builds": "~1.14.0",
     "better-sqlite3": "~8.0.0",
     "electron-log": "~4.4.1",
