@@ -6,7 +6,7 @@ export default [
       types: [
          {
             name: 'INT',
-            length: true,
+            length: 10,
             collation: false,
             unsigned: true,
             zerofill: true
