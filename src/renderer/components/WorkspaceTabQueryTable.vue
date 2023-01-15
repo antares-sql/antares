@@ -142,7 +142,7 @@ const settingsStore = useSettingsStore();
 const consoleStore = useConsoleStore();
 const { getWorkspace } = useWorkspacesStore();
 
-const { dataTabLimit: pageSize } = storeToRefs(settingsStore);
+const { dataTabLimit: pageSize, defaultCopyType } = storeToRefs(settingsStore);
 
 const { consoleHeight } = storeToRefs(consoleStore);
 
@@ -696,6 +696,18 @@ const onKey = async (e: KeyboardEvent) => {
 
    if ((e.ctrlKey || e.metaKey) && e.code === 'KeyA' && !e.altKey)
       selectAllRows(e);
+
+   if ((e.ctrlKey || e.metaKey) && e.code === 'KeyC' && !e.altKey) {
+      const copyType = defaultCopyType.value;
+      if (selectedRows.value.length >= 1) {
+         if (selectedRows.value.length === 1 && copyType === 'cell')
+            await navigator.clipboard.writeText(scrollElement.value.querySelector('.td.selected').innerText);
+         else if (selectedRows.value.length > 1 && copyType === 'cell')
+            copyRow('html');
+         else
+            copyRow(copyType);
+      }
+   }
 
    // row navigation stuff
    if (!(e.ctrlKey || e.metaKey) && (e.code.includes('Arrow') || e.code === 'Tab') && sortedResults.value.length > 0 && !e.altKey) {

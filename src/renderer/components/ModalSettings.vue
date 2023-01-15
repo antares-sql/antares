@@ -209,6 +209,23 @@
                                     </label>
                                  </div>
                               </div>
+                              <div class="form-group column col-12">
+                                 <div class="col-5 col-sm-12">
+                                    <label class="form-label">
+                                       {{ t('message.defaultCopyType') }}
+                                    </label>
+                                 </div>
+                                 <div class="col-3 col-sm-12">
+                                    <BaseSelect
+                                       v-model="defaultCopyType"
+                                       class="form-select"
+                                       :options="copyTypes"
+                                       option-track-by="code"
+                                       option-label="name"
+                                       @change="changeDefaultCopyType(defaultCopyType)"
+                                    />
+                                 </div>
+                              </div>
                            </div>
                         </form>
                      </div>
@@ -393,6 +410,7 @@ const {
    autoComplete: selectedAutoComplete,
    lineWrap: selectedLineWrap,
    executeSelected: selectedExecuteSelected,
+   defaultCopyType: selectedCopyType,
    notificationsTimeout,
    restoreTabs,
    disableBlur,
@@ -416,7 +434,8 @@ const {
    changeApplicationTheme,
    changeEditorTheme,
    changeEditorFontSize,
-   updateNotificationsTimeout
+   updateNotificationsTimeout,
+   changeDefaultCopyType
 } = settingsStore;
 const {
    hideSettingModal: closeModal,
@@ -432,7 +451,7 @@ const appLogo = require('../images/logo.svg');
 const darkPreview = require('../images/dark.png');
 const lightPreview = require('../images/light.png');
 const exampleQuery = `-- This is an example
-SELECT 
+SELECT
     employee.id,
     employee.first_name,
     employee.last_name,
@@ -448,6 +467,7 @@ ORDER BY
 `;
 
 const localLocale: Ref<AvailableLocale> = ref(null);
+const defaultCopyType: Ref<string> = ref(null);
 const localPageSize: Ref<number> = ref(null);
 const localTimeout: Ref<number> = ref(null);
 const localEditorTheme: Ref<string> = ref(null);
@@ -511,6 +531,14 @@ const locales = computed(() => {
    return locales;
 });
 
+const copyTypes = computed(() => [
+   { code: 'cell', name: t('word.cell') },
+   { code: 'html', name: t('word.table') },
+   { code: 'json', name: 'JSON' },
+   { code: 'csv', name: 'CSV' },
+   { code: 'sql', name: 'SQL insert' }
+]);
+
 const hasUpdates = computed(() => ['available', 'downloading', 'downloaded', 'link'].includes(updateStatus.value));
 
 const workspace = computed(() => {
@@ -570,6 +598,7 @@ const toggleExecuteSelected = () => {
 };
 
 localLocale.value = selectedLocale.value;
+defaultCopyType.value = selectedCopyType.value;
 localPageSize.value = pageSize.value as number;
 localTimeout.value = notificationsTimeout.value as number;
 localEditorTheme.value = editorTheme.value as string;

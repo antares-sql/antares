@@ -333,7 +333,8 @@ export const idID = {
       folderName: 'Nama folder',
       deleteFolder: 'Hapus folder',
       editConnectionAppearence: 'Ubah connection appearence',
-      executeSelectedQuery: 'Eksekusi query yang dipilih'
+      executeSelectedQuery: 'Eksekusi query yang dipilih',
+      defaultCopyType: 'Jenis salin default'
    },
    faker: {
       address: 'Alamat',

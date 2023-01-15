@@ -29,7 +29,8 @@ export const useSettingsStore = defineStore('settings', {
       restoreTabs: settingsStore.get('restore_tabs', true) as boolean,
       disableBlur: settingsStore.get('disable_blur', false) as boolean,
       disableScratchpad: settingsStore.get('disable_scratchpad', false) as boolean,
-      shortcuts: shortcutsStore.get('shortcuts', []) as ShortcutRecord[]
+      shortcuts: shortcutsStore.get('shortcuts', []) as ShortcutRecord[],
+      defaultCopyType: settingsStore.get('default_copy_type', 'cell') as string
    }),
    actions: {
       changeLocale (locale: AvailableLocale) {
@@ -92,6 +93,10 @@ export const useSettingsStore = defineStore('settings', {
       },
       updateShortcuts (shortcuts: ShortcutRecord[]) {
          this.shortcuts = shortcuts;
+      },
+      changeDefaultCopyType (type: string) {
+         this.defaultCopyType = type;
+         settingsStore.set('default_copy_type', this.defaultCopyType);
       }
    }
 });
