@@ -209,6 +209,11 @@
                                     </label>
                                  </div>
                               </div>
+                           </div>
+                           <div class="column col-12 h6 mt-4 text-uppercase mb-1">
+                              {{ t('word.resultsTable') }}
+                           </div>
+                           <div class="column col-12 col-sm-12 columns">
                               <div class="form-group column col-12">
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">

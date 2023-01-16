@@ -148,7 +148,8 @@ export const enUS = {
       appearence: 'Appearence',
       color: 'Color',
       label: 'Label',
-      icon: 'Icon'
+      icon: 'Icon',
+      resultsTable: 'Results table'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
