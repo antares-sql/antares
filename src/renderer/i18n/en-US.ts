@@ -148,7 +148,8 @@ export const enUS = {
       appearence: 'Appearence',
       color: 'Color',
       label: 'Label',
-      icon: 'Icon'
+      icon: 'Icon',
+      resultsTable: 'Results table'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -333,7 +334,8 @@ export const enUS = {
       folderName: 'Folder name',
       deleteFolder: 'Delete folder',
       editConnectionAppearence: 'Edit connection appearence',
-      executeSelectedQuery: 'Execute selected query'
+      executeSelectedQuery: 'Execute selected query',
+      defaultCopyType: 'Default copy type'
    },
    faker: {
       address: 'Address',
