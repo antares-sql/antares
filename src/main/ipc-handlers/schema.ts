@@ -62,7 +62,7 @@ export default (connections: {[key: string]: antares.Client}) => {
 
    ipcMain.handle('get-structure', async (event, params) => {
       try {
-         const structure = await connections[params.uid].getStructure(
+         const structure: unknown = await connections[params.uid].getStructure(
             params.schemas
          );
 
@@ -160,8 +160,7 @@ export default (connections: {[key: string]: antares.Client}) => {
             details: true,
             schema,
             tabUid,
-            autocommit,
-            comments: false
+            autocommit
          });
 
          return { status: 'success', response: result };
