@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.2](https://github.com/antares-sql/antares/compare/v0.7.1...v0.7.2) (2023-01-22)
+
+
+### Features
+
+* add copy shortcut and default copy type setting ([9aca894](https://github.com/antares-sql/antares/commit/9aca89477f1fd7b7f55f1e5c290d495c46f61d8e))
+* connection info icons in footer ([ff4bc6c](https://github.com/antares-sql/antares/commit/ff4bc6c39b05a827cebde84466814cf246908208))
+
+
+### Bug Fixes
+
+* allow comments in queies, fixes [#519](https://github.com/antares-sql/antares/issues/519) ([c7ab3b7](https://github.com/antares-sql/antares/commit/c7ab3b77a22e85cee6fb93064eaad5a8e8ad9fd2))
+* **SQLite:** exception saving tables without INT fields length ([0e80e82](https://github.com/antares-sql/antares/commit/0e80e823d059dfe24995b5848d88cc84235e6275))
+* ssh connection closed after idle time, fixes [#425](https://github.com/antares-sql/antares/issues/425) ([6fa430a](https://github.com/antares-sql/antares/commit/6fa430adf68013a9d0a093031f56dd741bdc0299))
+
 ### [0.7.1](https://github.com/antares-sql/antares/compare/v0.7.0...v0.7.1) (2022-12-23)
 
 
