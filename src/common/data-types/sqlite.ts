@@ -19,6 +19,13 @@ export default [
             zerofill: true
          },
          {
+            name: 'INTEGER UNSIGNED',
+            length: true,
+            collation: false,
+            unsigned: true,
+            zerofill: true
+         },
+         {
             name: 'BIGINT',
             length: true,
             collation: false,
