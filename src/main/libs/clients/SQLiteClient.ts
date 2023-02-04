@@ -672,8 +672,8 @@ export class SQLiteClient extends AntaresCore {
 
                      if ([...TIME, ...DATETIME].includes(parsedType)) {
                         const firstNotNull = queryAllResult.find(res => res[field.name] !== null);
-                        if (firstNotNull && firstNotNull[field.name].includes('.'))
-                           length = firstNotNull[field.name].split('.').pop().length;
+                        if (firstNotNull && String(firstNotNull[field.name]).includes('.'))
+                           length = String(firstNotNull[field.name]).split('.').pop().length;
                      }
 
                      return {
