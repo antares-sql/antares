@@ -254,25 +254,15 @@ export class MySQLClient extends AntaresCore {
    async getStructure (schemas: Set<string>) {
       /* eslint-disable camelcase */
       interface ShowTableResult {
-         Db?: string;
-         Name: string;
-         Engine: string;
-         Version: number;
-         Row_format: string;
-         Rows: number;
-         Avg_row_length: number;
-         Data_length: number;
-         Max_data_length: number;
-         Index_length: number;
-         Data_free: number;
-         Auto_increment: number;
-         Create_time: Date;
-         Update_time: Date;
-         Check_time?: number;
-         Collation: string;
-         Checksum?: number;
-         Create_options: string;
-         Comment: string;
+         TABLE_SCHEMA?: string;
+         TABLE_NAME: string;
+         TABLE_TYPE: string;
+         TABLE_ROWS: number;
+         ENGINE: string;
+         DATA_LENGTH: number;
+         INDEX_LENGTH: number;
+         TABLE_COLLATION: string;
+         TABLE_COMMENT: string;
       }
 
       interface ShowTriggersResult {
@@ -309,10 +299,24 @@ export class MySQLClient extends AntaresCore {
       for (const db of filteredDatabases) {
          if (!schemas.has(db.Database)) continue;
 
-         let { rows: tables } = await this.raw<antares.QueryResult<ShowTableResult>>(`SHOW TABLE STATUS FROM \`${db.Database}\``);
+         let { rows: tables } = await this.raw<antares.QueryResult<ShowTableResult>>(`
+            SELECT
+               TABLE_NAME,
+               TABLE_TYPE,
+               ENGINE,
+               DATA_LENGTH,
+               INDEX_LENGTH,
+               TABLE_COMMENT,
+               TABLE_COLLATION, 
+               CREATE_TIME,
+               UPDATE_TIME
+            FROM information_schema.TABLES
+            WHERE TABLE_SCHEMA = "${db.Database}"
+         `);
+
          if (tables.length) {
             tables = tables.map(table => {
-               table.Db = db.Database;
+               table.TABLE_SCHEMA = db.Database;
                return table;
             });
             tablesArr.push(...tables);
@@ -331,9 +335,9 @@ export class MySQLClient extends AntaresCore {
       return filteredDatabases.map(db => {
          if (schemas.has(db.Database)) {
             // TABLES
-            const remappedTables: antares.TableInfos[] = tablesArr.filter(table => table.Db === db.Database).map(table => {
+            const remappedTables: antares.TableInfos[] = tablesArr.filter(table => table.TABLE_SCHEMA === db.Database).map(table => {
                let tableType;
-               switch (table.Comment) {
+               switch (table.TABLE_TYPE) {
                   case 'VIEW':
                      tableType = 'view';
                      break;
@@ -342,20 +346,17 @@ export class MySQLClient extends AntaresCore {
                      break;
                }
 
-               const tableSize = Number(table.Data_length) + Number(table.Index_length);
+               const tableSize = Number(table.DATA_LENGTH) + Number(table.INDEX_LENGTH);
                schemaSize += tableSize;
 
                return {
-                  name: table.Name,
+                  name: table.TABLE_NAME,
                   type: tableType,
-                  rows: table.Rows,
-                  created: table.Create_time,
-                  updated: table.Update_time,
-                  engine: table.Engine,
-                  comment: table.Comment,
+                  rows: table.TABLE_ROWS,
+                  engine: table.ENGINE,
+                  comment: table.TABLE_COMMENT,
                   size: tableSize,
-                  autoIncrement: table.Auto_increment,
-                  collation: table.Collation
+                  collation: table.TABLE_COLLATION
                };
             });
 

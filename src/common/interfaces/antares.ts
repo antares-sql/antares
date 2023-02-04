@@ -85,12 +85,9 @@ export interface TableInfos {
    name: string;
    type: string;
    rows: number;
-   created: Date;
-   updated: Date;
    engine: string;
    comment: string;
    size: number | false;
-   autoIncrement: number;
    collation: string;
 }
 

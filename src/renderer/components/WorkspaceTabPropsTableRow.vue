@@ -410,7 +410,7 @@ const types = computed(() => {
    const types = [...props.dataTypes];
    if (!isInDataTypes.value)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (types as any).unshift({ name: props.row });
+      (types as any).unshift({ name: props.row.type });
 
    return types;
 });
