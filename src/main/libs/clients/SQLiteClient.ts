@@ -344,6 +344,20 @@ export class SQLiteClient extends AntaresCore {
 
          const tmpName = `Antares_${table}_tmp`;
          await this.raw(`CREATE TABLE "${tmpName}" AS SELECT * FROM "${table}"`);
+
+         // Get table triggers before drop
+         const { rows: triggers } = await this.raw(`SELECT * FROM "${schema}".sqlite_master WHERE type='trigger' AND tbl_name = '${table}'`);
+         const remappedTriggers = triggers.map((row) => {
+            return {
+               schema,
+               sql: row.sql.match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
+               name: row.name,
+               table: row.sql.match(/(?<=ON `).*?(?=`)/gs)[0],
+               activation: row.sql.match(/(BEFORE|AFTER)/gs)[0],
+               event: row.sql.match(/(INSERT|UPDATE|DELETE)/gs)[0]
+            };
+         });
+
          await this.dropTable(params);
 
          const createTableParams = {
@@ -376,6 +390,11 @@ export class SQLiteClient extends AntaresCore {
          await this.raw(`INSERT INTO "${createTableParams.options.name}" (${insertFields.join(',')}) SELECT ${selectFields.join(',')} FROM "${tmpName}"`);
 
          await this.dropTable({ schema: schema, table: tmpName });
+
+         // Recreates triggers
+         for (const trigger of remappedTriggers)
+            await this.createTrigger(trigger);
+
          await this.raw('PRAGMA foreign_keys = 1');
          await this.raw('COMMIT');
       }
