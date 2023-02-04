@@ -89,6 +89,7 @@ export interface TableInfos {
    comment: string;
    size: number | false;
    collation: string;
+   autoIncrement?: boolean;
 }
 
 export type TableOptions = Partial<TableInfos>;
