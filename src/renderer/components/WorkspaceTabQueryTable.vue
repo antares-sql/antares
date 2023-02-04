@@ -616,11 +616,11 @@ const deselectRows = (e: Event) => {
       if (!isDeleteConfirmModal.value)
          selectedRows.value = [];
 
-      selectedField.value = null;
-
       if (e.type === 'blur')
          hasFocus.value = false;
    }
+
+   selectedField.value = null;
 };
 
 const contextMenu = (event: MouseEvent, cell: any) => {
