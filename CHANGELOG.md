@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.3](https://github.com/antares-sql/antares/compare/v0.7.2...v0.7.3) (2023-02-09)
+
+
+### Features
+
+* **SQLite:** added support to INTEGER UNSIGNED ([e7e4913](https://github.com/antares-sql/antares/commit/e7e491340a037b64d6d8e538376415779d54332e))
+
+
+### Bug Fixes
+
+* longtext edit modal opens when it shouldn't, fixes [#524](https://github.com/antares-sql/antares/issues/524) ([6decba3](https://github.com/antares-sql/antares/commit/6decba316ca46106520cb4dba44409ceb4a4af75))
+* select of table type stuck when editing an unknown type ([e8447e5](https://github.com/antares-sql/antares/commit/e8447e56551871a200517bdaa747ae215ad83cf4))
+* **SQLite:** error with integer timestamp fields ([2b5e1e7](https://github.com/antares-sql/antares/commit/2b5e1e7b39c25f536b6139a4d01b9f7f17069ea8))
+* **SQLite:** triggers disappear after editing related table, fixes [#523](https://github.com/antares-sql/antares/issues/523) ([d934ae1](https://github.com/antares-sql/antares/commit/d934ae1e6c0747698b4973d9cad217379076a6cf))
+
 ### [0.7.2](https://github.com/antares-sql/antares/compare/v0.7.1...v0.7.2) (2023-01-22)
 
 
