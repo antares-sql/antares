@@ -312,6 +312,7 @@ export class MySQLClient extends AntaresCore {
                UPDATE_TIME
             FROM information_schema.TABLES
             WHERE TABLE_SCHEMA = "${db.Database}"
+            ORDER BY TABLE_NAME
          `);
 
          if (tables.length) {
