@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.4](https://github.com/antares-sql/antares/compare/v0.7.3...v0.7.4) (2023-02-10)
+
+
+### Bug Fixes
+
+* tables sort in sidebar ([ddb7ead](https://github.com/antares-sql/antares/commit/ddb7ead0832708713ba4bb2717661b8b93a47e3f))
+
 ### [0.7.3](https://github.com/antares-sql/antares/compare/v0.7.2...v0.7.3) (2023-02-09)
 
 
