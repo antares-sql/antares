@@ -32,7 +32,7 @@ export const zhCN = {
       results: '结果',
       size: '尺寸',
       seconds: '秒',
-      type: '类似',
+      type: '类型',
       mimeType: 'MIME类型',
       download: '下载',
       add: '新增',
