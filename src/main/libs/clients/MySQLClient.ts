@@ -290,7 +290,16 @@ export class MySQLClient extends AntaresCore {
 
       const { rows: functions } = await this.raw('SHOW FUNCTION STATUS');
       const { rows: procedures } = await this.raw('SHOW PROCEDURE STATUS');
-      const { rows: schedulers } = await this.raw('SELECT *, EVENT_SCHEMA AS `Db`, EVENT_NAME AS `Name` FROM information_schema.`EVENTS`');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let schedulers: any[] = [];
+
+      try { // Avoid exception with event_scheduler DISABLED with MariaDB 10
+         const { rows } = await this.raw('SELECT *, EVENT_SCHEMA AS `Db`, EVENT_NAME AS `Name` FROM information_schema.`EVENTS`');
+         schedulers = rows;
+      }
+      catch (err) {
+         console.log(err);
+      }
 
       const tablesArr: ShowTableResult[] = [];
       const triggersArr: ShowTriggersResult[] = [];
