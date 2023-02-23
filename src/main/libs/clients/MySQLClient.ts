@@ -1,9 +1,13 @@
 import * as antares from 'common/interfaces/antares';
 import * as mysql from 'mysql2/promise';
+import * as Store from 'electron-store';
 import { AntaresCore } from '../AntaresCore';
 import dataTypes from 'common/data-types/mysql';
 import SSH2Promise = require('ssh2-promise');
 import SSHConfig from 'ssh2-promise/lib/sshConfig';
+
+Store.initRenderer();
+const settingsStore = new Store({ name: 'settings' });
 
 export class MySQLClient extends AntaresCore {
    private _schema?: string;
@@ -308,28 +312,46 @@ export class MySQLClient extends AntaresCore {
       for (const db of filteredDatabases) {
          if (!schemas.has(db.Database)) continue;
 
-         let { rows: tables } = await this.raw<antares.QueryResult<ShowTableResult>>(`
-            SELECT
-               TABLE_NAME,
-               TABLE_TYPE,
-               ENGINE,
-               DATA_LENGTH,
-               INDEX_LENGTH,
-               TABLE_COMMENT,
-               TABLE_COLLATION, 
-               CREATE_TIME,
-               UPDATE_TIME
-            FROM information_schema.TABLES
-            WHERE TABLE_SCHEMA = "${db.Database}"
-            ORDER BY TABLE_NAME
-         `);
+         const showTableSize = settingsStore.get('show_table_size');
 
-         if (tables.length) {
-            tables = tables.map(table => {
-               table.TABLE_SCHEMA = db.Database;
-               return table;
-            });
-            tablesArr.push(...tables);
+         if (showTableSize) {
+            let { rows: tables } = await this.raw<antares.QueryResult<ShowTableResult>>(`
+               SELECT
+                  TABLE_NAME,
+                  TABLE_TYPE,
+                  ENGINE,
+                  DATA_LENGTH,
+                  INDEX_LENGTH,
+                  TABLE_COMMENT,
+                  TABLE_COLLATION, 
+                  CREATE_TIME,
+                  UPDATE_TIME
+               FROM information_schema.TABLES
+               WHERE TABLE_SCHEMA = "${db.Database}"
+               ORDER BY TABLE_NAME
+            `);
+
+            if (tables.length) {
+               tables = tables.map(table => {
+                  table.TABLE_SCHEMA = db.Database;
+                  return table;
+               });
+               tablesArr.push(...tables);
+            }
+         }
+         else {
+            let { rows: tables } = await this.raw<antares.QueryResult<ShowTableResult>>(`SHOW FULL TABLES FROM \`${db.Database}\``);
+
+            if (tables.length) {
+               tables = tables.map(table => {
+                  const [name, type] = Object.values(table);
+                  table.TABLE_SCHEMA = db.Database;
+                  table.TABLE_NAME = name;
+                  table.TABLE_TYPE = type;
+                  return table;
+               });
+               tablesArr.push(...tables);
+            }
          }
 
          let { rows: triggers } = await this.raw<antares.QueryResult<ShowTriggersResult>>(`SHOW TRIGGERS FROM \`${db.Database}\``);

@@ -19,6 +19,7 @@ export const useSettingsStore = defineStore('settings', {
       allowPrerelease: settingsStore.get('allow_prerelease', true) as boolean,
       explorebarSize: settingsStore.get('explorebar_size', null) as number,
       notificationsTimeout: settingsStore.get('notifications_timeout', 5) as number,
+      showTableSize: settingsStore.get('show_table_size', false) as boolean,
       dataTabLimit: settingsStore.get('data_tab_limit', 1000) as number,
       autoComplete: settingsStore.get('auto_complete', true) as boolean,
       lineWrap: settingsStore.get('line_wrap', true) as boolean,
@@ -49,6 +50,10 @@ export const useSettingsStore = defineStore('settings', {
       updateNotificationsTimeout (timeout: number) {
          this.notificationsTimeout = timeout;
          settingsStore.set('notifications_timeout', this.notificationsTimeout);
+      },
+      changeShowTableSize (show: boolean) {
+         this.showTableSize = show;
+         settingsStore.set('show_table_size', this.showTableSize);
       },
       changeExplorebarSize (size: number) {
          this.explorebarSize = size;

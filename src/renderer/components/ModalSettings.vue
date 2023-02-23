@@ -123,6 +123,24 @@
                               <div class="form-group column col-12 mb-0">
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">
+                                       {{ t('message.showTableSize') }}
+                                    </label>
+                                 </div>
+                                 <div class="col-1 col-sm-12">
+                                    <label class="form-switch d-inline-block" @click.prevent="toggleShowTableSize">
+                                       <input type="checkbox" :checked="showTableSize">
+                                       <i class="form-icon" />
+                                    </label>
+                                 </div>
+                                 <div class="col-6 col-sm-12 px-2 p-vcentered">
+                                    <small class="d-block" :style="'line-height: 1.1; font-size: 70%;'">
+                                       {{ t('message.showTableSizeDescription') }}
+                                    </small>
+                                 </div>
+                              </div>
+                              <div class="form-group column col-12 mb-0">
+                                 <div class="col-5 col-sm-12">
+                                    <label class="form-label">
                                        {{ t('message.disableBlur') }}
                                     </label>
                                  </div>
@@ -418,6 +436,7 @@ const {
    defaultCopyType: selectedCopyType,
    notificationsTimeout,
    restoreTabs,
+   showTableSize,
    disableBlur,
    disableScratchpad,
    applicationTheme,
@@ -440,7 +459,8 @@ const {
    changeEditorTheme,
    changeEditorFontSize,
    updateNotificationsTimeout,
-   changeDefaultCopyType
+   changeDefaultCopyType,
+   changeShowTableSize
 } = settingsStore;
 const {
    hideSettingModal: closeModal,
@@ -580,6 +600,10 @@ const onKey = (e: KeyboardEvent) => {
 
 const toggleRestoreSession = () => {
    changeRestoreTabs(!restoreTabs.value);
+};
+
+const toggleShowTableSize = () => {
+   changeShowTableSize(!showTableSize.value);
 };
 
 const toggleDisableBlur = () => {

@@ -335,7 +335,9 @@ export const enUS = {
       deleteFolder: 'Delete folder',
       editConnectionAppearence: 'Edit connection appearence',
       executeSelectedQuery: 'Execute selected query',
-      defaultCopyType: 'Default copy type'
+      defaultCopyType: 'Default copy type',
+      showTableSize: 'Show table size in sidebar',
+      showTableSizeDescription: 'MySQL/MariaDB only. Enable this option may affects performance on schema with many tables.'
    },
    faker: {
       address: 'Address',
