@@ -352,7 +352,18 @@ export default (connections: {[key: string]: antares.Client}) => {
                   if (typeof fakeValue === 'string') {
                      if (params.row[key].length)
                         fakeValue = fakeValue.substring(0, params.row[key].length);
-                     fakeValue = `'${sqlEscaper(fakeValue)}'`;
+
+                     switch (connections[params.uid]._client) {
+                        case 'mysql':
+                        case 'maria':
+                           fakeValue = `'${sqlEscaper(fakeValue)}'`;
+                           break;
+                        case 'pg':
+                        case 'sqlite':
+                        case 'firebird':
+                           fakeValue = `'${fakeValue.replaceAll('\'', '\'\'')}'`;
+                           break;
+                     }
                   }
                   else if ([...DATE, ...DATETIME].includes(type))
                      fakeValue = `'${moment(fakeValue).format('YYYY-MM-DD HH:mm:ss.SSSSSS')}'`;
