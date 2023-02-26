@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.5](https://github.com/antares-sql/antares/compare/v0.7.4...v0.7.5) (2023-02-26)
+
+
+### Features
+
+* **MySQL:** option, disabled by default, to enable table size indicators on sidebar ([313e740](https://github.com/antares-sql/antares/commit/313e7407eb1afe5d19ac49ee4b308950b48cafa8))
+
+
+### Bug Fixes
+
+* **MariaDB:** exception with event_scheduler DISABLED with MariaDB 10, fixes [#535](https://github.com/antares-sql/antares/issues/535) ([4458177](https://github.com/antares-sql/antares/commit/445817768863616ea7340c8bf62472197b73bd6e))
+* single quotes not properly escaped for random generated content ([629ce63](https://github.com/antares-sql/antares/commit/629ce633294c862266db9e27ffa5c154e8fc416c))
+* unable to import after a failed import, fixes [#515](https://github.com/antares-sql/antares/issues/515) ([b1fbc43](https://github.com/antares-sql/antares/commit/b1fbc43ab2f39827cb85ac7d21ac889ffc2f4c64))
+
 ### [0.7.4](https://github.com/antares-sql/antares/compare/v0.7.3...v0.7.4) (2023-02-10)
 
 
