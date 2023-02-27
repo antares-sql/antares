@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.6](https://github.com/antares-sql/antares/compare/v0.7.5...v0.7.6) (2023-02-27)
+
+
+### Bug Fixes
+
+* error with import/export tools, fixes [#541](https://github.com/antares-sql/antares/issues/541) ([d1297a0](https://github.com/antares-sql/antares/commit/d1297a0085fd54967817816efaeed5770a887bbf))
+
 ### [0.7.5](https://github.com/antares-sql/antares/compare/v0.7.4...v0.7.5) (2023-02-26)
 
 
