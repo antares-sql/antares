@@ -335,7 +335,9 @@ export const zhCN = {
       deleteFolder: '删除文件夹',
       editConnectionAppearence: '编辑连接的外观',
       executeSelectedQuery: '执行所选查询',
-      defaultCopyType: '默认复制类型'
+      defaultCopyType: '默认复制类型',
+      showTableSize: '在侧边栏显示表大小',
+      showTableSizeDescription: '仅限 MySQL/MariaDB. 启用此选项可能会影响许多表的模式(schema)的性能.'
    },
    faker: {
       address: '地址',
