@@ -292,7 +292,7 @@ export const enUS = {
       autoCommit: 'Auto commit',
       manualCommit: 'Manual commit',
       actionSuccessful: '{action} successful',
-      importQueryErrors: 'Warning: {n} error has accurrend | Warning: {n} errors occurred',
+      importQueryErrors: 'Warning: {n} error has occurrend | Warning: {n} errors occurred',
       executedQueries: '{n} query executed | {n} queries executed',
       ourputFormat: 'Output format',
       singleFile: 'Single {ext} file',
