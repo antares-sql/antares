@@ -1,13 +1,9 @@
 import * as antares from 'common/interfaces/antares';
 import * as mysql from 'mysql2/promise';
-import * as Store from 'electron-store';
 import { AntaresCore } from '../AntaresCore';
 import dataTypes from 'common/data-types/mysql';
 import SSH2Promise = require('ssh2-promise');
 import SSHConfig from 'ssh2-promise/lib/sshConfig';
-
-Store.initRenderer();
-const settingsStore = new Store({ name: 'settings' });
 
 export class MySQLClient extends AntaresCore {
    private _schema?: string;
@@ -309,10 +305,15 @@ export class MySQLClient extends AntaresCore {
       const triggersArr: ShowTriggersResult[] = [];
       let schemaSize = 0;
 
+      const Store = require('electron-store');
+
+      Store.initRenderer();
+      const settingsStore = new Store({ name: 'settings' });
+
       for (const db of filteredDatabases) {
          if (!schemas.has(db.Database)) continue;
 
-         const showTableSize = settingsStore.get('show_table_size');
+         const showTableSize = settingsStore.get('show_table_size', false);
 
          if (showTableSize) {
             let { rows: tables } = await this.raw<antares.QueryResult<ShowTableResult>>(`
