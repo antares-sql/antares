@@ -14,11 +14,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-
-      - name: npm install & build
-        run: |
-          npm install
-          npm run build
+      
+      - name: Install dependencies
+        run: npm i
+        
+      - name: "Build"
+        run: npm run build
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
