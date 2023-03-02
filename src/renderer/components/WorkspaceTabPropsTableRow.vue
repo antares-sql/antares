@@ -532,7 +532,10 @@ const editOFF = () => {
             break;
          case 'custom':
             localRow.value.autoIncrement = false;
-            localRow.value.default = Number.isNaN(+defaultValue.value.custom) ? `'${defaultValue.value.custom}'` : defaultValue.value.custom;
+            if (fieldType.value.group === 'string')
+               localRow.value.default = `'${defaultValue.value.custom}'`;
+            else
+               localRow.value.default = defaultValue.value.custom;
             break;
          case 'expression':
             localRow.value.autoIncrement = false;
