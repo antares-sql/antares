@@ -68,8 +68,7 @@
             "x64",
             "armv7l",
             "arm64"
-          ],
-          "fpm": ["--deb-no-default-config-files flag"]
+          ]
         },
         {
           "target": "AppImage",
