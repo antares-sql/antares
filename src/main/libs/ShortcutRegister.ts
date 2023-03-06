@@ -75,7 +75,7 @@ export class ShortcutRegister {
             for (const key of shortcut.keys) {
                try {
                   this._menu.append(new MenuItem({
-                     label: 'Shortcuts',
+                     label: '.',
                      visible: false,
                      submenu: [{
                         label: String(key),

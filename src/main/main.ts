@@ -52,7 +52,6 @@ async function createMainWindow () {
       trafficLightPosition: isMacOS ? { x: 10, y: 8 } : undefined,
       backgroundColor: '#1d1d1d'
    });
-   window.removeMenu();
 
    mainWindowState.manage(window);
    window.on('moved', saveWindowState);

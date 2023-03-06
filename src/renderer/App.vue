@@ -130,6 +130,12 @@ onMounted(() => {
          node = node.parentNode;
       }
    });
+
+   document.addEventListener('keydown', e => {
+      if (e.altKey && e.key === 'Alt') { // Prevent Alt key to trigger hidden shortcut menu
+         e.preventDefault();
+      }
+   });
 });
 </script>
 
