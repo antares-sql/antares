@@ -187,6 +187,7 @@ import WorkspaceTabPropsTableFields from '@/components/WorkspaceTabPropsTableFie
 import WorkspaceTabPropsTableIndexesModal from '@/components/WorkspaceTabPropsTableIndexesModal.vue';
 import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTableForeignModal.vue';
 import { ipcRenderer } from 'electron';
+import { useSettingsStore } from '@/stores/settings';
 
 const { t } = useI18n();
 
@@ -200,8 +201,10 @@ const props = defineProps({
 
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
+const settingsStore = useSettingsStore();
 
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const { showTableSize } = settingsStore;
 
 const {
    getWorkspace,
@@ -257,7 +260,7 @@ const isChanged = computed(() => {
 const getTableOptions = async (params: {uid: string; schema: string; table: string}) => {
    const db = workspace.value.structure.find(db => db.name === props.schema);
 
-   if (db && db.tables.length && props.table)
+   if (db && db.tables.length && props.table && showTableSize)
       tableOptions.value = db.tables.find(table => table.name === props.table);
    else {
       const { status, response } = await Tables.getTableOptions(params);
