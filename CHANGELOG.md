@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.7](https://github.com/antares-sql/antares/compare/v0.7.6...v0.7.7) (2023-03-10)
+
+
+### Bug Fixes
+
+* hide table size tooltip if disabled ([2c46269](https://github.com/antares-sql/antares/commit/2c46269cf262248d3f5644b7c5b89d5d317a89a4))
+* **Linux:** remove app menu shown pressing ALT key ([63fece2](https://github.com/antares-sql/antares/commit/63fece2a1b6b09f61ae416f7c3a7b51ee0a53d0e))
+* **Linux:** remove app menu shown pressing ALT key ([b925ff9](https://github.com/antares-sql/antares/commit/b925ff9c01afcc727e5d70bafb079d468ed1eede))
+* **MySQL:** missing table information in table setting tab ([59846e6](https://github.com/antares-sql/antares/commit/59846e6ff47591ec8dc22403c3be0e70e0f3ccfd))
+* unable to set string fields default values starting with 0 ([3546c57](https://github.com/antares-sql/antares/commit/3546c57e398be7b2e226bb8e93e8fc0fb8bab40a))
+
 ### [0.7.6](https://github.com/antares-sql/antares/compare/v0.7.5...v0.7.6) (2023-02-27)
 
 
