@@ -54,6 +54,7 @@ export default [
          {
             name: 'FLOAT',
             length: true,
+            scale: true,
             collation: false,
             unsigned: false,
             zerofill: false
