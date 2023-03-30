@@ -173,9 +173,6 @@ function createAppMenu () {
             role: 'editMenu'
          },
          {
-            role: 'viewMenu'
-         },
-         {
             role: 'windowMenu'
          }
       ]
