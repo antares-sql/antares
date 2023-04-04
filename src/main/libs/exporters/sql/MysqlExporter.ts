@@ -184,9 +184,9 @@ CREATE TABLE \`${view.Name}\`(
       const { rows: triggers } = await this._client.raw(
          `SHOW TRIGGERS FROM \`${this.schemaName}\``
       );
-      const generatedTables = this._tables
-         .filter(t => t.includeStructure)
-         .map(t => t.table);
+      // const generatedTables = this._tables
+      //    .filter(t => t.includeStructure)
+      //    .map(t => t.table);
 
       let sqlString = '';
 
@@ -200,7 +200,7 @@ CREATE TABLE \`${view.Name}\`(
             sql_mode: sqlMode
          } = trigger;
 
-         if (!generatedTables.includes(table)) continue;
+         // if (!generatedTables.includes(table)) continue;// Commented to avoid issues if export contains triggers without tables
 
          const definer = this.getEscapedDefiner(trigger.Definer);
          sqlString += '/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE*/;;\n';
