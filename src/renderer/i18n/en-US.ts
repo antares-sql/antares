@@ -337,7 +337,9 @@ export const enUS = {
       executeSelectedQuery: 'Execute selected query',
       defaultCopyType: 'Default copy type',
       showTableSize: 'Show table size in sidebar',
-      showTableSizeDescription: 'MySQL/MariaDB only. Enable this option may affects performance on schema with many tables.'
+      showTableSizeDescription: 'MySQL/MariaDB only. Enable this option may affects performance on schema with many tables.',
+      searchForSchemas: 'Search for schemas',
+      switchSearchMethod: 'Switch search method'
    },
    faker: {
       address: 'Address',
