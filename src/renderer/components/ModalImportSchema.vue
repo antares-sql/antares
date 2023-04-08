@@ -6,7 +6,7 @@
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
-                     <i class="mdi mdi-24px mdi-database-arrow-up mr-1" />
+                     <i class="mdi mdi-24px mdi-database-import mr-1" />
                      <span class="cut-text">{{ t('message.importSchema') }}</span>
                   </div>
                </div>

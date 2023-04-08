@@ -94,7 +94,7 @@ export const valueToSqlString = (args: {
          ? escapeAndQuote(moment(val).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`), client)
          : escapeAndQuote(val, client);
    }
-   else if ('isArray' in field) {
+   else if ('isArray' in field && field.isArray) {
       let localVal;
       if (Array.isArray(val))
          localVal = JSON.stringify(val).replaceAll('[', '{').replaceAll(']', '}');
@@ -152,17 +152,47 @@ export const valueToSqlString = (args: {
 };
 
 export const jsonToSqlInsert = (args: {
-      json: { [key: string]: any};
+      json: { [key: string]: any}[];
       client: ClientCode;
       fields: { [key: string]: {type: string; datePrecision: number}};
       table: string;
+      options?: {sqlInsertAfter: number; sqlInsertDivider: 'bytes' | 'rows'};
    }) => {
-   const { client, json, fields, table } = args;
+   const { client, json, fields, table, options } = args;
+   const sqlInsertAfter = options && options.sqlInsertAfter ? options.sqlInsertAfter : 1;
+   const sqlInsertDivider = options && options.sqlInsertDivider ? options.sqlInsertDivider : 'rows';
    const { elementsWrapper: ew } = customizations[client];
-   const fieldNames = Object.keys(json).map(key => `${ew}${key}${ew}`);
-   const values = Object.keys(json).map(key => (
-      valueToSqlString({ val: json[key], client, field: fields[key] })
-   ));
+   const fieldNames = Object.keys(json[0]).map(key => `${ew}${key}${ew}`);
+   let insertStmt = `INSERT INTO ${ew}${table}${ew} (${fieldNames.join(', ')}) VALUES `;
+   let insertsString = '';
+   let queryLength = 0;
+   let rowsWritten = 0;
 
-   return `INSERT INTO ${ew}${table}${ew} (${fieldNames.join(', ')}) VALUES (${values.join(', ')});`;
+   for (const row of json) {
+      const values = [];
+
+      values.push(Object.keys(row).map(key => (
+         valueToSqlString({ val: row[key], client, field: fields[key] })
+      )));
+
+      if (
+         (sqlInsertDivider === 'bytes' && queryLength >= sqlInsertAfter * 1024) ||
+         (sqlInsertDivider === 'rows' && rowsWritten === sqlInsertAfter)
+      ) {
+         insertsString += insertStmt+';';
+         insertStmt = `\nINSERT INTO ${ew}${table}${ew} (${fieldNames.join(', ')}) VALUES `;
+         rowsWritten = 0;
+      }
+      rowsWritten++;
+
+      if (rowsWritten > 1) insertStmt += ',\n';
+
+      insertStmt += `(${values.join(',')})`;
+      queryLength = insertStmt.length;
+   }
+
+   if (rowsWritten > 0)
+      insertsString += insertStmt+';';
+
+   return insertsString;
 };

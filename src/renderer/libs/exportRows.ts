@@ -9,6 +9,7 @@ export const exportRows = (args: {
    fields?: {
       [key: string]: {type: string; datePrecision: number};
    };
+   sqlOptions?: {sqlInsertAfter: number; sqlInsertDivider: 'bytes' | 'rows'};
 }) => {
    let mime;
    let content;
@@ -35,19 +36,16 @@ export const exportRows = (args: {
       }
       case 'sql': {
          mime = 'text/sql';
-         const sql = [];
+         const sql = jsonToSqlInsert({
+            json: args.content,
+            client:
+            args.client,
+            fields: args.fields,
+            table: args.table,
+            options: args.sqlOptions
+         });
 
-         for (const row of args.content) {
-            sql.push(jsonToSqlInsert({
-               json: row,
-               client:
-               args.client,
-               fields: args.fields,
-               table: args.table
-            }));
-         }
-
-         content = sql.join('\n');
+         content = sql;
          break;
       }
       case 'json':
