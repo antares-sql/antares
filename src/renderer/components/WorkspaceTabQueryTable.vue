@@ -668,15 +668,14 @@ const selectResultset = (index: number) => {
 const downloadTable = (format: 'csv' | 'json' | 'sql', table: string) => {
    if (!sortedResults.value) return;
 
-   const rows = JSON.parse(JSON.stringify(sortedResults.value)).map((row: any) => {
+   const rows = sortedResults.value.map((row: any) => {
       delete row._antares_id;
       return row;
    });
-
    exportRows({
       type: format,
       content: rows,
-      fields: fieldsObj.value as {
+      fields: JSON.parse(JSON.stringify(fieldsObj.value)) as {
          [key: string]: {type: string; datePrecision: number};
       },
       client: workspaceClient.value,

@@ -107,10 +107,16 @@ export const valueToSqlString = (args: {
    else if (BIT.includes(field.type))
       parsedValue = `b'${hexToBinary(Buffer.from(val).toString('hex') as undefined as HexChar[])}'`;
    else if (BLOB.includes(field.type)) {
+      let buffer: Buffer;
+      if (val instanceof Uint8Array)
+         buffer = Buffer.from(val);
+      else
+         buffer = val;
+
       if (['mysql', 'maria'].includes(client))
-         parsedValue = `X'${val.toString('hex').toUpperCase()}'`;
+         parsedValue = `X'${buffer.toString('hex').toUpperCase()}'`;
       else if (client === 'pg')
-         parsedValue = `decode('${val.toString('hex').toUpperCase()}', 'hex')`;
+         parsedValue = `decode('${buffer.toString('hex').toUpperCase()}', 'hex')`;
    }
    else if (NUMBER.includes(field.type))
       parsedValue = val;

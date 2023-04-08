@@ -21,8 +21,14 @@ export const exportRows = (args: {
          if (args.content.length)
             csv.push(Object.keys(args.content[0]).join(';'));
 
-         for (const row of args.content)
-            csv.push(Object.values(row).map(col => typeof col === 'string' ? `"${col}"` : col).join(';'));
+         for (const row of args.content) {
+            csv.push(Object.values(row).map(col => {
+               if (typeof col === 'string') return `"${col}"`;
+               if (col instanceof Buffer) return col.toString('base64');
+               if (col instanceof Uint8Array) return Buffer.from(col).toString('base64');
+               return col;
+            }).join(';'));
+         }
 
          content = csv.join('\n');
          break;
