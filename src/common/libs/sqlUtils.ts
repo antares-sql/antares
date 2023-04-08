@@ -72,7 +72,7 @@ export const escapeAndQuote = (val: string, client: ClientCode) => {
 export const valueToSqlString = (args: {
       val: any;
       client: ClientCode;
-      field: {type: string; datePrecision: number};
+      field: {type: string; datePrecision: number; isArray?: boolean};
    }): string => {
    let parsedValue;
    const { val, client, field } = args;
