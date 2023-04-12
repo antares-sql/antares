@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.8](https://github.com/antares-sql/antares/compare/v0.7.7...v0.7.8) (2023-04-12)
+
+
+### Features
+
+* filter schemas in sidebar, closes [#555](https://github.com/antares-sql/antares/issues/555) ([8be9f93](https://github.com/antares-sql/antares/commit/8be9f932e7a44b2067d8b57950d8faafc577123f))
+* **MySQL:** option to export from results SQL INSERTS in chunks, closes [#501](https://github.com/antares-sql/antares/issues/501) ([0f24c80](https://github.com/antares-sql/antares/commit/0f24c80e5a2dc45875df6b67d3c097cf1cca458e))
+
+
+### Bug Fixes
+
+* **MySQL:** missing scale for FLOAT type ([52108d7](https://github.com/antares-sql/antares/commit/52108d76133d5fdffb56faa995d7ab7ee3e7c4bc))
+* triggers not exported if related table not included ([d802b32](https://github.com/antares-sql/antares/commit/d802b32597e42ee90a2d691fe74245b3bc2517ee))
+* unable to export BLOB values from table content o query result ([afa61a9](https://github.com/antares-sql/antares/commit/afa61a9bc2d698894096a6b5413c49f05b2fd5aa))
+
 ### [0.7.7](https://github.com/antares-sql/antares/compare/v0.7.6...v0.7.7) (2023-03-10)
 
 
