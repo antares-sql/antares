@@ -144,6 +144,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="http://yaskur.net"><img src="https://avatars.githubusercontent.com/u/9539970?v=4?s=100" width="100px;" alt="Muhammad Dyas Yaskur"/><br /><sub><b>Muhammad Dyas Yaskur</b></sub></a><br /><a href="#translation-dyaskur" title="Translation">🌍</a> <a href="https://github.com/antares-sql/antares/commits?author=dyaskur" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jimcat8"><img src="https://avatars.githubusercontent.com/u/86754294?v=4?s=100" width="100px;" alt="tianci li"/><br /><sub><b>tianci li</b></sub></a><br /><a href="#translation-jimcat8" title="Translation">🌍</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/555cider"><img src="https://avatars.githubusercontent.com/u/73565447?v=4?s=100" width="100px;" alt="555cider"/><br /><sub><b>555cider</b></sub></a><br /><a href="#translation-555cider" title="Translation">🌍</a></td>
+    </tr>
   </tbody>
 </table>
 
