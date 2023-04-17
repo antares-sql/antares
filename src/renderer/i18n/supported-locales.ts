@@ -10,5 +10,6 @@ export const localesNames: {[key: string]: string} = {
    'ja-JP': '日本語',
    'zh-CN': '简体中文',
    'ru-RU': 'Русский',
-   'id-ID': 'Bahasa Indonesia'
+   'id-ID': 'Bahasa Indonesia',
+   'ko-KR': '한국어'
 };
