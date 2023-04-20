@@ -381,6 +381,7 @@ const resizeScroller = () => {
 
 const updateFilters = (clausoles: TableFilterClausole[]) => {
    filters.value = clausoles;
+   results.value = [];
    getTableData();
 };
 
