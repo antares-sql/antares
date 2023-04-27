@@ -247,7 +247,10 @@ export default (connections: {[key: string]: antares.Client}) => {
                   if (typeof row[key] === 'string')
                      row[key] = `'${row[key]}'`;
 
-                  row[key] = `= ${row[key]}`;
+                  if (row[key] === null)
+                     row[key] = 'IS NULL';
+                  else
+                     row[key] = `= ${row[key]}`;
                }
 
                await connections[params.uid]
