@@ -145,6 +145,14 @@
       />
       <div class="workspace-query-results p-relative column col-12">
          <BaseLoader v-if="isQuering" />
+         <div v-if="!isQuering && !results[0]?.rows.length" class="empty">
+            <div class="empty-icon">
+               <i class="mdi mdi-48px mdi-island" />
+            </div>
+            <p class="h4 empty-subtitle">
+               {{ t('message.noResultsPresent') }}
+            </p>
+         </div>
          <WorkspaceTabQueryTable
             v-if="results"
             ref="queryTable"

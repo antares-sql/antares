@@ -339,7 +339,8 @@ export const enUS = {
       showTableSize: 'Show table size in sidebar',
       showTableSizeDescription: 'MySQL/MariaDB only. Enable this option may affects performance on schema with many tables.',
       searchForSchemas: 'Search for schemas',
-      switchSearchMethod: 'Switch search method'
+      switchSearchMethod: 'Switch search method',
+      noResultsPresent: 'No results present'
    },
    faker: {
       address: 'Address',
