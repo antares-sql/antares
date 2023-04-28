@@ -9,7 +9,7 @@ export const exportRows = (args: {
    fields?: {
       [key: string]: {type: string; datePrecision: number};
    };
-   sqlOptions?: {sqlInsertAfter: number; sqlInsertDivider: 'bytes' | 'rows'};
+   sqlOptions?: {sqlInsertAfter: number; sqlInsertDivider: 'bytes' | 'rows'; targetTable: string};
 }) => {
    let mime;
    let content;
@@ -41,7 +41,7 @@ export const exportRows = (args: {
             client:
             args.client,
             fields: args.fields,
-            table: args.table,
+            table: args.sqlOptions.targetTable || args.table,
             options: args.sqlOptions
          });
 
@@ -58,7 +58,7 @@ export const exportRows = (args: {
 
    const file = new Blob([content], { type: mime });
    const downloadLink = document.createElement('a');
-   downloadLink.download = `${args.table}.${args.type}`;
+   downloadLink.download = `${args.sqlOptions?.targetTable || args.table}.${args.type}`;
    downloadLink.href = window.URL.createObjectURL(file);
    downloadLink.style.display = 'none';
    document.body.appendChild(downloadLink);

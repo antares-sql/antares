@@ -120,11 +120,21 @@
          <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-file-export mr-1" />
-               <span class="cut-text">{{ t('message.newInserStmtEvery') }}:</span>
+               <span class="cut-text">{{ t('message.sqlExportOptions') }}</span>
             </div>
          </template>
          <template #body>
             <div class="columns">
+               <label class="column col-12 h6 mb-2 cut-text">{{ t('message.targetTable') }}</label>
+               <div class="column col-12">
+                  <input
+                     v-model.number="sqlExportOptions.targetTable"
+                     type="text"
+                     class="form-input"
+                     :placeholder="chunkModalRequest"
+                  >
+               </div>
+               <label class="column col-12 h6 mb-2 mt-4 cut-text">{{ t('message.newInserStmtEvery') }}:</label>
                <div class="column col-6">
                   <input
                      v-model.number="sqlExportOptions.sqlInsertAfter"
@@ -214,7 +224,8 @@ const isEditingRow = ref(false);
 const chunkModalRequest: Ref<false | string> = ref(false);
 const sqlExportOptions = ref({
    sqlInsertAfter: 250,
-   sqlInsertDivider: 'bytes' as 'bytes' | 'rows'
+   sqlInsertDivider: 'bytes' as 'bytes' | 'rows',
+   targetTable: ''
 });
 
 const workspaceSchema = computed(() => getWorkspace(props.connUid).breadcrumbs.schema);
@@ -704,6 +715,11 @@ const downloadTable = (format: 'csv' | 'json' | 'sql', table: string, chunks = f
    if (!sortedResults.value) return;
 
    if (format === 'sql' && !chunks && customizations.value.exportByChunks) {
+      sqlExportOptions.value = {
+         sqlInsertAfter: 250,
+         sqlInsertDivider: 'bytes' as 'bytes' | 'rows',
+         targetTable: ''
+      };
       chunkModalRequest.value = table;
       return;
    }
