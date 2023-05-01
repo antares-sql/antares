@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.9](https://github.com/antares-sql/antares/compare/v0.7.8...v0.7.9) (2023-05-01)
+
+
+### Features
+
+* no table results message ([19859f4](https://github.com/antares-sql/antares/commit/19859f45f4457292b6ecfe79bdcfbdcc7722be06))
+* option to choose the target table of an SQL INSERT exportation, closes [#556](https://github.com/antares-sql/antares/issues/556) ([c48266c](https://github.com/antares-sql/antares/commit/c48266c336d7c61abe2b56b5702e5bca83bb57b3))
+* **translation:** ko-KR translation, closes [#561](https://github.com/antares-sql/antares/issues/561) ([baef4ea](https://github.com/antares-sql/antares/commit/baef4ea4d1747233a86b90fe5b60a0d6cfba1f1c))
+
+
+### Bug Fixes
+
+* sidebar height out of visible area ([af91d96](https://github.com/antares-sql/antares/commit/af91d96db6e79222e5dbc9b880a904a40332c09b))
+* unable to delete rows with null values and no primary key ([74c136f](https://github.com/antares-sql/antares/commit/74c136f8334b6972ae55dd8ee0ade09ef8ae3282))
+* vertical scrollbar does not reset after performing a search, fixes [#567](https://github.com/antares-sql/antares/issues/567) ([0cd55fb](https://github.com/antares-sql/antares/commit/0cd55fbfe9ff09589ae5993f16b0dd56a2ea1a5a))
+
+
+### Improvements
+
+* **translation:** update italian translation ([96e1ceb](https://github.com/antares-sql/antares/commit/96e1ceb1d2488390216553cd3fce2eec261f04eb))
+
 ### [0.7.8](https://github.com/antares-sql/antares/compare/v0.7.7...v0.7.8) (2023-04-12)
 
 
