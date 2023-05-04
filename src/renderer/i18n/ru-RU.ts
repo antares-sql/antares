@@ -106,7 +106,7 @@ export const ruRU = {
       scratchpad: 'Заметки',
       array: 'Массив',
       changelog: 'Журнал изменений',
-      format: 'Формат',
+      format: 'Отформатировать',
       sshTunnel: 'SSH туннель',
       structure: 'Структура',
       small: 'Малый',
