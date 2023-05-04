@@ -199,7 +199,7 @@ export const ruRU = {
       createNewIndex: 'Создать новый индекс',
       addToIndex: 'Добавить индекс',
       createNewTable: 'Создать новую таблицу',
-      emptyTable: 'Пустая таблица',
+      emptyTable: 'Очистить таблицу',
       deleteTable: 'Удалить таблицу',
       emptyCorfirm: 'Подтверждаете очистку?',
       unsavedChanges: 'Несохраненные изменения',
