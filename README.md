@@ -146,6 +146,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/555cider"><img src="https://avatars.githubusercontent.com/u/73565447?v=4?s=100" width="100px;" alt="555cider"/><br /><sub><b>555cider</b></sub></a><br /><a href="#translation-555cider" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/m1khal3v"><img src="https://avatars.githubusercontent.com/u/41085561?v=4?s=100" width="100px;" alt="Anton Mikhalev"/><br /><sub><b>Anton Mikhalev</b></sub></a><br /><a href="#translation-m1khal3v" title="Translation">🌍</a></td>
     </tr>
   </tbody>
 </table>
