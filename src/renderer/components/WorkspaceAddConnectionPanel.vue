@@ -416,7 +416,7 @@ const clients = [
    { name: 'MariaDB', slug: 'maria' },
    { name: 'PostgreSQL', slug: 'pg' },
    { name: 'SQLite', slug: 'sqlite' },
-   { name: 'Firebird SQL (experimental)', slug: 'firebird' }
+   { name: 'Firebird SQL', slug: 'firebird' }
 ];
 
 const connection = ref({

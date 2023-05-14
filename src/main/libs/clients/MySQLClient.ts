@@ -9,6 +9,8 @@ export class MySQLClient extends AntaresCore {
    private _schema?: string;
    private _runningConnections: Map<string, number>;
    private _connectionsToCommit: Map<string, mysql.Connection | mysql.PoolConnection>;
+   private _keepaliveTimer: NodeJS.Timer;
+   private _keepaliveMs: number;
    _connection?: mysql.Connection | mysql.Pool;
    _params: mysql.ConnectionOptions & {schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean};
 
@@ -52,6 +54,7 @@ export class MySQLClient extends AntaresCore {
       this._schema = null;
       this._runningConnections = new Map();
       this._connectionsToCommit = new Map();
+      this._keepaliveMs = 10*60*1000;
    }
 
    private _getType (field: mysql.FieldPacket & { columnType?: number; columnLength?: number }) {
@@ -182,6 +185,8 @@ export class MySQLClient extends AntaresCore {
 
    destroy () {
       this._connection.end();
+      clearInterval(this._keepaliveTimer);
+      this._keepaliveTimer = undefined;
       if (this._ssh) this._ssh.close();
    }
 
@@ -243,7 +248,17 @@ export class MySQLClient extends AntaresCore {
             conn.query(`SET SESSION sql_mode = '${sqlMode.filter((m: string) => !['ANSI', 'ANSI_QUOTES'].includes(m)).join(',')}'`);
       });
 
+      this._keepaliveTimer = setInterval(async () => {
+         await this.keepAlive();
+      }, this._keepaliveMs);
+
       return connection;
+   }
+
+   private async keepAlive () {
+      const connection = await (this._connection as mysql.Pool).getConnection();
+      await connection.ping();
+      connection.release();
    }
 
    use (schema: string) {

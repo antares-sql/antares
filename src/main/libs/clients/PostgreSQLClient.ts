@@ -84,6 +84,8 @@ export class PostgreSQLClient extends AntaresCore {
    private _schema?: string;
    private _runningConnections: Map<string, number>;
    private _connectionsToCommit: Map<string, pg.Client | pg.PoolClient>;
+   private _keepaliveTimer: NodeJS.Timer;
+   private _keepaliveMs: number;
    protected _connection?: pg.Client | pg.Pool;
    private types: {[key: string]: string} = {};
    private _arrayTypes: {[key: string]: string} = {
@@ -104,6 +106,7 @@ export class PostgreSQLClient extends AntaresCore {
       this._schema = null;
       this._runningConnections = new Map();
       this._connectionsToCommit = new Map();
+      this._keepaliveMs = 10*60*1000;
 
       for (const key in pg.types.builtins) {
          const builtinKey = key as builtinsTypes;
@@ -222,12 +225,24 @@ export class PostgreSQLClient extends AntaresCore {
          });
       }
 
+      this._keepaliveTimer = setInterval(async () => {
+         await this.keepAlive();
+      }, this._keepaliveMs);
+
       return connection;
    }
 
    destroy () {
       this._connection.end();
+      clearInterval(this._keepaliveTimer);
+      this._keepaliveTimer = undefined;
       if (this._ssh) this._ssh.close();
+   }
+
+   private async keepAlive () {
+      const connection = await this._connection.connect() as pg.PoolClient;
+      await connection.query('SELECT 1+1');
+      connection.release();
    }
 
    use (schema: string, connection?: pg.Client | pg.PoolClient) {

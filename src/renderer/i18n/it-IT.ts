@@ -22,7 +22,7 @@ export const itIT = {
       settings: 'Impostazioni',
       general: 'Generale',
       themes: 'Temi',
-      update: 'Aggiornamento',
+      update: 'Aggiorna',
       about: 'Informazioni',
       language: 'Lingua',
       version: 'Versione',
@@ -337,7 +337,7 @@ export const itIT = {
       executeSelectedQuery: 'Esegui la query selezionata',
       defaultCopyType: 'Tipo di copia default',
       showTableSize: 'Mostra dimensioni tabella nella sidebar',
-      showTableSizeDescription: 'Solo MySQL/MariaDB. Abilitare questa opzione può compmpromettere le performance in schemi con molte tabelle.',
+      showTableSizeDescription: 'Solo MySQL/MariaDB. Abilitare questa opzione può compromettere le performance in schemi con molte tabelle.',
       searchForSchemas: 'Cerca schemi',
       switchSearchMethod: 'Cambia metodo di ricerca',
       noResultsPresent: 'Nessun risultato presente'
