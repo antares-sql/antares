@@ -35,11 +35,12 @@ export const customizations: Customizations = {
    triggerFunctions: true,
    routines: true,
    functions: true,
-   // Settings
+   // Misc
    elementsWrapper: '"',
    stringsWrapper: '\'',
    tableAdd: true,
    tableDuplicate: true,
+   tableDdl: true,
    viewAdd: true,
    triggerAdd: true,
    triggerFunctionAdd: true,

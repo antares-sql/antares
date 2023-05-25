@@ -30,7 +30,7 @@ export interface Customizations {
    routines?: boolean;
    functions?: boolean;
    schedulers?: boolean;
-   // Settings
+   // Misc
    elementsWrapper: string;
    stringsWrapper: string;
    tableAdd?: boolean;
@@ -39,6 +39,7 @@ export interface Customizations {
    tableArray?: boolean;
    tableRealCount?: boolean;
    tableTruncateDisableFKCheck?: boolean;
+   tableDdl?: boolean;
    viewAdd?: boolean;
    viewSettings?: boolean;
    triggerAdd?: boolean;

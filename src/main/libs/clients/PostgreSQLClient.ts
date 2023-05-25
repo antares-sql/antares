@@ -582,6 +582,146 @@ export class PostgreSQLClient extends AntaresCore {
       }, {} as {table: string; schema: string}[]);
    }
 
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   async getTableDll ({ schema, table }: { schema: string; table: string }) {
+      // const { rows } = await this.raw<antares.QueryResult<{'ddl'?: string}>>(`
+      //    SELECT
+      //       'CREATE TABLE ' || relname || E'\n(\n' ||
+      //             array_to_string(
+      //                array_agg('    ' || column_name || ' ' ||  type || ' '|| not_null)
+      //                , E',\n'
+      //             ) || E'\n);\n' AS ddl
+      //    FROM (
+      //          SELECT
+      //             a.attname AS column_name
+      //             , pg_catalog.format_type(a.atttypid, a.atttypmod) AS type
+      //             , CASE WHEN a.attnotnull THEN 'NOT NULL' ELSE 'NULL' END AS not_null
+      //             , c.relname
+      //          FROM pg_attribute a, pg_class c, pg_type t
+      //          WHERE a.attnum > 0
+      //             AND a.attrelid = c.oid
+      //             AND a.atttypid = t.oid
+      //             AND c.relname = '${table}'
+      //          ORDER BY a.attnum
+      //    ) AS tabledefinition
+      //    GROUP BY relname
+      // `);
+
+      // if (rows.length)
+      //    return rows[0].ddl;
+      // else return '';
+
+      /* eslint-disable camelcase */
+      interface SequenceRecord {
+         sequence_catalog: string;
+         sequence_schema: string;
+         sequence_name: string;
+         data_type: string;
+         numeric_precision: number;
+         numeric_precision_radix: number;
+         numeric_scale: number;
+         start_value: string;
+         minimum_value: string;
+         maximum_value: string;
+         increment: string;
+         cycle_option: string;
+      }
+      /* eslint-enable camelcase */
+
+      let createSql = '';
+      const sequences = [];
+      const columnsSql = [];
+      const arrayTypes: {[key: string]: string} = {
+         _int2: 'smallint',
+         _int4: 'integer',
+         _int8: 'bigint',
+         _float4: 'real',
+         _float8: 'double precision',
+         _char: '"char"',
+         _varchar: 'character varying'
+      };
+
+      // Table columns
+      const { rows } = await this.raw(`
+         SELECT * 
+         FROM "information_schema"."columns" 
+         WHERE "table_schema" = '${schema}' 
+         AND "table_name" = '${table}' 
+         ORDER BY "ordinal_position" ASC
+      `, { schema: 'information_schema' });
+
+      if (!rows.length) return '';
+
+      for (const column of rows) {
+         let fieldType = column.data_type;
+         if (fieldType === 'USER-DEFINED') fieldType = `"${schema}".${column.udt_name}`;
+         else if (fieldType === 'ARRAY') {
+            if (Object.keys(arrayTypes).includes(fieldType))
+               fieldType = arrayTypes[column.udt_name] + '[]';
+            else
+               fieldType = column.udt_name.replaceAll('_', '') + '[]';
+         }
+
+         const columnArr = [
+            `"${column.column_name}"`,
+            `${fieldType}${column.character_maximum_length ? `(${column.character_maximum_length})` : ''}`
+         ];
+
+         if (column.column_default) {
+            columnArr.push(`DEFAULT ${column.column_default}`);
+            if (column.column_default.includes('nextval')) {
+               const sequenceName = column.column_default.split('\'')[1];
+               sequences.push(sequenceName);
+            }
+         }
+         if (column.is_nullable === 'NO') columnArr.push('NOT NULL');
+
+         columnsSql.push(columnArr.join(' '));
+      }
+
+      // Table sequences
+      for (let sequence of sequences) {
+         if (sequence.includes('.')) sequence = sequence.split('.')[1];
+
+         const { rows } = await this.select('*')
+            .schema('information_schema')
+            .from('sequences')
+            .where({ sequence_schema: `= '${schema}'`, sequence_name: `= '${sequence}'` })
+            .run<SequenceRecord>();
+
+         if (rows.length) {
+            createSql += `CREATE SEQUENCE "${schema}"."${sequence}"
+   START WITH ${rows[0].start_value}
+   INCREMENT BY ${rows[0].increment}
+   MINVALUE ${rows[0].minimum_value}
+   MAXVALUE ${rows[0].maximum_value}
+   CACHE 1;\n`;
+
+            // createSql += `\nALTER TABLE "${sequence}" OWNER TO ${this._client._params.user};\n\n`;
+         }
+      }
+
+      // Table create
+      createSql += `\nCREATE TABLE "${schema}"."${table}"(
+   ${columnsSql.join(',\n   ')}
+);\n`;
+
+      // createSql += `\nALTER TABLE "${tableName}" OWNER TO ${this._client._params.user};\n\n`;
+
+      // Table indexes
+      createSql += '\n';
+      const { rows: indexes } = await this.select('*')
+         .schema('pg_catalog')
+         .from('pg_indexes')
+         .where({ schemaname: `= '${schema}'`, tablename: `= '${table}'` })
+         .run<{indexdef: string}>();
+
+      for (const index of indexes)
+         createSql += `${index.indexdef};\n`;
+
+      return createSql;
+   }
+
    async getKeyUsage ({ schema, table }: { schema: string; table: string }) {
       /* eslint-disable camelcase */
       interface KeyResult {

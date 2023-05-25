@@ -43,12 +43,24 @@
                   <span>{{ t('word.indexes') }}</span>
                </button>
                <button
-                  class="btn btn-dark btn-sm"
+                  class="btn btn-dark btn-sm mr-0"
                   :disabled="isSaving"
                   @click="showForeignModal"
                >
                   <i class="mdi mdi-24px mdi-key-link mr-1" />
                   <span>{{ t('word.foreignKeys') }}</span>
+               </button>
+
+               <div class="divider-vert py-3" />
+
+               <button
+                  v-if="workspace.customizations.tableDdl"
+                  class="btn btn-dark btn-sm"
+                  :disabled="isSaving"
+                  @click="showDdlModal"
+               >
+                  <i class="mdi mdi-24px mdi-code-tags mr-1" />
+                  <span>{{ t('word.ddl') }}</span>
                </button>
             </div>
             <div class="workspace-query-info">
@@ -169,6 +181,13 @@
          @hide="hideForeignModal"
          @foreigns-update="foreignsUpdate"
       />
+      <WorkspaceTabPropsTableDdlModal
+         v-if="isDdlModal"
+         :table="table"
+         :schema="schema"
+         :workspace="workspace"
+         @hide="hideDdlModal"
+      />
    </div>
 </template>
 
@@ -186,6 +205,7 @@ import BaseSelect from '@/components/BaseSelect.vue';
 import WorkspaceTabPropsTableFields from '@/components/WorkspaceTabPropsTableFields.vue';
 import WorkspaceTabPropsTableIndexesModal from '@/components/WorkspaceTabPropsTableIndexesModal.vue';
 import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTableForeignModal.vue';
+import WorkspaceTabPropsTableDdlModal from '@/components/WorkspaceTabPropsTableDdlModal.vue';
 import { ipcRenderer } from 'electron';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -221,6 +241,7 @@ const isLoading = ref(false);
 const isSaving = ref(false);
 const isIndexesModal = ref(false);
 const isForeignModal = ref(false);
+const isDdlModal = ref(false);
 const originalFields: Ref<TableField[]> = ref([]);
 const localFields: Ref<TableField[]> = ref([]);
 const originalKeyUsage: Ref<TableForeign[]> = ref([]);
@@ -647,6 +668,14 @@ const showForeignModal = () => {
 
 const hideForeignModal = () => {
    isForeignModal.value = false;
+};
+
+const showDdlModal = () => {
+   isDdlModal.value = true;
+};
+
+const hideDdlModal = () => {
+   isDdlModal.value = false;
 };
 
 const foreignsUpdate = (foreigns: TableForeign[]) => {

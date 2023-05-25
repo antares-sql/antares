@@ -701,6 +701,17 @@ export class MySQLClient extends AntaresCore {
       });
    }
 
+   async getTableDll ({ schema, table }: { schema: string; table: string }) {
+      const { rows } = await this.raw<antares.QueryResult<{
+         'Create Table'?: string;
+         Table: string;
+      }>>(`SHOW CREATE TABLE \`${schema}\`.\`${table}\``);
+
+      if (rows.length)
+         return rows[0]['Create Table'];
+      else return '';
+   }
+
    async getKeyUsage ({ schema, table }: { schema: string; table: string }) {
       interface KeyResult {
          TABLE_SCHEMA: string;

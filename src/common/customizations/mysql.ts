@@ -44,6 +44,7 @@ export const customizations: Customizations = {
    tableAdd: true,
    tableTruncateDisableFKCheck: true,
    tableDuplicate: true,
+   tableDdl: true,
    viewAdd: true,
    triggerAdd: true,
    routineAdd: true,
