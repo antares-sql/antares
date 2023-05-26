@@ -118,6 +118,8 @@ onMounted(() => {
       }, 20);
    }
 
+   editor.commands.removeCommand('showSettingsMenu');
+
    setTimeout(() => {
       editor.resize();
    }, 20);

@@ -696,8 +696,6 @@ export class PostgreSQLClient extends AntaresCore {
    MINVALUE ${rows[0].minimum_value}
    MAXVALUE ${rows[0].maximum_value}
    CACHE 1;\n`;
-
-            // createSql += `\nALTER TABLE "${sequence}" OWNER TO ${this._client._params.user};\n\n`;
          }
       }
 
@@ -705,8 +703,6 @@ export class PostgreSQLClient extends AntaresCore {
       createSql += `\nCREATE TABLE "${schema}"."${table}"(
    ${columnsSql.join(',\n   ')}
 );\n`;
-
-      // createSql += `\nALTER TABLE "${tableName}" OWNER TO ${this._client._params.user};\n\n`;
 
       // Table indexes
       createSql += '\n';

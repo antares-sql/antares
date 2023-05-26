@@ -373,6 +373,8 @@ onMounted(() => {
       e.stop();
    });
 
+   editor.value.commands.removeCommand('showSettingsMenu');
+
    if (props.autoFocus) {
       setTimeout(() => {
          editor.value.focus();
