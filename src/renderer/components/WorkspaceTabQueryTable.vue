@@ -711,7 +711,7 @@ const selectResultset = (index: number) => {
    resultsetIndex.value = index;
 };
 
-const downloadTable = (format: 'csv' | 'json' | 'sql', table: string, chunks = false) => {
+const downloadTable = (format: 'csv' | 'json' | 'sql' | 'php', table: string, chunks = false) => {
    if (!sortedResults.value) return;
 
    if (format === 'sql' && !chunks && customizations.value.exportByChunks) {

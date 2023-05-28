@@ -343,7 +343,8 @@ export const enUS = {
       switchSearchMethod: 'Switch search method',
       noResultsPresent: 'No results present',
       sqlExportOptions: 'SQL export options',
-      targetTable: 'Target table'
+      targetTable: 'Target table',
+      phpArray: 'PHP array'
    },
    faker: {
       address: 'Address',

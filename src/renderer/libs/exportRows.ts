@@ -1,8 +1,9 @@
 import { ClientCode } from 'common/interfaces/antares';
 import { jsonToSqlInsert } from 'common/libs/sqlUtils';
+import * as json2php from 'json2php';
 
 export const exportRows = (args: {
-   type: 'csv' | 'json'| 'sql';
+   type: 'csv' | 'json'| 'sql' | 'php';
    content: object[];
    table: string;
    client?: ClientCode;
@@ -46,6 +47,13 @@ export const exportRows = (args: {
          });
 
          content = sql;
+         break;
+      }
+      case 'php': {
+         mime = 'application/x-httpd-php';
+         const printer = json2php.make({ linebreak: '\n', indent: '\t', shortArraySyntax: true });
+         content = printer(args.content);
+         content = `<?php\n$${(args.sqlOptions?.targetTable || args.table).replaceAll('-', '_')} = ${content};`;
          break;
       }
       case 'json':

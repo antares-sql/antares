@@ -2,6 +2,9 @@
 /* eslint-disable @typescript-eslint/ban-types */
 declare module '@/App.vue';
 declare module 'v-mask';
+declare module 'json2php' {
+    const make: (args: { linebreak: string; indent: string; shortArraySyntax: boolean }) => (json: any | any[]) => string;
+}
 declare module 'vuedraggable' {// <- to export as default
    const draggableComponent: import('vue').DefineComponent<{
       list: {
