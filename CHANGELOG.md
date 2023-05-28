@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.10](https://github.com/antares-sql/antares/compare/v0.7.9...v0.7.10) (2023-05-28)
+
+
+### Features
+
+* copy rows as PHP array ([03638c0](https://github.com/antares-sql/antares/commit/03638c05534e9ce2e594ce5945485587ed99e609))
+* DDL query in table settings for MySQL and PostgreSQL, closes [#581](https://github.com/antares-sql/antares/issues/581) ([f454b4b](https://github.com/antares-sql/antares/commit/f454b4bb1ca79eec285b3b4039a2ef66802ff82a))
+* export table content or query results as PHP array, closes [#575](https://github.com/antares-sql/antares/issues/575) ([8968179](https://github.com/antares-sql/antares/commit/8968179c11f4fe3e624873aac4685a5a33521024))
+* keepalive on mysql/postgre connections, should fix [#577](https://github.com/antares-sql/antares/issues/577) ([17eeb6d](https://github.com/antares-sql/antares/commit/17eeb6d38e45b553e35e004b748569971743ca18))
+
+
+### Bug Fixes
+
+* disable shorctut to show Ace editor settings, fixes [#585](https://github.com/antares-sql/antares/issues/585) ([2c0b4ff](https://github.com/antares-sql/antares/commit/2c0b4ffe1f2e418f5e9120a40787788d8e7fd27e))
+
 ### [0.7.9](https://github.com/antares-sql/antares/compare/v0.7.8...v0.7.9) (2023-05-01)
 
 
