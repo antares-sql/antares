@@ -177,6 +177,7 @@ import { TableUpdateParams } from 'common/interfaces/tableApis';
 import { jsonToSqlInsert } from 'common/libs/sqlUtils';
 import { unproxify } from '@/libs/unproxify';
 import faker from '@faker-js/faker';
+import * as json2php from 'json2php';
 
 const { t } = useI18n();
 
@@ -527,6 +528,12 @@ const copyRow = (format: string) => {
       })];
 
       navigator.clipboard.write(data);
+   }
+   else if (format === 'php') {
+      if (!Array.isArray(contentToCopy)) contentToCopy = [contentToCopy];
+      const printer = json2php.make({ linebreak: '\n', indent: '\t', shortArraySyntax: true });
+      const phpString = printer(contentToCopy);
+      navigator.clipboard.writeText(phpString);
    }
 };
 
