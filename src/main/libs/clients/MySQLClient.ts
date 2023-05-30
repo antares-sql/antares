@@ -689,11 +689,11 @@ export class MySQLClient extends AntaresCore {
 
       return rows.map(row => {
          return {
-            unique: !row.Non_unique,
+            unique: !Number(row.Non_unique),
             name: row.Key_name,
             column: row.Column_name,
             indexType: row.Index_type,
-            type: row.Key_name === 'PRIMARY' ? 'PRIMARY' : !row.Non_unique ? 'UNIQUE' : row.Index_type === 'FULLTEXT' ? 'FULLTEXT' : 'INDEX',
+            type: row.Key_name === 'PRIMARY' ? 'PRIMARY' : !Number(row.Non_unique) ? 'UNIQUE' : row.Index_type === 'FULLTEXT' ? 'FULLTEXT' : 'INDEX',
             cardinality: row.Cardinality,
             comment: row.Comment,
             indexComment: row.Index_comment
