@@ -764,7 +764,7 @@ export class MySQLClient extends AntaresCore {
    }
 
    async getUsers () {
-      const { rows } = await this.raw('SELECT `user`, `host`, authentication_string AS `password` FROM `mysql`.`user`');
+      const { rows } = await this.raw('SELECT `user` as \'user\', `host` as \'host\', authentication_string AS `password` FROM `mysql`.`user`');
 
       return rows.map(row => {
          return {
