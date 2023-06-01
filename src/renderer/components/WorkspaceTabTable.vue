@@ -73,6 +73,7 @@
                <button
                   class="btn btn-sm"
                   :title="t('word.filter')"
+                  :disabled="isQuering"
                   :class="{'btn-primary': isSearch, 'btn-dark': !isSearch}"
                   @click="isSearch = !isSearch"
                >
@@ -269,7 +270,7 @@ const keyUsage = computed(() => {
 });
 
 const getTableData = async () => {
-   if (!props.table || !props.isSelected) return;
+   if (!props.table || !props.isSelected || isQuering.value) return;
    isQuering.value = true;
 
    // if table changes clear cached values
