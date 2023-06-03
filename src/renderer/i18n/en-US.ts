@@ -344,7 +344,11 @@ export const enUS = {
       noResultsPresent: 'No results present',
       sqlExportOptions: 'SQL export options',
       targetTable: 'Target table',
-      phpArray: 'PHP array'
+      phpArray: 'PHP array',
+      closeAllTabs: 'Close all tabs',
+      closeOtherTabs: 'Close other tabs',
+      closeTabsToLeft: 'Close tabs to the left',
+      closeTabsToRight: 'Close tabs to the right'
    },
    faker: {
       address: 'Address',
