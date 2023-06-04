@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.11](https://github.com/antares-sql/antares/compare/v0.7.10...v0.7.11) (2023-06-04)
+
+
+### Features
+
+* context menu to close tabs, closes [#392](https://github.com/antares-sql/antares/issues/392) ([787014c](https://github.com/antares-sql/antares/commit/787014c38df743315c04962871a3801805a93c55))
+
+
+### Bug Fixes
+
+* disable filter during table content loading, fixes [#588](https://github.com/antares-sql/antares/issues/588) ([e60726c](https://github.com/antares-sql/antares/commit/e60726c741276b7da0d54c0986d2a45ed9979bc9))
+* **MySQL:** unable to get users list with some db settings ([9046707](https://github.com/antares-sql/antares/commit/904670781d47b1ac0dcfd982215ba1786f8c8145))
+* unique keys not recognized in table settings on some MariaDB versions ([4461998](https://github.com/antares-sql/antares/commit/446199827be4b07382453739f42d46fa0201d04c))
+* weird behavior in some text editors ([22bdaac](https://github.com/antares-sql/antares/commit/22bdaac18b1c46a57802cbbd3ad339ee075ec70b))
+
 ### [0.7.10](https://github.com/antares-sql/antares/compare/v0.7.9...v0.7.10) (2023-05-28)
 
 
