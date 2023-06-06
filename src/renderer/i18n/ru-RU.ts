@@ -29,7 +29,7 @@ export const ruRU = {
       donate: 'Пожертвование',
       run: 'Выполнить',
       schema: 'Схема',
-      results: 'Результаты',
+      results: 'Отображено',
       size: 'Размер',
       seconds: 'Секунды',
       type: 'Тип',
@@ -149,7 +149,8 @@ export const ruRU = {
       color: 'Цвет',
       label: 'Метка',
       icon: 'Иконка',
-      resultsTable: 'Таблица с результатом'
+      resultsTable: 'Таблица с результатом',
+      ddl: 'DDL'
    },
    message: {
       appWelcome: 'Приветствуем в SQL клиенте Antares!',
@@ -342,7 +343,12 @@ export const ruRU = {
       switchSearchMethod: 'Переключить способ поиска',
       noResultsPresent: 'Данные отсутствуют',
       sqlExportOptions: 'Опции SQL экспорта',
-      targetTable: 'Целевая таблица'
+      targetTable: 'Целевая таблица',
+      phpArray: 'PHP массив',
+      closeAllTabs: 'Закрыть все вкладки',
+      closeOtherTabs: 'Закрыть остальные вкладки',
+      closeTabsToLeft: 'Закрыть вкладки слева',
+      closeTabsToRight: 'Закрыть вкладки справа'
    },
    faker: {
       address: 'Адрес',
