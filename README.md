@@ -19,7 +19,10 @@ We are actively working on it, hoping to provide new cool features, improvements
 🔗 If you are curious to try Antares you can download and install the [latest release](https://github.com/Fabio286/antares/releases/latest).  
 👁 To stay tuned for new releases [follow Antares SQL](https://twitter.com/AntaresSQL) on Twitter.  
 🌟 Don't forget to **leave a star** if you appreciate this project.  
-🗳️ Poll: **[Which is the main OS you use Antares on?](https://github.com/antares-sql/antares/discussions/379)**
+
+🗳️ Polls: 
+- **[Which is the main OS you use Antares on?](https://github.com/antares-sql/antares/discussions/379)**
+- **[Which database do you use the most?](https://github.com/antares-sql/antares/discussions/594)**
 
 ## Current key features
 
