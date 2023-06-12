@@ -9,6 +9,8 @@ export class MySQLClient extends AntaresCore {
    private _schema?: string;
    private _runningConnections: Map<string, number>;
    private _connectionsToCommit: Map<string, mysql.Connection | mysql.PoolConnection>;
+   private _keepaliveTimer: NodeJS.Timer;
+   private _keepaliveMs: number;
    _connection?: mysql.Connection | mysql.Pool;
    _params: mysql.ConnectionOptions & {schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean};
 
@@ -52,6 +54,7 @@ export class MySQLClient extends AntaresCore {
       this._schema = null;
       this._runningConnections = new Map();
       this._connectionsToCommit = new Map();
+      this._keepaliveMs = 10*60*1000;
    }
 
    private _getType (field: mysql.FieldPacket & { columnType?: number; columnLength?: number }) {
@@ -182,6 +185,8 @@ export class MySQLClient extends AntaresCore {
 
    destroy () {
       this._connection.end();
+      clearInterval(this._keepaliveTimer);
+      this._keepaliveTimer = undefined;
       if (this._ssh) this._ssh.close();
    }
 
@@ -243,7 +248,17 @@ export class MySQLClient extends AntaresCore {
             conn.query(`SET SESSION sql_mode = '${sqlMode.filter((m: string) => !['ANSI', 'ANSI_QUOTES'].includes(m)).join(',')}'`);
       });
 
+      this._keepaliveTimer = setInterval(async () => {
+         await this.keepAlive();
+      }, this._keepaliveMs);
+
       return connection;
+   }
+
+   private async keepAlive () {
+      const connection = await (this._connection as mysql.Pool).getConnection();
+      await connection.ping();
+      connection.release();
    }
 
    use (schema: string) {
@@ -674,16 +689,27 @@ export class MySQLClient extends AntaresCore {
 
       return rows.map(row => {
          return {
-            unique: !row.Non_unique,
+            unique: !Number(row.Non_unique),
             name: row.Key_name,
             column: row.Column_name,
             indexType: row.Index_type,
-            type: row.Key_name === 'PRIMARY' ? 'PRIMARY' : !row.Non_unique ? 'UNIQUE' : row.Index_type === 'FULLTEXT' ? 'FULLTEXT' : 'INDEX',
+            type: row.Key_name === 'PRIMARY' ? 'PRIMARY' : !Number(row.Non_unique) ? 'UNIQUE' : row.Index_type === 'FULLTEXT' ? 'FULLTEXT' : 'INDEX',
             cardinality: row.Cardinality,
             comment: row.Comment,
             indexComment: row.Index_comment
          };
       });
+   }
+
+   async getTableDll ({ schema, table }: { schema: string; table: string }) {
+      const { rows } = await this.raw<antares.QueryResult<{
+         'Create Table'?: string;
+         Table: string;
+      }>>(`SHOW CREATE TABLE \`${schema}\`.\`${table}\``);
+
+      if (rows.length)
+         return rows[0]['Create Table'];
+      else return '';
    }
 
    async getKeyUsage ({ schema, table }: { schema: string; table: string }) {
@@ -738,7 +764,7 @@ export class MySQLClient extends AntaresCore {
    }
 
    async getUsers () {
-      const { rows } = await this.raw('SELECT `user`, `host`, authentication_string AS `password` FROM `mysql`.`user`');
+      const { rows } = await this.raw('SELECT `user` as \'user\', `host` as \'host\', authentication_string AS `password` FROM `mysql`.`user`');
 
       return rows.map(row => {
          return {

@@ -2,6 +2,72 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.11](https://github.com/antares-sql/antares/compare/v0.7.10...v0.7.11) (2023-06-04)
+
+
+### Features
+
+* context menu to close tabs, closes [#392](https://github.com/antares-sql/antares/issues/392) ([787014c](https://github.com/antares-sql/antares/commit/787014c38df743315c04962871a3801805a93c55))
+
+
+### Bug Fixes
+
+* disable filter during table content loading, fixes [#588](https://github.com/antares-sql/antares/issues/588) ([e60726c](https://github.com/antares-sql/antares/commit/e60726c741276b7da0d54c0986d2a45ed9979bc9))
+* **MySQL:** unable to get users list with some db settings ([9046707](https://github.com/antares-sql/antares/commit/904670781d47b1ac0dcfd982215ba1786f8c8145))
+* unique keys not recognized in table settings on some MariaDB versions ([4461998](https://github.com/antares-sql/antares/commit/446199827be4b07382453739f42d46fa0201d04c))
+* weird behavior in some text editors ([22bdaac](https://github.com/antares-sql/antares/commit/22bdaac18b1c46a57802cbbd3ad339ee075ec70b))
+
+### [0.7.10](https://github.com/antares-sql/antares/compare/v0.7.9...v0.7.10) (2023-05-28)
+
+
+### Features
+
+* copy rows as PHP array ([03638c0](https://github.com/antares-sql/antares/commit/03638c05534e9ce2e594ce5945485587ed99e609))
+* DDL query in table settings for MySQL and PostgreSQL, closes [#581](https://github.com/antares-sql/antares/issues/581) ([f454b4b](https://github.com/antares-sql/antares/commit/f454b4bb1ca79eec285b3b4039a2ef66802ff82a))
+* export table content or query results as PHP array, closes [#575](https://github.com/antares-sql/antares/issues/575) ([8968179](https://github.com/antares-sql/antares/commit/8968179c11f4fe3e624873aac4685a5a33521024))
+* keepalive on mysql/postgre connections, should fix [#577](https://github.com/antares-sql/antares/issues/577) ([17eeb6d](https://github.com/antares-sql/antares/commit/17eeb6d38e45b553e35e004b748569971743ca18))
+
+
+### Bug Fixes
+
+* disable shorctut to show Ace editor settings, fixes [#585](https://github.com/antares-sql/antares/issues/585) ([2c0b4ff](https://github.com/antares-sql/antares/commit/2c0b4ffe1f2e418f5e9120a40787788d8e7fd27e))
+
+### [0.7.9](https://github.com/antares-sql/antares/compare/v0.7.8...v0.7.9) (2023-05-01)
+
+
+### Features
+
+* no table results message ([19859f4](https://github.com/antares-sql/antares/commit/19859f45f4457292b6ecfe79bdcfbdcc7722be06))
+* option to choose the target table of an SQL INSERT exportation, closes [#556](https://github.com/antares-sql/antares/issues/556) ([c48266c](https://github.com/antares-sql/antares/commit/c48266c336d7c61abe2b56b5702e5bca83bb57b3))
+* **translation:** ko-KR translation, closes [#561](https://github.com/antares-sql/antares/issues/561) ([baef4ea](https://github.com/antares-sql/antares/commit/baef4ea4d1747233a86b90fe5b60a0d6cfba1f1c))
+
+
+### Bug Fixes
+
+* sidebar height out of visible area ([af91d96](https://github.com/antares-sql/antares/commit/af91d96db6e79222e5dbc9b880a904a40332c09b))
+* unable to delete rows with null values and no primary key ([74c136f](https://github.com/antares-sql/antares/commit/74c136f8334b6972ae55dd8ee0ade09ef8ae3282))
+* vertical scrollbar does not reset after performing a search, fixes [#567](https://github.com/antares-sql/antares/issues/567) ([0cd55fb](https://github.com/antares-sql/antares/commit/0cd55fbfe9ff09589ae5993f16b0dd56a2ea1a5a))
+
+
+### Improvements
+
+* **translation:** update italian translation ([96e1ceb](https://github.com/antares-sql/antares/commit/96e1ceb1d2488390216553cd3fce2eec261f04eb))
+
+### [0.7.8](https://github.com/antares-sql/antares/compare/v0.7.7...v0.7.8) (2023-04-12)
+
+
+### Features
+
+* filter schemas in sidebar, closes [#555](https://github.com/antares-sql/antares/issues/555) ([8be9f93](https://github.com/antares-sql/antares/commit/8be9f932e7a44b2067d8b57950d8faafc577123f))
+* **MySQL:** option to export from results SQL INSERTS in chunks, closes [#501](https://github.com/antares-sql/antares/issues/501) ([0f24c80](https://github.com/antares-sql/antares/commit/0f24c80e5a2dc45875df6b67d3c097cf1cca458e))
+
+
+### Bug Fixes
+
+* **MySQL:** missing scale for FLOAT type ([52108d7](https://github.com/antares-sql/antares/commit/52108d76133d5fdffb56faa995d7ab7ee3e7c4bc))
+* triggers not exported if related table not included ([d802b32](https://github.com/antares-sql/antares/commit/d802b32597e42ee90a2d691fe74245b3bc2517ee))
+* unable to export BLOB values from table content o query result ([afa61a9](https://github.com/antares-sql/antares/commit/afa61a9bc2d698894096a6b5413c49f05b2fd5aa))
+
 ### [0.7.7](https://github.com/antares-sql/antares/compare/v0.7.6...v0.7.7) (2023-03-10)
 
 

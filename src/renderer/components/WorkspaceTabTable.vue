@@ -73,6 +73,7 @@
                <button
                   class="btn btn-sm"
                   :title="t('word.filter')"
+                  :disabled="isQuering"
                   :class="{'btn-primary': isSearch, 'btn-dark': !isSearch}"
                   @click="isSearch = !isSearch"
                >
@@ -104,6 +105,9 @@
                      </li>
                      <li class="menu-item">
                         <a class="c-hand" @click="downloadTable('csv')">CSV</a>
+                     </li>
+                     <li class="menu-item">
+                        <a class="c-hand" @click="downloadTable('php')">{{ t('message.phpArray') }}</a>
                      </li>
                      <li class="menu-item">
                         <a class="c-hand" @click="downloadTable('sql')">SQL INSERT</a>
@@ -145,6 +149,14 @@
       />
       <div class="workspace-query-results p-relative column col-12">
          <BaseLoader v-if="isQuering" />
+         <div v-if="!isQuering && !results[0]?.rows.length" class="empty">
+            <div class="empty-icon">
+               <i class="mdi mdi-48px mdi-island" />
+            </div>
+            <p class="h4 empty-subtitle">
+               {{ t('message.noResultsPresent') }}
+            </p>
+         </div>
          <WorkspaceTabQueryTable
             v-if="results"
             ref="queryTable"
@@ -258,7 +270,7 @@ const keyUsage = computed(() => {
 });
 
 const getTableData = async () => {
-   if (!props.table || !props.isSelected) return;
+   if (!props.table || !props.isSelected || isQuering.value) return;
    isQuering.value = true;
 
    // if table changes clear cached values
@@ -365,7 +377,7 @@ const setRefreshInterval = () => {
    }
 };
 
-const downloadTable = (format: 'csv' | 'json' | 'sql') => {
+const downloadTable = (format: 'csv' | 'json' | 'sql' | 'php') => {
    queryTable.value.downloadTable(format, props.table);
 };
 
@@ -381,6 +393,7 @@ const resizeScroller = () => {
 
 const updateFilters = (clausoles: TableFilterClausole[]) => {
    filters.value = clausoles;
+   results.value = [];
    getTableData();
 };
 

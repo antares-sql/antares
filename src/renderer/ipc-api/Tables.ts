@@ -35,6 +35,10 @@ export default class {
       return ipcRenderer.invoke('get-table-indexes', unproxify(params));
    }
 
+   static getTableDll (params: { uid: string; schema: string; table: string }): Promise<IpcResponse<string>> {
+      return ipcRenderer.invoke('get-table-ddl', unproxify(params));
+   }
+
    static getKeyUsage (params: { uid: string; schema: string; table: string }): Promise<IpcResponse> {
       return ipcRenderer.invoke('get-key-usage', unproxify(params));
    }

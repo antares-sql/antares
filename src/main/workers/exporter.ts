@@ -7,7 +7,7 @@ import MysqlExporter from '../libs/exporters/sql/MysqlExporter';
 import PostgreSQLExporter from '../libs/exporters/sql/PostgreSQLExporter';
 let exporter: antares.Exporter;
 
-process.on('message', async ({ type, client, tables, options }) => {
+process.on('message', async ({ type, client, tables, options }: any) => {
    if (type === 'init') {
       const connection = await ClientsFactory.getClient({
          client: client.name,

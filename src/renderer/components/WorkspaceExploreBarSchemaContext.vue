@@ -63,14 +63,14 @@
          class="context-element"
          @click="showExportSchemaModal"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-database-arrow-down text-light pr-1" /> {{ t('word.export') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-database-export text-light pr-1" /> {{ t('word.export') }}</span>
       </div>
       <div
          v-if="workspace.customizations.schemaImport"
          class="context-element"
          @click="initImport"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-database-arrow-up text-light pr-1" /> {{ t('word.import') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-database-import text-light pr-1" /> {{ t('word.import') }}</span>
       </div>
       <div
          v-if="workspace.customizations.schemaEdit"

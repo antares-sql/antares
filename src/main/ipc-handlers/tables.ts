@@ -75,6 +75,17 @@ export default (connections: {[key: string]: antares.Client}) => {
       }
    });
 
+   ipcMain.handle('get-table-ddl', async (event, params) => {
+      try {
+         const result = await connections[params.uid].getTableDll(params);
+
+         return { status: 'success', response: result };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
    ipcMain.handle('get-key-usage', async (event, params) => {
       try {
          const result = await connections[params.uid].getKeyUsage(params);
@@ -247,7 +258,10 @@ export default (connections: {[key: string]: antares.Client}) => {
                   if (typeof row[key] === 'string')
                      row[key] = `'${row[key]}'`;
 
-                  row[key] = `= ${row[key]}`;
+                  if (row[key] === null)
+                     row[key] = 'IS NULL';
+                  else
+                     row[key] = `= ${row[key]}`;
                }
 
                await connections[params.uid]

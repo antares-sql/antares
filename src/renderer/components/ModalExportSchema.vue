@@ -6,7 +6,7 @@
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
-                     <i class="mdi mdi-24px mdi-database-arrow-down mr-1" />
+                     <i class="mdi mdi-24px mdi-database-export mr-1" />
                      <span class="cut-text">{{ t('message.exportSchema') }}</span>
                   </div>
                </div>
@@ -78,7 +78,7 @@
                         <div ref="table" class="table table-hover">
                            <div class="thead">
                               <div class="tr text-center">
-                                 <div class="th no-border" style="width: 50%;" />
+                                 <div class="th no-border" :style="'width: 50%;'" />
                                  <div class="th no-border">
                                     <label
                                        class="form-checkbox m-0 px-2 form-inline"
@@ -120,7 +120,7 @@
                                  </div>
                               </div>
                               <div class="tr">
-                                 <div class="th" style="width: 50%;">
+                                 <div class="th" :style="'width: 50%;'">
                                     <div class="table-column-title">
                                        <span>{{ t('word.table') }}</span>
                                     </div>

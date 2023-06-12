@@ -10,7 +10,7 @@
          <i v-else class="icon mdi mdi-18px mdi-chevron-right" />
          <i class="database-icon mdi mdi-18px mdi-database mr-1" />
          <div class="">
-            <span>{{ database.name }}</span>
+            <span v-html="highlightWord(database.name, 'schemas')" />
             <div
                v-if="database.size"
                class="schema-size tooltip tooltip-left mr-1"
@@ -249,7 +249,8 @@ const { t } = useI18n();
 
 const props = defineProps({
    database: Object as Prop<WorkspaceStructure>,
-   connection: Object
+   connection: Object,
+   searchMethod: String as Prop<'elements' | 'schemas'>
 });
 
 const emit = defineEmits([
@@ -282,29 +283,51 @@ const searchTerm = computed(() => {
 });
 
 const filteredTables = computed(() => {
-   return props.database.tables.filter(table => table.name.search(searchTerm.value) >= 0);
+   if (props.searchMethod === 'elements')
+      return props.database.tables.filter(table => table.name.search(searchTerm.value) >= 0);
+   else
+      return props.database.tables;
 });
 
 const filteredTriggers = computed(() => {
-   return props.database.triggers.filter(trigger => trigger.name.search(searchTerm.value) >= 0);
+   if (props.searchMethod === 'elements')
+      return props.database.triggers.filter(trigger => trigger.name.search(searchTerm.value) >= 0);
+   else
+      return props.database.triggers;
 });
 
 const filteredProcedures = computed(() => {
-   return props.database.procedures.filter(procedure => procedure.name.search(searchTerm.value) >= 0);
+   if (props.searchMethod === 'elements')
+      return props.database.procedures.filter(procedure => procedure.name.search(searchTerm.value) >= 0);
+   else
+      return props.database.procedures;
 });
 
 const filteredFunctions = computed(() => {
-   return props.database.functions.filter(func => func.name.search(searchTerm.value) >= 0);
+   if (props.searchMethod === 'elements')
+      return props.database.functions.filter(func => func.name.search(searchTerm.value) >= 0);
+   else
+      return props.database.functions;
 });
 
 const filteredTriggerFunctions = computed(() => {
-   return props.database.triggerFunctions
-      ? props.database.triggerFunctions.filter(func => func.name.search(searchTerm.value) >= 0)
-      : [];
+   if (props.searchMethod === 'elements') {
+      return props.database.triggerFunctions
+         ? props.database.triggerFunctions.filter(func => func.name.search(searchTerm.value) >= 0)
+         : [];
+   }
+   else {
+      return props.database.triggerFunctions
+         ? props.database.triggerFunctions
+         : [];
+   }
 });
 
 const filteredSchedulers = computed(() => {
-   return props.database.schedulers.filter(scheduler => scheduler.name.search(searchTerm.value) >= 0);
+   if (props.searchMethod === 'elements')
+      return props.database.schedulers.filter(scheduler => scheduler.name.search(searchTerm.value) >= 0);
+   else
+      return props.database.schedulers;
 });
 
 const workspace = computed(() => {
@@ -446,10 +469,10 @@ const setBreadcrumbs = (payload: Breadcrumb) => {
    changeBreadcrumbs(payload);
 };
 
-const highlightWord = (string: string) => {
+const highlightWord = (string: string, type = 'elements') => {
    string = string.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 
-   if (searchTerm.value) {
+   if (searchTerm.value && props.searchMethod === type) {
       const regexp = new RegExp(`(${searchTerm.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
       return string.replace(regexp, '<span class="text-primary">$1</span>');
    }

@@ -22,7 +22,7 @@ export const itIT = {
       settings: 'Impostazioni',
       general: 'Generale',
       themes: 'Temi',
-      update: 'Aggiornamento',
+      update: 'Aggiorna',
       about: 'Informazioni',
       language: 'Lingua',
       version: 'Versione',
@@ -143,7 +143,13 @@ export const itIT = {
       pin: 'Fissa',
       unpin: 'Sgancia',
       console: 'Console',
-      shortcuts: 'Scorciatoie'
+      shortcuts: 'Scorciatoie',
+      folder: 'Cartella | Cartelle',
+      appearence: 'Aspetto',
+      color: 'Colore',
+      label: 'Etichetta',
+      icon: 'Icona',
+      resultsTable: 'Tabella risultati'
    },
    message: {
       appWelcome: 'Benvenuto in Antares SQL Client!',
@@ -322,7 +328,19 @@ export const itIT = {
       clearQuery: 'Pulisci query',
       openFilter: 'Apri il filtro',
       nextResultsPage: 'Prossima pagina risultati',
-      previousResultsPage: 'Pagina risultati precedente'
+      previousResultsPage: 'Pagina risultati precedente',
+      fillCell: 'Riempi cella',
+      editFolder: 'Modifica cartella',
+      folderName: 'Nome cartella',
+      deleteFolder: 'Cancella cartella',
+      editConnectionAppearence: 'Modifica aspetto connessione',
+      executeSelectedQuery: 'Esegui la query selezionata',
+      defaultCopyType: 'Tipo di copia default',
+      showTableSize: 'Mostra dimensioni tabella nella sidebar',
+      showTableSizeDescription: 'Solo MySQL/MariaDB. Abilitare questa opzione può compromettere le performance in schemi con molte tabelle.',
+      searchForSchemas: 'Cerca schemi',
+      switchSearchMethod: 'Cambia metodo di ricerca',
+      noResultsPresent: 'Nessun risultato presente'
    },
    faker: {
       address: 'Indirizzo',
@@ -388,6 +406,7 @@ export const itIT = {
       collation: 'Confronto',
       engine: 'Motore',
       past: 'Passato',
+      now: 'Adesso',
       future: 'Futuro',
       between: 'Tra',
       recent: 'Recente',

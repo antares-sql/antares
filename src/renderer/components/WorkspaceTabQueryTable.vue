@@ -31,7 +31,7 @@
             :class="{'active': resultsetIndex === index}"
             @click="selectResultset(index)"
          >
-            <a>{{ result.fields ? result.fields[0].table : '' }} ({{ result.rows.length }})</a>
+            <a>{{ result.fields ? result.fields[0]?.table : '' }} ({{ result.rows.length }})</a>
          </li>
       </ul>
       <div ref="table" class="table table-hover">
@@ -111,6 +111,47 @@
             </div>
          </template>
       </ConfirmModal>
+
+      <ConfirmModal
+         v-if="chunkModalRequest"
+         @confirm="downloadTable('sql', chunkModalRequest as string, true)"
+         @hide="chunkModalRequest = false"
+      >
+         <template #header>
+            <div class="d-flex">
+               <i class="mdi mdi-24px mdi-file-export mr-1" />
+               <span class="cut-text">{{ t('message.sqlExportOptions') }}</span>
+            </div>
+         </template>
+         <template #body>
+            <div class="columns">
+               <label class="column col-12 h6 mb-2 cut-text">{{ t('message.targetTable') }}</label>
+               <div class="column col-12">
+                  <input
+                     v-model.number="sqlExportOptions.targetTable"
+                     type="text"
+                     class="form-input"
+                     :placeholder="chunkModalRequest"
+                  >
+               </div>
+               <label class="column col-12 h6 mb-2 mt-4 cut-text">{{ t('message.newInserStmtEvery') }}:</label>
+               <div class="column col-6">
+                  <input
+                     v-model.number="sqlExportOptions.sqlInsertAfter"
+                     type="number"
+                     class="form-input"
+                  >
+               </div>
+               <div class="column col-6">
+                  <BaseSelect
+                     v-model="sqlExportOptions.sqlInsertDivider"
+                     class="form-select"
+                     :options="[{value: 'bytes', label: 'KiB'}, {value: 'rows', label: t('word.row', 2)}]"
+                  />
+               </div>
+            </div>
+         </template>
+      </ConfirmModal>
    </div>
 </template>
 
@@ -128,6 +169,7 @@ import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
 import WorkspaceTabQueryTableRow from '@/components/WorkspaceTabQueryTableRow.vue';
 import TableContext from '@/components/WorkspaceTabQueryTableContext.vue';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseSelect from '@/components/BaseSelect.vue';
 import * as moment from 'moment';
 import { useI18n } from 'vue-i18n';
 import { TableField, QueryResult } from 'common/interfaces/antares';
@@ -135,6 +177,7 @@ import { TableUpdateParams } from 'common/interfaces/tableApis';
 import { jsonToSqlInsert } from 'common/libs/sqlUtils';
 import { unproxify } from '@/libs/unproxify';
 import faker from '@faker-js/faker';
+import * as json2php from 'json2php';
 
 const { t } = useI18n();
 
@@ -179,9 +222,16 @@ const scrollElement = ref(null);
 const rowHeight = ref(23);
 const selectedField = ref(null);
 const isEditingRow = ref(false);
+const chunkModalRequest: Ref<false | string> = ref(false);
+const sqlExportOptions = ref({
+   sqlInsertAfter: 250,
+   sqlInsertDivider: 'bytes' as 'bytes' | 'rows',
+   targetTable: ''
+});
 
 const workspaceSchema = computed(() => getWorkspace(props.connUid).breadcrumbs.schema);
 const workspaceClient = computed(() => getWorkspace(props.connUid).client);
+const customizations = computed(() => getWorkspace(props.connUid).customizations);
 
 const primaryField = computed(() => {
    const primaryFields = fields.value.filter(field => field.key === 'pri');
@@ -219,7 +269,7 @@ const sortedResults = computed(() => {
       return localResults.value;
 });
 
-const resultsWithRows = computed(() => props.results.filter(result => result.rows));
+const resultsWithRows = computed(() => props.results.filter(result => result.rows.length));
 const fields = computed(() => resultsWithRows.value.length ? resultsWithRows.value[resultsetIndex.value].fields : []);
 const keyUsage = computed(() => resultsWithRows.value.length ? resultsWithRows.value[resultsetIndex.value].keys : []);
 
@@ -438,20 +488,17 @@ const copyRow = (format: string) => {
    if (format === 'json')
       navigator.clipboard.writeText(JSON.stringify(contentToCopy));
    else if (format === 'sql') {
-      const sqlInserts = [];
       if (!Array.isArray(contentToCopy)) contentToCopy = [contentToCopy];
 
-      for (const row of contentToCopy) {
-         sqlInserts.push(jsonToSqlInsert({
-            json: row,
-            client: workspaceClient.value,
-            fields: fieldsObj.value as {
-               [key: string]: {type: string; datePrecision: number};
-            },
-            table: getTable(resultsetIndex.value)
-         }));
-      }
-      navigator.clipboard.writeText(sqlInserts.join('\n'));
+      const sqlInserts = jsonToSqlInsert({
+         json: contentToCopy,
+         client: workspaceClient.value,
+         fields: fieldsObj.value as {
+            [key: string]: {type: string; datePrecision: number};
+         },
+         table: getTable(resultsetIndex.value)
+      });
+      navigator.clipboard.writeText(sqlInserts);
    }
    else if (format === 'csv') {
       const csv = [];
@@ -481,6 +528,12 @@ const copyRow = (format: string) => {
       })];
 
       navigator.clipboard.write(data);
+   }
+   else if (format === 'php') {
+      if (!Array.isArray(contentToCopy)) contentToCopy = [contentToCopy];
+      const printer = json2php.make({ linebreak: '\n', indent: '\t', shortArraySyntax: true });
+      const phpString = printer(contentToCopy);
+      navigator.clipboard.writeText(phpString);
    }
 };
 
@@ -665,22 +718,36 @@ const selectResultset = (index: number) => {
    resultsetIndex.value = index;
 };
 
-const downloadTable = (format: 'csv' | 'json' | 'sql', table: string) => {
+const downloadTable = (format: 'csv' | 'json' | 'sql' | 'php', table: string, chunks = false) => {
    if (!sortedResults.value) return;
 
-   const rows = JSON.parse(JSON.stringify(sortedResults.value)).map((row: any) => {
-      delete row._antares_id;
-      return row;
+   if (format === 'sql' && !chunks && customizations.value.exportByChunks) {
+      sqlExportOptions.value = {
+         sqlInsertAfter: 250,
+         sqlInsertDivider: 'bytes' as 'bytes' | 'rows',
+         targetTable: ''
+      };
+      chunkModalRequest.value = table;
+      return;
+   }
+   else
+      chunkModalRequest.value = false;
+
+   const rows = sortedResults.value.map((row: any) => {
+      const clonedRow = { ...row };
+      delete clonedRow._antares_id;
+      return clonedRow;
    });
 
    exportRows({
       type: format,
       content: rows,
-      fields: fieldsObj.value as {
+      fields: JSON.parse(JSON.stringify(fieldsObj.value)) as {
          [key: string]: {type: string; datePrecision: number};
       },
       client: workspaceClient.value,
-      table
+      table,
+      sqlOptions: chunks ? { ...sqlExportOptions.value }: null
    });
 };
 

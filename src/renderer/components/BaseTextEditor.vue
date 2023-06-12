@@ -44,6 +44,11 @@ watch(() => props.mode, () => {
       editor.session.setMode(`ace/mode/${props.mode}`);
 });
 
+watch(() => props.modelValue, () => {
+   if (editor && props.readOnly)
+      editor.session.setValue(props.modelValue);
+});
+
 watch(editorTheme, () => {
    if (editor)
       editor.setTheme(`ace/theme/${editorTheme.value}`);
@@ -112,6 +117,8 @@ onMounted(() => {
          editor.resize();
       }, 20);
    }
+
+   editor.commands.removeCommand('showSettingsMenu');
 
    setTimeout(() => {
       editor.resize();

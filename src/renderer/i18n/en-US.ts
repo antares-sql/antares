@@ -149,7 +149,8 @@ export const enUS = {
       color: 'Color',
       label: 'Label',
       icon: 'Icon',
-      resultsTable: 'Results table'
+      resultsTable: 'Results table',
+      ddl: 'DDL'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -337,7 +338,17 @@ export const enUS = {
       executeSelectedQuery: 'Execute selected query',
       defaultCopyType: 'Default copy type',
       showTableSize: 'Show table size in sidebar',
-      showTableSizeDescription: 'MySQL/MariaDB only. Enable this option may affects performance on schema with many tables.'
+      showTableSizeDescription: 'MySQL/MariaDB only. Enable this option may affects performance on schema with many tables.',
+      searchForSchemas: 'Search for schemas',
+      switchSearchMethod: 'Switch search method',
+      noResultsPresent: 'No results present',
+      sqlExportOptions: 'SQL export options',
+      targetTable: 'Target table',
+      phpArray: 'PHP array',
+      closeAllTabs: 'Close all tabs',
+      closeOtherTabs: 'Close other tabs',
+      closeTabsToLeft: 'Close tabs to the left',
+      closeTabsToRight: 'Close tabs to the right'
    },
    faker: {
       address: 'Address',

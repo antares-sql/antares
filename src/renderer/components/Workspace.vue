@@ -1,5 +1,15 @@
 <template>
    <div v-show="isSelected" class="workspace column columns col-gapless">
+      <WorkspaceTabsContext
+         v-if="isTabContext"
+         :context-event="contextEvent"
+         :selected-tab="selectedContextTab"
+         @close-all-tabs="closeAllTabs"
+         @close-other-tabs="closeOtherTabs"
+         @close-to-left="closeTabsToLeft"
+         @close-to-right="closeTabsToRight"
+         @close-context="closeContext"
+      />
       <WorkspaceExploreBar
          v-if="workspace?.connectionStatus === 'connected'"
          :connection="connection"
@@ -23,6 +33,7 @@
                   :class="{'active': selectedTab === element.uid}"
                   @mousedown.left="selectTab({uid: workspace.uid, tab: element.uid})"
                   @mouseup.middle="closeTab(element)"
+                  @contextmenu.prevent="contextMenu($event, element)"
                >
                   <a
                      v-if="element.type === 'query'"
@@ -501,6 +512,7 @@ import WorkspaceTabNewRoutine from '@/components/WorkspaceTabNewRoutine.vue';
 import WorkspaceTabNewFunction from '@/components/WorkspaceTabNewFunction.vue';
 import WorkspaceTabNewScheduler from '@/components/WorkspaceTabNewScheduler.vue';
 import WorkspaceTabNewTriggerFunction from '@/components/WorkspaceTabNewTriggerFunction.vue';
+import WorkspaceTabsContext from '@/components/WorkspaceTabsContext.vue';
 
 import WorkspaceTabPropsTable from '@/components/WorkspaceTabPropsTable.vue';
 import WorkspaceTabPropsView from '@/components/WorkspaceTabPropsView.vue';
@@ -545,6 +557,9 @@ const hasWheelEvent = ref(false);
 const isProcessesModal = ref(false);
 const unsavedTab = ref(null);
 const tabWrap = ref(null);
+const contextEvent = ref(null);
+const isTabContext = ref(false);
+const selectedContextTab = ref(null);
 
 const workspace = computed(() => getWorkspace(props.connection.uid));
 
@@ -627,6 +642,34 @@ const closeTab = (tab: WorkspaceTab, force = false) => {
    removeTab({ uid: props.connection.uid, tab: tab.uid });
 };
 
+const closeAllTabs = () => {
+   for (const tab of draggableTabs.value)
+      removeTab({ uid: props.connection.uid, tab: tab.uid });
+};
+
+const closeOtherTabs = () => {
+   const otherTabs = draggableTabs.value.filter(t => t.uid !== selectedContextTab.value.uid);
+
+   for (const tab of otherTabs)
+      removeTab({ uid: props.connection.uid, tab: tab.uid });
+};
+
+const closeTabsToLeft = () => {
+   const tabIndex = draggableTabs.value.findIndex(t => t.uid === selectedContextTab.value.uid);
+   const leftTabs = draggableTabs.value.filter((t, i) => i < tabIndex);
+
+   for (const tab of leftTabs)
+      removeTab({ uid: props.connection.uid, tab: tab.uid });
+};
+
+const closeTabsToRight = () => {
+   const tabIndex = draggableTabs.value.findIndex(t => t.uid === selectedContextTab.value.uid);
+   const leftTabs = draggableTabs.value.filter((t, i) => i > tabIndex);
+
+   for (const tab of leftTabs)
+      removeTab({ uid: props.connection.uid, tab: tab.uid });
+};
+
 const showProcessesModal = () => {
    isProcessesModal.value = true;
 };
@@ -645,6 +688,16 @@ const addWheelEvent = () => {
       });
       hasWheelEvent.value = true;
    }
+};
+
+const contextMenu = (event: MouseEvent, tab: WorkspaceTab) => {
+   selectedContextTab.value = tab;
+   contextEvent.value = event;
+   isTabContext.value = true;
+};
+
+const closeContext = () => {
+   isTabContext.value = false;
 };
 
 (async () => {

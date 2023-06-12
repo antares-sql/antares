@@ -104,6 +104,9 @@
                         <a class="c-hand" @click="downloadTable('csv')">CSV</a>
                      </li>
                      <li class="menu-item">
+                        <a class="c-hand" @click="downloadTable('php')">{{ t('message.phpArray') }}</a>
+                     </li>
+                     <li class="menu-item">
                         <a class="c-hand" @click="downloadTable('sql')">SQL INSERT</a>
                      </li>
                   </ul>
@@ -446,7 +449,7 @@ const clear = () => {
    clearTabData();
 };
 
-const downloadTable = (format: 'csv' | 'json' | 'sql') => {
+const downloadTable = (format: 'csv' | 'json' | 'sql' | 'php') => {
    queryTable.value.downloadTable(format, `${props.tab.type}-${props.tab.index}`);
 };
 

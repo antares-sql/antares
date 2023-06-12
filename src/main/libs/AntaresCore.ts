@@ -174,6 +174,10 @@ export abstract class AntaresCore {
       throw new Error('Method "dropSchema" not implemented');
    }
 
+   getTableDll (...args: any) {
+      throw new Error('Method "getTableDll" not implemented');
+   }
+
    getDatabaseCollation (...args: any) {
       throw new Error('Method "getDatabaseCollation" not implemented');
    }

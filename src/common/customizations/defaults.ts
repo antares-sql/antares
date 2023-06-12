@@ -31,11 +31,12 @@ export const defaults: Customizations = {
    routines: false,
    functions: false,
    schedulers: false,
-   // Settings
+   // Misc
    elementsWrapper: '',
    stringsWrapper: '"',
    tableAdd: false,
    tableTruncateDisableFKCheck: false,
+   tableDdl: false,
    viewAdd: false,
    triggerAdd: false,
    triggerFunctionAdd: false,

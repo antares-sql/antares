@@ -32,13 +32,20 @@
             </span>
          </div>
          <div class="workspace-explorebar-search">
-            <div v-if="workspace.connectionStatus === 'connected'" class="has-icon-right">
+            <div v-if="workspace.connectionStatus === 'connected'" class="input-group has-icon-right">
+               <div
+                  class="input-group-addon px-1 py-0 p-vcentered c-hand"
+                  :title="t('message.switchSearchMethod')"
+                  @click="toggleSearchMethod"
+               >
+                  <i class="mdi mdi-18px" :class="[searchMethod === 'elements' ? 'mdi-shape' : 'mdi-database']" />
+               </div>
                <input
                   ref="searchInput"
                   v-model="searchTerm"
                   class="form-input input-sm"
                   type="text"
-                  :placeholder="t('message.searchForElements')"
+                  :placeholder="searchMethod === 'elements' ? t('message.searchForElements') : t('message.searchForSchemas')"
                >
                <i v-if="!searchTerm" class="form-icon mdi mdi-magnify mdi-18px" />
                <i
@@ -50,11 +57,12 @@
          </div>
          <div class="workspace-explorebar-body" @click="explorebar.focus()">
             <WorkspaceExploreBarSchema
-               v-for="db of workspace.structure"
+               v-for="db of filteredSchemas"
                :key="db.name"
                ref="schema"
                :database="db"
                :connection="connection"
+               :search-method="searchMethod"
                @show-schema-context="openSchemaContext"
                @show-table-context="openTableContext"
                @show-misc-context="openMiscContext"
@@ -181,6 +189,7 @@ const selectedSchema = ref('');
 const selectedTable = ref(null);
 const selectedMisc = ref(null);
 const searchTerm = ref('');
+const searchMethod: Ref<'elements' | 'schemas'> = ref('elements');
 
 const workspace = computed(() => {
    return getWorkspace(props.connection.uid);
@@ -192,6 +201,13 @@ const connectionName = computed(() => {
 
 const customizations = computed(() => {
    return workspace.value.customizations;
+});
+
+const filteredSchemas = computed(() => {
+   if (searchMethod.value === 'schemas')
+      return workspace.value.structure.filter(schema => schema.name.search(searchTerm.value) >= 0);
+   else
+      return workspace.value.structure;
 });
 
 watch(localWidth, (val: number) => {
@@ -403,6 +419,15 @@ const duplicateTable = async (payload: { schema: string; table: { name: string }
    });
 };
 
+const toggleSearchMethod = () => {
+   searchTerm.value = '';
+   setSearchTerm(searchTerm.value);
+
+   if (searchMethod.value === 'elements')
+      searchMethod.value = 'schemas';
+   else
+      searchMethod.value = 'elements';
+};
 </script>
 
 <style lang="scss">
@@ -478,6 +503,8 @@ const duplicateTable = async (payload: { schema: string; table: { name: string }
       justify-content: space-between;
       font-size: 0.6rem;
       height: 28px;
+      margin: 5px 0;
+      z-index: 10;
 
       .has-icon-right {
         width: 100%;
@@ -491,6 +518,7 @@ const duplicateTable = async (payload: { schema: string; table: { name: string }
         .form-input {
           height: 1.2rem;
           padding-left: 0.2rem;
+          border-radius:0 $border-radius $border-radius 0;
 
           &:focus + .form-icon {
             opacity: 0.9;
@@ -505,7 +533,7 @@ const duplicateTable = async (payload: { schema: string; table: { name: string }
 
     .workspace-explorebar-body {
       width: 100%;
-      height: calc((100vh - 58px) - #{$excluding-size});
+      height: calc((100vh - 68px) - #{$excluding-size});
       overflow: overlay;
       padding: 0 0.1rem;
     }
