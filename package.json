@@ -143,7 +143,7 @@
     "pinia": "~2.0.28",
     "source-map-support": "~0.5.20",
     "spectre.css": "~0.5.9",
-    "sql-formatter": "~12.0.3",
+    "sql-formatter": "~12.2.0",
     "ssh2-promise": "~1.0.2",
     "v-mask": "~2.3.0",
     "vue": "~3.2.45",
