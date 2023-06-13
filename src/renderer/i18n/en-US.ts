@@ -348,7 +348,8 @@ export const enUS = {
       closeAllTabs: 'Close all tabs',
       closeOtherTabs: 'Close other tabs',
       closeTabsToLeft: 'Close tabs to the left',
-      closeTabsToRight: 'Close tabs to the right'
+      closeTabsToRight: 'Close tabs to the right',
+      switchDatabase: 'Switch the database'
    },
    faker: {
       address: 'Address',

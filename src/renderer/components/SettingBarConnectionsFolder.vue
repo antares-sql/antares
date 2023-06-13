@@ -380,7 +380,7 @@ emit('folder-sort');// To apply changes on component key change
          overflow: hidden;
          white-space: nowrap;
          text-overflow: ellipsis;
-         line-height: 1;
+         line-height: 1.02;
          transition: bottom .2s;
       }
    }
@@ -444,7 +444,7 @@ emit('folder-sort');// To apply changes on component key change
          overflow: hidden;
          white-space: nowrap;
          text-overflow: ellipsis;
-         line-height: 1;
+         line-height: 1.02;
       }
    }
 }

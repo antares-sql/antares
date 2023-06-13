@@ -30,6 +30,7 @@ export interface WorkspaceTab {
    index?: number;
    selected?: boolean;
    type?: string;
+   database?: string;
    schema?: string;
    elementName?: string;
    elementNewName?: string;
@@ -65,6 +66,7 @@ export interface Breadcrumb {
 export interface Workspace {
    uid: string;
    client?: ClientCode;
+   database?: string;
    connectionStatus: string;
    selectedTab: string | number;
    searchTerm: string;
@@ -145,14 +147,15 @@ export const useWorkspacesStore = defineStore('workspaces', {
          else
             this.selectedWorkspace = uid;
       },
-      async connectWorkspace (connection: ConnectionParams & { pgConnString?: string }) {
+      async connectWorkspace (connection: ConnectionParams & { pgConnString?: string }, mode?: string) {
          this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === connection.uid
             ? {
                ...workspace,
-               structure: {},
+               structure: [],
                breadcrumbs: {},
                loadedSchemas: new Set(),
-               connectionStatus: 'connecting'
+               database: connection.database,
+               connectionStatus: mode === 'switch' ? 'connected' : 'connecting'
             }
             : workspace);
 
@@ -168,7 +171,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
                this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === connection.uid
                   ? {
                      ...workspace,
-                     structure: {},
+                     structure: [],
                      breadcrumbs: {},
                      loadedSchemas: new Set(),
                      connectionStatus: 'failed'
@@ -228,6 +231,12 @@ export const useWorkspacesStore = defineStore('workspaces', {
                   }, null);
                }
 
+               const selectedTab = cachedTabs.length
+                  ? connection.database
+                     ? cachedTabs.filter(tab => tab.type === 'query' || tab.database === connection.database)[0].uid
+                     : cachedTabs[0].uid
+                  : null;
+
                this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === connection.uid
                   ? {
                      ...workspace,
@@ -238,7 +247,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
                      structure: response,
                      connectionStatus: 'connected',
                      tabs: cachedTabs,
-                     selectedTab: cachedTabs.length ? cachedTabs[0].uid : null,
+                     selectedTab,
                      version
                   }
                   : workspace);
@@ -385,7 +394,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
          this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === uid
             ? {
                ...workspace,
-               structure: {},
+               structure: [],
                breadcrumbs: {},
                loadedSchemas: new Set(),
                connectionStatus: 'disconnected'
@@ -393,6 +402,10 @@ export const useWorkspacesStore = defineStore('workspaces', {
             : workspace);
 
          this.selectTab({ uid, tab: 0 });
+      },
+      async switchConnection (connection: ConnectionParams & { pgConnString?: string }) {
+         await Connection.disconnect(connection.uid);
+         return this.connectWorkspace(connection, 'switch');
       },
       addWorkspace (uid: string) {
          const workspace: Workspace = {
@@ -468,7 +481,15 @@ export const useWorkspacesStore = defineStore('workspaces', {
             }
             : workspace);
       },
-      _addTab ({ uid, tab, content, type, autorun, schema, elementName, elementType }: WorkspaceTab) {
+      setDatabase (databaseName: string) {
+         this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === this.getSelected
+            ? {
+               ...workspace,
+               database: databaseName
+            }
+            : workspace);
+      },
+      _addTab ({ uid, tab, content, type, autorun, schema, database, elementName, elementType }: WorkspaceTab) {
          if (type === 'query')
             tabIndex[uid] = tabIndex[uid] ? ++tabIndex[uid] : 1;
 
@@ -477,6 +498,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
             index: type === 'query' ? tabIndex[uid] : null,
             selected: false,
             type,
+            database,
             schema,
             elementName,
             elementType,
@@ -534,6 +556,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
                   content,
                   type,
                   autorun,
+                  database: workspaceTabs.database,
                   schema,
                   elementName,
                   elementType
@@ -572,7 +595,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
                            });
 
                            tabUid = uidGen('T');
-                           this._addTab({ uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
+                           this._addTab({ uid, tab: tabUid, content, type, autorun, database: workspaceTabs.database, schema, elementName, elementType });
                         }
                         else {
                            this._replaceTab({ uid, tab: tab.uid, type, schema, elementName, elementType });
@@ -582,7 +605,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
                   }
                   else {
                      tabUid = uidGen('T');
-                     this._addTab({ uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
+                     this._addTab({ uid, tab: tabUid, content, type, autorun, database: workspaceTabs.database, schema, elementName, elementType });
                   }
                }
             }
@@ -603,18 +626,18 @@ export const useWorkspacesStore = defineStore('workspaces', {
                   : false;
 
                if (existentTab) {
-                  this._replaceTab({ uid, tab: existentTab.uid, type, schema, elementName, elementType });
+                  this._replaceTab({ uid, tab: existentTab.uid, type, database: workspaceTabs.database, schema, elementName, elementType });
                   tabUid = existentTab.uid;
                }
                else {
                   tabUid = uidGen('T');
-                  this._addTab({ uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
+                  this._addTab({ uid, tab: tabUid, content, type, autorun, database: workspaceTabs.database, schema, elementName, elementType });
                }
             }
                break;
             default:
                tabUid = uidGen('T');
-               this._addTab({ uid, tab: tabUid, content, type, autorun, schema, elementName, elementType });
+               this._addTab({ uid, tab: tabUid, content, type, autorun, database: workspaceTabs.database, schema, elementName, elementType });
                break;
          }
 
@@ -626,8 +649,14 @@ export const useWorkspacesStore = defineStore('workspaces', {
             ? workspace.tabs.some(tab => tab.uid === workspace.selectedTab)
             : false;
 
-         if (!isSelectedExistent && workspace.tabs.length)
-            this.selectTab({ uid, tab: workspace.tabs[workspace.tabs.length - 1].uid });
+         if (!isSelectedExistent && workspace.tabs.length) {
+            if (workspace.customizations.database) {
+               const databaseTabs = workspace.tabs.filter(tab => tab.type === 'query' || tab.database === workspace.database);
+               this.selectTab({ uid, tab: databaseTabs[databaseTabs.length - 1].uid });
+            }
+            else
+               this.selectTab({ uid, tab: workspace.tabs[workspace.tabs.length - 1].uid });
+         }
       },
       updateTabContent ({ uid, tab, type, schema, content }: WorkspaceTab) {
          this._replaceTab({ uid, tab, type, schema, content });

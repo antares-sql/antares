@@ -10,7 +10,18 @@
          @keydown="explorebarSearch"
       >
          <div class="workspace-explorebar-header">
-            <span class="workspace-explorebar-title">{{ connectionName }}</span>
+            <div
+               v-if="customizations.database"
+               class="workspace-explorebar-database-switch"
+               :title="t('message.switchDatabase')"
+            >
+               <BaseSelect
+                  v-model="selectedDatabase"
+                  :options="databases"
+                  class="form-select select-sm text-bold my-0"
+               />
+            </div>
+            <span v-else class="workspace-explorebar-title">{{ connectionName }}</span>
             <span v-if="workspace.connectionStatus === 'connected'" class="workspace-explorebar-tools">
                <i
                   v-if="customizations.schemas"
@@ -124,10 +135,11 @@
 </template>
 
 <script setup lang="ts">
-import { Component, computed, onMounted, Ref, ref, watch } from 'vue';
+import { Component, computed, onMounted, Prop, Ref, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { useConnectionsStore } from '@/stores/connections';
+import { ConnectionParams } from 'common/interfaces/antares';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
@@ -141,12 +153,14 @@ import TableContext from '@/components/WorkspaceExploreBarTableContext.vue';
 import MiscContext from '@/components/WorkspaceExploreBarMiscContext.vue';
 import MiscFolderContext from '@/components/WorkspaceExploreBarMiscFolderContext.vue';
 import ModalNewSchema from '@/components/ModalNewSchema.vue';
+import BaseSelect from '@/components/BaseSelect.vue';
 import { useI18n } from 'vue-i18n';
+import Databases from '@/ipc-api/Databases';
 
 const { t } = useI18n();
 
 const props = defineProps({
-   connection: Object,
+   connection: Object as Prop<ConnectionParams>,
    isSelected: Boolean
 });
 
@@ -160,11 +174,13 @@ const { explorebarSize } = storeToRefs(settingsStore);
 const { changeExplorebarSize } = settingsStore;
 const {
    getWorkspace,
+   switchConnection,
    removeConnected: disconnectWorkspace,
    refreshStructure,
    newTab,
    removeTabs,
    setSearchTerm,
+   setDatabase,
    addLoadingElement,
    removeLoadingElement
 } = workspacesStore;
@@ -172,6 +188,7 @@ const {
 const searchInput: Ref<HTMLInputElement> = ref(null);
 const explorebar: Ref<HTMLInputElement> = ref(null);
 const resizer: Ref<HTMLInputElement> = ref(null);
+const databases: Ref<string[]> = ref([]);
 const schema: Ref<Component & { selectSchema: (name: string) => void; $refs: {schemaAccordion: HTMLDetailsElement} }[]> = ref(null);
 const isRefreshing = ref(false);
 const isNewDBModal = ref(false);
@@ -185,6 +202,7 @@ const isMiscFolderContext = ref(false);
 const databaseContextEvent = ref(null);
 const tableContextEvent = ref(null);
 const miscContextEvent = ref(null);
+const selectedDatabase = ref(props.connection.database);
 const selectedSchema = ref('');
 const selectedTable = ref(null);
 const selectedMisc = ref(null);
@@ -230,9 +248,14 @@ watch(searchTerm, () => {
    }, 200);
 });
 
+watch(selectedDatabase, (val, oldVal) => {
+   if (oldVal)
+      switchConnection({ ...props.connection, database: selectedDatabase.value });
+});
+
 localWidth.value = explorebarSize.value;
 
-onMounted(() => {
+onMounted(async () => {
    resizer.value.addEventListener('mousedown', (e: MouseEvent) => {
       e.preventDefault();
 
@@ -240,9 +263,27 @@ onMounted(() => {
       window.addEventListener('mouseup', stopResize);
    });
 
-   if (workspace.value.structure.length === 1) { // Auto-open if juust one schema
+   if (workspace.value.structure.length === 1) { // Auto-open if just one schema
       schema.value[0].selectSchema(workspace.value.structure[0].name);
       schema.value[0].$refs.schemaAccordion.open = true;
+   }
+
+   if (customizations.value.database) {
+      try {
+         const { status, response } = await Databases.getDatabases(props.connection.uid);
+         if (status === 'success') {
+            databases.value = response;
+            if (selectedDatabase.value === '') {
+               selectedDatabase.value = response[0];
+               setDatabase(selectedDatabase.value);
+            }
+         }
+         else
+            addNotification({ status: 'error', message: response });
+      }
+      catch (err) {
+         addNotification({ status: 'error', message: err.stack });
+      }
    }
 });
 
@@ -254,8 +295,11 @@ const refresh = async () => {
    }
 };
 
-const explorebarSearch = () => {
-   searchInput.value.focus();
+const explorebarSearch = (event: KeyboardEvent) => {
+   const isLetter = (event.key >= 'a' && event.key <= 'z');
+   const isNumber = (event.key >= '0' && event.key <= '9');
+   if (isLetter || isNumber)
+      searchInput.value.focus();
 };
 
 const resize = (e: MouseEvent) => {
@@ -497,13 +541,31 @@ const toggleSearchMethod = () => {
       }
     }
 
+    .workspace-explorebar-database-switch {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      z-index: 20;
+      margin-right: 5px;
+      margin-left: -4px;
+      margin-top: -3px;
+      margin-bottom: -0.5rem;
+      height: 24px;
+
+      .form-select.select-sm {
+         font-size: 0.6rem;
+         height: 1.2rem;
+         line-height: 1rem;
+      }
+    }
+
     .workspace-explorebar-search {
       width: 100%;
       display: flex;
       justify-content: space-between;
       font-size: 0.6rem;
       height: 28px;
-      margin: 5px 0;
+      margin: 0 0 5px 0;
       z-index: 10;
 
       .has-icon-right {
@@ -533,7 +595,7 @@ const toggleSearchMethod = () => {
 
     .workspace-explorebar-body {
       width: 100%;
-      height: calc((100vh - 68px) - #{$excluding-size});
+      height: calc((100vh - 63px) - #{$excluding-size});
       overflow: overlay;
       padding: 0 0.1rem;
     }

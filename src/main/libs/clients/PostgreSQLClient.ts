@@ -154,7 +154,7 @@ export class PostgreSQLClient extends AntaresCore {
          host: this._params.host,
          port: this._params.port,
          user: this._params.user,
-         database: undefined as string | undefined,
+         database: 'postgres' as string,
          password: this._params.password,
          ssl: null as mysql.SslOptions
       };
@@ -260,6 +260,18 @@ export class PostgreSQLClient extends AntaresCore {
 
    getCollations (): null[] {
       return [];
+   }
+
+   async getDatabases () {
+      const { rows } = await this.raw('SELECT datname FROM pg_database WHERE datistemplate = false');
+      if (rows) {
+         return rows.reduce((acc, cur) => {
+            acc.push(cur.datname);
+            return acc;
+         }, [] as string[]);
+      }
+      else
+         return [];
    }
 
    async getStructure (schemas: Set<string>) {

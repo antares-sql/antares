@@ -565,7 +565,11 @@ const workspace = computed(() => getWorkspace(props.connection.uid));
 
 const draggableTabs = computed<WorkspaceTab[]>({
    get () {
-      return workspace.value.tabs;
+      if (workspace.value.customizations.database)
+         return workspace.value.tabs.filter(tab => tab.type === 'query' || tab.database === workspace.value.database);
+
+      else
+         return workspace.value.tabs;
    },
    set (val) {
       updateTabs({ uid: props.connection.uid, tabs: val });

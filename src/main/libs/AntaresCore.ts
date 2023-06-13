@@ -162,6 +162,10 @@ export abstract class AntaresCore {
       throw new Error('Method "getDbConfig" not implemented');
    }
 
+   getDatabases () {
+      throw new Error('Method "getDatabases" not implemented');
+   }
+
    createSchema (...args: any) {
       throw new Error('Method "createSchema" not implemented');
    }

@@ -120,6 +120,7 @@
                               v-model="connection.database"
                               class="form-input"
                               type="text"
+                              :placeholder="clientCustomizations.defaultDatabase"
                            >
                         </div>
                      </div>

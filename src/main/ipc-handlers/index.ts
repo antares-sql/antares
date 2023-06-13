@@ -9,6 +9,7 @@ import functions from './functions';
 import schedulers from './schedulers';
 import updates from './updates';
 import application from './application';
+import database from './database';
 import schema from './schema';
 import users from './users';
 
@@ -22,6 +23,7 @@ export default () => {
    routines(connections);
    functions(connections);
    schedulers(connections);
+   database(connections);
    schema(connections);
    users(connections);
    updates();

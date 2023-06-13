@@ -291,6 +291,11 @@ watch(selectedSchema, () => {
    changeBreadcrumbs({ schema: selectedSchema.value, query: `Query #${props.tab.index}` });
 });
 
+watch(databaseSchemas, () => {
+   if (!databaseSchemas.value.includes(selectedSchema.value))
+      selectedSchema.value = null;
+}, { deep: true });
+
 const runQuery = async (query: string) => {
    if (!query || isQuering.value) return;
    isQuering.value = true;
@@ -495,9 +500,6 @@ defineExpose({ resizeResults });
 
 query.value = props.tab.content as string;
 selectedSchema.value = props.tab.schema || breadcrumbsSchema.value;
-
-if (!databaseSchemas.value.includes(selectedSchema.value))
-   selectedSchema.value = null;
 
 window.addEventListener('resize', onWindowResize);
 
