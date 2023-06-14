@@ -150,7 +150,10 @@ export const enUS = {
       label: 'Label',
       icon: 'Icon',
       resultsTable: 'Results table',
-      ddl: 'DDL'
+      ddl: 'DDL',
+      none: 'None',
+      singleQuote: 'Single quote',
+      doubleQuote: 'Double quote'
    },
    message: {
       appWelcome: 'Welcome to Antares SQL Client!',
@@ -349,7 +352,12 @@ export const enUS = {
       closeOtherTabs: 'Close other tabs',
       closeTabsToLeft: 'Close tabs to the left',
       closeTabsToRight: 'Close tabs to the right',
-      switchDatabase: 'Switch the database'
+      switchDatabase: 'Switch the database',
+      csvExportOptions: 'CSV export options',
+      csvFieldDelimiter: 'Field delimiter',
+      csvLinesTerminator: 'Line terminator',
+      csvStringDelimiter: 'String delimiter',
+      csvIncludeHeader: 'Include header'
    },
    faker: {
       address: 'Address',

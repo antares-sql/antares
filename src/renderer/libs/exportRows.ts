@@ -10,7 +10,17 @@ export const exportRows = (args: {
    fields?: {
       [key: string]: {type: string; datePrecision: number};
    };
-   sqlOptions?: {sqlInsertAfter: number; sqlInsertDivider: 'bytes' | 'rows'; targetTable: string};
+   sqlOptions?: {
+      sqlInsertAfter: number;
+      sqlInsertDivider: 'bytes' | 'rows';
+      targetTable: string;
+   };
+   csvOptions?: {
+      header: boolean;
+      fieldDelimiter: string;
+      linesTerminator: string;
+      stringDelimiter: string;
+   };
 }) => {
    let mime;
    let content;
@@ -19,20 +29,25 @@ export const exportRows = (args: {
       case 'csv': {
          mime = 'text/csv';
          const csv = [];
+         const sd = args.csvOptions.stringDelimiter === 'single'
+            ? '\''
+            : args.csvOptions.stringDelimiter === 'single'
+               ? '"'
+               : '';
 
-         if (args.content.length)
-            csv.push(Object.keys(args.content[0]).join(';'));
+         if (args.content.length && args.csvOptions.header)
+            csv.push(Object.keys(args.content[0]).join(args.csvOptions.fieldDelimiter));
 
          for (const row of args.content) {
             csv.push(Object.values(row).map(col => {
-               if (typeof col === 'string') return `"${col}"`;
+               if (typeof col === 'string') return `${sd}${col}${sd}`;
                if (col instanceof Buffer) return col.toString('base64');
                if (col instanceof Uint8Array) return Buffer.from(col).toString('base64');
                return col;
-            }).join(';'));
+            }).join(args.csvOptions.fieldDelimiter));
          }
 
-         content = csv.join('\n');
+         content = csv.join(args.csvOptions.linesTerminator.replaceAll('\\n', '\n').replaceAll('\\r', '\r'));
          break;
       }
       case 'sql': {

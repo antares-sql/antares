@@ -152,6 +152,77 @@
             </div>
          </template>
       </ConfirmModal>
+
+      <ConfirmModal
+         v-if="csvModalRequest"
+         @confirm="downloadTable('csv', csvModalRequest as string, true)"
+         @hide="csvModalRequest = false"
+      >
+         <template #header>
+            <div class="d-flex">
+               <i class="mdi mdi-24px mdi-file-export mr-1" />
+               <span class="cut-text">{{ t('message.csvExportOptions') }}</span>
+            </div>
+         </template>
+         <template #body>
+            <div class="columns">
+               <div class="form-group column col-12 columns col-gapless">
+                  <div class="column col-5">
+                     <label class="form-label cut-text">{{ t('message.csvFieldDelimiter') }}:</label>
+                  </div>
+                  <div class="column col-7">
+                     <input
+                        v-model.number="csvExportOptions.fieldDelimiter"
+                        type="string"
+                        class="form-input"
+                     >
+                  </div>
+               </div>
+               <div class="form-group column col-12 columns col-gapless">
+                  <div class="column col-5">
+                     <label class="form-label cut-text">{{ t('message.csvStringDelimiter') }}:</label>
+                  </div>
+                  <div class="column col-7">
+                     <BaseSelect
+                        v-model="csvExportOptions.stringDelimiter"
+                        class="form-select"
+                        :options="[
+                           {value: '', label: t('word.none')},
+                           {value: 'single', label: t('word.singleQuote')},
+                           {value: 'double', label: t('word.doubleQuote')}
+                        ]"
+                     />
+                  </div>
+               </div>
+               <div class="form-group column col-12 columns col-gapless">
+                  <div class="column col-5">
+                     <label class="form-label cut-text">{{ t('message.csvLinesTerminator') }}:</label>
+                  </div>
+                  <div class="column col-7">
+                     <textarea
+                        v-model.number="csvExportOptions.linesTerminator"
+                        class="form-input"
+                        :style="'resize: none'"
+                        rows="1"
+                     />
+                  </div>
+               </div>
+               <div class="form-group column col-12 columns col-gapless">
+                  <div class="column col-5">
+                     <label class="form-label">
+                        {{ t('message.csvIncludeHeader') }}
+                     </label>
+                  </div>
+                  <div class="column col-7">
+                     <label class="form-switch d-inline-block" @click.prevent="csvExportOptions.header = !csvExportOptions.header">
+                        <input type="checkbox" :checked="csvExportOptions.header">
+                        <i class="form-icon" />
+                     </label>
+                  </div>
+               </div>
+            </div>
+         </template>
+      </ConfirmModal>
    </div>
 </template>
 
@@ -223,10 +294,17 @@ const rowHeight = ref(23);
 const selectedField = ref(null);
 const isEditingRow = ref(false);
 const chunkModalRequest: Ref<false | string> = ref(false);
+const csvModalRequest: Ref<false | string> = ref(false);
 const sqlExportOptions = ref({
    sqlInsertAfter: 250,
    sqlInsertDivider: 'bytes' as 'bytes' | 'rows',
    targetTable: ''
+});
+const csvExportOptions = ref({
+   header: true,
+   fieldDelimiter: ';',
+   linesTerminator: '\n',
+   stringDelimiter: 'double'
 });
 
 const workspaceSchema = computed(() => getWorkspace(props.connUid).breadcrumbs.schema);
@@ -718,10 +796,10 @@ const selectResultset = (index: number) => {
    resultsetIndex.value = index;
 };
 
-const downloadTable = (format: 'csv' | 'json' | 'sql' | 'php', table: string, chunks = false) => {
+const downloadTable = (format: 'csv' | 'json' | 'sql' | 'php', table: string, popup = false) => {
    if (!sortedResults.value) return;
 
-   if (format === 'sql' && !chunks && customizations.value.exportByChunks) {
+   if (format === 'sql' && !popup && customizations.value.exportByChunks) {
       sqlExportOptions.value = {
          sqlInsertAfter: 250,
          sqlInsertDivider: 'bytes' as 'bytes' | 'rows',
@@ -730,8 +808,20 @@ const downloadTable = (format: 'csv' | 'json' | 'sql' | 'php', table: string, ch
       chunkModalRequest.value = table;
       return;
    }
-   else
+   else if (format === 'csv' && !popup) {
+      csvExportOptions.value = {
+         header: true,
+         fieldDelimiter: ';',
+         linesTerminator: '\\n',
+         stringDelimiter: 'double'
+      };
+      csvModalRequest.value = table;
+      return;
+   }
+   else {
       chunkModalRequest.value = false;
+      csvModalRequest.value = false;
+   }
 
    const rows = sortedResults.value.map((row: any) => {
       const clonedRow = { ...row };
@@ -747,7 +837,8 @@ const downloadTable = (format: 'csv' | 'json' | 'sql' | 'php', table: string, ch
       },
       client: workspaceClient.value,
       table,
-      sqlOptions: chunks ? { ...sqlExportOptions.value }: null
+      sqlOptions: popup ? { ...sqlExportOptions.value }: null,
+      csvOptions: popup ? { ...csvExportOptions.value }: null
    });
 };
 
