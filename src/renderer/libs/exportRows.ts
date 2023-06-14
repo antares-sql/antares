@@ -42,7 +42,7 @@ export const exportRows = (args: {
             client:
             args.client,
             fields: args.fields,
-            table: args.sqlOptions.targetTable || args.table,
+            table: args.sqlOptions?.targetTable || args.table,
             options: args.sqlOptions
          });
 
