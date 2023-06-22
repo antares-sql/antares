@@ -112,7 +112,7 @@ export const koKR = {
       small: '작음',
       medium: '중간',
       large: '큼',
-      row: '행 | 행들', 
+      row: '행 | 행들',
       cell: '셀 | 셀들',
       triggerFunction: '트리거 함수 | 트리거 함수들',
       all: '모두',
