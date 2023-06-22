@@ -11,5 +11,6 @@ export const localesNames: {[key: string]: string} = {
    'zh-CN': '简体中文',
    'ru-RU': 'Русский',
    'id-ID': 'Bahasa Indonesia',
-   'ko-KR': '한국어'
+   'ko-KR': '한국어',
+   'nl-NL': 'Nederlands'
 };
