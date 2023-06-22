@@ -144,7 +144,7 @@ export const ptBR = {
       console: 'Console',	
       shortcuts: 'Atalhos',
       folder: 'Pasta | Pastas',
-      appearence: 'Aparência',
+      appearance: 'Aparência',
       color: 'Cor',
       label: 'Rótulo',
       icon: 'Icone'
@@ -330,7 +330,7 @@ export const ptBR = {
       editFolder: 'Editar Pasta',
       folderName: 'Nome da pasta',
       deleteFolder: 'Apagar Pasta',
-      editConnectionAppearence: 'Editar aparência da conexão'
+      editConnectionAppearance: 'Editar aparência da conexão'
    },
    faker: {
       address: 'Endereço',
