@@ -17,8 +17,8 @@
       >
          <span class="d-flex"><i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ t('word.duplicate') }}</span>
       </div>
-      <div class="context-element" @click.stop="showAppearenceModal">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-brush-variant text-light pr-1" /> {{ t('word.appearence') }}</span>
+      <div class="context-element" @click.stop="showAppearanceModal">
+         <span class="d-flex"><i class="mdi mdi-18px mdi-brush-variant text-light pr-1" /> {{ t('word.appearance') }}</span>
       </div>
       <div class="context-element" @click="showConfirmModal">
          <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ t('word.delete') }}</span>
@@ -40,15 +40,15 @@
             </div>
          </template>
       </ConfirmModal>
-      <ModalFolderAppearence
+      <ModalFolderAppearance
          v-if="isFolderEdit"
          :folder="contextConnection"
-         @close="hideAppearenceModal"
+         @close="hideAppearanceModal"
       />
-      <ModalConnectionAppearence
+      <ModalConnectionAppearance
          v-if="isConnectionEdit"
          :connection="contextConnection"
-         @close="hideAppearenceModal"
+         @close="hideAppearanceModal"
       />
    </BaseContextMenu>
 </template>
@@ -62,8 +62,8 @@ import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
-import ModalFolderAppearence from '@/components/ModalFolderAppearence.vue';
-import ModalConnectionAppearence from '@/components/ModalConnectionAppearence.vue';
+import ModalFolderAppearance from '@/components/ModalFolderAppearance.vue';
+import ModalConnectionAppearance from '@/components/ModalConnectionAppearance.vue';
 
 const { t } = useI18n();
 
@@ -118,14 +118,14 @@ const duplicateConnection = () => {
    closeContext();
 };
 
-const showAppearenceModal = () => {
+const showAppearanceModal = () => {
    if (props.contextConnection.isFolder)
       isFolderEdit.value = true;
    else
       isConnectionEdit.value = true;
 };
 
-const hideAppearenceModal = () => {
+const hideAppearanceModal = () => {
    isConnectionEdit.value = false;
    isFolderEdit.value = false;
    closeContext();
