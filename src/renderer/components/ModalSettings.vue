@@ -553,7 +553,7 @@ const locales = computed(() => {
    for (const locale of Object.keys(localesNames))
       locales.push({ code: locale, name: localesNames[locale] });
 
-   return locales;
+   return locales.sort((a, b) => (a.name.localeCompare(b.name)));
 });
 
 const copyTypes = computed(() => [
