@@ -220,8 +220,18 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "64knl",
+      "name": "René",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3864423?v=4",
+      "profile": "https://64k.nl/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
-  "skipCi": true
+  "skipCi": true,
+  "commitType": "docs"
 }
