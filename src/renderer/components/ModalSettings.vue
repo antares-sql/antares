@@ -110,7 +110,7 @@
                               <div class="form-group column col-12 mb-0">
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">
-                                       {{ t('message.restorePreviourSession') }}
+                                       {{ t('message.restorePreviousSession') }}
                                     </label>
                                  </div>
                                  <div class="col-3 col-sm-12">
