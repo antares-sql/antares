@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <i class="mdi mdi-24px mdi-brush-variant mr-1" />
-                     <span class="cut-text">{{ t('message.editConnectionAppearence') }}</span>
+                     <span class="cut-text">{{ t('message.editConnectionAppearance') }}</span>
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -48,7 +48,7 @@
                </div>
             </div>
             <div class="modal-footer">
-               <button class="btn btn-primary mr-2" @click.stop="editFolderAppearence">
+               <button class="btn btn-primary mr-2" @click.stop="editFolderAppearance">
                   {{ t('word.update') }}
                </button>
                <button class="btn btn-link" @click.stop="closeModal">
@@ -136,7 +136,7 @@ const { trapRef } = useFocusTrap();
 const firstInput: Ref<HTMLInputElement> = ref(null);
 const localConnection: Ref<SidebarElement> = ref(unproxify(props.connection));
 
-const editFolderAppearence = () => {
+const editFolderAppearance = () => {
    updateConnectionOrder(localConnection.value);
    closeModal();
 };

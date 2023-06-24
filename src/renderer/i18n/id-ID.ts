@@ -145,7 +145,7 @@ export const idID = {
       console: 'Konsol',
       shortcuts: 'Shortcut',
       folder: 'Folder | Folder',
-      appearence: 'Appearence',
+      appearance: 'Appearance',
       color: 'Color',
       label: 'Label',
       icon: 'Icon'
@@ -332,7 +332,7 @@ export const idID = {
       editFolder: 'Ubah folder',
       folderName: 'Nama folder',
       deleteFolder: 'Hapus folder',
-      editConnectionAppearence: 'Ubah connection appearence',
+      editConnectionAppearance: 'Ubah connection appearance',
       executeSelectedQuery: 'Eksekusi query yang dipilih',
       defaultCopyType: 'Jenis salin default'
    },

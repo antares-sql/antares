@@ -51,7 +51,7 @@
                </div>
             </div>
             <div class="modal-footer">
-               <button class="btn btn-primary mr-2" @click.stop="editFolderAppearence">
+               <button class="btn btn-primary mr-2" @click.stop="editFolderAppearance">
                   {{ t('word.update') }}
                </button>
                <button class="btn btn-link" @click.stop="closeModal">
@@ -110,7 +110,7 @@ const { trapRef } = useFocusTrap();
 const firstInput: Ref<HTMLInputElement> = ref(null);
 const localFolder: Ref<SidebarElement> = ref(unproxify(props.folder));
 
-const editFolderAppearence = () => {
+const editFolderAppearance = () => {
    updateConnectionOrder(localFolder.value);
    closeModal();
 };
