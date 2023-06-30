@@ -51,7 +51,7 @@ export const esES = {
       testConnection: 'Comprobar conexión',
       editConnection: 'Editar conexión',
       deleteConnection: 'Eliminar conexión',
-      deleteCorfirm: 'Confirmas la cancelación de',
+      deleteConfirm: 'Confirmas la cancelación de',
       connectionSuccessfullyMade: 'Conexión realizada correctamente!',
       madeWithJS: 'Hecho con 💛 y JavaScript!',
       checkForUpdates: 'Comprobar actualizaciones',

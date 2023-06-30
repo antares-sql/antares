@@ -36,7 +36,7 @@
          </template>
          <template #body>
             <div class="mb-2">
-               {{ t('message.deleteCorfirm') }} <b>{{ connectionName }}</b>?
+               {{ t('message.deleteConfirm') }} <b>{{ connectionName }}</b>?
             </div>
          </template>
       </ConfirmModal>

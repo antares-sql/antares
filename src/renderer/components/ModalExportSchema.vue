@@ -195,7 +195,7 @@
                      </label>
                      <div v-if="clientCustoms.exportByChunks">
                         <div class="h6 mt-4 mb-2">
-                           {{ t('message.newInserStmtEvery') }}:
+                           {{ t('message.newInsertStmtEvery') }}:
                         </div>
                         <div class="columns">
                            <div class="column col-6">
@@ -216,7 +216,7 @@
                      </div>
 
                      <div class="h6 mb-2 mt-4">
-                        {{ t('message.ourputFormat') }}:
+                        {{ t('message.outputFormat') }}:
                      </div>
                      <div class="columns">
                         <div class="column h5 mb-4">
@@ -382,7 +382,7 @@ const updateProgress = (event: Event, state: ExportState) => {
          progressStatus.value = t('message.processingTableExport', { table: state.currentItem });
          break;
       case 'FETCH':
-         progressStatus.value = t('message.fechingTableExport', { table: state.currentItem });
+         progressStatus.value = t('message.fetchingTableExport', { table: state.currentItem });
          break;
       case 'WRITE':
          progressStatus.value = t('message.writingTableExport', { table: state.currentItem });

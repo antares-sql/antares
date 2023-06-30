@@ -137,7 +137,7 @@
          </template>
          <template #body>
             <div class="mb-2">
-               {{ t('message.deleteCorfirm') }} <b>{{ t(shortcutEvents[shortcutToDelete.event].l18n, {param: shortcutEvents[shortcutToDelete.event].l18nParam}) }} (<span v-html="parseKeys(shortcutToDelete.keys)" />)</b>?
+               {{ t('message.deleteConfirm') }} <b>{{ t(shortcutEvents[shortcutToDelete.event].l18n, {param: shortcutEvents[shortcutToDelete.event].l18nParam}) }} (<span v-html="parseKeys(shortcutToDelete.keys)" />)</b>?
             </div>
          </template>
       </ConfirmModal>

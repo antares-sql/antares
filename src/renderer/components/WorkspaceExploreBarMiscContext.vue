@@ -50,7 +50,7 @@
          </template>
          <template #body>
             <div class="mb-2">
-               {{ t('message.deleteCorfirm') }} "<b>{{ selectedMisc.name }}</b>"?
+               {{ t('message.deleteConfirm') }} "<b>{{ selectedMisc.name }}</b>"?
             </div>
          </template>
       </ConfirmModal>

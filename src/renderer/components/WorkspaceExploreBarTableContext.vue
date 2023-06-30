@@ -47,7 +47,7 @@
          </template>
          <template #body>
             <div class="mb-2">
-               {{ t('message.emptyCorfirm') }} "<b>{{ selectedTable.name }}</b>"?
+               {{ t('message.emptyConfirm') }} "<b>{{ selectedTable.name }}</b>"?
             </div>
             <div v-if="customizations.tableTruncateDisableFKCheck">
                <label class="form-checkbox form-inline">
@@ -69,7 +69,7 @@
          </template>
          <template #body>
             <div class="mb-2">
-               {{ t('message.deleteCorfirm') }} "<b>{{ selectedTable.name }}</b>"?
+               {{ t('message.deleteConfirm') }} "<b>{{ selectedTable.name }}</b>"?
             </div>
          </template>
       </ConfirmModal>

@@ -134,7 +134,7 @@
                      :placeholder="chunkModalRequest"
                   >
                </div>
-               <label class="column col-12 h6 mb-2 mt-4 cut-text">{{ t('message.newInserStmtEvery') }}:</label>
+               <label class="column col-12 h6 mb-2 mt-4 cut-text">{{ t('message.newInsertStmtEvery') }}:</label>
                <div class="column col-6">
                   <input
                      v-model.number="sqlExportOptions.sqlInsertAfter"
