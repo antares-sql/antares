@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.12](https://github.com/antares-sql/antares/compare/v0.7.11...v0.7.12) (2023-07-03)
+
+
+### Features
+
+* add Dutch language support ([4ff1d10](https://github.com/antares-sql/antares/commit/4ff1d107b8837887ceb3ffecaed46b9bdb908127))
+* format options of csv export, closes [#196](https://github.com/antares-sql/antares/issues/196) ([3ad1e51](https://github.com/antares-sql/antares/commit/3ad1e51f42f3cc37ad66bdab64e9a8a0eadea74b))
+* more translations ([575c8ea](https://github.com/antares-sql/antares/commit/575c8ea8cabc1fb315bad1693df6cd4ccd869838))
+* **PostgreSQL:** ability to switch the database, closes [#432](https://github.com/antares-sql/antares/issues/432) ([89815bf](https://github.com/antares-sql/antares/commit/89815bf5e7c4062950b7418b31b45552ae0e1276))
+* Sort available languages alphabetically ([3ff8d25](https://github.com/antares-sql/antares/commit/3ff8d2571be306a8a72e5ad2b9f963b285e8db26))
+
+
+### Bug Fixes
+
+* **PostgreSQL:** unable to export as sql inserts ([e07e7b7](https://github.com/antares-sql/antares/commit/e07e7b736ef29368262ec4b17d9e1f54ef3ec390))
+* rename components and variables in SettingBarContext ([8a4a099](https://github.com/antares-sql/antares/commit/8a4a099e37c9bbc1365f322f6276f32153e24379))
+* spelling corrections ([93e16fd](https://github.com/antares-sql/antares/commit/93e16fdda29601f3e898b1a9470bd8546ea95df6))
+* update source string to fix spelling ([001983c](https://github.com/antares-sql/antares/commit/001983c5a2ebe17c943a9be3a58cc587f5cd09e3))
+
 ### [0.7.11](https://github.com/antares-sql/antares/compare/v0.7.10...v0.7.11) (2023-06-04)
 
 
