@@ -104,7 +104,7 @@
                      class="tab-link"
                      :class="{'badge': element.isChanged}"
                   >
-                     <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
+                     <i class="mdi mdi-wrench-cog mdi-18px mr-1" />
                      <span :title="`${t('word.settings').toUpperCase()}: ${t(`word.${element.elementType}`)}`">
                         {{ cutText(element.elementName, 20, true) }}
                         <span
@@ -121,7 +121,7 @@
                      class="tab-link"
                      :class="{'badge': element.isChanged}"
                   >
-                     <i class="mdi mdi-tune-vertical-variant mdi-18px mr-1" />
+                     <i class="mdi mdi-wrench-cog mdi-18px mr-1" />
                      <span :title="`${t('word.settings').toUpperCase()}: ${t(`word.view`)}`">
                         {{ cutText(element.elementName, 20, true) }}
                         <span
@@ -241,7 +241,7 @@
                      :class="{'badge': element.isChanged}"
                      @dblclick="openAsPermanentTab(element)"
                   >
-                     <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
+                     <i class="mdi mdi-18px mdi-wrench-cog mr-1" />
                      <span :title="`${t('word.settings').toUpperCase()}: ${t(`word.${element.elementType}`)}`">
                         <span class=" text-italic">{{ cutText(element.elementName, 20, true) }}</span>
                         <span
@@ -258,7 +258,7 @@
                      class="tab-link"
                      :class="{'badge': element.isChanged}"
                   >
-                     <i class="mdi mdi-18px mdi-tune-vertical-variant mr-1" />
+                     <i class="mdi mdi-18px mdi-wrench-cog mr-1" />
                      <span :title="`${t('word.settings').toUpperCase()}: ${t(`word.${element.elementType}`)}`">
                         {{ cutText(element.elementName, 20, true) }}
                         <span

@@ -89,7 +89,7 @@
                   <span>{{ t('message.insertRow', 2) }}</span>
                </button>
 
-               <div class="dropdown table-dropdown pr-2">
+               <div class="dropdown table-dropdown">
                   <button
                      :disabled="isQuering"
                      class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
@@ -114,6 +114,19 @@
                      </li>
                   </ul>
                </div>
+
+               <div class="divider-vert py-3" />
+
+               <button
+                  v-if="isTable"
+                  class="btn btn-dark btn-sm"
+                  :disabled="isQuering"
+                  :title="t('word.settings')"
+                  @click="openTableSettingTab()"
+               >
+                  <i class="mdi mdi-24px mdi-cog" />
+                  <!-- <span>{{ t('word.settings') }}</span> -->
+               </button>
             </div>
             <div class="workspace-query-info">
                <div
@@ -203,6 +216,7 @@ import { ConnectionParams } from 'common/interfaces/antares';
 import { TableFilterClausole } from 'common/interfaces/tableApis';
 import { useFilters } from '@/composables/useFilters';
 import { ipcRenderer } from 'electron';
+import { table } from 'console';
 
 const { localeString } = useFilters();
 
@@ -231,7 +245,7 @@ const workspacesStore = useWorkspacesStore();
 
 const { dataTabLimit: limit } = storeToRefs(settingsStore);
 
-const { changeBreadcrumbs, getWorkspace } = workspacesStore;
+const { changeBreadcrumbs, getWorkspace, newTab } = workspacesStore;
 
 const pageSelect: Ref<HTMLInputElement> = ref(null);
 const tabUid = ref('data');
@@ -427,6 +441,21 @@ const hasApproximately = computed(() => {
       results.value[0].rows.length === limit.value &&
       results.value[0].rows.length < approximateCount.value;
 });
+
+const openTableSettingTab = () => {
+   newTab({
+      uid: workspace.value.uid,
+      elementName: props.table,
+      schema: props.schema,
+      type: 'table-props',
+      elementType: 'table'
+   });
+
+   changeBreadcrumbs({
+      schema: props.schema,
+      table: props.table
+   });
+};
 
 watch(() => props.schema, () => {
    if (props.isSelected) {
