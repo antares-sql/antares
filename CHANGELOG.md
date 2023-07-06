@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.13](https://github.com/antares-sql/antares/compare/v0.7.12...v0.7.13) (2023-07-06)
+
+
+### Features
+
+* button to open table settings tab, closes [#608](https://github.com/antares-sql/antares/issues/608) ([38bfea2](https://github.com/antares-sql/antares/commit/38bfea279ce93366dfd2021d0e91622a5a88878e))
+* update connection ([462ede8](https://github.com/antares-sql/antares/commit/462ede8dc701aaf9c6089b3ec41eea0f31babdf9))
+
+
+### Bug Fixes
+
+* **PostgreSQL:** unable to connect to database, fixes [#614](https://github.com/antares-sql/antares/issues/614) ([e808b86](https://github.com/antares-sql/antares/commit/e808b86c52b8488e0c079a9f0ddce225338af4c0))
+* unable to copy as sql inserts with BIT fileds, fixes [#613](https://github.com/antares-sql/antares/issues/613) ([6e01f0f](https://github.com/antares-sql/antares/commit/6e01f0f2e7194284341f89a44839d16398358f9b))
+
 ### [0.7.12](https://github.com/antares-sql/antares/compare/v0.7.11...v0.7.12) (2023-07-03)
 
 
