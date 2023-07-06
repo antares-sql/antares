@@ -331,8 +331,8 @@
                </li>
             </template>
          </Draggable>
-         <WorkspaceEmptyState v-if="!workspace.tabs.length" @new-tab="addQueryTab" />
-         <template v-for="tab of workspace.tabs" :key="tab.uid">
+         <WorkspaceEmptyState v-if="!draggableTabs.length" @new-tab="addQueryTab" />
+         <template v-for="tab of draggableTabs" :key="tab.uid">
             <WorkspaceTabQuery
                v-if="tab.type ==='query'"
                :tab-uid="tab.uid"

@@ -233,7 +233,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
 
                const selectedTab = cachedTabs.length
                   ? connection.database
-                     ? cachedTabs.filter(tab => tab.type === 'query' || tab.database === connection.database)[0].uid
+                     ? cachedTabs.filter(tab => tab.type === 'query' || tab.database === connection.database)[0]?.uid
                      : cachedTabs[0].uid
                   : null;
 
