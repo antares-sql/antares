@@ -72,7 +72,7 @@ export const escapeAndQuote = (val: string, client: ClientCode) => {
 export const valueToSqlString = (args: {
       val: any;
       client: ClientCode;
-      field: {type: string; datePrecision: number; isArray?: boolean};
+      field: {type: string; datePrecision?: number; precision?: number | false; isArray?: boolean};
    }): string => {
    let parsedValue;
    const { val, client, field } = args;
@@ -105,7 +105,7 @@ export const valueToSqlString = (args: {
    else if (TEXT_SEARCH.includes(field.type))
       parsedValue = `'${val.replaceAll('\'', '\'\'')}'`;
    else if (BIT.includes(field.type))
-      parsedValue = `b'${hexToBinary(Buffer.from(val).toString('hex') as undefined as HexChar[])}'`;
+      parsedValue = `b'${hexToBinary(Buffer.from(new Uint8Array(Object.values(val))).toString('hex') as undefined as HexChar[])}'`;
    else if (BLOB.includes(field.type)) {
       let buffer: Buffer;
       if (val instanceof Uint8Array)

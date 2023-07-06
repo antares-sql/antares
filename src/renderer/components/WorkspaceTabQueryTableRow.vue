@@ -293,7 +293,7 @@ const inputProps = computed(() => {
       let timeMask = '##:##:##';
       const precision = props.fields[editingField.value].length;
 
-      for (let i = 0; i < precision; i++)
+      for (let i = 0; i < Number(precision); i++)
          timeMask += i === 0 ? '.#' : '#';
 
       if (HAS_TIMEZONE.includes(editingType.value))
@@ -309,7 +309,7 @@ const inputProps = computed(() => {
       let datetimeMask = '####-##-## ##:##:##';
       const precision = props.fields[editingField.value].length;
 
-      for (let i = 0; i < precision; i++)
+      for (let i = 0; i < Number(precision); i++)
          datetimeMask += i === 0 ? '.#' : '#';
 
       if (HAS_TIMEZONE.includes(editingType.value))
@@ -582,7 +582,7 @@ const typeFormat = (val: string | number | Date | number[], type: string, precis
          return val;
 
       let datePrecision = '';
-      for (let i = 0; i < precision; i++)
+      for (let i = 0; i < Number(precision); i++)
          datePrecision += i === 0 ? '.S' : 'S';
 
       return moment(val).isValid() ? moment(val).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`) : val;
