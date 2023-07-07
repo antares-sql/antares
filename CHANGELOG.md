@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.14](https://github.com/antares-sql/antares/compare/v0.7.13...v0.7.14) (2023-07-07)
+
+
+### Features
+
+* button to open view settings tab ([32bbc45](https://github.com/antares-sql/antares/commit/32bbc453294736970ddbcadd3cc45597277f5bda))
+
+
+### Bug Fixes
+
+* unable to insert new rows ([1c73503](https://github.com/antares-sql/antares/commit/1c735031380c48aa8b08ed5ce3df80008dc72af8))
+
+
+### Improvements
+
+* **PostgreSQL:** minor improvement to schema selection ([9d8e9a5](https://github.com/antares-sql/antares/commit/9d8e9a5e1fda190ee7b3d4fd59e6178dd5ec1651))
+
 ### [0.7.13](https://github.com/antares-sql/antares/compare/v0.7.12...v0.7.13) (2023-07-06)
 
 
