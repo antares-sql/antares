@@ -215,7 +215,6 @@ import { ConnectionParams } from 'common/interfaces/antares';
 import { TableFilterClausole } from 'common/interfaces/tableApis';
 import { useFilters } from '@/composables/useFilters';
 import { ipcRenderer } from 'electron';
-import { table } from 'console';
 
 const { localeString } = useFilters();
 
