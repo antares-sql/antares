@@ -1579,7 +1579,7 @@ export class PostgreSQLClient extends AntaresCore {
       if (args.tabUid && isPool)
          this._runningConnections.set(args.tabUid, (connection as pg.PoolClient & { processID: number }).processID);
 
-      if (args.schema && args.schema !== 'public')
+      if (args.schema)
          await this.use(args.schema, connection);
 
       for (const query of queries) {
