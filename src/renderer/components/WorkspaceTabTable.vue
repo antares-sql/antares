@@ -118,7 +118,6 @@
                <div class="divider-vert py-3" />
 
                <button
-                  v-if="isTable"
                   class="btn btn-dark btn-sm"
                   :disabled="isQuering"
                   :title="t('word.settings')"
@@ -447,13 +446,14 @@ const openTableSettingTab = () => {
       uid: workspace.value.uid,
       elementName: props.table,
       schema: props.schema,
-      type: 'table-props',
-      elementType: 'table'
+      type: isTable.value ? 'table-props' : 'view-props',
+      elementType: isTable.value ? 'table' : 'view'
    });
 
    changeBreadcrumbs({
       schema: props.schema,
-      table: props.table
+      table: isTable.value ? props.table : null,
+      view: !isTable.value ? props.table : null
    });
 };
 
