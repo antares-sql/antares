@@ -327,7 +327,7 @@ const schemaItems = computed(() => {
    return [];
 });
 const filename = computed(() => {
-   const date = moment().format('YYYY-MM-DD');
+   const date = moment().format('YYYY-MM-DD_HH-mm-ss');
    return `${props.selectedSchema}_${date}.${options.value.outputFormat}`;
 });
 const dumpFilePath = computed(() => `${basePath.value}/${filename.value}`);
