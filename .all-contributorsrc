@@ -230,6 +230,15 @@
         "code",
         "translation"
       ]
+    },
+    {
+      "login": "zxp19821005",
+      "name": "Woodenman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4915850?v=4",
+      "profile": "https://github.com/zxp19821005",
+      "contributions": [
+        "platform"
+      ]
     }
   ],
   "contributorsPerLine": 7,
