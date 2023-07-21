@@ -589,7 +589,9 @@ const typeFormat = (val: string | number | Date | number[], type: string, precis
    }
 
    if (BLOB.includes(type)) {
-      const buff = Buffer.from(val as string);
+      if (typeof val === 'string') return val;
+
+      const buff = Buffer.from(val as unknown as ArrayBuffer);
       if (!buff.length) return '';
 
       const hex = buff.toString('hex').substring(0, 8).toUpperCase();
