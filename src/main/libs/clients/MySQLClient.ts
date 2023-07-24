@@ -865,21 +865,23 @@ export class MySQLClient extends AntaresCore {
          options
       } = params;
 
-      let sql = `ALTER TABLE \`${schema}\`.\`${table}\` `;
-      const alterColumns: string[] = [];
+      const sql = `ALTER TABLE \`${schema}\`.\`${table}\` `;
+      const alterColumnsAdd: string[] = [];
+      const alterColumnsChange: string[] = [];
+      const alterColumnsDrop: string[] = [];
 
       // OPTIONS
-      if ('comment' in options) alterColumns.push(`COMMENT='${options.comment}'`);
-      if ('engine' in options) alterColumns.push(`ENGINE=${options.engine}`);
-      if ('autoIncrement' in options) alterColumns.push(`AUTO_INCREMENT=${+options.autoIncrement}`);
-      if ('collation' in options) alterColumns.push(`COLLATE='${options.collation}'`);
+      if ('comment' in options) alterColumnsChange.push(`COMMENT='${options.comment}'`);
+      if ('engine' in options) alterColumnsChange.push(`ENGINE=${options.engine}`);
+      if ('autoIncrement' in options) alterColumnsChange.push(`AUTO_INCREMENT=${+options.autoIncrement}`);
+      if ('collation' in options) alterColumnsChange.push(`COLLATE='${options.collation}'`);
 
       // ADD FIELDS
       additions.forEach(addition => {
          const typeInfo = this.getTypeInfo(addition.type);
          const length = typeInfo.length ? addition.enumValues || addition.numLength || addition.charLength || addition.datePrecision : false;
 
-         alterColumns.push(`ADD COLUMN \`${addition.name}\` 
+         alterColumnsAdd.push(`ADD COLUMN \`${addition.name}\` 
             ${addition.type.toUpperCase()}${length ? `(${length}${addition.numScale ? `,${addition.numScale}` : ''})` : ''} 
             ${addition.unsigned ? 'UNSIGNED' : ''} 
             ${addition.zerofill ? 'ZEROFILL' : ''}
@@ -898,18 +900,18 @@ export class MySQLClient extends AntaresCore {
          let type = addition.type;
 
          if (type === 'PRIMARY')
-            alterColumns.push(`ADD PRIMARY KEY (${fields})`);
+            alterColumnsAdd.push(`ADD PRIMARY KEY (${fields})`);
          else {
             if (type === 'UNIQUE')
                type = 'UNIQUE INDEX';
 
-            alterColumns.push(`ADD ${type} \`${addition.name}\` (${fields})`);
+            alterColumnsAdd.push(`ADD ${type} \`${addition.name}\` (${fields})`);
          }
       });
 
       // ADD FOREIGN KEYS
       foreignChanges.additions.forEach(addition => {
-         alterColumns.push(`ADD CONSTRAINT \`${addition.constraintName}\` FOREIGN KEY (\`${addition.field}\`) REFERENCES \`${addition.refTable}\` (\`${addition.refField}\`) ON UPDATE ${addition.onUpdate} ON DELETE ${addition.onDelete}`);
+         alterColumnsAdd.push(`ADD CONSTRAINT \`${addition.constraintName}\` FOREIGN KEY (\`${addition.field}\`) REFERENCES \`${addition.refTable}\` (\`${addition.refField}\`) ON UPDATE ${addition.onUpdate} ON DELETE ${addition.onDelete}`);
       });
 
       // CHANGE FIELDS
@@ -917,7 +919,7 @@ export class MySQLClient extends AntaresCore {
          const typeInfo = this.getTypeInfo(change.type);
          const length = typeInfo.length ? change.enumValues || change.numLength || change.charLength || change.datePrecision : false;
 
-         alterColumns.push(`CHANGE COLUMN \`${change.orgName}\` \`${change.name}\` 
+         alterColumnsChange.push(`CHANGE COLUMN \`${change.orgName}\` \`${change.name}\` 
             ${change.type.toUpperCase()}${length ? `(${length}${change.numScale ? `,${change.numScale}` : ''})` : ''} 
             ${change.unsigned ? 'UNSIGNED' : ''} 
             ${change.zerofill ? 'ZEROFILL' : ''}
@@ -933,53 +935,56 @@ export class MySQLClient extends AntaresCore {
       // CHANGE INDEX
       indexChanges.changes.forEach(change => {
          if (change.oldType === 'PRIMARY')
-            alterColumns.push('DROP PRIMARY KEY');
+            alterColumnsChange.push('DROP PRIMARY KEY');
          else
-            alterColumns.push(`DROP INDEX \`${change.oldName}\``);
+            alterColumnsChange.push(`DROP INDEX \`${change.oldName}\``);
 
          const fields = change.fields.map(field => `\`${field}\``).join(',');
          let type = change.type;
 
          if (type === 'PRIMARY')
-            alterColumns.push(`ADD PRIMARY KEY (${fields})`);
+            alterColumnsChange.push(`ADD PRIMARY KEY (${fields})`);
          else {
             if (type === 'UNIQUE')
                type = 'UNIQUE INDEX';
 
-            alterColumns.push(`ADD ${type} \`${change.name}\` (${fields})`);
+            alterColumnsChange.push(`ADD ${type} \`${change.name}\` (${fields})`);
          }
       });
 
       // CHANGE FOREIGN KEYS
       foreignChanges.changes.forEach(change => {
-         alterColumns.push(`DROP FOREIGN KEY \`${change.oldName}\``);
-         alterColumns.push(`ADD CONSTRAINT \`${change.constraintName}\` FOREIGN KEY (\`${change.field}\`) REFERENCES \`${change.refTable}\` (\`${change.refField}\`) ON UPDATE ${change.onUpdate} ON DELETE ${change.onDelete}`);
+         alterColumnsChange.push(`DROP FOREIGN KEY \`${change.oldName}\``);
+         alterColumnsChange.push(`ADD CONSTRAINT \`${change.constraintName}\` FOREIGN KEY (\`${change.field}\`) REFERENCES \`${change.refTable}\` (\`${change.refField}\`) ON UPDATE ${change.onUpdate} ON DELETE ${change.onDelete}`);
       });
 
       // DROP FIELDS
       deletions.forEach(deletion => {
-         alterColumns.push(`DROP COLUMN \`${deletion.name}\``);
+         alterColumnsDrop.push(`DROP COLUMN \`${deletion.name}\``);
       });
 
       // DROP INDEX
       indexChanges.deletions.forEach(deletion => {
          if (deletion.type === 'PRIMARY')
-            alterColumns.push('DROP PRIMARY KEY');
+            alterColumnsDrop.push('DROP PRIMARY KEY');
          else
-            alterColumns.push(`DROP INDEX \`${deletion.name}\``);
+            alterColumnsDrop.push(`DROP INDEX \`${deletion.name}\``);
       });
 
       // DROP FOREIGN KEYS
       foreignChanges.deletions.forEach(deletion => {
-         alterColumns.push(`DROP FOREIGN KEY \`${deletion.constraintName}\``);
+         alterColumnsDrop.push(`DROP FOREIGN KEY \`${deletion.constraintName}\``);
       });
 
-      sql += alterColumns.join(', ');
+      const alterQueryes = [];
+      if (alterColumnsAdd.length) alterQueryes.push(sql+alterColumnsAdd.join(', '));
+      if (alterColumnsChange.length) alterQueryes.push(sql+alterColumnsChange.join(', '));
+      if (alterColumnsDrop.length) alterQueryes.push(sql+alterColumnsDrop.join(', '));
 
       // RENAME
-      if (options.name) sql += `; RENAME TABLE \`${schema}\`.\`${table}\` TO \`${schema}\`.\`${options.name}\``;
+      if (options.name) alterQueryes.push(`RENAME TABLE \`${schema}\`.\`${table}\` TO \`${schema}\`.\`${options.name}\``);
 
-      return await this.raw(sql);
+      return await this.raw(alterQueryes.join(';'));
    }
 
    async duplicateTable (params: { schema: string; table: string }) {
