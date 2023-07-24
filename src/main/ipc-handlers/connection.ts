@@ -23,6 +23,7 @@ export default (connections: {[key: string]: antares.Client}) => {
             port: number;
             privateKey: string;
             passphrase: string;
+            keepaliveInterval: number;
          }
       };
 
@@ -49,7 +50,8 @@ export default (connections: {[key: string]: antares.Client}) => {
             password: conn.sshPass,
             port: conn.sshPort ? conn.sshPort : 22,
             privateKey: conn.sshKey ? fs.readFileSync(conn.sshKey).toString() : null,
-            passphrase: conn.sshPassphrase
+            passphrase: conn.sshPassphrase,
+            keepaliveInterval: conn.sshKeepAliveInterval ?? 30*60*1000
          };
       }
 
@@ -98,6 +100,7 @@ export default (connections: {[key: string]: antares.Client}) => {
             port: number;
             privateKey: string;
             passphrase: string;
+            keepaliveInterval: number;
          }
       };
 
@@ -127,7 +130,8 @@ export default (connections: {[key: string]: antares.Client}) => {
             password: conn.sshPass,
             port: conn.sshPort ? conn.sshPort : 22,
             privateKey: conn.sshKey ? fs.readFileSync(conn.sshKey).toString() : null,
-            passphrase: conn.sshPassphrase
+            passphrase: conn.sshPassphrase,
+            keepaliveInterval: conn.sshKeepAliveInterval ?? 30*60*1000
          };
       }
 

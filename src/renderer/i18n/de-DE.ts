@@ -105,7 +105,8 @@ export const deDE = {
       scratchpad: 'Scratchpad',
       array: 'Array',
       format: 'Formatierung',
-      sshTunnel: 'SSH Tunnel'
+      sshTunnel: 'SSH Tunnel',
+      keepAliveInterval: 'Keep-Alive-Intervall'
    },
    message: {
       appWelcome: 'Willkommen im Antares SQL Client!',

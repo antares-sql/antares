@@ -64,6 +64,7 @@ export interface ConnectionParams {
    sshKey?: string;
    sshPort?: number;
    sshPassphrase?: string;
+   sshKeepAliveInterval?: number;
 }
 
 export interface TypeInformations {

@@ -108,6 +108,7 @@ export const enUS = {
       changelog: 'Changelog',
       format: 'Format',
       sshTunnel: 'SSH tunnel',
+      keepAliveInterval: 'Keep alive interval',
       structure: 'Structure',
       small: 'Small',
       medium: 'Medium',
