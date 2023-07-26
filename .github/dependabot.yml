@@ -11,4 +11,4 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly" 
-    target-branch: "edge"
+    target-branch: "develop"
