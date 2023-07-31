@@ -122,7 +122,7 @@
     "@mdi/font": "~7.1.96",
     "@turf/helpers": "~6.5.0",
     "@vueuse/core": "~8.7.5",
-    "ace-builds": "~1.14.0",
+    "ace-builds": "~1.23.4",
     "better-sqlite3": "~8.0.0",
     "electron-log": "~4.4.1",
     "electron-store": "~8.1.0",
