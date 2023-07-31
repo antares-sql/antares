@@ -1,10 +1,10 @@
-name: Build & release [STABLE]
+name: Build & release [BETA]
 
 on:
   push:
     tags:
       - "v*"
-      - '!*-beta.[0-9]+'
+      - '*-beta.[0-9]+'
 
 env:
   BRANCH_NAME: ${{ github.ref }} 
@@ -18,8 +18,8 @@ jobs:
         os: [macos-11, ubuntu-20.04, windows-latest]
 
     steps:
-      - name: Exit if not on master branch
-        if: contains(env.BRANCH_NAME, 'master') == false
+      - name: Exit if not on beta branch
+        if: contains(env.BRANCH_NAME, 'beta') == false
         run: | 
           echo "Wrong environment ${{env.BRANCH_NAME}}"
           exit 0
