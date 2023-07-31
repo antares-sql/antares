@@ -1,11 +1,20 @@
 import { ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import * as Store from 'electron-store';
-const persistentStore = new Store({ name: 'settings', clearInvalidConfig: true });
-const isMacOS = process.platform === 'darwin';
 
+const persistentStore = new Store({
+   name: 'settings',
+   clearInvalidConfig: true,
+   migrations: {
+      '0.7.15': store => {
+         store.set('allow_prerelease', false);
+      }
+   }
+});
+
+const isMacOS = process.platform === 'darwin';
 let mainWindow: Electron.IpcMainEvent;
-autoUpdater.allowPrerelease = persistentStore.get('allow_prerelease', true) as boolean;
+autoUpdater.allowPrerelease = persistentStore.get('allow_prerelease', false) as boolean;
 
 export default () => {
    ipcMain.on('check-for-updates', event => {

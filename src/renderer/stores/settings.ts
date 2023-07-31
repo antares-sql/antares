@@ -16,7 +16,7 @@ export type ApplicationTheme = 'light' | 'dark';
 export const useSettingsStore = defineStore('settings', {
    state: () => ({
       locale: settingsStore.get('locale', 'en-US') as AvailableLocale,
-      allowPrerelease: settingsStore.get('allow_prerelease', true) as boolean,
+      allowPrerelease: settingsStore.get('allow_prerelease', false) as boolean,
       explorebarSize: settingsStore.get('explorebar_size', null) as number,
       notificationsTimeout: settingsStore.get('notifications_timeout', 5) as number,
       showTableSize: settingsStore.get('show_table_size', false) as boolean,

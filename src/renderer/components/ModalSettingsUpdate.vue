@@ -44,7 +44,7 @@
          </button>
       </div>
       <div class="form-group mt-4">
-         <label class="form-switch d-inline-block disabled" @click.prevent="toggleAllowPrerelease">
+         <label class="form-switch d-inline-block" @click.prevent="toggleAllowPrerelease">
             <input type="checkbox" :checked="allowPrerelease">
             <i class="form-icon" /> {{ t('message.includeBetaUpdates') }}
          </label>
