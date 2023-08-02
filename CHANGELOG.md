@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.15](https://github.com/antares-sql/antares/compare/v0.7.14...v0.7.15) (2023-07-31)
+
+
+### Features
+
+* export file name with hour, minutes and seconds, closes [#610](https://github.com/antares-sql/antares/issues/610) ([2f5fa0f](https://github.com/antares-sql/antares/commit/2f5fa0f2e416e88753c9dc2bf32edefba8c4e072))
+
+
+### Bug Fixes
+
+* display content of BLOB fields if not binary, fixes [#628](https://github.com/antares-sql/antares/issues/628) ([f831fcd](https://github.com/antares-sql/antares/commit/f831fcd442f16a03f0ea83ff5bf77a4a79906eb6))
+* **MySQL:** error insertinf new fields with some MySQL configurations, fixes [#360](https://github.com/antares-sql/antares/issues/360) ([51b1419](https://github.com/antares-sql/antares/commit/51b14195a8a6c7e7f1b12bd4b86b7164a56b2aa5))
+* **MySQL:** unable to set more than one value in SET fields ([7c820b1](https://github.com/antares-sql/antares/commit/7c820b18276e4ed5e381d91110acd032862a5be9))
+
 ### [0.7.14](https://github.com/antares-sql/antares/compare/v0.7.13...v0.7.14) (2023-07-07)
 
 
