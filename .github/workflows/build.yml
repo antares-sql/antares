@@ -3,11 +3,10 @@ name: Build & release [STABLE]
 on:
   push:
     tags:
-      - "v*"
-      - '!*-beta.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 env:
-  BRANCH_NAME: ${{ github.ref }} 
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 jobs:
   release:
@@ -15,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-11, ubuntu-20.04, windows-latest]
+        os: [macos-11, ubuntu-latest, windows-latest]
 
     steps:
       - name: Exit if not on master branch
@@ -26,6 +25,8 @@ jobs:
 
       - name: Check out Git repository
         uses: actions/checkout@v3
+        with: 
+          ref: master
 
       - name: Install Node.js
         uses: actions/setup-node@v3
