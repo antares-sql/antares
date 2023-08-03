@@ -14,12 +14,12 @@
                <div class="tr text-uppercase">
                   <div class="th no-border">
                      <div>
-                        {{ t('database.event') }}
+                        {{ t('application.event') }}
                      </div>
                   </div>
                   <div class="th no-border" style="width: 100%;">
                      <div>
-                        {{ t('database.key', 2) }}
+                        {{ t('application.key', 2) }}
                      </div>
                   </div>
                   <div class="th no-border" />
@@ -71,7 +71,7 @@
          <template #body>
             <div class="mb-2">
                <div class="form-group">
-                  <label class="form-label">{{ t('database.event') }}</label>
+                  <label class="form-label">{{ t('application.event') }}</label>
                   <BaseSelect
                      v-model="shortcutToAdd.event"
                      class="form-select"
@@ -81,7 +81,7 @@
             </div>
             <div class="mb-2">
                <div class="form-group">
-                  <label class="form-label">{{ t('database.key', 2) }}</label>
+                  <label class="form-label">{{ t('application.key', 2) }}</label>
                   <KeyPressDetector v-model="typedShortcut" />
                </div>
             </div>
@@ -105,7 +105,7 @@
          <template #body>
             <div class="mb-2">
                <div class="form-group">
-                  <label class="form-label">{{ t('database.event') }}</label>
+                  <label class="form-label">{{ t('application.event') }}</label>
                   <BaseSelect
                      v-model="shortcutToEdit.event"
                      class="form-select"
@@ -116,7 +116,7 @@
             </div>
             <div class="mb-2">
                <div class="form-group">
-                  <label class="form-label">{{ t('database.key', 2) }}</label>
+                  <label class="form-label">{{ t('application.key', 2) }}</label>
                   <KeyPressDetector v-model="shortcutToEdit.keys[0]" />
                </div>
             </div>

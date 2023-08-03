@@ -276,6 +276,7 @@ export const enUS = {
       language: 'Language',
       shortcuts: 'Shortcuts',
       key: 'Key | Keys', // Keyboard key
+      event: 'Event',
       light: 'Light',
       dark: 'Dark',
       autoCompletion: 'Auto Completion',
