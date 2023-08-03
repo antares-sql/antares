@@ -22,7 +22,7 @@
                v-tooltip="{
                   strategy: 'fixed',
                   placement: 'right',
-                  content: t('message.allConnections')
+                  content: t('connection.allConnections')
                }"
                class="settingbar-element btn btn-link"
                @click="emit('show-connections-modal')"
@@ -35,7 +35,7 @@
                v-tooltip="{
                   strategy: 'fixed',
                   placement: 'right',
-                  content: t('message.addConnection')
+                  content: t('connection.addConnection')
                }"
                class="settingbar-element btn btn-link"
                :class="{ 'selected': 'NEW' === selectedWorkspace }"
@@ -55,7 +55,7 @@
                v-tooltip="{
                   strategy: 'fixed',
                   placement: 'right',
-                  content: t('word.scratchpad')
+                  content: t('application.scratchpad')
                }"
                class="settingbar-element btn btn-link"
                @click="showScratchpad"
@@ -66,7 +66,7 @@
                v-tooltip="{
                   strategy: 'fixed',
                   placement: 'right',
-                  content: t('word.settings')
+                  content: t('application.settings')
                }"
                class="settingbar-element btn btn-link"
                @click="showSettingModal('general')"

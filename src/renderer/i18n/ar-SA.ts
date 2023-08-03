@@ -1,5 +1,5 @@
 export const arSA = {
-   word: {
+   general: {
       edit: 'تعديل',
       save: 'حفظ',
       close: 'إغلاق',
@@ -7,6 +7,23 @@ export const arSA = {
       confirm: 'تأكيد',
       cancel: 'إلغاء',
       send: 'إرسال',
+      refresh: 'تحديث',
+      version: 'النسخة',
+      donate: 'إدعم',
+      run: 'شغل',
+      results: 'النتائج',
+      size: 'الحجم',
+      mimeType: 'نوع الميديا',
+      download: 'تحميل',
+      add: 'أضف',
+      data: 'بيانات',
+      properties: 'خصائص',
+      insert: 'أدرج',
+      seconds: 'ثواني',
+      deleteConfirm: 'هل أنت متأكد من حذف الإتصال؟',
+      uploadFile: 'رفع ملف'
+   },
+   connection: {
       connectionName: 'إسم الإتصال',
       client: 'العميل',
       hostName: 'إسم المستضيف',
@@ -18,31 +35,6 @@ export const arSA = {
       connected: 'متصل',
       disconnect: 'إلغاء الإتصال',
       disconnected: 'غير متصل',
-      refresh: 'تحديث',
-      settings: 'الإعدادات',
-      general: 'عام',
-      themes: 'الأنماط',
-      update: 'تحديث',
-      about: 'حول',
-      language: 'اللغة',
-      version: 'النسخة',
-      donate: 'إدعم',
-      run: 'شغل',
-      schema: 'Schema',
-      results: 'النتائج',
-      size: 'الحجم',
-      seconds: 'ثواني',
-      type: 'نوع',
-      mimeType: 'نوع الميديا',
-      download: 'تحميل',
-      add: 'أضف',
-      data: 'بيانات',
-      properties: 'خصائص',
-      insert: 'أدرج'
-   },
-   message: {
-      appWelcome: 'مرحبا بك في عميل الSQL انتاريس!',
-      appFirstStep: 'خطوتك الأولى قم بإنشاء إتصال جديد بقاعدة بيانات.',
       addConnection: 'إضافة إتصال',
       createConnection: 'إنشاء إتصال',
       createNewConnection: 'إنشاء إتصال جديد',
@@ -50,8 +42,25 @@ export const arSA = {
       testConnection: 'إختبر الإتصال',
       editConnection: 'عدل الإتصال',
       deleteConnection: 'إحذف الإتصال',
-      deleteConfirm: 'هل أنت متأكد من حذف الإتصال؟',
-      connectionSuccessfullyMade: 'تم الإتصال بنجاح!',
+      connectionSuccessfullyMade: 'تم الإتصال بنجاح!'
+   },
+   database: {
+      schema: 'Schema',
+      type: 'نوع',
+      unableEditFieldWithoutPrimary: 'لا يمكن تعديل الخانة بدون وجود مفتاح رئيسي في النتائج',
+      editCell: 'تعديل الخلية',
+      deleteRows: 'حذف صف | حذف {count} صفوف',
+      confirmToDeleteRows: 'هل أنت متأكد من حذف صف واحد؟? | هل أنت متأكد من حذف {count} صف?',
+      addNewRow: 'إضافة صف جديد',
+      numberOfInserts: 'عدد الإدراجات'
+   },
+   application: {
+      settings: 'الإعدادات',
+      general: 'عام',
+      themes: 'الأنماط',
+      update: 'تحديث',
+      about: 'حول',
+      language: 'اللغة',
       madeWithJS: 'بني بـ  💛 و جافاسكربت!',
       checkForUpdates: 'تأكد من التحديثات',
       noUpdatesAvailable: 'لا توجد تحديثات',
@@ -61,13 +70,6 @@ export const arSA = {
       downloadingUpdate: 'جاري تحميل التحديث',
       updateDownloaded: 'تم تحميل التحديث',
       restartToInstall: 'قم بإعادة تشغيل انتاريس للتحديث',
-      unableEditFieldWithoutPrimary: 'لا يمكن تعديل الخانة بدون وجود مفتاح رئيسي في النتائج',
-      editCell: 'تعديل الخلية',
-      deleteRows: 'حذف صف | حذف {count} صفوف',
-      confirmToDeleteRows: 'هل أنت متأكد من حذف صف واحد؟? | هل أنت متأكد من حذف {count} صف?',
-      notificationsTimeout: 'إنتهاء التنبيهات',
-      uploadFile: 'رفع ملف',
-      addNewRow: 'إضافة صف جديد',
-      numberOfInserts: 'عدد الإدراجات'
+      notificationsTimeout: 'إنتهاء التنبيهات'
    }
 };

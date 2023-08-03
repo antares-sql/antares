@@ -1,18 +1,18 @@
 <template>
    <ConfirmModal
-      :confirm-text="t('word.discard')"
-      :cancel-text="t('word.stay')"
+      :confirm-text="t('general.discard')"
+      :cancel-text="t('general.stay')"
       @confirm="emit('confirm')"
       @hide="emit('close')"
    >
       <template #header>
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-content-save-alert mr-1" /> {{ t('message.unsavedChanges') }}
+            <i class="mdi mdi-24px mdi-content-save-alert mr-1" /> {{ t('application.unsavedChanges') }}
          </div>
       </template>
       <template #body>
          <div>
-            {{ t('message.discardUnsavedChanges') }}
+            {{ t('application.discardUnsavedChanges') }}
          </div>
       </template>
    </ConfirmModal>

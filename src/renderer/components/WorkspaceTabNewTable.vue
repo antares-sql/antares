@@ -10,16 +10,16 @@
                   @click="saveChanges"
                >
                   <i class="mdi mdi-24px mdi-content-save mr-1" />
-                  <span>{{ t('word.save') }}</span>
+                  <span>{{ t('general.save') }}</span>
                </button>
                <button
                   :disabled="!isChanged || isSaving"
                   class="btn btn-link btn-sm mr-0"
-                  :title="t('message.clearChanges')"
+                  :title="t('database.clearChanges')"
                   @click="clearChanges"
                >
                   <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
-                  <span>{{ t('word.clear') }}</span>
+                  <span>{{ t('general.clear') }}</span>
                </button>
 
                <div class="divider-vert py-3" />
@@ -27,20 +27,20 @@
                <button
                   :disabled="isSaving"
                   class="btn btn-dark btn-sm"
-                  :title="t('message.addNewField')"
+                  :title="t('database.addNewField')"
                   @click="addField"
                >
                   <i class="mdi mdi-24px mdi-playlist-plus mr-1" />
-                  <span>{{ t('word.add') }}</span>
+                  <span>{{ t('general.add') }}</span>
                </button>
                <button
                   :disabled="isSaving || !localFields.length"
                   class="btn btn-dark btn-sm"
-                  :title="t('message.manageIndexes')"
+                  :title="t('database.manageIndexes')"
                   @click="showIntdexesModal"
                >
                   <i class="mdi mdi-24px mdi-key mdi-rotate-45 mr-1" />
-                  <span>{{ t('word.indexes') }}</span>
+                  <span>{{ t('database.indexes') }}</span>
                </button>
                <button
                   class="btn btn-dark btn-sm"
@@ -48,11 +48,11 @@
                   @click="showForeignModal"
                >
                   <i class="mdi mdi-24px mdi-key-link mr-1" />
-                  <span>{{ t('word.foreignKeys') }}</span>
+                  <span>{{ t('database.foreignKeys') }}</span>
                </button>
             </div>
             <div class="workspace-query-info">
-               <div class="d-flex" :title="t('word.schema')">
+               <div class="d-flex" :title="t('database.schema')">
                   <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
                </div>
             </div>
@@ -62,7 +62,7 @@
          <div class="columns mb-4">
             <div class="column col-auto">
                <div class="form-group">
-                  <label class="form-label">{{ t('word.name') }}</label>
+                  <label class="form-label">{{ t('general.name') }}</label>
                   <input
                      ref="firstInput"
                      v-model="localOptions.name"
@@ -73,7 +73,7 @@
             </div>
             <div v-if="workspace.customizations.comment" class="column">
                <div class="form-group">
-                  <label class="form-label">{{ t('word.comment') }}</label>
+                  <label class="form-label">{{ t('database.comment') }}</label>
                   <input
                      v-model="localOptions.comment"
                      class="form-input"
@@ -85,7 +85,7 @@
             <div v-if="workspace.customizations.collations" class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ t('word.collation') }}
+                     {{ t('database.collation') }}
                   </label>
                   <BaseSelect
                      v-model="localOptions.collation"
@@ -100,7 +100,7 @@
             <div v-if="workspace.customizations.engines" class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ t('word.engine') }}
+                     {{ t('database.engine') }}
                   </label>
                   <BaseSelect
                      v-model="localOptions.engine"
@@ -315,7 +315,7 @@ const addField = () => {
    const uid = uidGen();
    localFields.value.push({
       _antares_id: uid,
-      name: `${t('word.field', 1)}_${uid.substring(0, 4)}`,
+      name: `${t('database.field', 1)}_${uid.substring(0, 4)}`,
       key: '',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       type: (workspace.value.dataTypes[0] as any).types[0].name,

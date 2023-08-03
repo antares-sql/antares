@@ -4,12 +4,12 @@
          <img :src="logos[applicationTheme]" width="200">
       </div>
       <p class="h6 empty-subtitle">
-         {{ t('message.noOpenTabs') }}
+         {{ t('application.noOpenTabs') }}
       </p>
       <div class="empty-action">
          <button class="btn btn-primary d-flex" @click="emit('new-tab')">
             <i class="mdi mdi-24px mdi-tab-plus mr-2" />
-            {{ t('message.openNewTab') }}
+            {{ t('application.openNewTab') }}
          </button>
       </div>
    </div>

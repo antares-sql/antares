@@ -26,27 +26,27 @@
             :class="{'loading': updateStatus === 'checking'}"
             @click="checkForUpdates"
          >
-            {{ t('message.checkForUpdates') }}
+            {{ t('application.checkForUpdates') }}
          </button>
          <button
             v-else-if="updateStatus === 'downloaded'"
             class="btn btn-primary"
             @click="restartToUpdate"
          >
-            {{ t('message.restartToInstall') }}
+            {{ t('application.restartToInstall') }}
          </button>
          <button
             v-else-if="updateStatus === 'link'"
             class="btn btn-primary"
             @click="openOutside('https://antares-sql.app/download.html')"
          >
-            {{ t('message.goToDownloadPage') }}
+            {{ t('application.goToDownloadPage') }}
          </button>
       </div>
       <div class="form-group mt-4">
          <label class="form-switch d-inline-block" @click.prevent="toggleAllowPrerelease">
             <input type="checkbox" :checked="allowPrerelease">
-            <i class="form-icon" /> {{ t('message.includeBetaUpdates') }}
+            <i class="form-icon" /> {{ t('application.includeBetaUpdates') }}
          </label>
       </div>
    </div>
@@ -76,19 +76,19 @@ const { changeAllowPrerelease } = settingsStore;
 const updateMessage = computed(() => {
    switch (updateStatus.value) {
       case 'noupdate':
-         return t('message.noUpdatesAvailable');
+         return t('application.noUpdatesAvailable');
       case 'checking':
-         return t('message.checkingForUpdate');
+         return t('application.checkingForUpdate');
       case 'nocheck':
-         return t('message.checkFailure');
+         return t('application.checkFailure');
       case 'available':
-         return t('message.updateAvailable');
+         return t('application.updateAvailable');
       case 'downloading':
-         return t('message.downloadingUpdate');
+         return t('application.downloadingUpdate');
       case 'downloaded':
-         return t('message.updateDownloaded');
+         return t('application.updateDownloaded');
       case 'link':
-         return t('message.updateAvailable');
+         return t('application.updateAvailable');
       default:
          return updateStatus.value;
    }

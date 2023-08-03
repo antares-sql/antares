@@ -51,7 +51,7 @@
             class="btn btn-sm btn-primary mr-0 ml-2"
             type="submit"
          >
-            {{ t('word.filter') }}
+            {{ t('general.filter') }}
          </button>
          <button
             class="btn btn-sm btn-dark mr-0 ml-2"

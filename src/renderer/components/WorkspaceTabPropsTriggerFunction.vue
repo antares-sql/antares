@@ -10,16 +10,16 @@
                   @click="saveChanges"
                >
                   <i class="mdi mdi-24px mdi-content-save mr-1" />
-                  <span>{{ t('word.save') }}</span>
+                  <span>{{ t('general.save') }}</span>
                </button>
                <button
                   :disabled="!isChanged"
                   class="btn btn-link btn-sm mr-0"
-                  :title="t('message.clearChanges')"
+                  :title="t('database.clearChanges')"
                   @click="clearChanges"
                >
                   <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
-                  <span>{{ t('word.clear') }}</span>
+                  <span>{{ t('general.clear') }}</span>
                </button>
             </div>
          </div>
@@ -29,7 +29,7 @@
             <div v-if="customizations.triggerFunctionlanguages" class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ t('word.language') }}
+                     {{ t('application.language') }}
                   </label>
                   <BaseSelect
                      v-model="localFunction.language"
@@ -41,12 +41,12 @@
             <div v-if="customizations.definer" class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
-                     {{ t('word.definer') }}
+                     {{ t('database.definer') }}
                   </label>
                   <BaseSelect
                      v-model="localFunction.definer"
                      :options="workspace.users"
-                     :option-label="(user: any) => user.value === '' ? t('message.currentUser') : `${user.name}@${user.host}`"
+                     :option-label="(user: any) => user.value === '' ? t('database.currentUser') : `${user.name}@${user.host}`"
                      :option-track-by="(user: any) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
                      class="form-select"
                   />
@@ -54,7 +54,7 @@
             </div>
             <div v-if="customizations.comment" class="form-group">
                <label class="form-label">
-                  {{ t('word.comment') }}
+                  {{ t('database.comment') }}
                </label>
                <input
                   v-model="localFunction.comment"
@@ -66,7 +66,7 @@
       </div>
       <div class="workspace-query-results column col-12 mt-2 p-relative">
          <BaseLoader v-if="isLoading" />
-         <label class="form-label ml-2">{{ t('message.functionBody') }}</label>
+         <label class="form-label ml-2">{{ t('database.functionBody') }}</label>
          <QueryEditor
             v-show="isSelected"
             ref="queryEditor"

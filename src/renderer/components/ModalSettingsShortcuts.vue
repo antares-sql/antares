@@ -2,10 +2,10 @@
    <div class="p-relative">
       <div class="shortcuts-tools pb-2 px-2">
          <button class="btn btn-dark btn-sm d-flex ml-2" @click="showAddModal">
-            <i class="mdi mdi-24px mdi-plus mr-1" /><span>{{ t('message.addShortcut') }}</span>
+            <i class="mdi mdi-24px mdi-plus mr-1" /><span>{{ t('application.addShortcut') }}</span>
          </button>
          <button class="btn btn-dark btn-sm d-flex ml-2" @click="isConfirmRestoreModal = true">
-            <i class="mdi mdi-24px mdi-undo mr-1" /><span>{{ t('message.restoreDefaults') }}</span>
+            <i class="mdi mdi-24px mdi-undo mr-1" /><span>{{ t('application.restoreDefaults') }}</span>
          </button>
       </div>
       <div class="container workspace-query-results">
@@ -14,12 +14,12 @@
                <div class="tr text-uppercase">
                   <div class="th no-border">
                      <div>
-                        {{ t('word.event') }}
+                        {{ t('database.event') }}
                      </div>
                   </div>
                   <div class="th no-border" style="width: 100%;">
                      <div>
-                        {{ t('word.key', 2) }}
+                        {{ t('database.key', 2) }}
                      </div>
                   </div>
                   <div class="th no-border" />
@@ -43,10 +43,10 @@
                   />
                   <div class="td py-1 pr-2">
                      <button class="shortcut-button btn btn-link btn-sm d-flex p-0 px-1 mr-2" @click="showEditModal({...shortcut, index: i})">
-                        <span>{{ t('word.edit') }}</span><i class="mdi mdi-pencil ml-1" />
+                        <span>{{ t('general.edit') }}</span><i class="mdi mdi-pencil ml-1" />
                      </button>
                      <button class="shortcut-button btn btn-link btn-sm d-flex p-0 px-1" @click="showDeleteModal(shortcut)">
-                        <span>{{ t('word.delete') }}</span><i class="mdi mdi-delete-outline ml-1" />
+                        <span>{{ t('general.delete') }}</span><i class="mdi mdi-delete-outline ml-1" />
                      </button>
                   </div>
                </div>
@@ -58,20 +58,20 @@
       <ConfirmModal
          v-if="isConfirmAddModal"
          :disable-autofocus="true"
-         :confirm-text="t('word.save')"
+         :confirm-text="t('general.save')"
          :close-on-confirm="false"
          @confirm="addShortcut"
          @hide="closeAddModal"
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-plus mr-1" /> {{ t('message.addShortcut') }}
+               <i class="mdi mdi-24px mdi-plus mr-1" /> {{ t('application.addShortcut') }}
             </div>
          </template>
          <template #body>
             <div class="mb-2">
                <div class="form-group">
-                  <label class="form-label">{{ t('word.event') }}</label>
+                  <label class="form-label">{{ t('database.event') }}</label>
                   <BaseSelect
                      v-model="shortcutToAdd.event"
                      class="form-select"
@@ -81,31 +81,31 @@
             </div>
             <div class="mb-2">
                <div class="form-group">
-                  <label class="form-label">{{ t('word.key', 2) }}</label>
+                  <label class="form-label">{{ t('database.key', 2) }}</label>
                   <KeyPressDetector v-model="typedShortcut" />
                </div>
             </div>
-            <small v-if="doesShortcutExists" class="text-warning">{{ t('message.shortcutAlreadyExists') }}</small>
+            <small v-if="doesShortcutExists" class="text-warning">{{ t('application.shortcutAlreadyExists') }}</small>
          </template>
       </ConfirmModal>
 
       <ConfirmModal
          v-if="isConfirmEditModal"
          :disable-autofocus="true"
-         :confirm-text="t('word.save')"
+         :confirm-text="t('general.save')"
          :close-on-confirm="false"
          @confirm="editShortcut"
          @hide="closeEditModal"
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-plus mr-1" /> {{ t('message.editShortcut') }}
+               <i class="mdi mdi-24px mdi-plus mr-1" /> {{ t('application.editShortcut') }}
             </div>
          </template>
          <template #body>
             <div class="mb-2">
                <div class="form-group">
-                  <label class="form-label">{{ t('word.event') }}</label>
+                  <label class="form-label">{{ t('database.event') }}</label>
                   <BaseSelect
                      v-model="shortcutToEdit.event"
                      class="form-select"
@@ -116,11 +116,11 @@
             </div>
             <div class="mb-2">
                <div class="form-group">
-                  <label class="form-label">{{ t('word.key', 2) }}</label>
+                  <label class="form-label">{{ t('database.key', 2) }}</label>
                   <KeyPressDetector v-model="shortcutToEdit.keys[0]" />
                </div>
             </div>
-            <small v-if="doesShortcutExists" class="text-warning">{{ t('message.shortcutAlreadyExists') }}</small>
+            <small v-if="doesShortcutExists" class="text-warning">{{ t('application.shortcutAlreadyExists') }}</small>
          </template>
       </ConfirmModal>
 
@@ -132,12 +132,12 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-delete mr-1" /> {{ t('message.deleteShortcut') }}
+               <i class="mdi mdi-24px mdi-delete mr-1" /> {{ t('application.deleteShortcut') }}
             </div>
          </template>
          <template #body>
             <div class="mb-2">
-               {{ t('message.deleteConfirm') }} <b>{{ t(shortcutEvents[shortcutToDelete.event].l18n, {param: shortcutEvents[shortcutToDelete.event].l18nParam}) }} (<span v-html="parseKeys(shortcutToDelete.keys)" />)</b>?
+               {{ t('general.deleteConfirm') }} <b>{{ t(shortcutEvents[shortcutToDelete.event].l18n, {param: shortcutEvents[shortcutToDelete.event].l18nParam}) }} (<span v-html="parseKeys(shortcutToDelete.keys)" />)</b>?
             </div>
          </template>
       </ConfirmModal>
@@ -150,12 +150,12 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-undo mr-1" /> {{ t('message.restoreDefaults') }}
+               <i class="mdi mdi-24px mdi-undo mr-1" /> {{ t('application.restoreDefaults') }}
             </div>
          </template>
          <template #body>
             <div class="mb-2">
-               {{ t('message.restoreDefaultsQuestion') }}
+               {{ t('application.restoreDefaultsQuestion') }}
             </div>
          </template>
       </ConfirmModal>

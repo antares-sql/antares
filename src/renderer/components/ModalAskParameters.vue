@@ -1,7 +1,7 @@
 <template>
    <ConfirmModal
-      :confirm-text="t('word.run')"
-      :cancel-text="t('word.cancel')"
+      :confirm-text="t('general.run')"
+      :cancel-text="t('general.cancel')"
       size="400"
       @confirm="runRoutine"
       @hide="closeModal"
@@ -9,7 +9,7 @@
       <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-play mr-1" />
-            <span class="cut-text">{{ t('word.parameters') }}: {{ localRoutine.name }}</span>
+            <span class="cut-text">{{ t('database.parameters') }}: {{ localRoutine.name }}</span>
          </div>
       </template>
       <template #body>

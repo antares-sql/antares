@@ -8,7 +8,7 @@
                   :class="{'active': selectedTab === 'general'}"
                   @click="selectTab('general')"
                >
-                  <a class="tab-link">{{ t('word.general') }}</a>
+                  <a class="tab-link">{{ t('application.general') }}</a>
                </li>
                <li
                   v-if="clientCustomizations.sslConnection"
@@ -16,7 +16,7 @@
                   :class="{'active': selectedTab === 'ssl'}"
                   @click="selectTab('ssl')"
                >
-                  <a class="tab-link">{{ t('word.ssl') }}</a>
+                  <a class="tab-link">{{ t('connection.ssl') }}</a>
                </li>
                <li
                   v-if="clientCustomizations.sshConnection"
@@ -24,7 +24,7 @@
                   :class="{'active': selectedTab === 'ssh'}"
                   @click="selectTab('ssh')"
                >
-                  <a class="tab-link">{{ t('word.sshTunnel') }}</a>
+                  <a class="tab-link">{{ t('connection.sshTunnel') }}</a>
                </li>
             </ul>
          </div>
@@ -34,7 +34,7 @@
                   <fieldset class="m-0" :disabled="isBusy">
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.connectionName') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.connectionName') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -47,7 +47,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.client') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.client') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseSelect
@@ -61,7 +61,7 @@
                      </div>
                      <div v-if="connection.client === 'pg'" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.connectionString') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.connectionString') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -74,7 +74,7 @@
                      </div>
                      <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.hostName') }}/IP</label>
+                           <label class="form-label cut-text">{{ t('connection.hostName') }}/IP</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -86,12 +86,12 @@
                      </div>
                      <div v-if="clientCustomizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.database') }}</label>
+                           <label class="form-label cut-text">{{ t('database.database') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
                               :model-value="connection.databasePath"
-                              :message="t('word.browse')"
+                              :message="t('general.browse')"
                               @clear="pathClear('databasePath')"
                               @change="pathSelection($event, 'databasePath')"
                            />
@@ -99,7 +99,7 @@
                      </div>
                      <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.port') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.port') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -113,7 +113,7 @@
                      </div>
                      <div v-if="clientCustomizations.database" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.database') }}</label>
+                           <label class="form-label cut-text">{{ t('database.database') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -126,7 +126,7 @@
                      </div>
                      <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.user') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.user') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -139,7 +139,7 @@
                      </div>
                      <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.password') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.password') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -152,14 +152,14 @@
                      </div>
                      <div v-if="clientCustomizations.connectionSchema" class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.schema') }}</label>
+                           <label class="form-label cut-text">{{ t('database.schema') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
                               v-model="connection.schema"
                               class="form-input"
                               type="text"
-                              :placeholder="t('word.all')"
+                              :placeholder="t('general.all')"
                            >
                         </div>
                      </div>
@@ -167,7 +167,7 @@
                         <div class="column col-4 col-sm-12" />
                         <div class="column col-8 col-sm-12">
                            <label class="form-checkbox form-inline">
-                              <input v-model="connection.readonly" type="checkbox"><i class="form-icon" /> {{ t('message.readOnlyMode') }}
+                              <input v-model="connection.readonly" type="checkbox"><i class="form-icon" /> {{ t('connection.readOnlyMode') }}
                            </label>
                         </div>
                      </div>
@@ -175,7 +175,7 @@
                         <div class="column col-4 col-sm-12" />
                         <div class="column col-8 col-sm-12">
                            <label class="form-checkbox form-inline">
-                              <input v-model="connection.ask" type="checkbox"><i class="form-icon" /> {{ t('message.askCredentials') }}
+                              <input v-model="connection.ask" type="checkbox"><i class="form-icon" /> {{ t('connection.askCredentials') }}
                            </label>
                         </div>
                      </div>
@@ -189,7 +189,7 @@
                   <div class="form-group columns">
                      <div class="column col-4 col-sm-12">
                         <label class="form-label cut-text">
-                           {{ t('message.enableSsl') }}
+                           {{ t('connection.enableSsl') }}
                         </label>
                      </div>
                      <div class="column col-8 col-sm-12">
@@ -202,12 +202,12 @@
                   <fieldset class="m-0" :disabled="isBusy || !connection.ssl">
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.privateKey') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.privateKey') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
                               :model-value="connection.key"
-                              :message="t('word.browse')"
+                              :message="t('general.browse')"
                               @clear="pathClear('key')"
                               @change="pathSelection($event, 'key')"
                            />
@@ -215,12 +215,12 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.certificate') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.certificate') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
                               :model-value="connection.cert"
-                              :message="t('word.browse')"
+                              :message="t('general.browse')"
                               @clear="pathClear('cert')"
                               @change="pathSelection($event, 'cert')"
                            />
@@ -228,12 +228,12 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.caCertificate') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.caCertificate') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
                               :model-value="connection.ca"
-                              :message="t('word.browse')"
+                              :message="t('general.browse')"
                               @clear="pathClear('ca')"
                               @change="pathSelection($event, 'ca')"
                            />
@@ -241,7 +241,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.ciphers') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.ciphers') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -256,7 +256,7 @@
                         <div class="column col-4 col-sm-12" />
                         <div class="column col-8 col-sm-12">
                            <label class="form-checkbox form-inline">
-                              <input v-model="connection.untrustedConnection" type="checkbox"><i class="form-icon" /> {{ t('message.untrustedConnection') }}
+                              <input v-model="connection.untrustedConnection" type="checkbox"><i class="form-icon" /> {{ t('connection.untrustedConnection') }}
                            </label>
                         </div>
                      </div>
@@ -270,7 +270,7 @@
                   <div class="form-group columns">
                      <div class="column col-4 col-sm-12">
                         <label class="form-label cut-text">
-                           {{ t('message.enableSsh') }}
+                           {{ t('connection.enableSsh') }}
                         </label>
                      </div>
                      <div class="column col-8 col-sm-12">
@@ -283,7 +283,7 @@
                   <fieldset class="m-0" :disabled="isBusy || !connection.ssh">
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.hostName') }}/IP</label>
+                           <label class="form-label cut-text">{{ t('connection.hostName') }}/IP</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -295,7 +295,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.user') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.user') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -307,7 +307,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.password') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.password') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -319,7 +319,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.port') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.port') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -333,12 +333,12 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.privateKey') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.privateKey') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <BaseUploadInput
                               :model-value="connection.sshKey"
-                              :message="t('word.browse')"
+                              :message="t('general.browse')"
                               @clear="pathClear('sshKey')"
                               @change="pathSelection($event, 'sshKey')"
                            />
@@ -346,7 +346,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-4 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.passphrase') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.passphrase') }}</label>
                         </div>
                         <div class="column col-8 col-sm-12">
                            <input
@@ -369,7 +369,7 @@
                @click="startTest"
             >
                <i class="mdi mdi-24px mdi-lightning-bolt mr-1" />
-               {{ t('message.testConnection') }}
+               {{ t('connection.testConnection') }}
             </button>
             <button
                id="connection-save"
@@ -378,7 +378,7 @@
                @click="saveConnection"
             >
                <i class="mdi mdi-24px mdi-content-save mr-1" />
-               {{ t('word.save') }}
+               {{ t('general.save') }}
             </button>
          </div>
       </div>
@@ -484,7 +484,7 @@ const startTest = async () => {
          if (res.status === 'error')
             addNotification({ status: 'error', message: res.response.message || res.response.toString() });
          else
-            addNotification({ status: 'success', message: t('message.connectionSuccessfullyMade') });
+            addNotification({ status: 'success', message: t('connection.connectionSuccessfullyMade') });
       }
       catch (err) {
          addNotification({ status: 'error', message: err.stack });
@@ -508,7 +508,7 @@ const continueTest = async (credentials: { user: string; password: string }) => 
          if (res.status === 'error')
             addNotification({ status: 'error', message: res.response.message || res.response.toString() });
          else
-            addNotification({ status: 'success', message: t('message.connectionSuccessfullyMade') });
+            addNotification({ status: 'success', message: t('connection.connectionSuccessfullyMade') });
       }
    }
    catch (err) {

@@ -4,7 +4,7 @@
       @close-context="closeContext"
    >
       <div class="context-element">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-key-plus text-light pr-1" /> {{ t('message.createNewIndex') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-key-plus text-light pr-1" /> {{ t('database.createNewIndex') }}</span>
          <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
          <div class="context-submenu">
             <div
@@ -19,7 +19,7 @@
          </div>
       </div>
       <div v-if="indexes.length" class="context-element">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-key-arrow-right text-light pr-1" /> {{ t('message.addToIndex') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-key-arrow-right text-light pr-1" /> {{ t('database.addToIndex') }}</span>
          <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
          <div class="context-submenu">
             <div
@@ -34,10 +34,10 @@
          </div>
       </div>
       <div class="context-element" @click="duplicateField">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ t('word.duplicate') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ t('general.duplicate') }}</span>
       </div>
       <div class="context-element" @click="deleteField">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ t('message.deleteField') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ t('database.deleteField') }}</span>
       </div>
    </BaseContextMenu>
 </template>

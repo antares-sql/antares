@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <i class="mdi mdi-24px mdi-database-import mr-1" />
-                     <span class="cut-text">{{ t('message.importSchema') }}</span>
+                     <span class="cut-text">{{ t('database.importSchema') }}</span>
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -15,7 +15,7 @@
             <div class="modal-body pb-0">
                {{ sqlFile }}
                <div v-if="queryErrors.length > 0" class="mt-2">
-                  <label>{{ t('message.importQueryErrors', queryErrors.length) }}</label>
+                  <label>{{ t('database.importQueryErrors', queryErrors.length) }}</label>
                   <textarea
                      v-model="formattedQueryErrors"
                      class="form-input"
@@ -28,7 +28,7 @@
                <div class="column col modal-progress-wrapper text-left">
                   <div class="import-progress">
                      <span class="progress-status">
-                        {{ progressPercentage }}% - {{ progressStatus }} - {{ t('message.executedQueries', queryCount) }}
+                        {{ progressPercentage }}% - {{ progressStatus }} - {{ t('database.executedQueries', queryCount) }}
                      </span>
                      <progress
                         class="progress d-block"
@@ -39,7 +39,7 @@
                </div>
                <div class="column col-auto px-0">
                   <button class="btn btn-link" @click.stop="closeModal">
-                     {{ completed ? t('word.close') : t('word.cancel') }}
+                     {{ completed ? t('general.close') : t('general.cancel') }}
                   </button>
                </div>
             </div>
@@ -108,7 +108,7 @@ const startImport = async (file: string) => {
       const { status, response } = await Schema.import(params);
 
       if (status === 'success')
-         progressStatus.value = response.cancelled ? t('word.aborted') : t('word.completed');
+         progressStatus.value = response.cancelled ? t('general.aborted') : t('general.completed');
       else {
          progressStatus.value = response;
          addNotification({ status: 'error', message: response });

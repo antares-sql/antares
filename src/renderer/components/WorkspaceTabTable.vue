@@ -8,7 +8,7 @@
                      <button
                         class="btn btn-dark btn-sm mr-0 pr-1"
                         :class="{'loading':isQuering}"
-                        :title="`${t('word.refresh')}`"
+                        :title="`${t('general.refresh')}`"
                         @click="reloadTable"
                      >
                         <i v-if="!+autorefreshTimer" class="mdi mdi-24px mdi-refresh mr-1" />
@@ -18,7 +18,7 @@
                         <i class="mdi mdi-24px mdi-menu-down" />
                      </div>
                      <div class="menu px-3">
-                        <span>{{ t('word.autoRefresh') }}: <b>{{ +autorefreshTimer ? `${autorefreshTimer}s` : 'OFF' }}</b></span>
+                        <span>{{ t('general.autoRefresh') }}: <b>{{ +autorefreshTimer ? `${autorefreshTimer}s` : 'OFF' }}</b></span>
                         <input
                            v-model="autorefreshTimer"
                            class="slider no-border"
@@ -35,7 +35,7 @@
                   <button
                      class="btn btn-dark btn-sm mr-0"
                      :disabled="isQuering || page === 1"
-                     :title="t('message.previousResultsPage')"
+                     :title="t('application.previousResultsPage')"
                      @click="pageChange('prev')"
                   >
                      <i class="mdi mdi-24px mdi-skip-previous" />
@@ -46,7 +46,7 @@
                            {{ page }}
                         </div>
                         <div class="menu px-3">
-                           <span>{{ t('message.pageNumber') }}</span>
+                           <span>{{ t('general.pageNumber') }}</span>
                            <input
                               ref="pageSelect"
                               v-model="pageProxy"
@@ -61,7 +61,7 @@
                   <button
                      class="btn btn-dark btn-sm mr-0"
                      :disabled="isQuering || (results.length && results[0].rows.length < limit)"
-                     :title="t('message.nextResultsPage')"
+                     :title="t('application.nextResultsPage')"
                      @click="pageChange('next')"
                   >
                      <i class="mdi mdi-24px mdi-skip-next" />
@@ -72,7 +72,7 @@
 
                <button
                   class="btn btn-sm"
-                  :title="t('word.filter')"
+                  :title="t('general.filter')"
                   :disabled="isQuering"
                   :class="{'btn-primary': isSearch, 'btn-dark': !isSearch}"
                   @click="isSearch = !isSearch"
@@ -86,7 +86,7 @@
                   @click="showFakerModal()"
                >
                   <i class="mdi mdi-24px mdi-playlist-plus mr-1" />
-                  <span>{{ t('message.insertRow', 2) }}</span>
+                  <span>{{ t('database.insertRow', 2) }}</span>
                </button>
 
                <div class="dropdown table-dropdown">
@@ -96,7 +96,7 @@
                      tabindex="0"
                   >
                      <i class="mdi mdi-24px mdi-file-export mr-1" />
-                     <span>{{ t('word.export') }}</span>
+                     <span>{{ t('database.export') }}</span>
                      <i class="mdi mdi-24px mdi-menu-down" />
                   </button>
                   <ul class="menu text-left">
@@ -107,7 +107,7 @@
                         <a class="c-hand" @click="downloadTable('csv')">CSV</a>
                      </li>
                      <li class="menu-item">
-                        <a class="c-hand" @click="downloadTable('php')">{{ t('message.phpArray') }}</a>
+                        <a class="c-hand" @click="downloadTable('php')">{{ t('application.phpArray') }}</a>
                      </li>
                      <li class="menu-item">
                         <a class="c-hand" @click="downloadTable('sql')">SQL INSERT</a>
@@ -120,33 +120,33 @@
                <button
                   class="btn btn-dark btn-sm"
                   :disabled="isQuering"
-                  :title="t('word.settings')"
+                  :title="t('application.settings')"
                   @click="openTableSettingTab()"
                >
                   <i class="mdi mdi-24px mdi-cog" />
-                  <!-- <span>{{ t('word.settings') }}</span> -->
+                  <!-- <span>{{ t('application.settings') }}</span> -->
                </button>
             </div>
             <div class="workspace-query-info">
                <div
                   v-if="results.length"
                   class="d-flex"
-                  :title="t('message.queryDuration')"
+                  :title="t('database.queryDuration')"
                >
                   <i class="mdi mdi-timer-sand mdi-rotate-180 pr-1" /> <b>{{ results[0].duration / 1000 }}s</b>
                </div>
                <div v-if="results.length && results[0].rows">
-                  {{ t('word.results') }}: <b>{{ localeString(results[0].rows.length) }}</b>
+                  {{ t('general.results') }}: <b>{{ localeString(results[0].rows.length) }}</b>
                </div>
                <div v-if="hasApproximately || (page > 1 && approximateCount)">
-                  {{ t('word.total') }}: <b
-                     :title="!customizations.tableRealCount ? t('word.approximately') : ''"
+                  {{ t('database.total') }}: <b
+                     :title="!customizations.tableRealCount ? t('database.approximately') : ''"
                   >
                      <span v-if="!customizations.tableRealCount">≈</span>
                      {{ localeString(approximateCount) }}
                   </b>
                </div>
-               <div class="d-flex" :title="t('word.schema')">
+               <div class="d-flex" :title="t('database.schema')">
                   <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
                </div>
             </div>
@@ -166,7 +166,7 @@
                <i class="mdi mdi-48px mdi-island" />
             </div>
             <p class="h4 empty-subtitle">
-               {{ t('message.noResultsPresent') }}
+               {{ t('database.noResultsPresent') }}
             </p>
          </div>
          <WorkspaceTabQueryTable

@@ -8,20 +8,20 @@
          class="context-element"
          @click="disconnect"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-power text-light pr-1" /> {{ t('word.disconnect') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-power text-light pr-1" /> {{ t('connection.disconnect') }}</span>
       </div>
       <div
          v-if="!contextConnection.isFolder"
          class="context-element"
          @click="duplicateConnection"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ t('word.duplicate') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ t('general.duplicate') }}</span>
       </div>
       <div class="context-element" @click.stop="showAppearanceModal">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-brush-variant text-light pr-1" /> {{ t('word.appearance') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-brush-variant text-light pr-1" /> {{ t('application.appearance') }}</span>
       </div>
       <div class="context-element" @click="showConfirmModal">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ t('word.delete') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ t('general.delete') }}</span>
       </div>
 
       <ConfirmModal
@@ -31,12 +31,12 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mr-1" :class="[contextConnection.isFolder ? 'mdi-folder-remove' : 'mdi-server-remove']" /> {{ t(contextConnection.isFolder ? 'message.deleteFolder' : 'message.deleteConnection') }}
+               <i class="mdi mdi-24px mr-1" :class="[contextConnection.isFolder ? 'mdi-folder-remove' : 'mdi-server-remove']" /> {{ t(contextConnection.isFolder ? 'application.deleteFolder' : 'connection.deleteConnection') }}
             </div>
          </template>
          <template #body>
             <div class="mb-2">
-               {{ t('message.deleteConfirm') }} <b>{{ connectionName }}</b>?
+               {{ t('general.deleteConfirm') }} <b>{{ connectionName }}</b>?
             </div>
          </template>
       </ConfirmModal>
@@ -96,7 +96,7 @@ const isConfirmModal = ref(false);
 const isFolderEdit = ref(false);
 const isConnectionEdit = ref(false);
 
-const connectionName = computed(() => props.contextConnection.name || getConnectionName(props.contextConnection.uid) || t('word.folder', 1));
+const connectionName = computed(() => props.contextConnection.name || getConnectionName(props.contextConnection.uid) || t('general.folder', 1));
 const isConnected = computed(() => getWorkspace(props.contextConnection.uid)?.connectionStatus === 'connected');
 
 const confirmDeleteConnection = () => {

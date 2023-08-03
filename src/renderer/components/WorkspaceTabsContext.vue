@@ -4,19 +4,19 @@
       @close-context="closeContext"
    >
       <div class="context-element" @click.stop="closeAllTabs">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-asterisk text-light pr-1" /> {{ t('message.closeAllTabs') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-asterisk text-light pr-1" /> {{ t('application.closeAllTabs') }}</span>
       </div>
 
       <div class="context-element" @click.stop="closeOtherTabs">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-not-equal text-light pr-1" /> {{ t('message.closeOtherTabs') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-not-equal text-light pr-1" /> {{ t('application.closeOtherTabs') }}</span>
       </div>
 
       <div class="context-element" @click.stop="closeLeftTabs">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-less-than text-light pr-1" /> {{ t('message.closeTabsToLeft') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-less-than text-light pr-1" /> {{ t('application.closeTabsToLeft') }}</span>
       </div>
 
       <div class="context-element" @click.stop="closeRightTabs">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-greater-than text-light pr-1" /> {{ t('message.closeTabsToRight') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-greater-than text-light pr-1" /> {{ t('application.closeTabsToRight') }}</span>
       </div>
    </BaseContextMenu>
 </template>

@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <i class="mdi mdi-24px mdi-cog mr-1" />
-                     <span class="cut-text">{{ t('word.settings') }}</span>
+                     <span class="cut-text">{{ t('application.settings') }}</span>
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click="closeModal" />
@@ -21,21 +21,21 @@
                            :class="{'active': selectedTab === 'general'}"
                            @click="selectTab('general')"
                         >
-                           <a class="tab-link">{{ t('word.general') }}</a>
+                           <a class="tab-link">{{ t('application.general') }}</a>
                         </li>
                         <li
                            class="tab-item c-hand"
                            :class="{'active': selectedTab === 'themes'}"
                            @click="selectTab('themes')"
                         >
-                           <a class="tab-link">{{ t('word.themes') }}</a>
+                           <a class="tab-link">{{ t('application.themes') }}</a>
                         </li>
                         <li
                            class="tab-item c-hand"
                            :class="{'active': selectedTab === 'shortcuts'}"
                            @click="selectTab('shortcuts')"
                         >
-                           <a class="tab-link">{{ t('word.shortcuts') }}</a>
+                           <a class="tab-link">{{ t('application.shortcuts') }}</a>
                         </li>
                         <li
                            v-if="updateStatus !== 'disabled'"
@@ -43,21 +43,21 @@
                            :class="{'active': selectedTab === 'update'}"
                            @click="selectTab('update')"
                         >
-                           <a class="tab-link" :class="{'badge badge-update': hasUpdates}">{{ t('word.update') }}</a>
+                           <a class="tab-link" :class="{'badge badge-update': hasUpdates}">{{ t('application.update') }}</a>
                         </li>
                         <li
                            class="tab-item c-hand"
                            :class="{'active': selectedTab === 'changelog'}"
                            @click="selectTab('changelog')"
                         >
-                           <a class="tab-link">{{ t('word.changelog') }}</a>
+                           <a class="tab-link">{{ t('application.changelog') }}</a>
                         </li>
                         <li
                            class="tab-item c-hand"
                            :class="{'active': selectedTab === 'about'}"
                            @click="selectTab('about')"
                         >
-                           <a class="tab-link">{{ t('word.about') }}</a>
+                           <a class="tab-link">{{ t('application.about') }}</a>
                         </li>
                      </ul>
                   </div>
@@ -65,14 +65,14 @@
                      <div class="container">
                         <form class="form-horizontal columns">
                            <div class="column col-12 h6 text-uppercase mb-1">
-                              {{ t('word.application') }}
+                              {{ t('application.application') }}
                            </div>
                            <div class="column col-12 col-sm-12 mb-2 columns">
                               <div class="form-group column col-12">
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">
                                        <i class="mdi mdi-18px mdi-translate mr-1" />
-                                       {{ t('word.language') }}
+                                       {{ t('application.language') }}
                                     </label>
                                  </div>
                                  <div class="col-3 col-sm-12">
@@ -87,15 +87,15 @@
                                  </div>
                                  <div class="col-4 col-sm-12 px-2 p-vcentered">
                                     <small class="d-block" :style="'line-height: 1.1; font-size: 70%;'">
-                                       {{ t('message.missingOrIncompleteTranslation') }}<br>
-                                       <a class="text-bold c-hand" @click="openOutside('https://github.com/antares-sql/antares/wiki/Translate-Antares')">{{ t('message.findOutHowToContribute') }}</a>
+                                       {{ t('application.missingOrIncompleteTranslation') }}<br>
+                                       <a class="text-bold c-hand" @click="openOutside('https://github.com/antares-sql/antares/wiki/Translate-Antares')">{{ t('application.findOutHowToContribute') }}</a>
                                     </small>
                                  </div>
                               </div>
                               <div class="form-group column col-12">
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">
-                                       {{ t('message.dataTabPageSize') }}
+                                       {{ t('application.dataTabPageSize') }}
                                     </label>
                                  </div>
                                  <div class="col-3 col-sm-12">
@@ -110,7 +110,7 @@
                               <div class="form-group column col-12 mb-0">
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">
-                                       {{ t('message.restorePreviousSession') }}
+                                       {{ t('application.restorePreviousSession') }}
                                     </label>
                                  </div>
                                  <div class="col-3 col-sm-12">
@@ -123,7 +123,7 @@
                               <div class="form-group column col-12 mb-0">
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">
-                                       {{ t('message.showTableSize') }}
+                                       {{ t('application.showTableSize') }}
                                     </label>
                                  </div>
                                  <div class="col-1 col-sm-12">
@@ -134,14 +134,14 @@
                                  </div>
                                  <div class="col-6 col-sm-12 px-2 p-vcentered">
                                     <small class="d-block" :style="'line-height: 1.1; font-size: 70%;'">
-                                       {{ t('message.showTableSizeDescription') }}
+                                       {{ t('application.showTableSizeDescription') }}
                                     </small>
                                  </div>
                               </div>
                               <div class="form-group column col-12 mb-0">
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">
-                                       {{ t('message.disableBlur') }}
+                                       {{ t('application.disableBlur') }}
                                     </label>
                                  </div>
                                  <div class="col-3 col-sm-12">
@@ -154,7 +154,7 @@
                               <div class="form-group column col-12 mb-0">
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">
-                                       {{ t('message.disableScratchpad') }}
+                                       {{ t('application.disableScratchpad') }}
                                     </label>
                                  </div>
                                  <div class="col-3 col-sm-12">
@@ -167,7 +167,7 @@
                               <div class="form-group column col-12">
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">
-                                       {{ t('message.notificationsTimeout') }}
+                                       {{ t('application.notificationsTimeout') }}
                                     </label>
                                  </div>
                                  <div class="col-3 col-sm-12">
@@ -179,19 +179,19 @@
                                           min="1"
                                           @focusout="checkNotificationsTimeout"
                                        >
-                                       <span class="input-group-addon">{{ t('word.seconds') }}</span>
+                                       <span class="input-group-addon">{{ t('general.seconds') }}</span>
                                     </div>
                                  </div>
                               </div>
                            </div>
                            <div class="column col-12 h6 mt-4 text-uppercase mb-1">
-                              {{ t('word.editor') }}
+                              {{ t('application.editor') }}
                            </div>
                            <div class="column col-12 col-sm-12 columns">
                               <div class="form-group column col-12 mb-0">
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">
-                                       {{ t('word.autoCompletion') }}
+                                       {{ t('application.autoCompletion') }}
                                     </label>
                                  </div>
                                  <div class="col-3 col-sm-12">
@@ -204,7 +204,7 @@
                               <div class="form-group column col-12 mb-0">
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">
-                                       {{ t('message.wrapLongLines') }}
+                                       {{ t('application.wrapLongLines') }}
                                     </label>
                                  </div>
                                  <div class="col-3 col-sm-12">
@@ -217,7 +217,7 @@
                               <div class="form-group column col-12 mb-0">
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">
-                                       {{ t('message.executeSelectedQuery') }}
+                                       {{ t('database.executeSelectedQuery') }}
                                     </label>
                                  </div>
                                  <div class="col-3 col-sm-12">
@@ -229,13 +229,13 @@
                               </div>
                            </div>
                            <div class="column col-12 h6 mt-4 text-uppercase mb-1">
-                              {{ t('word.resultsTable') }}
+                              {{ t('database.resultsTable') }}
                            </div>
                            <div class="column col-12 col-sm-12 columns">
                               <div class="form-group column col-12">
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">
-                                       {{ t('message.defaultCopyType') }}
+                                       {{ t('application.defaultCopyType') }}
                                     </label>
                                  </div>
                                  <div class="col-3 col-sm-12">
@@ -258,7 +258,7 @@
                      <div class="container">
                         <div class="columns">
                            <div class="column col-12 h6 text-uppercase mb-2">
-                              {{ t('message.applicationTheme') }}
+                              {{ t('application.applicationTheme') }}
                            </div>
                            <div
                               class="column col-6 c-hand theme-block"
@@ -269,7 +269,7 @@
                               <div class="theme-name text-light">
                                  <i class="mdi mdi-moon-waning-crescent mdi-48px" />
                                  <div class="h6 mt-4">
-                                    {{ t('word.dark') }}
+                                    {{ t('application.dark') }}
                                  </div>
                               </div>
                            </div>
@@ -282,7 +282,7 @@
                               <div class="theme-name text-dark">
                                  <i class="mdi mdi-white-balance-sunny mdi-48px" />
                                  <div class="h6 mt-4">
-                                    {{ t('word.light') }}
+                                    {{ t('application.light') }}
                                  </div>
                               </div>
                            </div>
@@ -290,7 +290,7 @@
 
                         <div class="columns mt-4">
                            <div class="column col-12 h6 text-uppercase mb-2 mt-4">
-                              {{ t('message.editorTheme') }}
+                              {{ t('application.editorTheme') }}
                            </div>
                            <div class="column col-5 h5 mb-4">
                               <BaseSelect
@@ -378,16 +378,16 @@
                         <img :src="appLogo" width="128">
                         <h4>{{ appName }}</h4>
                         <p class="mb-2">
-                           {{ t('word.version') }} {{ appVersion }}<br>
+                           {{ t('general.version') }} {{ appVersion }}<br>
                            <a class="c-hand" @click="openOutside('https://github.com/antares-sql/antares')"><i class="mdi mdi-github d-inline" /> GitHub</a> • <a class="c-hand" @click="openOutside('https://twitter.com/AntaresSQL')"><i class="mdi mdi-twitter d-inline" /> Twitter</a> • <a class="c-hand" @click="openOutside('https://antares-sql.app/')"><i class="mdi mdi-web d-inline" /> Website</a><br>
-                           <small>{{ t('word.author') }} <a class="c-hand" @click="openOutside('https://github.com/Fabio286')">{{ appAuthor }}</a></small><br>
+                           <small>{{ t('general.author') }} <a class="c-hand" @click="openOutside('https://github.com/Fabio286')">{{ appAuthor }}</a></small><br>
                         </p>
                         <div class="mb-2">
-                           <small class="d-block text-uppercase">{{ t('word.contributors') }}:</small>
+                           <small class="d-block text-uppercase">{{ t('general.contributors') }}:</small>
                            <div class="d-block py-1">
                               <small v-for="(contributor, i) in otherContributors" :key="i">{{ i !== 0 ? ', ' : '' }}{{ contributor }}</small>
                            </div>
-                           <small>{{ t('message.madeWithJS') }}</small>
+                           <small>{{ t('application.madeWithJS') }}</small>
                         </div>
                      </div>
                   </div>
@@ -500,7 +500,7 @@ const selectedTab: Ref<string> = ref('general');
 
 const editorThemes = computed(() => [
    {
-      group: t('word.light'),
+      group: t('application.light'),
       themes: [
          { code: 'chrome', name: 'Chrome' },
          { code: 'clouds', name: 'Clouds' },
@@ -520,7 +520,7 @@ const editorThemes = computed(() => [
       ]
    },
    {
-      group: t('word.dark'),
+      group: t('application.dark'),
       themes: [
          { code: 'ambiance', name: 'Ambiance' },
          { code: 'chaos', name: 'Chaos' },
@@ -557,8 +557,8 @@ const locales = computed(() => {
 });
 
 const copyTypes = computed(() => [
-   { code: 'cell', name: t('word.cell') },
-   { code: 'html', name: t('word.table') },
+   { code: 'cell', name: t('database.cell') },
+   { code: 'html', name: t('database.table') },
    { code: 'json', name: 'JSON' },
    { code: 'csv', name: 'CSV' },
    { code: 'sql', name: 'SQL insert' }

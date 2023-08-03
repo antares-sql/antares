@@ -1,22 +1,22 @@
 export const shortcutEvents: { [key: string]: { l18n: string; l18nParam?: string | number; context?: 'tab' }} = {
-   'run-or-reload': { l18n: 'message.runOrReload', context: 'tab' },
-   'open-new-tab': { l18n: 'message.openNewTab', context: 'tab' },
-   'close-tab': { l18n: 'message.closeTab', context: 'tab' },
-   'format-query': { l18n: 'message.formatQuery', context: 'tab' },
-   'kill-query': { l18n: 'message.killQuery', context: 'tab' },
-   'query-history': { l18n: 'message.queryHistory', context: 'tab' },
-   'clear-query': { l18n: 'message.clearQuery', context: 'tab' },
-   'next-tab': { l18n: 'message.nextTab' },
-   'prev-tab': { l18n: 'message.previousTab' },
-   'open-all-connections': { l18n: 'message.openAllConnections' },
-   'open-filter': { l18n: 'message.openFilter' },
-   'next-page': { l18n: 'message.nextResultsPage' },
-   'prev-page': { l18n: 'message.previousResultsPage' },
-   'toggle-console': { l18n: 'message.toggleConsole' },
-   'save-content': { l18n: 'message.saveContent' },
-   'create-connection': { l18n: 'message.createNewConnection' },
-   'open-settings': { l18n: 'message.openSettings' },
-   'open-scratchpad': { l18n: 'message.openScratchpad' }
+   'run-or-reload': { l18n: 'application.runOrReload', context: 'tab' },
+   'open-new-tab': { l18n: 'application.openNewTab', context: 'tab' },
+   'close-tab': { l18n: 'application.closeTab', context: 'tab' },
+   'format-query': { l18n: 'database.formatQuery', context: 'tab' },
+   'kill-query': { l18n: 'database.killQuery', context: 'tab' },
+   'query-history': { l18n: 'database.queryHistory', context: 'tab' },
+   'clear-query': { l18n: 'database.clearQuery', context: 'tab' },
+   'next-tab': { l18n: 'application.nextTab' },
+   'prev-tab': { l18n: 'application.previousTab' },
+   'open-all-connections': { l18n: 'application.openAllConnections' },
+   'open-filter': { l18n: 'application.openFilter' },
+   'next-page': { l18n: 'application.nextResultsPage' },
+   'prev-page': { l18n: 'application.previousResultsPage' },
+   'toggle-console': { l18n: 'application.toggleConsole' },
+   'save-content': { l18n: 'application.saveContent' },
+   'create-connection': { l18n: 'connection.createNewConnection' },
+   'open-settings': { l18n: 'application.openSettings' },
+   'open-scratchpad': { l18n: 'application.openScratchpad' }
 };
 
 interface ShortcutRecord {
@@ -124,7 +124,7 @@ const shortcuts: ShortcutRecord[] = [
 
 for (let i = 1; i <= 9; i++) {
    shortcutEvents[`select-tab-${i}`] = {
-      l18n: 'message.selectTabNumber',
+      l18n: 'application.selectTabNumber',
       l18nParam: i
    };
 

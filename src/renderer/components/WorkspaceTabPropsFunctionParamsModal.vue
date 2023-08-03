@@ -1,6 +1,6 @@
 <template>
    <ConfirmModal
-      :confirm-text="t('word.confirm')"
+      :confirm-text="t('general.confirm')"
       size="medium"
       class="options-modal"
       @confirm="confirmParametersChange"
@@ -9,7 +9,7 @@
       <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-dots-horizontal mr-1" />
-            <span class="cut-text">{{ t('word.parameters') }} "{{ func }}"</span>
+            <span class="cut-text">{{ t('database.parameters') }} "{{ func }}"</span>
          </div>
       </template>
       <template #body>
@@ -20,16 +20,16 @@
                      <div class="d-flex">
                         <button class="btn btn-dark btn-sm d-flex" @click="addParameter">
                            <i class="mdi mdi-24px mdi-plus mr-1" />
-                           <span>{{ t('word.add') }}</span>
+                           <span>{{ t('general.add') }}</span>
                         </button>
                         <button
                            class="btn btn-dark btn-sm d-flex ml-2 mr-0"
-                           :title="t('message.clearChanges')"
+                           :title="t('database.clearChanges')"
                            :disabled="!isChanged"
                            @click.prevent="clearChanges"
                         >
                            <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
-                           <span>{{ t('word.clear') }}</span>
+                           <span>{{ t('general.clear') }}</span>
                         </button>
                      </div>
                   </div>
@@ -55,7 +55,7 @@
                         <div class="tile-action">
                            <button
                               class="btn btn-link remove-field p-0 mr-2"
-                              :title="t('word.delete')"
+                              :title="t('general.delete')"
                               @click.prevent="removeParameter(param._antares_id)"
                            >
                               <i class="mdi mdi-close" />
@@ -74,7 +74,7 @@
                >
                   <div class="form-group">
                      <label class="form-label col-3">
-                        {{ t('word.name') }}
+                        {{ t('general.name') }}
                      </label>
                      <div class="column">
                         <input
@@ -86,7 +86,7 @@
                   </div>
                   <div class="form-group">
                      <label class="form-label col-3">
-                        {{ t('word.type') }}
+                        {{ t('database.type') }}
                      </label>
                      <div class="column">
                         <BaseSelect
@@ -102,7 +102,7 @@
                   </div>
                   <div v-if="customizations.parametersLength" class="form-group">
                      <label class="form-label col-3">
-                        {{ t('word.length') }}
+                        {{ t('database.length') }}
                      </label>
                      <div class="column">
                         <input
@@ -115,7 +115,7 @@
                   </div>
                   <div v-if="customizations.functionContext" class="form-group">
                      <label class="form-label col-3">
-                        {{ t('word.context') }}
+                        {{ t('database.context') }}
                      </label>
                      <div class="column">
                         <label class="form-radio">
@@ -150,11 +150,11 @@
                      <i class="mdi mdi-dots-horizontal mdi-48px" />
                   </div>
                   <p class="empty-title h5">
-                     {{ t('message.thereAreNoParameters') }}
+                     {{ t('database.thereAreNoParameters') }}
                   </p>
                   <div class="empty-action">
                      <button class="btn btn-primary" @click="addParameter">
-                        {{ t('message.createNewParameter') }}
+                        {{ t('database.createNewParameter') }}
                      </button>
                   </div>
                </div>

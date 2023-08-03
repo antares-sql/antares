@@ -4,7 +4,7 @@
          v-model="selectedGroup"
          class="form-select"
          :options="[{name: 'manual'}, ...fakerGroups]"
-         :option-label="(opt: any) => opt.name === 'manual' ? t('message.manualValue') : t(`faker.${opt.name}`)"
+         :option-label="(opt: any) => opt.name === 'manual' ? t('general.manualValue') : t(`faker.${opt.name}`)"
          option-track-by="name"
          :disabled="!isChecked"
          :style="'flex-grow: 0;'"
@@ -41,7 +41,7 @@
       <BaseUploadInput
          v-else-if="inputProps().type === 'file'"
          :model-value="selectedValue"
-         :message="t('word.browse')"
+         :message="t('general.browse')"
          @clear="clearValue"
          @change="filesChange($event)"
       />

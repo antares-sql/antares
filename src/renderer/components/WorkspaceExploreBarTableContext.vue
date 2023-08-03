@@ -8,31 +8,31 @@
          class="context-element"
          @click="openTableSettingTab"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-wrench-cog text-light pr-1" /> {{ t('word.settings') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-wrench-cog text-light pr-1" /> {{ t('application.settings') }}</span>
       </div>
       <div
          v-if="selectedTable && selectedTable.type === 'view' && customizations.viewSettings"
          class="context-element"
          @click="openViewSettingTab"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-wrench-cog text-light pr-1" /> {{ t('word.settings') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-wrench-cog text-light pr-1" /> {{ t('application.settings') }}</span>
       </div>
       <div
          v-if="selectedTable && selectedTable.type === 'table' && customizations.tableDuplicate"
          class="context-element"
          @click="duplicateTable"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-table-multiple text-light pr-1" /> {{ t('message.duplicateTable') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-table-multiple text-light pr-1" /> {{ t('database.duplicateTable') }}</span>
       </div>
       <div
          v-if="selectedTable && selectedTable.type === 'table'"
          class="context-element"
          @click="showEmptyModal"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-table-off text-light pr-1" /> {{ t('message.emptyTable') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-table-off text-light pr-1" /> {{ t('database.emptyTable') }}</span>
       </div>
       <div class="context-element" @click="showDeleteModal">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-table-remove text-light pr-1" /> {{ t('word.delete') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-table-remove text-light pr-1" /> {{ t('database.deleteTable') }}</span>
       </div>
 
       <ConfirmModal
@@ -42,16 +42,16 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-table-off mr-1" /> <span class="cut-text">{{ t('message.emptyTable') }}</span>
+               <i class="mdi mdi-24px mdi-table-off mr-1" /> <span class="cut-text">{{ t('database.emptyTable') }}</span>
             </div>
          </template>
          <template #body>
             <div class="mb-2">
-               {{ t('message.emptyConfirm') }} "<b>{{ selectedTable.name }}</b>"?
+               {{ t('database.emptyConfirm') }} "<b>{{ selectedTable.name }}</b>"?
             </div>
             <div v-if="customizations.tableTruncateDisableFKCheck">
                <label class="form-checkbox form-inline">
-                  <input v-model="forceTruncate" type="checkbox"><i class="form-icon" /> {{ t('message.disableFKChecks') }}
+                  <input v-model="forceTruncate" type="checkbox"><i class="form-icon" /> {{ t('database.disableFKChecks') }}
                </label>
             </div>
          </template>
@@ -64,12 +64,12 @@
          <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-table-remove mr-1" />
-               <span class="cut-text">{{ selectedTable.type === 'table' ? t('message.deleteTable') : t('message.deleteView') }}</span>
+               <span class="cut-text">{{ selectedTable.type === 'table' ? t('database.deleteTable') : t('database.deleteView') }}</span>
             </div>
          </template>
          <template #body>
             <div class="mb-2">
-               {{ t('message.deleteConfirm') }} "<b>{{ selectedTable.name }}</b>"?
+               {{ t('general.deleteConfirm') }} "<b>{{ selectedTable.name }}</b>"?
             </div>
          </template>
       </ConfirmModal>
