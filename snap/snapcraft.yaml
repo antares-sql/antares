@@ -4,7 +4,7 @@ summary: Open source SQL client made to be simple and complete.
 description: |
   Antares is an SQL client that aims to become an useful and complete tool, especially for developers.
   The target is to support as many databases as possible, and all major operating systems, including the ARM versions.
-base: core20
+base: core22
 
 grade: stable
 confinement: strict
@@ -119,10 +119,10 @@ parts:
   cleanup:
     after: [antares]
     plugin: nil
-    build-snaps: [gnome-3-38-2004]
+    build-snaps: [gnome-42-2204]
     override-prime: |
       set -eux
-      cd /snap/gnome-3-38-2004/current
+      cd /snap/gnome-42-2204/current
       find . -type f,l -exec rm -f $SNAPCRAFT_PRIME/{} \;
 
   mdns-lookup:
@@ -136,7 +136,7 @@ parts:
       - libnss-mdns
     override-prime: |
       set -eux
-      sed -Ee 's/^\s*hosts:(\s+)files/hosts:\1files mdns4_minimal \[NOTFOUND=return\]/' /snap/core20/current/etc/nsswitch.conf > $SNAPCRAFT_STAGE/etc/nsswitch.conf
+      sed -Ee 's/^\s*hosts:(\s+)files/hosts:\1files mdns4_minimal \[NOTFOUND=return\]/' /snap/core22/current/etc/nsswitch.conf > $SNAPCRAFT_STAGE/etc/nsswitch.conf
       snapcraftctl prime
     prime:
       - lib/$SNAPCRAFT_ARCH_TRIPLET/libnss_mdns4_minimal*
@@ -146,10 +146,7 @@ apps:
   antares:
     command: opt/Antares/antares --no-sandbox
     desktop: usr/share/applications/antares.desktop
-    extensions: [gnome-3-38]
-    environment:
-      # Fallback to XWayland if running in a Wayland session.
-      DISABLE_WAYLAND: 1
+    extensions: [gnome]
     plugs:
       - browser-support
       - cups-control
