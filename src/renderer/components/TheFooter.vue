@@ -12,7 +12,7 @@
             </li>
             <li v-if="connectionInfos && connectionInfos.readonly" class="footer-element">
                <i class="mdi mdi-18px mdi-lock mr-1" />
-               <small>{{ t('message.readOnlyMode') }}</small>
+               <small>{{ t('connection.readOnlyMode') }}</small>
             </li>
             <li v-if="connectionInfos && connectionInfos.ssl" class="footer-element">
                <i class="mdi mdi-18px mdi-shield-key mr-1" />
@@ -33,22 +33,22 @@
                @click="toggleConsole()"
             >
                <i class="mdi mdi-18px mdi-console-line mr-1" />
-               <small>{{ t('word.console') }}</small>
+               <small>{{ t('application.console') }}</small>
             </li>
             <li class="footer-element footer-link" @click="openOutside('https://www.paypal.com/paypalme/fabiodistasio')">
                <i class="mdi mdi-18px mdi-coffee mr-1" />
-               <small>{{ t('word.donate') }}</small>
+               <small>{{ t('general.donate') }}</small>
             </li>
             <li
                class="footer-element footer-link"
-               :title="t('message.reportABug')"
+               :title="t('application.reportABug')"
                @click="openOutside('https://github.com/antares-sql/antares/issues')"
             >
                <i class="mdi mdi-18px mdi-bug" />
             </li>
             <li
                class="footer-element footer-link"
-               :title="t('word.about')"
+               :title="t('application.about')"
                @click="showSettingModal('about')"
             >
                <i class="mdi mdi-18px mdi-information-outline" />

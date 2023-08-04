@@ -17,6 +17,12 @@ jobs:
         os: [macos-11, ubuntu-latest, windows-latest]
 
     steps:
+      - name: Exit if not on master branch
+        if: contains(env.BRANCH_NAME, 'master') == false
+        run: | 
+          echo "Wrong environment ${{env.BRANCH_NAME}}"
+          exit 0
+
       - name: Check out Git repository
         uses: actions/checkout@v3
         with: 

@@ -73,7 +73,7 @@
       </div>
       <ConfirmModal
          v-if="isTextareaEditor"
-         :confirm-text="t('word.update')"
+         :confirm-text="t('application.update')"
          size="medium"
          :disable-autofocus="true"
          @confirm="editOFF"
@@ -81,7 +81,7 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-playlist-edit mr-1" /> <span class="cut-text">{{ t('word.edit') }} "{{ editingField }}"</span>
+               <i class="mdi mdi-24px mdi-playlist-edit mr-1" /> <span class="cut-text">{{ t('general.edit') }} "{{ editingField }}"</span>
             </div>
          </template>
          <template #body>
@@ -96,7 +96,7 @@
                <div class="editor-field-info p-vcentered">
                   <div class="d-flex p-vcentered">
                      <label for="editorMode" class="form-label mr-2">
-                        <b>{{ t('word.content') }}</b>:
+                        <b>{{ t('general.content') }}</b>:
                      </label>
                      <BaseSelect
                         id="editorMode"
@@ -110,10 +110,10 @@
                   <div class="d-flex">
                      <div class="p-vcentered">
                         <div class="mr-4">
-                           <b>{{ t('word.size') }}</b>: {{ editingContent ? editingContent.length : 0 }}
+                           <b>{{ t('general.size') }}</b>: {{ editingContent ? editingContent.length : 0 }}
                         </div>
                         <div v-if="editingType">
-                           <b>{{ t('word.type') }}</b>: {{ editingType.toUpperCase() }}
+                           <b>{{ t('database.type') }}</b>: {{ editingType.toUpperCase() }}
                         </div>
                      </div>
                   </div>
@@ -138,14 +138,14 @@
       </ConfirmModal>
       <ConfirmModal
          v-if="isBlobEditor"
-         :confirm-text="t('word.update')"
+         :confirm-text="t('application.update')"
          @confirm="editOFF"
          @hide="hideEditorModal"
       >
          <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-playlist-edit mr-1" />
-               <span class="cut-text">{{ t('word.edit') }} "{{ editingField }}"</span>
+               <span class="cut-text">{{ t('general.edit') }} "{{ editingField }}"</span>
             </div>
          </template>
          <template #body>
@@ -162,11 +162,11 @@
                      </div>
                      <div class="editor-buttons mt-2">
                         <button class="btn btn-link btn-sm" @click="downloadFile">
-                           <span>{{ t('word.download') }}</span>
+                           <span>{{ t('general.download') }}</span>
                            <i class="mdi mdi-24px mdi-download ml-1" />
                         </button>
                         <button class="btn btn-link btn-sm" @click="prepareToDelete">
-                           <span>{{ t('word.delete') }}</span>
+                           <span>{{ t('general.delete') }}</span>
                            <i class="mdi mdi-24px mdi-delete-forever ml-1" />
                         </button>
                      </div>
@@ -174,15 +174,15 @@
                </Transition>
                <div class="editor-field-info">
                   <div>
-                     <b>{{ t('word.size') }}</b>: {{ formatBytes(editingContent.length) }}<br>
-                     <b>{{ t('word.mimeType') }}</b>: {{ contentInfo.mime }}
+                     <b>{{ t('general.size') }}</b>: {{ formatBytes(editingContent.length) }}<br>
+                     <b>{{ t('general.mimeType') }}</b>: {{ contentInfo.mime }}
                   </div>
                   <div v-if="editingType">
-                     <b>{{ t('word.type') }}</b>: {{ editingType.toUpperCase() }}
+                     <b>{{ t('database.type') }}</b>: {{ editingType.toUpperCase() }}
                   </div>
                </div>
                <div class="mt-3">
-                  <label>{{ t('message.uploadFile') }}</label>
+                  <label>{{ t('general.uploadFile') }}</label>
                   <input
                      class="form-input"
                      type="file"

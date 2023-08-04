@@ -4,7 +4,7 @@
          class="form-input"
          type="text"
          :value="pressedKeys"
-         :placeholder="t('message.registerAShortcut')"
+         :placeholder="t('application.registerAShortcut')"
          @focus="isFocus = true"
          @blur="isFocus = false"
          @keydown.prevent.stop="onKey"
@@ -49,7 +49,7 @@ const pressedKeys = computed(() => {
          keys.push('Shift');
       if (keyboardEvent.value.code) {
          if (keys.length === 0 && (keyboardEvent.value.key.length === 1 || singleKeysToIgnore.includes(keyboardEvent.value.key)))
-            return t('message.invalidShortcutMessage');
+            return t('application.invalidShortcutMessage');
          else if (!specialKeys.includes(keyboardEvent.value.key)) {
             if (keyboardEvent.value.key === 'Dead') {
                keys.push(keyboardEvent.value.code
@@ -82,7 +82,7 @@ const pressedKeys = computed(() => {
             }
          }
          else
-            return t('message.invalidShortcutMessage');
+            return t('application.invalidShortcutMessage');
       }
    }
 
@@ -96,7 +96,7 @@ const onKey = (e: KeyboardEvent) => {
 };
 
 watch(pressedKeys, (value) => {
-   if (value !== t('message.invalidShortcutMessage'))
+   if (value !== t('application.invalidShortcutMessage'))
       emit('update:modelValue', pressedKeys.value);
 });
 

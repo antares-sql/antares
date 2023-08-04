@@ -102,12 +102,12 @@
          <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-delete mr-1" />
-               <span class="cut-text">{{ t('message.deleteRows', selectedRows.length) }}</span>
+               <span class="cut-text">{{ t('database.deleteRows', selectedRows.length) }}</span>
             </div>
          </template>
          <template #body>
             <div class="mb-2">
-               {{ t('message.confirmToDeleteRows', selectedRows.length) }}
+               {{ t('database.confirmToDeleteRows', selectedRows.length) }}
             </div>
          </template>
       </ConfirmModal>
@@ -120,12 +120,12 @@
          <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-file-export mr-1" />
-               <span class="cut-text">{{ t('message.sqlExportOptions') }}</span>
+               <span class="cut-text">{{ t('database.sqlExportOptions') }}</span>
             </div>
          </template>
          <template #body>
             <div class="columns">
-               <label class="column col-12 h6 mb-2 cut-text">{{ t('message.targetTable') }}</label>
+               <label class="column col-12 h6 mb-2 cut-text">{{ t('database.targetTable') }}</label>
                <div class="column col-12">
                   <input
                      v-model.number="sqlExportOptions.targetTable"
@@ -134,7 +134,7 @@
                      :placeholder="chunkModalRequest"
                   >
                </div>
-               <label class="column col-12 h6 mb-2 mt-4 cut-text">{{ t('message.newInsertStmtEvery') }}:</label>
+               <label class="column col-12 h6 mb-2 mt-4 cut-text">{{ t('database.newInsertStmtEvery') }}:</label>
                <div class="column col-6">
                   <input
                      v-model.number="sqlExportOptions.sqlInsertAfter"
@@ -146,7 +146,7 @@
                   <BaseSelect
                      v-model="sqlExportOptions.sqlInsertDivider"
                      class="form-select"
-                     :options="[{value: 'bytes', label: 'KiB'}, {value: 'rows', label: t('word.row', 2)}]"
+                     :options="[{value: 'bytes', label: 'KiB'}, {value: 'rows', label: t('database.row', 2)}]"
                   />
                </div>
             </div>
@@ -161,14 +161,14 @@
          <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-file-export mr-1" />
-               <span class="cut-text">{{ t('message.csvExportOptions') }}</span>
+               <span class="cut-text">{{ t('application.csvExportOptions') }}</span>
             </div>
          </template>
          <template #body>
             <div class="columns">
                <div class="form-group column col-12 columns col-gapless">
                   <div class="column col-5">
-                     <label class="form-label cut-text">{{ t('message.csvFieldDelimiter') }}:</label>
+                     <label class="form-label cut-text">{{ t('application.csvFieldDelimiter') }}:</label>
                   </div>
                   <div class="column col-7">
                      <input
@@ -180,23 +180,23 @@
                </div>
                <div class="form-group column col-12 columns col-gapless">
                   <div class="column col-5">
-                     <label class="form-label cut-text">{{ t('message.csvStringDelimiter') }}:</label>
+                     <label class="form-label cut-text">{{ t('application.csvStringDelimiter') }}:</label>
                   </div>
                   <div class="column col-7">
                      <BaseSelect
                         v-model="csvExportOptions.stringDelimiter"
                         class="form-select"
                         :options="[
-                           {value: '', label: t('word.none')},
-                           {value: 'single', label: t('word.singleQuote')},
-                           {value: 'double', label: t('word.doubleQuote')}
+                           {value: '', label: t('general.none')},
+                           {value: 'single', label: t('general.singleQuote')},
+                           {value: 'double', label: t('general.doubleQuote')}
                         ]"
                      />
                   </div>
                </div>
                <div class="form-group column col-12 columns col-gapless">
                   <div class="column col-5">
-                     <label class="form-label cut-text">{{ t('message.csvLinesTerminator') }}:</label>
+                     <label class="form-label cut-text">{{ t('application.csvLinesTerminator') }}:</label>
                   </div>
                   <div class="column col-7">
                      <textarea
@@ -210,7 +210,7 @@
                <div class="form-group column col-12 columns col-gapless">
                   <div class="column col-5">
                      <label class="form-label">
-                        {{ t('message.csvIncludeHeader') }}
+                        {{ t('application.csvIncludeHeader') }}
                      </label>
                   </div>
                   <div class="column col-7">

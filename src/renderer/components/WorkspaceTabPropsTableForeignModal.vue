@@ -1,6 +1,6 @@
 <template>
    <ConfirmModal
-      :confirm-text="t('word.confirm')"
+      :confirm-text="t('general.confirm')"
       size="medium"
       class="options-modal"
       @confirm="confirmForeignsChange"
@@ -9,7 +9,7 @@
       <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-key-link mr-1" />
-            <span class="cut-text">{{ t('word.foreignKeys') }} "{{ table }}"</span>
+            <span class="cut-text">{{ t('database.foreignKeys') }} "{{ table }}"</span>
          </div>
       </template>
       <template #body>
@@ -20,16 +20,16 @@
                      <div class="d-flex">
                         <button class="btn btn-dark btn-sm d-flex" @click="addForeign">
                            <i class="mdi mdi-24px mdi-link-plus mr-1" />
-                           <span>{{ t('word.add') }}</span>
+                           <span>{{ t('general.add') }}</span>
                         </button>
                         <button
                            class="btn btn-dark btn-sm d-flex ml-2 mr-0"
-                           :title="t('message.clearChanges')"
+                           :title="t('database.clearChanges')"
                            :disabled="!isChanged"
                            @click.prevent="clearChanges"
                         >
                            <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
-                           <span>{{ t('word.clear') }}</span>
+                           <span>{{ t('general.clear') }}</span>
                         </button>
                      </div>
                   </div>
@@ -67,7 +67,7 @@
                         <div class="tile-action">
                            <button
                               class="btn btn-link remove-field p-0 mr-2"
-                              :title="t('word.delete')"
+                              :title="t('general.delete')"
                               @click.prevent="removeIndex(foreign._antares_id)"
                            >
                               <i class="mdi mdi-close" />
@@ -86,7 +86,7 @@
                >
                   <div class="form-group">
                      <label class="form-label col-3">
-                        {{ t('word.name') }}
+                        {{ t('general.name') }}
                      </label>
                      <div class="column">
                         <input
@@ -98,7 +98,7 @@
                   </div>
                   <div class="form-group mb-4">
                      <label class="form-label col-3">
-                        {{ t('word.field', 1) }}
+                        {{ t('database.field', 1) }}
                      </label>
                      <div class="fields-list column pt-1">
                         <label
@@ -114,7 +114,7 @@
                   </div>
                   <div class="form-group">
                      <label class="form-label col-3">
-                        {{ t('message.referenceTable') }}
+                        {{ t('database.referenceTable') }}
                      </label>
                      <div class="column">
                         <BaseSelect
@@ -129,7 +129,7 @@
                   </div>
                   <div class="form-group mb-4">
                      <label class="form-label col-3">
-                        {{ t('message.referenceField') }}
+                        {{ t('database.referenceField') }}
                      </label>
                      <div class="fields-list column pt-1">
                         <label
@@ -145,7 +145,7 @@
                   </div>
                   <div class="form-group">
                      <label class="form-label col-3">
-                        {{ t('message.onUpdate') }}
+                        {{ t('database.onUpdate') }}
                      </label>
                      <div class="column">
                         <BaseSelect
@@ -157,7 +157,7 @@
                   </div>
                   <div class="form-group">
                      <label class="form-label col-3">
-                        {{ t('message.onDelete') }}
+                        {{ t('database.onDelete') }}
                      </label>
                      <div class="column">
                         <BaseSelect
@@ -174,11 +174,11 @@
                      <i class="mdi mdi-key-link mdi-48px" />
                   </div>
                   <p class="empty-title h5">
-                     {{ t('message.thereAreNoForeign') }}
+                     {{ t('database.thereAreNoForeign') }}
                   </p>
                   <div class="empty-action">
                      <button class="btn btn-primary" @click="addForeign">
-                        {{ t('message.createNewForeign') }}
+                        {{ t('database.createNewForeign') }}
                      </button>
                   </div>
                </div>

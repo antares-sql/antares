@@ -13,7 +13,7 @@
          :style="{height: localHeight ? localHeight+'px' : ''}"
       >
          <div class="query-console-header">
-            <div>{{ t('word.console') }}</div>
+            <div>{{ t('application.console') }}</div>
             <button class="btn btn-clear mr-1" @click="resizeConsole(0)" />
          </div>
          <div ref="queryConsoleBody" class="query-console-body">
@@ -35,7 +35,7 @@
       @close-context="isContext = false"
    >
       <div class="context-element" @click="copyQuery">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-content-copy text-light pr-1" /> {{ t('word.copy') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-content-copy text-light pr-1" /> {{ t('general.copy') }}</span>
       </div>
    </BaseContextMenu>
 </template>

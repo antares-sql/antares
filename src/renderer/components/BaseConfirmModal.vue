@@ -31,13 +31,13 @@
                      class="btn btn-primary mr-2"
                      @click.stop="confirmModal"
                   >
-                     {{ confirmText || t('word.confirm') }}
+                     {{ confirmText || t('general.confirm') }}
                   </button>
                   <button
                      class="btn btn-link"
                      @click="hideModal"
                   >
-                     {{ cancelText || t('word.cancel') }}
+                     {{ cancelText || t('general.cancel') }}
                   </button>
                </div>
             </div>

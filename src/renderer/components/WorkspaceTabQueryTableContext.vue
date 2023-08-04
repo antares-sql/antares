@@ -4,7 +4,7 @@
       @close-context="closeContext"
    >
       <div class="context-element">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-content-copy text-light pr-1" /> {{ t('word.copy') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-content-copy text-light pr-1" /> {{ t('general.copy') }}</span>
          <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
          <div class="context-submenu">
             <div
@@ -13,32 +13,32 @@
                @click="copyCell"
             >
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-numeric-0 mdi-rotate-90 text-light pr-1" /> {{ t('word.cell', 1) }}
+                  <i class="mdi mdi-18px mdi-numeric-0 mdi-rotate-90 text-light pr-1" /> {{ t('database.cell', 1) }}
                </span>
             </div>
             <div class="context-element" @click="copyRow('html')">
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', selectedRows.length) }} ({{ t('word.table') }})
+                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('database.row', selectedRows.length) }} ({{ t('database.table') }})
                </span>
             </div>
             <div class="context-element" @click="copyRow('json')">
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', selectedRows.length) }} (JSON)
+                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('database.row', selectedRows.length) }} (JSON)
                </span>
             </div>
             <div class="context-element" @click="copyRow('csv')">
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', selectedRows.length) }} (CSV)
+                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('database.row', selectedRows.length) }} (CSV)
                </span>
             </div>
             <div class="context-element" @click="copyRow('php')">
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', selectedRows.length) }} (PHP)
+                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('database.row', selectedRows.length) }} (PHP)
                </span>
             </div>
             <div class="context-element" @click="copyRow('sql')">
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('word.row', selectedRows.length) }} (SQL INSERT)
+                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('database.row', selectedRows.length) }} (SQL INSERT)
                </span>
             </div>
          </div>
@@ -49,7 +49,7 @@
          @click="duplicateRow"
       >
          <span class="d-flex">
-            <i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ t('word.duplicate') }}
+            <i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ t('general.duplicate') }}
          </span>
       </div>
       <div
@@ -57,7 +57,7 @@
          class="context-element"
       >
          <span class="d-flex">
-            <i class="mdi mdi-18px mdi-auto-fix text-light pr-1" /> {{ t('message.fillCell') }}
+            <i class="mdi mdi-18px mdi-auto-fix text-light pr-1" /> {{ t('database.fillCell') }}
          </span>
          <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
          <div class="context-submenu">
@@ -79,7 +79,7 @@
          @click="setNull"
       >
          <span class="d-flex">
-            <i class="mdi mdi-18px mdi-null text-light pr-1" /> {{ t('message.setNull') }}
+            <i class="mdi mdi-18px mdi-null text-light pr-1" /> {{ t('database.setNull') }}
          </span>
       </div>
       <div
@@ -88,7 +88,7 @@
          @click="showConfirmModal"
       >
          <span class="d-flex">
-            <i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ t('message.deleteRows', selectedRows.length) }}
+            <i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ t('database.deleteRows', selectedRows.length) }}
          </span>
       </div>
    </BaseContextMenu>

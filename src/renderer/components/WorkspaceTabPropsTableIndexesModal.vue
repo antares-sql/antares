@@ -1,6 +1,6 @@
 <template>
    <ConfirmModal
-      :confirm-text="t('word.confirm')"
+      :confirm-text="t('general.confirm')"
       size="medium"
       class="options-modal"
       @confirm="confirmIndexesChange"
@@ -9,7 +9,7 @@
       <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-key mdi-rotate-45 mr-1" />
-            <span class="cut-text">{{ t('word.indexes') }} "{{ table }}"</span>
+            <span class="cut-text">{{ t('database.indexes') }} "{{ table }}"</span>
          </div>
       </template>
       <template #body>
@@ -20,16 +20,16 @@
                      <div class="d-flex">
                         <button class="btn btn-dark btn-sm d-flex" @click="addIndex">
                            <i class="mdi mdi-24px mdi-key-plus mr-1" />
-                           <span>{{ t('word.add') }}</span>
+                           <span>{{ t('general.add') }}</span>
                         </button>
                         <button
                            class="btn btn-dark btn-sm d-flex ml-2 mr-0"
-                           :title="t('message.clearChanges')"
+                           :title="t('database.clearChanges')"
                            :disabled="!isChanged"
                            @click.prevent="clearChanges"
                         >
                            <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
-                           <span>{{ t('word.clear') }}</span>
+                           <span>{{ t('general.clear') }}</span>
                         </button>
                      </div>
                   </div>
@@ -50,12 +50,12 @@
                            <div class="tile-title">
                               {{ index.name }}
                            </div>
-                           <small class="tile-subtitle text-gray">{{ index.type }} · {{ index.fields.length }} {{ t('word.field', index.fields.length) }}</small>
+                           <small class="tile-subtitle text-gray">{{ index.type }} · {{ index.fields.length }} {{ t('database.field', index.fields.length) }}</small>
                         </div>
                         <div class="tile-action">
                            <button
                               class="btn btn-link remove-field p-0 mr-2"
-                              :title="t('word.delete')"
+                              :title="t('general.delete')"
                               @click.prevent="removeIndex(index._antares_id)"
                            >
                               <i class="mdi mdi-close" />
@@ -74,7 +74,7 @@
                >
                   <div class="form-group">
                      <label class="form-label col-3">
-                        {{ t('word.name') }}
+                        {{ t('general.name') }}
                      </label>
                      <div class="column">
                         <input
@@ -86,7 +86,7 @@
                   </div>
                   <div class="form-group">
                      <label class="form-label col-3">
-                        {{ t('word.type') }}
+                        {{ t('database.type') }}
                      </label>
                      <div class="column">
                         <BaseSelect
@@ -99,7 +99,7 @@
                   </div>
                   <div class="form-group">
                      <label class="form-label col-3">
-                        {{ t('word.field', fields.length) }}
+                        {{ t('database.field', fields.length) }}
                      </label>
                      <div class="fields-list column pt-1">
                         <label
@@ -119,11 +119,11 @@
                      <i class="mdi mdi-key-outline mdi-48px" />
                   </div>
                   <p class="empty-title h5">
-                     {{ t('message.thereAreNoIndexes') }}
+                     {{ t('database.thereAreNoIndexes') }}
                   </p>
                   <div class="empty-action">
                      <button class="btn btn-primary" @click="addIndex">
-                        {{ t('message.createNewIndex') }}
+                        {{ t('database.createNewIndex') }}
                      </button>
                   </div>
                </div>

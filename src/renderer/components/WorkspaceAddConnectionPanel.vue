@@ -8,7 +8,7 @@
                   :class="{'active': selectedTab === 'general'}"
                   @click="selectTab('general')"
                >
-                  <a class="tab-link">{{ t('word.general') }}</a>
+                  <a class="tab-link">{{ t('application.general') }}</a>
                </li>
                <li
                   v-if="clientCustomizations.sslConnection"
@@ -16,7 +16,7 @@
                   :class="{'active': selectedTab === 'ssl'}"
                   @click="selectTab('ssl')"
                >
-                  <a class="tab-link">{{ t('word.ssl') }}</a>
+                  <a class="tab-link">{{ t('connection.ssl') }}</a>
                </li>
                <li
                   v-if="clientCustomizations.sshConnection"
@@ -24,7 +24,7 @@
                   :class="{'active': selectedTab === 'ssh'}"
                   @click="selectTab('ssh')"
                >
-                  <a class="tab-link">{{ t('word.sshTunnel') }}</a>
+                  <a class="tab-link">{{ t('connection.sshTunnel') }}</a>
                </li>
             </ul>
          </div>
@@ -91,7 +91,7 @@
                         <div class="column col-7 col-sm-12">
                            <BaseUploadInput
                               :model-value="connection.databasePath"
-                              :message="t('word.browse')"
+                              :message="t('general.browse')"
                               @clear="pathClear('databasePath')"
                               @change="pathSelection($event, 'databasePath')"
                            />
@@ -159,7 +159,7 @@
                               v-model="connection.schema"
                               class="form-input"
                               type="text"
-                              :placeholder="t('word.all')"
+                              :placeholder="t('general.all')"
                            >
                         </div>
                      </div>
@@ -167,7 +167,7 @@
                         <div class="column col-5 col-sm-12" />
                         <div class="column col-7 col-sm-12">
                            <label class="form-checkbox form-inline">
-                              <input v-model="connection.readonly" type="checkbox"><i class="form-icon" /> {{ t('message.readOnlyMode') }}
+                              <input v-model="connection.readonly" type="checkbox"><i class="form-icon" /> {{ t('connection.readOnlyMode') }}
                            </label>
                         </div>
                      </div>
@@ -175,7 +175,7 @@
                         <div class="column col-5 col-sm-12" />
                         <div class="column col-7 col-sm-12">
                            <label class="form-checkbox form-inline">
-                              <input v-model="connection.ask" type="checkbox"><i class="form-icon" /> {{ t('message.askCredentials') }}
+                              <input v-model="connection.ask" type="checkbox"><i class="form-icon" /> {{ t('connection.askCredentials') }}
                            </label>
                         </div>
                      </div>
@@ -189,7 +189,7 @@
                   <div class="form-group columns">
                      <div class="column col-5 col-sm-12">
                         <label class="form-label cut-text">
-                           {{ t('message.enableSsl') }}
+                           {{ t('connection.enableSsl') }}
                         </label>
                      </div>
                      <div class="column col-7 col-sm-12">
@@ -207,7 +207,7 @@
                         <div class="column col-7 col-sm-12">
                            <BaseUploadInput
                               :model-value="connection.key"
-                              :message="t('word.browse')"
+                              :message="t('general.browse')"
                               @clear="pathClear('key')"
                               @change="pathSelection($event, 'key')"
                            />
@@ -220,7 +220,7 @@
                         <div class="column col-7 col-sm-12">
                            <BaseUploadInput
                               :model-value="connection.cert"
-                              :message="t('word.browse')"
+                              :message="t('general.browse')"
                               @clear="pathClear('cert')"
                               @change="pathSelection($event, 'cert')"
                            />
@@ -233,7 +233,7 @@
                         <div class="column col-7 col-sm-12">
                            <BaseUploadInput
                               :model-value="connection.ca"
-                              :message="t('word.browse')"
+                              :message="t('general.browse')"
                               @clear="pathClear('ca')"
                               @change="pathSelection($event, 'ca')"
                            />
@@ -256,7 +256,7 @@
                         <div class="column col-5 col-sm-12" />
                         <div class="column col-7 col-sm-12">
                            <label class="form-checkbox form-inline">
-                              <input v-model="connection.untrustedConnection" type="checkbox"><i class="form-icon" /> {{ t('message.untrustedConnection') }}
+                              <input v-model="connection.untrustedConnection" type="checkbox"><i class="form-icon" /> {{ t('connection.untrustedConnection') }}
                            </label>
                         </div>
                      </div>
@@ -270,7 +270,7 @@
                   <div class="form-group columns">
                      <div class="column col-5 col-sm-12">
                         <label class="form-label cut-text">
-                           {{ t('message.enableSsh') }}
+                           {{ t('connection.enableSsh') }}
                         </label>
                      </div>
                      <div class="column col-7 col-sm-12">
@@ -338,7 +338,7 @@
                         <div class="column col-7 col-sm-12">
                            <BaseUploadInput
                               :model-value="connection.sshKey"
-                              :message="t('word.browse')"
+                              :message="t('general.browse')"
                               @clear="pathClear('sshKey')"
                               @change="pathSelection($event, 'sshKey')"
                            />
@@ -382,7 +382,7 @@
                @click="startTest"
             >
                <i class="mdi mdi-24px mdi-lightning-bolt mr-1" />
-               {{ t('message.testConnection') }}
+               {{ t('connection.testConnection') }}
             </button>
             <button
                id="connection-save"
@@ -391,7 +391,7 @@
                @click="saveConnection"
             >
                <i class="mdi mdi-24px mdi-content-save mr-1" />
-               {{ t('word.save') }}
+               {{ t('general.save') }}
             </button>
          </div>
       </div>
@@ -497,7 +497,7 @@ const startTest = async () => {
          if (res.status === 'error')
             addNotification({ status: 'error', message: res.response.message || res.response.toString() });
          else
-            addNotification({ status: 'success', message: t('message.connectionSuccessfullyMade') });
+            addNotification({ status: 'success', message: t('connection.connectionSuccessfullyMade') });
       }
       catch (err) {
          addNotification({ status: 'error', message: err.stack });
@@ -521,7 +521,7 @@ const continueTest = async (credentials: { user: string; password: string }) => 
          if (res.status === 'error')
             addNotification({ status: 'error', message: res.response.message || res.response.toString() });
          else
-            addNotification({ status: 'success', message: t('message.connectionSuccessfullyMade') });
+            addNotification({ status: 'success', message: t('connection.connectionSuccessfullyMade') });
       }
    }
    catch (err) {

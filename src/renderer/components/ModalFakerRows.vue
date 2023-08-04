@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <i class="mdi mdi-24px mdi-playlist-plus mr-1" />
-                     <span class="cut-text">{{ t('message.insertRow', 2) }}</span>
+                     <span class="cut-text">{{ t('database.insertRow', 2) }}</span>
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -39,7 +39,7 @@
                                  <span class="input-group-addon field-type" :class="typeClass(field.type)">
                                     {{ field.type }} {{ wrapNumber(fieldLength(field)) }}
                                  </span>
-                                 <label class="form-checkbox ml-3" :title="t('word.insert')">
+                                 <label class="form-checkbox ml-3" :title="t('general.insert')">
                                     <input
                                        type="checkbox"
                                        :checked="!fieldsToExclude.includes(field.name)"
@@ -55,7 +55,7 @@
             </div>
             <div class="modal-footer columns">
                <div class="column d-flex" :class="hasFakes ? 'col-4' : 'col-2'">
-                  <div class="input-group tooltip tooltip-right" :data-tooltip="t('message.numberOfInserts')">
+                  <div class="input-group tooltip tooltip-right" :data-tooltip="t('database.numberOfInserts')">
                      <input
                         v-model="nInserts"
                         type="number"
@@ -70,7 +70,7 @@
                   <div
                      v-if="hasFakes"
                      class="tooltip tooltip-right ml-2"
-                     :data-tooltip="t('message.fakeDataLanguage')"
+                     :data-tooltip="t('database.fakeDataLanguage')"
                   >
                      <BaseSelect
                         v-model="fakerLocale"
@@ -85,10 +85,10 @@
                      :class="{'loading': isInserting}"
                      @click.stop="insertRows"
                   >
-                     {{ t('word.insert') }}
+                     {{ t('general.insert') }}
                   </button>
                   <button class="btn btn-link" @click.stop="closeModal">
-                     {{ t('word.close') }}
+                     {{ t('general.close') }}
                   </button>
                </div>
             </div>

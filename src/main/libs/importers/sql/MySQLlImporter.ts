@@ -47,7 +47,7 @@ export default class MySQLImporter extends BaseImporter {
                catch (error) {
                   this.emit('query-error', {
                      sql: query,
-                     message: error.sqlMessage,
+                     message: error.sqlMessage || error.message,
                      sqlSnippet: error.sql,
                      time: new Date().getTime()
                   });

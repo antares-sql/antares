@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <i class="mdi mdi-24px mdi-history mr-1" />
-                     <span class="cut-text">{{ t('word.history') }}: {{ connectionName }}</span>
+                     <span class="cut-text">{{ t('general.history') }}: {{ connectionName }}</span>
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -22,7 +22,7 @@
                      v-model="searchTerm"
                      class="form-input"
                      type="text"
-                     :placeholder="t('message.searchForQueries')"
+                     :placeholder="t('database.searchForQueries')"
                   >
                   <i v-if="!searchTerm" class="form-icon mdi mdi-magnify mdi-18px pr-4" />
                   <i
@@ -67,13 +67,13 @@
                                     <small class="tile-subtitle">{{ query.schema }} · {{ formatDate(query.date) }}</small>
                                     <div class="tile-history-buttons">
                                        <button class="btn btn-link pl-1" @click.stop="$emit('select-query', query.sql)">
-                                          <i class="mdi mdi-open-in-app pr-1" /> {{ t('word.select') }}
+                                          <i class="mdi mdi-open-in-app pr-1" /> {{ t('general.select') }}
                                        </button>
                                        <button class="btn btn-link pl-1" @click="copyQuery(query.sql)">
-                                          <i class="mdi mdi-content-copy pr-1" /> {{ t('word.copy') }}
+                                          <i class="mdi mdi-content-copy pr-1" /> {{ t('general.copy') }}
                                        </button>
                                        <button class="btn btn-link pl-1" @click="deleteQuery(query)">
-                                          <i class="mdi mdi-delete-forever pr-1" /> {{ t('word.delete') }}
+                                          <i class="mdi mdi-delete-forever pr-1" /> {{ t('general.delete') }}
                                        </button>
                                     </div>
                                  </div>
@@ -88,7 +88,7 @@
                      <i class="mdi mdi-history mdi-48px" />
                   </div>
                   <p class="empty-title h5">
-                     {{ t('message.thereIsNoQueriesYet') }}
+                     {{ t('database.thereIsNoQueriesYet') }}
                   </p>
                </div>
             </div>

@@ -1,6 +1,6 @@
 <template>
    <ConfirmModal
-      :confirm-text="t('word.confirm')"
+      :confirm-text="t('general.confirm')"
       size="400"
       :disable-autofocus="true"
       @confirm="confirmOptionsChange"
@@ -9,14 +9,14 @@
       <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-timer mr-1" />
-            <span class="cut-text">{{ t('word.timing') }} "{{ localOptions.name }}"</span>
+            <span class="cut-text">{{ t('database.timing') }} "{{ localOptions.name }}"</span>
          </div>
       </template>
       <template #body>
          <form class="form-horizontal">
             <div class="form-group">
                <label class="form-label col-4">
-                  {{ t('word.execution') }}
+                  {{ t('database.execution') }}
                </label>
                <div class="column">
                   <BaseSelect
@@ -62,7 +62,7 @@
                </div>
                <div class="form-group">
                   <label class="form-label col-4">
-                     {{ t('word.starts') }}
+                     {{ t('database.starts') }}
                   </label>
                   <div class="column">
                      <div class="input-group">
@@ -83,7 +83,7 @@
                </div>
                <div class="form-group">
                   <label class="form-label col-4">
-                     {{ t('word.ends') }}
+                     {{ t('database.ends') }}
                   </label>
                   <div class="column">
                      <div class="input-group">
@@ -125,7 +125,7 @@
                <div class="col-4" />
                <div class="column">
                   <label class="form-checkbox form-inline mt-2">
-                     <input v-model="optionsProxy.preserve" type="checkbox"><i class="form-icon" /> {{ t('message.preserveOnCompletion') }}
+                     <input v-model="optionsProxy.preserve" type="checkbox"><i class="form-icon" /> {{ t('database.preserveOnCompletion') }}
                   </label>
                </div>
             </div>

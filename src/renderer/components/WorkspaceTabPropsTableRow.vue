@@ -220,7 +220,7 @@
       </div>
       <ConfirmModal
          v-if="isDefaultModal"
-         :confirm-text="t('word.confirm')"
+         :confirm-text="t('general.confirm')"
          size="400"
          @confirm="editOFF"
          @hide="hideDefaultModal"
@@ -228,7 +228,7 @@
          <template #header>
             <div class="d-flex">
                <i class="mdi mdi-24px mdi-playlist-edit mr-1" />
-               <span class="cut-text">{{ t('word.default') }} "{{ row.name }}"</span>
+               <span class="cut-text">{{ t('database.default') }} "{{ row.name }}"</span>
             </div>
          </template>
          <template #body>
@@ -251,7 +251,7 @@
                            value="custom"
                            type="radio"
                            name="default"
-                        ><i class="form-icon" /> {{ t('message.customValue') }}
+                        ><i class="form-icon" /> {{ t('database.customValue') }}
                      </label>
                      <div class="column">
                         <input
@@ -292,7 +292,7 @@
                            type="radio"
                            name="default"
                            value="expression"
-                        ><i class="form-icon" /> {{ t('word.expression') }}
+                        ><i class="form-icon" /> {{ t('database.expression') }}
                      </label>
                      <div class="column">
                         <input
@@ -307,7 +307,7 @@
                <div v-if="customizations.onUpdate">
                   <div class="form-group">
                      <label class="form-label col-4">
-                        {{ t('message.onUpdate') }}
+                        {{ t('database.onUpdate') }}
                      </label>
                      <div class="column">
                         <input

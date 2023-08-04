@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <i class="mdi mdi-24px mdi-database-export mr-1" />
-                     <span class="cut-text">{{ t('message.exportSchema') }}</span>
+                     <span class="cut-text">{{ t('database.exportSchema') }}</span>
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -16,7 +16,7 @@
                <div class="container">
                   <div class="columns">
                      <div class="col-3">
-                        <label class="form-label">{{ t('message.directoryPath') }}</label>
+                        <label class="form-label">{{ t('general.directoryPath') }}</label>
                      </div>
                      <div class="col-9">
                         <fieldset class="input-group">
@@ -26,14 +26,14 @@
                               type="text"
                               required
                               readonly
-                              :placeholder="t('message.schemaName')"
+                              :placeholder="t('database.schemaName')"
                            >
                            <button
                               type="button"
                               class="btn btn-primary input-group-btn"
                               @click.prevent="openPathDialog"
                            >
-                              {{ t('word.change') }}
+                              {{ t('general.change') }}
                            </button>
                         </fieldset>
                      </div>
@@ -51,14 +51,14 @@
                         <div class="column col-auto col-ml-auto ">
                            <button
                               class="btn btn-dark btn-sm"
-                              :title="t('word.refresh')"
+                              :title="t('general.refresh')"
                               @click="refresh"
                            >
                               <i class="mdi mdi-database-refresh" />
                            </button>
                            <button
                               class="btn btn-dark btn-sm mx-1"
-                              :title="t('message.uncheckAllTables')"
+                              :title="t('database.uncheckAllTables')"
                               :disabled="isRefreshing"
                               @click="uncheckAllTables"
                            >
@@ -66,7 +66,7 @@
                            </button>
                            <button
                               class="btn btn-dark btn-sm"
-                              :title="t('message.checkAllTables')"
+                              :title="t('database.checkAllTables')"
                               :disabled="isRefreshing"
                               @click="checkAllTables"
                            >
@@ -122,22 +122,22 @@
                               <div class="tr">
                                  <div class="th" :style="'width: 50%;'">
                                     <div class="table-column-title">
-                                       <span>{{ t('word.table') }}</span>
+                                       <span>{{ t('database.table') }}</span>
                                     </div>
                                  </div>
                                  <div class="th text-center">
                                     <div class="table-column-title">
-                                       <span>{{ t('word.structure') }}</span>
+                                       <span>{{ t('database.structure') }}</span>
                                     </div>
                                  </div>
                                  <div class="th text-center">
                                     <div class="table-column-title">
-                                       <span>{{ t('word.content') }}</span>
+                                       <span>{{ t('general.content') }}</span>
                                     </div>
                                  </div>
                                  <div class="th text-center">
                                     <div class="table-column-title">
-                                       <span>{{ t('word.drop') }}</span>
+                                       <span>{{ t('database.drop') }}</span>
                                     </div>
                                  </div>
                               </div>
@@ -183,19 +183,19 @@
                   </div>
                   <div class="column col-4">
                      <h5 class="h5">
-                        {{ t('word.options') }}
+                        {{ t('general.options') }}
                      </h5>
-                     <span class="h6">{{ t('word.includes') }}:</span>
+                     <span class="h6">{{ t('general.includes') }}:</span>
                      <label
                         v-for="(_, key) in options.includes"
                         :key="key"
                         class="form-checkbox"
                      >
-                        <input v-model="options.includes[key]" type="checkbox"><i class="form-icon" /> {{ t(`word.${key}`, 2) }}
+                        <input v-model="options.includes[key]" type="checkbox"><i class="form-icon" /> {{ t(`database.${String(key).slice(0, -1)}`, 2) }}
                      </label>
                      <div v-if="clientCustoms.exportByChunks">
                         <div class="h6 mt-4 mb-2">
-                           {{ t('message.newInsertStmtEvery') }}:
+                           {{ t('database.newInsertStmtEvery') }}:
                         </div>
                         <div class="columns">
                            <div class="column col-6">
@@ -209,21 +209,21 @@
                               <BaseSelect
                                  v-model="options.sqlInsertDivider"
                                  class="form-select"
-                                 :options="[{value: 'bytes', label: 'KiB'}, {value: 'rows', label: t('word.row', 2)}]"
+                                 :options="[{value: 'bytes', label: 'KiB'}, {value: 'rows', label: t('database.row', 2)}]"
                               />
                            </div>
                         </div>
                      </div>
 
                      <div class="h6 mb-2 mt-4">
-                        {{ t('message.outputFormat') }}:
+                        {{ t('general.outputFormat') }}:
                      </div>
                      <div class="columns">
                         <div class="column h5 mb-4">
                            <BaseSelect
                               v-model="options.outputFormat"
                               class="form-select"
-                              :options="[{value: 'sql', label: t('message.singleFile', {ext: '.sql'})}, {value: 'sql.zip', label: t('message.zipCompressedFile', {ext: '.sql'})}]"
+                              :options="[{value: 'sql', label: t('general.singleFile', {ext: '.sql'})}, {value: 'sql.zip', label: t('general.zipCompressedFile', {ext: '.sql'})}]"
                            />
                         </div>
                      </div>
@@ -245,7 +245,7 @@
                </div>
                <div class="column col-auto px-0">
                   <button class="btn btn-link" @click.stop="closeModal">
-                     {{ t('word.close') }}
+                     {{ t('general.close') }}
                   </button>
                   <button
                      class="btn btn-primary mr-2"
@@ -254,7 +254,7 @@
                      autofocus
                      @click.prevent="startExport"
                   >
-                     {{ t('word.export') }}
+                     {{ t('database.export') }}
                   </button>
                </div>
             </div>
@@ -362,7 +362,7 @@ const startExport = async () => {
    try {
       const { status, response } = await Schema.export(params);
       if (status === 'success')
-         progressStatus.value = response.cancelled ? t('word.aborted') : t('word.completed');
+         progressStatus.value = response.cancelled ? t('general.aborted') : t('general.completed');
       else {
          progressStatus.value = response;
          addNotification({ status: 'error', message: response });
@@ -379,13 +379,13 @@ const updateProgress = (event: Event, state: ExportState) => {
    progressPercentage.value = Number((state.currentItemIndex / state.totalItems * 100).toFixed(1));
    switch (state.op) {
       case 'PROCESSING':
-         progressStatus.value = t('message.processingTableExport', { table: state.currentItem });
+         progressStatus.value = t('database.processingTableExport', { table: state.currentItem });
          break;
       case 'FETCH':
-         progressStatus.value = t('message.fetchingTableExport', { table: state.currentItem });
+         progressStatus.value = t('database.fetchingTableExport', { table: state.currentItem });
          break;
       case 'WRITE':
-         progressStatus.value = t('message.writingTableExport', { table: state.currentItem });
+         progressStatus.value = t('database.writingTableExport', { table: state.currentItem });
          break;
    }
 };

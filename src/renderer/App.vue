@@ -95,22 +95,22 @@ onMounted(() => {
 
    const InputMenu = Menu.buildFromTemplate([
       {
-         label: t('word.cut'),
+         label: t('general.cut'),
          role: 'cut'
       },
       {
-         label: t('word.copy'),
+         label: t('general.copy'),
          role: 'copy'
       },
       {
-         label: t('word.paste'),
+         label: t('general.paste'),
          role: 'paste'
       },
       {
          type: 'separator'
       },
       {
-         label: t('message.selectAll'),
+         label: t('general.selectAll'),
          role: 'selectAll'
       }
    ]);

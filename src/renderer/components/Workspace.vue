@@ -45,7 +45,7 @@
                         <span>{{ cutText(element.content || 'Query', 20, true) }} #{{ element.index }}</span>
                         <span
                            class="btn btn-clear"
-                           :title="t('word.close')"
+                           :title="t('general.close')"
                            @mousedown.left.stop
                            @click.stop="closeTab(element)"
                         />
@@ -58,11 +58,11 @@
                      @dblclick="openAsPermanentTab(element)"
                   >
                      <i class="mdi mdi-18px mr-1" :class="element.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
-                     <span :title="`${t('word.data').toUpperCase()}: ${t(`word.${element.elementType}`)}`">
+                     <span :title="`${t('general.data').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         <span class=" text-italic">{{ cutText(element.elementName, 20, true) }}</span>
                         <span
                            class="btn btn-clear"
-                           :title="t('word.close')"
+                           :title="t('general.close')"
                            @mousedown.left.stop
                            @click.stop="closeTab(element)"
                         />
@@ -71,11 +71,11 @@
 
                   <a v-else-if="element.type === 'data'" class="tab-link">
                      <i class="mdi mdi-18px mr-1" :class="element.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
-                     <span :title="`${t('word.data').toUpperCase()}: ${t(`word.${element.elementType}`)}`">
+                     <span :title="`${t('general.data').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         {{ cutText(element.elementName, 20, true) }}
                         <span
                            class="btn btn-clear"
-                           :title="t('word.close')"
+                           :title="t('general.close')"
                            @mousedown.left.stop
                            @click.stop="closeTab(element)"
                         />
@@ -88,11 +88,11 @@
                      :class="{'badge': element.isChanged}"
                   >
                      <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
-                     <span :title="`${t('word.new').toUpperCase()}: ${t(`word.${element.elementType}`)}`">
-                        {{ t('message.newTable') }}
+                     <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
+                        {{ t('database.newTable') }}
                         <span
                            class="btn btn-clear"
-                           :title="t('word.close')"
+                           :title="t('general.close')"
                            @mousedown.left.stop
                            @click.stop="closeTab(element)"
                         />
@@ -105,11 +105,11 @@
                      :class="{'badge': element.isChanged}"
                   >
                      <i class="mdi mdi-wrench-cog mdi-18px mr-1" />
-                     <span :title="`${t('word.settings').toUpperCase()}: ${t(`word.${element.elementType}`)}`">
+                     <span :title="`${t('application.settings').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         {{ cutText(element.elementName, 20, true) }}
                         <span
                            class="btn btn-clear"
-                           :title="t('word.close')"
+                           :title="t('general.close')"
                            @mousedown.left.stop
                            @click.stop="closeTab(element)"
                         />
@@ -122,11 +122,11 @@
                      :class="{'badge': element.isChanged}"
                   >
                      <i class="mdi mdi-wrench-cog mdi-18px mr-1" />
-                     <span :title="`${t('word.settings').toUpperCase()}: ${t(`word.view`)}`">
+                     <span :title="`${t('application.settings').toUpperCase()}: ${t(`database.view`)}`">
                         {{ cutText(element.elementName, 20, true) }}
                         <span
                            class="btn btn-clear"
-                           :title="t('word.close')"
+                           :title="t('general.close')"
                            @mousedown.left.stop
                            @click.stop="closeTab(element)"
                         />
@@ -139,11 +139,11 @@
                      :class="{'badge': element.isChanged}"
                   >
                      <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
-                     <span :title="`${t('word.new').toUpperCase()}: ${t(`word.${element.elementType}`)}`">
-                        {{ t('message.newView') }}
+                     <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
+                        {{ t('database.newView') }}
                         <span
                            class="btn btn-clear"
-                           :title="t('word.close')"
+                           :title="t('general.close')"
                            @mousedown.left.stop
                            @click.stop="closeTab(element)"
                         />
@@ -156,11 +156,11 @@
                      :class="{'badge': element.isChanged}"
                   >
                      <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
-                     <span :title="`${t('word.new').toUpperCase()}: ${t(`word.${element.elementType}`)}`">
-                        {{ t('message.newTrigger') }}
+                     <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
+                        {{ t('database.newTrigger') }}
                         <span
                            class="btn btn-clear"
-                           :title="t('word.close')"
+                           :title="t('general.close')"
                            @mousedown.left.stop
                            @click.stop="closeTab(element)"
                         />
@@ -173,11 +173,11 @@
                      :class="{'badge': element.isChanged}"
                   >
                      <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
-                     <span :title="`${t('word.new').toUpperCase()}: ${t(`word.${element.elementType}`)}`">
-                        {{ t('message.newRoutine') }}
+                     <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
+                        {{ t('database.newRoutine') }}
                         <span
                            class="btn btn-clear"
-                           :title="t('word.close')"
+                           :title="t('general.close')"
                            @mousedown.left.stop
                            @click.stop="closeTab(element)"
                         />
@@ -190,11 +190,11 @@
                      :class="{'badge': element.isChanged}"
                   >
                      <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
-                     <span :title="`${t('word.new').toUpperCase()}: ${t(`word.${element.elementType}`)}`">
-                        {{ t('message.newFunction') }}
+                     <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
+                        {{ t('database.newFunction') }}
                         <span
                            class="btn btn-clear"
-                           :title="t('word.close')"
+                           :title="t('general.close')"
                            @mousedown.left.stop
                            @click.stop="closeTab(element)"
                         />
@@ -207,11 +207,11 @@
                      :class="{'badge': element.isChanged}"
                   >
                      <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
-                     <span :title="`${t('word.new').toUpperCase()}: ${t(`word.${element.elementType}`)}`">
-                        {{ t('message.newTriggerFunction') }}
+                     <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
+                        {{ t('database.newTriggerFunction') }}
                         <span
                            class="btn btn-clear"
-                           :title="t('word.close')"
+                           :title="t('general.close')"
                            @mousedown.left.stop
                            @click.stop="closeTab(element)"
                         />
@@ -224,11 +224,11 @@
                      :class="{'badge': element.isChanged}"
                   >
                      <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
-                     <span :title="`${t('word.new').toUpperCase()}: ${t(`word.${element.elementType}`)}`">
-                        {{ t('message.newScheduler') }}
+                     <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
+                        {{ t('database.newScheduler') }}
                         <span
                            class="btn btn-clear"
-                           :title="t('word.close')"
+                           :title="t('general.close')"
                            @mousedown.left.stop
                            @click.stop="closeTab(element)"
                         />
@@ -242,11 +242,11 @@
                      @dblclick="openAsPermanentTab(element)"
                   >
                      <i class="mdi mdi-18px mdi-wrench-cog mr-1" />
-                     <span :title="`${t('word.settings').toUpperCase()}: ${t(`word.${element.elementType}`)}`">
+                     <span :title="`${t('application.settings').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         <span class=" text-italic">{{ cutText(element.elementName, 20, true) }}</span>
                         <span
                            class="btn btn-clear"
-                           :title="t('word.close')"
+                           :title="t('general.close')"
                            @mousedown.left.stop
                            @click.stop="closeTab(element)"
                         />
@@ -259,11 +259,11 @@
                      :class="{'badge': element.isChanged}"
                   >
                      <i class="mdi mdi-18px mdi-wrench-cog mr-1" />
-                     <span :title="`${t('word.settings').toUpperCase()}: ${t(`word.${element.elementType}`)}`">
+                     <span :title="`${t('application.settings').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         {{ cutText(element.elementName, 20, true) }}
                         <span
                            class="btn btn-clear"
-                           :title="t('word.close')"
+                           :title="t('general.close')"
                            @mousedown.left.stop
                            @click.stop="closeTab(element)"
                         />
@@ -279,7 +279,7 @@
                   <a
                      class="tab-link workspace-tools-link dropdown-toggle"
                      tabindex="0"
-                     :title="t('word.tools')"
+                     :title="t('general.tools')"
                   >
                      <i class="mdi mdi-24px mdi-tools" />
                   </a>
@@ -287,13 +287,13 @@
                      <li class="menu-item">
                         <a class="c-hand p-vcentered" @click="showProcessesModal">
                            <i class="mdi mdi-memory mr-1 tool-icon" />
-                           <span>{{ t('message.processesList') }}</span>
+                           <span>{{ t('database.processesList') }}</span>
                         </a>
                      </li>
                      <li class="menu-item">
                         <a class="c-hand p-vcentered" @click="toggleConsole">
                            <i class="mdi mdi-console-line mr-1 tool-icon" />
-                           <span>{{ t('word.console') }}</span>
+                           <span>{{ t('application.console') }}</span>
                         </a>
                      </li>
                      <li
@@ -303,7 +303,7 @@
                      >
                         <a class="c-hand p-vcentered disabled">
                            <i class="mdi mdi-shape mr-1 tool-icon" />
-                           <span>{{ t('word.variables') }}</span>
+                           <span>{{ t('database.variables') }}</span>
                         </a>
                      </li>
                      <li
@@ -313,7 +313,7 @@
                      >
                         <a class="c-hand p-vcentered disabled">
                            <i class="mdi mdi-account-group mr-1 tool-icon" />
-                           <span>{{ t('message.manageUsers') }}</span>
+                           <span>{{ t('database.manageUsers') }}</span>
                         </a>
                      </li>
                   </ul>
@@ -323,7 +323,7 @@
                <li class="tab-item">
                   <a
                      class="tab-add"
-                     :title="t('message.openNewTab')"
+                     :title="t('application.openNewTab')"
                      @click="addQueryTab"
                   >
                      <i class="mdi mdi-24px mdi-plus" />

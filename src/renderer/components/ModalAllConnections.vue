@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <i class="mdi mdi-24px mdi-apps mr-1" />
-                     <span class="cut-text">{{ t('message.allConnections') }}</span>
+                     <span class="cut-text">{{ t('connection.allConnections') }}</span>
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -21,7 +21,7 @@
                               v-model="searchTerm"
                               class="form-input"
                               type="text"
-                              :placeholder="t('message.searchForConnections')"
+                              :placeholder="t('connection.searchForConnections')"
                               @keypress.esc="searchTerm = ''"
                            >
                            <i v-if="!searchTerm" class="form-icon mdi mdi-magnify mdi-18px pr-4" />
@@ -58,7 +58,7 @@
                               <div class="all-connections-buttons p-absolute d-flex" :style="'top: 0; right: 0;'">
                                  <i
                                     class="all-connections-delete mdi mdi-delete mdi-18px ml-2"
-                                    :title="t('word.delete')"
+                                    :title="t('general.delete')"
                                     @click.stop="askToDelete(connection)"
                                  />
                               </div>
@@ -130,12 +130,12 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-server-remove mr-1" /> {{ t('message.deleteConnection') }}
+               <i class="mdi mdi-24px mdi-server-remove mr-1" /> {{ t('connection.deleteConnection') }}
             </div>
          </template>
          <template #body>
             <div class="mb-2">
-               {{ t('message.deleteConfirm') }} <b>{{ selectedConnectionName }}</b>?
+               {{ t('general.deleteConfirm') }} <b>{{ selectedConnectionName }}</b>?
             </div>
          </template>
       </ConfirmModal>

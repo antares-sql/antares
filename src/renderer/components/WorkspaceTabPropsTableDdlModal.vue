@@ -1,16 +1,16 @@
 <template>
    <ConfirmModal
-      :confirm-text="t('word.confirm')"
+      :confirm-text="t('general.confirm')"
       size="large"
       class="options-modal"
-      :cancel-text="t('word.close')"
+      :cancel-text="t('general.close')"
       :hide-footer="true"
       @hide="$emit('hide')"
    >
       <template #header>
          <div class="d-flex">
             <i class="mdi mdi-24px mdi-code-tags mr-1" />
-            <span class="cut-text">{{ t('word.ddl') }} "{{ table }}"</span>
+            <span class="cut-text">{{ t('database.ddl') }} "{{ table }}"</span>
          </div>
       </template>
       <template #body>
