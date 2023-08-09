@@ -7,7 +7,8 @@
 
 # Antares SQL Client
 
-![GitHub package.json version](https://img.shields.io/github/package-json/v/fabio286/antares) ![GitHub](https://img.shields.io/github/license/fabio286/antares) [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Ffabio286%2Fantares%2Fbadge&style=flat)](https://actions-badge.atrox.dev/fabio286/antares/goto) [![antares](https://snapcraft.io/antares/badge.svg)](https://snapcraft.io/antares) [![antares](https://snapcraft.io/antares/trending.svg?name=0)](https://snapcraft.io/antares) [![Twitter Follow](https://img.shields.io/twitter/follow/AntaresSQL?style=social)](https://twitter.com/AntaresSQL) [![Plant a Tree](https://raw.githubusercontent.com/Fabio286/treedom-badge/master/svg/plant-a-tree.svg)](https://www.treedom.net/en/user/fabio-di-stasio/event/antares-for-the-planet)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/fabio286/antares) ![GitHub](https://img.shields.io/github/license/fabio286/antares) [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Ffabio286%2Fantares%2Fbadge&style=flat)](https://actions-badge.atrox.dev/fabio286/antares/goto) [![antares](https://snapcraft.io/antares/badge.svg)](https://snapcraft.io/antares) [![antares](https://snapcraft.io/antares/trending.svg?name=0)](https://snapcraft.io/antares)
+![Mastodon Follow](https://img.shields.io/mastodon/follow/%20110860460902482117?domain=https%3A%2F%2Ffosstodon.org&style=social) [![Twitter Follow](https://img.shields.io/twitter/follow/AntaresSQL?style=social)](https://twitter.com/AntaresSQL) [![Plant a Tree](https://raw.githubusercontent.com/Fabio286/treedom-badge/master/svg/plant-a-tree.svg)](https://www.treedom.net/en/user/fabio-di-stasio/event/antares-for-the-planet)
 
 Antares is an SQL client based on [Electron.js](https://github.com/electron/electron) and [Vue.js](https://github.com/vuejs/vue) that aims to become a useful tool, especially for developers.  
 Our target is to support as many databases as possible, and all major operating systems, including the ARM versions.  
@@ -17,7 +18,7 @@ However, there are all the features necessary to have a pleasant database manage
 We are actively working on it, hoping to provide new cool features, improvements and fixes as soon as possible.  
 
 🔗 If you are curious to try Antares you can download and install the [latest release](https://github.com/Fabio286/antares/releases/latest).  
-👁 To stay tuned for new releases [follow Antares SQL](https://twitter.com/AntaresSQL) on Twitter.  
+👁 To stay tuned for new releases follow Antares SQL on [Mastodon](https://fosstodon.org/@AntaresSQL) or [Twitter](https://twitter.com/AntaresSQL).  
 🌟 Don't forget to **leave a star** if you appreciate this project.  
 
 🗳️ Polls: 
