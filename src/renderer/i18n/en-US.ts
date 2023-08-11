@@ -290,6 +290,7 @@ export const enUS = {
       color: 'Color',
       label: 'Label',
       icon: 'Icon',
+      fileName: 'File name',
       madeWithJS: 'Made with 💛 and JavaScript!',
       checkForUpdates: 'Check for updates',
       noUpdatesAvailable: 'No updates available',

@@ -42,10 +42,16 @@
 
                <div class="columns export-options">
                   <div class="column col-8 left">
-                     <div class="columns mb-2">
-                        <div class="column col-auto d-flex text-italic ">
-                           <i class="mdi mdi-file-document-outline mr-2" />
-                           {{ filename }}
+                     <div class="columns mb-2 mt-1 p-vcentered">
+                        <div class="column col-auto input-group d-flex text-italic" :style="'flex-grow: 1'">
+                           <i class="input-group-addon mdi mdi-file-document-outline" />
+                           <input
+                              v-model="chosenFilename"
+                              class="form-input"
+                              type="text"
+                              :placeholder="filename"
+                              :title="t('application.fileName')"
+                           >
                         </div>
 
                         <div class="column col-auto col-ml-auto ">
@@ -54,7 +60,7 @@
                               :title="t('general.refresh')"
                               @click="refresh"
                            >
-                              <i class="mdi mdi-database-refresh" />
+                              <i class="mdi mdi-refresh" />
                            </button>
                            <button
                               class="btn btn-dark btn-sm mx-1"
@@ -62,7 +68,7 @@
                               :disabled="isRefreshing"
                               @click="uncheckAllTables"
                            >
-                              <i class="mdi mdi-file-tree-outline" />
+                              <i class="mdi mdi-checkbox-blank-outline" />
                            </button>
                            <button
                               class="btn btn-dark btn-sm"
@@ -70,7 +76,7 @@
                               :disabled="isRefreshing"
                               @click="checkAllTables"
                            >
-                              <i class="mdi mdi-file-tree" />
+                              <i class="mdi mdi-checkbox-marked-outline" />
                            </button>
                         </div>
                      </div>
@@ -316,6 +322,7 @@ const options: Ref<Partial<ExportOptions>> = ref({
    sqlInsertDivider: 'bytes' as 'bytes' | 'rows'
 });
 const basePath = ref('');
+const chosenFilename = ref('');
 
 const currentWorkspace = computed(() => getWorkspace(selectedWorkspace.value));
 const clientCustoms: Ref<Customizations> = computed(() => currentWorkspace.value.customizations);
@@ -328,9 +335,9 @@ const schemaItems = computed(() => {
 });
 const filename = computed(() => {
    const date = moment().format('YYYY-MM-DD_HH-mm-ss');
-   return `${props.selectedSchema}_${date}.${options.value.outputFormat}`;
+   return `${props.selectedSchema}_${date}`;
 });
-const dumpFilePath = computed(() => `${basePath.value}/${filename.value}`);
+const dumpFilePath = computed(() => `${basePath.value}/${chosenFilename.value || filename.value}.${options.value.outputFormat}`);
 const includeStructureStatus = computed(() => {
    if (tables.value.every(item => item.includeStructure)) return 1;
    else if (tables.value.some(item => item.includeStructure)) return 2;
