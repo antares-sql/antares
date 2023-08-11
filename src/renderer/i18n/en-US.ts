@@ -181,6 +181,7 @@ export const enUS = {
       emptyTable: 'Empty table',
       duplicateTable: 'Duplicate table',
       deleteTable: 'Delete table',
+      exportTable: 'Export table',
       emptyConfirm: 'Do you confirm to empty',
       thereAreNoIndexes: 'There are no indexes',
       thereAreNoForeign: 'There are no foreign keys',

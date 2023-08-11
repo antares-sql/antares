@@ -154,6 +154,7 @@
                                  v-for="item in tables"
                                  :key="item.table"
                                  class="tr"
+                                 :class="{'selected': item.table === selectedTable}"
                               >
                                  <div class="td">
                                     {{ item.table }}
@@ -278,6 +279,7 @@ import { useI18n } from 'vue-i18n';
 import { ClientCode, SchemaInfos } from 'common/interfaces/antares';
 import { ExportOptions, ExportState } from 'common/interfaces/exporter';
 import { useNotificationsStore } from '@/stores/notifications';
+import { useSchemaExportStore } from '@/stores/schemaExport';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import Application from '@/ipc-api/Application';
@@ -285,15 +287,12 @@ import Schema from '@/ipc-api/Schema';
 import { Customizations } from 'common/interfaces/customizations';
 import BaseSelect from '@/components/BaseSelect.vue';
 
-const props = defineProps({
-   selectedSchema: String
-});
-
 const emit = defineEmits(['close']);
 const { t } = useI18n();
 
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
+const schemaExportStore = useSchemaExportStore();
 
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
@@ -303,6 +302,8 @@ const {
    getWorkspace,
    refreshSchema
 } = workspacesStore;
+
+const { selectedTable, selectedSchema } = storeToRefs(schemaExportStore);
 
 const isExporting = ref(false);
 const isRefreshing = ref(false);
@@ -315,7 +316,7 @@ const tables: Ref<{
    includeDropStatement: boolean;
 }[]> = ref([]);
 const options: Ref<Partial<ExportOptions>> = ref({
-   schema: props.selectedSchema,
+   schema: selectedSchema.value,
    includes: {} as {[key: string]: boolean},
    outputFormat: 'sql' as 'sql' | 'sql.zip',
    sqlInsertAfter: 250,
@@ -327,7 +328,7 @@ const chosenFilename = ref('');
 const currentWorkspace = computed(() => getWorkspace(selectedWorkspace.value));
 const clientCustoms: Ref<Customizations> = computed(() => currentWorkspace.value.customizations);
 const schemaItems = computed(() => {
-   const db: SchemaInfos = currentWorkspace.value.structure.find((db: SchemaInfos) => db.name === props.selectedSchema);
+   const db: SchemaInfos = currentWorkspace.value.structure.find((db: SchemaInfos) => db.name === selectedSchema.value);
    if (db)
       return db.tables.filter(table => table.type === 'table');
 
@@ -335,7 +336,7 @@ const schemaItems = computed(() => {
 });
 const filename = computed(() => {
    const date = moment().format('YYYY-MM-DD_HH-mm-ss');
-   return `${props.selectedSchema}_${date}`;
+   return `${selectedTable.value || selectedSchema.value}_${date}`;
 });
 const dumpFilePath = computed(() => `${basePath.value}/${chosenFilename.value || filename.value}.${options.value.outputFormat}`);
 const includeStructureStatus = computed(() => {
@@ -360,7 +361,7 @@ const startExport = async () => {
    const params = {
       uid,
       type: client,
-      schema: props.selectedSchema,
+      schema: selectedSchema.value,
       outputFile: dumpFilePath.value,
       tables: [...tables.value],
       ...options.value
@@ -438,7 +439,7 @@ const toggleAllTablesOption = (option: 'includeStructure' | 'includeContent' |'i
 
 const refresh = async () => {
    isRefreshing.value = true;
-   await refreshSchema({ uid: currentWorkspace.value.uid, schema: props.selectedSchema });
+   await refreshSchema({ uid: currentWorkspace.value.uid, schema: selectedSchema.value });
    isRefreshing.value = false;
 };
 
@@ -453,12 +454,31 @@ const openPathDialog = async () => {
 
    window.addEventListener('keydown', onKey);
 
+   if (selectedTable.value) {
+      setTimeout(() => {
+         const element = document.querySelector<HTMLElement>('.modal.active .selected');
+
+         if (element) {
+            const rect = element.getBoundingClientRect();
+            const elemTop = rect.top;
+            const elemBottom = rect.bottom;
+            const isVisible = (elemTop >= 0) && (elemBottom <= window.innerHeight);
+
+            if (!isVisible) {
+               element.setAttribute('tabindex', '-1');
+               element.focus();
+               element.removeAttribute('tabindex');
+            }
+         }
+      }, 100);
+   }
+
    basePath.value = await Application.getDownloadPathDirectory();
    tables.value = schemaItems.value.map(item => ({
       table: item.name,
-      includeStructure: true,
-      includeContent: true,
-      includeDropStatement: true
+      includeStructure: !selectedTable.value ? true : selectedTable.value === item.name,
+      includeContent: !selectedTable.value ? true : selectedTable.value === item.name,
+      includeDropStatement: !selectedTable.value ? true : selectedTable.value === item.name
    }));
 
    const structure = ['functions', 'views', 'triggers', 'routines', 'schedulers'];
@@ -466,7 +486,7 @@ const openPathDialog = async () => {
    structure.forEach((feat: keyof Customizations) => {
       const val = clientCustoms.value[feat];
       if (val)
-         options.value.includes[feat] = true;
+         options.value.includes[feat] = !selectedTable.value;
    });
 
    ipcRenderer.on('export-progress', updateProgress);
