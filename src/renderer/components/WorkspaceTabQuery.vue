@@ -24,11 +24,11 @@
                      v-if="showCancel && isQuering"
                      class="btn btn-primary btn-sm cancellable"
                      :disabled="!query"
-                     :title="t('word.cancel')"
+                     :title="t('general.cancel')"
                      @click="killTabQuery()"
                   >
                      <i class="mdi mdi-24px mdi-window-close" />
-                     <span class="d-invisible pr-1">{{ t('word.run') }}</span>
+                     <span class="d-invisible pr-1">{{ t('general.run') }}</span>
                   </button>
                   <button
                      v-else
@@ -38,7 +38,7 @@
                      @click="runQuery(query)"
                   >
                      <i class="mdi mdi-24px mdi-play pr-1" />
-                     <span>{{ t('word.run') }}</span>
+                     <span>{{ t('general.run') }}</span>
                   </button>
                </div>
                <button
@@ -48,7 +48,7 @@
                   @click="commitTab()"
                >
                   <i class="mdi mdi-24px mdi-cube-send pr-1" />
-                  <span>{{ t('word.commit') }}</span>
+                  <span>{{ t('database.commit') }}</span>
                </button>
                <button
                   v-if="!autocommit"
@@ -57,7 +57,7 @@
                   @click="rollbackTab()"
                >
                   <i class="mdi mdi-24px mdi-undo-variant pr-1" />
-                  <span>{{ t('word.rollback') }}</span>
+                  <span>{{ t('database.rollback') }}</span>
                </button>
                <button
                   class="btn btn-link btn-sm mr-0"
@@ -65,7 +65,7 @@
                   @click="clear()"
                >
                   <i class="mdi mdi-24px mdi-delete-sweep pr-1" />
-                  <span>{{ t('word.clear') }}</span>
+                  <span>{{ t('general.clear') }}</span>
                </button>
 
                <div class="divider-vert py-3" />
@@ -76,7 +76,7 @@
                   @click="beautify()"
                >
                   <i class="mdi mdi-24px mdi-brush pr-1" />
-                  <span>{{ t('word.format') }}</span>
+                  <span>{{ t('general.format') }}</span>
                </button>
                <button
                   class="btn btn-dark btn-sm"
@@ -84,7 +84,7 @@
                   @click="openHistoryModal()"
                >
                   <i class="mdi mdi-24px mdi-history pr-1" />
-                  <span>{{ t('word.history') }}</span>
+                  <span>{{ t('general.history') }}</span>
                </button>
                <div class="dropdown table-dropdown pr-2">
                   <button
@@ -93,7 +93,7 @@
                      tabindex="0"
                   >
                      <i class="mdi mdi-24px mdi-file-export mr-1" />
-                     <span>{{ t('word.export') }}</span>
+                     <span>{{ t('database.export') }}</span>
                      <i class="mdi mdi-24px mdi-menu-down" />
                   </button>
                   <ul class="menu text-left">
@@ -104,18 +104,18 @@
                         <a class="c-hand" @click="downloadTable('csv')">CSV</a>
                      </li>
                      <li class="menu-item">
-                        <a class="c-hand" @click="downloadTable('php')">{{ t('message.phpArray') }}</a>
+                        <a class="c-hand" @click="downloadTable('php')">{{ t('application.phpArray') }}</a>
                      </li>
                      <li class="menu-item">
                         <a class="c-hand" @click="downloadTable('sql')">SQL INSERT</a>
                      </li>
                   </ul>
                </div>
-               <div class="input-group pr-2" :title="t('message.commitMode')">
+               <div class="input-group pr-2" :title="t('database.commitMode')">
                   <i class="input-group-addon addon-sm mdi mdi-24px mdi-source-commit p-0" />
                   <BaseSelect
                      v-model="autocommit"
-                     :options="[{value: true, label: t('message.autoCommit')}, {value: false, label: t('message.manualCommit')}]"
+                     :options="[{value: true, label: t('database.autoCommit')}, {value: false, label: t('database.manualCommit')}]"
                      :option-label="(opt: any) => opt.label"
                      :option-track-by="(opt: any) => opt.value"
                      class="form-select select-sm text-bold"
@@ -126,30 +126,30 @@
                <div
                   v-if="results.length"
                   class="d-flex"
-                  :title="t('message.queryDuration')"
+                  :title="t('database.queryDuration')"
                >
                   <i class="mdi mdi-timer-sand mdi-rotate-180 pr-1" /> <b>{{ durationsCount / 1000 }}s</b>
                </div>
                <div
                   v-if="resultsCount"
                   class="d-flex"
-                  :title="t('word.results')"
+                  :title="t('general.results')"
                >
                   <i class="mdi mdi-equal pr-1" /> <b>{{ resultsCount.toLocaleString() }}</b>
                </div>
                <div
                   v-if="hasAffected"
                   class="d-flex"
-                  :title="t('message.affectedRows')"
+                  :title="t('database.affectedRows')"
                >
                   <i class="mdi mdi-target pr-1" /> <b>{{ affectedCount }}</b>
                </div>
-               <div class="input-group" :title="t('word.schema')">
+               <div class="input-group" :title="t('database.schema')">
                   <i class="input-group-addon addon-sm mdi mdi-24px mdi-database" />
 
                   <BaseSelect
                      v-model="selectedSchema"
-                     :options="[{value: null, label: t('message.noSchema')}, ...databaseSchemas.map(el => ({label: el, value: el}))]"
+                     :options="[{value: null, label: t('database.noSchema')}, ...databaseSchemas.map(el => ({label: el, value: el}))]"
                      class="form-select select-sm text-bold"
                   />
                </div>
@@ -468,7 +468,7 @@ const commitTab = async () => {
 
       await Schema.commitTab(params);
       setUnsavedChanges({ uid: props.connection.uid, tUid: props.tabUid, isChanged: false });
-      addNotification({ status: 'success', message: t('message.actionSuccessful', { action: 'COMMIT' }) });
+      addNotification({ status: 'success', message: t('general.actionSuccessful', { action: 'COMMIT' }) });
    }
    catch (err) {
       addNotification({ status: 'error', message: err.stack });
@@ -487,7 +487,7 @@ const rollbackTab = async () => {
 
       await Schema.rollbackTab(params);
       setUnsavedChanges({ uid: props.connection.uid, tUid: props.tabUid, isChanged: false });
-      addNotification({ status: 'success', message: t('message.actionSuccessful', { action: 'ROLLBACK' }) });
+      addNotification({ status: 'success', message: t('general.actionSuccessful', { action: 'ROLLBACK' }) });
    }
    catch (err) {
       addNotification({ status: 'error', message: err.stack });

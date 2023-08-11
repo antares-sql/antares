@@ -21,81 +21,81 @@
             <div class="tr">
                <div class="th">
                   <div class="text-right">
-                     {{ t('word.order') }}
+                     {{ t('database.order') }}
                   </div>
                </div>
                <div class="th">
                   <div class="table-column-title">
-                     {{ t('word.key', 2) }}
+                     {{ t('database.key', 2) }}
                   </div>
                </div>
                <div class="th">
                   <div class="column-resizable min-100">
                      <div class="table-column-title">
-                        {{ t('word.name') }}
+                        {{ t('general.name') }}
                      </div>
                   </div>
                </div>
                <div class="th">
                   <div class="column-resizable min-100">
                      <div class="table-column-title">
-                        {{ t('word.type') }}
+                        {{ t('database.type') }}
                      </div>
                   </div>
                </div>
                <div v-if="customizations.tableArray" class="th">
                   <div class="column-resizable">
                      <div class="table-column-title">
-                        {{ t('word.array') }}
+                        {{ t('database.array') }}
                      </div>
                   </div>
                </div>
                <div class="th">
                   <div class="column-resizable">
                      <div class="table-column-title">
-                        {{ t('word.length') }}
+                        {{ t('database.length') }}
                      </div>
                   </div>
                </div>
                <div v-if="customizations.unsigned" class="th">
                   <div class="column-resizable">
                      <div class="table-column-title">
-                        {{ t('word.unsigned') }}
+                        {{ t('database.unsigned') }}
                      </div>
                   </div>
                </div>
                <div v-if="customizations.nullable" class="th">
                   <div class="column-resizable">
                      <div class="table-column-title">
-                        {{ t('message.allowNull') }}
+                        {{ t('database.allowNull') }}
                      </div>
                   </div>
                </div>
                <div v-if="customizations.zerofill" class="th">
                   <div class="column-resizable">
                      <div class="table-column-title">
-                        {{ t('message.zeroFill') }}
+                        {{ t('database.zeroFill') }}
                      </div>
                   </div>
                </div>
                <div class="th">
                   <div class="column-resizable">
                      <div class="table-column-title">
-                        {{ t('word.default') }}
+                        {{ t('database.default') }}
                      </div>
                   </div>
                </div>
                <div v-if="customizations.comment" class="th">
                   <div class="column-resizable">
                      <div class="table-column-title">
-                        {{ t('word.comment') }}
+                        {{ t('database.comment') }}
                      </div>
                   </div>
                </div>
                <div v-if="customizations.collation" class="th">
                   <div class="column-resizable min-100">
                      <div class="table-column-title">
-                        {{ t('word.collation') }}
+                        {{ t('database.collation') }}
                      </div>
                   </div>
                </div>

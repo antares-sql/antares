@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <i class="mdi mdi-24px mdi-brush-variant mr-1" />
-                     <span class="cut-text">{{ t('message.editConnectionAppearance') }}</span>
+                     <span class="cut-text">{{ t('connection.editConnectionAppearance') }}</span>
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -17,7 +17,7 @@
                   <form class="form-horizontal">
                      <div class="form-group mb-4">
                         <div class="col-3">
-                           <label class="form-label">{{ t('word.label') }}</label>
+                           <label class="form-label">{{ t('application.label') }}</label>
                         </div>
                         <div class="col-9">
                            <input
@@ -31,7 +31,7 @@
                      </div>
                      <div class="form-group">
                         <div class="col-3">
-                           <label class="form-label">{{ t('word.icon') }}</label>
+                           <label class="form-label">{{ t('application.icon') }}</label>
                         </div>
                         <div class="col-9 icons-wrapper">
                            <div
@@ -49,10 +49,10 @@
             </div>
             <div class="modal-footer">
                <button class="btn btn-primary mr-2" @click.stop="editFolderAppearance">
-                  {{ t('word.update') }}
+                  {{ t('application.update') }}
                </button>
                <button class="btn btn-link" @click.stop="closeModal">
-                  {{ t('word.close') }}
+                  {{ t('general.close') }}
                </button>
             </div>
          </div>

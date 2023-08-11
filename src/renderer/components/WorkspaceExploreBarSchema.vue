@@ -60,7 +60,7 @@
                   @contextmenu.prevent="showMiscFolderContext($event, 'trigger')"
                >
                   <i class="misc-icon mdi mdi-18px mdi-folder-cog mr-1" />
-                  {{ t('word.trigger', 2) }}
+                  {{ t('database.trigger', 2) }}
                </summary>
                <div class="accordion-body">
                   <div>
@@ -82,7 +82,7 @@
                            <div
                               v-if="trigger.enabled === false"
                               class="tooltip tooltip-left disabled-indicator"
-                              :data-tooltip="t('word.disabled')"
+                              :data-tooltip="t('general.disabled')"
                            >
                               <i class="table-icon mdi mdi-pause mdi-18px mr-1" />
                            </div>
@@ -101,7 +101,7 @@
                   @contextmenu.prevent="showMiscFolderContext($event, 'routine')"
                >
                   <i class="misc-icon mdi mdi-18px mdi-folder-sync mr-1" />
-                  {{ t('word.storedRoutine', 2) }}
+                  {{ t('database.storedRoutine', 2) }}
                </summary>
                <div class="accordion-body">
                   <div>
@@ -134,7 +134,7 @@
                   @contextmenu.prevent="showMiscFolderContext($event, 'triggerFunction')"
                >
                   <i class="misc-icon mdi mdi-18px mdi-folder-refresh mr-1" />
-                  {{ t('word.triggerFunction', 2) }}
+                  {{ t('database.triggerFunction', 2) }}
                </summary>
                <div class="accordion-body">
                   <div>
@@ -167,7 +167,7 @@
                   @contextmenu.prevent="showMiscFolderContext($event, 'function')"
                >
                   <i class="misc-icon mdi mdi-18px mdi-folder-move mr-1" />
-                  {{ t('word.function', 2) }}
+                  {{ t('database.function', 2) }}
                </summary>
                <div class="accordion-body">
                   <div>
@@ -200,7 +200,7 @@
                   @contextmenu.prevent="showMiscFolderContext($event, 'scheduler')"
                >
                   <i class="misc-icon mdi mdi-18px mdi-folder-clock mr-1" />
-                  {{ t('word.scheduler', 2) }}
+                  {{ t('database.scheduler', 2) }}
                </summary>
                <div class="accordion-body">
                   <div>
@@ -222,7 +222,7 @@
                            <div
                               v-if="scheduler.enabled === false"
                               class="tooltip tooltip-left disabled-indicator"
-                              :data-tooltip="t('word.disabled')"
+                              :data-tooltip="t('general.disabled')"
                            >
                               <i class="table-icon mdi mdi-pause mdi-18px mr-1" />
                            </div>

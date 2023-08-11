@@ -16,15 +16,15 @@
       </div>
       <ConfirmModal
          v-if="isInfoModal"
-         :confirm-text="t('word.update')"
-         :cancel-text="t('word.close')"
+         :confirm-text="t('application.update')"
+         :cancel-text="t('general.close')"
          size="medium"
          :hide-footer="true"
          @hide="hideInfoModal"
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-information-outline mr-1" /> {{ t('message.processInfo') }}
+               <i class="mdi mdi-24px mdi-information-outline mr-1" /> {{ t('database.processInfo') }}
             </div>
          </template>
          <template #body>

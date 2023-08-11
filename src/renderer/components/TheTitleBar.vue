@@ -63,7 +63,7 @@ const isLinux = process.platform === 'linux';
 
 const windowTitle = computed(() => {
    if (!selectedWorkspace.value) return '';
-   if (selectedWorkspace.value === 'NEW') return t('message.createNewConnection');
+   if (selectedWorkspace.value === 'NEW') return t('connection.createNewConnection');
 
    const connectionName = getConnectionName(selectedWorkspace.value);
    const workspace = getWorkspace(selectedWorkspace.value);

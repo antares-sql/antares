@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <i class="mdi mdi-24px mdi-database-export mr-1" />
-                     <span class="cut-text">{{ t('message.exportSchema') }}</span>
+                     <span class="cut-text">{{ t('database.exportSchema') }}</span>
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -16,7 +16,7 @@
                <div class="container">
                   <div class="columns">
                      <div class="col-3">
-                        <label class="form-label">{{ t('message.directoryPath') }}</label>
+                        <label class="form-label">{{ t('general.directoryPath') }}</label>
                      </div>
                      <div class="col-9">
                         <fieldset class="input-group">
@@ -26,14 +26,14 @@
                               type="text"
                               required
                               readonly
-                              :placeholder="t('message.schemaName')"
+                              :placeholder="t('database.schemaName')"
                            >
                            <button
                               type="button"
                               class="btn btn-primary input-group-btn"
                               @click.prevent="openPathDialog"
                            >
-                              {{ t('word.change') }}
+                              {{ t('general.change') }}
                            </button>
                         </fieldset>
                      </div>
@@ -42,35 +42,41 @@
 
                <div class="columns export-options">
                   <div class="column col-8 left">
-                     <div class="columns mb-2">
-                        <div class="column col-auto d-flex text-italic ">
-                           <i class="mdi mdi-file-document-outline mr-2" />
-                           {{ filename }}
+                     <div class="columns mb-2 mt-1 p-vcentered">
+                        <div class="column col-auto input-group d-flex text-italic" :style="'flex-grow: 1'">
+                           <i class="input-group-addon mdi mdi-file-document-outline" />
+                           <input
+                              v-model="chosenFilename"
+                              class="form-input"
+                              type="text"
+                              :placeholder="filename"
+                              :title="t('application.fileName')"
+                           >
                         </div>
 
                         <div class="column col-auto col-ml-auto ">
                            <button
                               class="btn btn-dark btn-sm"
-                              :title="t('word.refresh')"
+                              :title="t('general.refresh')"
                               @click="refresh"
                            >
-                              <i class="mdi mdi-database-refresh" />
+                              <i class="mdi mdi-refresh" />
                            </button>
                            <button
                               class="btn btn-dark btn-sm mx-1"
-                              :title="t('message.uncheckAllTables')"
+                              :title="t('database.uncheckAllTables')"
                               :disabled="isRefreshing"
                               @click="uncheckAllTables"
                            >
-                              <i class="mdi mdi-file-tree-outline" />
+                              <i class="mdi mdi-checkbox-blank-outline" />
                            </button>
                            <button
                               class="btn btn-dark btn-sm"
-                              :title="t('message.checkAllTables')"
+                              :title="t('database.checkAllTables')"
                               :disabled="isRefreshing"
                               @click="checkAllTables"
                            >
-                              <i class="mdi mdi-file-tree" />
+                              <i class="mdi mdi-checkbox-marked-outline" />
                            </button>
                         </div>
                      </div>
@@ -122,22 +128,22 @@
                               <div class="tr">
                                  <div class="th" :style="'width: 50%;'">
                                     <div class="table-column-title">
-                                       <span>{{ t('word.table') }}</span>
+                                       <span>{{ t('database.table') }}</span>
                                     </div>
                                  </div>
                                  <div class="th text-center">
                                     <div class="table-column-title">
-                                       <span>{{ t('word.structure') }}</span>
+                                       <span>{{ t('database.structure') }}</span>
                                     </div>
                                  </div>
                                  <div class="th text-center">
                                     <div class="table-column-title">
-                                       <span>{{ t('word.content') }}</span>
+                                       <span>{{ t('general.content') }}</span>
                                     </div>
                                  </div>
                                  <div class="th text-center">
                                     <div class="table-column-title">
-                                       <span>{{ t('word.drop') }}</span>
+                                       <span>{{ t('database.drop') }}</span>
                                     </div>
                                  </div>
                               </div>
@@ -148,6 +154,7 @@
                                  v-for="item in tables"
                                  :key="item.table"
                                  class="tr"
+                                 :class="{'selected': item.table === selectedTable}"
                               >
                                  <div class="td">
                                     {{ item.table }}
@@ -183,19 +190,19 @@
                   </div>
                   <div class="column col-4">
                      <h5 class="h5">
-                        {{ t('word.options') }}
+                        {{ t('general.options') }}
                      </h5>
-                     <span class="h6">{{ t('word.includes') }}:</span>
+                     <span class="h6">{{ t('general.includes') }}:</span>
                      <label
                         v-for="(_, key) in options.includes"
                         :key="key"
                         class="form-checkbox"
                      >
-                        <input v-model="options.includes[key]" type="checkbox"><i class="form-icon" /> {{ t(`word.${key}`, 2) }}
+                        <input v-model="options.includes[key]" type="checkbox"><i class="form-icon" /> {{ t(`database.${String(key).slice(0, -1)}`, 2) }}
                      </label>
                      <div v-if="clientCustoms.exportByChunks">
                         <div class="h6 mt-4 mb-2">
-                           {{ t('message.newInsertStmtEvery') }}:
+                           {{ t('database.newInsertStmtEvery') }}:
                         </div>
                         <div class="columns">
                            <div class="column col-6">
@@ -209,21 +216,21 @@
                               <BaseSelect
                                  v-model="options.sqlInsertDivider"
                                  class="form-select"
-                                 :options="[{value: 'bytes', label: 'KiB'}, {value: 'rows', label: t('word.row', 2)}]"
+                                 :options="[{value: 'bytes', label: 'KiB'}, {value: 'rows', label: t('database.row', 2)}]"
                               />
                            </div>
                         </div>
                      </div>
 
                      <div class="h6 mb-2 mt-4">
-                        {{ t('message.outputFormat') }}:
+                        {{ t('general.outputFormat') }}:
                      </div>
                      <div class="columns">
                         <div class="column h5 mb-4">
                            <BaseSelect
                               v-model="options.outputFormat"
                               class="form-select"
-                              :options="[{value: 'sql', label: t('message.singleFile', {ext: '.sql'})}, {value: 'sql.zip', label: t('message.zipCompressedFile', {ext: '.sql'})}]"
+                              :options="[{value: 'sql', label: t('general.singleFile', {ext: '.sql'})}, {value: 'sql.zip', label: t('general.zipCompressedFile', {ext: '.sql'})}]"
                            />
                         </div>
                      </div>
@@ -245,7 +252,7 @@
                </div>
                <div class="column col-auto px-0">
                   <button class="btn btn-link" @click.stop="closeModal">
-                     {{ t('word.close') }}
+                     {{ t('general.close') }}
                   </button>
                   <button
                      class="btn btn-primary mr-2"
@@ -254,7 +261,7 @@
                      autofocus
                      @click.prevent="startExport"
                   >
-                     {{ t('word.export') }}
+                     {{ t('database.export') }}
                   </button>
                </div>
             </div>
@@ -272,6 +279,7 @@ import { useI18n } from 'vue-i18n';
 import { ClientCode, SchemaInfos } from 'common/interfaces/antares';
 import { ExportOptions, ExportState } from 'common/interfaces/exporter';
 import { useNotificationsStore } from '@/stores/notifications';
+import { useSchemaExportStore } from '@/stores/schemaExport';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import Application from '@/ipc-api/Application';
@@ -279,15 +287,12 @@ import Schema from '@/ipc-api/Schema';
 import { Customizations } from 'common/interfaces/customizations';
 import BaseSelect from '@/components/BaseSelect.vue';
 
-const props = defineProps({
-   selectedSchema: String
-});
-
 const emit = defineEmits(['close']);
 const { t } = useI18n();
 
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
+const schemaExportStore = useSchemaExportStore();
 
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
@@ -297,6 +302,8 @@ const {
    getWorkspace,
    refreshSchema
 } = workspacesStore;
+
+const { selectedTable, selectedSchema } = storeToRefs(schemaExportStore);
 
 const isExporting = ref(false);
 const isRefreshing = ref(false);
@@ -309,18 +316,19 @@ const tables: Ref<{
    includeDropStatement: boolean;
 }[]> = ref([]);
 const options: Ref<Partial<ExportOptions>> = ref({
-   schema: props.selectedSchema,
+   schema: selectedSchema.value,
    includes: {} as {[key: string]: boolean},
    outputFormat: 'sql' as 'sql' | 'sql.zip',
    sqlInsertAfter: 250,
    sqlInsertDivider: 'bytes' as 'bytes' | 'rows'
 });
 const basePath = ref('');
+const chosenFilename = ref('');
 
 const currentWorkspace = computed(() => getWorkspace(selectedWorkspace.value));
 const clientCustoms: Ref<Customizations> = computed(() => currentWorkspace.value.customizations);
 const schemaItems = computed(() => {
-   const db: SchemaInfos = currentWorkspace.value.structure.find((db: SchemaInfos) => db.name === props.selectedSchema);
+   const db: SchemaInfos = currentWorkspace.value.structure.find((db: SchemaInfos) => db.name === selectedSchema.value);
    if (db)
       return db.tables.filter(table => table.type === 'table');
 
@@ -328,9 +336,9 @@ const schemaItems = computed(() => {
 });
 const filename = computed(() => {
    const date = moment().format('YYYY-MM-DD_HH-mm-ss');
-   return `${props.selectedSchema}_${date}.${options.value.outputFormat}`;
+   return `${selectedTable.value || selectedSchema.value}_${date}`;
 });
-const dumpFilePath = computed(() => `${basePath.value}/${filename.value}`);
+const dumpFilePath = computed(() => `${basePath.value}/${chosenFilename.value || filename.value}.${options.value.outputFormat}`);
 const includeStructureStatus = computed(() => {
    if (tables.value.every(item => item.includeStructure)) return 1;
    else if (tables.value.some(item => item.includeStructure)) return 2;
@@ -353,7 +361,7 @@ const startExport = async () => {
    const params = {
       uid,
       type: client,
-      schema: props.selectedSchema,
+      schema: selectedSchema.value,
       outputFile: dumpFilePath.value,
       tables: [...tables.value],
       ...options.value
@@ -362,7 +370,7 @@ const startExport = async () => {
    try {
       const { status, response } = await Schema.export(params);
       if (status === 'success')
-         progressStatus.value = response.cancelled ? t('word.aborted') : t('word.completed');
+         progressStatus.value = response.cancelled ? t('general.aborted') : t('general.completed');
       else {
          progressStatus.value = response;
          addNotification({ status: 'error', message: response });
@@ -379,13 +387,13 @@ const updateProgress = (event: Event, state: ExportState) => {
    progressPercentage.value = Number((state.currentItemIndex / state.totalItems * 100).toFixed(1));
    switch (state.op) {
       case 'PROCESSING':
-         progressStatus.value = t('message.processingTableExport', { table: state.currentItem });
+         progressStatus.value = t('database.processingTableExport', { table: state.currentItem });
          break;
       case 'FETCH':
-         progressStatus.value = t('message.fetchingTableExport', { table: state.currentItem });
+         progressStatus.value = t('database.fetchingTableExport', { table: state.currentItem });
          break;
       case 'WRITE':
-         progressStatus.value = t('message.writingTableExport', { table: state.currentItem });
+         progressStatus.value = t('database.writingTableExport', { table: state.currentItem });
          break;
    }
 };
@@ -431,7 +439,7 @@ const toggleAllTablesOption = (option: 'includeStructure' | 'includeContent' |'i
 
 const refresh = async () => {
    isRefreshing.value = true;
-   await refreshSchema({ uid: currentWorkspace.value.uid, schema: props.selectedSchema });
+   await refreshSchema({ uid: currentWorkspace.value.uid, schema: selectedSchema.value });
    isRefreshing.value = false;
 };
 
@@ -446,12 +454,31 @@ const openPathDialog = async () => {
 
    window.addEventListener('keydown', onKey);
 
+   if (selectedTable.value) {
+      setTimeout(() => {
+         const element = document.querySelector<HTMLElement>('.modal.active .selected');
+
+         if (element) {
+            const rect = element.getBoundingClientRect();
+            const elemTop = rect.top;
+            const elemBottom = rect.bottom;
+            const isVisible = (elemTop >= 0) && (elemBottom <= window.innerHeight);
+
+            if (!isVisible) {
+               element.setAttribute('tabindex', '-1');
+               element.focus();
+               element.removeAttribute('tabindex');
+            }
+         }
+      }, 100);
+   }
+
    basePath.value = await Application.getDownloadPathDirectory();
    tables.value = schemaItems.value.map(item => ({
       table: item.name,
-      includeStructure: true,
-      includeContent: true,
-      includeDropStatement: true
+      includeStructure: !selectedTable.value ? true : selectedTable.value === item.name,
+      includeContent: !selectedTable.value ? true : selectedTable.value === item.name,
+      includeDropStatement: !selectedTable.value ? true : selectedTable.value === item.name
    }));
 
    const structure = ['functions', 'views', 'triggers', 'routines', 'schedulers'];
@@ -459,7 +486,7 @@ const openPathDialog = async () => {
    structure.forEach((feat: keyof Customizations) => {
       const val = clientCustoms.value[feat];
       if (val)
-         options.value.includes[feat] = true;
+         options.value.includes[feat] = !selectedTable.value;
    });
 
    ipcRenderer.on('export-progress', updateProgress);

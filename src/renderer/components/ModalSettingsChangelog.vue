@@ -18,6 +18,7 @@ import { marked } from 'marked';
 import BaseLoader from '@/components/BaseLoader.vue';
 import { useApplicationStore } from '@/stores/application';
 import { ref } from 'vue';
+import { shell } from 'electron';
 
 const { appVersion } = useApplicationStore();
 
@@ -25,6 +26,10 @@ const changelog = ref('');
 const isLoading = ref(true);
 const error = ref('');
 const isError = ref(false);
+
+const openOutside = (link: string) => {
+   shell.openExternal(link);
+};
 
 const getChangelog = async () => {
    try {
@@ -40,7 +45,7 @@ const getChangelog = async () => {
 
       const renderer = {
          link (href: string, title: string, text: string) {
-            return text;
+            return `<a class="changelog-link" href="${href}" title="${title || ''}" target="_blank">${text}</a>`;
          },
          listitem (text: string) {
             return `<li>${text.replace(/ *\([^)]*\) */g, '')}</li>`;
@@ -57,6 +62,17 @@ const getChangelog = async () => {
    }
 
    isLoading.value = false;
+
+   setTimeout(() => {
+      const links = document.querySelectorAll<HTMLAnchorElement>('.changelog-link');
+
+      for (const link of links) {
+         link.addEventListener('click', e => {
+            e.preventDefault();
+            openOutside(link.href);
+         });
+      }
+   }, 0);
 };
 
 getChangelog();

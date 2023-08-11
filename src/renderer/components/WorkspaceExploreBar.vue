@@ -13,7 +13,7 @@
             <div
                v-if="customizations.database"
                class="workspace-explorebar-database-switch"
-               :title="t('message.switchDatabase')"
+               :title="t('database.switchDatabase')"
             >
                <BaseSelect
                   v-model="selectedDatabase"
@@ -26,18 +26,18 @@
                <i
                   v-if="customizations.schemas"
                   class="mdi mdi-18px mdi-database-plus c-hand mr-2"
-                  :title="t('message.createNewSchema')"
+                  :title="t('database.createNewSchema')"
                   @click="showNewDBModal"
                />
                <i
                   class="mdi mdi-18px mdi-refresh c-hand mr-2"
                   :class="{'rotate':isRefreshing}"
-                  :title="t('word.refresh')"
+                  :title="t('general.refresh')"
                   @click="refresh"
                />
                <i
                   class="mdi mdi-18px mdi-power c-hand"
-                  :title="t('word.disconnect')"
+                  :title="t('connection.disconnect')"
                   @click="disconnectWorkspace(connection.uid)"
                />
             </span>
@@ -46,7 +46,7 @@
             <div v-if="workspace.connectionStatus === 'connected'" class="input-group has-icon-right">
                <div
                   class="input-group-addon px-1 py-0 p-vcentered c-hand"
-                  :title="t('message.switchSearchMethod')"
+                  :title="t('application.switchSearchMethod')"
                   @click="toggleSearchMethod"
                >
                   <i class="mdi mdi-18px" :class="[searchMethod === 'elements' ? 'mdi-shape' : 'mdi-database']" />
@@ -56,7 +56,7 @@
                   v-model="searchTerm"
                   class="form-input input-sm"
                   type="text"
-                  :placeholder="searchMethod === 'elements' ? t('message.searchForElements') : t('message.searchForSchemas')"
+                  :placeholder="searchMethod === 'elements' ? t('database.searchForElements') : t('database.searchForSchemas')"
                >
                <i v-if="!searchTerm" class="form-icon mdi mdi-magnify mdi-18px" />
                <i

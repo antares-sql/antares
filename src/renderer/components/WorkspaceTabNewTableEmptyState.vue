@@ -1,12 +1,12 @@
 <template>
    <div class="column col-12 empty">
       <p class="h6 empty-subtitle">
-         {{ t('message.thereAreNoTableFields') }}
+         {{ t('database.thereAreNoTableFields') }}
       </p>
       <div class="empty-action">
          <button class="btn btn-gray d-flex" @click="emit('new-field')">
             <i class="mdi mdi-24px mdi-playlist-plus mr-2" />
-            {{ t('message.addNewField') }}
+            {{ t('database.addNewField') }}
          </button>
       </div>
    </div>

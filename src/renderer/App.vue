@@ -21,7 +21,15 @@
             <BaseTextEditor class="d-none" value="" />
          </div>
       </div>
-      <ModalAllConnections v-if="isAllConnectionsModal" @close="isAllConnectionsModal = false" />
+      <ModalAllConnections
+         v-if="isAllConnectionsModal"
+         @close="isAllConnectionsModal = false"
+      />
+
+      <ModalExportSchema
+         v-if="isExportSchemaModal"
+         @close="hideExportModal"
+      />
    </div>
 </template>
 
@@ -33,9 +41,11 @@ import { useI18n } from 'vue-i18n';
 import { Menu, getCurrentWindow } from '@electron/remote';
 import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
+import { useSchemaExportStore } from '@/stores/schemaExport';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
 import TheSettingBar from '@/components/TheSettingBar.vue';
+import ModalExportSchema from '@/components/ModalExportSchema.vue';
 
 const { t } = useI18n();
 
@@ -64,6 +74,10 @@ const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const { checkVersionUpdate } = applicationStore;
 const { changeApplicationTheme } = settingsStore;
+
+const schemaExportStore = useSchemaExportStore();
+const { hideExportModal } = schemaExportStore;
+const { isExportModal: isExportSchemaModal } = storeToRefs(schemaExportStore);
 
 const isAllConnectionsModal: Ref<boolean> = ref(false);
 
@@ -95,22 +109,22 @@ onMounted(() => {
 
    const InputMenu = Menu.buildFromTemplate([
       {
-         label: t('word.cut'),
+         label: t('general.cut'),
          role: 'cut'
       },
       {
-         label: t('word.copy'),
+         label: t('general.copy'),
          role: 'copy'
       },
       {
-         label: t('word.paste'),
+         label: t('general.paste'),
          role: 'paste'
       },
       {
          type: 'separator'
       },
       {
-         label: t('message.selectAll'),
+         label: t('general.selectAll'),
          role: 'selectAll'
       }
    ]);

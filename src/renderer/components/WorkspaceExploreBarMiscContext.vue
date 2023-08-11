@@ -8,7 +8,7 @@
          class="context-element"
          @click="runElementCheck"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-play text-light pr-1" /> {{ t('word.run') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-play text-light pr-1" /> {{ t('general.run') }}</span>
       </div>
       <div
          v-if="selectedMisc.type === 'trigger' && customizations.triggerEnableDisable"
@@ -16,10 +16,10 @@
          @click="toggleTrigger"
       >
          <span v-if="!selectedMisc.enabled" class="d-flex">
-            <i class="mdi mdi-18px mdi-play text-light pr-1" /> {{ t('word.enable') }}
+            <i class="mdi mdi-18px mdi-play text-light pr-1" /> {{ t('general.enable') }}
          </span>
          <span v-else class="d-flex">
-            <i class="mdi mdi-18px mdi-pause text-light pr-1" /> {{ t('word.disable') }}
+            <i class="mdi mdi-18px mdi-pause text-light pr-1" /> {{ t('general.disable') }}
          </span>
       </div>
       <div
@@ -28,14 +28,14 @@
          @click="toggleScheduler"
       >
          <span v-if="!selectedMisc.enabled" class="d-flex">
-            <i class="mdi mdi-18px mdi-play text-light pr-1" /> {{ t('word.enable') }}
+            <i class="mdi mdi-18px mdi-play text-light pr-1" /> {{ t('general.enable') }}
          </span>
          <span v-else class="d-flex">
-            <i class="mdi mdi-18px mdi-pause text-light pr-1" /> {{ t('word.disable') }}
+            <i class="mdi mdi-18px mdi-pause text-light pr-1" /> {{ t('general.disable') }}
          </span>
       </div>
       <div class="context-element" @click="showDeleteModal">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-table-remove text-light pr-1" /> {{ t('word.delete') }}</span>
+         <span class="d-flex"><i class="mdi mdi-18px mdi-table-remove text-light pr-1" /> {{ t('general.delete') }}</span>
       </div>
       <ConfirmModal
          v-if="isDeleteModal"
@@ -50,7 +50,7 @@
          </template>
          <template #body>
             <div class="mb-2">
-               {{ t('message.deleteConfirm') }} "<b>{{ selectedMisc.name }}</b>"?
+               {{ t('general.deleteConfirm') }} "<b>{{ selectedMisc.name }}</b>"?
             </div>
          </template>
       </ConfirmModal>
@@ -117,14 +117,14 @@ const customizations = computed(() => {
 const deleteMessage = computed(() => {
    switch (props.selectedMisc.type) {
       case 'trigger':
-         return t('message.deleteTrigger');
+         return t('database.deleteTrigger');
       case 'procedure':
-         return t('message.deleteRoutine');
+         return t('database.deleteRoutine');
       case 'function':
       case 'triggerFunction':
-         return t('message.deleteFunction');
+         return t('database.deleteFunction');
       case 'scheduler':
-         return t('message.deleteScheduler');
+         return t('database.deleteScheduler');
       default:
          return '';
    }

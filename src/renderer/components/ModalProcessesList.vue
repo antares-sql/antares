@@ -17,7 +17,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <i class="mdi mdi-24px mdi-memory mr-1" />
-                     <span class="cut-text">{{ t('message.processesList') }}: {{ connectionName }}</span>
+                     <span class="cut-text">{{ t('database.processesList') }}: {{ connectionName }}</span>
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -29,7 +29,7 @@
                         <button
                            class="btn btn-dark btn-sm mr-0 pr-1 d-flex"
                            :class="{'loading':isQuering}"
-                           :title="`${t('word.refresh')}`"
+                           :title="`${t('general.refresh')}`"
                            @click="getProcessesList"
                         >
                            <i v-if="!+autorefreshTimer" class="mdi mdi-24px mdi-refresh mr-1" />
@@ -39,7 +39,7 @@
                            <i class="mdi mdi-24px mdi-menu-down" />
                         </div>
                         <div class="menu px-3">
-                           <span>{{ t('word.autoRefresh') }}: <b>{{ +autorefreshTimer ? `${autorefreshTimer}s` : 'OFF' }}</b></span>
+                           <span>{{ t('general.autoRefresh') }}: <b>{{ +autorefreshTimer ? `${autorefreshTimer}s` : 'OFF' }}</b></span>
                            <input
                               v-model="autorefreshTimer"
                               class="slider no-border"
@@ -59,7 +59,7 @@
                         tabindex="0"
                      >
                         <i class="mdi mdi-24px mdi-file-export mr-1" />
-                        <span>{{ t('word.export') }}</span>
+                        <span>{{ t('database.export') }}</span>
                         <i class="mdi mdi-24px mdi-menu-down" />
                      </button>
                      <ul class="menu text-left">
@@ -74,7 +74,7 @@
                </div>
                <div class="workspace-query-info">
                   <div v-if="sortedResults.length">
-                     {{ t('word.processes') }}: <b>{{ sortedResults.length.toLocaleString() }}</b>
+                     {{ t('database.processes') }}: <b>{{ sortedResults.length.toLocaleString() }}</b>
                   </div>
                </div>
             </div>

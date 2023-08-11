@@ -10,20 +10,20 @@
                   @click="saveChanges"
                >
                   <i class="mdi mdi-24px mdi-content-save mr-1" />
-                  <span>{{ t('word.save') }}</span>
+                  <span>{{ t('general.save') }}</span>
                </button>
                <button
                   :disabled="!isChanged"
                   class="btn btn-link btn-sm mr-0"
-                  :title="t('message.clearChanges')"
+                  :title="t('database.clearChanges')"
                   @click="clearChanges"
                >
                   <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
-                  <span>{{ t('word.clear') }}</span>
+                  <span>{{ t('general.clear') }}</span>
                </button>
             </div>
             <div class="workspace-query-info">
-               <div class="d-flex" :title="t('word.schema')">
+               <div class="d-flex" :title="t('database.schema')">
                   <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
                </div>
             </div>
@@ -33,7 +33,7 @@
          <div class="columns">
             <div class="column col-auto">
                <div class="form-group">
-                  <label class="form-label">{{ t('word.name') }}</label>
+                  <label class="form-label">{{ t('general.name') }}</label>
                   <input
                      ref="firstInput"
                      v-model="localTrigger.name"
@@ -44,11 +44,11 @@
             </div>
             <div v-if="customizations.definer" class="column col-auto">
                <div class="form-group">
-                  <label class="form-label">{{ t('word.definer') }}</label>
+                  <label class="form-label">{{ t('database.definer') }}</label>
                   <BaseSelect
                      v-model="localTrigger.definer"
                      :options="users"
-                     :option-label="(user: any) => user.value === '' ? t('message.currentUser') : `${user.name}@${user.host}`"
+                     :option-label="(user: any) => user.value === '' ? t('database.currentUser') : `${user.name}@${user.host}`"
                      :option-track-by="(user: any) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
                      class="form-select"
                   />
@@ -57,7 +57,7 @@
             <fieldset class="column columns mb-0" :disabled="customizations.triggerOnlyRename">
                <div class="column col-auto">
                   <div class="form-group">
-                     <label class="form-label">{{ t('word.table') }}</label>
+                     <label class="form-label">{{ t('database.table') }}</label>
                      <BaseSelect
                         v-model="localTrigger.table"
                         :options="schemaTables"
@@ -69,7 +69,7 @@
                </div>
                <div class="column col-auto">
                   <div class="form-group">
-                     <label class="form-label">{{ t('word.event') }}</label>
+                     <label class="form-label">{{ t('database.event') }}</label>
                      <div class="input-group">
                         <BaseSelect
                            v-model="localTrigger.activation"
@@ -100,7 +100,7 @@
       </div>
       <div class="workspace-query-results column col-12 mt-2 p-relative">
          <BaseLoader v-if="isLoading" />
-         <label class="form-label ml-2">{{ t('message.triggerStatement') }}</label>
+         <label class="form-label ml-2">{{ t('database.triggerStatement') }}</label>
          <QueryEditor
             v-show="isSelected"
             ref="queryEditor"

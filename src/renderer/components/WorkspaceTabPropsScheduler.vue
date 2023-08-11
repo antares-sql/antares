@@ -10,26 +10,26 @@
                   @click="saveChanges"
                >
                   <i class="mdi mdi-24px mdi-content-save mr-1" />
-                  <span>{{ t('word.save') }}</span>
+                  <span>{{ t('general.save') }}</span>
                </button>
                <button
                   :disabled="!isChanged"
                   class="btn btn-link btn-sm mr-0"
-                  :title="t('message.clearChanges')"
+                  :title="t('database.clearChanges')"
                   @click="clearChanges"
                >
                   <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
-                  <span>{{ t('word.clear') }}</span>
+                  <span>{{ t('general.clear') }}</span>
                </button>
 
                <div class="divider-vert py-3" />
                <button class="btn btn-dark btn-sm" @click="showTimingModal">
                   <i class="mdi mdi-24px mdi-timer mr-1" />
-                  <span>{{ t('word.timing') }}</span>
+                  <span>{{ t('database.timing') }}</span>
                </button>
             </div>
             <div class="workspace-query-info">
-               <div class="d-flex" :title="t('word.schema')">
+               <div class="d-flex" :title="t('database.schema')">
                   <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
                </div>
             </div>
@@ -39,7 +39,7 @@
          <div class="columns">
             <div class="column col-auto">
                <div class="form-group">
-                  <label class="form-label">{{ t('word.name') }}</label>
+                  <label class="form-label">{{ t('general.name') }}</label>
                   <input
                      v-model="localScheduler.name"
                      class="form-input"
@@ -49,11 +49,11 @@
             </div>
             <div class="column col-auto">
                <div class="form-group">
-                  <label class="form-label">{{ t('word.definer') }}</label>
+                  <label class="form-label">{{ t('database.definer') }}</label>
                   <BaseSelect
                      v-model="localScheduler.definer"
                      :options="users"
-                     :option-label="(user: any) => user.value === '' ? t('message.currentUser') : `${user.name}@${user.host}`"
+                     :option-label="(user: any) => user.value === '' ? t('database.currentUser') : `${user.name}@${user.host}`"
                      :option-track-by="(user: any) => user.value === '' ? '' : `\`${user.name}\`@\`${user.host}\``"
                      class="form-select"
                   />
@@ -61,7 +61,7 @@
             </div>
             <div class="column">
                <div class="form-group">
-                  <label class="form-label">{{ t('word.comment') }}</label>
+                  <label class="form-label">{{ t('database.comment') }}</label>
                   <input
                      v-model="localScheduler.comment"
                      class="form-input"
@@ -71,7 +71,7 @@
             </div>
             <div class="column">
                <div class="form-group">
-                  <label class="form-label mr-2">{{ t('word.state') }}</label>
+                  <label class="form-label mr-2">{{ t('database.state') }}</label>
                   <label class="form-radio form-inline">
                      <input
                         v-model="localScheduler.state"
@@ -102,7 +102,7 @@
       </div>
       <div class="workspace-query-results column col-12 mt-2 p-relative">
          <BaseLoader v-if="isLoading" />
-         <label class="form-label ml-2">{{ t('message.schedulerBody') }}</label>
+         <label class="form-label ml-2">{{ t('database.schedulerBody') }}</label>
          <QueryEditor
             v-show="isSelected"
             ref="queryEditor"
