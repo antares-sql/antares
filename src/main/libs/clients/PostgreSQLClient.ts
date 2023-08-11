@@ -1,11 +1,11 @@
 import * as antares from 'common/interfaces/antares';
-import * as mysql from 'mysql2';
 import * as pg from 'pg';
 import * as pgAst from 'pgsql-ast-parser';
 import { AntaresCore } from '../AntaresCore';
 import dataTypes from 'common/data-types/postgresql';
 import SSH2Promise = require('ssh2-promise');
 import SSHConfig from 'ssh2-promise/lib/sshConfig';
+import { ConnectionOptions } from 'tls';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function pgToString (value: any) {
@@ -98,7 +98,7 @@ export class PostgreSQLClient extends AntaresCore {
       _varchar: 'CHARACTER VARYING'
    }
 
-   _params: pg.ClientConfig & {schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean};
+   _params: pg.ClientConfig & {schema: string; ssl?: ConnectionOptions; ssh?: SSHConfig; readonly: boolean};
 
    constructor (args: antares.ClientParams) {
       super(args);
@@ -156,7 +156,7 @@ export class PostgreSQLClient extends AntaresCore {
          user: this._params.user,
          database: 'postgres' as string,
          password: this._params.password,
-         ssl: null as mysql.SslOptions
+         ssl: null as ConnectionOptions
       };
 
       if (this._params.database?.length) dbConfig.database = this._params.database;
