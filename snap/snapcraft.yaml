@@ -31,10 +31,10 @@ parts:
       fi
       # Get the latest releases json
       echo "Get GitHub releases..."
-      wget --quiet https://api.github.com/repos/fabio286/antares/releases/latest -O releases.json
+      wget --quiet https://api.github.com/repos/fabio286/antares/releases -O releases.json
       # Get the version from the tag_name and the download URL.
-      VERSION=$(jq . releases.json | grep tag_name | cut -d'"' -f4 | sed s'/release-//')
-      DEB_URL=$(cat releases.json | jq -r ".assets[] | select(.name | test(\"${FILTER}\")) | .browser_download_url")
+      VERSION=$(jq . releases.json | grep tag_name | head -1 | cut -d'"' -f4 | sed s'/release-//')
+      DEB_URL=$(cat releases.json | jq -r ".[0].assets[] | select(.name | test(\"${FILTER}\")) | .browser_download_url")
       DEB=$(basename "${DEB_URL}")
       echo "Downloading ${DEB_URL}..."
       wget --quiet "${DEB_URL}" -O "${SNAPCRAFT_PART_INSTALL}/${DEB}"
