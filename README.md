@@ -153,6 +153,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/m1khal3v"><img src="https://avatars.githubusercontent.com/u/41085561?v=4?s=100" width="100px;" alt="Anton Mikhalev"/><br /><sub><b>Anton Mikhalev</b></sub></a><br /><a href="#translation-m1khal3v" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://64k.nl/"><img src="https://avatars.githubusercontent.com/u/3864423?v=4?s=100" width="100px;" alt="René"/><br /><sub><b>René</b></sub></a><br /><a href="https://github.com/antares-sql/antares/commits?author=64knl" title="Code">💻</a> <a href="#translation-64knl" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/zxp19821005"><img src="https://avatars.githubusercontent.com/u/4915850?v=4?s=100" width="100px;" alt="Woodenman"/><br /><sub><b>Woodenman</b></sub></a><br /><a href="#platform-zxp19821005" title="Packaging/porting to new platform">📦</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/markusand"><img src="https://avatars.githubusercontent.com/u/12972543?v=4?s=100" width="100px;" alt="Marc Vilella"/><br /><sub><b>Marc Vilella</b></sub></a><br /><a href="#translation-markusand" title="Translation">🌍</a></td>
     </tr>
   </tbody>
 </table>
