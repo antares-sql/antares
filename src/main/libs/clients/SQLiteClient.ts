@@ -425,7 +425,7 @@ export class SQLiteClient extends AntaresCore {
 
       return results.rows.map(row => {
          return {
-            sql: row.sql.match(/(?<=AS ).*?$/gs)[0],
+            sql: row.sql.match(/(?<=(AS|as)( |\n)).*?$/gs)[0],
             name: view
          };
       })[0];
