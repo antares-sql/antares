@@ -45,6 +45,7 @@
                <button
                   class="btn btn-dark btn-sm mr-0"
                   :disabled="isSaving"
+                  :title="t('database.manageIndexes')"
                   @click="showForeignModal"
                >
                   <i class="mdi mdi-24px mdi-key-link mr-1" />

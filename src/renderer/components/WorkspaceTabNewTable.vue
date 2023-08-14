@@ -45,6 +45,7 @@
                <button
                   class="btn btn-dark btn-sm"
                   :disabled="isSaving || !localFields.length"
+                  :title="t('database.manageForeignKeys')"
                   @click="showForeignModal"
                >
                   <i class="mdi mdi-24px mdi-key-link mr-1" />
