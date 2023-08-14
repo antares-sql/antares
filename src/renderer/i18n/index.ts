@@ -13,6 +13,7 @@ import { ruRU } from './ru-RU';
 import { idID } from './id-ID';
 import { koKR } from './ko-KR';
 import { nlNL } from './nl-NL';
+import { caES } from './ca-ES';
 const messages = {
    'en-US': enUS,
    'it-IT': itIT,
@@ -27,7 +28,8 @@ const messages = {
    'ru-RU': ruRU,
    'id-ID': idID,
    'ko-KR': koKR,
-   'nl-NL': nlNL
+   'nl-NL': nlNL,
+   'ca-ES': caES
 };
 
 type NestedPartial<T> = {
