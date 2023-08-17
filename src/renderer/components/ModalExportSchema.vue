@@ -26,7 +26,7 @@
                               type="text"
                               required
                               readonly
-                              :placeholder="t('database.schemaName')"
+                              @click.prevent="openPathDialog"
                            >
                            <button
                               type="button"
@@ -251,7 +251,7 @@
                   </div>
                </div>
                <div class="column col-auto px-0">
-                  <button class="btn btn-link" @click.stop="closeModal">
+                  <button class="btn btn-link mr-2" @click.stop="closeModal">
                      {{ t('general.close') }}
                   </button>
                   <button

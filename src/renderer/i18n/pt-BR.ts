@@ -351,7 +351,6 @@ export const ptBR = {
       csvStringDelimiter: 'Delimitador da String',
       csvIncludeHeader: 'Incluir cabeçalho',
       csvExportOptions: 'Opções de exportação do CSV',
-      scratchPadDefaultValue: '# COMO AJUDAR O ANTARES\n\n- [ ] Deixe sua estrela para o Antares [GitHub repo](https://github.com/antares-sql/antares)\n- [ ] Envie sugestões e avisos\n- [ ] Relate bugs\n- [ ] Se você gostar, compartilhe o Antares com amigos\n\n# SOBRE O BLOCO DE NOTAS\n\nEsse é o bloco de notas para salvar suas **notas pessoais**. ele suporta o formato `markdown`, porém você é livre para usar qualquer texto.\nEsse conteúdo é apenas um texto, fique a vontade para limpar e obter mais espaço para suas notas.\n',
       phpArray: 'Array PHP'
    },
    faker: {

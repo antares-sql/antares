@@ -352,7 +352,6 @@ export const caES = {
       csvStringDelimiter: 'Delimitador de cadena',
       csvIncludeHeader: 'Inclou capçalera',
       csvExportOptions: 'Opcions d\'exportació CSV',
-      scratchPadDefaultValue: '# COM SUPORTAR ANTARES\n\n- [ ] Deixa una estrella a Antares [repositori GitHub](https://github.com/antares-sql/antares)\n- [ ] Envia comentaris i consells\n- [ ] Informa d\'errors\n- [ ] Si t\'agrada, comparteix Antares amb amics\n\n# SOBRE EL BLOC DE NOTES\n\nAquest és un bloc de notes on pots guardar les teves **notes personals**. Suporta format `markdown`, però pots usar text pla.\nAquest contingut és simplement un espai reservat, pots esborrar-lo per fer lloc per les teves notes.\n',
       phpArray: 'Matriu PHP'
    },
    faker: {

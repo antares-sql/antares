@@ -349,7 +349,6 @@ export const frFR = {
       csvStringDelimiter: 'Séparateur',
       csvIncludeHeader: 'Inclure l\'en-tête',
       csvExportOptions: 'Options d\'export CSV',
-      scratchPadDefaultValue: '# COMMENT SOUTENIR ANTARES\n\n- [ ] Laissez une etoile à Antares [GitHub repo](https://github.com/antares-sql/antares)\n- [ ] Envoyez vos avis et conseils\n- [ ] Signalez les bugs\n- [ ] Si vous l\'appréciez, partagez Antares avec des amis\n\n# A PROPOS DU BLOC-NOTES\n\nCeci est un bloc-notes où vous pouvez sauvegarder vos **notes personnelles**. Il supporte le format `markdown`, mais vous êtes libre d\'utiliser du texte standard.\nCe contenu est juste un modèle, vous pouvez a tout moment l\'effacer pour le remplacer par vos notes.\n',
       phpArray: 'Tableau PHP'
    },
    faker: {
