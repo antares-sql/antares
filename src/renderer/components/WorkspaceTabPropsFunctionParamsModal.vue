@@ -165,9 +165,10 @@
 </template>
 
 <script setup lang="ts">
+import { uidGen } from 'common/libs/uidGen';
 import { computed, onMounted, onUnmounted, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { uidGen } from 'common/libs/uidGen';
+
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 

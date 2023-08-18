@@ -1,9 +1,9 @@
+import { ChildProcess, fork } from 'child_process';
 import * as antares from 'common/interfaces/antares';
 import * as workers from 'common/interfaces/workers';
+import { dialog, ipcMain } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ChildProcess, fork } from 'child_process';
-import { ipcMain, dialog } from 'electron';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 

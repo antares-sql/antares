@@ -1,12 +1,12 @@
-import * as fs from 'fs';
+import { faker } from '@faker-js/faker';
+import customizations from 'common/customizations';
+import { ARRAY, BIT, BLOB, BOOLEAN, DATE, DATETIME, FLOAT, LONG_TEXT, NUMBER, TEXT, TEXT_SEARCH } from 'common/fieldTypes';
 import * as antares from 'common/interfaces/antares';
 import { InsertRowsParams } from 'common/interfaces/tableApis';
-import { ipcMain } from 'electron';
-import { faker } from '@faker-js/faker';
-import * as moment from 'moment';
 import { sqlEscaper } from 'common/libs/sqlUtils';
-import { TEXT, LONG_TEXT, ARRAY, TEXT_SEARCH, NUMBER, FLOAT, BLOB, BIT, DATE, DATETIME, BOOLEAN } from 'common/fieldTypes';
-import customizations from 'common/customizations';
+import { ipcMain } from 'electron';
+import * as fs from 'fs';
+import * as moment from 'moment';
 
 export default (connections: {[key: string]: antares.Client}) => {
    ipcMain.handle('get-table-columns', async (event, params) => {

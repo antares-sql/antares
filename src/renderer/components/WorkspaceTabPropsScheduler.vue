@@ -122,20 +122,21 @@
    </div>
 </template>
 <script setup lang="ts">
-import { AlterEventParams, EventInfos } from 'common/interfaces/antares';
-import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
 import { Ace } from 'ace-builds';
-import { useI18n } from 'vue-i18n';
+import { AlterEventParams, EventInfos } from 'common/interfaces/antares';
+import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
+import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import BaseLoader from '@/components/BaseLoader.vue';
+import BaseSelect from '@/components/BaseSelect.vue';
+import QueryEditor from '@/components/QueryEditor.vue';
+import WorkspaceTabPropsSchedulerTimingModal from '@/components/WorkspaceTabPropsSchedulerTimingModal.vue';
+import Schedulers from '@/ipc-api/Schedulers';
 import { useConsoleStore } from '@/stores/console';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import BaseLoader from '@/components/BaseLoader.vue';
-import QueryEditor from '@/components/QueryEditor.vue';
-import WorkspaceTabPropsSchedulerTimingModal from '@/components/WorkspaceTabPropsSchedulerTimingModal.vue';
-import BaseSelect from '@/components/BaseSelect.vue';
-import Schedulers from '@/ipc-api/Schedulers';
-import { ipcRenderer } from 'electron';
 
 const { t } = useI18n();
 

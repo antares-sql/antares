@@ -1,6 +1,6 @@
 import * as importer from 'common/interfaces/importer';
-import * as fs from 'fs';
 import * as EventEmitter from 'events';
+import * as fs from 'fs';
 
 export class BaseImporter extends EventEmitter {
    protected _options;

@@ -18,7 +18,8 @@
     },
     "plugins": [
         "vue",
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "simple-import-sort"
     ],
     "rules": {
         "space-infix-ops": "off",
@@ -91,6 +92,8 @@
                 }
             }
         ],
-        "@typescript-eslint/no-var-requires": "off"
+        "@typescript-eslint/no-var-requires": "off",
+        "simple-import-sort/imports": "error",
+        "simple-import-sort/exports": "error"
     }
 }

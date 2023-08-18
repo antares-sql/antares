@@ -237,13 +237,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, Prop, Ref, ref, watch } from 'vue';
+import { EventInfos, FunctionInfos, RoutineInfos, TableInfos, TriggerFunctionInfos, TriggerInfos } from 'common/interfaces/antares';
+import { formatBytes } from 'common/libs/formatBytes';
 import { storeToRefs } from 'pinia';
+import { computed, Prop, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import { useSettingsStore } from '@/stores/settings';
 import { Breadcrumb, useWorkspacesStore, WorkspaceStructure } from '@/stores/workspaces';
-import { formatBytes } from 'common/libs/formatBytes';
-import { EventInfos, FunctionInfos, RoutineInfos, TableInfos, TriggerFunctionInfos, TriggerInfos } from 'common/interfaces/antares';
 
 const { t } = useI18n();
 

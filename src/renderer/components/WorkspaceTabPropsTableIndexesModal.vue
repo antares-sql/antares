@@ -134,10 +134,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, Prop, Ref, ref } from 'vue';
 import { TableField } from 'common/interfaces/antares';
 import { uidGen } from 'common/libs/uidGen';
+import { computed, onMounted, onUnmounted, Prop, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 

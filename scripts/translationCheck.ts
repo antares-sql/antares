@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { localesNames } from '../src/renderer/i18n/supported-locales';
 import { enUS } from '../src/renderer/i18n/en-US';
+import { localesNames } from '../src/renderer/i18n/supported-locales';
 const locale = process.argv[2];
 let fullCount = 0;
 let checkCount = 0;

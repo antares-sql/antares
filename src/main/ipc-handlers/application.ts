@@ -1,4 +1,5 @@
-import { app, ipcMain, dialog } from 'electron';
+import { app, dialog, ipcMain } from 'electron';
+
 import { ShortcutRegister } from '../libs/ShortcutRegister';
 
 export default () => {

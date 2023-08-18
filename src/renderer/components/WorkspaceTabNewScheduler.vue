@@ -124,20 +124,21 @@
 </template>
 
 <script setup lang="ts">
-import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Prop, Ref, ref, watch } from 'vue';
 import { Ace } from 'ace-builds';
 import { ConnectionParams, EventInfos } from 'common/interfaces/antares';
-import { useI18n } from 'vue-i18n';
+import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
-import { useConsoleStore } from '@/stores/console';
-import { useNotificationsStore } from '@/stores/notifications';
-import { useWorkspacesStore } from '@/stores/workspaces';
+import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Prop, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import BaseLoader from '@/components/BaseLoader.vue';
+import BaseSelect from '@/components/BaseSelect.vue';
 import QueryEditor from '@/components/QueryEditor.vue';
 import WorkspaceTabPropsSchedulerTimingModal from '@/components/WorkspaceTabPropsSchedulerTimingModal.vue';
 import Schedulers from '@/ipc-api/Schedulers';
-import BaseSelect from '@/components/BaseSelect.vue';
-import { ipcRenderer } from 'electron';
+import { useConsoleStore } from '@/stores/console';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
 

@@ -1,9 +1,10 @@
-import * as path from 'path';
-import * as antares from 'common/interfaces/antares';
-import * as firebird from 'node-firebird';
-import { AntaresCore } from '../AntaresCore';
 import dataTypes from 'common/data-types/firebird';
 import { FLOAT, NUMBER } from 'common/fieldTypes';
+import * as antares from 'common/interfaces/antares';
+import * as firebird from 'node-firebird';
+import * as path from 'path';
+
+import { AntaresCore } from '../AntaresCore';
 
 export class FirebirdSQLClient extends AntaresCore {
    private _schema?: string;

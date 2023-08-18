@@ -271,21 +271,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, Ref, ref } from 'vue';
-import * as moment from 'moment';
-import { ipcRenderer } from 'electron';
-import { storeToRefs } from 'pinia';
-import { useI18n } from 'vue-i18n';
 import { ClientCode, SchemaInfos } from 'common/interfaces/antares';
+import { Customizations } from 'common/interfaces/customizations';
 import { ExportOptions, ExportState } from 'common/interfaces/exporter';
-import { useNotificationsStore } from '@/stores/notifications';
-import { useSchemaExportStore } from '@/stores/schemaExport';
-import { useWorkspacesStore } from '@/stores/workspaces';
+import { ipcRenderer } from 'electron';
+import * as moment from 'moment';
+import { storeToRefs } from 'pinia';
+import { computed, onBeforeUnmount, Ref, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import BaseSelect from '@/components/BaseSelect.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import Application from '@/ipc-api/Application';
 import Schema from '@/ipc-api/Schema';
-import { Customizations } from 'common/interfaces/customizations';
-import BaseSelect from '@/components/BaseSelect.vue';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useSchemaExportStore } from '@/stores/schemaExport';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const emit = defineEmits(['close']);
 const { t } = useI18n();

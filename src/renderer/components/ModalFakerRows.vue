@@ -98,19 +98,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeMount, onMounted, Prop, Ref, ref, watch } from 'vue';
-import * as moment from 'moment';
+import { BIT, BLOB, DATE, DATETIME, FLOAT, LONG_TEXT, NUMBER, TEXT, TIME } from 'common/fieldTypes';
 import { TableField, TableForeign } from 'common/interfaces/antares';
+import * as moment from 'moment';
 import { storeToRefs } from 'pinia';
-import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT } from 'common/fieldTypes';
-import { useNotificationsStore } from '@/stores/notifications';
-import { useWorkspacesStore } from '@/stores/workspaces';
+import { computed, onBeforeMount, onMounted, Prop, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import BaseSelect from '@/components/BaseSelect.vue';
+import FakerSelect from '@/components/FakerSelect.vue';
+import { useFilters } from '@/composables/useFilters';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import Tables from '@/ipc-api/Tables';
-import FakerSelect from '@/components/FakerSelect.vue';
-import BaseSelect from '@/components/BaseSelect.vue';
-import { useFilters } from '@/composables/useFilters';
-import { useI18n } from 'vue-i18n';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
 

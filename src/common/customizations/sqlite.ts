@@ -1,6 +1,6 @@
+import sqliteTypes from '../data-types/sqlite';
 import { Customizations } from '../interfaces/customizations';
 import { defaults } from './defaults';
-import sqliteTypes from '../data-types/sqlite';
 
 export const customizations: Customizations = {
    ...defaults,

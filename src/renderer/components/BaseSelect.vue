@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import { defineComponent, computed, ref, watch, nextTick, onMounted, onUnmounted } from 'vue';
+import { computed, defineComponent, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 export default defineComponent({
    name: 'BaseSelect',

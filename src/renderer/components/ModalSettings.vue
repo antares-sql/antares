@@ -409,22 +409,23 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, Ref, ref, computed } from 'vue';
 import { shell } from 'electron';
 import { storeToRefs } from 'pinia';
+import { computed, onBeforeUnmount, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import BaseSelect from '@/components/BaseSelect.vue';
+import BaseTextEditor from '@/components/BaseTextEditor.vue';
+import ModalSettingsChangelog from '@/components/ModalSettingsChangelog.vue';
+import ModalSettingsData from '@/components/ModalSettingsData.vue';
+import ModalSettingsShortcuts from '@/components/ModalSettingsShortcuts.vue';
+import ModalSettingsUpdate from '@/components/ModalSettingsUpdate.vue';
+import { useFocusTrap } from '@/composables/useFocusTrap';
+import { AvailableLocale } from '@/i18n';
+import { localesNames } from '@/i18n/supported-locales';
 import { useApplicationStore } from '@/stores/application';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import { useFocusTrap } from '@/composables/useFocusTrap';
-import { localesNames } from '@/i18n/supported-locales';
-import ModalSettingsUpdate from '@/components/ModalSettingsUpdate.vue';
-import ModalSettingsChangelog from '@/components/ModalSettingsChangelog.vue';
-import ModalSettingsShortcuts from '@/components/ModalSettingsShortcuts.vue';
-import ModalSettingsData from '@/components/ModalSettingsData.vue';
-import BaseTextEditor from '@/components/BaseTextEditor.vue';
-import BaseSelect from '@/components/BaseSelect.vue';
-import { AvailableLocale } from '@/i18n';
 
 const { t } = useI18n();
 

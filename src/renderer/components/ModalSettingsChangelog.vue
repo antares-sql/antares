@@ -14,11 +14,12 @@
    </div>
 </template>
 <script setup lang="ts">
+import { shell } from 'electron';
 import { marked } from 'marked';
+import { ref } from 'vue';
+
 import BaseLoader from '@/components/BaseLoader.vue';
 import { useApplicationStore } from '@/stores/application';
-import { ref } from 'vue';
-import { shell } from 'electron';
 
 const { appVersion } = useApplicationStore();
 

@@ -43,10 +43,11 @@
 </template>
 
 <script setup lang="ts">
+import { TableIndex } from 'common/interfaces/antares';
 import { computed, Prop } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
-import { TableIndex } from 'common/interfaces/antares';
 
 const { t } = useI18n();
 

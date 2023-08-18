@@ -1,6 +1,6 @@
-import { Page, _electron as electron } from 'playwright';
+import { expect, test } from '@playwright/test';
+import { _electron as electron, Page } from 'playwright';
 import { ElectronApplication } from 'playwright-core';
-import { test, expect } from '@playwright/test';
 
 let appWindow: Page;
 let electronApp: ElectronApplication;

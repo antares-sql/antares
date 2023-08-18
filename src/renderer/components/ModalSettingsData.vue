@@ -47,10 +47,11 @@
 </template>
 <script setup lang="ts">
 // import { useApplicationStore } from '@/stores/application';
-import ModalSettingsDataExport from '@/components/ModalSettingsDataExport.vue';
-import ModalSettingsDataImport from '@/components/ModalSettingsDataImport.vue';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import ModalSettingsDataExport from '@/components/ModalSettingsDataExport.vue';
+import ModalSettingsDataImport from '@/components/ModalSettingsDataImport.vue';
 
 const { t } = useI18n();
 

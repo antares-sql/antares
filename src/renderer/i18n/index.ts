@@ -1,20 +1,21 @@
 import { createI18n } from 'vue-i18n';
-import { enUS } from './en-US';
-import { itIT } from './it-IT';
+
 import { arSA } from './ar-SA';
-import { esES } from './es-ES';
-import { frFR } from './fr-FR';
-import { ptBR } from './pt-BR';
-import { deDE } from './de-DE';
-import { viVN } from './vi-VN';
-import { jaJP } from './ja-JP';
-import { zhCN } from './zh-CN';
-import { ruRU } from './ru-RU';
-import { idID } from './id-ID';
-import { koKR } from './ko-KR';
-import { nlNL } from './nl-NL';
 import { caES } from './ca-ES';
 import { csCZ } from './cs-CZ';
+import { deDE } from './de-DE';
+import { enUS } from './en-US';
+import { esES } from './es-ES';
+import { frFR } from './fr-FR';
+import { idID } from './id-ID';
+import { itIT } from './it-IT';
+import { jaJP } from './ja-JP';
+import { koKR } from './ko-KR';
+import { nlNL } from './nl-NL';
+import { ptBR } from './pt-BR';
+import { ruRU } from './ru-RU';
+import { viVN } from './vi-VN';
+import { zhCN } from './zh-CN';
 const messages = {
    'en-US': enUS,
    'it-IT': itIT,
@@ -31,7 +32,7 @@ const messages = {
    'ko-KR': koKR,
    'nl-NL': nlNL,
    'ca-ES': caES,
-   'cs-CZ': csCZ,
+   'cs-CZ': csCZ
 };
 
 type NestedPartial<T> = {

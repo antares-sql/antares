@@ -76,12 +76,13 @@
    </div>
 </template>
 <script setup lang="ts">
-import { computed, PropType, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
+import { computed, PropType, ref, watch } from 'vue';
 import * as Draggable from 'vuedraggable';
+
+import SettingBarConnections from '@/components/SettingBarConnections.vue';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import SettingBarConnections from '@/components/SettingBarConnections.vue';
 
 const workspacesStore = useWorkspacesStore();
 const connectionsStore = useConnectionsStore();

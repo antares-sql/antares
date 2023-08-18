@@ -25,7 +25,4 @@ function decrypt (hash: { iv: string; content: string; authTag: string }, passwo
    return decrpyted;
 }
 
-export {
-   encrypt,
-   decrypt
-};
+export { decrypt, encrypt };

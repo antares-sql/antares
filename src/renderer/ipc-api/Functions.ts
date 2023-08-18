@@ -1,5 +1,6 @@
 import { AlterFunctionParams, CreateFunctionParams, IpcResponse } from 'common/interfaces/antares';
 import { ipcRenderer } from 'electron';
+
 import { unproxify } from '../libs/unproxify';
 
 export default class {

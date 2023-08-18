@@ -119,18 +119,19 @@
 </template>
 
 <script setup lang="ts">
-import { Component, computed, nextTick, Ref, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useNotificationsStore } from '@/stores/notifications';
-import { useWorkspacesStore } from '@/stores/workspaces';
-import { useSchemaExportStore } from '@/stores/schemaExport';
-import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import { Component, computed, nextTick, Ref, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseContextMenu from '@/components/BaseContextMenu.vue';
 import ModalEditSchema from '@/components/ModalEditSchema.vue';
 import ModalImportSchema from '@/components/ModalImportSchema.vue';
-import Schema from '@/ipc-api/Schema';
 import Application from '@/ipc-api/Application';
-import { useI18n } from 'vue-i18n';
+import Schema from '@/ipc-api/Schema';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useSchemaExportStore } from '@/stores/schemaExport';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
 

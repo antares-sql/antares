@@ -9,16 +9,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, Prop, Ref, ref, toRef, watch } from 'vue';
+/* eslint-disable simple-import-sort/imports */
 import * as ace from 'ace-builds';
-import 'ace-builds/webpack-resolver';
 import '../libs/ext-language_tools';
-import { storeToRefs } from 'pinia';
+import 'ace-builds/webpack-resolver';
+/* eslint-enable simple-import-sort/imports */
+
 import { uidGen } from 'common/libs/uidGen';
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, Prop, Ref, ref, toRef, watch } from 'vue';
+
+import Tables from '@/ipc-api/Tables';
 import { useApplicationStore } from '@/stores/application';
 import { useSettingsStore } from '@/stores/settings';
 import { Workspace } from '@/stores/workspaces';
-import Tables from '@/ipc-api/Tables';
 
 const editor: Ref<ace.Ace.Editor> = ref(null);
 const applicationStore = useApplicationStore();

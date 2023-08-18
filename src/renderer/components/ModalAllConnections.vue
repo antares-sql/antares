@@ -143,14 +143,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, Ref, ref } from 'vue';
+import { ConnectionParams } from 'common/interfaces/antares';
 import { storeToRefs } from 'pinia';
+import { computed, onBeforeUnmount, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import { useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import ConfirmModal from '@/components/BaseConfirmModal.vue';
-import { ConnectionParams } from 'common/interfaces/antares';
 
 const { t } = useI18n();
 

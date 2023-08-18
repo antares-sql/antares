@@ -61,12 +61,13 @@
 <script setup lang="ts">
 import { shell } from 'electron';
 import { storeToRefs } from 'pinia';
-import { useI18n } from 'vue-i18n';
-import { useApplicationStore } from '@/stores/application';
-import { useWorkspacesStore } from '@/stores/workspaces';
 import { computed, ComputedRef } from 'vue';
-import { useConsoleStore } from '@/stores/console';
+import { useI18n } from 'vue-i18n';
+
+import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
+import { useConsoleStore } from '@/stores/console';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
 

@@ -15,11 +15,12 @@
    </div>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 

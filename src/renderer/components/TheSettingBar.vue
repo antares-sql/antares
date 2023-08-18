@@ -82,16 +82,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, Ref, computed, watch } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useApplicationStore } from '@/stores/application';
-import { useConnectionsStore, SidebarElement } from '@/stores/connections';
-import { useWorkspacesStore } from '@/stores/workspaces';
-import { useSettingsStore } from '@/stores/settings';
-import SettingBarContext from '@/components/SettingBarContext.vue';
-import SettingBarConnections from '@/components/SettingBarConnections.vue';
 import { useElementBounding } from '@vueuse/core';
+import { storeToRefs } from 'pinia';
+import { computed, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import SettingBarConnections from '@/components/SettingBarConnections.vue';
+import SettingBarContext from '@/components/SettingBarContext.vue';
+import { useApplicationStore } from '@/stores/application';
+import { SidebarElement, useConnectionsStore } from '@/stores/connections';
+import { useSettingsStore } from '@/stores/settings';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
 localStorage.setItem('opened-folders', '[]');

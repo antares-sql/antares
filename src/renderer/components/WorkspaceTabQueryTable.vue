@@ -228,27 +228,29 @@
 
 <script setup lang="ts">
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, computed, nextTick, onMounted, onUnmounted, onUpdated, Prop, ref, Ref, watch } from 'vue';
-import { storeToRefs } from 'pinia';
-import { uidGen } from 'common/libs/uidGen';
-import { useSettingsStore } from '@/stores/settings';
-import { useWorkspacesStore } from '@/stores/workspaces';
-import { useConsoleStore } from '@/stores/console';
-import { exportRows } from '../libs/exportRows';
-import { TEXT, LONG_TEXT, BLOB, DATE, DATETIME, TIME } from 'common/fieldTypes';
-import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
-import WorkspaceTabQueryTableRow from '@/components/WorkspaceTabQueryTableRow.vue';
-import TableContext from '@/components/WorkspaceTabQueryTableContext.vue';
-import ConfirmModal from '@/components/BaseConfirmModal.vue';
-import BaseSelect from '@/components/BaseSelect.vue';
-import * as moment from 'moment';
-import { useI18n } from 'vue-i18n';
-import { TableField, QueryResult } from 'common/interfaces/antares';
+import faker from '@faker-js/faker';
+import { BLOB, DATE, DATETIME, LONG_TEXT, TEXT, TIME } from 'common/fieldTypes';
+import { QueryResult, TableField } from 'common/interfaces/antares';
 import { TableUpdateParams } from 'common/interfaces/tableApis';
 import { jsonToSqlInsert } from 'common/libs/sqlUtils';
-import { unproxify } from '@/libs/unproxify';
-import faker from '@faker-js/faker';
+import { uidGen } from 'common/libs/uidGen';
 import * as json2php from 'json2php';
+import * as moment from 'moment';
+import { storeToRefs } from 'pinia';
+import { Component, computed, nextTick, onMounted, onUnmounted, onUpdated, Prop, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseSelect from '@/components/BaseSelect.vue';
+import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
+import TableContext from '@/components/WorkspaceTabQueryTableContext.vue';
+import WorkspaceTabQueryTableRow from '@/components/WorkspaceTabQueryTableRow.vue';
+import { unproxify } from '@/libs/unproxify';
+import { useConsoleStore } from '@/stores/console';
+import { useSettingsStore } from '@/stores/settings';
+import { useWorkspacesStore } from '@/stores/workspaces';
+
+import { exportRows } from '../libs/exportRows';
 
 const { t } = useI18n();
 

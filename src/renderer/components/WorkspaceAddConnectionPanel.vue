@@ -391,18 +391,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, Ref, ref, watch } from 'vue';
 import customizations from 'common/customizations';
-import Connection from '@/ipc-api/Connection';
+import { ConnectionParams } from 'common/interfaces/antares';
 import { uidGen } from 'common/libs/uidGen';
+import { computed, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import BaseSelect from '@/components/BaseSelect.vue';
+import BaseUploadInput from '@/components/BaseUploadInput.vue';
+import ModalAskCredentials from '@/components/ModalAskCredentials.vue';
+import Connection from '@/ipc-api/Connection';
 import { useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import ModalAskCredentials from '@/components/ModalAskCredentials.vue';
-import BaseUploadInput from '@/components/BaseUploadInput.vue';
-import BaseSelect from '@/components/BaseSelect.vue';
-import { ConnectionParams } from 'common/interfaces/antares';
-import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 

@@ -65,13 +65,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, Prop, ref } from 'vue';
-import { ClientCode, TableField } from 'common/interfaces/antares';
 import customizations from 'common/customizations';
-import { NUMBER, FLOAT } from 'common/fieldTypes';
-import BaseSelect from '@/components/BaseSelect.vue';
+import { FLOAT, NUMBER } from 'common/fieldTypes';
+import { ClientCode, TableField } from 'common/interfaces/antares';
 import { TableFilterClausole } from 'common/interfaces/tableApis';
+import { computed, Prop, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import BaseSelect from '@/components/BaseSelect.vue';
 
 const { t } = useI18n();
 

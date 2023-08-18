@@ -182,26 +182,27 @@
 </template>
 
 <script setup lang="ts">
-import { Component, computed, onBeforeUnmount, onMounted, Prop, ref, Ref, watch } from 'vue';
 import { Ace } from 'ace-builds';
-import { useI18n } from 'vue-i18n';
+import { ConnectionParams } from 'common/interfaces/antares';
+import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
 import { format } from 'sql-formatter';
-import { ConnectionParams } from 'common/interfaces/antares';
+import { Component, computed, onBeforeUnmount, onMounted, Prop, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import BaseLoader from '@/components/BaseLoader.vue';
+import BaseSelect from '@/components/BaseSelect.vue';
+import ModalHistory from '@/components/ModalHistory.vue';
+import QueryEditor from '@/components/QueryEditor.vue';
+import WorkspaceTabQueryEmptyState from '@/components/WorkspaceTabQueryEmptyState.vue';
+import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable.vue';
+import { useResultTables } from '@/composables/useResultTables';
+import Schema from '@/ipc-api/Schema';
+import { useConsoleStore } from '@/stores/console';
 import { useHistoryStore } from '@/stores/history';
 import { useNotificationsStore } from '@/stores/notifications';
-import { useWorkspacesStore } from '@/stores/workspaces';
-import { useResultTables } from '@/composables/useResultTables';
-import { useConsoleStore } from '@/stores/console';
-import Schema from '@/ipc-api/Schema';
-import QueryEditor from '@/components/QueryEditor.vue';
-import BaseLoader from '@/components/BaseLoader.vue';
-import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable.vue';
-import WorkspaceTabQueryEmptyState from '@/components/WorkspaceTabQueryEmptyState.vue';
-import ModalHistory from '@/components/ModalHistory.vue';
-import BaseSelect from '@/components/BaseSelect.vue';
-import { ipcRenderer } from 'electron';
 import { useSettingsStore } from '@/stores/settings';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
 

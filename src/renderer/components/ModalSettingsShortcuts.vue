@@ -162,17 +162,19 @@
    </Teleport>
 </template>
 <script setup lang="ts">
-import { Ref, ref, watch } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useI18n } from 'vue-i18n';
-import { useSettingsStore } from '@/stores/settings';
-import KeyPressDetector from './KeyPressDetector.vue';
-import Application from '@/ipc-api/Application';
+import { computed } from '@vue/reactivity';
 import { shortcutEvents, ShortcutRecord } from 'common/shortcuts';
+import { storeToRefs } from 'pinia';
+import { Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
-import { computed } from '@vue/reactivity';
 import { useFilters } from '@/composables/useFilters';
+import Application from '@/ipc-api/Application';
+import { useSettingsStore } from '@/stores/settings';
+
+import KeyPressDetector from './KeyPressDetector.vue';
 
 const { parseKeys } = useFilters();
 

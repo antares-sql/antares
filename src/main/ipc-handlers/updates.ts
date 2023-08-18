@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
-import { autoUpdater } from 'electron-updater';
 import * as Store from 'electron-store';
+import { autoUpdater } from 'electron-updater';
 
 const persistentStore = new Store({
    name: 'settings',

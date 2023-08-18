@@ -54,16 +54,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, Prop, ref } from 'vue';
-import { storeToRefs } from 'pinia';
 import { uidGen } from 'common/libs/uidGen';
+import { storeToRefs } from 'pinia';
+import { computed, Prop, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import ModalConnectionAppearance from '@/components/ModalConnectionAppearance.vue';
+import ModalFolderAppearance from '@/components/ModalFolderAppearance.vue';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import BaseContextMenu from '@/components/BaseContextMenu.vue';
-import ConfirmModal from '@/components/BaseConfirmModal.vue';
-import ModalFolderAppearance from '@/components/ModalFolderAppearance.vue';
-import ModalConnectionAppearance from '@/components/ModalConnectionAppearance.vue';
 
 const { t } = useI18n();
 

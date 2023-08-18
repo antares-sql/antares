@@ -1,17 +1,17 @@
 import * as antares from 'common/interfaces/antares';
 
-import connection from './connection';
-import tables from './tables';
-import views from './views';
-import triggers from './triggers';
-import routines from './routines';
-import functions from './functions';
-import schedulers from './schedulers';
-import updates from './updates';
 import application from './application';
+import connection from './connection';
 import database from './database';
+import functions from './functions';
+import routines from './routines';
+import schedulers from './schedulers';
 import schema from './schema';
+import tables from './tables';
+import triggers from './triggers';
+import updates from './updates';
 import users from './users';
+import views from './views';
 
 const connections: {[key: string]: antares.Client} = {};
 

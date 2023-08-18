@@ -84,15 +84,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useNotificationsStore } from '@/stores/notifications';
-import { useWorkspacesStore } from '@/stores/workspaces';
-import { useSchemaExportStore } from '@/stores/schemaExport';
-import BaseContextMenu from '@/components/BaseContextMenu.vue';
-import ConfirmModal from '@/components/BaseConfirmModal.vue';
-import Tables from '@/ipc-api/Tables';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import Tables from '@/ipc-api/Tables';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useSchemaExportStore } from '@/stores/schemaExport';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
 

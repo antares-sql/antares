@@ -3,15 +3,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, PropType, Ref, ref } from 'vue';
-import * as L from 'leaflet';
 import {
-   point,
    lineString,
+   point,
    polygon
 } from '@turf/helpers';
-import { GeoJsonObject } from 'geojson';
 import { getArrayDepth } from 'common/libs/getArrayDepth';
+import { GeoJsonObject } from 'geojson';
+import * as L from 'leaflet';
+import { onMounted, PropType, Ref, ref } from 'vue';
 
 interface Coordinates { x: number; y: number }
 

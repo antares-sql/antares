@@ -193,22 +193,23 @@
 </template>
 
 <script setup lang="ts">
-import { Component, computed, onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue';
 import { AlterTableParams, TableField, TableForeign, TableIndex, TableInfos, TableOptions } from 'common/interfaces/antares';
-import { storeToRefs } from 'pinia';
-import { useI18n } from 'vue-i18n';
-import { useNotificationsStore } from '@/stores/notifications';
-import { useWorkspacesStore } from '@/stores/workspaces';
 import { uidGen } from 'common/libs/uidGen';
-import Tables from '@/ipc-api/Tables';
+import { ipcRenderer } from 'electron';
+import { storeToRefs } from 'pinia';
+import { Component, computed, onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import BaseLoader from '@/components/BaseLoader.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
-import WorkspaceTabPropsTableFields from '@/components/WorkspaceTabPropsTableFields.vue';
-import WorkspaceTabPropsTableIndexesModal from '@/components/WorkspaceTabPropsTableIndexesModal.vue';
-import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTableForeignModal.vue';
 import WorkspaceTabPropsTableDdlModal from '@/components/WorkspaceTabPropsTableDdlModal.vue';
-import { ipcRenderer } from 'electron';
+import WorkspaceTabPropsTableFields from '@/components/WorkspaceTabPropsTableFields.vue';
+import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTableForeignModal.vue';
+import WorkspaceTabPropsTableIndexesModal from '@/components/WorkspaceTabPropsTableIndexesModal.vue';
+import Tables from '@/ipc-api/Tables';
+import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
 

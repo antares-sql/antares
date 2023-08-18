@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia';
 import * as Store from 'electron-store';
+import { defineStore } from 'pinia';
 const persistentStore = new Store({ name: 'notes' });
 
 export const useScratchpadStore = defineStore('scratchpad', {

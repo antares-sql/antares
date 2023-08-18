@@ -50,15 +50,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, Ref, ref } from 'vue';
+import { ImportState } from 'common/interfaces/importer';
 import { ipcRenderer } from 'electron';
 import * as moment from 'moment';
 import { storeToRefs } from 'pinia';
+import { computed, onBeforeUnmount, Ref, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import Schema from '@/ipc-api/Schema';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import Schema from '@/ipc-api/Schema';
-import { ImportState } from 'common/interfaces/importer';
-import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 

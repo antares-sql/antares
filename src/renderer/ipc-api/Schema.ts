@@ -1,8 +1,9 @@
-import { ipcRenderer } from 'electron';
-import { unproxify } from '../libs/unproxify';
 import { ClientCode, IpcResponse/*, EventInfos, QueryResult, RoutineInfos, TableInfos, TriggerInfos */ } from 'common/interfaces/antares';
 import { ExportOptions } from 'common/interfaces/exporter';
 import { ImportOptions } from 'common/interfaces/importer';
+import { ipcRenderer } from 'electron';
+
+import { unproxify } from '../libs/unproxify';
 
 export default class {
    static createSchema (params: { uid: string; name: string; collation?: string }): Promise<IpcResponse> {

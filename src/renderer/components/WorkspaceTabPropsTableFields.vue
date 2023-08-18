@@ -125,15 +125,16 @@
 </template>
 
 <script setup lang="ts">
-import { Component, computed, onMounted, onUnmounted, onUpdated, Prop, ref, Ref, watch } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useI18n } from 'vue-i18n';
-import { useWorkspacesStore } from '@/stores/workspaces';
-import { useConsoleStore } from '@/stores/console';
-import * as Draggable from 'vuedraggable';
-import TableRow from '@/components/WorkspaceTabPropsTableRow.vue';
-import TableContext from '@/components/WorkspaceTabPropsTableContext.vue';
 import { TableField, TableForeign, TableIndex } from 'common/interfaces/antares';
+import { storeToRefs } from 'pinia';
+import { Component, computed, onMounted, onUnmounted, onUpdated, Prop, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import * as Draggable from 'vuedraggable';
+
+import TableContext from '@/components/WorkspaceTabPropsTableContext.vue';
+import TableRow from '@/components/WorkspaceTabPropsTableRow.vue';
+import { useConsoleStore } from '@/stores/console';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
 

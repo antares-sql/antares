@@ -64,14 +64,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, Ref, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useNotificationsStore } from '@/stores/notifications';
-import { useWorkspacesStore } from '@/stores/workspaces';
+import { computed, onBeforeUnmount, Ref, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import BaseSelect from '@/components/BaseSelect.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import Schema from '@/ipc-api/Schema';
-import BaseSelect from '@/components/BaseSelect.vue';
-import { useI18n } from 'vue-i18n';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
 

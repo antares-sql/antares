@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia';
-import * as Store from 'electron-store';
-import * as crypto from 'crypto';
 import { ConnectionParams } from 'common/interfaces/antares';
 import { uidGen } from 'common/libs/uidGen';
+import * as crypto from 'crypto';
+import * as Store from 'electron-store';
+import { defineStore } from 'pinia';
 const key = localStorage.getItem('key');
 
 export interface SidebarElement {

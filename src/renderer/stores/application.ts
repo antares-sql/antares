@@ -1,6 +1,6 @@
-import { defineStore } from 'pinia';
-import * as Store from 'electron-store';
 import { Ace } from 'ace-builds';
+import * as Store from 'electron-store';
+import { defineStore } from 'pinia';
 const persistentStore = new Store({ name: 'settings' });
 
 export const useApplicationStore = defineStore('application', {

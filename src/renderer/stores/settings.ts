@@ -1,8 +1,9 @@
-import { defineStore } from 'pinia';
-import { ipcRenderer } from 'electron';
-import { i18n, AvailableLocale } from '@/i18n';
-import * as Store from 'electron-store';
 import { ShortcutRecord } from 'common/shortcuts';
+import { ipcRenderer } from 'electron';
+import * as Store from 'electron-store';
+import { defineStore } from 'pinia';
+
+import { AvailableLocale, i18n } from '@/i18n';
 
 const settingsStore = new Store({ name: 'settings' });
 const shortcutsStore = new Store({ name: 'shortcuts' });

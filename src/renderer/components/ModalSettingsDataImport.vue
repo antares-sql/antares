@@ -80,15 +80,16 @@
 </template>
 
 <script setup lang="ts">
+import { ConnectionParams } from 'common/interfaces/antares';
+import { decrypt } from 'common/libs/encrypter';
+import { storeToRefs } from 'pinia';
 import { onBeforeUnmount, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import BaseUploadInput from '@/components/BaseUploadInput.vue';
-import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { unproxify } from '@/libs/unproxify';
-import { storeToRefs } from 'pinia';
-import { decrypt } from 'common/libs/encrypter';
+import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
-import { ConnectionParams } from 'common/interfaces/antares';
 
 const { t } = useI18n();
 const emit = defineEmits(['close']);

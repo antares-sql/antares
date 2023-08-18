@@ -136,16 +136,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, Ref, ref } from 'vue';
-import * as moment from 'moment';
-import { useI18n } from 'vue-i18n';
-import { useFocusTrap } from '@/composables/useFocusTrap';
-import { SidebarElement, useConnectionsStore } from '@/stores/connections';
-import { unproxify } from '@/libs/unproxify';
-import { uidGen } from 'common/libs/uidGen';
-import { storeToRefs } from 'pinia';
-import { encrypt } from 'common/libs/encrypter';
 import { ConnectionParams } from 'common/interfaces/antares';
+import { encrypt } from 'common/libs/encrypter';
+import { uidGen } from 'common/libs/uidGen';
+import * as moment from 'moment';
+import { storeToRefs } from 'pinia';
+import { computed, onBeforeUnmount, Ref, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import { useFocusTrap } from '@/composables/useFocusTrap';
+import { unproxify } from '@/libs/unproxify';
+import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 
 const { t } = useI18n();
 const emit = defineEmits(['close']);

@@ -523,4 +523,4 @@ export const csCZ = {
       fuel: 'Fuel',
       vin: 'Vin'
    }
-}
+};

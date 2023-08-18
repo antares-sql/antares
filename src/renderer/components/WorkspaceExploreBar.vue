@@ -135,27 +135,25 @@
 </template>
 
 <script setup lang="ts">
-import { Component, computed, onMounted, Prop, Ref, ref, watch } from 'vue';
-import { storeToRefs } from 'pinia';
-
-import { useConnectionsStore } from '@/stores/connections';
 import { ConnectionParams } from 'common/interfaces/antares';
-import { useNotificationsStore } from '@/stores/notifications';
-import { useSettingsStore } from '@/stores/settings';
-import { useWorkspacesStore } from '@/stores/workspaces';
+import { storeToRefs } from 'pinia';
+import { Component, computed, onMounted, Prop, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import Tables from '@/ipc-api/Tables';
-import Views from '@/ipc-api/Views';
-
+import BaseSelect from '@/components/BaseSelect.vue';
+import ModalNewSchema from '@/components/ModalNewSchema.vue';
+import MiscContext from '@/components/WorkspaceExploreBarMiscContext.vue';
+import MiscFolderContext from '@/components/WorkspaceExploreBarMiscFolderContext.vue';
 import WorkspaceExploreBarSchema from '@/components/WorkspaceExploreBarSchema.vue';
 import DatabaseContext from '@/components/WorkspaceExploreBarSchemaContext.vue';
 import TableContext from '@/components/WorkspaceExploreBarTableContext.vue';
-import MiscContext from '@/components/WorkspaceExploreBarMiscContext.vue';
-import MiscFolderContext from '@/components/WorkspaceExploreBarMiscFolderContext.vue';
-import ModalNewSchema from '@/components/ModalNewSchema.vue';
-import BaseSelect from '@/components/BaseSelect.vue';
-import { useI18n } from 'vue-i18n';
 import Databases from '@/ipc-api/Databases';
+import Tables from '@/ipc-api/Tables';
+import Views from '@/ipc-api/Views';
+import { useConnectionsStore } from '@/stores/connections';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useSettingsStore } from '@/stores/settings';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
 
