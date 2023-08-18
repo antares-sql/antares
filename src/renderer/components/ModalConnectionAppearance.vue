@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <i class="mdi mdi-24px mdi-brush-variant mr-1" />
-                     <span class="cut-text">{{ t('connection.editConnectionAppearance') }}</span>
+                     <span class="cut-text">{{ t('application.editConnectionAppearance') }}</span>
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />
