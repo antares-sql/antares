@@ -16,6 +16,7 @@
             :id="`id_${id}`"
             class="file-uploader-input"
             type="file"
+            :accept="accept"
             @change="$emit('change', $event)"
          >
       </form>
@@ -31,6 +32,10 @@ const { lastPart } = useFilters();
 defineProps({
    message: {
       default: 'Browse',
+      type: String
+   },
+   accept: {
+      default: '',
       type: String
    },
    modelValue: {

@@ -295,6 +295,7 @@ export const enUS = {
       fileName: 'File name',
       choseFile: 'Chose file',
       data: 'Data',
+      password: 'Password',
       required: 'Required',
       madeWithJS: 'Made with 💛 and JavaScript!',
       checkForUpdates: 'Check for updates',
@@ -369,7 +370,11 @@ export const enUS = {
       includeConnectionPasswords: 'Include connection passwords',
       includeFolders: 'Include folders',
       encryptionPassword: 'Encryption password',
-      encryptionPasswordError: 'The encryption password must be at least 8 characters long.'
+      encryptionPasswordError: 'The encryption password must be at least 8 characters long.',
+      ignoreDuplicates: 'Ignore duplicates',
+      wrongImportPassword: 'Wrong import password',
+      wrongFileFormat: 'Wrong file format',
+      dataImportSuccess: 'Data successfully imported'
    },
    faker: { // Faker.js methods, used in random generated content
       address: 'Address',

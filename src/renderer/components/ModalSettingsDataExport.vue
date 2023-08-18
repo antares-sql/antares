@@ -140,11 +140,12 @@ import { computed, onBeforeUnmount, Ref, ref } from 'vue';
 import * as moment from 'moment';
 import { useI18n } from 'vue-i18n';
 import { useFocusTrap } from '@/composables/useFocusTrap';
-import { useConnectionsStore } from '@/stores/connections';
+import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { unproxify } from '@/libs/unproxify';
 import { uidGen } from 'common/libs/uidGen';
 import { storeToRefs } from 'pinia';
 import { encrypt } from 'common/libs/encrypter';
+import { ConnectionParams } from 'common/interfaces/antares';
 
 const { t } = useI18n();
 const emit = defineEmits(['close']);
@@ -153,8 +154,8 @@ const { trapRef } = useFocusTrap();
 
 const { getConnectionName } = useConnectionsStore();
 const { connectionsOrder, connections } = storeToRefs(useConnectionsStore());
-const localConnections = unproxify<typeof connections.value>(connections.value);
-const localConnectionsOrder = unproxify<typeof connectionsOrder.value>(connectionsOrder.value);
+const localConnections = unproxify<ConnectionParams[]>(connections.value);
+const localConnectionsOrder = unproxify<SidebarElement[]>(connectionsOrder.value);
 
 const isPasswordVisible = ref(false);
 const isPasswordError = ref(false);
@@ -217,6 +218,7 @@ const exportData = () => {
          const foldersToInclude = unproxify(localConnectionsOrder).filter(f => (
             f.isFolder && oldConnUids.some(uid => f.connections.includes(uid))
          )).map(f => {
+            f.uid = uidGen('F');
             f.connections = f.connections
                .map(fc => connectionsUidMap.get(fc))
                .filter(fc => newConnUids.includes(fc));
@@ -242,10 +244,12 @@ const exportData = () => {
       document.body.appendChild(downloadLink);
       downloadLink.click();
       downloadLink.remove();
+
+      closeModal();
    }
 };
 
-const closeModal = async () => {
+const closeModal = () => {
    emit('close');
 };
 

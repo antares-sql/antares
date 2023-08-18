@@ -38,41 +38,17 @@
       <ModalSettingsDataExport
          v-if="isExportModal"
          @close="isExportModal = false"
-      >
-         <template #header>
-            <div class="d-flex">
-               <i class="mdi mdi-24px mdi-tray-arrow-up mr-1" /> {{ t('application.exportData') }}
-            </div>
-         </template>
-         <template #body>
-            <div class="mb-2">
-               <!--  -->
-            </div>
-         </template>
-      </ModalSettingsDataExport>
-
-      <!-- <ConfirmModal
+      />
+      <ModalSettingsDataImport
          v-if="isImportModal"
-         size="medium"
-         @confirm="null"
-         @hide="isImportModal = false"
-      >
-         <template #header>
-            <div class="d-flex">
-               <i class="mdi mdi-24px mdi-tray-arrow-down mr-1" /> {{ t('application.importData') }}
-            </div>
-         </template>
-         <template #body>
-            <div class="mb-2">
-
-            </div>
-         </template>
-      </ConfirmModal> -->
+         @close="isImportModal = false"
+      />
    </div>
 </template>
 <script setup lang="ts">
 // import { useApplicationStore } from '@/stores/application';
 import ModalSettingsDataExport from '@/components/ModalSettingsDataExport.vue';
+import ModalSettingsDataImport from '@/components/ModalSettingsDataImport.vue';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 

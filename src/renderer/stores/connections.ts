@@ -219,6 +219,16 @@ export const useConnectionsStore = defineStore('connections', {
 
          this.connectionsOrder = (this.connectionsOrder as SidebarElement[]).filter(el => !emptyFolders.includes(el.uid));
          persistentStore.set('connectionsOrder', this.connectionsOrder);
+      },
+      importConnections (importObj: {
+         connections: ConnectionParams[];
+         connectionsOrder: SidebarElement[];
+      }) {
+         this.connections = [...this.connections, ...importObj.connections];
+         this.connectionsOrder = [...this.connectionsOrder, ...importObj.connectionsOrder];
+
+         persistentStore.set('connections', this.connections);
+         persistentStore.set('connectionsOrder', this.connectionsOrder);
       }
    }
 });
