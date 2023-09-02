@@ -71,10 +71,12 @@
                class="settingbar-element btn btn-link"
                @click="showSettingModal('general')"
             >
-               <i
-                  class="settingbar-element-icon mdi mdi-24px mdi-cog text-light"
-                  :class="{ ' badge badge-update': hasUpdates }"
-               />
+               <div class="settingbar-element-icon-wrapper">
+                  <i
+                     class="settingbar-element-icon mdi mdi-24px mdi-cog text-light"
+                     :class="{ ' badge badge-update': hasUpdates }"
+                  />
+               </div>
             </li>
          </ul>
       </div>
@@ -239,7 +241,7 @@ if (!connectionsArr.value.length)
             border-radius: $border-radius;
          }
 
-         .settingbar-element-icon-wrapper{
+         .settingbar-element-icon-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;

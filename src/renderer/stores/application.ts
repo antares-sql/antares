@@ -1,7 +1,9 @@
 import { Ace } from 'ace-builds';
 import * as Store from 'electron-store';
 import { defineStore } from 'pinia';
+
 const persistentStore = new Store({ name: 'settings' });
+export type UpdateStatus = 'noupdate' | 'available' | 'checking' | 'nocheck' | 'downloading' | 'downloaded' | 'disabled';
 
 export const useApplicationStore = defineStore('application', {
    state: () => ({
@@ -14,7 +16,7 @@ export const useApplicationStore = defineStore('application', {
       isScratchpad: false,
       selectedSettingTab: 'general',
       selectedConection: {},
-      updateStatus: 'noupdate', // 'noupdate' | 'available' | 'checking' | 'nocheck' | 'downloading' | 'downloaded' | 'disabled'
+      updateStatus: 'noupdate' as UpdateStatus,
       downloadProgress: 0,
       baseCompleter: [] as Ace.Completer[] // Needed to reset ace editor, due global-only ace completer
    }),
