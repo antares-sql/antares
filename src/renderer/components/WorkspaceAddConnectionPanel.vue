@@ -361,12 +361,15 @@
                            <label class="form-label cut-text">{{ t('connection.keepAliveInterval') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
-                           <input
-                              v-model="connection.sshKeepAliveInterval"
-                              class="form-input"
-                              type="number"
-                              min="1"
-                           >
+                           <div class="input-group">
+                              <input
+                                 v-model="connection.sshKeepAliveInterval"
+                                 class="form-input"
+                                 type="number"
+                                 min="1"
+                              >
+                              <span class="input-group-addon">{{ t('general.seconds') }}</span>
+                           </div>
                         </div>
                      </div>
                   </fieldset>
@@ -456,8 +459,10 @@ const connection = ref({
    sshHost: '',
    sshUser: '',
    sshPass: '',
+   sshPassphrase: null,
    sshKey: '',
    sshPort: 22,
+   sshKeepAliveInterval: 1800,
    pgConnString: ''
 }) as Ref<ConnectionParams & { pgConnString: string }>;
 

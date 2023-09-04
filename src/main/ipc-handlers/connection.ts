@@ -52,7 +52,7 @@ export default (connections: {[key: string]: antares.Client}) => {
             port: conn.sshPort ? conn.sshPort : 22,
             privateKey: conn.sshKey ? fs.readFileSync(conn.sshKey).toString() : null,
             passphrase: conn.sshPassphrase,
-            keepaliveInterval: conn.sshKeepAliveInterval ?? 30*60*1000
+            keepaliveInterval: conn.sshKeepAliveInterval ?? conn.sshKeepAliveInterval*1000
          };
       }
 
@@ -132,7 +132,7 @@ export default (connections: {[key: string]: antares.Client}) => {
             port: conn.sshPort ? conn.sshPort : 22,
             privateKey: conn.sshKey ? fs.readFileSync(conn.sshKey).toString() : null,
             passphrase: conn.sshPassphrase,
-            keepaliveInterval: conn.sshKeepAliveInterval ?? 30*60*1000
+            keepaliveInterval: conn.sshKeepAliveInterval ?? conn.sshKeepAliveInterval*1000
          };
       }
 
