@@ -21,21 +21,32 @@
             <BaseTextEditor class="d-none" value="" />
          </div>
       </div>
-      <ModalAllConnections v-if="isAllConnectionsModal" @close="isAllConnectionsModal = false" />
+      <ModalAllConnections
+         v-if="isAllConnectionsModal"
+         @close="isAllConnectionsModal = false"
+      />
+
+      <ModalExportSchema
+         v-if="isExportSchemaModal"
+         @close="hideExportModal"
+      />
    </div>
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, onMounted, Ref, ref } from 'vue';
-import { storeToRefs } from 'pinia';
+import { getCurrentWindow, Menu } from '@electron/remote';
 import { ipcRenderer } from 'electron';
+import { storeToRefs } from 'pinia';
+import { defineAsyncComponent, onMounted, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Menu, getCurrentWindow } from '@electron/remote';
+
+import ModalExportSchema from '@/components/ModalExportSchema.vue';
+import TheSettingBar from '@/components/TheSettingBar.vue';
 import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
+import { useSchemaExportStore } from '@/stores/schemaExport';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import TheSettingBar from '@/components/TheSettingBar.vue';
 
 const { t } = useI18n();
 
@@ -64,6 +75,10 @@ const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const { checkVersionUpdate } = applicationStore;
 const { changeApplicationTheme } = settingsStore;
+
+const schemaExportStore = useSchemaExportStore();
+const { hideExportModal } = schemaExportStore;
+const { isExportModal: isExportSchemaModal } = storeToRefs(schemaExportStore);
 
 const isAllConnectionsModal: Ref<boolean> = ref(false);
 

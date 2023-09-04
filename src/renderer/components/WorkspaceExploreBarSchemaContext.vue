@@ -109,11 +109,6 @@
          :selected-schema="selectedSchema"
          @close="hideEditModal"
       />
-      <ModalExportSchema
-         v-if="isExportSchemaModal"
-         :selected-schema="selectedSchema"
-         @close="hideExportSchemaModal"
-      />
       <ModalImportSchema
          v-if="isImportSchemaModal"
          ref="importModalRef"
@@ -124,18 +119,19 @@
 </template>
 
 <script setup lang="ts">
-import { Component, computed, nextTick, Ref, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useNotificationsStore } from '@/stores/notifications';
-import { useWorkspacesStore } from '@/stores/workspaces';
-import BaseContextMenu from '@/components/BaseContextMenu.vue';
-import ConfirmModal from '@/components/BaseConfirmModal.vue';
-import ModalEditSchema from '@/components/ModalEditSchema.vue';
-import ModalExportSchema from '@/components/ModalExportSchema.vue';
-import ModalImportSchema from '@/components/ModalImportSchema.vue';
-import Schema from '@/ipc-api/Schema';
-import Application from '@/ipc-api/Application';
+import { Component, computed, nextTick, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import ModalEditSchema from '@/components/ModalEditSchema.vue';
+import ModalImportSchema from '@/components/ModalImportSchema.vue';
+import Application from '@/ipc-api/Application';
+import Schema from '@/ipc-api/Schema';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useSchemaExportStore } from '@/stores/schemaExport';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
 
@@ -158,6 +154,8 @@ const emit = defineEmits([
 
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
+const schemaExportStore = useSchemaExportStore();
+const { showExportModal } = schemaExportStore;
 
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
@@ -169,7 +167,6 @@ const {
 const importModalRef: Ref<Component & {startImport: (file: string) => void}> = ref(null);
 const isDeleteModal = ref(false);
 const isEditModal = ref(false);
-const isExportSchemaModal = ref(false);
 const isImportSchemaModal = ref(false);
 
 const workspace = computed(() => getWorkspace(selectedWorkspace.value));
@@ -220,11 +217,7 @@ const hideEditModal = () => {
 };
 
 const showExportSchemaModal = () => {
-   isExportSchemaModal.value = true;
-};
-
-const hideExportSchemaModal = () => {
-   isExportSchemaModal.value = false;
+   showExportModal(props.selectedSchema);
    closeContext();
 };
 

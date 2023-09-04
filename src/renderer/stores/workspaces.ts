@@ -1,15 +1,4 @@
-import { defineStore } from 'pinia';
-import * as Store from 'electron-store';
-import Connection from '@/ipc-api/Connection';
-import Schema from '@/ipc-api/Schema';
-import Users from '@/ipc-api/Users';
-import { uidGen } from 'common/libs/uidGen';
-
 import customizations from 'common/customizations';
-
-import { useConnectionsStore } from '@/stores/connections';
-import { useNotificationsStore } from '@/stores/notifications';
-import { useSettingsStore } from '@/stores/settings';
 import {
    ClientCode,
    CollationInfos,
@@ -23,6 +12,16 @@ import {
    TypesGroup
 } from 'common/interfaces/antares';
 import { Customizations } from 'common/interfaces/customizations';
+import { uidGen } from 'common/libs/uidGen';
+import * as Store from 'electron-store';
+import { defineStore } from 'pinia';
+
+import Connection from '@/ipc-api/Connection';
+import Schema from '@/ipc-api/Schema';
+import Users from '@/ipc-api/Users';
+import { useConnectionsStore } from '@/stores/connections';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useSettingsStore } from '@/stores/settings';
 
 export interface WorkspaceTab {
    uid: string;

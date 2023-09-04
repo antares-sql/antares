@@ -163,22 +163,23 @@
 </template>
 
 <script setup lang="ts">
-import { Component, computed, onUnmounted, onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue';
-import { AlterRoutineParams, FunctionParam, RoutineInfos } from 'common/interfaces/antares';
 import { Ace } from 'ace-builds';
-import { useI18n } from 'vue-i18n';
+import { AlterRoutineParams, FunctionParam, RoutineInfos } from 'common/interfaces/antares';
+import { uidGen } from 'common/libs/uidGen';
+import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
+import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import BaseLoader from '@/components/BaseLoader.vue';
+import BaseSelect from '@/components/BaseSelect.vue';
+import ModalAskParameters from '@/components/ModalAskParameters.vue';
+import QueryEditor from '@/components/QueryEditor.vue';
+import WorkspaceTabPropsRoutineParamsModal from '@/components/WorkspaceTabPropsRoutineParamsModal.vue';
+import Routines from '@/ipc-api/Routines';
 import { useConsoleStore } from '@/stores/console';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import { uidGen } from 'common/libs/uidGen';
-import Routines from '@/ipc-api/Routines';
-import QueryEditor from '@/components/QueryEditor.vue';
-import BaseLoader from '@/components/BaseLoader.vue';
-import WorkspaceTabPropsRoutineParamsModal from '@/components/WorkspaceTabPropsRoutineParamsModal.vue';
-import ModalAskParameters from '@/components/ModalAskParameters.vue';
-import BaseSelect from '@/components/BaseSelect.vue';
-import { ipcRenderer } from 'electron';
 
 const { t } = useI18n();
 

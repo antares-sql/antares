@@ -19,9 +19,10 @@
 </template>
 
 <script setup lang="ts">
-import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import { onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
 
 const { t } = useI18n();
 

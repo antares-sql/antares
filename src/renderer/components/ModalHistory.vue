@@ -98,14 +98,15 @@
 </template>
 
 <script setup lang="ts">
+import { ConnectionParams } from 'common/interfaces/antares';
 import { Component, computed, ComputedRef, onBeforeUnmount, onMounted, onUpdated, Prop, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { ConnectionParams } from 'common/interfaces/antares';
-import { HistoryRecord, useHistoryStore } from '@/stores/history';
-import { useConnectionsStore } from '@/stores/connections';
-import { useFocusTrap } from '@/composables/useFocusTrap';
-import { useFilters } from '@/composables/useFilters';
+
 import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
+import { useFilters } from '@/composables/useFilters';
+import { useFocusTrap } from '@/composables/useFocusTrap';
+import { useConnectionsStore } from '@/stores/connections';
+import { HistoryRecord, useHistoryStore } from '@/stores/history';
 
 const { t } = useI18n();
 const { formatDate } = useFilters();

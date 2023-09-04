@@ -22,8 +22,9 @@
 </template>
 
 <script setup lang="ts">
-import BaseContextMenu from '@/components/BaseContextMenu.vue';
 import { useI18n } from 'vue-i18n';
+
+import BaseContextMenu from '@/components/BaseContextMenu.vue';
 
 const { t } = useI18n();
 

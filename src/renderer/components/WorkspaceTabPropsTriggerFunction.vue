@@ -80,19 +80,20 @@
 </template>
 
 <script setup lang="ts">
-import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
 import { Ace } from 'ace-builds';
-import { useI18n } from 'vue-i18n';
-import { storeToRefs } from 'pinia';
-import { useNotificationsStore } from '@/stores/notifications';
-import { useWorkspacesStore } from '@/stores/workspaces';
-import { useConsoleStore } from '@/stores/console';
-import BaseLoader from '@/components/BaseLoader.vue';
-import QueryEditor from '@/components/QueryEditor.vue';
-import Functions from '@/ipc-api/Functions';
-import BaseSelect from '@/components/BaseSelect.vue';
 import { AlterFunctionParams, TriggerFunctionInfos } from 'common/interfaces/antares';
 import { ipcRenderer } from 'electron';
+import { storeToRefs } from 'pinia';
+import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import BaseLoader from '@/components/BaseLoader.vue';
+import BaseSelect from '@/components/BaseSelect.vue';
+import QueryEditor from '@/components/QueryEditor.vue';
+import Functions from '@/ipc-api/Functions';
+import { useConsoleStore } from '@/stores/console';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
 

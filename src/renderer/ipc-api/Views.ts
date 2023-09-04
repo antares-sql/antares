@@ -1,6 +1,7 @@
-import { ipcRenderer } from 'electron';
-import { unproxify } from '../libs/unproxify';
 import { AlterViewParams, CreateViewParams, IpcResponse } from 'common/interfaces/antares';
+import { ipcRenderer } from 'electron';
+
+import { unproxify } from '../libs/unproxify';
 
 export default class {
    static getViewInformations (params: { uid: string; schema: string; view: string }): Promise<IpcResponse> {

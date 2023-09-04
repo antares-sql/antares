@@ -47,9 +47,10 @@
 </template>
 
 <script setup lang="ts">
-import { useFocusTrap } from '@/composables/useFocusTrap';
 import { computed, onBeforeUnmount, PropType, useSlots } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import { useFocusTrap } from '@/composables/useFocusTrap';
 
 const { t } = useI18n();
 

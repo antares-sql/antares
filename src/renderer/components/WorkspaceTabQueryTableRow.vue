@@ -196,40 +196,40 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, Prop, ref, Ref, watch, nextTick } from 'vue';
-import { useI18n } from 'vue-i18n';
-import * as moment from 'moment';
-import { mimeFromHex } from 'common/libs/mimeFromHex';
-import { formatBytes } from 'common/libs/formatBytes';
-import { langDetector } from 'common/libs/langDetector';
-import { bufferToBase64 } from 'common/libs/bufferToBase64';
-import hexToBinary, { HexChar } from 'common/libs/hexToBinary';
 import {
-   TEXT,
-   LONG_TEXT,
    ARRAY,
-   TEXT_SEARCH,
-   NUMBER,
-   FLOAT,
+   BINARY,
+   BIT,
+   BLOB,
    BOOLEAN,
    DATE,
-   TIME,
    DATETIME,
-   BLOB,
-   BIT,
-   BINARY,
+   FLOAT,
    HAS_TIMEZONE,
-   SPATIAL,
+   IS_BIGINT,
    IS_MULTI_SPATIAL,
-   IS_BIGINT
-} from 'common/fieldTypes';
-import ConfirmModal from '@/components/BaseConfirmModal.vue';
-import TextEditor from '@/components/BaseTextEditor.vue';
-import BaseMap from '@/components/BaseMap.vue';
-import ForeignKeySelect from '@/components/ForeignKeySelect.vue';
-import BaseSelect from '@/components/BaseSelect.vue';
-import { useFilters } from '@/composables/useFilters';
+   LONG_TEXT,
+   NUMBER,
+   SPATIAL,
+   TEXT,
+   TEXT_SEARCH,
+   TIME } from 'common/fieldTypes';
 import { QueryForeign, TableField } from 'common/interfaces/antares';
+import { bufferToBase64 } from 'common/libs/bufferToBase64';
+import { formatBytes } from 'common/libs/formatBytes';
+import hexToBinary, { HexChar } from 'common/libs/hexToBinary';
+import { langDetector } from 'common/libs/langDetector';
+import { mimeFromHex } from 'common/libs/mimeFromHex';
+import * as moment from 'moment';
+import { computed, nextTick, onBeforeUnmount, Prop, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseMap from '@/components/BaseMap.vue';
+import BaseSelect from '@/components/BaseSelect.vue';
+import TextEditor from '@/components/BaseTextEditor.vue';
+import ForeignKeySelect from '@/components/ForeignKeySelect.vue';
+import { useFilters } from '@/composables/useFilters';
 
 const { t } = useI18n();
 const { cutText } = useFilters();

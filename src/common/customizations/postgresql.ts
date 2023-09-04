@@ -1,6 +1,6 @@
+import postgresqlTypes from '../data-types/postgresql';
 import { Customizations } from '../interfaces/customizations';
 import { defaults } from './defaults';
-import postgresqlTypes from '../data-types/postgresql';
 
 export const customizations: Customizations = {
    ...defaults,

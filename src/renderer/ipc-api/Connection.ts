@@ -1,5 +1,6 @@
 import { ConnectionParams, IpcResponse } from 'common/interfaces/antares';
 import { ipcRenderer } from 'electron';
+
 import connStringConstruct from '../libs/connStringDecode';
 import { unproxify } from '../libs/unproxify';
 

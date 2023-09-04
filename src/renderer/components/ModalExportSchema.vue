@@ -26,7 +26,7 @@
                               type="text"
                               required
                               readonly
-                              :placeholder="t('database.schemaName')"
+                              @click.prevent="openPathDialog"
                            >
                            <button
                               type="button"
@@ -42,10 +42,16 @@
 
                <div class="columns export-options">
                   <div class="column col-8 left">
-                     <div class="columns mb-2">
-                        <div class="column col-auto d-flex text-italic ">
-                           <i class="mdi mdi-file-document-outline mr-2" />
-                           {{ filename }}
+                     <div class="columns mb-2 mt-1 p-vcentered">
+                        <div class="column col-auto input-group d-flex text-italic" :style="'flex-grow: 1'">
+                           <i class="input-group-addon mdi mdi-file-document-outline" />
+                           <input
+                              v-model="chosenFilename"
+                              class="form-input"
+                              type="text"
+                              :placeholder="filename"
+                              :title="t('application.fileName')"
+                           >
                         </div>
 
                         <div class="column col-auto col-ml-auto ">
@@ -54,7 +60,7 @@
                               :title="t('general.refresh')"
                               @click="refresh"
                            >
-                              <i class="mdi mdi-database-refresh" />
+                              <i class="mdi mdi-refresh" />
                            </button>
                            <button
                               class="btn btn-dark btn-sm mx-1"
@@ -62,7 +68,7 @@
                               :disabled="isRefreshing"
                               @click="uncheckAllTables"
                            >
-                              <i class="mdi mdi-file-tree-outline" />
+                              <i class="mdi mdi-checkbox-blank-outline" />
                            </button>
                            <button
                               class="btn btn-dark btn-sm"
@@ -70,7 +76,7 @@
                               :disabled="isRefreshing"
                               @click="checkAllTables"
                            >
-                              <i class="mdi mdi-file-tree" />
+                              <i class="mdi mdi-checkbox-marked-outline" />
                            </button>
                         </div>
                      </div>
@@ -148,6 +154,7 @@
                                  v-for="item in tables"
                                  :key="item.table"
                                  class="tr"
+                                 :class="{'selected': item.table === selectedTable}"
                               >
                                  <div class="td">
                                     {{ item.table }}
@@ -244,7 +251,7 @@
                   </div>
                </div>
                <div class="column col-auto px-0">
-                  <button class="btn btn-link" @click.stop="closeModal">
+                  <button class="btn btn-link mr-2" @click.stop="closeModal">
                      {{ t('general.close') }}
                   </button>
                   <button
@@ -264,30 +271,29 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, Ref, ref } from 'vue';
-import * as moment from 'moment';
-import { ipcRenderer } from 'electron';
-import { storeToRefs } from 'pinia';
-import { useI18n } from 'vue-i18n';
 import { ClientCode, SchemaInfos } from 'common/interfaces/antares';
+import { Customizations } from 'common/interfaces/customizations';
 import { ExportOptions, ExportState } from 'common/interfaces/exporter';
-import { useNotificationsStore } from '@/stores/notifications';
-import { useWorkspacesStore } from '@/stores/workspaces';
+import { ipcRenderer } from 'electron';
+import * as moment from 'moment';
+import { storeToRefs } from 'pinia';
+import { computed, onBeforeUnmount, Ref, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import BaseSelect from '@/components/BaseSelect.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import Application from '@/ipc-api/Application';
 import Schema from '@/ipc-api/Schema';
-import { Customizations } from 'common/interfaces/customizations';
-import BaseSelect from '@/components/BaseSelect.vue';
-
-const props = defineProps({
-   selectedSchema: String
-});
+import { useNotificationsStore } from '@/stores/notifications';
+import { useSchemaExportStore } from '@/stores/schemaExport';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const emit = defineEmits(['close']);
 const { t } = useI18n();
 
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
+const schemaExportStore = useSchemaExportStore();
 
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
@@ -297,6 +303,8 @@ const {
    getWorkspace,
    refreshSchema
 } = workspacesStore;
+
+const { selectedTable, selectedSchema } = storeToRefs(schemaExportStore);
 
 const isExporting = ref(false);
 const isRefreshing = ref(false);
@@ -309,18 +317,19 @@ const tables: Ref<{
    includeDropStatement: boolean;
 }[]> = ref([]);
 const options: Ref<Partial<ExportOptions>> = ref({
-   schema: props.selectedSchema,
+   schema: selectedSchema.value,
    includes: {} as {[key: string]: boolean},
    outputFormat: 'sql' as 'sql' | 'sql.zip',
    sqlInsertAfter: 250,
    sqlInsertDivider: 'bytes' as 'bytes' | 'rows'
 });
 const basePath = ref('');
+const chosenFilename = ref('');
 
 const currentWorkspace = computed(() => getWorkspace(selectedWorkspace.value));
 const clientCustoms: Ref<Customizations> = computed(() => currentWorkspace.value.customizations);
 const schemaItems = computed(() => {
-   const db: SchemaInfos = currentWorkspace.value.structure.find((db: SchemaInfos) => db.name === props.selectedSchema);
+   const db: SchemaInfos = currentWorkspace.value.structure.find((db: SchemaInfos) => db.name === selectedSchema.value);
    if (db)
       return db.tables.filter(table => table.type === 'table');
 
@@ -328,9 +337,9 @@ const schemaItems = computed(() => {
 });
 const filename = computed(() => {
    const date = moment().format('YYYY-MM-DD_HH-mm-ss');
-   return `${props.selectedSchema}_${date}.${options.value.outputFormat}`;
+   return `${selectedTable.value || selectedSchema.value}_${date}`;
 });
-const dumpFilePath = computed(() => `${basePath.value}/${filename.value}`);
+const dumpFilePath = computed(() => `${basePath.value}/${chosenFilename.value || filename.value}.${options.value.outputFormat}`);
 const includeStructureStatus = computed(() => {
    if (tables.value.every(item => item.includeStructure)) return 1;
    else if (tables.value.some(item => item.includeStructure)) return 2;
@@ -353,7 +362,7 @@ const startExport = async () => {
    const params = {
       uid,
       type: client,
-      schema: props.selectedSchema,
+      schema: selectedSchema.value,
       outputFile: dumpFilePath.value,
       tables: [...tables.value],
       ...options.value
@@ -431,7 +440,7 @@ const toggleAllTablesOption = (option: 'includeStructure' | 'includeContent' |'i
 
 const refresh = async () => {
    isRefreshing.value = true;
-   await refreshSchema({ uid: currentWorkspace.value.uid, schema: props.selectedSchema });
+   await refreshSchema({ uid: currentWorkspace.value.uid, schema: selectedSchema.value });
    isRefreshing.value = false;
 };
 
@@ -446,12 +455,31 @@ const openPathDialog = async () => {
 
    window.addEventListener('keydown', onKey);
 
+   if (selectedTable.value) {
+      setTimeout(() => {
+         const element = document.querySelector<HTMLElement>('.modal.active .selected');
+
+         if (element) {
+            const rect = element.getBoundingClientRect();
+            const elemTop = rect.top;
+            const elemBottom = rect.bottom;
+            const isVisible = (elemTop >= 0) && (elemBottom <= window.innerHeight);
+
+            if (!isVisible) {
+               element.setAttribute('tabindex', '-1');
+               element.focus();
+               element.removeAttribute('tabindex');
+            }
+         }
+      }, 100);
+   }
+
    basePath.value = await Application.getDownloadPathDirectory();
    tables.value = schemaItems.value.map(item => ({
       table: item.name,
-      includeStructure: true,
-      includeContent: true,
-      includeDropStatement: true
+      includeStructure: !selectedTable.value ? true : selectedTable.value === item.name,
+      includeContent: !selectedTable.value ? true : selectedTable.value === item.name,
+      includeDropStatement: !selectedTable.value ? true : selectedTable.value === item.name
    }));
 
    const structure = ['functions', 'views', 'triggers', 'routines', 'schedulers'];
@@ -459,7 +487,7 @@ const openPathDialog = async () => {
    structure.forEach((feat: keyof Customizations) => {
       const val = clientCustoms.value[feat];
       if (val)
-         options.value.includes[feat] = true;
+         options.value.includes[feat] = !selectedTable.value;
    });
 
    ipcRenderer.on('export-progress', updateProgress);

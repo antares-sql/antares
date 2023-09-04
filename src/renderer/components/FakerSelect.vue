@@ -86,13 +86,14 @@
 </template>
 
 <script setup lang="ts">
+import FakerMethods from 'common/FakerMethods';
+import { BIT, BLOB, DATE, DATETIME, FLOAT, IS_BIGINT, LONG_TEXT, NUMBER, TEXT, TIME, UUID } from 'common/fieldTypes';
 import { computed, PropType, Ref, ref, watch } from 'vue';
-import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, BLOB, BIT, UUID, IS_BIGINT } from 'common/fieldTypes';
+import { useI18n } from 'vue-i18n';
+
+import BaseSelect from '@/components/BaseSelect.vue';
 import BaseUploadInput from '@/components/BaseUploadInput.vue';
 import ForeignKeySelect from '@/components/ForeignKeySelect.vue';
-import FakerMethods from 'common/FakerMethods';
-import BaseSelect from '@/components/BaseSelect.vue';
-import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 

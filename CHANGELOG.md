@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.16-beta.0](https://github.com/antares-sql/antares/compare/v0.7.15...v0.7.16-beta.0) (2023-08-11)
+
+
+### Features
+
+* ability to change sql dump file name ([2e39d81](https://github.com/antares-sql/antares/commit/2e39d810b519401d0410cbb76520c07c595329fc))
+* ability to export a table dump from table context menu ([84b2255](https://github.com/antares-sql/antares/commit/84b2255bf405431070511890b2bca770fc4cc2bc))
+* support to links in changelog ([ad7e459](https://github.com/antares-sql/antares/commit/ad7e459c689d70ca664b9a3091d3dcab3f26ce4d))
+
+
+### Bug Fixes
+
+* **MySQL:** missing error details on mysql importer with some exceptione ([7b1cb4f](https://github.com/antares-sql/antares/commit/7b1cb4ff86dddb5fb4b4d960b47ea17f38a24aa6))
+
 ### [0.7.15](https://github.com/antares-sql/antares/compare/v0.7.14...v0.7.15) (2023-07-31)
 
 

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+
 import { useWorkspacesStore } from './workspaces';
 const logsSize = 1000;
 

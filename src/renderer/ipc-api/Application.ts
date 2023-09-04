@@ -1,5 +1,6 @@
 import { ShortcutRecord } from 'common/shortcuts';
 import { ipcRenderer, OpenDialogOptions, OpenDialogReturnValue } from 'electron';
+
 import { unproxify } from '../libs/unproxify';
 
 export default class {

@@ -7,7 +7,8 @@
 
 # Antares SQL Client
 
-![GitHub package.json version](https://img.shields.io/github/package-json/v/fabio286/antares) ![GitHub](https://img.shields.io/github/license/fabio286/antares) [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Ffabio286%2Fantares%2Fbadge&style=flat)](https://actions-badge.atrox.dev/fabio286/antares/goto) [![antares](https://snapcraft.io/antares/badge.svg)](https://snapcraft.io/antares) [![antares](https://snapcraft.io/antares/trending.svg?name=0)](https://snapcraft.io/antares) [![Twitter Follow](https://img.shields.io/twitter/follow/AntaresSQL?style=social)](https://twitter.com/AntaresSQL) [![Plant a Tree](https://raw.githubusercontent.com/Fabio286/treedom-badge/master/svg/plant-a-tree.svg)](https://www.treedom.net/en/user/fabio-di-stasio/event/antares-for-the-planet)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/fabio286/antares) ![GitHub](https://img.shields.io/github/license/fabio286/antares) [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Ffabio286%2Fantares%2Fbadge&style=flat)](https://actions-badge.atrox.dev/fabio286/antares/goto) [![antares](https://snapcraft.io/antares/badge.svg)](https://snapcraft.io/antares) [![antares](https://snapcraft.io/antares/trending.svg?name=0)](https://snapcraft.io/antares)
+![Mastodon Follow](https://img.shields.io/mastodon/follow/%20110860460902482117?domain=https%3A%2F%2Ffosstodon.org&style=social) [![Twitter Follow](https://img.shields.io/twitter/follow/AntaresSQL?style=social)](https://twitter.com/AntaresSQL) [![Plant a Tree](https://raw.githubusercontent.com/Fabio286/treedom-badge/master/svg/plant-a-tree.svg)](https://www.treedom.net/en/user/fabio-di-stasio/event/antares-for-the-planet)
 
 Antares is an SQL client based on [Electron.js](https://github.com/electron/electron) and [Vue.js](https://github.com/vuejs/vue) that aims to become a useful tool, especially for developers.  
 Our target is to support as many databases as possible, and all major operating systems, including the ARM versions.  
@@ -17,7 +18,7 @@ However, there are all the features necessary to have a pleasant database manage
 We are actively working on it, hoping to provide new cool features, improvements and fixes as soon as possible.  
 
 🔗 If you are curious to try Antares you can download and install the [latest release](https://github.com/Fabio286/antares/releases/latest).  
-👁 To stay tuned for new releases [follow Antares SQL](https://twitter.com/AntaresSQL) on Twitter.  
+👁 To stay tuned for new releases follow Antares SQL on [Mastodon](https://fosstodon.org/@AntaresSQL) or [Twitter](https://twitter.com/AntaresSQL).  
 🌟 Don't forget to **leave a star** if you appreciate this project.  
 
 🗳️ Polls: 
@@ -152,6 +153,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/m1khal3v"><img src="https://avatars.githubusercontent.com/u/41085561?v=4?s=100" width="100px;" alt="Anton Mikhalev"/><br /><sub><b>Anton Mikhalev</b></sub></a><br /><a href="#translation-m1khal3v" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://64k.nl/"><img src="https://avatars.githubusercontent.com/u/3864423?v=4?s=100" width="100px;" alt="René"/><br /><sub><b>René</b></sub></a><br /><a href="https://github.com/antares-sql/antares/commits?author=64knl" title="Code">💻</a> <a href="#translation-64knl" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/zxp19821005"><img src="https://avatars.githubusercontent.com/u/4915850?v=4?s=100" width="100px;" alt="Woodenman"/><br /><sub><b>Woodenman</b></sub></a><br /><a href="#platform-zxp19821005" title="Packaging/porting to new platform">📦</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/markusand"><img src="https://avatars.githubusercontent.com/u/12972543?v=4?s=100" width="100px;" alt="Marc Vilella"/><br /><sub><b>Marc Vilella</b></sub></a><br /><a href="#translation-markusand" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Lawondyss"><img src="https://avatars.githubusercontent.com/u/272130?v=4?s=100" width="100px;" alt="Ladislav Vondráček"/><br /><sub><b>Ladislav Vondráček</b></sub></a><br /><a href="#translation-Lawondyss" title="Translation">🌍</a></td>
     </tr>
   </tbody>
 </table>

@@ -1,6 +1,6 @@
+import firebirdTypes from '../data-types/firebird';
 import { Customizations } from '../interfaces/customizations';
 import { defaults } from './defaults';
-import firebirdTypes from '../data-types/firebird';
 
 export const customizations: Customizations = {
    ...defaults,

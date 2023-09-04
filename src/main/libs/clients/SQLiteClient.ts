@@ -1,8 +1,9 @@
-import * as antares from 'common/interfaces/antares';
 import * as sqlite from 'better-sqlite3';
-import { AntaresCore } from '../AntaresCore';
 import dataTypes from 'common/data-types/sqlite';
-import { NUMBER, FLOAT, TIME, DATETIME } from 'common/fieldTypes';
+import { DATETIME, FLOAT, NUMBER, TIME } from 'common/fieldTypes';
+import * as antares from 'common/interfaces/antares';
+
+import { AntaresCore } from '../AntaresCore';
 
 export class SQLiteClient extends AntaresCore {
    private _schema?: string;
@@ -425,7 +426,7 @@ export class SQLiteClient extends AntaresCore {
 
       return results.rows.map(row => {
          return {
-            sql: row.sql.match(/(?<=AS ).*?$/gs)[0],
+            sql: row.sql.match(/(?<=(AS|as)( |\n)).*?$/gs)[0],
             name: view
          };
       })[0];

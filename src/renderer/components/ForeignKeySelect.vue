@@ -13,15 +13,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, Ref, ref, watch } from 'vue';
+import { LONG_TEXT, TEXT } from 'common/fieldTypes';
+import { TableField } from 'common/interfaces/antares';
 import { storeToRefs } from 'pinia';
+import { computed, Ref, ref, watch } from 'vue';
+
+import BaseSelect from '@/components/BaseSelect.vue';
+import { useFilters } from '@/composables/useFilters';
 import Tables from '@/ipc-api/Tables';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import { TEXT, LONG_TEXT } from 'common/fieldTypes';
-import BaseSelect from '@/components/BaseSelect.vue';
-import { TableField } from 'common/interfaces/antares';
-import { useFilters } from '@/composables/useFilters';
 
 const props = defineProps({
    modelValue: [String, Number],

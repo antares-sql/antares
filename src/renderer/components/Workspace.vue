@@ -488,42 +488,40 @@
 </template>
 
 <script setup lang="ts">
-import { ipcRenderer } from 'electron';
-import { computed, onMounted, Prop, ref, watch } from 'vue';
-import { storeToRefs } from 'pinia';
-import * as Draggable from 'vuedraggable';
-import Connection from '@/ipc-api/Connection';
-import { useWorkspacesStore, WorkspaceTab } from '@/stores/workspaces';
-import { useConsoleStore } from '@/stores/console';
 import { ConnectionParams } from 'common/interfaces/antares';
-import { useFilters } from '@/composables/useFilters';
+import { ipcRenderer } from 'electron';
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, Prop, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import * as Draggable from 'vuedraggable';
 
+import ModalDiscardChanges from '@/components/ModalDiscardChanges.vue';
+import ModalProcessesList from '@/components/ModalProcessesList.vue';
+import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPanel.vue';
 import WorkspaceEmptyState from '@/components/WorkspaceEmptyState.vue';
 import WorkspaceExploreBar from '@/components/WorkspaceExploreBar.vue';
-import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPanel.vue';
-import WorkspaceTabQuery from '@/components/WorkspaceTabQuery.vue';
-import WorkspaceTabTable from '@/components/WorkspaceTabTable.vue';
 import WorkspaceQueryConsole from '@/components/WorkspaceQueryConsole.vue';
-
-import WorkspaceTabNewTable from '@/components/WorkspaceTabNewTable.vue';
-import WorkspaceTabNewView from '@/components/WorkspaceTabNewView.vue';
-import WorkspaceTabNewTrigger from '@/components/WorkspaceTabNewTrigger.vue';
-import WorkspaceTabNewRoutine from '@/components/WorkspaceTabNewRoutine.vue';
 import WorkspaceTabNewFunction from '@/components/WorkspaceTabNewFunction.vue';
+import WorkspaceTabNewRoutine from '@/components/WorkspaceTabNewRoutine.vue';
 import WorkspaceTabNewScheduler from '@/components/WorkspaceTabNewScheduler.vue';
+import WorkspaceTabNewTable from '@/components/WorkspaceTabNewTable.vue';
+import WorkspaceTabNewTrigger from '@/components/WorkspaceTabNewTrigger.vue';
 import WorkspaceTabNewTriggerFunction from '@/components/WorkspaceTabNewTriggerFunction.vue';
-import WorkspaceTabsContext from '@/components/WorkspaceTabsContext.vue';
-
+import WorkspaceTabNewView from '@/components/WorkspaceTabNewView.vue';
+import WorkspaceTabPropsFunction from '@/components/WorkspaceTabPropsFunction.vue';
+import WorkspaceTabPropsRoutine from '@/components/WorkspaceTabPropsRoutine.vue';
+import WorkspaceTabPropsScheduler from '@/components/WorkspaceTabPropsScheduler.vue';
 import WorkspaceTabPropsTable from '@/components/WorkspaceTabPropsTable.vue';
-import WorkspaceTabPropsView from '@/components/WorkspaceTabPropsView.vue';
 import WorkspaceTabPropsTrigger from '@/components/WorkspaceTabPropsTrigger.vue';
 import WorkspaceTabPropsTriggerFunction from '@/components/WorkspaceTabPropsTriggerFunction.vue';
-import WorkspaceTabPropsRoutine from '@/components/WorkspaceTabPropsRoutine.vue';
-import WorkspaceTabPropsFunction from '@/components/WorkspaceTabPropsFunction.vue';
-import WorkspaceTabPropsScheduler from '@/components/WorkspaceTabPropsScheduler.vue';
-import ModalProcessesList from '@/components/ModalProcessesList.vue';
-import ModalDiscardChanges from '@/components/ModalDiscardChanges.vue';
-import { useI18n } from 'vue-i18n';
+import WorkspaceTabPropsView from '@/components/WorkspaceTabPropsView.vue';
+import WorkspaceTabQuery from '@/components/WorkspaceTabQuery.vue';
+import WorkspaceTabsContext from '@/components/WorkspaceTabsContext.vue';
+import WorkspaceTabTable from '@/components/WorkspaceTabTable.vue';
+import { useFilters } from '@/composables/useFilters';
+import Connection from '@/ipc-api/Connection';
+import { useConsoleStore } from '@/stores/console';
+import { useWorkspacesStore, WorkspaceTab } from '@/stores/workspaces';
 
 const { t } = useI18n();
 

@@ -1,8 +1,9 @@
 import * as exporter from 'common/interfaces/exporter';
-import * as mysql from 'mysql2/promise';
-import { SqlExporter } from './SqlExporter';
-import { MySQLClient } from '../../clients/MySQLClient';
 import { valueToSqlString } from 'common/libs/sqlUtils';
+import * as mysql from 'mysql2/promise';
+
+import { MySQLClient } from '../../clients/MySQLClient';
+import { SqlExporter } from './SqlExporter';
 
 export default class MysqlExporter extends SqlExporter {
    protected _client: MySQLClient;

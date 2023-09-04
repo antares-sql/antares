@@ -1,6 +1,6 @@
+import mysqlTypes from '../data-types/mysql';
 import { Customizations } from '../interfaces/customizations';
 import { defaults } from './defaults';
-import mysqlTypes from '../data-types/mysql';
 
 export const customizations: Customizations = {
    ...defaults,

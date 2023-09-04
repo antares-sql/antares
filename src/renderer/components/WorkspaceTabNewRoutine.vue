@@ -147,20 +147,21 @@
 </template>
 
 <script setup lang="ts">
-import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
 import { Ace } from 'ace-builds';
-import Routines from '@/ipc-api/Routines';
+import { FunctionParam } from 'common/interfaces/antares';
+import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
+import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import BaseLoader from '@/components/BaseLoader.vue';
+import BaseSelect from '@/components/BaseSelect.vue';
+import QueryEditor from '@/components/QueryEditor.vue';
+import WorkspaceTabPropsRoutineParamsModal from '@/components/WorkspaceTabPropsRoutineParamsModal.vue';
+import Routines from '@/ipc-api/Routines';
 import { useConsoleStore } from '@/stores/console';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import QueryEditor from '@/components/QueryEditor.vue';
-import BaseLoader from '@/components/BaseLoader.vue';
-import WorkspaceTabPropsRoutineParamsModal from '@/components/WorkspaceTabPropsRoutineParamsModal.vue';
-import BaseSelect from '@/components/BaseSelect.vue';
-import { FunctionParam } from 'common/interfaces/antares';
-import { useI18n } from 'vue-i18n';
-import { ipcRenderer } from 'electron';
 
 const { t } = useI18n();
 

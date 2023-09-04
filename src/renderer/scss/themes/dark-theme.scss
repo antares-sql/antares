@@ -144,9 +144,15 @@
     cursor: default;
   }
 
-  .input-group .input-group-addon {
-    border-color: #3f3f3f;
+  .has-error .form-input {
     background: $bg-color-dark;
+  }
+
+  .input-group {
+    .input-group-addon {
+      border-color: #3f3f3f;
+      background: $bg-color-dark;
+    }
   }
 
   .empty {

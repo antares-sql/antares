@@ -5,7 +5,7 @@ import { toRaw } from 'vue';
  * @param {*} val
  * @param {Boolean} json converts the value in JSON object (default true)
  */
-export function unproxify (val: any, json = true): any {
+export function unproxify<T = any> (val: T, json = true): T {
    if (json)// JSON conversion
       return JSON.parse(JSON.stringify(val));
    else if (Array.isArray(val))// If array

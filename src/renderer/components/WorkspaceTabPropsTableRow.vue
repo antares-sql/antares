@@ -325,13 +325,14 @@
 </template>
 
 <script setup lang="ts">
+import { TableField, TableIndex, TypesGroup } from 'common/interfaces/antares';
+import { storeToRefs } from 'pinia';
 import { computed, nextTick, onMounted, Prop, PropType, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { storeToRefs } from 'pinia';
-import { useWorkspacesStore } from '@/stores/workspaces';
+
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
-import { TableField, TableIndex, TypesGroup } from 'common/interfaces/antares';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
 

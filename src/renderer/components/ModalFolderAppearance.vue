@@ -65,10 +65,11 @@
 
 <script setup lang="ts">
 import { onBeforeUnmount, PropType, Ref, ref } from 'vue';
-import { useFocusTrap } from '@/composables/useFocusTrap';
 import { useI18n } from 'vue-i18n';
-import { SidebarElement, useConnectionsStore } from '@/stores/connections';
+
+import { useFocusTrap } from '@/composables/useFocusTrap';
 import { unproxify } from '@/libs/unproxify';
+import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 
 const connectionsStore = useConnectionsStore();
 

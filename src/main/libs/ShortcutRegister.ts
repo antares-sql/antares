@@ -1,6 +1,6 @@
+import { ShortcutRecord, shortcuts } from 'common/shortcuts';
 import { BrowserWindow, globalShortcut, Menu, MenuItem, MenuItemConstructorOptions } from 'electron';
 import * as Store from 'electron-store';
-import { ShortcutRecord, shortcuts } from 'common/shortcuts';
 
 const shortcutsStore = new Store({ name: 'shortcuts' });
 const isDevelopment = process.env.NODE_ENV !== 'production';

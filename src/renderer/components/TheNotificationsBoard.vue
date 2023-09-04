@@ -17,11 +17,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, Ref, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
+import { computed, Ref, ref, watch } from 'vue';
+
+import BaseNotification from '@/components/BaseNotification.vue';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
-import BaseNotification from '@/components/BaseNotification.vue';
 
 const notificationsStore = useNotificationsStore();
 const settingsStore = useSettingsStore();

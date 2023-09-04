@@ -40,12 +40,13 @@
    </BaseContextMenu>
 </template>
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, Ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
 import * as moment from 'moment';
-import { useConsoleStore } from '@/stores/console';
 import { storeToRefs } from 'pinia';
+import { computed, nextTick, onMounted, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import { useConsoleStore } from '@/stores/console';
 
 const { t } = useI18n();
 

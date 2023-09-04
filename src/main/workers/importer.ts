@@ -1,13 +1,14 @@
 import * as antares from 'common/interfaces/antares';
-import * as pg from 'pg';
+import { ImportOptions } from 'common/interfaces/importer';
 import * as mysql from 'mysql2';
+import * as pg from 'pg';
+import SSHConfig from 'ssh2-promise/lib/sshConfig';
+
 import { MySQLClient } from '../libs/clients/MySQLClient';
 import { PostgreSQLClient } from '../libs/clients/PostgreSQLClient';
 import { ClientsFactory } from '../libs/ClientsFactory';
 import MySQLImporter from '../libs/importers/sql/MySQLlImporter';
 import PostgreSQLImporter from '../libs/importers/sql/PostgreSQLImporter';
-import SSHConfig from 'ssh2-promise/lib/sshConfig';
-import { ImportOptions } from 'common/interfaces/importer';
 let importer: antares.Importer;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

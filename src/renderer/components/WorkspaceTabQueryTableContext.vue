@@ -95,10 +95,11 @@
 </template>
 
 <script setup lang="ts">
+import { DATE, DATETIME, FLOAT, LONG_TEXT, NUMBER, TEXT, TIME, UUID } from 'common/fieldTypes';
 import { computed, Prop } from 'vue';
-import BaseContextMenu from '@/components/BaseContextMenu.vue';
 import { useI18n } from 'vue-i18n';
-import { TEXT, LONG_TEXT, NUMBER, FLOAT, DATE, TIME, DATETIME, UUID } from 'common/fieldTypes';
+
+import BaseContextMenu from '@/components/BaseContextMenu.vue';
 
 const { t } = useI18n();
 

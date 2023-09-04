@@ -1,7 +1,8 @@
-import Tables from '@/ipc-api/Tables';
-import { Component, Ref, ref } from 'vue';
-import { useNotificationsStore } from '@/stores/notifications';
 import { TableDeleteParams, TableUpdateParams } from 'common/interfaces/tableApis';
+import { Component, Ref, ref } from 'vue';
+
+import Tables from '@/ipc-api/Tables';
+import { useNotificationsStore } from '@/stores/notifications';
 const { addNotification } = useNotificationsStore();
 
 export function useResultTables (uid: string, reloadTable: () => void) {

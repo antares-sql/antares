@@ -1,6 +1,7 @@
-import { ipcRenderer } from 'electron';
-import { unproxify } from '../libs/unproxify';
 import { AlterTriggerParams, CreateTriggerParams, IpcResponse } from 'common/interfaces/antares';
+import { ipcRenderer } from 'electron';
+
+import { unproxify } from '../libs/unproxify';
 
 export default class {
    static getTriggerInformations (params: { uid: string; schema: string; trigger: string }): Promise<IpcResponse> {

@@ -45,6 +45,7 @@
                <button
                   class="btn btn-dark btn-sm"
                   :disabled="isSaving || !localFields.length"
+                  :title="t('database.manageForeignKeys')"
                   @click="showForeignModal"
                >
                   <i class="mdi mdi-24px mdi-key-link mr-1" />
@@ -161,21 +162,22 @@
 </template>
 
 <script setup lang="ts">
+import { ConnectionParams, TableField, TableForeign, TableIndex, TableOptions } from 'common/interfaces/antares';
+import { uidGen } from 'common/libs/uidGen';
+import { ipcRenderer } from 'electron';
+import { storeToRefs } from 'pinia';
 import { Component, computed, onBeforeUnmount, onMounted, Prop, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { storeToRefs } from 'pinia';
+
+import BaseLoader from '@/components/BaseLoader.vue';
+import BaseSelect from '@/components/BaseSelect.vue';
+import WorkspaceTabNewTableEmptyState from '@/components/WorkspaceTabNewTableEmptyState.vue';
+import WorkspaceTabPropsTableFields from '@/components/WorkspaceTabPropsTableFields.vue';
+import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTableForeignModal.vue';
+import WorkspaceTabPropsTableIndexesModal from '@/components/WorkspaceTabPropsTableIndexesModal.vue';
+import Tables from '@/ipc-api/Tables';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import { uidGen } from 'common/libs/uidGen';
-import Tables from '@/ipc-api/Tables';
-import BaseLoader from '@/components/BaseLoader.vue';
-import WorkspaceTabPropsTableFields from '@/components/WorkspaceTabPropsTableFields.vue';
-import WorkspaceTabPropsTableIndexesModal from '@/components/WorkspaceTabPropsTableIndexesModal.vue';
-import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTableForeignModal.vue';
-import WorkspaceTabNewTableEmptyState from '@/components/WorkspaceTabNewTableEmptyState.vue';
-import BaseSelect from '@/components/BaseSelect.vue';
-import { ConnectionParams, TableField, TableForeign, TableIndex, TableOptions } from 'common/interfaces/antares';
-import { ipcRenderer } from 'electron';
 
 const { t } = useI18n();
 

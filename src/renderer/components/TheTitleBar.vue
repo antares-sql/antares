@@ -36,13 +36,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onUnmounted, ref, watch } from 'vue';
-import { storeToRefs } from 'pinia';
 import { getCurrentWindow } from '@electron/remote';
+import { ipcRenderer } from 'electron';
+import { storeToRefs } from 'pinia';
+import { computed, onUnmounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import { useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import { useI18n } from 'vue-i18n';
-import { ipcRenderer } from 'electron';
 
 const { t } = useI18n();
 

@@ -135,12 +135,13 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, ref } from 'vue';
+import { EventInfos } from 'common/interfaces/antares';
 import * as moment from 'moment';
+import { Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
-import { EventInfos } from 'common/interfaces/antares';
 
 const { t } = useI18n();
 

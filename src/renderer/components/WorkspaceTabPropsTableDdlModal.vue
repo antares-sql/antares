@@ -29,11 +29,12 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { useNotificationsStore } from '@/stores/notifications';
 import { useI18n } from 'vue-i18n';
-import Tables from '@/ipc-api/Tables';
+
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseTextEditor from '@/components/BaseTextEditor.vue';
+import Tables from '@/ipc-api/Tables';
+import { useNotificationsStore } from '@/stores/notifications';
 
 const { t } = useI18n();
 

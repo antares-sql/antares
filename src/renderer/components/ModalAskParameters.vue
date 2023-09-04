@@ -48,12 +48,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType, Ref, ref } from 'vue';
-import { NUMBER, FLOAT } from 'common/fieldTypes';
+import { FLOAT, NUMBER } from 'common/fieldTypes';
 import { FunctionInfos, RoutineInfos } from 'common/interfaces/antares';
+import { computed, PropType, Ref, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import { useFilters } from '@/composables/useFilters';
-import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 

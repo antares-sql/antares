@@ -38,6 +38,13 @@
                            <a class="tab-link">{{ t('application.shortcuts') }}</a>
                         </li>
                         <li
+                           class="tab-item c-hand"
+                           :class="{'active': selectedTab === 'data'}"
+                           @click="selectTab('data')"
+                        >
+                           <a class="tab-link">{{ t('application.data') }}</a>
+                        </li>
+                        <li
                            v-if="updateStatus !== 'disabled'"
                            class="tab-item c-hand"
                            :class="{'active': selectedTab === 'update'}"
@@ -366,6 +373,9 @@
                   <div v-show="selectedTab === 'shortcuts'" class="panel-body py-4">
                      <ModalSettingsShortcuts />
                   </div>
+                  <div v-show="selectedTab === 'data'" class="panel-body py-4">
+                     <ModalSettingsData />
+                  </div>
                   <div v-show="selectedTab === 'update'" class="panel-body py-4">
                      <ModalSettingsUpdate />
                   </div>
@@ -379,7 +389,7 @@
                         <h4>{{ appName }}</h4>
                         <p class="mb-2">
                            {{ t('general.version') }} {{ appVersion }}<br>
-                           <a class="c-hand" @click="openOutside('https://github.com/antares-sql/antares')"><i class="mdi mdi-github d-inline" /> GitHub</a> • <a class="c-hand" @click="openOutside('https://twitter.com/AntaresSQL')"><i class="mdi mdi-twitter d-inline" /> Twitter</a> • <a class="c-hand" @click="openOutside('https://antares-sql.app/')"><i class="mdi mdi-web d-inline" /> Website</a><br>
+                           <a class="c-hand" @click="openOutside('https://github.com/antares-sql/antares')"><i class="mdi mdi-github d-inline" /> GitHub</a> • <a class="c-hand" @click="openOutside('https://fosstodon.org/@AntaresSQL')"><i class="mdi mdi-mastodon d-inline" /> Mastodon</a> • <a class="c-hand" @click="openOutside('https://twitter.com/AntaresSQL')"><i class="mdi mdi-twitter d-inline" /> Twitter</a> • <a class="c-hand" @click="openOutside('https://antares-sql.app/')"><i class="mdi mdi-web d-inline" /> Website</a><br>
                            <small>{{ t('general.author') }} <a class="c-hand" @click="openOutside('https://github.com/Fabio286')">{{ appAuthor }}</a></small><br>
                         </p>
                         <div class="mb-2">
@@ -399,21 +409,23 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, Ref, ref, computed } from 'vue';
 import { shell } from 'electron';
 import { storeToRefs } from 'pinia';
+import { computed, onBeforeUnmount, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import BaseSelect from '@/components/BaseSelect.vue';
+import BaseTextEditor from '@/components/BaseTextEditor.vue';
+import ModalSettingsChangelog from '@/components/ModalSettingsChangelog.vue';
+import ModalSettingsData from '@/components/ModalSettingsData.vue';
+import ModalSettingsShortcuts from '@/components/ModalSettingsShortcuts.vue';
+import ModalSettingsUpdate from '@/components/ModalSettingsUpdate.vue';
+import { useFocusTrap } from '@/composables/useFocusTrap';
+import { AvailableLocale } from '@/i18n';
+import { localesNames } from '@/i18n/supported-locales';
 import { useApplicationStore } from '@/stores/application';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import { useFocusTrap } from '@/composables/useFocusTrap';
-import { localesNames } from '@/i18n/supported-locales';
-import ModalSettingsUpdate from '@/components/ModalSettingsUpdate.vue';
-import ModalSettingsChangelog from '@/components/ModalSettingsChangelog.vue';
-import ModalSettingsShortcuts from '@/components/ModalSettingsShortcuts.vue';
-import BaseTextEditor from '@/components/BaseTextEditor.vue';
-import BaseSelect from '@/components/BaseSelect.vue';
-import { AvailableLocale } from '@/i18n';
 
 const { t } = useI18n();
 
@@ -648,10 +660,14 @@ onBeforeUnmount(() => {
     .modal-body {
       overflow: hidden;
 
-      .tab-link {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
+      .tab-item {
+         max-width: 20%;
+
+         .tab-link {
+           overflow: hidden;
+           white-space: nowrap;
+           text-overflow: ellipsis;
+         }
       }
 
       .panel-body {

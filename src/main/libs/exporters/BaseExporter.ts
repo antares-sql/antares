@@ -1,8 +1,8 @@
 import * as exporter from 'common/interfaces/exporter';
-import * as fs from 'fs';
-import { createGzip, Gzip } from 'zlib';
-import * as path from 'path';
 import * as EventEmitter from 'events';
+import * as fs from 'fs';
+import * as path from 'path';
+import { createGzip, Gzip } from 'zlib';
 
 export class BaseExporter extends EventEmitter {
    protected _tables;

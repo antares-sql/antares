@@ -1,11 +1,12 @@
 import * as antares from 'common/interfaces/antares';
 import * as exporter from 'common/interfaces/exporter';
-import { SqlExporter } from './SqlExporter';
+import { valueToSqlString } from 'common/libs/sqlUtils';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as QueryStream from 'pg-query-stream';
+
 import { PostgreSQLClient } from '../../clients/PostgreSQLClient';
-import { valueToSqlString } from 'common/libs/sqlUtils';
+import { SqlExporter } from './SqlExporter';
 
 export default class PostgreSQLExporter extends SqlExporter {
    constructor (client: PostgreSQLClient, tables: exporter.TableParams[], options: exporter.ExportOptions) {

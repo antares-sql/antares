@@ -29,13 +29,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, Ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useApplicationStore } from '@/stores/application';
-import { useScratchpadStore } from '@/stores/scratchpad';
+import { Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import TextEditor from '@/components/BaseTextEditor.vue';
-import { useI18n } from 'vue-i18n';
+import { useApplicationStore } from '@/stores/application';
+import { useScratchpadStore } from '@/stores/scratchpad';
 
 const { t } = useI18n();
 

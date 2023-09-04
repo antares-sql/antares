@@ -46,10 +46,11 @@
 
 <script setup lang="ts">
 import { Ref, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import TextEditor from '@/components/BaseTextEditor.vue';
 import { useFilters } from '@/composables/useFilters';
-import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 

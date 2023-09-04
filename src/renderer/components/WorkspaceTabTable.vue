@@ -199,22 +199,23 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, Prop, ref, Ref, watch } from 'vue';
+import { ConnectionParams } from 'common/interfaces/antares';
+import { TableFilterClausole } from 'common/interfaces/tableApis';
+import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
+import { computed, onBeforeUnmount, Prop, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import Tables from '@/ipc-api/Tables';
+
+import BaseLoader from '@/components/BaseLoader.vue';
+import ModalFakerRows from '@/components/ModalFakerRows.vue';
+import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable.vue';
+import WorkspaceTabTableFilters from '@/components/WorkspaceTabTableFilters.vue';
+import { useFilters } from '@/composables/useFilters';
 import { useResultTables } from '@/composables/useResultTables';
+import Tables from '@/ipc-api/Tables';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
-import BaseLoader from '@/components/BaseLoader.vue';
-import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable.vue';
-import WorkspaceTabTableFilters from '@/components/WorkspaceTabTableFilters.vue';
-import ModalFakerRows from '@/components/ModalFakerRows.vue';
-import { ConnectionParams } from 'common/interfaces/antares';
-import { TableFilterClausole } from 'common/interfaces/tableApis';
-import { useFilters } from '@/composables/useFilters';
-import { ipcRenderer } from 'electron';
 
 const { localeString } = useFilters();
 

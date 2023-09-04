@@ -24,12 +24,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useI18n } from 'vue-i18n';
-import { useSettingsStore } from '@/stores/settings';
 import { shortcutEvents } from 'common/shortcuts';
+import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import { useFilters } from '@/composables/useFilters';
+import { useSettingsStore } from '@/stores/settings';
 
 const { parseKeys } = useFilters();
 

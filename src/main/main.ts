@@ -1,8 +1,8 @@
-import { app, BrowserWindow, nativeImage, ipcMain } from 'electron';
-import * as path from 'path';
+import * as remoteMain from '@electron/remote/main';
+import { app, BrowserWindow, ipcMain, nativeImage } from 'electron';
 import * as Store from 'electron-store';
 import * as windowStateKeeper from 'electron-window-state';
-import * as remoteMain from '@electron/remote/main';
+import * as path from 'path';
 
 import ipcHandlers from './ipc-handlers';
 import { OsMenu, ShortcutRegister } from './libs/ShortcutRegister';

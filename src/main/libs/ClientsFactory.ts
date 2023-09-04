@@ -1,8 +1,9 @@
 import * as antares from 'common/interfaces/antares';
+
+import { FirebirdSQLClient } from './clients/FirebirdSQLClient';
 import { MySQLClient } from './clients/MySQLClient';
 import { PostgreSQLClient } from './clients/PostgreSQLClient';
 import { SQLiteClient } from './clients/SQLiteClient';
-import { FirebirdSQLClient } from './clients/FirebirdSQLClient';
 
 export class ClientsFactory {
    static getClient (args: antares.ClientParams) {

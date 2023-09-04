@@ -10,12 +10,16 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch } from 'vue';
+/* eslint-disable simple-import-sort/imports */
 import * as ace from 'ace-builds';
 import 'ace-builds/webpack-resolver';
-import { storeToRefs } from 'pinia';
-import { useSettingsStore } from '@/stores/settings';
+/* eslint-enable simple-import-sort/imports */
+
 import { uidGen } from 'common/libs/uidGen';
+import { storeToRefs } from 'pinia';
+import { onMounted, watch } from 'vue';
+
+import { useSettingsStore } from '@/stores/settings';
 
 const props = defineProps({
    modelValue: String,

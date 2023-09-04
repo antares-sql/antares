@@ -16,6 +16,7 @@
             :id="`id_${id}`"
             class="file-uploader-input"
             type="file"
+            :accept="accept"
             @change="$emit('change', $event)"
          >
       </form>
@@ -24,6 +25,7 @@
 
 <script setup lang="ts">
 import { uidGen } from 'common/libs/uidGen';
+
 import { useFilters } from '@/composables/useFilters';
 
 const { lastPart } = useFilters();
@@ -31,6 +33,10 @@ const { lastPart } = useFilters();
 defineProps({
    message: {
       default: 'Browse',
+      type: String
+   },
+   accept: {
+      default: '',
       type: String
    },
    modelValue: {

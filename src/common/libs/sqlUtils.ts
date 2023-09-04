@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-useless-escape */
-import * as moment from 'moment';
 import { lineString, point, polygon } from '@turf/helpers';
+import { BIT, BLOB, DATE, DATETIME, FLOAT, IS_MULTI_SPATIAL, NUMBER, SPATIAL, TEXT_SEARCH } from 'common/fieldTypes';
+import * as moment from 'moment';
+
 import customizations from '../customizations';
 import { ClientCode } from '../interfaces/antares';
-import { BLOB, BIT, DATE, DATETIME, FLOAT, SPATIAL, IS_MULTI_SPATIAL, NUMBER, TEXT_SEARCH } from 'common/fieldTypes';
-import hexToBinary, { HexChar } from './hexToBinary';
 import { getArrayDepth } from './getArrayDepth';
+import hexToBinary, { HexChar } from './hexToBinary';
 
 /**
  * Escapes a string fo SQL use

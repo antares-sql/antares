@@ -134,18 +134,20 @@
 </template>
 
 <script setup lang="ts">
-import { Component, computed, onBeforeUnmount, onMounted, onUpdated, Prop, Ref, ref } from 'vue';
-import { ipcRenderer } from 'electron';
 import { ConnectionParams } from 'common/interfaces/antares';
-import { exportRows } from '../libs/exportRows';
-import { useNotificationsStore } from '@/stores/notifications';
+import { ipcRenderer } from 'electron';
+import { Component, computed, onBeforeUnmount, onMounted, onUpdated, Prop, Ref, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
+import ModalProcessesListContext from '@/components/ModalProcessesListContext.vue';
+import ModalProcessesListRow from '@/components/ModalProcessesListRow.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import Schema from '@/ipc-api/Schema';
 import { useConnectionsStore } from '@/stores/connections';
-import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
-import ModalProcessesListRow from '@/components/ModalProcessesListRow.vue';
-import ModalProcessesListContext from '@/components/ModalProcessesListContext.vue';
-import { useI18n } from 'vue-i18n';
+import { useNotificationsStore } from '@/stores/notifications';
+
+import { exportRows } from '../libs/exportRows';
 
 const { t } = useI18n();
 

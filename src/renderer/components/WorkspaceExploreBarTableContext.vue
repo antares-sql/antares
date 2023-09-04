@@ -11,6 +11,13 @@
          <span class="d-flex"><i class="mdi mdi-18px mdi-wrench-cog text-light pr-1" /> {{ t('application.settings') }}</span>
       </div>
       <div
+         v-if="selectedTable && selectedTable.type === 'table' && customizations.schemaExport"
+         class="context-element"
+         @click="showTableExportModal"
+      >
+         <span class="d-flex"><i class="mdi mdi-18px mdi-table-arrow-right text-light pr-1" /> {{ t('database.exportTable') }}</span>
+      </div>
+      <div
          v-if="selectedTable && selectedTable.type === 'view' && customizations.viewSettings"
          class="context-element"
          @click="openViewSettingTab"
@@ -77,14 +84,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useNotificationsStore } from '@/stores/notifications';
-import { useWorkspacesStore } from '@/stores/workspaces';
-import BaseContextMenu from '@/components/BaseContextMenu.vue';
-import ConfirmModal from '@/components/BaseConfirmModal.vue';
-import Tables from '@/ipc-api/Tables';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import Tables from '@/ipc-api/Tables';
+import { useNotificationsStore } from '@/stores/notifications';
+import { useSchemaExportStore } from '@/stores/schemaExport';
+import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
 
@@ -98,6 +107,7 @@ const emit = defineEmits(['close-context', 'duplicate-table', 'reload', 'delete-
 
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
+const { showExportModal } = useSchemaExportStore();
 
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
@@ -115,6 +125,11 @@ const forceTruncate = ref(false);
 
 const workspace = computed(() => getWorkspace(selectedWorkspace.value));
 const customizations = computed(() => workspace.value && workspace.value.customizations ? workspace.value.customizations : null);
+
+const showTableExportModal = () => {
+   showExportModal(props.selectedSchema, props.selectedTable.name);
+   closeContext();
+};
 
 const showDeleteModal = () => {
    isDeleteModal.value = true;
