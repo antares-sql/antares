@@ -67,7 +67,8 @@ export const deDE = {
       deleteConnection: 'Verbindung löschen',
       connectionSuccessfullyMade: 'Verbindung erfolgreich erstellt!',
       enableSsl: 'Aktiviere SSL',
-      enableSsh: 'Aktiviere SSH'
+      enableSsh: 'Aktiviere SSH',
+      keepAliveInterval: 'Keep-Alive-Intervall'
    },
    database: {
       schema: 'Schema',

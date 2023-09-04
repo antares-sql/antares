@@ -33,10 +33,10 @@
                <form class="form-horizontal">
                   <fieldset class="m-0" :disabled="isBusy">
                      <div class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('connection.connectionName') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <input
                               ref="firstInput"
                               v-model="localConnection.name"
@@ -46,10 +46,10 @@
                         </div>
                      </div>
                      <div class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('connection.client') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <BaseSelect
                               v-model="localConnection.client"
                               :options="clients"
@@ -62,10 +62,10 @@
                         </div>
                      </div>
                      <div v-if="localConnection.client === 'pg'" class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('connection.connectionString') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <input
                               ref="pgString"
                               v-model="localConnection.pgConnString"
@@ -75,10 +75,10 @@
                         </div>
                      </div>
                      <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('connection.hostName') }}/IP</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <input
                               v-model="localConnection.host"
                               class="form-input"
@@ -87,10 +87,10 @@
                         </div>
                      </div>
                      <div v-if="clientCustomizations.fileConnection" class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('database.database') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <BaseUploadInput
                               :model-value="localConnection.databasePath"
                               :message="t('general.browse')"
@@ -100,10 +100,10 @@
                         </div>
                      </div>
                      <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('connection.port') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <input
                               v-model="localConnection.port"
                               class="form-input"
@@ -114,10 +114,10 @@
                         </div>
                      </div>
                      <div v-if="clientCustomizations.database" class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('database.database') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <input
                               v-model="localConnection.database"
                               class="form-input"
@@ -127,10 +127,10 @@
                         </div>
                      </div>
                      <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('connection.user') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <input
                               v-model="localConnection.user"
                               class="form-input"
@@ -140,10 +140,10 @@
                         </div>
                      </div>
                      <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('connection.password') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <input
                               v-model="localConnection.password"
                               class="form-input"
@@ -153,10 +153,10 @@
                         </div>
                      </div>
                      <div v-if="clientCustomizations.connectionSchema" class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('database.schema') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <input
                               v-model="localConnection.schema"
                               class="form-input"
@@ -166,16 +166,16 @@
                         </div>
                      </div>
                      <div v-if="clientCustomizations.readOnlyMode" class="form-group columns">
-                        <div class="column col-4 col-sm-12" />
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-5 col-sm-12" />
+                        <div class="column col-7 col-sm-12">
                            <label class="form-checkbox form-inline">
                               <input v-model="localConnection.readonly" type="checkbox"><i class="form-icon" /> {{ t('connection.readOnlyMode') }}
                            </label>
                         </div>
                      </div>
                      <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
-                        <div class="column col-4 col-sm-12" />
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-5 col-sm-12" />
+                        <div class="column col-7 col-sm-12">
                            <label class="form-checkbox form-inline">
                               <input v-model="localConnection.ask" type="checkbox"><i class="form-icon" /> {{ t('connection.askCredentials') }}
                            </label>
@@ -189,12 +189,12 @@
             <div>
                <form class="form-horizontal">
                   <div class="form-group columns">
-                     <div class="column col-4 col-sm-12">
+                     <div class="column col-5 col-sm-12">
                         <label class="form-label cut-text">
                            {{ t('connection.enableSsl') }}
                         </label>
                      </div>
-                     <div class="column col-8 col-sm-12">
+                     <div class="column col-7 col-sm-12">
                         <label class="form-switch d-inline-block" @click.prevent="toggleSsl">
                            <input type="checkbox" :checked="localConnection.ssl">
                            <i class="form-icon" />
@@ -203,10 +203,10 @@
                   </div>
                   <fieldset class="m-0" :disabled="isBusy || !localConnection.ssl">
                      <div class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('connection.privateKey') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <BaseUploadInput
                               :model-value="localConnection.key"
                               :message="t('general.browse')"
@@ -216,10 +216,10 @@
                         </div>
                      </div>
                      <div class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('connection.certificate') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <BaseUploadInput
                               :model-value="localConnection.cert"
                               :message="t('general.browse')"
@@ -229,10 +229,10 @@
                         </div>
                      </div>
                      <div class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('connection.caCertificate') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <BaseUploadInput
                               :model-value="localConnection.ca"
                               :message="t('general.browse')"
@@ -242,10 +242,10 @@
                         </div>
                      </div>
                      <div class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('connection.ciphers') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <input
                               ref="firstInput"
                               v-model="localConnection.ciphers"
@@ -255,8 +255,8 @@
                         </div>
                      </div>
                      <div class="form-group columns">
-                        <div class="column col-4 col-sm-12" />
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-5 col-sm-12" />
+                        <div class="column col-7 col-sm-12">
                            <label class="form-checkbox form-inline">
                               <input v-model="localConnection.untrustedConnection" type="checkbox"><i class="form-icon" /> {{ t('connection.untrustedConnection') }}
                            </label>
@@ -270,12 +270,12 @@
             <div>
                <form class="form-horizontal">
                   <div class="form-group columns">
-                     <div class="column col-4 col-sm-12">
+                     <div class="column col-5 col-sm-12">
                         <label class="form-label cut-text">
                            {{ t('connection.enableSsh') }}
                         </label>
                      </div>
-                     <div class="column col-8 col-sm-12">
+                     <div class="column col-7 col-sm-12">
                         <label class="form-switch d-inline-block" @click.prevent="toggleSsh">
                            <input type="checkbox" :checked="localConnection.ssh">
                            <i class="form-icon" />
@@ -284,10 +284,10 @@
                   </div>
                   <fieldset class="m-0" :disabled="isBusy || !localConnection.ssh">
                      <div class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('connection.hostName') }}/IP</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <input
                               v-model="localConnection.sshHost"
                               class="form-input"
@@ -296,10 +296,10 @@
                         </div>
                      </div>
                      <div class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('connection.user') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <input
                               v-model="localConnection.sshUser"
                               class="form-input"
@@ -308,10 +308,10 @@
                         </div>
                      </div>
                      <div class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('connection.password') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <input
                               v-model="localConnection.sshPass"
                               class="form-input"
@@ -320,10 +320,10 @@
                         </div>
                      </div>
                      <div class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('connection.port') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <input
                               v-model="localConnection.sshPort"
                               class="form-input"
@@ -334,10 +334,10 @@
                         </div>
                      </div>
                      <div class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('connection.privateKey') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <BaseUploadInput
                               :model-value="localConnection.sshKey"
                               :message="t('general.browse')"
@@ -347,15 +347,31 @@
                         </div>
                      </div>
                      <div class="form-group columns">
-                        <div class="column col-4 col-sm-12">
+                        <div class="column col-5 col-sm-12">
                            <label class="form-label cut-text">{{ t('connection.passphrase') }}</label>
                         </div>
-                        <div class="column col-8 col-sm-12">
+                        <div class="column col-7 col-sm-12">
                            <input
                               v-model="localConnection.sshPassphrase"
                               class="form-input"
                               type="password"
                            >
+                        </div>
+                     </div>
+                     <div class="form-group columns">
+                        <div class="column col-5 col-sm-12">
+                           <label class="form-label cut-text">{{ t('connection.keepAliveInterval') }}</label>
+                        </div>
+                        <div class="column col-7 col-sm-12">
+                           <div class="input-group">
+                              <input
+                                 v-model="localConnection.sshKeepAliveInterval"
+                                 class="form-input"
+                                 type="number"
+                                 min="1"
+                              >
+                              <span class="input-group-addon">{{ t('general.seconds') }}</span>
+                           </div>
                         </div>
                      </div>
                   </fieldset>

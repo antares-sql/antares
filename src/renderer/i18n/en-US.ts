@@ -100,7 +100,8 @@ export const enUS = {
       connectionSuccessfullyMade: 'Connection successfully made!',
       readOnlyMode: 'Read-only mode',
       allConnections: 'All connections',
-      searchForConnections: 'Search for connections'
+      searchForConnections: 'Search for connections',
+      keepAliveInterval: 'Keep alive interval'
    },
    database: { // Database related terms
       schema: 'Schema',

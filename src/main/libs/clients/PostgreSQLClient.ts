@@ -168,7 +168,6 @@ export class PostgreSQLClient extends AntaresCore {
          try {
             this._ssh = new SSH2Promise({
                ...this._params.ssh,
-               keepaliveInterval: 30*60*1000,
                debug: process.env.NODE_ENV !== 'production' ? (s) => console.log(s) : null
             });
 
