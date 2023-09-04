@@ -34,7 +34,7 @@
                   <fieldset class="m-0" :disabled="isBusy">
                      <div class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.connectionName') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.connectionName') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <input
@@ -47,7 +47,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.client') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.client') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <BaseSelect
@@ -61,7 +61,7 @@
                      </div>
                      <div v-if="connection.client === 'pg'" class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.connectionString') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.connectionString') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <input
@@ -74,7 +74,7 @@
                      </div>
                      <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.hostName') }}/IP</label>
+                           <label class="form-label cut-text">{{ t('connection.hostName') }}/IP</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <input
@@ -86,7 +86,7 @@
                      </div>
                      <div v-if="clientCustomizations.fileConnection" class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.database') }}</label>
+                           <label class="form-label cut-text">{{ t('database.database') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <BaseUploadInput
@@ -99,7 +99,7 @@
                      </div>
                      <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.port') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.port') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <input
@@ -113,7 +113,7 @@
                      </div>
                      <div v-if="clientCustomizations.database" class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.database') }}</label>
+                           <label class="form-label cut-text">{{ t('database.database') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <input
@@ -126,7 +126,7 @@
                      </div>
                      <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.user') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.user') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <input
@@ -139,7 +139,7 @@
                      </div>
                      <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.password') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.password') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <input
@@ -152,7 +152,7 @@
                      </div>
                      <div v-if="clientCustomizations.connectionSchema" class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.schema') }}</label>
+                           <label class="form-label cut-text">{{ t('database.schema') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <input
@@ -202,7 +202,7 @@
                   <fieldset class="m-0" :disabled="isBusy || !connection.ssl">
                      <div class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.privateKey') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.privateKey') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <BaseUploadInput
@@ -215,7 +215,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.certificate') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.certificate') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <BaseUploadInput
@@ -228,7 +228,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.caCertificate') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.caCertificate') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <BaseUploadInput
@@ -241,7 +241,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.ciphers') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.ciphers') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <input
@@ -283,7 +283,7 @@
                   <fieldset class="m-0" :disabled="isBusy || !connection.ssh">
                      <div class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.hostName') }}/IP</label>
+                           <label class="form-label cut-text">{{ t('connection.hostName') }}/IP</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <input
@@ -295,7 +295,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.user') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.user') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <input
@@ -307,7 +307,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.password') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.password') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <input
@@ -319,7 +319,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.port') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.port') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <input
@@ -333,7 +333,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.privateKey') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.privateKey') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <BaseUploadInput
@@ -346,7 +346,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.passphrase') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.passphrase') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <input
@@ -358,7 +358,7 @@
                      </div>
                      <div class="form-group columns">
                         <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('word.keepAliveInterval') }}</label>
+                           <label class="form-label cut-text">{{ t('connection.keepAliveInterval') }}</label>
                         </div>
                         <div class="column col-7 col-sm-12">
                            <input

@@ -100,7 +100,8 @@ export const enUS = {
       connectionSuccessfullyMade: 'Connection successfully made!',
       readOnlyMode: 'Read-only mode',
       allConnections: 'All connections',
-      searchForConnections: 'Search for connections'
+      searchForConnections: 'Search for connections',
+      keepAliveInterval: 'Keep alive interval'
    },
    database: { // Database related terms
       schema: 'Schema',
@@ -144,10 +145,6 @@ export const enUS = {
       processes: 'Processes',
       database: 'Database',
       array: 'Array',
-      changelog: 'Changelog',
-      format: 'Format',
-      sshTunnel: 'SSH tunnel',
-      keepAliveInterval: 'Keep alive interval',
       structure: 'Structure',
       row: 'Row | Rows',
       cell: 'Cell | Cells',
