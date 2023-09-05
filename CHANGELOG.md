@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.16](https://github.com/antares-sql/antares/compare/v0.7.16-beta.1...v0.7.16) (2023-08-26)
+
+### [0.7.16-beta.1](https://github.com/antares-sql/antares/compare/v0.7.16-beta.0...v0.7.16-beta.1) (2023-08-18)
+
+
+### Features
+
+* ability to export connections ([f5b86e5](https://github.com/antares-sql/antares/commit/f5b86e59e7e41bbbe1555ec8a85ec1f849e8271d))
+* ability to import connections ([6df2145](https://github.com/antares-sql/antares/commit/6df214558f8186dd5fbf101505465f4c07c8ad5f))
+* Add catalan language ([9c6f1a9](https://github.com/antares-sql/antares/commit/9c6f1a9ea52b4791082bdbae91b764c486684c3b))
+
+
+### Bug Fixes
+
+* add some missing titles of buttons ([52e42fa](https://github.com/antares-sql/antares/commit/52e42fa1b529512154c0680124c5e425964a5b1a))
+* **SQLite:** improved view body parsing ([832aa75](https://github.com/antares-sql/antares/commit/832aa75ebe46776b9c365dde2dd13db3746adcd5))
+
 ### [0.7.16-beta.0](https://github.com/antares-sql/antares/compare/v0.7.15...v0.7.16-beta.0) (2023-08-11)
 
 
