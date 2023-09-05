@@ -35,8 +35,8 @@ export class SQLiteClient extends AntaresCore {
       });
    }
 
-   destroy (): void {
-      return null;
+   destroy () {
+      this._connection.close();
    }
 
    use (): void {
