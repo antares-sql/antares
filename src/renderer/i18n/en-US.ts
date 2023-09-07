@@ -293,7 +293,7 @@ export const enUS = {
       label: 'Label',
       icon: 'Icon',
       fileName: 'File name',
-      choseFile: 'Chose file',
+      choseFile: 'Choose file',
       data: 'Data',
       password: 'Password',
       required: 'Required',
