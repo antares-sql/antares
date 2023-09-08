@@ -411,25 +411,13 @@
   }
 
   #settingbar {
-    width: $settingbar-width;
-    height: calc(100vh - #{$excluding-size});
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
     background: $bg-color-light-dark;
-    padding: 0;
     box-shadow: 0 0 1px 0 #000;
-    z-index: 9;
 
     .settingbar-top-elements {
       overflow-x: hidden;
       overflow-y: overlay;
       max-height: calc((100vh - 3.5rem) - #{$excluding-size});
-
-      &::-webkit-scrollbar {
-        width: 3px;
-      }
     }
 
     .settingbar-bottom-elements {
@@ -439,7 +427,6 @@
     .settingbar-elements {
       list-style: none;
       text-align: center;
-      width: $settingbar-width;
       padding: 0;
       margin: 0;
 
