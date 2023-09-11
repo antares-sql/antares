@@ -55,7 +55,6 @@
 
 <script setup lang="ts">
 import { uidGen } from 'common/libs/uidGen';
-import { storeToRefs } from 'pinia';
 import { computed, Prop, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -78,10 +77,8 @@ const {
 } = connectionsStore;
 
 const workspacesStore = useWorkspacesStore();
-const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const {
-   selectWorkspace,
    removeConnected: disconnectWorkspace,
    getWorkspace
 } = workspacesStore;
@@ -101,8 +98,8 @@ const connectionName = computed(() => props.contextConnection.name || getConnect
 const isConnected = computed(() => getWorkspace(props.contextConnection.uid)?.connectionStatus === 'connected');
 
 const confirmDeleteConnection = () => {
-   if (selectedWorkspace.value === props.contextConnection.uid)
-      selectWorkspace(null);
+   if (isConnected.value)
+      disconnectWorkspace(props.contextConnection.uid);
    deleteConnection(props.contextConnection);
    closeContext();
 };

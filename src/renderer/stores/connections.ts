@@ -3,6 +3,8 @@ import { uidGen } from 'common/libs/uidGen';
 import * as crypto from 'crypto';
 import * as Store from 'electron-store';
 import { defineStore } from 'pinia';
+
+import { useWorkspacesStore } from '@/stores/workspaces';
 const key = localStorage.getItem('key');
 
 export interface SidebarElement {
@@ -105,10 +107,12 @@ export const useConnectionsStore = defineStore('connections', {
             return el;
          });
          this.connectionsOrder = (this.connectionsOrder as SidebarElement[]).filter(el => el.uid !== connection.uid);
+         this.lastConnections = (this.lastConnections as SidebarElement[]).filter(el => el.uid !== connection.uid);
 
          this.connections = (this.connections as SidebarElement[]).filter(el => el.uid !== connection.uid);
          persistentStore.set('connections', this.connections);
          this.clearEmptyFolders();
+         useWorkspacesStore().removeWorkspace(connection.uid);
       },
       editConnection (connection: ConnectionParams) {
          const editedConnections = (this.connections as ConnectionParams[]).map(conn => {

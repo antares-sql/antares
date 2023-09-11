@@ -424,6 +424,10 @@ export const useWorkspacesStore = defineStore('workspaces', {
 
          this.workspaces.push(workspace);
       },
+      removeWorkspace (uid: string) {
+         this.workspaces = this.workspaces.filter((w: Workspace) => w.uid !== uid);
+         if (uid === this.selectedWorkspace) this.selectedWorkspace = 'NEW';
+      },
       changeBreadcrumbs (payload: Breadcrumb) {
          const breadcrumbsObj: Breadcrumb = {
             schema: null,
