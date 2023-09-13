@@ -5,6 +5,8 @@ import { dialog, ipcMain } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { validateSender } from '../libs/misc/validateSender';
+
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 export default (connections: {[key: string]: antares.Client}) => {
@@ -12,6 +14,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    let importer: ChildProcess = null;
 
    ipcMain.handle('create-schema', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          await connections[params.uid].createSchema(params);
 
@@ -23,6 +27,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('update-schema', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          await connections[params.uid].alterSchema(params);
 
@@ -34,6 +40,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('delete-schema', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          await connections[params.uid].dropSchema(params);
 
@@ -45,6 +53,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('get-schema-collation', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          const collation = await connections[params.uid].getDatabaseCollation(
             params
@@ -61,6 +71,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('get-structure', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          const structure: unknown = await connections[params.uid].getStructure(
             params.schemas
@@ -74,6 +86,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('get-collations', async (event, uid) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          const result = await connections[uid].getCollations();
 
@@ -85,6 +99,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('get-variables', async (event, uid) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          const result = await connections[uid].getVariables();
 
@@ -96,6 +112,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('get-engines', async (event, uid) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          const result: unknown = await connections[uid].getEngines();
 
@@ -107,6 +125,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('get-version', async (event, uid) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          const result = await connections[uid].getVersion();
 
@@ -118,6 +138,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('get-processes', async (event, uid) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          const result = await connections[uid].getProcesses();
 
@@ -129,6 +151,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('kill-process', async (event, { uid, pid }) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          const result = await connections[uid].killProcess(pid);
 
@@ -140,6 +164,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('use-schema', async (event, { uid, schema }) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       if (!schema) return;
 
       try {
@@ -152,6 +178,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('raw-query', async (event, { uid, query, schema, tabUid, autocommit }) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       if (!query) return;
 
       try {
@@ -171,6 +199,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('export', (event, { uid, type, tables, ...rest }) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       if (exporter !== null) {
          exporter.kill();
          return;
@@ -245,7 +275,9 @@ export default (connections: {[key: string]: antares.Client}) => {
       });
    });
 
-   ipcMain.handle('abort-export', async () => {
+   ipcMain.handle('abort-export', async (event) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       let willAbort = false;
 
       if (exporter) {
@@ -267,6 +299,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('import-sql', async (event, options) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       if (importer !== null) {
          importer.kill();
          return;
@@ -318,7 +352,9 @@ export default (connections: {[key: string]: antares.Client}) => {
       });
    });
 
-   ipcMain.handle('abort-import-sql', async () => {
+   ipcMain.handle('abort-import-sql', async (event) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       let willAbort = false;
 
       if (importer) {
@@ -340,6 +376,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('kill-tab-query', async (event, { uid, tabUid }) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       if (!tabUid) return;
 
       try {
@@ -352,6 +390,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('commit-tab', async (event, { uid, tabUid }) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       if (!tabUid) return;
 
       try {
@@ -364,6 +404,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('rollback-tab', async (event, { uid, tabUid }) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       if (!tabUid) return;
 
       try {
@@ -376,6 +418,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('destroy-connection-to-commit', async (event, { uid, tabUid }) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       if (!tabUid) return;
 
       try {

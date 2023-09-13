@@ -142,6 +142,14 @@ else {
          const extensionPath = path.resolve(__dirname, `../../misc/${antares.devtoolsId}`);
          window.webContents.session.loadExtension(extensionPath, { allowFileAccess: true }).catch(console.error);
       }
+
+      window.webContents.on('will-navigate', (e) => { // Prevent browser navigation
+         e.preventDefault();
+      });
+
+      window.webContents.on('did-create-window', (w) => { // Close new windows
+         w.close();
+      });
    });
 }
 

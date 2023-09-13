@@ -8,8 +8,12 @@ import { ipcMain } from 'electron';
 import * as fs from 'fs';
 import * as moment from 'moment';
 
+import { validateSender } from '../libs/misc/validateSender';
+
 export default (connections: {[key: string]: antares.Client}) => {
    ipcMain.handle('get-table-columns', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          const result = await connections[params.uid].getTableColumns(params);
          return { status: 'success', response: result };
@@ -20,6 +24,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('get-table-data', async (event, { uid, schema, table, limit, page, sortParams, where }) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          const offset = (page - 1) * limit;
          const query = connections[uid]
@@ -45,6 +51,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('get-table-count', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          const result = await connections[params.uid].getTableApproximateCount(params);
          return { status: 'success', response: result };
@@ -55,6 +63,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('get-table-options', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          const result = await connections[params.uid].getTableOptions(params);
          return { status: 'success', response: result };
@@ -65,6 +75,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('get-table-indexes', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          const result = await connections[params.uid].getTableIndexes(params);
 
@@ -76,6 +88,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('get-table-ddl', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          const result = await connections[params.uid].getTableDll(params);
 
@@ -87,6 +101,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('get-key-usage', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          const result = await connections[params.uid].getKeyUsage(params);
 
@@ -98,6 +114,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('update-table-cell', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       delete params.row._antares_id;
       const { stringsWrapper: sw } = customizations[connections[params.uid]._client];
 
@@ -227,6 +245,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('delete-table-rows', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       if (params.primary) {
          // eslint-disable-next-line @typescript-eslint/no-explicit-any
          const idString = params.rows.map((row: {[key: string]: any}) => {
@@ -281,6 +301,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('insert-table-fake-rows', async (event, params: InsertRowsParams) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try { // TODO: move to client classes
          const rows: {[key: string]: string | number | boolean | Date | Buffer}[] = [];
 
@@ -403,6 +425,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('get-foreign-list', async (event, { uid, schema, table, column, description }) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          const query = connections[uid]
             .select(`${column} AS foreign_column`)
@@ -436,6 +460,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('create-table', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          await connections[params.uid].createTable(params);
          return { status: 'success' };
@@ -446,6 +472,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('alter-table', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          await connections[params.uid].alterTable(params);
          return { status: 'success' };
@@ -456,6 +484,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('duplicate-table', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          await connections[params.uid].duplicateTable(params);
          return { status: 'success' };
@@ -466,6 +496,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('truncate-table', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          await connections[params.uid].truncateTable(params);
          return { status: 'success' };
@@ -476,6 +508,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('drop-table', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       try {
          await connections[params.uid].dropTable(params);
          return { status: 'success' };

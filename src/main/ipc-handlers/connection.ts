@@ -4,9 +4,12 @@ import * as fs from 'fs';
 import { SslOptions } from 'mysql2';
 
 import { ClientsFactory } from '../libs/ClientsFactory';
+import { validateSender } from '../libs/misc/validateSender';
 
 export default (connections: {[key: string]: antares.Client}) => {
    ipcMain.handle('test-connection', async (event, conn: antares.ConnectionParams) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       const params = {
          host: conn.host,
          port: +conn.port,
@@ -83,6 +86,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('connect', async (event, conn: antares.ConnectionParams) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       const params = {
          host: conn.host,
          port: +conn.port,
@@ -158,6 +163,8 @@ export default (connections: {[key: string]: antares.Client}) => {
    });
 
    ipcMain.handle('disconnect', (event, uid) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
       connections[uid].destroy();
       delete connections[uid];
    });
