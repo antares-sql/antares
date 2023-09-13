@@ -3,7 +3,7 @@ import * as Store from 'electron-store';
 import { defineStore } from 'pinia';
 
 const persistentStore = new Store({ name: 'settings' });
-export type UpdateStatus = 'noupdate' | 'available' | 'checking' | 'nocheck' | 'downloading' | 'downloaded' | 'disabled';
+export type UpdateStatus = 'noupdate' | 'available' | 'checking' | 'nocheck' | 'downloading' | 'downloaded' | 'disabled' | 'link';
 
 export const useApplicationStore = defineStore('application', {
    state: () => ({
