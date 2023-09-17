@@ -155,7 +155,7 @@
                   <BaseIcon
                      class="mr-1 mt-1"
                      icon-name="mdiTimerSand"
-                     rotate="180deg"
+                     :rotate="180"
                      :size="16"
                   /> <b>{{ results[0].duration / 1000 }}s</b>
                </div>

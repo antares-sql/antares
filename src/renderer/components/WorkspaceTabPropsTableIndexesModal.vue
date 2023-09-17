@@ -11,7 +11,7 @@
             <BaseIcon
                class="mr-1"
                icon-name="mdiKey"
-               rotate="45deg"
+               :rotate="45"
                :size="24"
             />
             <span class="cut-text">{{ t('database.indexes') }} "{{ table }}"</span>

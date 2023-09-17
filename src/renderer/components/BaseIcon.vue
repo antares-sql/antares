@@ -31,7 +31,7 @@ const props = defineProps({
       default: () => null
    },
    rotate: {
-      type: String,
+      type: Number,
       default: () => null
    }
 });

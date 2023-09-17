@@ -48,7 +48,7 @@
                         <div v-if="field.key" :title="keyName(field.key)">
                            <BaseIcon
                               icon-name="mdiKey"
-                              rotate="45deg"
+                              :rotate="45"
                               :size="14"
                               class="column-key c-help mt-1 mr-1"
                               :class="`key-${field.key}`"

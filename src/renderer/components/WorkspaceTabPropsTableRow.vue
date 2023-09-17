@@ -21,7 +21,7 @@
             >
                <BaseIcon
                   icon-name="mdiKey"
-                  rotate="45deg"
+                  :rotate="45"
                   :size="14"
                   class="d-inline-block column-key c-help"
                   :class="`key-${index.type}`"

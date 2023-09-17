@@ -23,7 +23,7 @@
                <span class="d-flex">
                   <BaseIcon
                      icon-name="mdiNumeric0"
-                     rotate="90deg"
+                     :rotate="90"
                      class="text-light mt-1 mr-1"
                      :size="18"
                   /> {{ t('database.cell', 1) }}

@@ -25,7 +25,7 @@
                   <BaseIcon
                      icon-name="mdiNumeric0"
                      class="mr-1 mt-1 text-light"
-                     rotate="90deg"
+                     :rotate="90"
                      :size="18"
                   /> {{ t('database.cell', 1) }}
                </span>

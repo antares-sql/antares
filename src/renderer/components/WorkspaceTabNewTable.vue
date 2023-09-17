@@ -54,7 +54,7 @@
                   <BaseIcon
                      class="mr-1"
                      icon-name="mdiKey"
-                     rotate="45deg"
+                     :rotate="45"
                      :size="24"
                   />
                   <span>{{ t('database.indexes') }}</span>

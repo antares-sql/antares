@@ -80,7 +80,7 @@ declare module 'vuedraggable' {// <- to export as default
    export = draggableComponent;
 }
 
-declare let SvgIcon: import('vue').DefineComponent<{
+declare const SvgIcon: import('vue').DefineComponent<{
     type: {
       type: StringConstructor;
       default: string;
@@ -102,7 +102,7 @@ declare let SvgIcon: import('vue').DefineComponent<{
       optional: boolean;
     };
     rotate: {
-      type: StringConstructor;
+      type: NumberConstructor;
       optional: boolean;
     };
   }>;

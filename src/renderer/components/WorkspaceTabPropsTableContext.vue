@@ -28,7 +28,7 @@
                      class="column-key pr-1 mt-1 mr-1"
                      :class="`key-${index}`"
                      icon-name="mdiKey"
-                     rotate="45deg"
+                     :rotate="45"
                      :size="20"
                   /> {{ index }}</span>
             </div>
@@ -59,7 +59,7 @@
                      class="column-key pr-1 mt-1 mr-1"
                      :class="`key-${index.type}`"
                      icon-name="mdiKey"
-                     rotate="45deg"
+                     :rotate="45"
                      :size="20"
                   /> {{ index.name }}</span>
             </div>
