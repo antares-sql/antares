@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.17-beta.0](https://github.com/antares-sql/antares/compare/v0.7.16...v0.7.17-beta.0) (2023-09-17)
+
+
+### Features
+
+* customize keep-alive-interval for ssh-tunnel ([b4731d6](https://github.com/antares-sql/antares/commit/b4731d67a5b819bf87c437eb626f30a7489477f9))
+* keep alive interval in seconds ([8d605ee](https://github.com/antares-sql/antares/commit/8d605ee2872c20495f0ac4de84bf17d61c6455ae))
+* **translation:** Update Dutch ([b43c400](https://github.com/antares-sql/antares/commit/b43c4000d5905838348c391f25b3228dc6a6b2ac))
+
+
+### Bug Fixes
+
+* empty workspace deleting connections in some conditions ([0de5ef8](https://github.com/antares-sql/antares/commit/0de5ef8a985cc8d9f1fa4479eeaf7dbb20f5fd7c))
+* **SQLite:** disconnecting a sqlite connection does not truly close it, fixes [#661](https://github.com/antares-sql/antares/issues/661) ([757a2b3](https://github.com/antares-sql/antares/commit/757a2b3cbf0d7f4df37eb5d90faa2f9821794e5f))
+* **UI:** update notification indicator moves settings icon ([e6f45d7](https://github.com/antares-sql/antares/commit/e6f45d71c75206187a7ae87e5f90a22d288a53ef))
+
+
+### Improvements
+
+* **core:** improved app security, fixes [#666](https://github.com/antares-sql/antares/issues/666) ([1359242](https://github.com/antares-sql/antares/commit/13592425afc643fe7188463fe4a2d02b6e27f87c))
+* improved ipc validation on Linux ([9de5f67](https://github.com/antares-sql/antares/commit/9de5f67d189c9b56fff41b29e6df69a3909bfa26))
+* migration from font icons to svg icons ([e7bec0a](https://github.com/antares-sql/antares/commit/e7bec0aaaf019fe0c3040d2d9443233e46a60188))
+
 ### [0.7.16](https://github.com/antares-sql/antares/compare/v0.7.16-beta.1...v0.7.16) (2023-08-26)
 
 ### [0.7.16-beta.1](https://github.com/antares-sql/antares/compare/v0.7.16-beta.0...v0.7.16-beta.1) (2023-08-18)
