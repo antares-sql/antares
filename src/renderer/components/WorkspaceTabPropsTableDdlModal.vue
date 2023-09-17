@@ -9,7 +9,11 @@
    >
       <template #header>
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-code-tags mr-1" />
+            <BaseIcon
+               class="mr-1"
+               icon-name="mdiCodeTags"
+               :size="24"
+            />
             <span class="cut-text">{{ t('database.ddl') }} "{{ table }}"</span>
          </div>
       </template>
@@ -32,6 +36,7 @@ import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseTextEditor from '@/components/BaseTextEditor.vue';
 import Tables from '@/ipc-api/Tables';
 import { useNotificationsStore } from '@/stores/notifications';

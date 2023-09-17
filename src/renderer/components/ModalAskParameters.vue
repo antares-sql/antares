@@ -8,7 +8,11 @@
    >
       <template #header>
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-play mr-1" />
+            <BaseIcon
+               icon-name="mdiPlay"
+               class="mr-1"
+               :size="24"
+            />
             <span class="cut-text">{{ t('database.parameters') }}: {{ localRoutine.name }}</span>
          </div>
       </template>
@@ -54,6 +58,7 @@ import { computed, PropType, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import { useFilters } from '@/composables/useFilters';
 
 const { t } = useI18n();

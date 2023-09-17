@@ -6,7 +6,11 @@
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
-                     <i class="mdi mdi-24px mdi-history mr-1" />
+                     <BaseIcon
+                        icon-name="mdiHistory"
+                        class="mr-1"
+                        :size="24"
+                     />
                      <span class="cut-text">{{ t('general.history') }}: {{ connectionName }}</span>
                   </div>
                </div>
@@ -24,17 +28,24 @@
                      type="text"
                      :placeholder="t('database.searchForQueries')"
                   >
-                  <i v-if="!searchTerm" class="form-icon mdi mdi-magnify mdi-18px pr-4" />
-                  <i
+                  <BaseIcon
+                     v-if="!searchTerm"
+                     icon-name="mdiMagnify"
+                     class="form-icon pr-2"
+                     :size="18"
+                  />
+                  <BaseIcon
                      v-else
-                     class="form-icon c-hand mdi mdi-backspace mdi-18px pr-4"
+                     icon-name="mdiBackspace"
+                     class="form-icon c-hand pr-2"
+                     :size="18"
                      @click="searchTerm = ''"
                   />
                </div>
                <div
                   v-if="history.length"
                   ref="tableWrapper"
-                  class="vscroll px-1 "
+                  class="vscroll px-1"
                   :style="{'height': resultsSize+'px'}"
                >
                   <div ref="table">
@@ -53,7 +64,11 @@
                               tabindex="0"
                            >
                               <div class="tile-icon">
-                                 <i class="mdi mdi-code-tags pr-1" />
+                                 <BaseIcon
+                                    icon-name="mdiCodeTags"
+                                    class="pr-1"
+                                    :size="24"
+                                 />
                               </div>
                               <div class="tile-content">
                                  <div class="tile-title">
@@ -67,13 +82,25 @@
                                     <small class="tile-subtitle">{{ query.schema }} · {{ formatDate(query.date) }}</small>
                                     <div class="tile-history-buttons">
                                        <button class="btn btn-link pl-1" @click.stop="$emit('select-query', query.sql)">
-                                          <i class="mdi mdi-open-in-app pr-1" /> {{ t('general.select') }}
+                                          <BaseIcon
+                                             icon-name="mdiOpenInApp"
+                                             class="pr-1"
+                                             :size="22"
+                                          /> {{ t('general.select') }}
                                        </button>
                                        <button class="btn btn-link pl-1" @click="copyQuery(query.sql)">
-                                          <i class="mdi mdi-content-copy pr-1" /> {{ t('general.copy') }}
+                                          <BaseIcon
+                                             icon-name="mdiContentCopy"
+                                             class="pr-1"
+                                             :size="22"
+                                          /> {{ t('general.copy') }}
                                        </button>
                                        <button class="btn btn-link pl-1" @click="deleteQuery(query)">
-                                          <i class="mdi mdi-delete-forever pr-1" /> {{ t('general.delete') }}
+                                          <BaseIcon
+                                             icon-name="mdiDeleteForever"
+                                             class="pr-1"
+                                             :size="22"
+                                          /> {{ t('general.delete') }}
                                        </button>
                                     </div>
                                  </div>
@@ -85,7 +112,7 @@
                </div>
                <div v-else class="empty">
                   <div class="empty-icon">
-                     <i class="mdi mdi-history mdi-48px" />
+                     <BaseIcon icon-name="mdiHistory" :size="48" />
                   </div>
                   <p class="empty-title h5">
                      {{ t('database.thereIsNoQueriesYet') }}
@@ -102,6 +129,7 @@ import { ConnectionParams } from 'common/interfaces/antares';
 import { Component, computed, ComputedRef, onBeforeUnmount, onMounted, onUpdated, Prop, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
 import { useFilters } from '@/composables/useFilters';
 import { useFocusTrap } from '@/composables/useFocusTrap';

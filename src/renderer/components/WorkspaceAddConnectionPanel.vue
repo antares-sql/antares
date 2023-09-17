@@ -384,7 +384,11 @@
                :disabled="isBusy"
                @click="startTest"
             >
-               <i class="mdi mdi-24px mdi-lightning-bolt mr-1" />
+               <BaseIcon
+                  icon-name="mdiLightningBolt"
+                  :size="24"
+                  class="mr-1"
+               />
                {{ t('connection.testConnection') }}
             </button>
             <button
@@ -393,7 +397,11 @@
                :disabled="isBusy"
                @click="saveConnection"
             >
-               <i class="mdi mdi-24px mdi-content-save mr-1" />
+               <BaseIcon
+                  icon-name="mdiContentSave"
+                  :size="24"
+                  class="mr-1"
+               />
                {{ t('general.save') }}
             </button>
          </div>
@@ -413,6 +421,7 @@ import { uidGen } from 'common/libs/uidGen';
 import { computed, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import BaseUploadInput from '@/components/BaseUploadInput.vue';
 import ModalAskCredentials from '@/components/ModalAskCredentials.vue';

@@ -8,20 +8,40 @@
          class="context-element"
          @click="disconnect"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-power text-light pr-1" /> {{ t('connection.disconnect') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiPower"
+               :size="18"
+            /> {{ t('connection.disconnect') }}</span>
       </div>
       <div
          v-if="!contextConnection.isFolder"
          class="context-element"
          @click="duplicateConnection"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ t('general.duplicate') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiContentDuplicate"
+               :size="18"
+            /> {{ t('general.duplicate') }}</span>
       </div>
       <div class="context-element" @click.stop="showAppearanceModal">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-brush-variant text-light pr-1" /> {{ t('application.appearance') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiBrushVariant"
+               :size="18"
+            /> {{ t('application.appearance') }}</span>
       </div>
       <div class="context-element" @click="showConfirmModal">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ t('general.delete') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiDelete"
+               :size="18"
+            /> {{ t('general.delete') }}</span>
       </div>
 
       <ConfirmModal
@@ -31,7 +51,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mr-1" :class="[contextConnection.isFolder ? 'mdi-folder-remove' : 'mdi-server-remove']" /> {{ t(contextConnection.isFolder ? 'application.deleteFolder' : 'connection.deleteConnection') }}
+               <BaseIcon
+                  class="text-light mr-1"
+                  :icon-name="contextConnection.isFolder ? 'mdiFolderRemove' : 'mdiServerRemove'"
+                  :size="24"
+               /> {{ t(contextConnection.isFolder ? 'application.deleteFolder' : 'connection.deleteConnection') }}
             </div>
          </template>
          <template #body>
@@ -60,6 +84,7 @@ import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import ModalConnectionAppearance from '@/components/ModalConnectionAppearance.vue';
 import ModalFolderAppearance from '@/components/ModalFolderAppearance.vue';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';

@@ -27,7 +27,11 @@
                      :title="t('general.cancel')"
                      @click="killTabQuery()"
                   >
-                     <i class="mdi mdi-24px mdi-window-close" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiWindowCLose"
+                        :size="24"
+                     />
                      <span class="d-invisible pr-1">{{ t('general.run') }}</span>
                   </button>
                   <button
@@ -37,7 +41,11 @@
                      :disabled="!query"
                      @click="runQuery(query)"
                   >
-                     <i class="mdi mdi-24px mdi-play pr-1" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiPlay"
+                        :size="24"
+                     />
                      <span>{{ t('general.run') }}</span>
                   </button>
                </div>
@@ -47,7 +55,11 @@
                   :class="{'loading':isQuering}"
                   @click="commitTab()"
                >
-                  <i class="mdi mdi-24px mdi-cube-send pr-1" />
+                  <BaseIcon
+                     class="mr-1"
+                     icon-name="mdiCubeSend"
+                     :size="24"
+                  />
                   <span>{{ t('database.commit') }}</span>
                </button>
                <button
@@ -56,7 +68,11 @@
                   :class="{'loading':isQuering}"
                   @click="rollbackTab()"
                >
-                  <i class="mdi mdi-24px mdi-undo-variant pr-1" />
+                  <BaseIcon
+                     class="mr-1"
+                     icon-name="mdiUndoVariant"
+                     :size="24"
+                  />
                   <span>{{ t('database.rollback') }}</span>
                </button>
                <button
@@ -64,7 +80,11 @@
                   :disabled="!query || isQuering"
                   @click="clear()"
                >
-                  <i class="mdi mdi-24px mdi-delete-sweep pr-1" />
+                  <BaseIcon
+                     class="mr-1"
+                     icon-name="mdiDeleteSweep"
+                     :size="24"
+                  />
                   <span>{{ t('general.clear') }}</span>
                </button>
 
@@ -75,7 +95,11 @@
                   :disabled="!query || isQuering"
                   @click="beautify()"
                >
-                  <i class="mdi mdi-24px mdi-brush pr-1" />
+                  <BaseIcon
+                     class="mr-1"
+                     icon-name="mdiBrush"
+                     :size="24"
+                  />
                   <span>{{ t('general.format') }}</span>
                </button>
                <button
@@ -83,7 +107,11 @@
                   :disabled="isQuering"
                   @click="openHistoryModal()"
                >
-                  <i class="mdi mdi-24px mdi-history pr-1" />
+                  <BaseIcon
+                     class="mr-1"
+                     icon-name="mdiHistory"
+                     :size="24"
+                  />
                   <span>{{ t('general.history') }}</span>
                </button>
                <div class="dropdown table-dropdown pr-2">
@@ -92,9 +120,17 @@
                      class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
                      tabindex="0"
                   >
-                     <i class="mdi mdi-24px mdi-file-export mr-1" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiFileExport"
+                        :size="24"
+                     />
                      <span>{{ t('database.export') }}</span>
-                     <i class="mdi mdi-24px mdi-menu-down" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiMenuDown"
+                        :size="24"
+                     />
                   </button>
                   <ul class="menu text-left">
                      <li class="menu-item">
@@ -112,7 +148,11 @@
                   </ul>
                </div>
                <div class="input-group pr-2" :title="t('database.commitMode')">
-                  <i class="input-group-addon addon-sm mdi mdi-24px mdi-source-commit p-0" />
+                  <BaseIcon
+                     class="input-group-addon addon-sm p-0"
+                     icon-name="mdiSourceCommit"
+                     :size="28"
+                  />
                   <BaseSelect
                      v-model="autocommit"
                      :options="[{value: true, label: t('database.autoCommit')}, {value: false, label: t('database.manualCommit')}]"
@@ -128,24 +168,41 @@
                   class="d-flex"
                   :title="t('database.queryDuration')"
                >
-                  <i class="mdi mdi-timer-sand mdi-rotate-180 pr-1" /> <b>{{ durationsCount / 1000 }}s</b>
+                  <BaseIcon
+                     class="mr-1 mt-1"
+                     icon-name="mdiTimerSand"
+                     rotate="180deg"
+                     :size="16"
+                  /> <b>{{ durationsCount / 1000 }}s</b>
                </div>
                <div
                   v-if="resultsCount"
                   class="d-flex"
                   :title="t('general.results')"
                >
-                  <i class="mdi mdi-equal pr-1" /> <b>{{ resultsCount.toLocaleString() }}</b>
+                  <BaseIcon
+                     class="mr-1 mt-1"
+                     icon-name="mdiEqual"
+                     :size="16"
+                  /> <b>{{ resultsCount.toLocaleString() }}</b>
                </div>
                <div
                   v-if="hasAffected"
                   class="d-flex"
                   :title="t('database.affectedRows')"
                >
-                  <i class="mdi mdi-target pr-1" /> <b>{{ affectedCount }}</b>
+                  <BaseIcon
+                     class="mr-1 mt-1"
+                     icon-name="mdiTarget"
+                     :size="16"
+                  />  <b>{{ affectedCount }}</b>
                </div>
                <div class="input-group" :title="t('database.schema')">
-                  <i class="input-group-addon addon-sm mdi mdi-24px mdi-database" />
+                  <BaseIcon
+                     class="input-group-addon addon-sm p-0 px-1"
+                     icon-name="mdiDatabase"
+                     :size="28"
+                  />
 
                   <BaseSelect
                      v-model="selectedSchema"
@@ -190,6 +247,7 @@ import { format } from 'sql-formatter';
 import { Component, computed, onBeforeUnmount, onMounted, Prop, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseLoader from '@/components/BaseLoader.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import ModalHistory from '@/components/ModalHistory.vue';

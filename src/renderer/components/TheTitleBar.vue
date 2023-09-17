@@ -21,14 +21,14 @@
             class="titlebar-element"
             @click="openDevTools"
          >
-            <i class="mdi mdi-24px mdi-code-tags" />
+            <BaseIcon icon-name="mdiCodeTags" :size="24" />
          </div>
          <div
             v-if="isDevelopment"
             class="titlebar-element"
             @click="reload"
          >
-            <i class="mdi mdi-24px mdi-refresh" />
+            <BaseIcon icon-name="mdiRefresh" :size="24" />
          </div>
          <div v-if="isWindows" :style="'width: 140px;'" />
       </div>
@@ -42,6 +42,7 @@ import { storeToRefs } from 'pinia';
 import { computed, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import { useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
 

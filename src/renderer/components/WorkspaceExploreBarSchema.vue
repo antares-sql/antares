@@ -7,8 +7,17 @@
          @contextmenu.prevent="showSchemaContext($event, database.name)"
       >
          <div v-if="isLoading" class="icon loading" />
-         <i v-else class="icon mdi mdi-18px mdi-chevron-right" />
-         <i class="database-icon mdi mdi-18px mdi-database mr-1" />
+         <BaseIcon
+            v-else
+            class="icon"
+            icon-name="mdiChevronRight"
+            :size="18"
+         />
+         <BaseIcon
+            class="database-icon mr-1"
+            icon-name="mdiDatabase"
+            :size="18"
+         />
          <div class="">
             <span v-html="highlightWord(database.name, 'schemas')" />
             <div
@@ -16,7 +25,11 @@
                class="schema-size tooltip tooltip-left mr-1"
                :data-tooltip="formatBytes(database.size)"
             >
-               <i class="mdi mdi-information-outline pr-2" />
+               <BaseIcon
+                  class="mr-2"
+                  icon-name="mdiInformationOutline"
+                  :size="18"
+               />
             </div>
          </div>
       </summary>
@@ -34,10 +47,11 @@
                >
                   <a class="table-name">
                      <div v-if="checkLoadingStatus(table.name, 'table')" class="icon loading mr-1" />
-                     <i
+                     <BaseIcon
                         v-else
-                        class="table-icon mdi mdi-18px mr-1"
-                        :class="table.type === 'view' ? 'mdi-table-eye' : 'mdi-table'"
+                        class="table-icon mr-1"
+                        :icon-name="table.type === 'view' ? 'mdiTableEye' : 'mdiTable'"
+                        :size="18"
                      />
                      <span v-html="highlightWord(table.name)" />
                   </a>
@@ -59,7 +73,11 @@
                   :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.trigger}"
                   @contextmenu.prevent="showMiscFolderContext($event, 'trigger')"
                >
-                  <i class="misc-icon mdi mdi-18px mdi-folder-cog mr-1" />
+                  <BaseIcon
+                     class="misc-icon mr-1"
+                     icon-name="mdiFolderCog"
+                     :size="18"
+                  />
                   {{ t('database.trigger', 2) }}
                </summary>
                <div class="accordion-body">
@@ -76,7 +94,12 @@
                         >
                            <a class="table-name">
                               <div v-if="checkLoadingStatus(trigger.name, 'trigger')" class="icon loading mr-1" />
-                              <i v-else class="table-icon mdi mdi-table-cog mdi-18px mr-1" />
+                              <BaseIcon
+                                 v-else
+                                 class="table-icon mr-1"
+                                 icon-name="mdiTableCog"
+                                 :size="18"
+                              />
                               <span v-html="highlightWord(trigger.name)" />
                            </a>
                            <div
@@ -84,7 +107,11 @@
                               class="tooltip tooltip-left disabled-indicator"
                               :data-tooltip="t('general.disabled')"
                            >
-                              <i class="table-icon mdi mdi-pause mdi-18px mr-1" />
+                              <BaseIcon
+                                 class="table-icon mr-1"
+                                 icon-name="mdiPause"
+                                 :size="18"
+                              />
                            </div>
                         </li>
                      </ul>
@@ -100,7 +127,11 @@
                   :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.routine}"
                   @contextmenu.prevent="showMiscFolderContext($event, 'routine')"
                >
-                  <i class="misc-icon mdi mdi-18px mdi-folder-sync mr-1" />
+                  <BaseIcon
+                     class="misc-icon mr-1"
+                     icon-name="mdiFolderSync"
+                     :size="18"
+                  />
                   {{ t('database.storedRoutine', 2) }}
                </summary>
                <div class="accordion-body">
@@ -116,7 +147,11 @@
                            @contextmenu.prevent="showMiscContext($event, {...routine, type: 'routine'})"
                         >
                            <a class="table-name">
-                              <i class="table-icon mdi mdi-sync-circle mdi-18px mr-1" />
+                              <BaseIcon
+                                 class="table-icon mr-1"
+                                 icon-name="mdiSyncCircle"
+                                 :size="18"
+                              />
                               <span v-html="highlightWord(routine.name)" />
                            </a>
                         </li>
@@ -133,7 +168,11 @@
                   :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.triggerFunction}"
                   @contextmenu.prevent="showMiscFolderContext($event, 'triggerFunction')"
                >
-                  <i class="misc-icon mdi mdi-18px mdi-folder-refresh mr-1" />
+                  <BaseIcon
+                     class="misc-icon mr-1"
+                     icon-name="mdiFolderRefresh"
+                     :size="18"
+                  />
                   {{ t('database.triggerFunction', 2) }}
                </summary>
                <div class="accordion-body">
@@ -149,7 +188,11 @@
                            @contextmenu.prevent="showMiscContext($event, {...func, type: 'triggerFunction'})"
                         >
                            <a class="table-name">
-                              <i class="table-icon mdi mdi-cog-clockwise mdi-18px mr-1" />
+                              <BaseIcon
+                                 class="misc-icon mr-1"
+                                 icon-name="mdiCogClockwise"
+                                 :size="18"
+                              />
                               <span v-html="highlightWord(func.name)" />
                            </a>
                         </li>
@@ -166,7 +209,11 @@
                   :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.function}"
                   @contextmenu.prevent="showMiscFolderContext($event, 'function')"
                >
-                  <i class="misc-icon mdi mdi-18px mdi-folder-move mr-1" />
+                  <BaseIcon
+                     class="misc-icon mr-1"
+                     icon-name="mdiFolderMove"
+                     :size="18"
+                  />
                   {{ t('database.function', 2) }}
                </summary>
                <div class="accordion-body">
@@ -182,7 +229,11 @@
                            @contextmenu.prevent="showMiscContext($event, {...func, type: 'function'})"
                         >
                            <a class="table-name">
-                              <i class="table-icon mdi mdi-arrow-right-bold-box mdi-18px mr-1" />
+                              <BaseIcon
+                                 class="misc-icon mr-1"
+                                 icon-name="mdiArrowRightBoldBox"
+                                 :size="18"
+                              />
                               <span v-html="highlightWord(func.name)" />
                            </a>
                         </li>
@@ -199,7 +250,11 @@
                   :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.scheduler}"
                   @contextmenu.prevent="showMiscFolderContext($event, 'scheduler')"
                >
-                  <i class="misc-icon mdi mdi-18px mdi-folder-clock mr-1" />
+                  <BaseIcon
+                     class="misc-icon mr-1"
+                     icon-name="mdiFolderClock"
+                     :size="18"
+                  />
                   {{ t('database.scheduler', 2) }}
                </summary>
                <div class="accordion-body">
@@ -216,7 +271,11 @@
                         >
                            <a class="table-name">
                               <div v-if="checkLoadingStatus(scheduler.name, 'scheduler')" class="icon loading mr-1" />
-                              <i v-else class="table-icon mdi mdi-calendar-clock mdi-18px mr-1" />
+                              <BaseIcon
+                                 class="misc-icon mr-1"
+                                 icon-name="mdiCalendarClock"
+                                 :size="18"
+                              />
                               <span v-html="highlightWord(scheduler.name)" />
                            </a>
                            <div
@@ -224,7 +283,11 @@
                               class="tooltip tooltip-left disabled-indicator"
                               :data-tooltip="t('general.disabled')"
                            >
-                              <i class="table-icon mdi mdi-pause mdi-18px mr-1" />
+                              <BaseIcon
+                                 class="misc-icon mr-1"
+                                 icon-name="mdiPause"
+                                 :size="18"
+                              />
                            </div>
                         </li>
                      </ul>
@@ -243,6 +306,7 @@ import { storeToRefs } from 'pinia';
 import { computed, Prop, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import { useSettingsStore } from '@/stores/settings';
 import { Breadcrumb, useWorkspacesStore, WorkspaceStructure } from '@/stores/workspaces';
 
@@ -594,7 +658,7 @@ defineExpose({ selectSchema, schemaAccordion });
     display: flex;
     align-items: center;
     height: 100%;
-    opacity: 0.2;
+    opacity: 0.4;
     transition: opacity 0.2s;
 
     &:hover {

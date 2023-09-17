@@ -12,7 +12,11 @@
                class="btn btn-primary d-inline-flex"
                @click="isExportModal=true"
             >
-               <i class="mdi mdi-tray-arrow-up mdi-24px pr-2" />
+               <BaseIcon
+                  icon-name="mdiTrayArrowUp"
+                  class="mr-2"
+                  :size="24"
+               />
                <span>{{ t('application.exportData') }}</span>
             </button>
          </div>
@@ -30,7 +34,11 @@
                class="btn btn-dark d-inline-flex ml-auto"
                @click="isImportModal=true"
             >
-               <i class="mdi mdi-tray-arrow-down mdi-24px pr-2" />
+               <BaseIcon
+                  icon-name="mdiTrayArrowDown"
+                  class="mr-2"
+                  :size="24"
+               />
                <span>{{ t('application.importData') }}</span>
             </button>
          </div>
@@ -46,10 +54,10 @@
    </div>
 </template>
 <script setup lang="ts">
-// import { useApplicationStore } from '@/stores/application';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import ModalSettingsDataExport from '@/components/ModalSettingsDataExport.vue';
 import ModalSettingsDataImport from '@/components/ModalSettingsDataImport.vue';
 

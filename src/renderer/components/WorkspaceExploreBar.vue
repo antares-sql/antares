@@ -23,23 +23,33 @@
             </div>
             <span v-else class="workspace-explorebar-title">{{ connectionName }}</span>
             <span v-if="workspace.connectionStatus === 'connected'" class="workspace-explorebar-tools">
-               <i
-                  v-if="customizations.schemas"
-                  class="mdi mdi-18px mdi-database-plus c-hand mr-2"
-                  :title="t('database.createNewSchema')"
-                  @click="showNewDBModal"
-               />
-               <i
-                  class="mdi mdi-18px mdi-refresh c-hand mr-2"
-                  :class="{'rotate':isRefreshing}"
-                  :title="t('general.refresh')"
-                  @click="refresh"
-               />
-               <i
-                  class="mdi mdi-18px mdi-power c-hand"
-                  :title="t('connection.disconnect')"
-                  @click="disconnectWorkspace(connection.uid)"
-               />
+               <div :title="t('database.createNewSchema')">
+                  <BaseIcon
+                     v-if="customizations.schemas"
+                     icon-name="mdiDatabasePlus"
+                     :size="18"
+                     class="c-hand mr-2"
+                     @click="showNewDBModal"
+                  />
+               </div>
+               <div :title="t('general.refresh')">
+                  <BaseIcon
+                     v-if="customizations.schemas"
+                     icon-name="mdiRefresh"
+                     :size="18"
+                     class="c-hand mr-2"
+                     :class="{'rotate':isRefreshing}"
+                     @click="refresh"
+                  />
+               </div>
+               <div :title="t('connection.disconnect')">
+                  <BaseIcon
+                     icon-name="mdiPower"
+                     :size="18"
+                     class="c-hand"
+                     @click="disconnectWorkspace(connection.uid)"
+                  />
+               </div>
             </span>
          </div>
          <div class="workspace-explorebar-search">
@@ -49,7 +59,7 @@
                   :title="t('application.switchSearchMethod')"
                   @click="toggleSearchMethod"
                >
-                  <i class="mdi mdi-18px" :class="[searchMethod === 'elements' ? 'mdi-shape' : 'mdi-database']" />
+                  <BaseIcon :icon-name="searchMethod === 'elements' ? 'mdiShape' : 'mdiDatabase'" :size="18" />
                </div>
                <input
                   ref="searchInput"
@@ -58,10 +68,17 @@
                   type="text"
                   :placeholder="searchMethod === 'elements' ? t('database.searchForElements') : t('database.searchForSchemas')"
                >
-               <i v-if="!searchTerm" class="form-icon mdi mdi-magnify mdi-18px" />
-               <i
+               <BaseIcon
+                  v-if="!searchTerm"
+                  class="form-icon"
+                  icon-name="mdiMagnify"
+                  :size="18"
+               />
+               <BaseIcon
                   v-else
-                  class="form-icon c-hand mdi mdi-backspace mdi-18px pr-1"
+                  class="form-icon c-hand pr-1"
+                  icon-name="mdiBackspace"
+                  :size="18"
                   @click="searchTerm = ''"
                />
             </div>
@@ -140,6 +157,7 @@ import { storeToRefs } from 'pinia';
 import { Component, computed, onMounted, Prop, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import ModalNewSchema from '@/components/ModalNewSchema.vue';
 import MiscContext from '@/components/WorkspaceExploreBarMiscContext.vue';
@@ -526,7 +544,7 @@ const toggleSearchMethod = () => {
         display: flex;
         align-items: center;
 
-        > i {
+         svg {
           opacity: 0.6;
           transition: opacity 0.2s;
           display: flex;

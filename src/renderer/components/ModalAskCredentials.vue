@@ -6,7 +6,11 @@
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
-                     <i class="mdi mdi-24px mdi-key-variant mr-1" /> {{ t('connection.credentials') }}
+                     <BaseIcon
+                        icon-name="mdiKeyVariant"
+                        class="mr-1"
+                        :size="24"
+                     /> {{ t('connection.credentials') }}
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -59,6 +63,7 @@
 import { Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 
 const { t } = useI18n();

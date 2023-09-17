@@ -9,13 +9,18 @@
          @blur="isFocus = false"
          @keydown.prevent.stop="onKey"
       >
-      <i class="form-icon mdi mdi-keyboard-outline mdi-24px" />
+      <BaseIcon
+         icon-name="mdiKeyboardOutline"
+         class="form-icon"
+         :size="24"
+      />
    </div>
 </template>
 <script setup lang="ts">
 import { computed, PropType, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import Application from '@/ipc-api/Application';
 
 const { t } = useI18n();

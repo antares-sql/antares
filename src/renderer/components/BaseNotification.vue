@@ -1,13 +1,18 @@
 <template>
    <div class="toast mt-2" :class="notificationStatus.className">
       <span class="p-vcentered text-left" :class="{'expanded': isExpanded}">
-         <i class="mdi mdi-24px mr-2" :class="notificationStatus.iconName" />
+         <BaseIcon
+            :icon-name="notificationStatus.iconName"
+            class="mr-2"
+            :size="24"
+         />
          <span class="notification-message">{{ message }}</span>
       </span>
-      <i
+      <BaseIcon
          v-if="isExpandable"
-         class="mdi mdi-24px c-hand expand-btn"
-         :class="isExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+         :icon-name="isExpanded ? 'mdiChevronUp' : 'mdiChevronDown'"
+         class=" c-hand expand-btn"
+         :size="24"
          @click="toggleExpand"
       />
       <button class="btn btn-clear ml-2" @click="hideToast" />
@@ -16,6 +21,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+
+import BaseIcon from '@/components/BaseIcon.vue';
 
 const props = defineProps({
    message: {
@@ -36,19 +43,19 @@ const notificationStatus = computed(() => {
    switch (props.status) {
       case 'success':
          className = 'toast-success';
-         iconName = 'mdi-check';
+         iconName = 'mdiCheck';
          break;
       case 'error':
          className = 'toast-error';
-         iconName = 'mdi-alert-rhombus';
+         iconName = 'mdiAlertRhombus';
          break;
       case 'warning':
          className = 'toast-warning';
-         iconName = 'mdi-alert';
+         iconName = 'mdiAlert';
          break;
       case 'primary':
          className = 'toast-primary';
-         iconName = 'mdi-information-outline';
+         iconName = 'mdiInformationOutline';
          break;
    }
 

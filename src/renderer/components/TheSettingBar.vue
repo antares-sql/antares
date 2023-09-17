@@ -28,7 +28,11 @@
                @click="emit('show-connections-modal')"
             >
                <div class="settingbar-element-icon-wrapper">
-                  <i class="settingbar-element-icon mdi mdi-24px mdi-dots-horizontal text-light" />
+                  <BaseIcon
+                     icon-name="mdiDotsHorizontal"
+                     class="settingbar-element-icon text-light"
+                     :size="24"
+                  />
                </div>
             </li>
             <li
@@ -42,7 +46,11 @@
                @click="selectWorkspace('NEW')"
             >
                <div class="settingbar-element-icon-wrapper">
-                  <i class="settingbar-element-icon mdi mdi-24px mdi-plus text-light" />
+                  <BaseIcon
+                     icon-name="mdiPlus"
+                     class="settingbar-element-icon text-light"
+                     :size="24"
+                  />
                </div>
             </li>
          </ul>
@@ -60,7 +68,11 @@
                class="settingbar-element btn btn-link"
                @click="showScratchpad"
             >
-               <i class="settingbar-element-icon mdi mdi-24px mdi-notebook-edit-outline text-light" />
+               <BaseIcon
+                  icon-name="mdiNotebookEditOutline"
+                  class="settingbar-element-icon text-light"
+                  :size="24"
+               />
             </li>
             <li
                v-tooltip="{
@@ -72,9 +84,11 @@
                @click="showSettingModal('general')"
             >
                <div class="settingbar-element-icon-wrapper">
-                  <i
-                     class="settingbar-element-icon mdi mdi-24px mdi-cog text-light"
-                     :class="{ ' badge badge-update': hasUpdates }"
+                  <BaseIcon
+                     icon-name="mdiCog"
+                     class="settingbar-element-icon text-light"
+                     :class="{ 'badge badge-update': hasUpdates }"
+                     :size="24"
                   />
                </div>
             </li>
@@ -89,6 +103,7 @@ import { storeToRefs } from 'pinia';
 import { computed, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import SettingBarConnections from '@/components/SettingBarConnections.vue';
 import SettingBarContext from '@/components/SettingBarContext.vue';
 import { useApplicationStore } from '@/stores/application';

@@ -38,8 +38,16 @@
                :style="`color: ${folder.color};`"
                @click="closeFolder"
             >
-               <i class="folder-icon-open mdi mdi-folder-open mdi-36px" />
-               <i class="folder-icon-close mdi mdi-folder mdi-36px" />
+               <BaseIcon
+                  class="folder-icon-open"
+                  icon-name="mdiFolderOpen"
+                  :size="36"
+               />
+               <BaseIcon
+                  class="folder-icon-close"
+                  icon-name="mdiFolder"
+                  :size="36"
+               />
             </div>
          </template>
          <template #item="{ element }">
@@ -55,9 +63,20 @@
                @click="emit('select-workspace', element)"
                @contextmenu.stop="emit('context', {event: $event, content: getConnectionOrderByUid(element)})"
             >
-               <i
+               <div
+                  v-if="getConnectionOrderByUid(element).icon"
+                  class="folder-element-icon"
+                  :class="[getStatusBadge(element)]"
+               >
+                  <BaseIcon
+                     :icon-name="camelize(getConnectionOrderByUid(element).icon)"
+                     :size="36"
+                  />
+               </div>
+               <div
+                  v-else
                   class="folder-element-icon dbi"
-                  :class="[getConnectionOrderByUid(element)?.icon ? `mdi ${getConnectionOrderByUid(element).icon}`: `dbi-${getConnectionOrderByUid(element)?.client}`, getStatusBadge(element)]"
+                  :class="[`dbi-${getConnectionOrderByUid(element).client}`, getStatusBadge(element)]"
                />
                <small v-if="isOpen" class="folder-element-name">{{ getConnectionOrderByUid(element)?.name || getConnectionName(element) }}</small>
             </div>
@@ -80,6 +99,7 @@ import { storeToRefs } from 'pinia';
 import { computed, PropType, ref, watch } from 'vue';
 import * as Draggable from 'vuedraggable';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import SettingBarConnections from '@/components/SettingBarConnections.vue';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
@@ -175,6 +195,16 @@ const dragStart = () => {
 
 const dragStop = () => {
    emit('folder-drag', false);
+};
+
+const camelize = (text: string) => {
+   const textArr = text.split('-');
+   for (let i = 0; i < textArr.length; i++) {
+      if (i === 0) continue;
+      textArr[i] = textArr[i].charAt(0).toUpperCase() + textArr[i].slice(1);
+   }
+
+   return textArr.join('');
 };
 
 watch(() => dummyNested.value.length, () => {
@@ -389,7 +419,8 @@ emit('folder-sort');// To apply changes on component key change
    &:not(.opened){
       .folder-element {
 
-         .folder-element-icon {
+         .folder-element-icon,
+         .folder-element-icon svg {
             width: 21px;
             height: 21px;
             font-size: 16px;

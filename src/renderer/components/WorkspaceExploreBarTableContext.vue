@@ -8,38 +8,68 @@
          class="context-element"
          @click="openTableSettingTab"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-wrench-cog text-light pr-1" /> {{ t('application.settings') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiWrenchCog"
+               :size="18"
+            /> {{ t('application.settings') }}</span>
       </div>
       <div
          v-if="selectedTable && selectedTable.type === 'table' && customizations.schemaExport"
          class="context-element"
          @click="showTableExportModal"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-table-arrow-right text-light pr-1" /> {{ t('database.exportTable') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiTableArrowRight"
+               :size="18"
+            /> {{ t('database.exportTable') }}</span>
       </div>
       <div
          v-if="selectedTable && selectedTable.type === 'view' && customizations.viewSettings"
          class="context-element"
          @click="openViewSettingTab"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-wrench-cog text-light pr-1" /> {{ t('application.settings') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiWrenchCog"
+               :size="18"
+            /> {{ t('application.settings') }}</span>
       </div>
       <div
          v-if="selectedTable && selectedTable.type === 'table' && customizations.tableDuplicate"
          class="context-element"
          @click="duplicateTable"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-table-multiple text-light pr-1" /> {{ t('database.duplicateTable') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiTableMultiple"
+               :size="18"
+            /> {{ t('database.duplicateTable') }}</span>
       </div>
       <div
          v-if="selectedTable && selectedTable.type === 'table'"
          class="context-element"
          @click="showEmptyModal"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-table-off text-light pr-1" /> {{ t('database.emptyTable') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiTableOff"
+               :size="18"
+            /> {{ t('database.emptyTable') }}</span>
       </div>
       <div class="context-element" @click="showDeleteModal">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-table-remove text-light pr-1" /> {{ t('database.deleteTable') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiTableRemove"
+               :size="18"
+            /> {{ t('database.deleteTable') }}</span>
       </div>
 
       <ConfirmModal
@@ -49,7 +79,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-table-off mr-1" /> <span class="cut-text">{{ t('database.emptyTable') }}</span>
+               <BaseIcon
+                  class="text-light mr-1"
+                  icon-name="mdiTableOff"
+                  :size="24"
+               /> <span class="cut-text">{{ t('database.emptyTable') }}</span>
             </div>
          </template>
          <template #body>
@@ -70,7 +104,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-table-remove mr-1" />
+               <BaseIcon
+                  class="text-light mr-1"
+                  icon-name="mdiTableRemove"
+                  :size="24"
+               />
                <span class="cut-text">{{ selectedTable.type === 'table' ? t('database.deleteTable') : t('database.deleteView') }}</span>
             </div>
          </template>
@@ -90,6 +128,7 @@ import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import Tables from '@/ipc-api/Tables';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSchemaExportStore } from '@/stores/schemaExport';

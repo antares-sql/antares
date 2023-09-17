@@ -295,6 +295,12 @@ option:checked {
   }
 }
 
+.has-icon-left svg.form-icon,
+.has-icon-right svg.form-icon {
+  width: auto;
+  height: auto;
+}
+
 .form-select {
   cursor: pointer;
 

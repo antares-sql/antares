@@ -2,10 +2,18 @@
    <div class="p-relative">
       <div class="shortcuts-tools pb-2 px-2">
          <button class="btn btn-dark btn-sm d-flex ml-2" @click="showAddModal">
-            <i class="mdi mdi-24px mdi-plus mr-1" /><span>{{ t('application.addShortcut') }}</span>
+            <BaseIcon
+               icon-name="mdiPlus"
+               class="mr-1"
+               :size="24"
+            /><span>{{ t('application.addShortcut') }}</span>
          </button>
          <button class="btn btn-dark btn-sm d-flex ml-2" @click="isConfirmRestoreModal = true">
-            <i class="mdi mdi-24px mdi-undo mr-1" /><span>{{ t('application.restoreDefaults') }}</span>
+            <BaseIcon
+               icon-name="mdiUndo"
+               class="mr-1"
+               :size="24"
+            /><span>{{ t('application.restoreDefaults') }}</span>
          </button>
       </div>
       <div class="container workspace-query-results">
@@ -43,10 +51,20 @@
                   />
                   <div class="td py-1 pr-2">
                      <button class="shortcut-button btn btn-link btn-sm d-flex p-0 px-1 mr-2" @click="showEditModal({...shortcut, index: i})">
-                        <span>{{ t('general.edit') }}</span><i class="mdi mdi-pencil ml-1" />
+                        <span>{{ t('general.edit') }}</span>
+                        <BaseIcon
+                           icon-name="mdiPencil"
+                           class="ml-1"
+                           :size="16"
+                        />
                      </button>
                      <button class="shortcut-button btn btn-link btn-sm d-flex p-0 px-1" @click="showDeleteModal(shortcut)">
-                        <span>{{ t('general.delete') }}</span><i class="mdi mdi-delete-outline ml-1" />
+                        <span>{{ t('general.delete') }}</span>
+                        <BaseIcon
+                           icon-name="mdiDeleteOutline"
+                           class="ml-1"
+                           :size="16"
+                        />
                      </button>
                   </div>
                </div>
@@ -65,7 +83,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-plus mr-1" /> {{ t('application.addShortcut') }}
+               <BaseIcon
+                  icon-name="mdiPlus"
+                  class="mr-1"
+                  :size="24"
+               /> {{ t('application.addShortcut') }}
             </div>
          </template>
          <template #body>
@@ -99,7 +121,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-plus mr-1" /> {{ t('application.editShortcut') }}
+               <BaseIcon
+                  icon-name="mdiPencil"
+                  class="mr-1"
+                  :size="24"
+               /> {{ t('application.editShortcut') }}
             </div>
          </template>
          <template #body>
@@ -132,7 +158,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-delete mr-1" /> {{ t('application.deleteShortcut') }}
+               <BaseIcon
+                  icon-name="mdiDelete"
+                  class="mr-1"
+                  :size="24"
+               /> {{ t('application.deleteShortcut') }}
             </div>
          </template>
          <template #body>
@@ -150,7 +180,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-undo mr-1" /> {{ t('application.restoreDefaults') }}
+               <BaseIcon
+                  icon-name="mdiUndo"
+                  class="mr-1"
+                  :size="24"
+               /> {{ t('application.restoreDefaults') }}
             </div>
          </template>
          <template #body>
@@ -169,6 +203,7 @@ import { Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import { useFilters } from '@/composables/useFilters';
 import Application from '@/ipc-api/Application';

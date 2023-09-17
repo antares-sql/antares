@@ -4,8 +4,16 @@
       @close-context="closeContext"
    >
       <div v-if="props.selectedRow" class="context-element">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-content-copy text-light pr-1" /> {{ t('general.copy') }}</span>
-         <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
+         <span class="d-flex"><BaseIcon
+            icon-name="mdiContentCopy"
+            class="text-light mt-1 mr-1"
+            :size="18"
+         /> {{ t('general.copy') }}</span>
+         <BaseIcon
+            icon-name="mdiChevronRight"
+            class="text-light"
+            :size="18"
+         />
          <div class="context-submenu">
             <div
                v-if="props.selectedRow"
@@ -13,7 +21,12 @@
                @click="copyCell"
             >
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-numeric-0 mdi-rotate-90 text-light pr-1" /> {{ t('database.cell', 1) }}
+                  <BaseIcon
+                     icon-name="mdiNumeric0"
+                     rotate="90deg"
+                     class="text-light mt-1 mr-1"
+                     :size="18"
+                  /> {{ t('database.cell', 1) }}
                </span>
             </div>
             <div
@@ -22,7 +35,11 @@
                @click="copyRow"
             >
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('database.row', 1) }}
+                  <BaseIcon
+                     icon-name="mdiTableRow"
+                     class="text-light mt-1 mr-1"
+                     :size="18"
+                  /> {{ t('database.row', 1) }}
                </span>
             </div>
          </div>
@@ -33,7 +50,11 @@
          @click="killProcess"
       >
          <span class="d-flex">
-            <i class="mdi mdi-18px mdi-close-circle-outline text-light pr-1" /> {{ t('database.killProcess') }}
+            <BaseIcon
+               icon-name="mdiCloseCircleOutline"
+               class="text-light mt-1 mr-1"
+               :size="18"
+            /> {{ t('database.killProcess') }}
          </span>
       </div>
    </BaseContextMenu>
@@ -43,6 +64,7 @@
 import { useI18n } from 'vue-i18n';
 
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 
 const { t } = useI18n();
 

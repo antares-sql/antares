@@ -4,57 +4,101 @@
       @close-context="closeContext"
    >
       <div class="context-element">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-plus text-light pr-1" /> {{ t('general.add') }}</span>
-         <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiPlus"
+               :size="18"
+            /> {{ t('general.add') }}</span>
+         <BaseIcon
+            class="text-light ml-1"
+            icon-name="mdiChevronRight"
+            :size="18"
+         />
          <div class="context-submenu">
             <div
                v-if="workspace.customizations.tableAdd"
                class="context-element"
                @click="openCreateTableTab"
             >
-               <span class="d-flex"><i class="mdi mdi-18px mdi-table text-light pr-1" /> {{ t('database.table') }}</span>
+               <span class="d-flex">
+                  <BaseIcon
+                     class="text-light mt-1 mr-1"
+                     icon-name="mdiTable"
+                     :size="18"
+                  /> {{ t('database.table') }}</span>
             </div>
             <div
                v-if="workspace.customizations.viewAdd"
                class="context-element"
                @click="openCreateViewTab"
             >
-               <span class="d-flex"><i class="mdi mdi-18px mdi-table-eye text-light pr-1" /> {{ t('database.view') }}</span>
+               <span class="d-flex">
+                  <BaseIcon
+                     class="text-light mt-1 mr-1"
+                     icon-name="mdiTableEye"
+                     :size="18"
+                  /> {{ t('database.view') }}</span>
             </div>
             <div
                v-if="workspace.customizations.triggerAdd"
                class="context-element"
                @click="openCreateTriggerTab"
             >
-               <span class="d-flex"><i class="mdi mdi-18px mdi-table-cog text-light pr-1" /> {{ t('database.trigger', 1) }}</span>
+               <span class="d-flex">
+                  <BaseIcon
+                     class="text-light mt-1 mr-1"
+                     icon-name="mdiTableCog"
+                     :size="18"
+                  /> {{ t('database.trigger', 1) }}</span>
             </div>
             <div
                v-if="workspace.customizations.routineAdd"
                class="context-element"
                @click="openCreateRoutineTab"
             >
-               <span class="d-flex"><i class="mdi mdi-18px mdi-sync-circle pr-1" /> {{ t('database.storedRoutine', 1) }}</span>
+               <span class="d-flex">
+                  <BaseIcon
+                     class="text-light mt-1 mr-1"
+                     icon-name="mdiSyncCircle"
+                     :size="18"
+                  /> {{ t('database.storedRoutine', 1) }}</span>
             </div>
             <div
                v-if="workspace.customizations.functionAdd"
                class="context-element"
                @click="openCreateFunctionTab"
             >
-               <span class="d-flex"><i class="mdi mdi-18px mdi-arrow-right-bold-box pr-1" /> {{ t('database.function', 1) }}</span>
+               <span class="d-flex">
+                  <BaseIcon
+                     class="text-light mt-1 mr-1"
+                     icon-name="mdiArrowRightBoldBox"
+                     :size="18"
+                  /> {{ t('database.function', 1) }}</span>
             </div>
             <div
                v-if="workspace.customizations.triggerFunctionAdd"
                class="context-element"
                @click="openCreateTriggerFunctionTab"
             >
-               <span class="d-flex"><i class="mdi mdi-18px mdi-cog-clockwise pr-1" /> {{ t('database.triggerFunction', 1) }}</span>
+               <span class="d-flex">
+                  <BaseIcon
+                     class="text-light mt-1 mr-1"
+                     icon-name="mdiCogClockwise"
+                     :size="18"
+                  /> {{ t('database.triggerFunction', 1) }}</span>
             </div>
             <div
                v-if="workspace.customizations.schedulerAdd"
                class="context-element"
                @click="openCreateSchedulerTab"
             >
-               <span class="d-flex"><i class="mdi mdi-18px mdi-calendar-clock text-light pr-1" /> {{ t('database.scheduler', 1) }}</span>
+               <span class="d-flex">
+                  <BaseIcon
+                     class="text-light mt-1 mr-1"
+                     icon-name="mdiCalendarClock"
+                     :size="18"
+                  /> {{ t('database.scheduler', 1) }}</span>
             </div>
          </div>
       </div>
@@ -63,28 +107,48 @@
          class="context-element"
          @click="showExportSchemaModal"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-database-export text-light pr-1" /> {{ t('database.export') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiDatabaseExport"
+               :size="18"
+            /> {{ t('database.export') }}</span>
       </div>
       <div
          v-if="workspace.customizations.schemaImport"
          class="context-element"
          @click="initImport"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-database-import text-light pr-1" /> {{ t('database.import') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiDatabaseImport"
+               :size="18"
+            /> {{ t('database.import') }}</span>
       </div>
       <div
          v-if="workspace.customizations.schemaEdit"
          class="context-element"
          @click="showEditModal"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-database-edit text-light pr-1" /> {{ t('database.editSchema') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiDatabaseEdit"
+               :size="18"
+            /> {{ t('database.editSchema') }}</span>
       </div>
       <div
          v-if="workspace.customizations.schemaDrop"
          class="context-element"
          @click="showDeleteModal"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-database-remove text-light pr-1" /> {{ t('database.deleteSchema') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiDatabaseRemove"
+               :size="18"
+            /> {{ t('database.deleteSchema') }}</span>
       </div>
 
       <ConfirmModal
@@ -94,7 +158,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-database-remove mr-1" />
+               <BaseIcon
+                  class="text-light mr-1"
+                  icon-name="mdiDatabaseRemove"
+                  :size="24"
+               />
                <span class="cut-text">{{ t('database.deleteSchema') }}</span>
             </div>
          </template>
@@ -125,6 +193,7 @@ import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import ModalEditSchema from '@/components/ModalEditSchema.vue';
 import ModalImportSchema from '@/components/ModalImportSchema.vue';
 import Application from '@/ipc-api/Application';

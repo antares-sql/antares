@@ -8,7 +8,7 @@
       />
       <div v-if="isError" class="empty">
          <div class="empty-icon">
-            <i class="mdi mdi-48px mdi-alert-outline" />
+            <BaseIcon icon-name="mdiAlertOutline" :size="48" />
          </div>
       </div>
    </div>
@@ -18,6 +18,7 @@ import { shell } from 'electron';
 import { marked } from 'marked';
 import { ref } from 'vue';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseLoader from '@/components/BaseLoader.vue';
 import { useApplicationStore } from '@/stores/application';
 

@@ -2,25 +2,43 @@
    <div class="tr" @contextmenu.prevent="!editingField ? emit('contextmenu', $event, localRow._antares_id) : null">
       <div class="td p-0" tabindex="0">
          <div :class="customizations.sortableFields ? 'row-draggable' : 'text-center'">
-            <i v-if="customizations.sortableFields" class="mdi mdi-drag-horizontal row-draggable-icon" />
+            <BaseIcon
+               v-if="customizations.sortableFields"
+               icon-name="mdiDragHorizontal"
+               :size="22"
+               class="row-draggable-icon"
+            />
             {{ localRow.order }}
          </div>
       </div>
       <div class="td p-0" tabindex="0">
-         <div class="text-center">
-            <i
+         <div class="text-center" :style="'display: flex; justify-content: center; align-items: center'">
+            <div
                v-for="(index, i) in indexes"
                :key="`${index.name}-${i}`"
                :title="index.type"
-               class="d-inline-block mdi mdi-key column-key c-help"
-               :class="`key-${index.type}`"
-            />
-            <i
+               class="p-vcentered"
+            >
+               <BaseIcon
+                  icon-name="mdiKey"
+                  rotate="45deg"
+                  :size="14"
+                  class="d-inline-block column-key c-help"
+                  :class="`key-${index.type}`"
+               />
+            </div>
+            <div
                v-for="foreign in foreigns"
                :key="foreign"
                :title="foreign"
-               class="d-inline-block mdi mdi-key-link c-help"
-            />
+               class="p-vcentered"
+            >
+               <BaseIcon
+                  class="d-inline-block c-help"
+                  icon-name="mdiKeyLink"
+                  :size="16"
+               />
+            </div>
          </div>
       </div>
       <div class="td p-0" tabindex="0">
@@ -227,7 +245,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-playlist-edit mr-1" />
+               <BaseIcon
+                  class="mr-1"
+                  icon-name="mdiPlaylistEdit"
+                  :size="24"
+               />
                <span class="cut-text">{{ t('database.default') }} "{{ row.name }}"</span>
             </div>
          </template>
@@ -331,6 +353,7 @@ import { computed, nextTick, onMounted, Prop, PropType, Ref, ref, watch } from '
 import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
@@ -558,7 +581,7 @@ const editOFF = () => {
 
 const checkLengthScale = (e: KeyboardEvent & { target: HTMLInputElement }) => {
    e = (e) || window.event as KeyboardEvent & { target: HTMLInputElement };
-   const charCode = (e.which) ? e.which : e.code;
+   const charCode = (e.which) ? e.which : Number(e.code);
 
    if (((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 44) || (charCode === 44 && e.target.value.includes(',')))
       e.preventDefault();

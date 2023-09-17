@@ -81,7 +81,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-playlist-edit mr-1" /> <span class="cut-text">{{ t('general.edit') }} "{{ editingField }}"</span>
+               <BaseIcon
+                  icon-name="mdiPlaylistEdit"
+                  class="mr-1"
+                  :size="24"
+               /> <span class="cut-text">{{ t('general.edit') }} "{{ editingField }}"</span>
             </div>
          </template>
          <template #body>
@@ -129,7 +133,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-map mr-1" /> <span class="cut-text">"{{ editingField }}"</span>
+               <BaseIcon
+                  icon-name="mdiMap"
+                  class="mr-1"
+                  :size="24"
+               /> <span class="cut-text">"{{ editingField }}"</span>
             </div>
          </template>
          <template #body>
@@ -144,7 +152,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-playlist-edit mr-1" />
+               <BaseIcon
+                  icon-name="mdiPlaylistEdit"
+                  class="mr-1"
+                  :size="24"
+               />
                <span class="cut-text">{{ t('general.edit') }} "{{ editingField }}"</span>
             </div>
          </template>
@@ -158,16 +170,24 @@
                         class="img-responsive p-centered bg-checkered"
                      >
                      <div v-else class="text-center">
-                        <i class="mdi mdi-36px mdi-file" />
+                        <BaseIcon icon-name="mdiFile" :size="36" />
                      </div>
                      <div class="editor-buttons mt-2">
                         <button class="btn btn-link btn-sm" @click="downloadFile">
                            <span>{{ t('general.download') }}</span>
-                           <i class="mdi mdi-24px mdi-download ml-1" />
+                           <BaseIcon
+                              icon-name="mdiDownload"
+                              class="ml-1"
+                              :size="24"
+                           />
                         </button>
                         <button class="btn btn-link btn-sm" @click="prepareToDelete">
                            <span>{{ t('general.delete') }}</span>
-                           <i class="mdi mdi-24px mdi-delete-forever ml-1" />
+                           <BaseIcon
+                              icon-name="mdiDeleteForever"
+                              class="ml-1"
+                              :size="24"
+                           />
                         </button>
                      </div>
                   </div>
@@ -225,6 +245,7 @@ import { computed, nextTick, onBeforeUnmount, Prop, Ref, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseMap from '@/components/BaseMap.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import TextEditor from '@/components/BaseTextEditor.vue';

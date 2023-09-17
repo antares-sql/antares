@@ -35,7 +35,12 @@
       @close-context="isContext = false"
    >
       <div class="context-element" @click="copyQuery">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-content-copy text-light pr-1" /> {{ t('general.copy') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiContentCopy"
+               :size="18"
+            /> {{ t('general.copy') }}</span>
       </div>
    </BaseContextMenu>
 </template>
@@ -46,6 +51,7 @@ import { computed, nextTick, onMounted, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import { useConsoleStore } from '@/stores/console';
 
 const { t } = useI18n();

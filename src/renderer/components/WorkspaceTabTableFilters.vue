@@ -43,7 +43,11 @@
             type="button"
             @click="removeRow(index)"
          >
-            <i class="mdi mdi-minus-circle-outline" />
+            <BaseIcon
+               icon-name="mdiMinusCircleOutline"
+               class="mt-1"
+               :size="16"
+            />
          </button>
       </div>
       <div class="workspace-table-filters-buttons">
@@ -58,7 +62,11 @@
             type="button"
             @click="addRow"
          >
-            <i class="mdi mdi-plus-circle-outline" />
+            <BaseIcon
+               icon-name="mdiPlusCircleOutline"
+               class="mt-1"
+               :size="16"
+            />
          </button>
       </div>
    </form>
@@ -72,6 +80,7 @@ import { TableFilterClausole } from 'common/interfaces/tableApis';
 import { computed, Prop, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 
 const { t } = useI18n();

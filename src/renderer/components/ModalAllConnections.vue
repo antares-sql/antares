@@ -6,7 +6,11 @@
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
-                     <i class="mdi mdi-24px mdi-apps mr-1" />
+                     <BaseIcon
+                        icon-name="mdiApps"
+                        class="mr-1"
+                        :size="24"
+                     />
                      <span class="cut-text">{{ t('connection.allConnections') }}</span>
                   </div>
                </div>
@@ -24,10 +28,17 @@
                               :placeholder="t('connection.searchForConnections')"
                               @keypress.esc="searchTerm = ''"
                            >
-                           <i v-if="!searchTerm" class="form-icon mdi mdi-magnify mdi-18px pr-4" />
-                           <i
+                           <BaseIcon
+                              v-if="!searchTerm"
+                              icon-name="mdiMagnify"
+                              class="form-icon pr-4"
+                              :size="18"
+                           />
+                           <BaseIcon
                               v-else
-                              class="form-icon c-hand mdi mdi-backspace mdi-18px pr-4"
+                              icon-name="mdiBackspace"
+                              class="form-icon c-hand pr-4"
+                              :size="18"
                               @click="searchTerm = ''"
                            />
                         </div>
@@ -56,9 +67,11 @@
                                  {{ clients.get(connection.client) || connection.client }}
                               </div>
                               <div class="all-connections-buttons p-absolute d-flex" :style="'top: 0; right: 0;'">
-                                 <i
-                                    class="all-connections-delete mdi mdi-delete mdi-18px ml-2"
+                                 <BaseIcon
+                                    icon-name="mdiDelete"
+                                    class="all-connections-delete ml-2"
                                     :title="t('general.delete')"
+                                    :size="18"
                                     @click.stop="askToDelete(connection)"
                                  />
                               </div>
@@ -66,32 +79,57 @@
                            <div class="panel-body text-center">
                               <div v-if="connection.databasePath">
                                  <div class="text-ellipsis" :title="connection.databasePath">
-                                    <i class="mdi mdi-database d-inline" /> <span class="text-bold">{{
+                                    <BaseIcon
+                                       icon-name="mdiDatabase"
+                                       class="p-relative"
+                                       :style="'top:3px'"
+                                       :size="18"
+                                    /> <span class="text-bold">{{
                                        connection.databasePath
                                     }}</span>
                                  </div>
                               </div>
                               <div v-else>
                                  <div class="text-ellipsis" :title="`${connection.host}:${connection.port}`">
-                                    <i class="mdi mdi-server d-inline" /> <span class="text-bold">{{ connection.host
+                                    <BaseIcon
+                                       icon-name="mdiServer"
+                                       class="p-relative"
+                                       :style="'top:3px'"
+                                       :size="18"
+                                    /> <span class="text-bold">{{ connection.host
                                     }}:{{ connection.port }}</span>
                                  </div>
                               </div>
                               <div v-if="connection.user">
                                  <div class="text-ellipsis">
-                                    <i class="mdi mdi-account d-inline" /> <span class="text-bold">{{ connection.user
+                                    <BaseIcon
+                                       icon-name="mdiAccount"
+                                       class="p-relative"
+                                       :style="'top:3px'"
+                                       :size="18"
+                                    /> <span class="text-bold">{{ connection.user
                                     }}</span>
                                  </div>
                               </div>
                               <div v-if="connection.schema">
                                  <div class="text-ellipsis">
-                                    <i class="mdi mdi-database d-inline" /> <span class="text-bold">{{ connection.schema
+                                    <BaseIcon
+                                       icon-name="mdiDatabase"
+                                       class="p-relative"
+                                       :style="'top:3px'"
+                                       :size="18"
+                                    /> <span class="text-bold">{{ connection.schema
                                     }}</span>
                                  </div>
                               </div>
                               <div v-if="connection.database">
                                  <div class="text-ellipsis">
-                                    <i class="mdi mdi-database d-inline" /> <span class="text-bold">{{
+                                    <BaseIcon
+                                       icon-name="mdiDatabase"
+                                       class="p-relative"
+                                       :style="'top:3px'"
+                                       :size="18"
+                                    /> <span class="text-bold">{{
                                        connection.database
                                     }}</span>
                                  </div>
@@ -99,11 +137,19 @@
                            </div>
                            <div class="panel-footer text-center py-0">
                               <div v-if="connection.ssl" class="chip bg-success mt-2">
-                                 <i class="mdi mdi-shield-key mdi-18px mr-1" />
+                                 <BaseIcon
+                                    icon-name="mdiShieldKey"
+                                    class="mr-1"
+                                    :size="18"
+                                 />
                                  SSL
                               </div>
                               <div v-if="connection.ssh" class="chip bg-success mt-2">
-                                 <i class="mdi mdi-console-network mdi-18px mr-1" />
+                                 <BaseIcon
+                                    icon-name="mdiConsoleNetwork"
+                                    class="mr-1"
+                                    :size="18"
+                                 />
                                  SSH
                               </div>
                            </div>
@@ -130,7 +176,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-server-remove mr-1" /> {{ t('connection.deleteConnection') }}
+               <BaseIcon
+                  icon-name="mdiServerRemove"
+                  class="mr-1"
+                  :size="24"
+               /> {{ t('connection.deleteConnection') }}
             </div>
          </template>
          <template #body>
@@ -149,6 +199,7 @@ import { computed, onBeforeUnmount, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import { useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';

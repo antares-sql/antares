@@ -4,8 +4,17 @@
       @close-context="closeContext"
    >
       <div class="context-element">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-content-copy text-light pr-1" /> {{ t('general.copy') }}</span>
-         <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
+         <span class="d-flex">
+            <BaseIcon
+               icon-name="mdiContentCopy"
+               class="mr-1 mt-1"
+               :size="18"
+            /> {{ t('general.copy') }}</span>
+         <BaseIcon
+            icon-name="mdiChevronRight"
+            class="mt-1 text-light"
+            :size="18"
+         />
          <div class="context-submenu">
             <div
                v-if="selectedRows.length === 1"
@@ -13,32 +22,57 @@
                @click="copyCell"
             >
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-numeric-0 mdi-rotate-90 text-light pr-1" /> {{ t('database.cell', 1) }}
+                  <BaseIcon
+                     icon-name="mdiNumeric0"
+                     class="mr-1 mt-1 text-light"
+                     rotate="90deg"
+                     :size="18"
+                  /> {{ t('database.cell', 1) }}
                </span>
             </div>
             <div class="context-element" @click="copyRow('html')">
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('database.row', selectedRows.length) }} ({{ t('database.table') }})
+                  <BaseIcon
+                     icon-name="mdiTableRow"
+                     class="mr-1 mt-1 text-light"
+                     :size="18"
+                  /> {{ t('database.row', selectedRows.length) }} ({{ t('database.table') }})
                </span>
             </div>
             <div class="context-element" @click="copyRow('json')">
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('database.row', selectedRows.length) }} (JSON)
+                  <BaseIcon
+                     icon-name="mdiTableRow"
+                     class="mr-1 mt-1 text-light"
+                     :size="18"
+                  /> {{ t('database.row', selectedRows.length) }} (JSON)
                </span>
             </div>
             <div class="context-element" @click="copyRow('csv')">
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('database.row', selectedRows.length) }} (CSV)
+                  <BaseIcon
+                     icon-name="mdiTableRow"
+                     class="mr-1 mt-1 text-light"
+                     :size="18"
+                  /> {{ t('database.row', selectedRows.length) }} (CSV)
                </span>
             </div>
             <div class="context-element" @click="copyRow('php')">
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('database.row', selectedRows.length) }} (PHP)
+                  <BaseIcon
+                     icon-name="mdiTableRow"
+                     class="mr-1 mt-1 text-light"
+                     :size="18"
+                  /> {{ t('database.row', selectedRows.length) }} (PHP)
                </span>
             </div>
             <div class="context-element" @click="copyRow('sql')">
                <span class="d-flex">
-                  <i class="mdi mdi-18px mdi-table-row text-light pr-1" /> {{ t('database.row', selectedRows.length) }} (SQL INSERT)
+                  <BaseIcon
+                     icon-name="mdiTableRow"
+                     class="mr-1 mt-1 text-light"
+                     :size="18"
+                  /> {{ t('database.row', selectedRows.length) }} (SQL INSERT)
                </span>
             </div>
          </div>
@@ -49,7 +83,11 @@
          @click="duplicateRow"
       >
          <span class="d-flex">
-            <i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ t('general.duplicate') }}
+            <BaseIcon
+               icon-name="mdiContentDuplicate"
+               class="mr-1 mt-1 text-light"
+               :size="18"
+            /> {{ t('general.duplicate') }}
          </span>
       </div>
       <div
@@ -57,9 +95,17 @@
          class="context-element"
       >
          <span class="d-flex">
-            <i class="mdi mdi-18px mdi-auto-fix text-light pr-1" /> {{ t('database.fillCell') }}
+            <BaseIcon
+               icon-name="mdiAutoFix"
+               class="mr-1 mt-1 text-light"
+               :size="18"
+            /> {{ t('database.fillCell') }}
          </span>
-         <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
+         <BaseIcon
+            icon-name="mdiChevronRight"
+            class="mt-1 text-light"
+            :size="18"
+         />
          <div class="context-submenu">
             <div
                v-for="method in fakerMethods[fakerGroup]"
@@ -79,7 +125,11 @@
          @click="setNull"
       >
          <span class="d-flex">
-            <i class="mdi mdi-18px mdi-null text-light pr-1" /> {{ t('database.setNull') }}
+            <BaseIcon
+               icon-name="mdiNull"
+               class="mr-1 mt-1 text-light"
+               :size="18"
+            /> {{ t('database.setNull') }}
          </span>
       </div>
       <div
@@ -88,7 +138,11 @@
          @click="showConfirmModal"
       >
          <span class="d-flex">
-            <i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ t('database.deleteRows', selectedRows.length) }}
+            <BaseIcon
+               icon-name="mdiDelete"
+               class="mr-1 mt-1 text-light"
+               :size="18"
+            /> {{ t('database.deleteRows', selectedRows.length) }}
          </span>
       </div>
    </BaseContextMenu>
@@ -100,6 +154,7 @@ import { computed, Prop } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 
 const { t } = useI18n();
 

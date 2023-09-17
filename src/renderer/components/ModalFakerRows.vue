@@ -6,7 +6,11 @@
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
-                     <i class="mdi mdi-24px mdi-playlist-plus mr-1" />
+                     <BaseIcon
+                        icon-name="mdiPlaylistPlus"
+                        :size="24"
+                        class="mr-1"
+                     />
                      <span class="cut-text">{{ t('database.insertRow', 2) }}</span>
                   </div>
                </div>
@@ -64,7 +68,7 @@
                         :disabled="isInserting"
                      >
                      <span class="input-group-addon">
-                        <i class="mdi mdi-24px mdi-repeat" />
+                        <BaseIcon icon-name="mdiRepeat" :size="24" />
                      </span>
                   </div>
                   <div
@@ -105,6 +109,7 @@ import { storeToRefs } from 'pinia';
 import { computed, onBeforeMount, onMounted, Prop, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import FakerSelect from '@/components/FakerSelect.vue';
 import { useFilters } from '@/composables/useFilters';

@@ -8,7 +8,12 @@
          class="context-element"
          @click="runElementCheck"
       >
-         <span class="d-flex"><i class="mdi mdi-18px mdi-play text-light pr-1" /> {{ t('general.run') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiPlay"
+               :size="18"
+            /> {{ t('general.run') }}</span>
       </div>
       <div
          v-if="selectedMisc.type === 'trigger' && customizations.triggerEnableDisable"
@@ -16,10 +21,18 @@
          @click="toggleTrigger"
       >
          <span v-if="!selectedMisc.enabled" class="d-flex">
-            <i class="mdi mdi-18px mdi-play text-light pr-1" /> {{ t('general.enable') }}
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiPlay"
+               :size="18"
+            /> {{ t('general.enable') }}
          </span>
          <span v-else class="d-flex">
-            <i class="mdi mdi-18px mdi-pause text-light pr-1" /> {{ t('general.disable') }}
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiPause"
+               :size="18"
+            /> {{ t('general.disable') }}
          </span>
       </div>
       <div
@@ -28,14 +41,27 @@
          @click="toggleScheduler"
       >
          <span v-if="!selectedMisc.enabled" class="d-flex">
-            <i class="mdi mdi-18px mdi-play text-light pr-1" /> {{ t('general.enable') }}
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiPlay"
+               :size="18"
+            /> {{ t('general.enable') }}
          </span>
          <span v-else class="d-flex">
-            <i class="mdi mdi-18px mdi-pause text-light pr-1" /> {{ t('general.disable') }}
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiPause"
+               :size="18"
+            /> {{ t('general.disable') }}
          </span>
       </div>
       <div class="context-element" @click="showDeleteModal">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-table-remove text-light pr-1" /> {{ t('general.delete') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiTableRemove"
+               :size="18"
+            /> {{ t('general.delete') }}</span>
       </div>
       <ConfirmModal
          v-if="isDeleteModal"
@@ -44,7 +70,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-delete mr-1" />
+               <BaseIcon
+                  class="text-light mr-1"
+                  icon-name="mdiDelete"
+                  :size="24"
+               />
                <span class="cut-text">{{ deleteMessage }}</span>
             </div>
          </template>
@@ -72,6 +102,7 @@ import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import ModalAskParameters from '@/components/ModalAskParameters.vue';
 import Functions from '@/ipc-api/Functions';
 import Routines from '@/ipc-api/Routines';
@@ -119,6 +150,7 @@ const deleteMessage = computed(() => {
    switch (props.selectedMisc.type) {
       case 'trigger':
          return t('database.deleteTrigger');
+      case 'routine':
       case 'procedure':
          return t('database.deleteRoutine');
       case 'function':

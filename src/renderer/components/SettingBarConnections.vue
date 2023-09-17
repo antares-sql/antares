@@ -41,12 +41,28 @@
                   @dragleave="coveredElement = false"
                   @change="createFolder"
                />
-               <i v-if="coveredElement === element.uid && draggedElement !== coveredElement" class="settingbar-element-icon mdi mdi-folder-plus mdi-36px" />
+               <BaseIcon
+                  v-if="coveredElement === element.uid && draggedElement !== coveredElement"
+                  class="settingbar-element-icon"
+                  icon-name="mdiFolderPlus"
+                  :size="36"
+               />
                <template v-else>
                   <div class="settingbar-element-icon-wrapper">
-                     <i
+                     <div
+                        v-if="element.icon"
+                        class="settingbar-element-icon"
+                        :class="[getStatusBadge(element.uid)]"
+                     >
+                        <BaseIcon
+                           :icon-name="camelize(element.icon)"
+                           :size="36"
+                        />
+                     </div>
+                     <div
+                        v-else
                         class="settingbar-element-icon dbi"
-                        :class="[element.icon ? `mdi ${element.icon} mdi-36px`: `dbi-${element.client}`, getStatusBadge(element.uid)]"
+                        :class="[`dbi-${element.client}`, getStatusBadge(element.uid)]"
                      />
                      <small class="settingbar-element-name">{{ element.name || getConnectionName(element.uid) }}</small>
                   </div>
@@ -75,6 +91,7 @@ import { storeToRefs } from 'pinia';
 import { computed, PropType, Ref, ref, watch } from 'vue';
 import * as Draggable from 'vuedraggable';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import SettingBarConnectionsFolder from '@/components/SettingBarConnectionsFolder.vue';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
@@ -146,6 +163,16 @@ const getStatusBadge = (uid: string) => {
             return '';
       }
    }
+};
+
+const camelize = (text: string) => {
+   const textArr = text.split('-');
+   for (let i = 0; i < textArr.length; i++) {
+      if (i === 0) continue;
+      textArr[i] = textArr[i].charAt(0).toUpperCase() + textArr[i].slice(1);
+   }
+
+   return textArr.join('');
 };
 
 watch(() => dummyNested.value.length, () => {

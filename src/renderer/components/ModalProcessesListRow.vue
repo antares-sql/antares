@@ -24,7 +24,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-information-outline mr-1" /> {{ t('database.processInfo') }}
+               <BaseIcon
+                  icon-name="mdiInformationOutline"
+                  :size="24"
+                  class="mr-1"
+               /> {{ t('database.processInfo') }}
             </div>
          </template>
          <template #body>
@@ -49,6 +53,7 @@ import { Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import TextEditor from '@/components/BaseTextEditor.vue';
 import { useFilters } from '@/composables/useFilters';
 

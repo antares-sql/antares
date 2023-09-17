@@ -6,7 +6,11 @@
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
-                     <i class="mdi mdi-24px mdi-cog mr-1" />
+                     <BaseIcon
+                        icon-name="mdiCog"
+                        class="mr-1"
+                        :size="24"
+                     />
                      <span class="cut-text">{{ t('application.settings') }}</span>
                   </div>
                </div>
@@ -78,7 +82,11 @@
                               <div class="form-group column col-12">
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">
-                                       <i class="mdi mdi-18px mdi-translate mr-1" />
+                                       <BaseIcon
+                                          icon-name="mdiTranslate"
+                                          class="mr-1"
+                                          :size="18"
+                                       />
                                        {{ t('application.language') }}
                                     </label>
                                  </div>
@@ -274,7 +282,11 @@
                            >
                               <img :src="darkPreview" class="img-responsive img-fit-cover s-rounded">
                               <div class="theme-name text-light">
-                                 <i class="mdi mdi-moon-waning-crescent mdi-48px" />
+                                 <BaseIcon
+                                    icon-name="mdiMoonWaningCrescent"
+                                    class="mr-1"
+                                    :size="48"
+                                 />
                                  <div class="h6 mt-4">
                                     {{ t('application.dark') }}
                                  </div>
@@ -287,7 +299,11 @@
                            >
                               <img :src="lightPreview" class="img-responsive img-fit-cover s-rounded">
                               <div class="theme-name text-dark">
-                                 <i class="mdi mdi-white-balance-sunny mdi-48px" />
+                                 <BaseIcon
+                                    icon-name="mdiWhiteBalanceSunny"
+                                    class="mr-1"
+                                    :size="48"
+                                 />
                                  <div class="h6 mt-4">
                                     {{ t('application.light') }}
                                  </div>
@@ -389,7 +405,39 @@
                         <h4>{{ appName }}</h4>
                         <p class="mb-2">
                            {{ t('general.version') }} {{ appVersion }}<br>
-                           <a class="c-hand" @click="openOutside('https://github.com/antares-sql/antares')"><i class="mdi mdi-github d-inline" /> GitHub</a> • <a class="c-hand" @click="openOutside('https://fosstodon.org/@AntaresSQL')"><i class="mdi mdi-mastodon d-inline" /> Mastodon</a> • <a class="c-hand" @click="openOutside('https://twitter.com/AntaresSQL')"><i class="mdi mdi-twitter d-inline" /> Twitter</a> • <a class="c-hand" @click="openOutside('https://antares-sql.app/')"><i class="mdi mdi-web d-inline" /> Website</a><br>
+                           <a
+                              class="c-hand"
+                              :style="'align-items: center; display: inline-flex;'"
+                              @click="openOutside('https://github.com/antares-sql/antares')"
+                           ><BaseIcon
+                              icon-name="mdiGithub"
+                              class="d-inline mr-1"
+                              :size="16"
+                           /> GitHub</a> • <a
+                              class="c-hand"
+                              :style="'align-items: center; display: inline-flex;'"
+                              @click="openOutside('https://fosstodon.org/@AntaresSQL')"
+                           ><BaseIcon
+                              icon-name="mdiMastodon"
+                              class="d-inline mr-1"
+                              :size="16"
+                           /> Mastodon</a> • <a
+                              class="c-hand"
+                              :style="'align-items: center; display: inline-flex;'"
+                              @click="openOutside('https://twitter.com/AntaresSQL')"
+                           ><BaseIcon
+                              icon-name="mdiTwitter"
+                              class="d-inline mr-1"
+                              :size="16"
+                           /> Twitter</a> • <a
+                              class="c-hand"
+                              :style="'align-items: center; display: inline-flex;'"
+                              @click="openOutside('https://antares-sql.app/')"
+                           ><BaseIcon
+                              icon-name="mdiWeb"
+                              class="d-inline mr-1"
+                              :size="16"
+                           /> Website</a><br>
                            <small>{{ t('general.author') }} <a class="c-hand" @click="openOutside('https://github.com/Fabio286')">{{ appAuthor }}</a></small><br>
                         </p>
                         <div class="mb-2">
@@ -414,6 +462,7 @@ import { storeToRefs } from 'pinia';
 import { computed, onBeforeUnmount, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import BaseTextEditor from '@/components/BaseTextEditor.vue';
 import ModalSettingsChangelog from '@/components/ModalSettingsChangelog.vue';

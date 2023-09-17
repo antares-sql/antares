@@ -8,7 +8,12 @@
    >
       <template #header>
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-key mdi-rotate-45 mr-1" />
+            <BaseIcon
+               class="mr-1"
+               icon-name="mdiKey"
+               rotate="45deg"
+               :size="24"
+            />
             <span class="cut-text">{{ t('database.indexes') }} "{{ table }}"</span>
          </div>
       </template>
@@ -19,7 +24,11 @@
                   <div class="panel-header pt-0 pl-0">
                      <div class="d-flex">
                         <button class="btn btn-dark btn-sm d-flex" @click="addIndex">
-                           <i class="mdi mdi-24px mdi-key-plus mr-1" />
+                           <BaseIcon
+                              class="mr-1"
+                              icon-name="mdiKeyPlus"
+                              :size="24"
+                           />
                            <span>{{ t('general.add') }}</span>
                         </button>
                         <button
@@ -28,7 +37,11 @@
                            :disabled="!isChanged"
                            @click.prevent="clearChanges"
                         >
-                           <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
+                           <BaseIcon
+                              class="mr-1"
+                              icon-name="mdiDeleteSweep"
+                              :size="24"
+                           />
                            <span>{{ t('general.clear') }}</span>
                         </button>
                      </div>
@@ -43,7 +56,12 @@
                      >
                         <div class="tile-icon">
                            <div>
-                              <i class="mdi mdi-key mdi-24px column-key" :class="`key-${index.type}`" />
+                              <BaseIcon
+                                 class="mt-2 column-key"
+                                 icon-name="mdiKey"
+                                 :class="`key-${index.type}`"
+                                 :size="24"
+                              />
                            </div>
                         </div>
                         <div class="tile-content">
@@ -58,7 +76,11 @@
                               :title="t('general.delete')"
                               @click.prevent="removeIndex(index._antares_id)"
                            >
-                              <i class="mdi mdi-close" />
+                              <BaseIcon
+                                 icon-name="mdiClose"
+                                 :size="18"
+                                 class="mt-2"
+                              />
                            </button>
                         </div>
                      </div>
@@ -116,7 +138,11 @@
                </form>
                <div v-if="!indexesProxy.length" class="empty">
                   <div class="empty-icon">
-                     <i class="mdi mdi-key-outline mdi-48px" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiKeyOutline"
+                        :size="48"
+                     />
                   </div>
                   <p class="empty-title h5">
                      {{ t('database.thereAreNoIndexes') }}
@@ -140,6 +166,7 @@ import { computed, onMounted, onUnmounted, Prop, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 
 const { t } = useI18n();
@@ -270,7 +297,7 @@ onUnmounted(() => {
   overflow: auto;
 }
 
-.remove-field .mdi {
+.remove-field svg {
   pointer-events: none;
 }
 </style>

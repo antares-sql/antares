@@ -6,7 +6,11 @@
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
-                     <i class="mdi mdi-24px mdi-folder-edit mr-1" />
+                     <BaseIcon
+                        icon-name="mdiFolderEdit"
+                        class="mr-1"
+                        :size="24"
+                     />
                      <span class="cut-text">{{ t('application.editFolder') }}</span>
                   </div>
                </div>
@@ -43,7 +47,11 @@
                               :style="`background-color: ${color.hex}`"
                               @click="localFolder.color = color.hex"
                            >
-                              <i v-if="localFolder.color === color.hex" class="mdi mdi-check" />
+                              <BaseIcon
+                                 v-if="localFolder.color === color.hex"
+                                 icon-name="mdiCheck"
+                                 :size="16"
+                              />
                            </div>
                         </div>
                      </div>
@@ -67,6 +75,7 @@
 import { onBeforeUnmount, PropType, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import { unproxify } from '@/libs/unproxify';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';

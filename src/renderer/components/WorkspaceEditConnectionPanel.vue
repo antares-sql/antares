@@ -386,7 +386,11 @@
                :disabled="isBusy"
                @click="startTest"
             >
-               <i class="mdi mdi-24px mdi-lightning-bolt mr-1" />
+               <BaseIcon
+                  icon-name="mdiLightningBolt"
+                  :size="24"
+                  class="mr-1"
+               />
                {{ t('connection.testConnection') }}
             </button>
             <button
@@ -395,7 +399,11 @@
                :disabled="isBusy || !hasChanges"
                @click="saveConnection"
             >
-               <i class="mdi mdi-24px mdi-content-save mr-1" />
+               <BaseIcon
+                  icon-name="mdiContentSave"
+                  :size="24"
+                  class="mr-1"
+               />
                {{ t('general.save') }}
             </button>
             <button
@@ -405,7 +413,11 @@
                :disabled="isBusy"
                @click="startConnection"
             >
-               <i class="mdi mdi-24px mdi-connection mr-1" />
+               <BaseIcon
+                  icon-name="mdiConnection"
+                  :size="24"
+                  class="mr-1"
+               />
                {{ t('connection.connect') }}
             </button>
          </div>
@@ -424,6 +436,7 @@ import { ConnectionParams } from 'common/interfaces/antares';
 import { computed, Prop, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import BaseUploadInput from '@/components/BaseUploadInput.vue';
 import ModalAskCredentials from '@/components/ModalAskCredentials.vue';

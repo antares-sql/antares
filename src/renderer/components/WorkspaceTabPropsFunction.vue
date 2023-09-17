@@ -9,7 +9,11 @@
                   :class="{'loading':isSaving}"
                   @click="saveChanges"
                >
-                  <i class="mdi mdi-24px mdi-content-save mr-1" />
+                  <BaseIcon
+                     class="mr-1"
+                     icon-name="mdiContentSave"
+                     :size="24"
+                  />
                   <span>{{ t('general.save') }}</span>
                </button>
                <button
@@ -18,7 +22,11 @@
                   :title="t('database.clearChanges')"
                   @click="clearChanges"
                >
-                  <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
+                  <BaseIcon
+                     class="mr-1"
+                     icon-name="mdiDeleteSweep"
+                     :size="24"
+                  />
                   <span>{{ t('general.clear') }}</span>
                </button>
 
@@ -29,17 +37,29 @@
                   :disabled="isChanged"
                   @click="runFunctionCheck"
                >
-                  <i class="mdi mdi-24px mdi-play mr-1" />
+                  <BaseIcon
+                     class="mr-1"
+                     icon-name="mdiPlay"
+                     :size="24"
+                  />
                   <span>{{ t('general.run') }}</span>
                </button>
                <button class="btn btn-dark btn-sm" @click="showParamsModal">
-                  <i class="mdi mdi-24px mdi-dots-horizontal mr-1" />
+                  <BaseIcon
+                     class="mr-1"
+                     icon-name="mdiDotsHorizontal"
+                     :size="24"
+                  />
                   <span>{{ t('database.parameters') }}</span>
                </button>
             </div>
             <div class="workspace-query-info">
                <div class="d-flex" :title="t('database.schema')">
-                  <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
+                  <BaseIcon
+                     class="mt-1 mr-1"
+                     icon-name="mdiDatabase"
+                     :size="18"
+                  /><b>{{ schema }}</b>
                </div>
             </div>
          </div>
@@ -199,6 +219,7 @@ import { storeToRefs } from 'pinia';
 import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseLoader from '@/components/BaseLoader.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import ModalAskParameters from '@/components/ModalAskParameters.vue';

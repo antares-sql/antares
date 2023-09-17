@@ -9,7 +9,11 @@
                   :class="{'loading':isSaving}"
                   @click="saveChanges"
                >
-                  <i class="mdi mdi-24px mdi-content-save mr-1" />
+                  <BaseIcon
+                     class="mr-1"
+                     icon-name="mdiContentSave"
+                     :size="24"
+                  />
                   <span>{{ t('general.save') }}</span>
                </button>
                <button
@@ -18,7 +22,11 @@
                   :title="t('database.clearChanges')"
                   @click="clearChanges"
                >
-                  <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
+                  <BaseIcon
+                     class="mr-1"
+                     icon-name="mdiDeleteSweep"
+                     :size="24"
+                  />
                   <span>{{ t('general.clear') }}</span>
                </button>
 
@@ -30,7 +38,11 @@
                   :title="t('database.addNewField')"
                   @click="addField"
                >
-                  <i class="mdi mdi-24px mdi-playlist-plus mr-1" />
+                  <BaseIcon
+                     class="mr-1"
+                     icon-name="mdiPlaylistPlus"
+                     :size="24"
+                  />
                   <span>{{ t('general.add') }}</span>
                </button>
                <button
@@ -39,7 +51,12 @@
                   :title="t('database.manageIndexes')"
                   @click="showIntdexesModal"
                >
-                  <i class="mdi mdi-24px mdi-key mdi-rotate-45 mr-1" />
+                  <BaseIcon
+                     class="mr-1"
+                     icon-name="mdiKey"
+                     rotate="45deg"
+                     :size="24"
+                  />
                   <span>{{ t('database.indexes') }}</span>
                </button>
                <button
@@ -48,7 +65,11 @@
                   :title="t('database.manageIndexes')"
                   @click="showForeignModal"
                >
-                  <i class="mdi mdi-24px mdi-key-link mr-1" />
+                  <BaseIcon
+                     class="mr-1"
+                     icon-name="mdiKeyLink"
+                     :size="24"
+                  />
                   <span>{{ t('database.foreignKeys') }}</span>
                </button>
 
@@ -60,13 +81,21 @@
                   :disabled="isSaving"
                   @click="showDdlModal"
                >
-                  <i class="mdi mdi-24px mdi-code-tags mr-1" />
+                  <BaseIcon
+                     class="mr-1"
+                     icon-name="mdiCodeTags"
+                     :size="24"
+                  />
                   <span>{{ t('database.ddl') }}</span>
                </button>
             </div>
             <div class="workspace-query-info">
                <div class="d-flex" :title="t('database.schema')">
-                  <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
+                  <BaseIcon
+                     class="mt-1 mr-1"
+                     icon-name="mdiDatabase"
+                     :size="18"
+                  /><b>{{ schema }}</b>
                </div>
             </div>
          </div>
@@ -200,6 +229,7 @@ import { storeToRefs } from 'pinia';
 import { Component, computed, onBeforeUnmount, onMounted, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseLoader from '@/components/BaseLoader.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import WorkspaceTabPropsTableDdlModal from '@/components/WorkspaceTabPropsTableDdlModal.vue';

@@ -8,7 +8,11 @@
    >
       <template #header>
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-dots-horizontal mr-1" />
+            <BaseIcon
+               class="mr-1"
+               icon-name="mdiDotsHorizontal"
+               :size="24"
+            />
             <span class="cut-text">{{ t('database.parameters') }} "{{ func }}"</span>
          </div>
       </template>
@@ -19,7 +23,11 @@
                   <div class="panel-header pt-0 pl-0">
                      <div class="d-flex">
                         <button class="btn btn-dark btn-sm d-flex" @click="addParameter">
-                           <i class="mdi mdi-24px mdi-plus mr-1" />
+                           <BaseIcon
+                              class="mr-1"
+                              icon-name="mdiPlus"
+                              :size="24"
+                           />
                            <span>{{ t('general.add') }}</span>
                         </button>
                         <button
@@ -28,7 +36,11 @@
                            :disabled="!isChanged"
                            @click.prevent="clearChanges"
                         >
-                           <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
+                           <BaseIcon
+                              class="mr-1"
+                              icon-name="mdiDeleteSweep"
+                              :size="24"
+                           />
                            <span>{{ t('general.clear') }}</span>
                         </button>
                      </div>
@@ -43,7 +55,12 @@
                      >
                         <div class="tile-icon">
                            <div>
-                              <i class="mdi mdi-hexagon mdi-24px" :class="typeClass(param.type)" />
+                              <BaseIcon
+                                 class="mt-2"
+                                 icon-name="mdiHexagon"
+                                 :class="typeClass(param.type)"
+                                 :size="24"
+                              />
                            </div>
                         </div>
                         <div class="tile-content">
@@ -58,7 +75,11 @@
                               :title="t('general.delete')"
                               @click.prevent="removeParameter(param._antares_id)"
                            >
-                              <i class="mdi mdi-close" />
+                              <BaseIcon
+                                 icon-name="mdiClose"
+                                 :size="18"
+                                 class="mt-2"
+                              />
                            </button>
                         </div>
                      </div>
@@ -147,7 +168,11 @@
                </form>
                <div v-if="!parametersProxy.length" class="empty">
                   <div class="empty-icon">
-                     <i class="mdi mdi-dots-horizontal mdi-48px" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiDotsHorizontal"
+                        :size="48"
+                     />
                   </div>
                   <p class="empty-title h5">
                      {{ t('database.thereAreNoParameters') }}
@@ -170,6 +195,7 @@ import { computed, onMounted, onUnmounted, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 
 const { t } = useI18n();
@@ -307,7 +333,7 @@ onUnmounted(() => {
   overflow: auto;
 }
 
-.remove-field .mdi {
+.remove-field svg {
   pointer-events: none;
 }
 </style>

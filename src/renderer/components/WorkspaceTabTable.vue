@@ -11,11 +11,22 @@
                         :title="`${t('general.refresh')}`"
                         @click="reloadTable"
                      >
-                        <i v-if="!+autorefreshTimer" class="mdi mdi-24px mdi-refresh mr-1" />
-                        <i v-else class="mdi mdi-24px mdi-history mdi-flip-h mr-1" />
+                        <BaseIcon
+                           v-if="!+autorefreshTimer"
+                           class="mr-1"
+                           icon-name="mdiRefresh"
+                           :size="24"
+                        />
+                        <BaseIcon
+                           v-else
+                           class="mr-1"
+                           icon-name="mdiHistory"
+                           flip="horizontal"
+                           :size="24"
+                        />
                      </button>
                      <div class="btn btn-dark btn-sm dropdown-toggle pl-0 pr-0" tabindex="0">
-                        <i class="mdi mdi-24px mdi-menu-down" />
+                        <BaseIcon icon-name="mdiMenuDown" :size="24" />
                      </div>
                      <div class="menu px-3">
                         <span>{{ t('general.autoRefresh') }}: <b>{{ +autorefreshTimer ? `${autorefreshTimer}s` : 'OFF' }}</b></span>
@@ -38,7 +49,7 @@
                      :title="t('application.previousResultsPage')"
                      @click="pageChange('prev')"
                   >
-                     <i class="mdi mdi-24px mdi-skip-previous" />
+                     <BaseIcon icon-name="mdiSkipPrevious" :size="24" />
                   </button>
                   <div class="dropdown" :class="{'active': isPageMenu}">
                      <div @click="openPageMenu">
@@ -64,7 +75,7 @@
                      :title="t('application.nextResultsPage')"
                      @click="pageChange('next')"
                   >
-                     <i class="mdi mdi-24px mdi-skip-next" />
+                     <BaseIcon icon-name="mdiSkipNext" :size="24" />
                   </button>
                </div>
 
@@ -77,7 +88,7 @@
                   :class="{'btn-primary': isSearch, 'btn-dark': !isSearch}"
                   @click="isSearch = !isSearch"
                >
-                  <i class="mdi mdi-24px mdi-magnify" />
+                  <BaseIcon icon-name="mdiMagnify" :size="24" />
                </button>
                <button
                   v-if="isTable"
@@ -85,7 +96,11 @@
                   :disabled="isQuering"
                   @click="showFakerModal()"
                >
-                  <i class="mdi mdi-24px mdi-playlist-plus mr-1" />
+                  <BaseIcon
+                     icon-name="mdiPlaylistPlus"
+                     class="mr-1"
+                     :size="24"
+                  />
                   <span>{{ t('database.insertRow', 2) }}</span>
                </button>
 
@@ -95,9 +110,13 @@
                      class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
                      tabindex="0"
                   >
-                     <i class="mdi mdi-24px mdi-file-export mr-1" />
+                     <BaseIcon
+                        icon-name="mdiFileExport"
+                        class="mr-1"
+                        :size="24"
+                     />
                      <span>{{ t('database.export') }}</span>
-                     <i class="mdi mdi-24px mdi-menu-down" />
+                     <BaseIcon icon-name="mdiMenuDown" :size="24" />
                   </button>
                   <ul class="menu text-left">
                      <li class="menu-item">
@@ -123,7 +142,7 @@
                   :title="t('application.settings')"
                   @click="openTableSettingTab()"
                >
-                  <i class="mdi mdi-24px mdi-cog" />
+                  <BaseIcon icon-name="mdiCog" :size="24" />
                   <!-- <span>{{ t('application.settings') }}</span> -->
                </button>
             </div>
@@ -133,7 +152,12 @@
                   class="d-flex"
                   :title="t('database.queryDuration')"
                >
-                  <i class="mdi mdi-timer-sand mdi-rotate-180 pr-1" /> <b>{{ results[0].duration / 1000 }}s</b>
+                  <BaseIcon
+                     class="mr-1 mt-1"
+                     icon-name="mdiTimerSand"
+                     rotate="180deg"
+                     :size="16"
+                  /> <b>{{ results[0].duration / 1000 }}s</b>
                </div>
                <div v-if="results.length && results[0].rows">
                   {{ t('general.results') }}: <b>{{ localeString(results[0].rows.length) }}</b>
@@ -147,7 +171,11 @@
                   </b>
                </div>
                <div class="d-flex" :title="t('database.schema')">
-                  <i class="mdi mdi-18px mdi-database mr-1" /><b>{{ schema }}</b>
+                  <BaseIcon
+                     class="mt-1 mr-1"
+                     icon-name="mdiDatabase"
+                     :size="18"
+                  /><b>{{ schema }}</b>
                </div>
             </div>
          </div>
@@ -163,7 +191,7 @@
          <BaseLoader v-if="isQuering" />
          <div v-if="!isQuering && !results[0]?.rows.length" class="empty">
             <div class="empty-icon">
-               <i class="mdi mdi-48px mdi-island" />
+               <BaseIcon icon-name="mdiIsland" :size="56" />
             </div>
             <p class="h4 empty-subtitle">
                {{ t('database.noResultsPresent') }}
@@ -206,6 +234,7 @@ import { storeToRefs } from 'pinia';
 import { computed, onBeforeUnmount, Prop, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseLoader from '@/components/BaseLoader.vue';
 import ModalFakerRows from '@/components/ModalFakerRows.vue';
 import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable.vue';

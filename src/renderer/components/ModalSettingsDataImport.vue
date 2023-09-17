@@ -6,7 +6,11 @@
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
-                     <i class="mdi mdi-24px mdi-tray-arrow-down mr-1" /> {{ t('application.importData') }}
+                     <BaseIcon
+                        icon-name="mdiTrayArrowDown"
+                        class="mr-1"
+                        :size="24"
+                     /> {{ t('application.importData') }}
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -20,7 +24,7 @@
                      :model-value="filePath"
                      :message="t('general.browse')"
                      accept=".antares"
-                     @clear="filePath = ''"
+                     @clear="clearPath"
                      @change="filesChange($event)"
                   />
                </div>
@@ -42,8 +46,18 @@
                            class="btn btn-link input-group-addon"
                            @click="isPasswordVisible = !isPasswordVisible"
                         >
-                           <i v-if="isPasswordVisible" class="mdi mdi-eye px-1" />
-                           <i v-else class="mdi mdi-eye-off px-1" />
+                           <BaseIcon
+                              v-if="isPasswordVisible"
+                              icon-name="mdiEye"
+                              class="mt-1 mx-1"
+                              :size="16"
+                           />
+                           <BaseIcon
+                              v-else
+                              icon-name="mdiEyeOff"
+                              class="mt-1 mx-1"
+                              :size="16"
+                           />
                         </button>
                      </div>
                      <span v-if="isPasswordError" class="form-input-hint">
@@ -86,6 +100,7 @@ import { storeToRefs } from 'pinia';
 import { onBeforeUnmount, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseUploadInput from '@/components/BaseUploadInput.vue';
 import { unproxify } from '@/libs/unproxify';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
@@ -123,6 +138,11 @@ const filesChange = ({ target } : {target: HTMLInputElement }) => {
       fileContent.value = reader.result;
       filePath.value = files[0].path;
    };
+};
+
+const clearPath = () => {
+   filePath.value = '';
+   fileContent.value = null;
 };
 
 const importData = () => {

@@ -1,10 +1,5 @@
 /* stylelint-disable selector-class-pattern */
 .column-key {
-  transform: rotate(45deg);
-  font-size: 0.7rem;
-  line-height: 1.5;
-  margin-right: 0.2rem;
-
   &.key-pri,
   &.key-PRIMARY {
     color: goldenrod;

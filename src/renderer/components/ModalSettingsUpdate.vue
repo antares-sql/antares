@@ -1,7 +1,7 @@
 <template>
    <div class="empty">
       <div class="empty-icon">
-         <i class="mdi mdi-48px mdi-cloud-download" />
+         <BaseIcon icon-name="mdiCloudDownload" :size="48" />
       </div>
       <p class="empty-title h5">
          {{ updateMessage }}
@@ -58,6 +58,7 @@ import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import { useApplicationStore } from '@/stores/application';
 import { useSettingsStore } from '@/stores/settings';
 

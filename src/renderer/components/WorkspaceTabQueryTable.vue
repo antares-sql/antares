@@ -45,19 +45,28 @@
                >
                   <div ref="columnResize" class="column-resizable">
                      <div class="table-column-title" @click="sort(field.name)">
-                        <i
-                           v-if="field.key"
-                           class="mdi mdi-key column-key c-help"
-                           :class="`key-${field.key}`"
-                           :title="keyName(field.key)"
-                        />
+                        <div v-if="field.key" :title="keyName(field.key)">
+                           <BaseIcon
+                              icon-name="mdiKey"
+                              rotate="45deg"
+                              :size="14"
+                              class="column-key c-help mt-1 mr-1"
+                              :class="`key-${field.key}`"
+                           />
+                        </div>
                         <span>{{ field.alias || field.name }}</span>
-                        <i
+                        <BaseIcon
                            v-if="isSortable && currentSort === field.name || currentSort === `${field.table}.${field.name}`"
-                           class="mdi sort-icon"
-                           :class="currentSortDir === 'asc' ? 'mdi-sort-ascending':'mdi-sort-descending'"
+                           :icon-name="currentSortDir === 'asc' ? 'mdiSortAscending':'mdiSortDescending'"
+                           :size="18"
+                           class="sort-icon ml-1"
                         />
-                        <i v-else class="mdi sort-icon mdi-minus d-invisible" />
+                        <BaseIcon
+                           v-else
+                           icon-name="mdiMinus"
+                           :size="18"
+                           class="sort-icon d-invisible"
+                        />
                      </div>
                   </div>
                </div>
@@ -101,7 +110,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-delete mr-1" />
+               <BaseIcon
+                  icon-name="mdiDelete"
+                  class="mr-1"
+                  :size="24"
+               />
                <span class="cut-text">{{ t('database.deleteRows', selectedRows.length) }}</span>
             </div>
          </template>
@@ -119,7 +132,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-file-export mr-1" />
+               <BaseIcon
+                  icon-name="mdiFileExport"
+                  class="mr-1"
+                  :size="24"
+               />
                <span class="cut-text">{{ t('database.sqlExportOptions') }}</span>
             </div>
          </template>
@@ -160,7 +177,11 @@
       >
          <template #header>
             <div class="d-flex">
-               <i class="mdi mdi-24px mdi-file-export mr-1" />
+               <BaseIcon
+                  icon-name="mdiFileExport"
+                  class="mr-1"
+                  :size="24"
+               />
                <span class="cut-text">{{ t('application.csvExportOptions') }}</span>
             </div>
          </template>
@@ -241,6 +262,7 @@ import { Component, computed, nextTick, onMounted, onUnmounted, onUpdated, Prop,
 import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
 import TableContext from '@/components/WorkspaceTabQueryTableContext.vue';
@@ -555,6 +577,8 @@ const copyRow = (format: string) => {
    if (selectedRows.value.length === 1) {
       const row = localResults.value.find((row: any) => selectedRows.value.includes(row._antares_id));
       const rowToCopy = unproxify(row);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       delete rowToCopy._antares_id;
       contentToCopy = rowToCopy;
    }

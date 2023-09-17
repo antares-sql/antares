@@ -6,7 +6,11 @@
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
-                     <i class="mdi mdi-24px mdi-database-import mr-1" />
+                     <BaseIcon
+                        icon-name="mdiDatabaseImport"
+                        class="mr-1"
+                        :size="24"
+                     />
                      <span class="cut-text">{{ t('database.importSchema') }}</span>
                   </div>
                </div>
@@ -57,6 +61,7 @@ import { storeToRefs } from 'pinia';
 import { computed, onBeforeUnmount, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import Schema from '@/ipc-api/Schema';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';

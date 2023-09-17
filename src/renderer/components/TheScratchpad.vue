@@ -8,7 +8,11 @@
    >
       <template #header>
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-notebook-edit-outline mr-1" /> {{ t('application.scratchpad') }}
+            <BaseIcon
+               icon-name="mdiNotebookEditOutline"
+               class="mr-1"
+               :size="24"
+            /> {{ t('application.scratchpad') }}
          </div>
       </template>
       <template #body>
@@ -34,6 +38,7 @@ import { Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import TextEditor from '@/components/BaseTextEditor.vue';
 import { useApplicationStore } from '@/stores/application';
 import { useScratchpadStore } from '@/stores/scratchpad';

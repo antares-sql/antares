@@ -5,7 +5,11 @@
       </p>
       <div class="empty-action">
          <button class="btn btn-gray d-flex" @click="emit('new-field')">
-            <i class="mdi mdi-24px mdi-playlist-plus mr-2" />
+            <BaseIcon
+               class="mr-2"
+               icon-name="mdiPlaylistPlus"
+               :size="24"
+            />
             {{ t('database.addNewField') }}
          </button>
       </div>
@@ -14,6 +18,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
+
+import BaseIcon from '@/components/BaseIcon.vue';
 
 const { t } = useI18n();
 const emit = defineEmits(['new-field']);

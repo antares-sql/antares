@@ -6,7 +6,11 @@
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
-                     <i class="mdi mdi-24px mdi-tray-arrow-up mr-1" /> {{ t('application.exportData') }}
+                     <BaseIcon
+                        icon-name="mdiTrayArrowUp"
+                        class="mr-1"
+                        :size="24"
+                     /> {{ t('application.exportData') }}
                   </div>
                </div>
                <a class="btn btn-clear c-hand" @click.stop="closeModal" />
@@ -107,8 +111,18 @@
                               class="btn btn-link input-group-addon"
                               @click="isPasswordVisible = !isPasswordVisible"
                            >
-                              <i v-if="isPasswordVisible" class="mdi mdi-eye px-1" />
-                              <i v-else class="mdi mdi-eye-off px-1" />
+                              <BaseIcon
+                                 v-if="isPasswordVisible"
+                                 icon-name="mdiEye"
+                                 class="mt-1 mx-1"
+                                 :size="16"
+                              />
+                              <BaseIcon
+                                 v-else
+                                 icon-name="mdiEyeOff"
+                                 class="mt-1 mx-1"
+                                 :size="16"
+                              />
                            </button>
                         </div>
                         <span v-if="isPasswordError" class="form-input-hint">
@@ -144,6 +158,7 @@ import { storeToRefs } from 'pinia';
 import { computed, onBeforeUnmount, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import { unproxify } from '@/libs/unproxify';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';

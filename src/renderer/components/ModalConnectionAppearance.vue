@@ -6,7 +6,11 @@
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
-                     <i class="mdi mdi-24px mdi-brush-variant mr-1" />
+                     <BaseIcon
+                        icon-name="mdiBrushVariant"
+                        class="mr-1"
+                        :size="24"
+                     />
                      <span class="cut-text">{{ t('application.editConnectionAppearance') }}</span>
                   </div>
                </div>
@@ -37,11 +41,24 @@
                            <div
                               v-for="icon in icons"
                               :key="icon.name"
-                              class="icon-box"
-                              :title="icon.name"
-                              :class="[icon.code ? `mdi ${icon.code} mdi-36px` : `dbi dbi-${connection.client}`, {'selected': localConnection.icon === icon.code}]"
-                              @click="localConnection.icon = icon.code"
-                           />
+                           >
+                              <BaseIcon
+                                 v-if="icon.code"
+                                 :icon-name="camelize(icon.code)"
+                                 :size="36"
+                                 class="icon-box"
+                                 :title="icon.name"
+                                 :class="[{'selected': localConnection.icon === icon.code}]"
+                                 @click="localConnection.icon = icon.code"
+                              />
+                              <div
+                                 v-else
+                                 class="icon-box"
+                                 :title="icon.name"
+                                 :class="[`dbi dbi-${connection.client}`, {'selected': localConnection.icon === icon.code}]"
+                                 @click="localConnection.icon = icon.code"
+                              />
+                           </div>
                         </div>
                      </div>
                   </form>
@@ -64,6 +81,7 @@
 import { onBeforeUnmount, PropType, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import { unproxify } from '@/libs/unproxify';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
@@ -140,6 +158,16 @@ const localConnection: Ref<SidebarElement> = ref(unproxify(props.connection));
 const editFolderAppearance = () => {
    updateConnectionOrder(localConnection.value);
    closeModal();
+};
+
+const camelize = (text: string) => {
+   const textArr = text.split('-');
+   for (let i = 0; i < textArr.length; i++) {
+      if (i === 0) continue;
+      textArr[i] = textArr[i].charAt(0).toUpperCase() + textArr[i].slice(1);
+   }
+
+   return textArr.join('');
 };
 
 const closeModal = () => emit('close');

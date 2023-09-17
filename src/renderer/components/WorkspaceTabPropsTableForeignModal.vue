@@ -8,7 +8,11 @@
    >
       <template #header>
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-key-link mr-1" />
+            <BaseIcon
+               class="mr-1"
+               icon-name="mdiKeyLink"
+               :size="24"
+            />
             <span class="cut-text">{{ t('database.foreignKeys') }} "{{ table }}"</span>
          </div>
       </template>
@@ -19,7 +23,11 @@
                   <div class="panel-header pt-0 pl-0">
                      <div class="d-flex">
                         <button class="btn btn-dark btn-sm d-flex" @click="addForeign">
-                           <i class="mdi mdi-24px mdi-link-plus mr-1" />
+                           <BaseIcon
+                              class="mr-1"
+                              icon-name="mdiLinkPlus"
+                              :size="24"
+                           />
                            <span>{{ t('general.add') }}</span>
                         </button>
                         <button
@@ -28,7 +36,11 @@
                            :disabled="!isChanged"
                            @click.prevent="clearChanges"
                         >
-                           <i class="mdi mdi-24px mdi-delete-sweep mr-1" />
+                           <BaseIcon
+                              class="mr-1"
+                              icon-name="mdiDeleteSweep"
+                              :size="24"
+                           />
                            <span>{{ t('general.clear') }}</span>
                         </button>
                      </div>
@@ -43,7 +55,11 @@
                      >
                         <div class="tile-icon">
                            <div>
-                              <i class="mdi mdi-key-link mdi-24px" />
+                              <BaseIcon
+                                 class="mr-1"
+                                 icon-name="mdiKeyLink"
+                                 :size="24"
+                              />
                            </div>
                         </div>
                         <div class="tile-content">
@@ -51,14 +67,26 @@
                               {{ foreign.constraintName }}
                            </div>
                            <small class="tile-subtitle text-gray d-flex">
-                              <i class="mdi mdi-link-variant mr-1" />
+                              <BaseIcon
+                                 class="mt-1 mr-1"
+                                 icon-name="mdiLinkVariant"
+                                 :size="18"
+                              />
                               <div class="fk-details-wrapper">
                                  <span v-if="foreign.table !== ''" class="fk-details">
-                                    <i class="mdi mdi-table mr-1" />
+                                    <BaseIcon
+                                       class="mr-1"
+                                       icon-name="mdiTable"
+                                       :size="14"
+                                    />
                                     <span>{{ foreign.table }}.{{ foreign.field }}</span>
                                  </span>
                                  <span v-if="foreign.refTable !== ''" class="fk-details">
-                                    <i class="mdi mdi-table mr-1" />
+                                    <BaseIcon
+                                       class="mr-1"
+                                       icon-name="mdiTable"
+                                       :size="14"
+                                    />
                                     <span>{{ foreign.refTable }}.{{ foreign.refField }}</span>
                                  </span>
                               </div>
@@ -70,7 +98,11 @@
                               :title="t('general.delete')"
                               @click.prevent="removeIndex(foreign._antares_id)"
                            >
-                              <i class="mdi mdi-close" />
+                              <BaseIcon
+                                 icon-name="mdiClose"
+                                 :size="18"
+                                 class="mt-2"
+                              />
                            </button>
                         </div>
                      </div>
@@ -171,7 +203,11 @@
 
                <div v-if="!foreignProxy.length" class="empty">
                   <div class="empty-icon">
-                     <i class="mdi mdi-key-link mdi-48px" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiKeyLink"
+                        :size="48"
+                     />
                   </div>
                   <p class="empty-title h5">
                      {{ t('database.thereAreNoForeign') }}
@@ -195,6 +231,7 @@ import { computed, onMounted, onUnmounted, Prop, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import Tables from '@/ipc-api/Tables';
 import { useNotificationsStore } from '@/stores/notifications';
@@ -383,7 +420,7 @@ onUnmounted(() => {
   overflow: auto;
 }
 
-.remove-field .mdi {
+.remove-field svg {
   pointer-events: none;
 }
 
@@ -394,6 +431,7 @@ onUnmounted(() => {
     display: flex;
     line-height: 1;
     align-items: baseline;
+    align-items: center;
 
     > span {
       overflow: hidden;

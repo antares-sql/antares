@@ -16,7 +16,11 @@
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
-                     <i class="mdi mdi-24px mdi-memory mr-1" />
+                     <BaseIcon
+                        icon-name="mdiMemory"
+                        class="mr-1"
+                        :size="24"
+                     />
                      <span class="cut-text">{{ t('database.processesList') }}: {{ connectionName }}</span>
                   </div>
                </div>
@@ -32,11 +36,21 @@
                            :title="`${t('general.refresh')}`"
                            @click="getProcessesList"
                         >
-                           <i v-if="!+autorefreshTimer" class="mdi mdi-24px mdi-refresh mr-1" />
-                           <i v-else class="mdi mdi-24px mdi-history mdi-flip-h mr-1" />
+                           <BaseIcon
+                              v-if="!+autorefreshTimer"
+                              icon-name="mdiRefresh"
+                              :size="24"
+                           />
+                           <BaseIcon
+                              v-else
+                              icon-name="mdiHistory"
+                              flip="horizontal"
+                              class="mr-1"
+                              :size="24"
+                           />
                         </button>
                         <div class="btn btn-dark btn-sm dropdown-toggle pl-0 pr-0" tabindex="0">
-                           <i class="mdi mdi-24px mdi-menu-down" />
+                           <BaseIcon icon-name="mdiMenuDown" :size="24" />
                         </div>
                         <div class="menu px-3">
                            <span>{{ t('general.autoRefresh') }}: <b>{{ +autorefreshTimer ? `${autorefreshTimer}s` : 'OFF' }}</b></span>
@@ -58,9 +72,9 @@
                         class="btn btn-dark btn-sm dropdown-toggle d-flex mr-0 pr-0"
                         tabindex="0"
                      >
-                        <i class="mdi mdi-24px mdi-file-export mr-1" />
+                        <BaseIcon icon-name="mdiFileExport" :size="24" />
                         <span>{{ t('database.export') }}</span>
-                        <i class="mdi mdi-24px mdi-menu-down" />
+                        <BaseIcon icon-name="mdiMenuDown" :size="24" />
                      </button>
                      <ul class="menu text-left">
                         <li class="menu-item">
@@ -95,10 +109,12 @@
                               <div ref="columnResize" class="column-resizable">
                                  <div class="table-column-title" @click="sort(field)">
                                     <span>{{ field.toUpperCase() }}</span>
-                                    <i
+
+                                    <BaseIcon
                                        v-if="currentSort === field"
-                                       class="mdi sort-icon"
-                                       :class="currentSortDir === 'asc' ? 'mdi-sort-ascending':'mdi-sort-descending'"
+                                       :icon-name="currentSortDir === 'asc' ? 'mdiSortAscending':'mdiSortDescending'"
+                                       :size="18"
+                                       class="ml-1"
                                     />
                                  </div>
                               </div>
@@ -139,6 +155,7 @@ import { ipcRenderer } from 'electron';
 import { Component, computed, onBeforeUnmount, onMounted, onUpdated, Prop, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
 import ModalProcessesListContext from '@/components/ModalProcessesListContext.vue';
 import ModalProcessesListRow from '@/components/ModalProcessesListRow.vue';

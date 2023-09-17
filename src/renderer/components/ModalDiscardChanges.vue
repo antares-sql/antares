@@ -7,7 +7,11 @@
    >
       <template #header>
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-content-save-alert mr-1" /> {{ t('application.unsavedChanges') }}
+            <BaseIcon
+               icon-name="mdiContentSaveAlert"
+               class="mr-1"
+               :size="24"
+            /> {{ t('application.unsavedChanges') }}
          </div>
       </template>
       <template #body>
@@ -23,6 +27,7 @@ import { onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 
 const { t } = useI18n();
 

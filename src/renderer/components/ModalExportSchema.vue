@@ -6,7 +6,11 @@
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
-                     <i class="mdi mdi-24px mdi-database-export mr-1" />
+                     <BaseIcon
+                        icon-name="mdiDatabaseExport"
+                        class="mr-1"
+                        :size="24"
+                     />
                      <span class="cut-text">{{ t('database.exportSchema') }}</span>
                   </div>
                </div>
@@ -44,7 +48,11 @@
                   <div class="column col-8 left">
                      <div class="columns mb-2 mt-1 p-vcentered">
                         <div class="column col-auto input-group d-flex text-italic" :style="'flex-grow: 1'">
-                           <i class="input-group-addon mdi mdi-file-document-outline" />
+                           <BaseIcon
+                              icon-name="mdiFileDocumentOutline"
+                              class="input-group-addon"
+                              :size="36"
+                           />
                            <input
                               v-model="chosenFilename"
                               class="form-input"
@@ -56,27 +64,27 @@
 
                         <div class="column col-auto col-ml-auto ">
                            <button
-                              class="btn btn-dark btn-sm"
+                              class="btn btn-dark btn-sm pt-1"
                               :title="t('general.refresh')"
                               @click="refresh"
                            >
-                              <i class="mdi mdi-refresh" />
+                              <BaseIcon icon-name="mdiRefresh" :size="15" />
                            </button>
                            <button
-                              class="btn btn-dark btn-sm mx-1"
+                              class="btn btn-dark btn-sm mx-1 pt-1"
                               :title="t('database.uncheckAllTables')"
                               :disabled="isRefreshing"
                               @click="uncheckAllTables"
                            >
-                              <i class="mdi mdi-checkbox-blank-outline" />
+                              <BaseIcon icon-name="mdiCheckboxBlankOutline" :size="15" />
                            </button>
                            <button
-                              class="btn btn-dark btn-sm"
+                              class="btn btn-dark btn-sm pt-1"
                               :title="t('database.checkAllTables')"
                               :disabled="isRefreshing"
                               @click="checkAllTables"
                            >
-                              <i class="mdi mdi-checkbox-marked-outline" />
+                              <BaseIcon icon-name="mdiCheckboxMarkedOutline" :size="15" />
                            </button>
                         </div>
                      </div>
@@ -280,6 +288,7 @@ import { storeToRefs } from 'pinia';
 import { computed, onBeforeUnmount, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import Application from '@/ipc-api/Application';

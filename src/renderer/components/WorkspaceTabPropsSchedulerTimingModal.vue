@@ -8,7 +8,11 @@
    >
       <template #header>
          <div class="d-flex">
-            <i class="mdi mdi-24px mdi-timer mr-1" />
+            <BaseIcon
+               class="mr-1"
+               icon-name="mdiTimer"
+               :size="24"
+            />
             <span class="cut-text">{{ t('database.timing') }} "{{ localOptions.name }}"</span>
          </div>
       </template>
@@ -76,7 +80,11 @@
                            class="form-input"
                         >
                         <span class="input-group-addon p-vcentered">
-                           <i class="form-icon mdi mdi-calendar" />
+                           <BaseIcon
+                              icon-name="mdiCalendar"
+                              :size="18"
+                              class="form-icon"
+                           />
                         </span>
                      </div>
                   </div>
@@ -97,7 +105,11 @@
                            class="form-input"
                         >
                         <span class="input-group-addon p-vcentered">
-                           <i class="form-icon mdi mdi-calendar" />
+                           <BaseIcon
+                              icon-name="mdiCalendar"
+                              :size="18"
+                              class="form-icon"
+                           />
                         </span>
                      </div>
                   </div>
@@ -115,7 +127,11 @@
                            class="form-input"
                         >
                         <span class="input-group-addon p-vcentered">
-                           <i class="form-icon mdi mdi-calendar" />
+                           <BaseIcon
+                              icon-name="mdiCalendar"
+                              :size="18"
+                              class="form-icon"
+                           />
                         </span>
                      </div>
                   </div>
@@ -141,6 +157,7 @@ import { Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 
 const { t } = useI18n();

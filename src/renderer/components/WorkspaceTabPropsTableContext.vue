@@ -4,8 +4,17 @@
       @close-context="closeContext"
    >
       <div class="context-element">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-key-plus text-light pr-1" /> {{ t('database.createNewIndex') }}</span>
-         <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiKeyPlus"
+               :size="18"
+            /> {{ t('database.createNewIndex') }}</span>
+         <BaseIcon
+            class="text-light mt-1"
+            icon-name="mdiChevronRight"
+            :size="18"
+         />
          <div class="context-submenu">
             <div
                v-for="index in indexTypes"
@@ -14,13 +23,29 @@
                :class="{'disabled': index === 'PRIMARY' && hasPrimary}"
                @click="addNewIndex(index)"
             >
-               <span class="d-flex"><i class="mdi mdi-18px mdi-key column-key pr-1" :class="`key-${index}`" /> {{ index }}</span>
+               <span class="d-flex">
+                  <BaseIcon
+                     class="column-key pr-1 mt-1 mr-1"
+                     :class="`key-${index}`"
+                     icon-name="mdiKey"
+                     rotate="45deg"
+                     :size="20"
+                  /> {{ index }}</span>
             </div>
          </div>
       </div>
       <div v-if="indexes.length" class="context-element">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-key-arrow-right text-light pr-1" /> {{ t('database.addToIndex') }}</span>
-         <i class="mdi mdi-18px mdi-chevron-right text-light pl-1" />
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiKeyArrowRight"
+               :size="18"
+            /> {{ t('database.addToIndex') }}</span>
+         <BaseIcon
+            class="text-light mt-1"
+            icon-name="mdiChevronRight"
+            :size="18"
+         />
          <div class="context-submenu">
             <div
                v-for="index in indexes"
@@ -29,15 +54,32 @@
                :class="{'disabled': index.fields.includes(selectedField.name)}"
                @click="addToIndex(index._antares_id)"
             >
-               <span class="d-flex"><i class="mdi mdi-18px mdi-key column-key pr-1" :class="`key-${index.type}`" /> {{ index.name }}</span>
+               <span class="d-flex">
+                  <BaseIcon
+                     class="column-key pr-1 mt-1 mr-1"
+                     :class="`key-${index.type}`"
+                     icon-name="mdiKey"
+                     rotate="45deg"
+                     :size="20"
+                  /> {{ index.name }}</span>
             </div>
          </div>
       </div>
       <div class="context-element" @click="duplicateField">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-content-duplicate text-light pr-1" /> {{ t('general.duplicate') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiContentDuplicate"
+               :size="18"
+            /> {{ t('general.duplicate') }}</span>
       </div>
       <div class="context-element" @click="deleteField">
-         <span class="d-flex"><i class="mdi mdi-18px mdi-delete text-light pr-1" /> {{ t('database.deleteField') }}</span>
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiDelete"
+               :size="18"
+            /> {{ t('database.deleteField') }}</span>
       </div>
    </BaseContextMenu>
 </template>
@@ -48,6 +90,7 @@ import { computed, Prop } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
+import BaseIcon from '@/components/BaseIcon.vue';
 
 const { t } = useI18n();
 

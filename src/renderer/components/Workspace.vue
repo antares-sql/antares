@@ -40,7 +40,11 @@
                      class="tab-link"
                      :class="{'badge': element.isChanged}"
                   >
-                     <i class="mdi mdi-18px mdi-code-tags mr-1" />
+                     <BaseIcon
+                        class="mt-1 mr-1"
+                        icon-name="mdiCodeTags"
+                        :size="18"
+                     />
                      <span>
                         <span>{{ cutText(element.content || 'Query', 20, true) }} #{{ element.index }}</span>
                         <span
@@ -57,7 +61,11 @@
                      class="tab-link"
                      @dblclick="openAsPermanentTab(element)"
                   >
-                     <i class="mdi mdi-18px mr-1" :class="element.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
+                     <BaseIcon
+                        class="mt-1 mr-1"
+                        :icon-name="element.elementType === 'view' ? 'mdiTableEye' : 'mdiTable'"
+                        :size="18"
+                     />
                      <span :title="`${t('general.data').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         <span class=" text-italic">{{ cutText(element.elementName, 20, true) }}</span>
                         <span
@@ -70,7 +78,11 @@
                   </a>
 
                   <a v-else-if="element.type === 'data'" class="tab-link">
-                     <i class="mdi mdi-18px mr-1" :class="element.elementType === 'view' ? 'mdi-table-eye' : 'mdi-table'" />
+                     <BaseIcon
+                        class="mt-1 mr-1"
+                        :icon-name="element.elementType === 'view' ? 'mdiTableEye' : 'mdiTable'"
+                        :size="18"
+                     />
                      <span :title="`${t('general.data').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         {{ cutText(element.elementName, 20, true) }}
                         <span
@@ -87,7 +99,11 @@
                      class="tab-link"
                      :class="{'badge': element.isChanged}"
                   >
-                     <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiShapeSquarePlus"
+                        :size="18"
+                     />
                      <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         {{ t('database.newTable') }}
                         <span
@@ -104,7 +120,11 @@
                      class="tab-link"
                      :class="{'badge': element.isChanged}"
                   >
-                     <i class="mdi mdi-wrench-cog mdi-18px mr-1" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiWrenchCog"
+                        :size="18"
+                     />
                      <span :title="`${t('application.settings').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         {{ cutText(element.elementName, 20, true) }}
                         <span
@@ -121,7 +141,11 @@
                      class="tab-link"
                      :class="{'badge': element.isChanged}"
                   >
-                     <i class="mdi mdi-wrench-cog mdi-18px mr-1" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiWrenchCog"
+                        :size="18"
+                     />
                      <span :title="`${t('application.settings').toUpperCase()}: ${t(`database.view`)}`">
                         {{ cutText(element.elementName, 20, true) }}
                         <span
@@ -138,7 +162,11 @@
                      class="tab-link"
                      :class="{'badge': element.isChanged}"
                   >
-                     <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiShapeSquarePlus"
+                        :size="18"
+                     />
                      <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         {{ t('database.newView') }}
                         <span
@@ -155,7 +183,11 @@
                      class="tab-link"
                      :class="{'badge': element.isChanged}"
                   >
-                     <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiShapeSquarePlus"
+                        :size="18"
+                     />
                      <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         {{ t('database.newTrigger') }}
                         <span
@@ -172,7 +204,11 @@
                      class="tab-link"
                      :class="{'badge': element.isChanged}"
                   >
-                     <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiShapeSquarePlus"
+                        :size="18"
+                     />
                      <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         {{ t('database.newRoutine') }}
                         <span
@@ -189,7 +225,11 @@
                      class="tab-link"
                      :class="{'badge': element.isChanged}"
                   >
-                     <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiShapeSquarePlus"
+                        :size="18"
+                     />
                      <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         {{ t('database.newFunction') }}
                         <span
@@ -206,7 +246,11 @@
                      class="tab-link"
                      :class="{'badge': element.isChanged}"
                   >
-                     <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiShapeSquarePlus"
+                        :size="18"
+                     />
                      <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         {{ t('database.newTriggerFunction') }}
                         <span
@@ -223,7 +267,11 @@
                      class="tab-link"
                      :class="{'badge': element.isChanged}"
                   >
-                     <i class="mdi mdi-shape-square-plus mdi-18px mr-1" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiShapeSquarePlus"
+                        :size="18"
+                     />
                      <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         {{ t('database.newScheduler') }}
                         <span
@@ -241,7 +289,11 @@
                      :class="{'badge': element.isChanged}"
                      @dblclick="openAsPermanentTab(element)"
                   >
-                     <i class="mdi mdi-18px mdi-wrench-cog mr-1" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiWrenchCog"
+                        :size="18"
+                     />
                      <span :title="`${t('application.settings').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         <span class=" text-italic">{{ cutText(element.elementName, 20, true) }}</span>
                         <span
@@ -258,7 +310,11 @@
                      class="tab-link"
                      :class="{'badge': element.isChanged}"
                   >
-                     <i class="mdi mdi-18px mdi-wrench-cog mr-1" />
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiWrenchCog"
+                        :size="18"
+                     />
                      <span :title="`${t('application.settings').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         {{ cutText(element.elementName, 20, true) }}
                         <span
@@ -281,18 +337,26 @@
                      tabindex="0"
                      :title="t('general.tools')"
                   >
-                     <i class="mdi mdi-24px mdi-tools" />
+                     <BaseIcon icon-name="mdiTools" :size="24" />
                   </a>
                   <ul v-if="hasTools" class="menu text-left text-uppercase">
                      <li class="menu-item">
                         <a class="c-hand p-vcentered" @click="showProcessesModal">
-                           <i class="mdi mdi-memory mr-1 tool-icon" />
+                           <BaseIcon
+                              icon-name="mdiMemory"
+                              :size="18"
+                              class="mr-1 tool-icon"
+                           />
                            <span>{{ t('database.processesList') }}</span>
                         </a>
                      </li>
                      <li class="menu-item">
                         <a class="c-hand p-vcentered" @click="toggleConsole">
-                           <i class="mdi mdi-console-line mr-1 tool-icon" />
+                           <BaseIcon
+                              icon-name="mdiConsoleLine"
+                              :size="18"
+                              class="mr-1 tool-icon"
+                           />
                            <span>{{ t('application.console') }}</span>
                         </a>
                      </li>
@@ -302,7 +366,11 @@
                         title="Coming..."
                      >
                         <a class="c-hand p-vcentered disabled">
-                           <i class="mdi mdi-shape mr-1 tool-icon" />
+                           <BaseIcon
+                              icon-name="mdiShape"
+                              :size="18"
+                              class="mr-1 tool-icon"
+                           />
                            <span>{{ t('database.variables') }}</span>
                         </a>
                      </li>
@@ -312,7 +380,11 @@
                         title="Coming..."
                      >
                         <a class="c-hand p-vcentered disabled">
-                           <i class="mdi mdi-account-group mr-1 tool-icon" />
+                           <BaseIcon
+                              icon-name="mdiAccountGroup"
+                              :size="18"
+                              class="mr-1 tool-icon"
+                           />
                            <span>{{ t('database.manageUsers') }}</span>
                         </a>
                      </li>
@@ -326,7 +398,7 @@
                      :title="t('application.openNewTab')"
                      @click="addQueryTab"
                   >
-                     <i class="mdi mdi-24px mdi-plus" />
+                     <BaseIcon icon-name="mdiPlus" :size="24" />
                   </a>
                </li>
             </template>
@@ -495,6 +567,7 @@ import { computed, onMounted, Prop, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import * as Draggable from 'vuedraggable';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import ModalDiscardChanges from '@/components/ModalDiscardChanges.vue';
 import ModalProcessesList from '@/components/ModalProcessesList.vue';
 import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPanel.vue';

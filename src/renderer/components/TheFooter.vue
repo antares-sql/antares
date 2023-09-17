@@ -7,19 +7,35 @@
       <div class="footer-left-elements">
          <ul class="footer-elements">
             <li class="footer-element">
-               <i class="mdi mdi-18px mdi-database mr-1" />
+               <BaseIcon
+                  icon-name="mdiServer"
+                  class="mr-1"
+                  :size="18"
+               />
                <small>{{ versionString }}</small>
             </li>
             <li v-if="connectionInfos && connectionInfos.readonly" class="footer-element">
-               <i class="mdi mdi-18px mdi-lock mr-1" />
+               <BaseIcon
+                  icon-name="mdiLock"
+                  class="mr-1"
+                  :size="18"
+               />
                <small>{{ t('connection.readOnlyMode') }}</small>
             </li>
             <li v-if="connectionInfos && connectionInfos.ssl" class="footer-element">
-               <i class="mdi mdi-18px mdi-shield-key mr-1" />
+               <BaseIcon
+                  icon-name="mdiShieldKey"
+                  class="mr-1"
+                  :size="18"
+               />
                <small>SSL</small>
             </li>
             <li v-if="connectionInfos && connectionInfos.ssh" class="footer-element">
-               <i class="mdi mdi-18px mdi-console-network mr-1" />
+               <BaseIcon
+                  icon-name="mdiConsoleNetwork"
+                  class="mr-1"
+                  :size="18"
+               />
                <small>SSH</small>
             </li>
          </ul>
@@ -32,11 +48,19 @@
                class="footer-element footer-link"
                @click="toggleConsole()"
             >
-               <i class="mdi mdi-18px mdi-console-line mr-1" />
+               <BaseIcon
+                  icon-name="mdiConsoleLine"
+                  class="mr-1"
+                  :size="18"
+               />
                <small>{{ t('application.console') }}</small>
             </li>
             <li class="footer-element footer-link" @click="openOutside('https://www.paypal.com/paypalme/fabiodistasio')">
-               <i class="mdi mdi-18px mdi-coffee mr-1" />
+               <BaseIcon
+                  icon-name="mdiCoffee"
+                  class="mr-1"
+                  :size="18"
+               />
                <small>{{ t('general.donate') }}</small>
             </li>
             <li
@@ -44,14 +68,14 @@
                :title="t('application.reportABug')"
                @click="openOutside('https://github.com/antares-sql/antares/issues')"
             >
-               <i class="mdi mdi-18px mdi-bug" />
+               <BaseIcon icon-name="mdiBug" :size="18" />
             </li>
             <li
                class="footer-element footer-link"
                :title="t('application.about')"
                @click="showSettingModal('about')"
             >
-               <i class="mdi mdi-18px mdi-information-outline" />
+               <BaseIcon icon-name="mdiInformationOutline" :size="18" />
             </li>
          </ul>
       </div>
@@ -64,6 +88,7 @@ import { storeToRefs } from 'pinia';
 import { computed, ComputedRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
 import { useConsoleStore } from '@/stores/console';

@@ -8,7 +8,11 @@
       </p>
       <div class="empty-action">
          <button class="btn btn-primary d-flex" @click="emit('new-tab')">
-            <i class="mdi mdi-24px mdi-tab-plus mr-2" />
+            <BaseIcon
+               icon-name="mdiTabPlus"
+               :size="24"
+               class="mr-2"
+            />
             {{ t('application.openNewTab') }}
          </button>
       </div>
@@ -19,6 +23,7 @@ import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
