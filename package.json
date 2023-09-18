@@ -1,7 +1,7 @@
 {
   "name": "antares",
   "productName": "Antares",
-  "version": "0.7.16",
+  "version": "0.7.17-beta.0",
   "description": "A modern, fast and productivity driven SQL client with a focus in UX.",
   "license": "MIT",
   "repository": "https://github.com/antares-sql/antares.git",
@@ -67,7 +67,6 @@
           "target": "deb",
           "arch": [
             "x64",
-            "arm64",
             "armv7l"
           ]
         },
@@ -75,7 +74,6 @@
           "target": "AppImage",
           "arch": [
             "x64",
-            "arm64",
             "armv7l"
           ]
         }
