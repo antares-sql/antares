@@ -3,8 +3,8 @@
       :type="type"
       :path="iconPath"
       :size="size"
-      :flip="flip"
       :rotate="rotate"
+      :class="iconFlip"
    />
 </template>
 
@@ -39,4 +39,25 @@ const props = defineProps({
 const iconPath = computed(() => {
    return (Icons as {[k:string]: string})[props.iconName];
 });
+
+const iconFlip = computed(() => {
+   if (['horizontal', 'vertical', 'both'].includes(props.flip))
+      return `flip-${props.flip}`;
+   else return '';
+});
 </script>
+
+<style lang="scss" scoped>
+.flip-horizontal {
+    transform: scaleX(-1);
+}
+
+.flip-vertical {
+    transform: scaleY(-1);
+}
+
+.flip-both {
+    /* flip both */
+    transform: scale(-1, -1);
+}
+</style>
