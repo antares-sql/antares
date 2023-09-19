@@ -122,6 +122,13 @@ const createClausole = (filter: TableFilterClausole) => {
    const { elementsWrapper: ew, stringsWrapper: sw } = clientCustomizations.value;
    let value;
 
+   if (isNumeric) {
+      if (isNaN(Number(filter.value)))
+         filter.value = '';
+      if (isNaN(Number(filter.value2)))
+         filter.value2 = '';
+   }
+
    switch (filter.op) {
       case '=':
       case '!=':
