@@ -296,7 +296,13 @@ export class SQLiteClient extends AntaresCore {
       // ADD FIELDS
       fields.forEach(field => {
          const typeInfo = this.getTypeInfo(field.type);
-         const length = typeInfo?.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
+         const length = typeInfo?.length
+            ? field.enumValues ||
+              field.numLength ||
+              field.numPrecision ||
+              field.charLength ||
+              field.datePrecision
+            : false;
 
          newColumns.push(`"${field.name}" 
             ${field.type.toUpperCase()}${length ? `(${length})` : ''} 

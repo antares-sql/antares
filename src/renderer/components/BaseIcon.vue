@@ -57,7 +57,6 @@ const iconFlip = computed(() => {
 }
 
 .flip-both {
-    /* flip both */
     transform: scale(-1, -1);
 }
 </style>
