@@ -231,7 +231,7 @@ import { ConnectionParams } from 'common/interfaces/antares';
 import { TableFilterClausole } from 'common/interfaces/tableApis';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
-import { computed, onBeforeUnmount, Prop, Ref, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, Prop, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseIcon from '@/components/BaseIcon.vue';
@@ -258,7 +258,10 @@ const props = defineProps({
    elementType: String
 });
 
-const reloadTable = () => getTableData();
+const reloadTable = async () => {
+   await nextTick();
+   getTableData();
+};
 
 const {
    queryTable,
