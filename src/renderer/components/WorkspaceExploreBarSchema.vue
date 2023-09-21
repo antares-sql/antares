@@ -52,6 +52,7 @@
                         class="table-icon mr-1"
                         :icon-name="table.type === 'view' ? 'mdiTableEye' : 'mdiTable'"
                         :size="18"
+                        :style="`min-width: 18px`"
                      />
                      <span v-html="highlightWord(table.name)" />
                   </a>
@@ -99,6 +100,7 @@
                                  class="table-icon mr-1"
                                  icon-name="mdiTableCog"
                                  :size="18"
+                                 :style="`min-width: 18px`"
                               />
                               <span v-html="highlightWord(trigger.name)" />
                            </a>
@@ -151,6 +153,7 @@
                                  class="table-icon mr-1"
                                  icon-name="mdiSyncCircle"
                                  :size="18"
+                                 :style="`min-width: 18px`"
                               />
                               <span v-html="highlightWord(routine.name)" />
                            </a>
@@ -172,6 +175,7 @@
                      class="misc-icon mr-1"
                      icon-name="mdiFolderRefresh"
                      :size="18"
+                     :style="`min-width: 18px`"
                   />
                   {{ t('database.triggerFunction', 2) }}
                </summary>
@@ -233,6 +237,7 @@
                                  class="misc-icon mr-1"
                                  icon-name="mdiArrowRightBoldBox"
                                  :size="18"
+                                 :style="`min-width: 18px`"
                               />
                               <span v-html="highlightWord(func.name)" />
                            </a>
@@ -275,6 +280,7 @@
                                  class="misc-icon mr-1"
                                  icon-name="mdiCalendarClock"
                                  :size="18"
+                                 :style="`min-width: 18px`"
                               />
                               <span v-html="highlightWord(scheduler.name)" />
                            </a>
