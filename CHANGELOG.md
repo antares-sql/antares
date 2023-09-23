@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.17-beta.1](https://github.com/antares-sql/antares/compare/v0.7.17-beta.0...v0.7.17-beta.1) (2023-09-23)
+
+
+### Bug Fixes
+
+* flip not working on BaseIcon component ([922f56f](https://github.com/antares-sql/antares/commit/922f56f69b168302a9d1ff86565d3f09400d6a7c))
+* **SQLite:** field length lost when editing a table, fixes [#664](https://github.com/antares-sql/antares/issues/664) ([b321e64](https://github.com/antares-sql/antares/commit/b321e64b835e0b39da116c4a77bac50247f240f3))
+* **SQLite:** table content not refresh after an update, fixes [#665](https://github.com/antares-sql/antares/issues/665) ([6dceaf0](https://github.com/antares-sql/antares/commit/6dceaf09be7bd46f1915721abd03253ffc517256))
+* table filter not working when search string on integer field, [#671](https://github.com/antares-sql/antares/issues/671) ([7e36260](https://github.com/antares-sql/antares/commit/7e36260cdb0438197152b5c6ac61db8ae8a9791a))
+* **UI:** small icons in sidebar elements with long name ([354928e](https://github.com/antares-sql/antares/commit/354928e302437d608903d1434d99d68eb79aa6e9))
+
 ### [0.7.17-beta.0](https://github.com/antares-sql/antares/compare/v0.7.16...v0.7.17-beta.0) (2023-09-17)
 
 
