@@ -2,8 +2,6 @@ import { ipcMain } from 'electron';
 import * as Store from 'electron-store';
 import { autoUpdater } from 'electron-updater';
 
-import { validateSender } from '../libs/misc/validateSender';
-
 const persistentStore = new Store({
    name: 'settings',
    clearInvalidConfig: true,
@@ -20,8 +18,6 @@ autoUpdater.allowPrerelease = persistentStore.get('allow_prerelease', false) as 
 
 export default () => {
    ipcMain.on('check-for-updates', event => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
       mainWindow = event;
       if (process.windowsStore || (process.platform === 'linux' && !process.env.APPIMAGE))
          mainWindow.reply('no-auto-update');
@@ -35,38 +31,31 @@ export default () => {
       }
    });
 
-   ipcMain.on('restart-to-update', (event) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+   ipcMain.on('restart-to-update', () => {
       autoUpdater.quitAndInstall();
    });
 
    // auto-updater events
-   autoUpdater.on('checking-for-update', (event) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+   autoUpdater.on('checking-for-update', () => {
       mainWindow.reply('checking-for-update');
    });
 
-   autoUpdater.on('update-available', (event) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
+   autoUpdater.on('update-available', () => {
       if (isMacOS)
          mainWindow.reply('link-to-download');
       else
          mainWindow.reply('update-available');
    });
 
-   autoUpdater.on('update-not-available', (event) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+   autoUpdater.on('update-not-available', () => {
       mainWindow.reply('update-not-available');
    });
 
    autoUpdater.on('download-progress', event => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
       mainWindow.reply('download-progress', event);
    });
 
-   autoUpdater.on('update-downloaded', (event) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+   autoUpdater.on('update-downloaded', () => {
       mainWindow.reply('update-downloaded');
    });
 
