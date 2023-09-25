@@ -21,10 +21,12 @@ export interface TableDeleteParams {
    rows: {[key: string]: any};
 }
 
+export type TableFilterOperator = '=' | '!=' | '>' | '<' | '>=' | '<=' | 'IN' | 'NOT IN' | 'LIKE' | 'NOT LIKE' | 'BETWEEN' | 'IS NULL' | 'IS NOT NULL'
+
 export interface TableFilterClausole {
    active: boolean;
    field: string;
-   op: '=' | '!=' | '>' | '<' | '>=' | '<=' | 'IN' | 'NOT IN' | 'LIKE' | 'BETWEEN' | 'IS NULL' | 'IS NOT NULL';
+   op:TableFilterOperator;
    value: '';
    value2: '';
 }

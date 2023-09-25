@@ -76,7 +76,7 @@
 import customizations from 'common/customizations';
 import { FLOAT, NUMBER } from 'common/fieldTypes';
 import { ClientCode, TableField } from 'common/interfaces/antares';
-import { TableFilterClausole } from 'common/interfaces/tableApis';
+import { TableFilterClausole, TableFilterOperator } from 'common/interfaces/tableApis';
 import { computed, Prop, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -93,8 +93,8 @@ const props = defineProps({
 const emit = defineEmits(['filter-change', 'filter']);
 
 const rows = ref([]);
-const operators = ref([
-   '=', '!=', '>', '<', '>=', '<=', 'IN', 'NOT IN', 'LIKE', 'BETWEEN', 'IS NULL', 'IS NOT NULL'
+const operators = ref<TableFilterOperator[]>([
+   '=', '!=', '>', '<', '>=', '<=', 'IN', 'NOT IN', 'LIKE', 'NOT LIKE', 'BETWEEN', 'IS NULL', 'IS NOT NULL'
 ]);
 
 const clientCustomizations = computed(() => customizations[props.connClient]);
@@ -152,6 +152,7 @@ const createClausole = (filter: TableFilterClausole) => {
          value = '';
          break;
       case 'LIKE':
+      case 'NOT LIKE':
          value = `${sw}%${filter.value}%${sw}`;
          break;
       default:
