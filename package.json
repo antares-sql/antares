@@ -121,7 +121,6 @@
     "@electron/remote": "~2.0.1",
     "@faker-js/faker": "~6.1.2",
     "@jamescoyle/vue-icon": "~0.1.2",
-    "@mdi/font": "~7.2.96",
     "@mdi/js": "~7.2.96",
     "@turf/helpers": "~6.5.0",
     "@vueuse/core": "~10.4.1",

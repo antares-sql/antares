@@ -403,11 +403,6 @@ defineExpose({ editor });
   }
 }
 
-.ace_.mdi {
-  display: inline-block;
-  width: 17px;
-}
-
 .ace_gutter-cell.ace_breakpoint {
   &::before {
     content: '\F0403';

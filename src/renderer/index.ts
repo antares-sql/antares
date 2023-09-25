@@ -1,5 +1,4 @@
 'use strict';
-import '@mdi/font/css/materialdesignicons.css';
 import 'floating-vue/dist/style.css';
 import 'leaflet/dist/leaflet.css';
 import '@/scss/main.scss';

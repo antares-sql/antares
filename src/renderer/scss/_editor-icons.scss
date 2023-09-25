@@ -1,0 +1,67 @@
+/* stylelint-disable selector-class-pattern */
+
+/* Only used in ext-language_tools.js */
+.editor-icon {
+  display: inline-block;
+  width: 17px;
+  height: 17px;
+  background-size: cover;
+  position: relative;
+  top: 2px;
+  margin-right: 1px;
+  opacity: 0.7;
+
+  &.editor-icon-table {
+    background-image: url("../images/svg/table.svg");
+  }
+
+  &.editor-icon-rhombus-split-outline {
+    background-image: url("../images/svg/rhombus-split-outline.svg");
+  }
+
+  &.editor-icon-table-eye {
+    background-image: url("../images/svg/table-eye.svg");
+  }
+
+  &.editor-icon-table-cog {
+    background-image: url("../images/svg/table-cog.svg");
+  }
+
+  &.editor-icon-sync-circle {
+    background-image: url("../images/svg/sync-circle.svg");
+  }
+
+  &.editor-icon-arrow-right-bold-box {
+    background-image: url("../images/svg/arrow-right-bold-box.svg");
+  }
+
+  &.editor-icon-calendar-clock {
+    background-image: url("../images/svg/calendar-clock.svg");
+  }
+
+  &.editor-icon-cube {
+    background-image: url("../images/svg/cube.svg");
+  }
+
+  &.editor-icon-code-braces {
+    background-image: url("../images/svg/code-braces.svg");
+  }
+
+  &.editor-icon-alphabetical-variant {
+    background-image: url("../images/svg/alphabetical-variant.svg");
+  }
+
+  &.editor-icon-circle {
+    background-image: url("../images/svg/circle.svg");
+  }
+
+  &::before {
+    line-height: 1;
+  }
+}
+
+.ace_dark {
+  .editor-icon {
+    filter: invert(100%);
+  }
+}

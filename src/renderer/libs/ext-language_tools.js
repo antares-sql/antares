@@ -1227,42 +1227,42 @@ ace.define('ace/autocomplete/popup', ['require', 'exports', 'module', 'ace/virtu
 
             switch (meta) {
                case 'table':
-                  iconClass = 'mdi-table';
+                  iconClass = 'editor-icon-table';
                   break;
                case 'column':
-                  iconClass = 'mdi-rhombus-split-outline';
+                  iconClass = 'editor-icon-rhombus-split-outline';
                   break;
                case 'view':
-                  iconClass = 'mdi-table-eye';
+                  iconClass = 'editor-icon-table-eye';
                   break;
                case 'trigger':
-                  iconClass = 'mdi-table-cog';
+                  iconClass = 'editor-icon-table-cog';
                   break;
                case 'routine':
-                  iconClass = 'mdi-sync-circle';
+                  iconClass = 'editor-icon-sync-circle';
                   break;
                case 'function':
-                  iconClass = 'mdi-arrow-right-bold-box';
+                  iconClass = 'editor-icon-arrow-right-bold-box';
                   break;
                case 'scheduler':
-                  iconClass = 'mdi-calendar-clock';
+                  iconClass = 'editor-icon-calendar-clock';
                   break;
                case 'keyword':
-                  iconClass = 'mdi-cube';
+                  iconClass = 'editor-icon-cube';
                   break;
                case 'snippet':
-                  iconClass = 'mdi-code-braces';
+                  iconClass = 'editor-icon-code-braces';
                   break;
                case 'local':
-                  iconClass = 'mdi-alphabetical-variant';
+                  iconClass = 'editor-icon-alphabetical-variant';
                   break;
                default:
-                  iconClass = 'mdi-circle';
+                  iconClass = 'editor-icon-circle';
                   break;
             }
 
             iconClass && tokens.push({
-               type: ` mdi ${iconClass}`,
+               type: ` editor-icon ${iconClass}`,
                value: ' '
             });
          }

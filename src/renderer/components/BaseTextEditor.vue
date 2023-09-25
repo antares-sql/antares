@@ -136,9 +136,4 @@ onMounted(() => {
     width: 100%;
   }
 }
-
-.ace_.mdi {
-  display: inline-block;
-  width: 17px;
-}
 </style>
