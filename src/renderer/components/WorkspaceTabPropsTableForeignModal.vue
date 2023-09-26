@@ -56,7 +56,7 @@
                         <div class="tile-icon">
                            <div>
                               <BaseIcon
-                                 class="mr-1"
+                                 class="mr-1 mt-1"
                                  icon-name="mdiKeyLink"
                                  :size="24"
                               />
@@ -78,6 +78,7 @@
                                        class="mr-1"
                                        icon-name="mdiTable"
                                        :size="14"
+                                       :style="'min-width:14px'"
                                     />
                                     <span>{{ foreign.table }}.{{ foreign.field }}</span>
                                  </span>
@@ -86,6 +87,7 @@
                                        class="mr-1"
                                        icon-name="mdiTable"
                                        :size="14"
+                                       :style="'min-width:14px'"
                                     />
                                     <span>{{ foreign.refTable }}.{{ foreign.refField }}</span>
                                  </span>
