@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.17-beta.2](https://github.com/antares-sql/antares/compare/v0.7.17-beta.1...v0.7.17-beta.2) (2023-09-28)
+
+
+### Features
+
+* add NOT LIKE to table filters, closes [#672](https://github.com/antares-sql/antares/issues/672) ([9c66fd5](https://github.com/antares-sql/antares/commit/9c66fd51cbbe6f21a1fa6a34cc962496d3db7a98))
+
+
+### Bug Fixes
+
+* nsis updater not working ([198ff01](https://github.com/antares-sql/antares/commit/198ff0103bfa95e3491296d352c944165f31b87e))
+* **UI:** small icons in foreign key modal ([b37781d](https://github.com/antares-sql/antares/commit/b37781df84cf7ee99a69ecaa54480d662d79c4aa))
+
 ### [0.7.17-beta.1](https://github.com/antares-sql/antares/compare/v0.7.17-beta.0...v0.7.17-beta.1) (2023-09-23)
 
 
