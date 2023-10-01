@@ -119,7 +119,7 @@
   },
   "dependencies": {
     "@electron/remote": "~2.0.1",
-    "@faker-js/faker": "~6.1.2",
+    "@faker-js/faker": "~8.1.0",
     "@jamescoyle/vue-icon": "~0.1.2",
     "@mdi/js": "~7.2.96",
     "@turf/helpers": "~6.5.0",
