@@ -6,6 +6,7 @@ const isWindows = process.platform === 'win32';
 const indexPath = path.resolve(__dirname, 'index.html').split(path.sep).join('/');
 
 export function validateSender (frame: WebFrameMain) {
+   if (process.windowsStore) return true; // TEMP HOTFIX
    const frameUrl = new URL(frame.url);
    const prefix = isWindows ? 'file:///' : 'file://';
    const framePath = frameUrl.href.replace(prefix, '');
