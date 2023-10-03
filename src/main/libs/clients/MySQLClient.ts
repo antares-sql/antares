@@ -256,9 +256,12 @@ export class MySQLClient extends AntaresCore {
    }
 
    private async keepAlive () {
-      const connection = await (this._connection as mysql.Pool).getConnection();
-      await connection.ping();
-      connection.release();
+      try {
+         const connection = await (this._connection as mysql.Pool).getConnection();
+         await connection.ping();
+         connection.release();
+      }
+      catch (_) {}
    }
 
    use (schema: string) {

@@ -27,11 +27,7 @@
                      :title="t('general.cancel')"
                      @click="killTabQuery()"
                   >
-                     <BaseIcon
-                        class="mr-1"
-                        icon-name="mdiWindowCLose"
-                        :size="24"
-                     />
+                     <BaseIcon icon-name="mdiWindowClose" :size="24" />
                      <span class="d-invisible pr-1">{{ t('general.run') }}</span>
                   </button>
                   <button

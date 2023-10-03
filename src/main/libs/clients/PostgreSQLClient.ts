@@ -240,9 +240,12 @@ export class PostgreSQLClient extends AntaresCore {
    }
 
    private async keepAlive () {
-      const connection = await this._connection.connect() as pg.PoolClient;
-      await connection.query('SELECT 1+1');
-      connection.release();
+      try {
+         const connection = await this._connection.connect() as pg.PoolClient;
+         await connection.query('SELECT 1+1');
+         connection.release();
+      }
+      catch (_) {}
    }
 
    use (schema: string, connection?: pg.Client | pg.PoolClient) {
