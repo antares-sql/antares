@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.18](https://github.com/antares-sql/antares/compare/v0.7.17...v0.7.18) (2023-10-03)
+
+
+### Bug Fixes
+
+* hotfix for Microsoft Store unauthorized process ([b3b698b](https://github.com/antares-sql/antares/commit/b3b698b3a23a3c848921ab40fc0fec5d8178ef0e))
+
 ### [0.7.17](https://github.com/antares-sql/antares/compare/v0.7.17-beta.2...v0.7.17) (2023-09-30)
 
 ### [0.7.17-beta.2](https://github.com/antares-sql/antares/compare/v0.7.17-beta.1...v0.7.17-beta.2) (2023-09-28)
