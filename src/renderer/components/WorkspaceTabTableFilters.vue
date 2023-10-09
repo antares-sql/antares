@@ -122,7 +122,7 @@ const createClausole = (filter: TableFilterClausole) => {
    const { elementsWrapper: ew, stringsWrapper: sw } = clientCustomizations.value;
    let value;
 
-   if (isNumeric) {
+   if (isNumeric && !['IN', 'NOT IN'].includes(filter.op)) {
       if (isNaN(Number(filter.value)))
          filter.value = '';
       if (isNaN(Number(filter.value2)))
@@ -145,7 +145,7 @@ const createClausole = (filter: TableFilterClausole) => {
             val = val.trim();
             return isNumeric ? val : `${sw}${val}${sw}`;
          }).join(',');
-         value = `(${filter.value})`;
+         value = `(${value})`;
          break;
       case 'IS NULL':
       case 'IS NOT NULL':
