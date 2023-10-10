@@ -197,13 +197,13 @@ const fakerMethods = {
       { name: 'amount', group: 'finance' }
    ],
    datetime: [
-      { name: 'now', group: 'custom' },
+      { name: 'now', group: 'date' },
       { name: 'past', group: 'date' },
       { name: 'future', group: 'date' }
    ],
    time: [
-      { name: 'now', group: 'custom' },
-      { name: 'random', group: 'custom' }
+      { name: 'now', group: 'time' },
+      { name: 'random', group: 'time' }
    ],
    uuid: [
       { name: 'uuid', group: 'random' }

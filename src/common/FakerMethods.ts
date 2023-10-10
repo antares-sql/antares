@@ -51,6 +51,7 @@ export default class {
          { name: 'collation', group: 'database', types: ['string'] },
          { name: 'engine', group: 'database', types: ['string'] },
 
+         { name: 'now', group: 'date', types: ['string', 'datetime'] },
          { name: 'past', group: 'date', types: ['string', 'datetime'] },
          { name: 'future', group: 'date', types: ['string', 'datetime'] },
          // { name: 'between', group: 'date', types: ['string'] },
@@ -161,7 +162,9 @@ export default class {
          { name: 'filePath', group: 'system', types: ['string'] },
          { name: 'semver', group: 'system', types: ['string'] },
 
+         { name: 'now', group: 'time', types: ['string', 'time'] },
          { name: 'recent', group: 'time', types: ['string', 'time'] },
+         { name: 'random', group: 'time', types: ['string', 'time'] },
 
          { name: 'vehicle', group: 'vehicle', types: ['string'] },
          { name: 'manufacturer', group: 'vehicle', types: ['string'] },

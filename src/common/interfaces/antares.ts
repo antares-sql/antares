@@ -363,8 +363,7 @@ export interface QueryBuilderObject {
    offset: number;
    join: string[];
    update: string[];
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   insert: {[key: string]: any}[];
+   insert: {[key: string]: string | boolean | number }[];
    delete: boolean;
 }
 

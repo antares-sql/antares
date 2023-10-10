@@ -3,7 +3,7 @@
       ref="tableWrapper"
       class="vscroll no-outline"
       tabindex="0"
-      :style="{'height': resultsSize+'px'}"
+      :style="{ 'height': resultsSize + 'px' }"
       @blur="deselectRows"
       @focus="hasFocus = true"
       @keyup.delete="showDeleteConfirmModal"
@@ -28,7 +28,7 @@
             v-for="(result, index) in resultsWithRows"
             :key="index"
             class="tab-item"
-            :class="{'active': resultsetIndex === index}"
+            :class="{ 'active': resultsetIndex === index }"
             @click="selectResultset(index)"
          >
             <a>{{ result.fields ? result.fields[0]?.table : '' }} ({{ result.rows.length }})</a>
@@ -57,7 +57,7 @@
                         <span>{{ field.alias || field.name }}</span>
                         <BaseIcon
                            v-if="isSortable && currentSort === field.name || currentSort === `${field.table}.${field.name}`"
-                           :icon-name="currentSortDir === 'asc' ? 'mdiSortAscending':'mdiSortDescending'"
+                           :icon-name="currentSortDir === 'asc' ? 'mdiSortAscending' : 'mdiSortDescending'"
                            :size="18"
                            class="sort-icon ml-1"
                         />
@@ -90,7 +90,7 @@
                   :fields="fieldsObj"
                   :key-usage="keyUsage"
                   :element-type="elementType"
-                  :class="{'selected': selectedRows.includes(row._antares_id)}"
+                  :class="{ 'selected': selectedRows.includes(row._antares_id) }"
                   :selected="selectedRows.includes(row._antares_id)"
                   :selected-cell="selectedRows.length === 1 && selectedRows.includes(row._antares_id) ? selectedField : null"
                   @start-editing="isEditingRow = true"
@@ -163,7 +163,7 @@
                   <BaseSelect
                      v-model="sqlExportOptions.sqlInsertDivider"
                      class="form-select"
-                     :options="[{value: 'bytes', label: 'KiB'}, {value: 'rows', label: t('database.row', 2)}]"
+                     :options="[{ value: 'bytes', label: 'KiB' }, { value: 'rows', label: t('database.row', 2) }]"
                   />
                </div>
             </div>
@@ -208,9 +208,9 @@
                         v-model="csvExportOptions.stringDelimiter"
                         class="form-select"
                         :options="[
-                           {value: '', label: t('general.none')},
-                           {value: 'single', label: t('general.singleQuote')},
-                           {value: 'double', label: t('general.doubleQuote')}
+                           { value: '', label: t('general.none') },
+                           { value: 'single', label: t('general.singleQuote') },
+                           { value: 'double', label: t('general.doubleQuote') }
                         ]"
                      />
                   </div>
@@ -235,7 +235,10 @@
                      </label>
                   </div>
                   <div class="column col-7">
-                     <label class="form-switch d-inline-block" @click.prevent="csvExportOptions.header = !csvExportOptions.header">
+                     <label
+                        class="form-switch d-inline-block"
+                        @click.prevent="csvExportOptions.header = !csvExportOptions.header"
+                     >
                         <input type="checkbox" :checked="csvExportOptions.header">
                         <i class="form-icon" />
                      </label>
@@ -249,10 +252,10 @@
 
 <script setup lang="ts">
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import faker from '@faker-js/faker';
 import { BLOB, DATE, DATETIME, LONG_TEXT, TEXT, TIME } from 'common/fieldTypes';
 import { QueryResult, TableField } from 'common/interfaces/antares';
 import { TableUpdateParams } from 'common/interfaces/tableApis';
+import { fakerCustom } from 'common/libs/fakerCustom';
 import { jsonToSqlInsert } from 'common/libs/sqlUtils';
 import { uidGen } from 'common/libs/uidGen';
 import * as json2php from 'json2php';
@@ -299,7 +302,7 @@ const emit = defineEmits([
    'duplicate-row'
 ]);
 
-const resultTable: Ref<Component & {updateWindow: () => void}> = ref(null);
+const resultTable: Ref<Component & { updateWindow: () => void }> = ref(null);
 const tableWrapper: Ref<HTMLDivElement> = ref(null);
 const table: Ref<HTMLDivElement> = ref(null);
 const resultsSize = ref(0);
@@ -377,7 +380,7 @@ const keyUsage = computed(() => resultsWithRows.value.length ? resultsWithRows.v
 
 const fieldsObj = computed(() => {
    if (sortedResults.value.length) {
-      const fieldsObj: {[key: string]: TableField} = {};
+      const fieldsObj: { [key: string]: TableField } = {};
       for (const key in sortedResults.value[0]) {
          if (key === '_antares_id') continue;
 
@@ -483,7 +486,7 @@ const resizeResults = () => {
 
 const refreshScroller = () => resizeResults();
 
-const updateField = (payload: { field: string; type: string; content: any }, row: {[key: string]: any}) => {
+const updateField = (payload: { field: string; type: string; content: any }, row: { [key: string]: any }) => {
    const orgRow: any = localResults.value.find((lr: any) => lr._antares_id === row._antares_id);
 
    Object.keys(orgRow).forEach(key => { // remap the row
@@ -598,7 +601,7 @@ const copyRow = (format: string) => {
          json: contentToCopy,
          client: workspaceClient.value,
          fields: fieldsObj.value as {
-            [key: string]: {type: string; datePrecision: number};
+            [key: string]: { type: string; datePrecision: number };
          },
          table: getTable(resultsetIndex.value)
       });
@@ -670,28 +673,18 @@ const fillCell = (event: { name: string; group: string; type: string }) => {
          datePrecision += i === 0 ? '.S' : 'S';
    }
 
-   if (event.group === 'custom') {
-      if (event.type === 'time' && event.name === 'now')
-         fakeValue = moment().format(`HH:mm:ss${datePrecision}`);
-      else if (event.type === 'time' && event.name === 'random')
-         fakeValue = moment(faker.date.recent()).format(`HH:mm:ss${datePrecision}`);
-      else if (event.type === 'datetime' && event.name === 'now')
-         fakeValue = moment().format(`YYYY-MM-DD HH:mm:ss${datePrecision}`);
-   }
-   else {
-      fakeValue = (faker as any)[event.group][event.name]();
-      if (['string', 'number'].includes(typeof fakeValue)) {
-         if (typeof fakeValue === 'number')
-            fakeValue = String(fakeValue);
+   fakeValue = (fakerCustom as any)[event.group][event.name]();
+   if (['string', 'number'].includes(typeof fakeValue)) {
+      if (typeof fakeValue === 'number')
+         fakeValue = String(fakeValue);
 
-         if (selectedCell.value.length)
-            fakeValue = fakeValue.substring(0, selectedCell.value.length < 1024 ? Number(selectedCell.value.length) : 1024);
-      }
-      else if ([...DATE, ...DATETIME].includes(selectedCell.value.type))
-         fakeValue = moment(fakeValue).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`);
-      else if (TIME.includes(selectedCell.value.type))
-         fakeValue = moment(fakeValue).format(`HH:mm:ss${datePrecision}`);
+      if (selectedCell.value.length)
+         fakeValue = fakeValue.substring(0, selectedCell.value.length < 1024 ? Number(selectedCell.value.length) : 1024);
    }
+   else if ([...DATE, ...DATETIME].includes(selectedCell.value.type))
+      fakeValue = moment(fakeValue).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`);
+   else if (TIME.includes(selectedCell.value.type))
+      fakeValue = moment(fakeValue).format(`HH:mm:ss${datePrecision}`);
 
    const params = {
       primary: primaryField.value?.name,
@@ -859,12 +852,12 @@ const downloadTable = (format: 'csv' | 'json' | 'sql' | 'php', table: string, po
       type: format,
       content: rows,
       fields: JSON.parse(JSON.stringify(fieldsObj.value)) as {
-         [key: string]: {type: string; datePrecision: number};
+         [key: string]: { type: string; datePrecision: number };
       },
       client: workspaceClient.value,
       table,
-      sqlOptions: popup ? { ...sqlExportOptions.value }: null,
-      csvOptions: popup ? { ...csvExportOptions.value }: null
+      sqlOptions: popup ? { ...sqlExportOptions.value } : null,
+      csvOptions: popup ? { ...csvExportOptions.value } : null
    });
 };
 
@@ -897,7 +890,7 @@ const onKey = async (e: KeyboardEvent) => {
    if (!(e.ctrlKey || e.metaKey) && (e.code.includes('Arrow') || e.code === 'Tab') && sortedResults.value.length > 0 && !e.altKey) {
       e.preventDefault();
 
-      const aviableFields= Object.keys(sortedResults.value[0]).slice(0, -1); // removes _antares_id
+      const aviableFields = Object.keys(sortedResults.value[0]).slice(0, -1); // removes _antares_id
 
       if (!selectedField.value)
          selectedField.value = aviableFields[0];
@@ -914,8 +907,8 @@ const onKey = async (e: KeyboardEvent) => {
                nextIndex = selectedIndex + 1;
                nextFieldIndex = selectedFieldIndex;
 
-               if (nextIndex > sortedResults.value.length -1)
-                  nextIndex = sortedResults.value.length -1;
+               if (nextIndex > sortedResults.value.length - 1)
+                  nextIndex = sortedResults.value.length - 1;
 
                break;
             case 'ArrowUp':
@@ -931,7 +924,7 @@ const onKey = async (e: KeyboardEvent) => {
                nextIndex = selectedIndex;
                nextFieldIndex = selectedFieldIndex + 1;
 
-               if (nextFieldIndex > aviableFields.length -1)
+               if (nextFieldIndex > aviableFields.length - 1)
                   nextFieldIndex = 0;
 
                break;
@@ -941,7 +934,7 @@ const onKey = async (e: KeyboardEvent) => {
                nextFieldIndex = selectedFieldIndex - 1;
 
                if (nextFieldIndex < 0)
-                  nextFieldIndex = aviableFields.length -1;
+                  nextFieldIndex = aviableFields.length - 1;
 
                break;
 
@@ -950,11 +943,11 @@ const onKey = async (e: KeyboardEvent) => {
                if (e.shiftKey) {
                   nextFieldIndex = selectedFieldIndex - 1;
                   if (nextFieldIndex < 0)
-                     nextFieldIndex = aviableFields.length -1;
+                     nextFieldIndex = aviableFields.length - 1;
                }
                else {
                   nextFieldIndex = selectedFieldIndex + 1;
-                  if (nextFieldIndex > aviableFields.length -1)
+                  if (nextFieldIndex > aviableFields.length - 1)
                      nextFieldIndex = 0;
                }
          }
@@ -1049,32 +1042,33 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .vscroll {
-  height: 1000px;
-  overflow: auto;
-  overflow-anchor: none;
+   height: 1000px;
+   overflow: auto;
+   overflow-anchor: none;
 }
 
 .column-resizable {
-  &:hover,
-  &:active {
-    resize: horizontal;
-    overflow: hidden;
-  }
+
+   &:hover,
+   &:active {
+      resize: horizontal;
+      overflow: hidden;
+   }
 }
 
 .table-column-title {
-  display: flex;
-  align-items: center;
+   display: flex;
+   align-items: center;
 }
 
 .sort-icon {
-  font-size: 0.7rem;
-  line-height: 1;
-  margin-left: 0.2rem;
+   font-size: 0.7rem;
+   line-height: 1;
+   margin-left: 0.2rem;
 }
 
 .result-tabs {
-  background: transparent !important;
-  margin: 0;
+   background: transparent !important;
+   margin: 0;
 }
 </style>

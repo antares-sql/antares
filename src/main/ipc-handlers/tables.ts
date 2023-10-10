@@ -1,8 +1,8 @@
-import { faker } from '@faker-js/faker';
 import customizations from 'common/customizations';
 import { ARRAY, BIT, BLOB, BOOLEAN, DATE, DATETIME, FLOAT, LONG_TEXT, NUMBER, TEXT, TEXT_SEARCH } from 'common/fieldTypes';
 import * as antares from 'common/interfaces/antares';
 import { InsertRowsParams } from 'common/interfaces/tableApis';
+import { fakerCustom } from 'common/libs/fakerCustom';
 import { sqlEscaper } from 'common/libs/sqlUtils';
 import { ipcMain } from 'electron';
 import * as fs from 'fs';
@@ -371,19 +371,19 @@ export default (connections: {[key: string]: antares.Client}) => {
                   let fakeValue;
 
                   if (params.locale)
-                     faker.locale = params.locale;
+                     fakerCustom.locale = params.locale;
 
                   if (Object.keys(params.row[key].params).length) {
                      Object.keys(params.row[key].params).forEach(param => {
-                        if (!isNaN(params.row[key].params[param]))
-                           parsedParams[param] = +params.row[key].params[param];
+                        if (!isNaN(params.row[key].params[param]))// Converts string numerics params to number
+                           parsedParams[param] = Number(params.row[key].params[param]);
                      });
                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                     fakeValue = (faker as any)[params.row[key].group][params.row[key].method](parsedParams);
+                     fakeValue = (fakerCustom as any)[params.row[key].group][params.row[key].method](parsedParams);
                   }
                   else
                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                     fakeValue = (faker as any)[params.row[key].group][params.row[key].method]();
+                     fakeValue = (fakerCustom as any)[params.row[key].group][params.row[key].method]();
 
                   if (typeof fakeValue === 'string') {
                      if (params.row[key].length)
