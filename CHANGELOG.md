@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.19-beta.0](https://github.com/antares-sql/antares/compare/v0.7.18...v0.7.19-beta.0) (2023-10-14)
+
+
+### Features
+
+* "now" and "random" options added in datetime related data in insert rows tool, closes [#402](https://github.com/antares-sql/antares/issues/402) ([9f9c63b](https://github.com/antares-sql/antares/commit/9f9c63bfcc3423bfeef143cd835f48c62900a799))
+
+
+### Bug Fixes
+
+* IN and NOT IN filters not working properly, fixes [#687](https://github.com/antares-sql/antares/issues/687) ([c0dcf30](https://github.com/antares-sql/antares/commit/c0dcf30e73a69b25b01ba31d21b27c1983ed2db6))
+* timeout issue on long time sql import ([ddd290c](https://github.com/antares-sql/antares/commit/ddd290c90344241eaa70cb528552e942fd7edec0))
+
 ### [0.7.18](https://github.com/antares-sql/antares/compare/v0.7.17...v0.7.18) (2023-10-03)
 
 
