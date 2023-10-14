@@ -27,7 +27,7 @@
     "contributors:add": "all-contributors add",
     "contributors:generate": "all-contributors generate"
   },
-  "author": "Fabio Di Stasio <fabio286@gmail.com>",
+  "author": "Fabio Di Stasio <info@fabiodistasio.it>",
   "main": "./dist/main.js",
   "antares": {
     "devtoolsId": "nhdogjmejiglipccpnnnanhbledajbpd"
