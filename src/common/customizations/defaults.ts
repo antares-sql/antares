@@ -9,6 +9,7 @@ export const defaults: Customizations = {
    dataTypes: [],
    indexTypes: [],
    foreignActions: [],
+   operators: ['=', '!=', '>', '<', '>=', '<=', 'IN', 'NOT IN', 'LIKE', 'NOT LIKE', 'BETWEEN', 'IS NULL', 'IS NOT NULL'],
    // Core
    database: false,
    collations: false,

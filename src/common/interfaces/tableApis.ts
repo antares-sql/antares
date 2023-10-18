@@ -21,7 +21,7 @@ export interface TableDeleteParams {
    rows: {[key: string]: any};
 }
 
-export type TableFilterOperator = '=' | '!=' | '>' | '<' | '>=' | '<=' | 'IN' | 'NOT IN' | 'LIKE' | 'NOT LIKE' | 'BETWEEN' | 'IS NULL' | 'IS NOT NULL'
+export type TableFilterOperator = '=' | '!=' | '>' | '<' | '>=' | '<=' | 'IN' | 'NOT IN' | 'LIKE' | 'NOT LIKE' | 'RLIKE' | 'NOT RLIKE' | 'BETWEEN' | 'IS NULL' | 'IS NOT NULL'
 
 export interface TableFilterClausole {
    active: boolean;

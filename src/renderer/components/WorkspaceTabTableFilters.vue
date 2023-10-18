@@ -9,6 +9,7 @@
             <input
                v-model="row.active"
                type="checkbox"
+               :disabled="isQuering"
                @change="doFilter"
             ><i class="form-icon" />
          </label>
@@ -18,11 +19,13 @@
             :options="fields"
             option-track-by="name"
             option-label="name"
+            :disabled="isQuering"
          />
          <BaseSelect
             v-model="row.op"
             class="form-select ml-2 col-auto select-sm"
             :options="operators"
+            :disabled="isQuering"
          />
          <div class="workspace-table-filters-row-value ml-2">
             <input
@@ -30,12 +33,14 @@
                v-model="row.value"
                type="text"
                class="form-input input-sm"
+               :disabled="isQuering"
             >
             <input
                v-if="row.op === 'BETWEEN'"
                v-model="row.value2"
                type="text"
                class="form-input ml-2 input-sm"
+               :disabled="isQuering"
             >
          </div>
          <button
@@ -87,15 +92,14 @@ const { t } = useI18n();
 
 const props = defineProps({
    fields: Array as Prop<TableField[]>,
-   connClient: String as Prop<ClientCode>
+   connClient: String as Prop<ClientCode>,
+   isQuering: Boolean
 });
 
 const emit = defineEmits(['filter-change', 'filter']);
 
 const rows = ref([]);
-const operators = ref<TableFilterOperator[]>([
-   '=', '!=', '>', '<', '>=', '<=', 'IN', 'NOT IN', 'LIKE', 'NOT LIKE', 'BETWEEN', 'IS NULL', 'IS NOT NULL'
-]);
+const operators: TableFilterOperator[] = customizations[props.connClient].operators;
 
 const clientCustomizations = computed(() => customizations[props.connClient]);
 
@@ -122,7 +126,7 @@ const createClausole = (filter: TableFilterClausole) => {
    const { elementsWrapper: ew, stringsWrapper: sw } = clientCustomizations.value;
    let value;
 
-   if (isNumeric && !['IN', 'NOT IN'].includes(filter.op)) {
+   if (isNumeric && !['IN', 'NOT IN', 'RLIKE', 'NOT RLIKE'].includes(filter.op)) {
       if (isNaN(Number(filter.value)))
          filter.value = '';
       if (isNaN(Number(filter.value2)))

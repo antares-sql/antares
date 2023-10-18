@@ -1,4 +1,5 @@
 import { TypesGroup } from './antares';
+import { TableFilterOperator } from './tableApis';
 
 export interface Customizations {
    // Defaults
@@ -8,6 +9,7 @@ export interface Customizations {
    dataTypes?: TypesGroup[];
    indexTypes?: string[];
    foreignActions?: string[];
+   operators?: TableFilterOperator[];
    // Core
    database?: boolean;
    collations?: boolean;
