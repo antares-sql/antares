@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.19-beta.1](https://github.com/antares-sql/antares/compare/v0.7.19-beta.0...v0.7.19-beta.1) (2023-10-25)
+
+
+### Features
+
+* **MySQL:** RLIKE and NOT RLIKE regular expression filters, closes [#688](https://github.com/antares-sql/antares/issues/688) ([e4eb27d](https://github.com/antares-sql/antares/commit/e4eb27d503e8f912178359c01c62a9b523d17848))
+
 ### [0.7.19-beta.0](https://github.com/antares-sql/antares/compare/v0.7.18...v0.7.19-beta.0) (2023-10-14)
 
 
