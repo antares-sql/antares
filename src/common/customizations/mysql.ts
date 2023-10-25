@@ -9,6 +9,7 @@ export const customizations: Customizations = {
    defaultUser: 'root',
    defaultDatabase: null,
    dataTypes: mysqlTypes,
+   operators: ['=', '!=', '>', '<', '>=', '<=', 'IN', 'NOT IN', 'LIKE', 'NOT LIKE', 'RLIKE', 'NOT RLIKE', 'BETWEEN', 'IS NULL', 'IS NOT NULL'],
    indexTypes: [
       'PRIMARY',
       'INDEX',

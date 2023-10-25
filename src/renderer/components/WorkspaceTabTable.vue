@@ -183,6 +183,7 @@
       <WorkspaceTabTableFilters
          v-if="isSearch"
          :fields="fields"
+         :is-quering="isQuering"
          :conn-client="connection.client"
          @filter="updateFilters"
          @filter-change="onFilterChange"
