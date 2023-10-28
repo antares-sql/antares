@@ -168,7 +168,10 @@ export class MySQLClient extends BaseClient {
             dbConfig.port = tunnel.localPort;
          }
          catch (err) {
-            if (this._ssh) this._ssh.close();
+            if (this._ssh) {
+               this._ssh.close();
+               this._ssh.closeTunnel();
+            }
             throw err;
          }
       }
@@ -187,7 +190,10 @@ export class MySQLClient extends BaseClient {
       this._connection.end();
       clearInterval(this._keepaliveTimer);
       this._keepaliveTimer = undefined;
-      if (this._ssh) this._ssh.close();
+      if (this._ssh) {
+         this._ssh.close();
+         this._ssh.closeTunnel();
+      }
    }
 
    async getConnection () {
