@@ -141,7 +141,7 @@
     "pg": "~8.11.1",
     "pg-connection-string": "~2.5.0",
     "pg-query-stream": "~4.2.3",
-    "pgsql-ast-parser": "~7.2.1",
+    "pgsql-ast-parser": "~11.1.0",
     "pinia": "~2.1.6",
     "source-map-support": "~0.5.20",
     "spectre.css": "~0.5.9",
