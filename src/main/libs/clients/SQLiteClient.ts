@@ -3,9 +3,9 @@ import dataTypes from 'common/data-types/sqlite';
 import { DATETIME, FLOAT, NUMBER, TIME } from 'common/fieldTypes';
 import * as antares from 'common/interfaces/antares';
 
-import { AntaresCore } from '../AntaresCore';
+import { BaseClient } from './BaseClient';
 
-export class SQLiteClient extends AntaresCore {
+export class SQLiteClient extends BaseClient {
    private _schema?: string;
    private _connectionsToCommit: Map<string, sqlite.Database>;
    protected _connection?: sqlite.Database;

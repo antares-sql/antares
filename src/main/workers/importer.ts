@@ -1,8 +1,8 @@
+import SSHConfig from '@fabio286/ssh2-promise/lib/sshConfig';
 import * as antares from 'common/interfaces/antares';
 import { ImportOptions } from 'common/interfaces/importer';
 import * as mysql from 'mysql2';
 import * as pg from 'pg';
-import SSHConfig from 'ssh2-promise/lib/sshConfig';
 
 import { MySQLClient } from '../libs/clients/MySQLClient';
 import { PostgreSQLClient } from '../libs/clients/PostgreSQLClient';

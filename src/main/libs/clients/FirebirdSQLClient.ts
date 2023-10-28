@@ -4,9 +4,9 @@ import * as antares from 'common/interfaces/antares';
 import * as firebird from 'node-firebird';
 import * as path from 'path';
 
-import { AntaresCore } from '../AntaresCore';
+import { BaseClient } from './BaseClient';
 
-export class FirebirdSQLClient extends AntaresCore {
+export class FirebirdSQLClient extends BaseClient {
    private _schema?: string;
    private _runningConnections: Map<string, number>;
    private _connectionsToCommit: Map<string, firebird.Transaction>;

@@ -1,7 +1,7 @@
 import * as antares from 'common/interfaces/antares';
 import mysql from 'mysql2/promise';
 import * as pg from 'pg';
-import SSH2Promise from 'ssh2-promise';
+import SSH2Promise = require('@fabio286/ssh2-promise');
 
 const queryLogger = ({ sql, cUid }: {sql: string; cUid: string}) => {
    // Remove comments, newlines and multiple spaces
@@ -16,7 +16,7 @@ const queryLogger = ({ sql, cUid }: {sql: string; cUid: string}) => {
 /**
  * As Simple As Possible Query Builder Core
  */
-export abstract class AntaresCore {
+export abstract class BaseClient {
    _client: antares.ClientCode;
    protected _cUid: string
    protected _params: mysql.ConnectionOptions | pg.ClientConfig | { databasePath: string; readonly: boolean};

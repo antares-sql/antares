@@ -1,12 +1,12 @@
+import SSH2Promise = require('@fabio286/ssh2-promise');
+import SSHConfig from '@fabio286/ssh2-promise/lib/sshConfig';
 import dataTypes from 'common/data-types/postgresql';
 import * as antares from 'common/interfaces/antares';
 import * as pg from 'pg';
 import * as pgAst from 'pgsql-ast-parser';
-
-import { AntaresCore } from '../AntaresCore';
-import SSH2Promise = require('ssh2-promise');
-import SSHConfig from 'ssh2-promise/lib/sshConfig';
 import { ConnectionOptions } from 'tls';
+
+import { BaseClient } from './BaseClient';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function pgToString (value: any) {
@@ -81,7 +81,7 @@ type builtinsTypes =
    'JSONB' |
    'REGNAMESPACE' |
    'REGROLE';
-export class PostgreSQLClient extends AntaresCore {
+export class PostgreSQLClient extends BaseClient {
    private _schema?: string;
    private _runningConnections: Map<string, number>;
    private _connectionsToCommit: Map<string, pg.Client | pg.PoolClient>;

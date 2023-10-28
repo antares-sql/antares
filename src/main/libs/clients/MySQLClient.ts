@@ -1,12 +1,12 @@
+import SSH2Promise = require('@fabio286/ssh2-promise');
+import SSHConfig from '@fabio286/ssh2-promise/lib/sshConfig';
 import dataTypes from 'common/data-types/mysql';
 import * as antares from 'common/interfaces/antares';
 import * as mysql from 'mysql2/promise';
 
-import { AntaresCore } from '../AntaresCore';
-import SSH2Promise = require('ssh2-promise');
-import SSHConfig from 'ssh2-promise/lib/sshConfig';
+import { BaseClient } from './BaseClient';
 
-export class MySQLClient extends AntaresCore {
+export class MySQLClient extends BaseClient {
    private _schema?: string;
    private _runningConnections: Map<string, number>;
    private _connectionsToCommit: Map<string, mysql.Connection | mysql.PoolConnection>;
