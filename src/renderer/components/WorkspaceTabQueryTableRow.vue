@@ -580,7 +580,7 @@ const onKey = (e: KeyboardEvent) => {
    if (!editingField.value && e.key === 'Enter')
       return editON(props.selectedCell);
 
-   if (editingField.value && e.key === 'Enter' && !isBaseSelectField.value)
+   if (editingField.value && e.key === 'Enter' && !isBaseSelectField.value && !isTextareaEditor.value)
       return editOFF();
 
    if (editingField.value && e.key === 'Escape') {
