@@ -136,7 +136,7 @@
     "leaflet": "~1.7.1",
     "marked": "~4.0.19",
     "moment": "~2.29.4",
-    "mysql2": "~3.5.2",
+    "mysql2": "~3.6.2",
     "node-firebird": "~1.1.4",
     "pg": "~8.11.1",
     "pg-connection-string": "~2.5.0",
