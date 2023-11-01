@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.19](https://github.com/antares-sql/antares/compare/v0.7.19-beta.2...v0.7.19) (2023-11-01)
+
+
+### Bug Fixes
+
+* table field changes not saved on text fields if pressing enter on textarea modal ([f6fb266](https://github.com/antares-sql/antares/commit/f6fb266771f2d798c8ae42b997c1e33520cf21c3))
+
 ### [0.7.19-beta.2](https://github.com/antares-sql/antares/compare/v0.7.19-beta.1...v0.7.19-beta.2) (2023-10-29)
 
 
