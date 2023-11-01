@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Antares SQL
+Exec=startantares
+Terminal=false
+Type=Application
+Icon=it.fabiodistasio.AntaresSQL
+StartupWMClass=antares
+Comment=A modern, fast and productivity driven SQL client with a focus in UX
+Categories=Development;

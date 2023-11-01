@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+   <id>it.fabiodistasio.AntaresSQL</id>
+   <name>Antares SQL</name>
+   <metadata_license>CC0-1.0</metadata_license>
+   <project_license>MIT</project_license>
+   <developer_name>Fabio Di Stasio</developer_name>
+   <summary>A modern, fast and productivity driven SQL client with a focus in UX</summary>
+   <url type="homepage">https://antares-sql.app/</url>
+   <url type="bugtracker">https://github.com/antares-sql/antares/issues</url>
+   <url type="help">https://github.com/antares-sql/antares/discussions</url>
+   <url type="donation">https://paypal.me/fabiodistasio</url>
+   <description>
+      <p>Antares is an SQL client that aims to become an useful and complete tool, especially for developers. </p>
+      <p>The main goal is to develop a totally free, full featured, cross platform and open source alternative.
+A modern application created with minimalism and semplicity in mind, with features in the right places, not hundreds of tiny buttons, nested tabs or submenu; productivity comes first.</p>
+      <p>Supported database: </p>
+      <ul>
+         <li>MySQL/MariaDB</li>
+         <li>PostgreSQL</li>
+         <li>SQLite</li>
+         <li>Firebird SQL</li>
+      </ul>
+   </description>
+   <screenshots>
+      <screenshot type="default">
+         <image type="source">https://lh3.googleusercontent.com/drive-viewer/AK7aPaC00fbmJIUcfwSPv-hjoxEmHS8NapR8qyOqOpopMIdcDFqYKNDs5mdIK08hnhZdHMrozTfR4Hx3Yj6bQ0zgfStEEFhxWg=s1600</image>
+      </screenshot>
+   </screenshots>
+   <content_rating type="oars-1.1" />
+   <releases>
+      <release version="v0.7.19" date="2023-11-01"/>
+   </releases>
+</component>
