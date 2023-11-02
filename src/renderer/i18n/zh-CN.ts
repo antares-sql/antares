@@ -1,4 +1,4 @@
-export const enUS = {
+export const zhCN = {
    general: { // 通用术语
       edit: '编辑',
       save: '保存',
