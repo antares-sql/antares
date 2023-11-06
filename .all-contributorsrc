@@ -257,6 +257,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "zvlad",
+      "name": "Vladyslav",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9055134?v=4",
+      "profile": "https://github.com/zvlad",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "contributorsPerLine": 7,
