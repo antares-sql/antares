@@ -14,6 +14,7 @@ import { koKR } from './ko-KR';
 import { nlNL } from './nl-NL';
 import { ptBR } from './pt-BR';
 import { ruRU } from './ru-RU';
+import { ukUA } from './uk-UA';
 import { viVN } from './vi-VN';
 import { zhCN } from './zh-CN';
 const messages = {
@@ -32,7 +33,8 @@ const messages = {
    'ko-KR': koKR,
    'nl-NL': nlNL,
    'ca-ES': caES,
-   'cs-CZ': csCZ
+   'cs-CZ': csCZ,
+   'uk-UA': ukUA
 };
 
 type NestedPartial<T> = {
