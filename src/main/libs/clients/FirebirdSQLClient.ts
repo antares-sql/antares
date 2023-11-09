@@ -118,6 +118,10 @@ export class FirebirdSQLClient extends BaseClient {
       return null;
    }
 
+   getDatabases (): null[] {
+      return [];
+   }
+
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
    async getStructure (_schemas: Set<string>) {
       interface TableResult {
@@ -157,10 +161,10 @@ export class FirebirdSQLClient extends BaseClient {
 
          const { rows: tables } = await this.raw<antares.QueryResult<TableResult>>(`
             SELECT 
-               rdb$relation_name AS name,
-               rdb$format AS format,
-               rdb$description AS description,
-               'table' AS type
+               rdb$relation_name AS NAME,
+               rdb$format AS FORMAT,
+               rdb$description AS DESCRIPTION,
+               'table' AS TYPE
             FROM RDB$RELATIONS a
             WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0 
             AND RDB$RELATION_TYPE = 0         
@@ -168,8 +172,8 @@ export class FirebirdSQLClient extends BaseClient {
 
          const { rows: views } = await this.raw<antares.QueryResult<TableResult>>(`
             SELECT 
-               DISTINCT RDB$VIEW_NAME AS name,
-               'view' AS type
+               DISTINCT RDB$VIEW_NAME AS NAME,
+               'view' AS TYPE
             FROM RDB$VIEW_RELATIONS    
          `);
 
@@ -177,9 +181,9 @@ export class FirebirdSQLClient extends BaseClient {
 
          const { rows: triggers } = await this.raw<antares.QueryResult<TriggersResult>>(`
             SELECT
-               RDB$TRIGGER_NAME as name,
-               RDB$RELATION_NAME as relation,
-               RDB$TRIGGER_SOURCE as source
+               RDB$TRIGGER_NAME as NAME,
+               RDB$RELATION_NAME as RELATION,
+               RDB$TRIGGER_SOURCE as SOURCE
             FROM RDB$TRIGGERS
             WHERE RDB$SYSTEM_FLAG=0
             ORDER BY RDB$TRIGGER_NAME;
@@ -208,8 +212,8 @@ export class FirebirdSQLClient extends BaseClient {
             schemaSize += tableSize;
 
             return {
-               name: table.NAME.trim(),
-               type: table.TYPE.trim(),
+               name: table.NAME?.trim(),
+               type: table.TYPE?.trim(),
                rows: false,
                size: false
             };
@@ -218,8 +222,8 @@ export class FirebirdSQLClient extends BaseClient {
          // TRIGGERS
          const remappedTriggers = triggersArr.map(trigger => {
             return {
-               name: trigger.NAME.trim(),
-               table: trigger.RELATION.trim(),
+               name: trigger.NAME?.trim(),
+               table: trigger.RELATION?.trim(),
                statement: trigger.SOURCE
             };
          });
@@ -227,7 +231,7 @@ export class FirebirdSQLClient extends BaseClient {
          // PROCEDURES
          const remappedProcedures = proceduresArr.map(procedure => {
             return {
-               name: procedure.NAME.trim(),
+               name: procedure.NAME?.trim(),
                definer: procedure.DEFINER,
                comment: procedure.COMMENT?.trim()
             };

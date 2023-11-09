@@ -11,7 +11,7 @@
       >
          <div class="workspace-explorebar-header">
             <div
-               v-if="customizations.database"
+               v-if="customizations.database && databases.length"
                class="workspace-explorebar-database-switch"
                :title="t('database.switchDatabase')"
             >
