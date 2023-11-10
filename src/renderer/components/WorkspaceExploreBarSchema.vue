@@ -79,6 +79,11 @@
                      icon-name="mdiFolderCog"
                      :size="18"
                   />
+                  <BaseIcon
+                     class="misc-icon open-folder mr-1"
+                     icon-name="mdiFolderOpen"
+                     :size="18"
+                  />
                   {{ t('database.trigger', 2) }}
                </summary>
                <div class="accordion-body">
@@ -134,6 +139,11 @@
                      icon-name="mdiFolderSync"
                      :size="18"
                   />
+                  <BaseIcon
+                     class="misc-icon open-folder mr-1"
+                     icon-name="mdiFolderOpen"
+                     :size="18"
+                  />
                   {{ t('database.storedRoutine', 2) }}
                </summary>
                <div class="accordion-body">
@@ -177,6 +187,11 @@
                      :size="18"
                      :style="`min-width: 18px`"
                   />
+                  <BaseIcon
+                     class="misc-icon open-folder mr-1"
+                     icon-name="mdiFolderOpen"
+                     :size="18"
+                  />
                   {{ t('database.triggerFunction', 2) }}
                </summary>
                <div class="accordion-body">
@@ -216,6 +231,11 @@
                   <BaseIcon
                      class="misc-icon mr-1"
                      icon-name="mdiFolderMove"
+                     :size="18"
+                  />
+                  <BaseIcon
+                     class="misc-icon open-folder mr-1"
+                     icon-name="mdiFolderOpen"
                      :size="18"
                   />
                   {{ t('database.function', 2) }}
@@ -258,6 +278,11 @@
                   <BaseIcon
                      class="misc-icon mr-1"
                      icon-name="mdiFolderClock"
+                     :size="18"
+                  />
+                  <BaseIcon
+                     class="misc-icon open-folder mr-1"
+                     icon-name="mdiFolderOpen"
                      :size="18"
                   />
                   {{ t('database.scheduler', 2) }}
@@ -645,9 +670,18 @@ defineExpose({ selectSchema, schemaAccordion });
   .database-misc {
     margin-left: 1.6rem;
 
-    .accordion[open] .accordion-header > .misc-icon:first-child::before {
-      content: "\F0770";
+    .open-folder {
+      display: none;
     }
+
+    .accordion[open] .accordion-header {
+       > .misc-icon {
+          display: none;
+          &.open-folder {
+             display: initial;
+          }
+      }
+   }
 
     .accordion-body {
       margin-bottom: 0.2rem;
