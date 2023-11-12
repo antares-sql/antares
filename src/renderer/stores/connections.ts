@@ -1,6 +1,7 @@
 import { ConnectionParams } from 'common/interfaces/antares';
 import { uidGen } from 'common/libs/uidGen';
 import * as crypto from 'crypto';
+import { ipcRenderer } from 'electron';
 import * as Store from 'electron-store';
 import { defineStore } from 'pinia';
 
@@ -17,10 +18,18 @@ export interface SidebarElement {
    icon?: null | string;
 }
 
-if (!key)
-   localStorage.setItem('key', crypto.randomBytes(16).toString('hex'));
-else
-   localStorage.setItem('key', key);
+if (!key) {
+   const storedKey = ipcRenderer.sendSync('get-key');
+
+   if (!storedKey) {
+      const newKey = crypto.randomBytes(16).toString('hex');
+      localStorage.setItem('key', newKey);
+   }
+   else
+      localStorage.setItem('key', storedKey);
+}
+
+ipcRenderer.send('set-key', key);
 
 const persistentStore = new Store({
    name: 'connections',

@@ -1,5 +1,5 @@
 import * as remoteMain from '@electron/remote/main';
-import { app, BrowserWindow, ipcMain, nativeImage } from 'electron';
+import { app, BrowserWindow, ipcMain, nativeImage, safeStorage } from 'electron';
 import * as Store from 'electron-store';
 import * as windowStateKeeper from 'electron-window-state';
 import * as path from 'path';
@@ -78,7 +78,8 @@ async function createMainWindow () {
    return window;
 }
 
-if (!gotTheLock) app.quit();
+if (!gotTheLock && !safeStorage.isEncryptionAvailable()) // Disable multiple instances if is not possible to share session keys
+   app.quit();
 else {
    require('@electron/remote/main').initialize();
 
@@ -126,6 +127,12 @@ else {
 
       // if (isDevelopment)
       //    mainWindow.webContents.openDevTools();
+
+      // const key = safeStorage.encryptString('godisnothere');
+      // console.log('KEY:', key.toString('hex'));
+
+      // const decrypted = safeStorage.decryptString(key);
+      // console.log(decrypted.toString());
 
       process.on('uncaughtException', error => {
          mainWindow.webContents.send('unhandled-exception', error);
