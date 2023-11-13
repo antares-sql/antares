@@ -6,7 +6,7 @@ import * as Store from 'electron-store';
 import { defineStore } from 'pinia';
 
 import { useWorkspacesStore } from '@/stores/workspaces';
-const key = localStorage.getItem('key');
+let key = localStorage.getItem('key');
 
 export interface SidebarElement {
    isFolder: boolean;
@@ -18,18 +18,21 @@ export interface SidebarElement {
    icon?: null | string;
 }
 
-if (!key) {
-   const storedKey = ipcRenderer.sendSync('get-key');
+if (!key) { // If no key in local storace
+   const storedKey = ipcRenderer.sendSync('get-key');// Ask for key stored on disk
 
-   if (!storedKey) {
+   if (!storedKey) { // Of nop stored key on disk
       const newKey = crypto.randomBytes(16).toString('hex');
       localStorage.setItem('key', newKey);
+      key = newKey;
    }
-   else
+   else {
       localStorage.setItem('key', storedKey);
+      key = storedKey;
+   }
 }
-
-ipcRenderer.send('set-key', key);
+else
+   ipcRenderer.send('set-key', key);
 
 const persistentStore = new Store({
    name: 'connections',
