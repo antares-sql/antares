@@ -13,6 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-11, ubuntu-latest, windows-latest]
 
@@ -31,7 +32,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
       
       - name: Install dependencies
         run: npm i
