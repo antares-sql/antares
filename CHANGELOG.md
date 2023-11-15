@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.20-beta.0](https://github.com/antares-sql/antares/compare/v0.7.19...v0.7.20-beta.0) (2023-11-15)
+
+
+### Features
+
+* ability to open multiple app sessions ([075f542](https://github.com/antares-sql/antares/commit/075f542dc8f4a48bef07b86b78c40d03fcdccc56))
+* nl string updates ([8628711](https://github.com/antares-sql/antares/commit/8628711374269c29c4b1e6722fe66b0d8179477e))
+* **translation:** add Ukrainian language, thanks to [#707](https://github.com/antares-sql/antares/issues/707) ([e14302b](https://github.com/antares-sql/antares/commit/e14302bdc0038b84a1a06089753205149cd1a92b))
+
+
+### Bug Fixes
+
+* error with multiple sessions in non-dev environment ([169f610](https://github.com/antares-sql/antares/commit/169f610b2ee4857661ec3da7f04b628fec21f1f0))
+* **Firebird SQL:** error "Cannot read properties of null" connecting to some databases, fixes [#708](https://github.com/antares-sql/antares/issues/708) ([186fc18](https://github.com/antares-sql/antares/commit/186fc18363b6f14678465a8e38d85b1319e47b50))
+* missing open folder icon for trigger, function and other database elements on sidebar ([1bc95b0](https://github.com/antares-sql/antares/commit/1bc95b0c2cd91bbf0410a23266e23bbbf2a71995))
+
 ### [0.7.19](https://github.com/antares-sql/antares/compare/v0.7.19-beta.2...v0.7.19) (2023-11-01)
 
 
