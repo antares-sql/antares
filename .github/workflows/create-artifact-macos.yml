@@ -50,7 +50,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: macos-build
+          name: macos-build-beta
           retention-days: 3
           path: |
             build
