@@ -13,7 +13,34 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20
+
+      - name: npm install & build
+        run: |
+          npm install
+          npm run build
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-build
+          retention-days: 3
+          path: |
+            build
+            !build/*-unpacked
+            !build/.icon-ico
+  build-beta:
+    runs-on: macos-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+        with:
+          ref: beta
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
 
       - name: npm install & build
         run: |
