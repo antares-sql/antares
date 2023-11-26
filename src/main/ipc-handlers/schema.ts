@@ -1,4 +1,4 @@
-import { ChildProcess, fork } from 'child_process';
+import { ChildProcess, ChildProcessWithoutNullStreams, fork, spawn } from 'child_process';
 import * as antares from 'common/interfaces/antares';
 import * as workers from 'common/interfaces/workers';
 import { dialog, ipcMain } from 'electron';
@@ -8,9 +8,10 @@ import * as path from 'path';
 import { validateSender } from '../libs/misc/validateSender';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
+const isFlatpak = process.platform === 'linux' && Boolean(process.env.FLATPAK_ID?.includes('fabiodistasio') || process.env.FLATPAK_ID?.includes('AntaresSQL'));
 
 export default (connections: {[key: string]: antares.Client}) => {
-   let exporter: ChildProcess = null;
+   let exporter: ChildProcessWithoutNullStreams = null;
    let importer: ChildProcess = null;
 
    ipcMain.handle('create-schema', async (event, params) => {
@@ -228,9 +229,19 @@ export default (connections: {[key: string]: antares.Client}) => {
             }
 
             // Init exporter process
-            exporter = fork(isDevelopment ? './dist/exporter.js' : path.resolve(__dirname, './exporter.js'), [], {
-               execArgv: isDevelopment ? ['--inspect=9224'] : undefined
-            });
+            if (isFlatpak) {
+               const exporterPath = isDevelopment ? './dist/exporter.js' : path.resolve(__dirname, './exporter.js');
+
+               exporter = spawn('flatpak-spawn', ['--host', 'node', exporterPath], {
+                  stdio: ['inherit', 'inherit', 'inherit', 'ipc']
+               });
+            }
+            else {
+               exporter = fork(isDevelopment ? './dist/exporter.js' : path.resolve(__dirname, './exporter.js'), [], {
+                  execArgv: isDevelopment ? ['--inspect=9224'] : undefined
+               });
+            }
+
             exporter.send({
                type: 'init',
                client: {
@@ -311,9 +322,19 @@ export default (connections: {[key: string]: antares.Client}) => {
             const dbConfig = await connections[options.uid].getDbConfig();
 
             // Init importer process
-            importer = fork(isDevelopment ? './dist/importer.js' : path.resolve(__dirname, './importer.js'), [], {
-               execArgv: isDevelopment ? ['--inspect=9224'] : undefined
-            });
+            if (isFlatpak) {
+               const importerPath = isDevelopment ? './dist/importer.js' : path.resolve(__dirname, './importer.js');
+
+               importer = spawn('flatpak-spawn', ['--host', 'node', importerPath], {
+                  stdio: ['inherit', 'inherit', 'inherit', 'ipc']
+               });
+            }
+            else {
+               importer = fork(isDevelopment ? './dist/importer.js' : path.resolve(__dirname, './importer.js'), [], {
+                  execArgv: isDevelopment ? ['--inspect=9224'] : undefined
+               });
+            }
+
             importer.send({
                type: 'init',
                dbConfig,
@@ -347,6 +368,11 @@ export default (connections: {[key: string]: antares.Client}) => {
                      resolve({ status: 'error', response: payload });
                      break;
                }
+            });
+
+            importer.on('exit', code => {
+               importer = null;
+               resolve({ status: 'error', response: `Operation ended with code: ${code}` });
             });
          })();
       });

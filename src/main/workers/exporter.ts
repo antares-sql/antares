@@ -8,6 +8,7 @@ import MysqlExporter from '../libs/exporters/sql/MysqlExporter';
 import PostgreSQLExporter from '../libs/exporters/sql/PostgreSQLExporter';
 let exporter: antares.Exporter;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 process.on('message', async ({ type, client, tables, options }: any) => {
    if (type === 'init') {
       const connection = await ClientsFactory.getClient({
