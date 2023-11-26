@@ -10,7 +10,8 @@
       "translation",
       "Linux",
       "MacOS",
-      "deps"
+      "deps",
+      "Flatpak"
    ],
    "svg.preview.background": "transparent"
 }

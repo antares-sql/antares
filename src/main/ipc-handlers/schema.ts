@@ -1,4 +1,4 @@
-import { ChildProcess, ChildProcessWithoutNullStreams, fork, spawn } from 'child_process';
+import { ChildProcess, ChildProcessWithoutNullStreams, fork } from 'child_process';
 import * as antares from 'common/interfaces/antares';
 import * as workers from 'common/interfaces/workers';
 import { dialog, ipcMain } from 'electron';
@@ -209,6 +209,11 @@ export default (connections: {[key: string]: antares.Client}) => {
 
       return new Promise((resolve/*, reject */) => {
          (async () => {
+            if (isFlatpak) {
+               resolve({ status: 'error', response: 'Temporarily unavailable on Flatpak' });
+               return;
+            }
+
             if (fs.existsSync(rest.outputFile)) { // If file exists ask for replace
                const result = await dialog.showMessageBox({
                   type: 'warning',
@@ -229,18 +234,9 @@ export default (connections: {[key: string]: antares.Client}) => {
             }
 
             // Init exporter process
-            if (isFlatpak) {
-               const exporterPath = isDevelopment ? './dist/exporter.js' : path.resolve(__dirname, './exporter.js');
-
-               exporter = spawn('flatpak-spawn', ['--host', 'node', exporterPath], {
-                  stdio: ['inherit', 'inherit', 'inherit', 'ipc']
-               });
-            }
-            else {
-               exporter = fork(isDevelopment ? './dist/exporter.js' : path.resolve(__dirname, './exporter.js'), [], {
-                  execArgv: isDevelopment ? ['--inspect=9224'] : undefined
-               });
-            }
+            exporter = fork(isDevelopment ? './dist/exporter.js' : './exporter.js', [], {
+               execArgv: isDevelopment ? ['--inspect=9224'] : undefined
+            });
 
             exporter.send({
                type: 'init',
@@ -319,21 +315,17 @@ export default (connections: {[key: string]: antares.Client}) => {
 
       return new Promise((resolve/*, reject */) => {
          (async () => {
+            if (isFlatpak) {
+               resolve({ status: 'warning', response: 'Temporarily unavailable on Flatpak' });
+               return;
+            }
+
             const dbConfig = await connections[options.uid].getDbConfig();
 
             // Init importer process
-            if (isFlatpak) {
-               const importerPath = isDevelopment ? './dist/importer.js' : path.resolve(__dirname, './importer.js');
-
-               importer = spawn('flatpak-spawn', ['--host', 'node', importerPath], {
-                  stdio: ['inherit', 'inherit', 'inherit', 'ipc']
-               });
-            }
-            else {
-               importer = fork(isDevelopment ? './dist/importer.js' : path.resolve(__dirname, './importer.js'), [], {
-                  execArgv: isDevelopment ? ['--inspect=9224'] : undefined
-               });
-            }
+            importer = fork(isDevelopment ? './dist/importer.js' : path.resolve(__dirname, './importer.js'), [], {
+               execArgv: isDevelopment ? ['--inspect=9224'] : undefined
+            });
 
             importer.send({
                type: 'init',
