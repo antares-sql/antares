@@ -42,6 +42,7 @@ const downloadFile = url => {
       await unzip(filePath, destFolder);
       fs.unlinkSync(filePath);
       fs.unlinkSync(`${destFolder}/package.json`);// <- Avoid to display annoyng npm script in vscode
+      process.exit();
    }
    catch (error) {
       console.log(error);
