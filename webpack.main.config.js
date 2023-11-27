@@ -43,7 +43,8 @@ module.exports = { // Main
       new ProgressPlugin(true),
       new webpack.DefinePlugin({
          'process.env': {
-            PACKAGE_VERSION: `"${version}"`
+            PACKAGE_VERSION: `"${version}"`,
+            DISTRIBUTION: `"${process.env.DISTRIBUTION || 'none'}"`
          }
       })
    ],

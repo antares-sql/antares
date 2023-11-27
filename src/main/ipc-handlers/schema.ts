@@ -1,4 +1,4 @@
-import { ChildProcess, ChildProcessWithoutNullStreams, fork } from 'child_process';
+import { ChildProcess, fork } from 'child_process';
 import * as antares from 'common/interfaces/antares';
 import * as workers from 'common/interfaces/workers';
 import { dialog, ipcMain } from 'electron';
@@ -8,10 +8,10 @@ import * as path from 'path';
 import { validateSender } from '../libs/misc/validateSender';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
-const isFlatpak = process.platform === 'linux' && process.env.FLATPAK_ID;
+const isFlatpak = process.platform === 'linux' && process.env.DISTRIBUTION === 'flatpak';
 
 export default (connections: {[key: string]: antares.Client}) => {
-   let exporter: ChildProcessWithoutNullStreams = null;
+   let exporter: ChildProcess = null;
    let importer: ChildProcess = null;
 
    ipcMain.handle('create-schema', async (event, params) => {
