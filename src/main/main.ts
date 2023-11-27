@@ -1,5 +1,6 @@
 import * as remoteMain from '@electron/remote/main';
 import { app, BrowserWindow, ipcMain, nativeImage, safeStorage } from 'electron';
+import * as log from 'electron-log/main';
 import * as Store from 'electron-store';
 import * as windowStateKeeper from 'electron-window-state';
 import * as path from 'path';
@@ -8,6 +9,7 @@ import ipcHandlers from './ipc-handlers';
 import { OsMenu, ShortcutRegister } from './libs/ShortcutRegister';
 
 Store.initRenderer();
+log.errorHandler.startCatching();
 const settingsStore = new Store({ name: 'settings' });
 const appTheme = settingsStore.get('application_theme');
 const isDevelopment = process.env.NODE_ENV !== 'production';

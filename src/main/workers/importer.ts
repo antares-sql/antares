@@ -1,6 +1,7 @@
 import SSHConfig from '@fabio286/ssh2-promise/lib/sshConfig';
 import * as antares from 'common/interfaces/antares';
 import { ImportOptions } from 'common/interfaces/importer';
+import * as log from 'electron-log/main';
 import * as mysql from 'mysql2';
 import * as pg from 'pg';
 
@@ -10,6 +11,9 @@ import { ClientsFactory } from '../libs/ClientsFactory';
 import MySQLImporter from '../libs/importers/sql/MySQLlImporter';
 import PostgreSQLImporter from '../libs/importers/sql/PostgreSQLImporter';
 let importer: antares.Importer;
+
+log.transports.file.fileName = 'workers.log';
+log.errorHandler.startCatching();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 process.on('message', async ({ type, dbConfig, options }: {
@@ -49,7 +53,7 @@ process.on('message', async ({ type, dbConfig, options }: {
          }
 
          importer.once('error', err => {
-            console.error(err);
+            log.error(err.toString());
             process.send({
                type: 'error',
                payload: err.toString()
@@ -84,7 +88,7 @@ process.on('message', async ({ type, dbConfig, options }: {
          importer.run();
       }
       catch (err) {
-         console.error(err);
+         log.error(err.toString());
          process.send({
             type: 'error',
             payload: err.toString()
@@ -93,20 +97,4 @@ process.on('message', async ({ type, dbConfig, options }: {
    }
    else if (type === 'cancel')
       importer.cancel();
-});
-
-process.on('uncaughtException', (err) => {
-   console.error(err);
-   process.send({
-      type: 'error',
-      payload: err.toString()
-   });
-});
-
-process.on('unhandledRejection', (err) => {
-   console.error(err);
-   process.send({
-      type: 'error',
-      payload: err.toString()
-   });
 });

@@ -1,4 +1,5 @@
 import { ipcMain } from 'electron';
+import * as log from 'electron-log/main';
 import * as Store from 'electron-store';
 import { autoUpdater } from 'electron-updater';
 
@@ -59,7 +60,7 @@ export default () => {
       mainWindow.reply('update-downloaded');
    });
 
-   // autoUpdater.logger = require('electron-log');
-   // autoUpdater.logger.transports.console.format = '{h}:{i}:{s} {text}';
-   // autoUpdater.logger.transports.file.level = 'info';
+   log.transports.file.level = 'info';
+   // log.transports.console.format = '{h}:{i}:{s} {text}';
+   autoUpdater.logger = log;
 };

@@ -8,7 +8,7 @@ import * as path from 'path';
 import { validateSender } from '../libs/misc/validateSender';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
-const isFlatpak = process.platform === 'linux' && Boolean(process.env.FLATPAK_ID?.includes('fabiodistasio') || process.env.FLATPAK_ID?.includes('AntaresSQL'));
+const isFlatpak = process.platform === 'linux' && process.env.FLATPAK_ID;
 
 export default (connections: {[key: string]: antares.Client}) => {
    let exporter: ChildProcessWithoutNullStreams = null;
