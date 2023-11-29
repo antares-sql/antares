@@ -52,6 +52,7 @@ import { useI18n } from 'vue-i18n';
 
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
+import { copyText } from '@/libs/copyText';
 import { useConsoleStore } from '@/stores/console';
 
 const { t } = useI18n();
@@ -100,7 +101,7 @@ const contextMenu = (event: MouseEvent, wLog: {date: Date; sql: string}) => {
 };
 
 const copyQuery = () => {
-   navigator.clipboard.writeText(contextQuery.value);
+   copyText(contextQuery.value);
    isContext.value = false;
 };
 

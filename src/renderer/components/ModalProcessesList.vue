@@ -161,6 +161,7 @@ import ModalProcessesListContext from '@/components/ModalProcessesListContext.vu
 import ModalProcessesListRow from '@/components/ModalProcessesListRow.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import Schema from '@/ipc-api/Schema';
+import { copyText } from '@/libs/copyText';
 import { useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
 
@@ -322,13 +323,13 @@ const closeContext = () => {
 const copyCell = () => {
    const row = results.value.find(row => Number(row.id) === selectedRow.value);
    const valueToCopy = row[selectedCell.value.field];
-   navigator.clipboard.writeText(valueToCopy);
+   copyText(valueToCopy);
 };
 
 const copyRow = () => {
    const row = results.value.find(row => Number(row.id) === selectedRow.value);
    const rowToCopy = JSON.parse(JSON.stringify(row));
-   navigator.clipboard.writeText(JSON.stringify(rowToCopy));
+   copyText(JSON.stringify(rowToCopy));
 };
 
 const closeModal = () => emit('close');

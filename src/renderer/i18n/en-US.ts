@@ -65,7 +65,8 @@ export const enUS = {
       actionSuccessful: '{action} successful',
       outputFormat: 'Output format',
       singleFile: 'Single {ext} file',
-      zipCompressedFile: 'ZIP compressed {ext} file'
+      zipCompressedFile: 'ZIP compressed {ext} file',
+      copyName: 'Copy name'
    },
    connection: { // Database connection
       connectionName: 'Connection name',

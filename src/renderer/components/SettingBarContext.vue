@@ -15,6 +15,14 @@
                :size="18"
             /> {{ t('connection.disconnect') }}</span>
       </div>
+      <div class="context-element" @click.stop="showAppearanceModal">
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiBrushVariant"
+               :size="18"
+            /> {{ t('application.appearance') }}</span>
+      </div>
       <div
          v-if="!contextConnection.isFolder"
          class="context-element"
@@ -26,14 +34,6 @@
                icon-name="mdiContentDuplicate"
                :size="18"
             /> {{ t('general.duplicate') }}</span>
-      </div>
-      <div class="context-element" @click.stop="showAppearanceModal">
-         <span class="d-flex">
-            <BaseIcon
-               class="text-light mt-1 mr-1"
-               icon-name="mdiBrushVariant"
-               :size="18"
-            /> {{ t('application.appearance') }}</span>
       </div>
       <div class="context-element" @click="showConfirmModal">
          <span class="d-flex">

@@ -55,6 +55,14 @@
             /> {{ t('general.disable') }}
          </span>
       </div>
+      <div class="context-element" @click="copyName(selectedMisc.name)">
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiContentCopy"
+               :size="18"
+            /> {{ t('general.copyName') }}</span>
+      </div>
       <div class="context-element" @click="showDeleteModal">
          <span class="d-flex">
             <BaseIcon
@@ -108,6 +116,7 @@ import Functions from '@/ipc-api/Functions';
 import Routines from '@/ipc-api/Routines';
 import Schedulers from '@/ipc-api/Schedulers';
 import Triggers from '@/ipc-api/Triggers';
+import { copyText } from '@/libs/copyText';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
@@ -162,6 +171,11 @@ const deleteMessage = computed(() => {
          return '';
    }
 });
+
+const copyName = (name: string) => {
+   copyText(name);
+   closeContext();
+};
 
 const showDeleteModal = () => {
    isDeleteModal.value = true;

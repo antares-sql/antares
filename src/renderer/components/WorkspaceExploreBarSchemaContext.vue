@@ -102,6 +102,14 @@
             </div>
          </div>
       </div>
+      <div class="context-element" @click="copyName(selectedSchema)">
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiContentCopy"
+               :size="18"
+            /> {{ t('general.copyName') }}</span>
+      </div>
       <div
          v-if="workspace.customizations.schemaExport"
          class="context-element"
@@ -198,6 +206,7 @@ import ModalEditSchema from '@/components/ModalEditSchema.vue';
 import ModalImportSchema from '@/components/ModalImportSchema.vue';
 import Application from '@/ipc-api/Application';
 import Schema from '@/ipc-api/Schema';
+import { copyText } from '@/libs/copyText';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSchemaExportStore } from '@/stores/schemaExport';
 import { useWorkspacesStore } from '@/stores/workspaces';
@@ -266,6 +275,11 @@ const openCreateTriggerFunctionTab = () => {
 
 const openCreateSchedulerTab = () => {
    emit('open-create-scheduler-tab');
+};
+
+const copyName = (name: string) => {
+   copyText(name);
+   closeContext();
 };
 
 const showDeleteModal = () => {

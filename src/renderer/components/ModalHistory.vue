@@ -133,6 +133,7 @@ import BaseIcon from '@/components/BaseIcon.vue';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
 import { useFilters } from '@/composables/useFilters';
 import { useFocusTrap } from '@/composables/useFocusTrap';
+import { copyText } from '@/libs/copyText';
 import { useConnectionsStore } from '@/stores/connections';
 import { HistoryRecord, useHistoryStore } from '@/stores/history';
 
@@ -173,7 +174,7 @@ watch(searchTerm, () => {
 });
 
 const copyQuery = (sql: string) => {
-   navigator.clipboard.writeText(sql);
+   copyText(sql);
 };
 
 const deleteQuery = (query: HistoryRecord[]) => {

@@ -270,6 +270,7 @@ import BaseSelect from '@/components/BaseSelect.vue';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
 import TableContext from '@/components/WorkspaceTabQueryTableContext.vue';
 import WorkspaceTabQueryTableRow from '@/components/WorkspaceTabQueryTableRow.vue';
+import { copyText } from '@/libs/copyText';
 import { unproxify } from '@/libs/unproxify';
 import { useConsoleStore } from '@/stores/console';
 import { useSettingsStore } from '@/stores/settings';
@@ -571,7 +572,7 @@ const copyCell = () => {
    let valueToCopy = row[cellName];
    if (typeof valueToCopy === 'object')
       valueToCopy = JSON.stringify(valueToCopy);
-   navigator.clipboard.writeText(valueToCopy);
+   copyText(valueToCopy);
 };
 
 const copyRow = (format: string) => {
@@ -593,7 +594,7 @@ const copyRow = (format: string) => {
    }
 
    if (format === 'json')
-      navigator.clipboard.writeText(JSON.stringify(contentToCopy));
+      copyText(JSON.stringify(contentToCopy));
    else if (format === 'sql') {
       if (!Array.isArray(contentToCopy)) contentToCopy = [contentToCopy];
 
@@ -605,7 +606,7 @@ const copyRow = (format: string) => {
          },
          table: getTable(resultsetIndex.value)
       });
-      navigator.clipboard.writeText(sqlInserts);
+      copyText(sqlInserts);
    }
    else if (format === 'csv') {
       const csv = [];
@@ -617,7 +618,7 @@ const copyRow = (format: string) => {
       for (const row of contentToCopy)
          csv.push(Object.values(row).map(col => typeof col === 'string' ? `"${col}"` : col).join(';'));
 
-      navigator.clipboard.writeText(csv.join('\n'));
+      copyText(csv.join('\n'));
    }
    else if (format === 'html') {
       const arrayContent = new Array<string[]>();
@@ -640,7 +641,7 @@ const copyRow = (format: string) => {
       if (!Array.isArray(contentToCopy)) contentToCopy = [contentToCopy];
       const printer = json2php.make({ linebreak: '\n', indent: '\t', shortArraySyntax: true });
       const phpString = printer(contentToCopy);
-      navigator.clipboard.writeText(phpString);
+      copyText(phpString);
    }
 };
 
@@ -878,7 +879,7 @@ const onKey = async (e: KeyboardEvent) => {
       const copyType = defaultCopyType.value;
       if (selectedRows.value.length >= 1) {
          if (selectedRows.value.length === 1 && copyType === 'cell')
-            await navigator.clipboard.writeText(scrollElement.value.querySelector('.td.selected').innerText);
+            await copyText(scrollElement.value.querySelector('.td.selected').innerText);
          else if (selectedRows.value.length > 1 && copyType === 'cell')
             copyRow('html');
          else

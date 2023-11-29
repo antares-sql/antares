@@ -15,6 +15,14 @@
                :size="18"
             /> {{ t('application.settings') }}</span>
       </div>
+      <div class="context-element" @click="copyName(selectedTable.name)">
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiContentCopy"
+               :size="18"
+            /> {{ t('general.copyName') }}</span>
+      </div>
       <div
          v-if="selectedTable && selectedTable.type === 'table' && customizations.schemaExport"
          class="context-element"
@@ -130,6 +138,7 @@ import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseContextMenu from '@/components/BaseContextMenu.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
 import Tables from '@/ipc-api/Tables';
+import { copyText } from '@/libs/copyText';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSchemaExportStore } from '@/stores/schemaExport';
 import { useWorkspacesStore } from '@/stores/workspaces';
@@ -167,6 +176,11 @@ const customizations = computed(() => workspace.value && workspace.value.customi
 
 const showTableExportModal = () => {
    showExportModal(props.selectedSchema, props.selectedTable.name);
+   closeContext();
+};
+
+const copyName = (name: string) => {
+   copyText(name);
    closeContext();
 };
 
