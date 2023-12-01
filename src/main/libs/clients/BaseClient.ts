@@ -10,7 +10,7 @@ const queryLogger = ({ sql, cUid }: {sql: string; cUid: string}) => {
       const mainWindow = require('electron').webContents.fromId(1);
       mainWindow.send('query-log', { cUid, sql: escapedSql, date: new Date() });
    }
-   if (process.env.NODE_ENV === 'development') console.log(escapedSql);
+   if (process.env.NODE_ENV === 'development' && process.type === 'browser') console.log(escapedSql);
 };
 
 /**

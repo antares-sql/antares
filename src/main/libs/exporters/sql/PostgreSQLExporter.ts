@@ -425,7 +425,6 @@ SET row_security = off;\n\n\n`;
    }
 
    async _queryStream (sql: string) {
-      if (process.env.NODE_ENV === 'development') console.log('EXPORTER:', sql);
       const connection = await this._client.getConnection();
       const query = new QueryStream(sql, null);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
