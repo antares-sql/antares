@@ -1,6 +1,4 @@
-import SSHConfig from '@fabio286/ssh2-promise/lib/sshConfig';
 import * as antares from 'common/interfaces/antares';
-import { ImportOptions } from 'common/interfaces/importer';
 import * as log from 'electron-log/main';
 import * as mysql from 'mysql2';
 import * as pg from 'pg';
@@ -13,16 +11,12 @@ import PostgreSQLImporter from '../libs/importers/sql/PostgreSQLImporter';
 let importer: antares.Importer;
 
 log.transports.file.fileName = 'workers.log';
+log.transports.console = null;
 log.errorHandler.startCatching();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-process.on('message', async ({ type, dbConfig, options }: {
-   type: string;
-   dbConfig: mysql.ConnectionOptions & { schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean }
-      | pg.ClientConfig & { schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean }
-      | { databasePath: string; readonly: boolean };
-   options: ImportOptions;
-}) => {
+process.stdin.on('data', async (buff: Buffer) => {
+   const { type, dbConfig, options } = JSON.parse(buff.toString());
+
    if (type === 'init') {
       try {
          const connection = await ClientsFactory.getClient({
@@ -45,54 +39,54 @@ process.on('message', async ({ type, dbConfig, options }: {
                importer = new PostgreSQLImporter(pool as unknown as pg.PoolClient, options);
                break;
             default:
-               process.send({
+               process.stdout.write(JSON.stringify({
                   type: 'error',
                   payload: `"${options.type}" importer not aviable`
-               });
+               }));
                return;
          }
 
          importer.once('error', err => {
             log.error(err.toString());
-            process.send({
+            process.stdout.write(JSON.stringify({
                type: 'error',
                payload: err.toString()
-            });
+            }));
          });
 
          importer.once('end', () => {
-            process.send({
+            process.stdout.write(JSON.stringify({
                type: 'end',
                payload: { cancelled: importer.isCancelled }
-            });
+            }));
          });
 
          importer.once('cancel', () => {
-            process.send({ type: 'cancel' });
+            process.stdout.write(JSON.stringify({ type: 'cancel' }));
          });
 
          importer.on('progress', state => {
-            process.send({
+            process.stdout.write(JSON.stringify({
                type: 'import-progress',
                payload: state
-            });
+            }));
          });
 
          importer.on('query-error', state => {
-            process.send({
+            process.stdout.write(JSON.stringify({
                type: 'query-error',
                payload: state
-            });
+            }));
          });
 
          importer.run();
       }
       catch (err) {
          log.error(err.toString());
-         process.send({
+         process.stdout.write(JSON.stringify({
             type: 'error',
             payload: err.toString()
-         });
+         }));
       }
    }
    else if (type === 'cancel')

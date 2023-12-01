@@ -1,6 +1,5 @@
 import * as exporter from 'common/interfaces/exporter';
 import { valueToSqlString } from 'common/libs/sqlUtils';
-import * as mysql from 'mysql2/promise';
 
 import { MySQLClient } from '../../clients/MySQLClient';
 import { SqlExporter } from './SqlExporter';
@@ -334,12 +333,10 @@ CREATE TABLE \`${view.Name}\`(
    }
 
    async _queryStream (sql: string) {
-      if (process.env.NODE_ENV === 'development') console.log('EXPORTER:', sql);
-      const isPool = 'getConnection' in this._client._connection;
-      const connection = isPool ? await (this._client._connection as mysql.Pool).getConnection() : this._client._connection;
+      const connection = await this._client.getConnection();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const stream = (connection as any).connection.query(sql).stream();
-      const dispose = () => (connection as mysql.PoolConnection).release();
+      const dispose = () => connection.end();
 
       stream.on('end', dispose);
       stream.on('error', dispose);

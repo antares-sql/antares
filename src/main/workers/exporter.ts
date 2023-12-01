@@ -1,6 +1,7 @@
 import * as antares from 'common/interfaces/antares';
 import * as log from 'electron-log/main';
 import * as fs from 'fs';
+import { nextTick } from 'process';
 
 import { MySQLClient } from '../libs/clients/MySQLClient';
 import { PostgreSQLClient } from '../libs/clients/PostgreSQLClient';
@@ -10,10 +11,12 @@ import PostgreSQLExporter from '../libs/exporters/sql/PostgreSQLExporter';
 let exporter: antares.Exporter;
 
 log.transports.file.fileName = 'workers.log';
+log.transports.console = null;
 log.errorHandler.startCatching();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-process.on('message', async ({ type, client, tables, options }: any) => {
+process.stdin.on('data', async buff => {
+   const { type, client, tables, options } = JSON.parse(buff.toString());
+
    if (type === 'init') {
       try {
          const connection = await ClientsFactory.getClient({
@@ -32,49 +35,53 @@ process.on('message', async ({ type, client, tables, options }: any) => {
                exporter = new PostgreSQLExporter(connection as PostgreSQLClient, tables, options);
                break;
             default:
-               process.send({
+               process.stdout.write(JSON.stringify({
                   type: 'error',
                   payload: `"${client.name}" exporter not aviable`
-               });
+               }));
                return;
          }
 
          exporter.once('error', err => {
             log.error(err.toString());
-            process.send({
+            process.stdout.write(JSON.stringify({
                type: 'error',
                payload: err.toString()
-            });
+            }));
          });
 
          exporter.once('end', () => {
-            process.send({
-               type: 'end',
-               payload: { cancelled: exporter.isCancelled }
+            nextTick(() => {
+               process.stdout.write(JSON.stringify({
+                  type: 'end',
+                  payload: { cancelled: exporter.isCancelled }
+               }));
+               connection.destroy();
             });
-            connection.destroy();
          });
 
          exporter.once('cancel', () => {
-            fs.unlinkSync(exporter.outputFile);
-            process.send({ type: 'cancel' });
+            nextTick(() => {
+               fs.unlinkSync(exporter.outputFile);
+               process.stdout.write(JSON.stringify({ type: 'cancel' }));
+            });
          });
 
          exporter.on('progress', state => {
-            process.send({
+            process.stdout.write(JSON.stringify({
                type: 'export-progress',
                payload: state
-            });
+            }));
          });
 
          exporter.run();
       }
       catch (err) {
          log.error(err.toString());
-         process.send({
+         process.stdout.write(JSON.stringify({
             type: 'error',
             payload: err.toString()
-         });
+         }));
       }
    }
    else if (type === 'cancel')

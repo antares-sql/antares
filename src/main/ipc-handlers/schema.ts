@@ -1,9 +1,8 @@
-import { ChildProcess, fork } from 'child_process';
+import { ChildProcess, fork, spawn } from 'child_process';
 import * as antares from 'common/interfaces/antares';
 import * as workers from 'common/interfaces/workers';
 import { dialog, ipcMain } from 'electron';
 import * as fs from 'fs';
-import * as path from 'path';
 
 import { validateSender } from '../libs/misc/validateSender';
 
@@ -209,11 +208,6 @@ export default (connections: {[key: string]: antares.Client}) => {
 
       return new Promise((resolve/*, reject */) => {
          (async () => {
-            if (isFlatpak) {
-               resolve({ status: 'error', response: 'Temporarily unavailable on Flatpak' });
-               return;
-            }
-
             if (fs.existsSync(rest.outputFile)) { // If file exists ask for replace
                const result = await dialog.showMessageBox({
                   type: 'warning',
@@ -234,11 +228,20 @@ export default (connections: {[key: string]: antares.Client}) => {
             }
 
             // Init exporter process
-            exporter = fork(isDevelopment ? './dist/exporter.js' : './exporter.js', [], {
-               execArgv: isDevelopment ? ['--inspect=9224'] : undefined
-            });
+            if (isFlatpak) {
+               exporter = spawn('flatpak-spawn', ['--watch-bus', '--host', 'node', './exporter.js'], {
+                  shell: true
+               });
+            }
+            else {
+               exporter = fork(isDevelopment ? './dist/exporter.js' : './exporter.js', [], {
+                  execArgv: isDevelopment ? ['--inspect=9224'] : undefined,
+                  silent: true
+               });
+               // exporter = spawn('node', [isDevelopment ? '--inspect=9224' : '', isDevelopment ? './dist/exporter.js' : './exporter.js']);
+            }
 
-            exporter.send({
+            exporter.stdin.write(JSON.stringify({
                type: 'init',
                client: {
                   name: type,
@@ -246,18 +249,31 @@ export default (connections: {[key: string]: antares.Client}) => {
                },
                tables,
                options: rest
-            });
+            }));
 
             // Exporter message listener
-            exporter.on('message', ({ type, payload }: workers.WorkerIpcMessage) => {
+            exporter.stdout.on('data', (buff: Buffer) => {
+               let message;
+               try { // Ignore non-JSON data (console.log output)
+                  message = JSON.parse(buff.toString());
+               }
+               catch (_) {
+                  if (process.env.NODE_ENV === 'development') console.log('EXPORTER:', buff.toString());
+                  return;
+               }
+
+               const { type, payload } = message as workers.WorkerIpcMessage;
+
                switch (type) {
                   case 'export-progress':
                      event.sender.send('export-progress', payload);
                      break;
                   case 'end':
                      setTimeout(() => { // Ensures that writing process has finished
-                        exporter.kill();
-                        exporter = null;
+                        if (exporter) {
+                           exporter.kill();
+                           exporter = null;
+                        }
                      }, 2000);
                      resolve({ status: 'success', response: payload });
                      break;
@@ -274,7 +290,7 @@ export default (connections: {[key: string]: antares.Client}) => {
                }
             });
 
-            exporter.on('exit', code => {
+            exporter.on('close', code => {
                exporter = null;
                resolve({ status: 'error', response: `Operation ended with code: ${code}` });
             });
@@ -298,7 +314,7 @@ export default (connections: {[key: string]: antares.Client}) => {
 
          if (result.response === 1) {
             willAbort = true;
-            exporter.send({ type: 'cancel' });
+            exporter.stdin.write(JSON.stringify({ type: 'cancel' }));
          }
       }
 
@@ -315,26 +331,40 @@ export default (connections: {[key: string]: antares.Client}) => {
 
       return new Promise((resolve/*, reject */) => {
          (async () => {
-            if (isFlatpak) {
-               resolve({ status: 'warning', response: 'Temporarily unavailable on Flatpak' });
-               return;
-            }
-
             const dbConfig = await connections[options.uid].getDbConfig();
 
             // Init importer process
-            importer = fork(isDevelopment ? './dist/importer.js' : path.resolve(__dirname, './importer.js'), [], {
-               execArgv: isDevelopment ? ['--inspect=9224'] : undefined
-            });
+            if (isFlatpak) {
+               importer = spawn('flatpak-spawn', ['--watch-bus', 'node', './importer.js'], {
+                  cwd: __dirname
+               });
+            }
+            else {
+               importer = fork(isDevelopment ? './dist/importer.js' : './importer.js', [], {
+                  execArgv: isDevelopment ? ['--inspect=9224'] : undefined,
+                  silent: true
+               });
+            }
 
-            importer.send({
+            importer.stdin.write(JSON.stringify({
                type: 'init',
                dbConfig,
                options
-            });
+            }));
 
             // Importer message listener
-            importer.on('message', ({ type, payload }: workers.WorkerIpcMessage) => {
+            importer.stdout.on('data', (buff: Buffer) => {
+               let message;
+               try { // Ignore non-JSON data (console.log output)
+                  message = JSON.parse(buff.toString());
+               }
+               catch (_) {
+                  if (process.env.NODE_ENV === 'development') console.log('IMPORTER:', buff.toString());
+                  return;
+               }
+
+               const { type, payload } = message as workers.WorkerIpcMessage;
+
                switch (type) {
                   case 'import-progress':
                      event.sender.send('import-progress', payload);
@@ -362,7 +392,7 @@ export default (connections: {[key: string]: antares.Client}) => {
                }
             });
 
-            importer.on('exit', code => {
+            importer.on('close', code => {
                importer = null;
                resolve({ status: 'error', response: `Operation ended with code: ${code}` });
             });
@@ -386,7 +416,7 @@ export default (connections: {[key: string]: antares.Client}) => {
 
          if (result.response === 1) {
             willAbort = true;
-            importer.send({ type: 'cancel' });
+            importer.stdin.write(JSON.stringify({ type: 'cancel' }));
          }
       }
 
