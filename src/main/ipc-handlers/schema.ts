@@ -4,6 +4,7 @@ import * as workers from 'common/interfaces/workers';
 import { dialog, ipcMain } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Worker } from 'worker_threads';
 
 import { validateSender } from '../libs/misc/validateSender';
 
@@ -11,7 +12,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 const isFlatpak = process.platform === 'linux' && process.env.DISTRIBUTION === 'flatpak';
 
 export default (connections: {[key: string]: antares.Client}) => {
-   let exporter: ChildProcess = null;
+   let exporter: Worker = null;
    let importer: ChildProcess = null;
 
    ipcMain.handle('create-schema', async (event, params) => {
@@ -203,16 +204,16 @@ export default (connections: {[key: string]: antares.Client}) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       if (exporter !== null) {
-         exporter.kill();
+         exporter.terminate();
          return;
       }
 
       return new Promise((resolve/*, reject */) => {
          (async () => {
-            if (isFlatpak) {
-               resolve({ status: 'error', response: 'Temporarily unavailable on Flatpak' });
-               return;
-            }
+            // if (isFlatpak) {
+            //    resolve({ status: 'error', response: 'Temporarily unavailable on Flatpak' });
+            //    return;
+            // }
 
             if (fs.existsSync(rest.outputFile)) { // If file exists ask for replace
                const result = await dialog.showMessageBox({
@@ -233,12 +234,10 @@ export default (connections: {[key: string]: antares.Client}) => {
                }
             }
 
-            // Init exporter process
-            exporter = fork(isDevelopment ? './dist/exporter.js' : './exporter.js', [], {
-               execArgv: isDevelopment ? ['--inspect=9224'] : undefined
-            });
+            // Init exporter thread
+            exporter = new Worker(isDevelopment ? './dist/exporter.js' : './exporter.js');
 
-            exporter.send({
+            exporter.postMessage({
                type: 'init',
                client: {
                   name: type,
@@ -255,19 +254,19 @@ export default (connections: {[key: string]: antares.Client}) => {
                      event.sender.send('export-progress', payload);
                      break;
                   case 'end':
-                     setTimeout(() => { // Ensures that writing process has finished
-                        exporter.kill();
+                     setTimeout(() => { // Ensures that writing thread has finished
+                        exporter.terminate();
                         exporter = null;
                      }, 2000);
                      resolve({ status: 'success', response: payload });
                      break;
                   case 'cancel':
-                     exporter.kill();
+                     exporter.terminate();
                      exporter = null;
                      resolve({ status: 'error', response: 'Operation cancelled' });
                      break;
                   case 'error':
-                     exporter.kill();
+                     exporter.terminate();
                      exporter = null;
                      resolve({ status: 'error', response: payload });
                      break;
@@ -298,7 +297,7 @@ export default (connections: {[key: string]: antares.Client}) => {
 
          if (result.response === 1) {
             willAbort = true;
-            exporter.send({ type: 'cancel' });
+            exporter.postMessage({ type: 'cancel' });
          }
       }
 

@@ -1,6 +1,7 @@
 import * as antares from 'common/interfaces/antares';
 import * as log from 'electron-log/main';
 import * as fs from 'fs';
+import { parentPort } from 'worker_threads';
 
 import { MySQLClient } from '../libs/clients/MySQLClient';
 import { PostgreSQLClient } from '../libs/clients/PostgreSQLClient';
@@ -13,7 +14,9 @@ log.transports.file.fileName = 'workers.log';
 log.errorHandler.startCatching();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-process.on('message', async ({ type, client, tables, options }: any) => {
+const exportHandler = async (data: any) => {
+   const { type, client, tables, options } = data;
+
    if (type === 'init') {
       try {
          const connection = await ClientsFactory.getClient({
@@ -32,7 +35,7 @@ process.on('message', async ({ type, client, tables, options }: any) => {
                exporter = new PostgreSQLExporter(connection as PostgreSQLClient, tables, options);
                break;
             default:
-               process.send({
+               parentPort.postMessage({
                   type: 'error',
                   payload: `"${client.name}" exporter not aviable`
                });
@@ -41,14 +44,14 @@ process.on('message', async ({ type, client, tables, options }: any) => {
 
          exporter.once('error', err => {
             log.error(err.toString());
-            process.send({
+            parentPort.postMessage({
                type: 'error',
                payload: err.toString()
             });
          });
 
          exporter.once('end', () => {
-            process.send({
+            parentPort.postMessage({
                type: 'end',
                payload: { cancelled: exporter.isCancelled }
             });
@@ -57,11 +60,11 @@ process.on('message', async ({ type, client, tables, options }: any) => {
 
          exporter.once('cancel', () => {
             fs.unlinkSync(exporter.outputFile);
-            process.send({ type: 'cancel' });
+            parentPort.postMessage({ type: 'cancel' });
          });
 
          exporter.on('progress', state => {
-            process.send({
+            parentPort.postMessage({
                type: 'export-progress',
                payload: state
             });
@@ -71,7 +74,7 @@ process.on('message', async ({ type, client, tables, options }: any) => {
       }
       catch (err) {
          log.error(err.toString());
-         process.send({
+         parentPort.postMessage({
             type: 'error',
             payload: err.toString()
          });
@@ -79,4 +82,6 @@ process.on('message', async ({ type, client, tables, options }: any) => {
    }
    else if (type === 'cancel')
       exporter.cancel();
-});
+};
+
+parentPort.on('message', exportHandler);
