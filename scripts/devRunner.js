@@ -63,43 +63,39 @@ async function restartElectron () {
       if (!manualRestart) process.exit(0);
    });
 }
+function startWorkers () {
+   const compiler = webpack(workersConfig);
+   const { name } = compiler;
 
-function startMain () {
-   const webpackSetup = webpack([mainConfig, workersConfig]);
-
-   webpackSetup.compilers.forEach((compiler) => {
-      const { name } = compiler;
-
-      switch (name) {
-         case 'workers':
-            compiler.hooks.afterEmit.tap('afterEmit', async () => {
-               console.log(chalk.gray(`\nCompiled ${name} script!`));
-               console.log(
-                  chalk.gray(`\nWatching file changes for ${name} script...`)
-               );
-            });
-            break;
-         case 'main':
-         default:
-            compiler.hooks.afterEmit.tap('afterEmit', async () => {
-               console.log(chalk.gray(`\nCompiled ${name} script!`));
-
-               manualRestart = true;
-               await restartElectron();
-
-               setTimeout(() => {
-                  manualRestart = false;
-               }, 2500);
-
-               console.log(
-                  chalk.gray(`\nWatching file changes for ${name} script...`)
-               );
-            });
-            break;
-      }
+   compiler.hooks.afterEmit.tap('afterEmit', () => {
+      console.log(chalk.gray(`\nCompiled ${name} script!`));
+      console.log(chalk.gray(`\nWatching file changes for ${name} script...`));
    });
 
-   webpackSetup.watch({ aggregateTimeout: 500 }, err => {
+   compiler.watch({ aggregateTimeout: 500 }, err => {
+      if (err) console.error(chalk.red(err));
+   });
+}
+
+function startMain () {
+   const compiler = webpack(mainConfig);
+   const { name } = compiler;
+
+   compiler.hooks.afterEmit.tap('afterEmit', async () => {
+      console.log(chalk.gray(`\nCompiled ${name} script!`));
+
+      manualRestart = true;
+      await restartElectron();
+      startWorkers();
+
+      setTimeout(() => {
+         manualRestart = false;
+      }, 2500);
+
+      console.log(chalk.gray(`\nWatching file changes for ${name} script...`));
+   });
+
+   compiler.watch({ aggregateTimeout: 500 }, err => {
       if (err) console.error(chalk.red(err));
    });
 }

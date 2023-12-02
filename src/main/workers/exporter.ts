@@ -1,7 +1,7 @@
 import * as antares from 'common/interfaces/antares';
 import * as log from 'electron-log/main';
 import * as fs from 'fs';
-import { nextTick } from 'process';
+import { parentPort } from 'worker_threads';
 
 import { MySQLClient } from '../libs/clients/MySQLClient';
 import { PostgreSQLClient } from '../libs/clients/PostgreSQLClient';
@@ -14,8 +14,9 @@ log.transports.file.fileName = 'workers.log';
 log.transports.console = null;
 log.errorHandler.startCatching();
 
-process.stdin.on('data', async buff => {
-   const { type, client, tables, options } = JSON.parse(buff.toString());
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const exportHandler = async (data: any) => {
+   const { type, client, tables, options } = data;
 
    if (type === 'init') {
       try {
@@ -35,7 +36,7 @@ process.stdin.on('data', async buff => {
                exporter = new PostgreSQLExporter(connection as PostgreSQLClient, tables, options);
                break;
             default:
-               process.stdout.write(JSON.stringify({
+               parentPort.postMessage({
                   type: 'error',
                   payload: `"${client.name}" exporter not aviable`
                }));
@@ -44,31 +45,26 @@ process.stdin.on('data', async buff => {
 
          exporter.once('error', err => {
             log.error(err.toString());
-            process.stdout.write(JSON.stringify({
+            parentPort.postMessage({
                type: 'error',
                payload: err.toString()
             }));
          });
 
          exporter.once('end', () => {
-            nextTick(() => {
-               process.stdout.write(JSON.stringify({
-                  type: 'end',
-                  payload: { cancelled: exporter.isCancelled }
-               }));
-               connection.destroy();
+            parentPort.postMessage({
+               type: 'end',
+               payload: { cancelled: exporter.isCancelled }
             });
          });
 
          exporter.once('cancel', () => {
-            nextTick(() => {
-               fs.unlinkSync(exporter.outputFile);
-               process.stdout.write(JSON.stringify({ type: 'cancel' }));
-            });
+            fs.unlinkSync(exporter.outputFile);
+            parentPort.postMessage({ type: 'cancel' });
          });
 
          exporter.on('progress', state => {
-            process.stdout.write(JSON.stringify({
+            parentPort.postMessage({
                type: 'export-progress',
                payload: state
             }));
@@ -78,7 +74,7 @@ process.stdin.on('data', async buff => {
       }
       catch (err) {
          log.error(err.toString());
-         process.stdout.write(JSON.stringify({
+         parentPort.postMessage({
             type: 'error',
             payload: err.toString()
          }));
@@ -86,4 +82,6 @@ process.stdin.on('data', async buff => {
    }
    else if (type === 'cancel')
       exporter.cancel();
-});
+};
+
+parentPort.on('message', exportHandler);

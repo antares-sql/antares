@@ -19,7 +19,15 @@ module.exports = { // Main
    output: {
       libraryTarget: 'commonjs2',
       path: path.join(__dirname, 'dist'),
-      filename: '[name].js'
+      filename: '[name].js',
+      assetModuleFilename: (pathData) => {
+         const { filename } = pathData;
+
+         if (filename.endsWith('.ts'))
+            return '[name].js';
+         else
+            return '[name][ext]';
+      }
    },
    node: {
       global: true,

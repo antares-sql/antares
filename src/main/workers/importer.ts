@@ -2,6 +2,7 @@ import * as antares from 'common/interfaces/antares';
 import * as log from 'electron-log/main';
 import * as mysql from 'mysql2';
 import * as pg from 'pg';
+import { parentPort } from 'worker_threads';
 
 import { MySQLClient } from '../libs/clients/MySQLClient';
 import { PostgreSQLClient } from '../libs/clients/PostgreSQLClient';
@@ -14,9 +15,14 @@ log.transports.file.fileName = 'workers.log';
 log.transports.console = null;
 log.errorHandler.startCatching();
 
-process.stdin.on('data', async (buff: Buffer) => {
-   const { type, dbConfig, options } = JSON.parse(buff.toString());
-
+const importHandler = async (data: {
+   type: string;
+   dbConfig: mysql.ConnectionOptions & { schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean }
+      | pg.ClientConfig & { schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean }
+      | { databasePath: string; readonly: boolean };
+   options: ImportOptions;
+}) => {
+   const { type, dbConfig, options } = data;
    if (type === 'init') {
       try {
          const connection = await ClientsFactory.getClient({
@@ -39,7 +45,7 @@ process.stdin.on('data', async (buff: Buffer) => {
                importer = new PostgreSQLImporter(pool as unknown as pg.PoolClient, options);
                break;
             default:
-               process.stdout.write(JSON.stringify({
+               parentPort.postMessage({
                   type: 'error',
                   payload: `"${options.type}" importer not aviable`
                }));
@@ -48,32 +54,32 @@ process.stdin.on('data', async (buff: Buffer) => {
 
          importer.once('error', err => {
             log.error(err.toString());
-            process.stdout.write(JSON.stringify({
+            parentPort.postMessage({
                type: 'error',
                payload: err.toString()
             }));
          });
 
          importer.once('end', () => {
-            process.stdout.write(JSON.stringify({
+            parentPort.postMessage({
                type: 'end',
                payload: { cancelled: importer.isCancelled }
             }));
          });
 
          importer.once('cancel', () => {
-            process.stdout.write(JSON.stringify({ type: 'cancel' }));
+            parentPort.postMessage({ type: 'cancel' });
          });
 
          importer.on('progress', state => {
-            process.stdout.write(JSON.stringify({
+            parentPort.postMessage({
                type: 'import-progress',
                payload: state
             }));
          });
 
          importer.on('query-error', state => {
-            process.stdout.write(JSON.stringify({
+            parentPort.postMessage({
                type: 'query-error',
                payload: state
             }));
@@ -83,7 +89,7 @@ process.stdin.on('data', async (buff: Buffer) => {
       }
       catch (err) {
          log.error(err.toString());
-         process.stdout.write(JSON.stringify({
+         parentPort.postMessage({
             type: 'error',
             payload: err.toString()
          }));
@@ -91,4 +97,6 @@ process.stdin.on('data', async (buff: Buffer) => {
    }
    else if (type === 'cancel')
       importer.cancel();
-});
+};
+
+parentPort.on('message', importHandler);
