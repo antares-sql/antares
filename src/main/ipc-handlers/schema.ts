@@ -235,7 +235,9 @@ export default (connections: {[key: string]: antares.Client}) => {
             }
 
             // Init exporter thread
-            exporter = new Worker(isDevelopment ? './dist/exporter.js' : './exporter.js');
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            exporter = new Worker(new URL('../workers/exporter', import.meta.url));
 
             exporter.postMessage({
                type: 'init',
@@ -255,18 +257,18 @@ export default (connections: {[key: string]: antares.Client}) => {
                      break;
                   case 'end':
                      setTimeout(() => { // Ensures that writing thread has finished
-                        exporter.terminate();
+                        exporter?.terminate();
                         exporter = null;
                      }, 2000);
                      resolve({ status: 'success', response: payload });
                      break;
                   case 'cancel':
-                     exporter.terminate();
+                     exporter?.terminate();
                      exporter = null;
                      resolve({ status: 'error', response: 'Operation cancelled' });
                      break;
                   case 'error':
-                     exporter.terminate();
+                     exporter?.terminate();
                      exporter = null;
                      resolve({ status: 'error', response: payload });
                      break;
