@@ -237,7 +237,7 @@ export default (connections: {[key: string]: antares.Client}) => {
                },
                tables,
                options: rest
-            }));
+            });
 
             // Exporter message listener
             exporter.stdout.on('data', (buff: Buffer) => {
@@ -328,7 +328,7 @@ export default (connections: {[key: string]: antares.Client}) => {
                type: 'init',
                dbConfig,
                options
-            }));
+            });
 
             // Importer message listener
             importer.stdout.on('data', (buff: Buffer) => {

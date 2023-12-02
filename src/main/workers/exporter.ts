@@ -39,7 +39,7 @@ const exportHandler = async (data: any) => {
                parentPort.postMessage({
                   type: 'error',
                   payload: `"${client.name}" exporter not aviable`
-               }));
+               });
                return;
          }
 
@@ -48,7 +48,7 @@ const exportHandler = async (data: any) => {
             parentPort.postMessage({
                type: 'error',
                payload: err.toString()
-            }));
+            });
          });
 
          exporter.once('end', () => {
@@ -67,7 +67,7 @@ const exportHandler = async (data: any) => {
             parentPort.postMessage({
                type: 'export-progress',
                payload: state
-            }));
+            });
          });
 
          exporter.run();
@@ -77,7 +77,7 @@ const exportHandler = async (data: any) => {
          parentPort.postMessage({
             type: 'error',
             payload: err.toString()
-         }));
+         });
       }
    }
    else if (type === 'cancel')
