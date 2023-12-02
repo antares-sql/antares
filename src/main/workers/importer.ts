@@ -1,6 +1,4 @@
-import SSHConfig from '@fabio286/ssh2-promise/lib/sshConfig';
 import * as antares from 'common/interfaces/antares';
-import { ImportOptions } from 'common/interfaces/importer';
 import * as log from 'electron-log/main';
 import * as mysql from 'mysql2';
 import * as pg from 'pg';
@@ -14,6 +12,7 @@ import PostgreSQLImporter from '../libs/importers/sql/PostgreSQLImporter';
 let importer: antares.Importer;
 
 log.transports.file.fileName = 'workers.log';
+log.transports.console = null;
 log.errorHandler.startCatching();
 
 const importHandler = async (data: {
@@ -49,7 +48,7 @@ const importHandler = async (data: {
                parentPort.postMessage({
                   type: 'error',
                   payload: `"${options.type}" importer not aviable`
-               });
+               }));
                return;
          }
 
@@ -58,14 +57,14 @@ const importHandler = async (data: {
             parentPort.postMessage({
                type: 'error',
                payload: err.toString()
-            });
+            }));
          });
 
          importer.once('end', () => {
             parentPort.postMessage({
                type: 'end',
                payload: { cancelled: importer.isCancelled }
-            });
+            }));
          });
 
          importer.once('cancel', () => {
@@ -76,14 +75,14 @@ const importHandler = async (data: {
             parentPort.postMessage({
                type: 'import-progress',
                payload: state
-            });
+            }));
          });
 
          importer.on('query-error', state => {
             parentPort.postMessage({
                type: 'query-error',
                payload: state
-            });
+            }));
          });
 
          importer.run();
@@ -93,7 +92,7 @@ const importHandler = async (data: {
          parentPort.postMessage({
             type: 'error',
             payload: err.toString()
-         });
+         }));
       }
    }
    else if (type === 'cancel')

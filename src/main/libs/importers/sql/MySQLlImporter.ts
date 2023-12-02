@@ -33,8 +33,8 @@ export default class MySQLImporter extends BaseImporter {
             parser.on('error', reject);
 
             parser.on('close', async () => {
-               console.log('TOTAL QUERIES', queryCount);
-               console.log('import end');
+               // console.log('TOTAL QUERIES', queryCount);
+               // console.log('import end');
                resolve();
             });
 

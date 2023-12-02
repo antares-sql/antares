@@ -11,6 +11,7 @@ import PostgreSQLExporter from '../libs/exporters/sql/PostgreSQLExporter';
 let exporter: antares.Exporter;
 
 log.transports.file.fileName = 'workers.log';
+log.transports.console = null;
 log.errorHandler.startCatching();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,7 +39,7 @@ const exportHandler = async (data: any) => {
                parentPort.postMessage({
                   type: 'error',
                   payload: `"${client.name}" exporter not aviable`
-               });
+               }));
                return;
          }
 
@@ -47,7 +48,7 @@ const exportHandler = async (data: any) => {
             parentPort.postMessage({
                type: 'error',
                payload: err.toString()
-            });
+            }));
          });
 
          exporter.once('end', () => {
@@ -55,7 +56,6 @@ const exportHandler = async (data: any) => {
                type: 'end',
                payload: { cancelled: exporter.isCancelled }
             });
-            connection.destroy();
          });
 
          exporter.once('cancel', () => {
@@ -67,7 +67,7 @@ const exportHandler = async (data: any) => {
             parentPort.postMessage({
                type: 'export-progress',
                payload: state
-            });
+            }));
          });
 
          exporter.run();
@@ -77,7 +77,7 @@ const exportHandler = async (data: any) => {
          parentPort.postMessage({
             type: 'error',
             payload: err.toString()
-         });
+         }));
       }
    }
    else if (type === 'cancel')
