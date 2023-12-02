@@ -1,19 +1,14 @@
-import { ChildProcess, fork } from 'child_process';
 import * as antares from 'common/interfaces/antares';
 import * as workers from 'common/interfaces/workers';
 import { dialog, ipcMain } from 'electron';
 import * as fs from 'fs';
-import * as path from 'path';
 import { Worker } from 'worker_threads';
 
 import { validateSender } from '../libs/misc/validateSender';
 
-const isDevelopment = process.env.NODE_ENV !== 'production';
-const isFlatpak = process.platform === 'linux' && process.env.DISTRIBUTION === 'flatpak';
-
 export default (connections: {[key: string]: antares.Client}) => {
    let exporter: Worker = null;
-   let importer: ChildProcess = null;
+   let importer: Worker = null;
 
    ipcMain.handle('create-schema', async (event, params) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
@@ -310,25 +305,20 @@ export default (connections: {[key: string]: antares.Client}) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       if (importer !== null) {
-         importer.kill();
+         importer.terminate();
          return;
       }
 
       return new Promise((resolve/*, reject */) => {
          (async () => {
-            if (isFlatpak) {
-               resolve({ status: 'warning', response: 'Temporarily unavailable on Flatpak' });
-               return;
-            }
-
             const dbConfig = await connections[options.uid].getDbConfig();
 
-            // Init importer process
-            importer = fork(isDevelopment ? './dist/importer.js' : path.resolve(__dirname, './importer.js'), [], {
-               execArgv: isDevelopment ? ['--inspect=9224'] : undefined
-            });
+            // Init importer thread
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            importer = new Worker(new URL('../workers/importer', import.meta.url));
 
-            importer.send({
+            importer.postMessage({
                type: 'init',
                dbConfig,
                options
@@ -345,18 +335,18 @@ export default (connections: {[key: string]: antares.Client}) => {
                      break;
                   case 'end':
                      setTimeout(() => { // Ensures that writing process has finished
-                        importer?.kill();
+                        importer?.terminate();
                         importer = null;
                      }, 2000);
                      resolve({ status: 'success', response: payload });
                      break;
                   case 'cancel':
-                     importer.kill();
+                     importer.terminate();
                      importer = null;
                      resolve({ status: 'error', response: 'Operation cancelled' });
                      break;
                   case 'error':
-                     importer.kill();
+                     importer.terminate();
                      importer = null;
                      resolve({ status: 'error', response: payload });
                      break;
@@ -387,7 +377,7 @@ export default (connections: {[key: string]: antares.Client}) => {
 
          if (result.response === 1) {
             willAbort = true;
-            importer.send({ type: 'cancel' });
+            importer.postMessage({ type: 'cancel' });
          }
       }
 
