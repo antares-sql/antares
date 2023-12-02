@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.20-beta.1](https://github.com/antares-sql/antares/compare/v0.7.20-beta.0...v0.7.20-beta.1) (2023-12-02)
+
+
+### Features
+
+* copy element names on sidebar from context menu, closes [#718](https://github.com/antares-sql/antares/issues/718) ([f13d4e6](https://github.com/antares-sql/antares/commit/f13d4e6dceb70b0c7cb8d56ddfb5f00e938571cc))
+* logging errors on log file ([315d9d8](https://github.com/antares-sql/antares/commit/315d9d84c2caa29852d68bd189750b2a4028d953))
+
+
+### Bug Fixes
+
+* **Flatpak:** import/export schema not working ([e26809f](https://github.com/antares-sql/antares/commit/e26809f260099ba194bf5d00671cae14d438197b))
+
 ### [0.7.20-beta.0](https://github.com/antares-sql/antares/compare/v0.7.19...v0.7.20-beta.0) (2023-11-15)
 
 
