@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.20-beta.2](https://github.com/antares-sql/antares/compare/v0.7.20-beta.1...v0.7.20-beta.2) (2023-12-06)
+
+
+### Bug Fixes
+
+* communication with worker thread not working ([6a72f6b](https://github.com/antares-sql/antares/commit/6a72f6b4ae3f4c1d6c42ca7a817d2f2c135696a7))
+
 ### [0.7.20-beta.1](https://github.com/antares-sql/antares/compare/v0.7.20-beta.0...v0.7.20-beta.1) (2023-12-02)
 
 

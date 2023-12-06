@@ -240,17 +240,8 @@ export default (connections: {[key: string]: antares.Client}) => {
             });
 
             // Exporter message listener
-            exporter.stdout.on('data', (buff: Buffer) => {
-               let message;
-               try { // Ignore non-JSON data (console.log output)
-                  message = JSON.parse(buff.toString());
-               }
-               catch (_) {
-                  if (process.env.NODE_ENV === 'development') console.log('EXPORTER:', buff.toString());
-                  return;
-               }
-
-               const { type, payload } = message as workers.WorkerIpcMessage;
+            exporter.on('message', (message: workers.WorkerIpcMessage) => {
+               const { type, payload } = message;
 
                switch (type) {
                   case 'export-progress':
@@ -331,17 +322,8 @@ export default (connections: {[key: string]: antares.Client}) => {
             });
 
             // Importer message listener
-            importer.stdout.on('data', (buff: Buffer) => {
-               let message;
-               try { // Ignore non-JSON data (console.log output)
-                  message = JSON.parse(buff.toString());
-               }
-               catch (_) {
-                  if (process.env.NODE_ENV === 'development') console.log('IMPORTER:', buff.toString());
-                  return;
-               }
-
-               const { type, payload } = message as workers.WorkerIpcMessage;
+            importer.on('message', (message: workers.WorkerIpcMessage) => {
+               const { type, payload } = message;
 
                switch (type) {
                   case 'import-progress':
