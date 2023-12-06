@@ -59,17 +59,16 @@
       <div class="settingbar-bottom-elements">
          <ul class="settingbar-elements">
             <li
-               v-if="!disableScratchpad"
                v-tooltip="{
                   strategy: 'fixed',
                   placement: 'right',
-                  content: t('application.scratchpad')
+                  content: t('application.note', 2)
                }"
                class="settingbar-element btn btn-link"
                @click="showScratchpad"
             >
                <BaseIcon
-                  icon-name="mdiNotebookEditOutline"
+                  icon-name="mdiNotebookOutline"
                   class="settingbar-element-icon text-light"
                   :size="24"
                />
@@ -108,7 +107,6 @@ import SettingBarConnections from '@/components/SettingBarConnections.vue';
 import SettingBarContext from '@/components/SettingBarContext.vue';
 import { useApplicationStore } from '@/stores/application';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
-import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
@@ -117,12 +115,10 @@ localStorage.setItem('opened-folders', '[]');
 const applicationStore = useApplicationStore();
 const connectionsStore = useConnectionsStore();
 const workspacesStore = useWorkspacesStore();
-const settingsStore = useSettingsStore();
 
 const { updateStatus } = storeToRefs(applicationStore);
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 const { connectionsOrder } = storeToRefs(connectionsStore);
-const { disableScratchpad } = storeToRefs(settingsStore);
 
 const { showSettingModal, showScratchpad } = applicationStore;
 const { updateConnectionsOrder, initConnectionsOrder } = connectionsStore;

@@ -152,6 +152,14 @@
                                  />
                                  SSH
                               </div>
+                              <div v-if="connection.readonly" class="chip bg-success mt-2">
+                                 <BaseIcon
+                                    icon-name="mdiLock"
+                                    class="mr-1"
+                                    :size="18"
+                                 />
+                                 Read-only
+                              </div>
                            </div>
                         </div>
                      </div>

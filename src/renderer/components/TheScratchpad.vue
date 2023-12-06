@@ -2,45 +2,183 @@
    <ConfirmModal
       :confirm-text="t('application.update')"
       :cancel-text="t('general.close')"
-      size="large"
+      size="medium"
       :hide-footer="true"
       @hide="hideScratchpad"
    >
       <template #header>
          <div class="d-flex">
             <BaseIcon
-               icon-name="mdiNotebookEditOutline"
+               icon-name="mdiNotebookOutline"
                class="mr-1"
                :size="24"
-            /> {{ t('application.scratchpad') }}
+            /> {{ t('application.note', 2) }}
          </div>
       </template>
       <template #body>
-         <div>
-            <div>
-               <TextEditor
-                  v-model="localNotes"
-                  editor-class="textarea-editor"
-                  mode="markdown"
-                  :auto-focus="true"
-                  :show-line-numbers="false"
+         <div class="d-flex p-vcentered" style="gap: 0 10px">
+            <div style="flex: 1;">
+               <BaseSelect
+                  v-model="localConnection"
+                  class="form-select"
+                  :options="connectionOptions"
+                  option-track-by="code"
+                  option-label="name"
+                  @change="null"
                />
             </div>
-            <small class="text-gray">{{ t('application.markdownSupported') }}</small>
+            <div class="btn-group btn-group-block text-uppercase">
+               <div class="btn btn-primary">
+                  {{ t('general.all') }}
+               </div>
+               <div class="btn btn-dark">
+                  {{ t('application.note', 1) }}
+               </div>
+               <div class="btn btn-dark">
+                  TODO
+               </div>
+               <div class="btn btn-dark">
+                  Query
+               </div>
+            </div>
+            <div class="">
+               <button class="btn btn-link px-1 tooltip tooltip-left" :data-tooltip="'Show archived notes'">
+                  <BaseIcon
+                     icon-name="mdiArchiveEyeOutline"
+                     class=""
+                     :size="24"
+                  />
+               </button>
+            </div>
+         </div>
+         <div>
+            <div
+               v-if="filteredNotes.length"
+               ref="searchForm"
+               class="form-group has-icon-right m-0"
+            >
+               <input
+                  v-model="searchTerm"
+                  class="form-input"
+                  type="text"
+                  :placeholder="t('general.search')"
+               >
+               <BaseIcon
+                  v-if="!searchTerm"
+                  icon-name="mdiMagnify"
+                  class="form-icon pr-2"
+                  :size="18"
+               />
+               <BaseIcon
+                  v-else
+                  icon-name="mdiBackspace"
+                  class="form-icon c-hand pr-2"
+                  :size="18"
+                  @click="searchTerm = ''"
+               />
+            </div>
+         </div>
+         <div
+            v-if="connectionNotes.length"
+            ref="tableWrapper"
+            class="vscroll px-1"
+            :style="{'height': resultsSize+'px'}"
+         >
+            <div ref="table">
+               <BaseVirtualScroll
+                  ref="resultTable"
+                  :items="filteredNotes"
+                  :item-height="66"
+                  :visible-height="resultsSize"
+                  :scroll-element="scrollElement"
+               >
+                  <template #default="{ items }">
+                     <div
+                        v-for="note in items"
+                        :key="note.uid"
+                        class="tile my-2"
+                        tabindex="0"
+                     >
+                        <div class="tile-icon">
+                           <BaseIcon
+                              icon-name="mdiCodeTags"
+                              class="pr-1"
+                              :size="24"
+                           />
+                        </div>
+                        <div class="tile-content">
+                           <div class="tile-title">
+                              <code
+                                 class="cut-text"
+                                 :title="note.note"
+                                 v-html="highlightWord(note.note)"
+                              />
+                           </div>
+                           <div class="tile-bottom-content">
+                              <!-- <small class="tile-subtitle">{{ query.schema }} · {{ formatDate(query.date) }}</small>
+                              <div class="tile-history-buttons">
+                                 <button class="btn btn-link pl-1" @click.stop="$emit('select-query', query.sql)">
+                                    <BaseIcon
+                                       icon-name="mdiOpenInApp"
+                                       class="pr-1"
+                                       :size="22"
+                                    /> {{ t('general.select') }}
+                                 </button>
+                                 <button class="btn btn-link pl-1" @click="copyQuery(query.sql)">
+                                    <BaseIcon
+                                       icon-name="mdiContentCopy"
+                                       class="pr-1"
+                                       :size="22"
+                                    /> {{ t('general.copy') }}
+                                 </button>
+                                 <button class="btn btn-link pl-1" @click="deleteQuery(query)">
+                                    <BaseIcon
+                                       icon-name="mdiDeleteForever"
+                                       class="pr-1"
+                                       :size="22"
+                                    /> {{ t('general.delete') }}
+                                 </button>
+                              </div> -->
+                           </div>
+                        </div>
+                     </div>
+                  </template>
+               </BaseVirtualScroll>
+            </div>
+         </div>
+         <div v-else class="empty">
+            <div class="empty-icon">
+               <BaseIcon icon-name="mdiNoteSearch" :size="48" />
+            </div>
+            <p class="empty-title h5">
+               {{ t('application.thereIsNoNotesYet') }}
+            </p>
          </div>
       </template>
    </ConfirmModal>
 </template>
 
 <script setup lang="ts">
+import { ConnectionParams } from 'common/interfaces/antares';
 import { storeToRefs } from 'pinia';
-import { Ref, ref, watch } from 'vue';
+import {
+   Component,
+   computed,
+   onBeforeUnmount,
+   onMounted,
+   onUpdated,
+   Ref,
+   ref
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
-import TextEditor from '@/components/BaseTextEditor.vue';
+import BaseSelect from '@/components/BaseSelect.vue';
+import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
+import { unproxify } from '@/libs/unproxify';
 import { useApplicationStore } from '@/stores/application';
+import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { useScratchpadStore } from '@/stores/scratchpad';
 
 const { t } = useI18n();
@@ -48,19 +186,73 @@ const { t } = useI18n();
 const applicationStore = useApplicationStore();
 const scratchpadStore = useScratchpadStore();
 
-const { notes } = storeToRefs(scratchpadStore);
+const { connectionNotes } = storeToRefs(scratchpadStore);
 const { changeNotes } = scratchpadStore;
 const { hideScratchpad } = applicationStore;
+const { getConnectionName } = useConnectionsStore();
+const { connections } = storeToRefs(useConnectionsStore());
+const localConnections = unproxify<ConnectionParams[]>(connections.value);
 
-const localNotes = ref(notes.value);
-const debounceTimeout: Ref<NodeJS.Timeout> = ref(null);
+const localConnection = ref(null);
+const table: Ref<HTMLDivElement> = ref(null);
+const resultTable: Ref<Component & { updateWindow: () => void }> = ref(null);
+const tableWrapper: Ref<HTMLDivElement> = ref(null);
+const searchForm: Ref<HTMLInputElement> = ref(null);
+const resultsSize = ref(1000);
+const localNotes = ref(connectionNotes.value);
+const searchTermInterval: Ref<NodeJS.Timeout> = ref(null);
+const scrollElement: Ref<HTMLDivElement> = ref(null);
+const searchTerm = ref('');
+const localSearchTerm = ref('');
 
-watch(localNotes, () => {
-   clearTimeout(debounceTimeout.value);
+const filteredNotes = computed(() => localNotes.value);
+const connectionOptions = computed(() => {
+   return [
+      { code: null, name: t('general.all') },
+      ...connections.value.map(c => ({ code: c.uid, name: getConnectionName(c.uid) }))
+   ];
+});
 
-   debounceTimeout.value = setTimeout(() => {
-      changeNotes(localNotes.value);
-   }, 200);
+const resizeResults = () => {
+   if (resultTable.value) {
+      const el = tableWrapper.value.parentElement;
+
+      if (el)
+         resultsSize.value = el.offsetHeight - searchForm.value.offsetHeight;
+
+      resultTable.value.updateWindow();
+   }
+};
+
+const refreshScroller = () => resizeResults();
+
+const highlightWord = (string: string) => {
+   string = string.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
+   if (searchTerm.value) {
+      const regexp = new RegExp(`(${searchTerm.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      return string.replace(regexp, '<span class="text-primary text-bold">$1</span>');
+   }
+   else
+      return string;
+};
+
+onUpdated(() => {
+   if (table.value)
+      refreshScroller();
+
+   if (tableWrapper.value)
+      scrollElement.value = tableWrapper.value;
+});
+
+onMounted(() => {
+   resizeResults();
+   window.addEventListener('resize', resizeResults);
+});
+
+onBeforeUnmount(() => {
+   window.removeEventListener('resize', resizeResults);
+   clearInterval(searchTermInterval.value);
 });
 
 </script>

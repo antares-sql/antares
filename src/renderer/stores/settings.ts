@@ -30,7 +30,6 @@ export const useSettingsStore = defineStore('settings', {
       editorFontSize: settingsStore.get('editor_font_size', 'medium') as EditorFontSize,
       restoreTabs: settingsStore.get('restore_tabs', true) as boolean,
       disableBlur: settingsStore.get('disable_blur', false) as boolean,
-      disableScratchpad: settingsStore.get('disable_scratchpad', false) as boolean,
       shortcuts: shortcutsStore.get('shortcuts', []) as ShortcutRecord[],
       defaultCopyType: settingsStore.get('default_copy_type', 'cell') as string
    }),
@@ -92,10 +91,6 @@ export const useSettingsStore = defineStore('settings', {
       changeDisableBlur (val: boolean) {
          this.disableBlur = val;
          settingsStore.set('disable_blur', this.disableBlur);
-      },
-      changeDisableScratchpad (val: boolean) {
-         this.disableScratchpad = val;
-         settingsStore.set('disable_scratchpad', this.disableScratchpad);
       },
       updateShortcuts (shortcuts: ShortcutRecord[]) {
          this.shortcuts = shortcuts;
