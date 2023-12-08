@@ -84,12 +84,15 @@
                @click="showSettingModal('general')"
             >
                <div class="settingbar-element-icon-wrapper">
-                  <BaseIcon
-                     icon-name="mdiCog"
+                  <div
                      class="settingbar-element-icon text-light"
                      :class="{ 'badge badge-update': hasUpdates }"
-                     :size="24"
-                  />
+                  >
+                     <BaseIcon
+                        icon-name="mdiCog"
+                        :size="24"
+                     />
+                  </div>
                </div>
             </li>
          </ul>
@@ -266,7 +269,7 @@ if (!connectionsArr.value.length)
             .settingbar-element-icon {
                &.badge::after {
                   top: 10px;
-                  right: -6px;
+                  right: -3px;
                   position: absolute;
                }
 
