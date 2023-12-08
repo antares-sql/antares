@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.20](https://github.com/antares-sql/antares/compare/v0.7.20-beta.2...v0.7.20) (2023-12-08)
+
+
+### Bug Fixes
+
+* missing update indicator on setting icon ([b055350](https://github.com/antares-sql/antares/commit/b055350726774e05a4e04ea6d890c46f64f2112e))
+
 ### [0.7.20-beta.2](https://github.com/antares-sql/antares/compare/v0.7.20-beta.1...v0.7.20-beta.2) (2023-12-06)
 
 
