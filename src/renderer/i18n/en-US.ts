@@ -76,9 +76,11 @@ export const enUS = {
       singleFile: 'Single {ext} file',
       zipCompressedFile: 'ZIP compressed {ext} file',
       copyName: 'Copy name',
-      search: 'Search'
+      search: 'Search',
+      title: 'Title'
    },
    connection: { // Database connection
+      connection: 'Connection',
       connectionName: 'Connection name',
       hostName: 'Host name',
       client: 'Client',
@@ -385,7 +387,11 @@ export const enUS = {
       wrongFileFormat: 'Wrong file format',
       dataImportSuccess: 'Data successfully imported',
       note: 'Note | Notes',
-      thereIsNoNotesYet: 'There is no notes yet'
+      thereAreNoNotesYet: 'There are no notes yet',
+      addNote: 'Add note',
+      showArchivedNotes: 'Show archived notes',
+      hideArchivedNotes: 'Hide archived notes',
+      tag: 'Tag' // Note tag
    },
    faker: { // Faker.js methods, used in random generated content
       address: 'Address',
