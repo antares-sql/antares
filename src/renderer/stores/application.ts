@@ -15,14 +15,12 @@ export const useApplicationStore = defineStore('application', {
       isSettingModal: false,
       isScratchpad: false,
       selectedSettingTab: 'general',
-      selectedConection: {},
       updateStatus: 'noupdate' as UpdateStatus,
       downloadProgress: 0,
       baseCompleter: [] as Ace.Completer[] // Needed to reset ace editor, due global-only ace completer
    }),
    getters: {
       getBaseCompleter: state => state.baseCompleter,
-      getSelectedConnection: state => state.selectedConection,
       getDownloadProgress: state => Number(state.downloadProgress.toFixed(1))
    },
    actions: {

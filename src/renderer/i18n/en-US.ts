@@ -77,7 +77,9 @@ export const enUS = {
       zipCompressedFile: 'ZIP compressed {ext} file',
       copyName: 'Copy name',
       search: 'Search',
-      title: 'Title'
+      title: 'Title',
+      archive: 'Archive', // verb
+      undo: 'Undo'
    },
    connection: { // Database connection
       connection: 'Connection',

@@ -1,5 +1,11 @@
 <template>
-   <ConfirmModal size="400">
+   <ConfirmModal
+      size="medium"
+      :disable-autofocus="true"
+      :close-on-confirm="!!newNote.note.length"
+      @confirm="createNote"
+      @hide="$emit('hide')"
+   >
       <template #header>
          <div class="d-flex">
             <BaseIcon
@@ -11,17 +17,6 @@
       </template>
       <template #body>
          <form class="form">
-            <div class="form-group columns">
-               <div class="column col-12">
-                  <label class="form-label">{{ t('general.title') }}</label>
-                  <input
-                     ref="firstInput"
-                     v-model="newNote.title"
-                     class="form-input"
-                     type="text"
-                  >
-               </div>
-            </div>
             <div class="form-group columns">
                <div class="column col-8">
                   <label class="form-label">{{ t('connection.connection') }}</label>
@@ -48,7 +43,11 @@
             </div>
             <div class="form-group">
                <label class="form-label">{{ t('general.content') }}</label>
-               <BaseTextEditor :mode="editorMode" :show-line-numbers="false" />
+               <BaseTextEditor
+                  v-model="newNote.note"
+                  :mode="editorMode"
+                  :show-line-numbers="false"
+               />
             </div>
          </form>
       </template>
@@ -64,12 +63,18 @@ import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import BaseTextEditor from '@/components/BaseTextEditor.vue';
-import { ConnectionNote, TagCode } from '@/stores/scratchpad';
+import { ConnectionNote, TagCode, useScratchpadStore } from '@/stores/scratchpad';
 
 const { t } = useI18n();
+const { addNote } = useScratchpadStore();
+
+const emit = defineEmits(['hide']);
 
 const noteTags = inject<{code: TagCode; name: string}[]>('noteTags');
+const selectedConnection = inject<Ref<null | string>>('selectedConnection');
+const selectedTag = inject<Ref<TagCode>>('selectedTag');
 const connectionOptions = inject<{code: string; name: string}[]>('connectionOptions');
+
 const editorMode = ref('markdown');
 
 const newNote: Ref<ConnectionNote> = ref({
@@ -78,8 +83,20 @@ const newNote: Ref<ConnectionNote> = ref({
    title: undefined,
    note: '',
    date: new Date(),
-   type: 'note'
+   type: 'note',
+   isArchived: false
 });
+
+const createNote = () => {
+   if (newNote.value.note) {
+      if (!newNote.value.title)// Set a default title
+         newNote.value.title = `${newNote.value.type.toLocaleUpperCase()}: ${newNote.value.uid}`;
+
+      newNote.value.date = new Date();
+      addNote(newNote.value);
+      emit('hide');
+   }
+};
 
 watch(() => newNote.value.type, () => {
    if (newNote.value.type === 'query')
@@ -87,5 +104,10 @@ watch(() => newNote.value.type, () => {
    else
       editorMode.value = 'markdown';
 });
+
+newNote.value.cUid = selectedConnection.value;
+
+if (selectedTag.value !== 'all')
+   newNote.value.type = selectedTag.value;
 
 </script>

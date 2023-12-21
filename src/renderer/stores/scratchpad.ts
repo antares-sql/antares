@@ -8,6 +8,7 @@ export interface ConnectionNote {
    uid: string;
    cUid: string | null;
    title?: string;
+   isArchived: boolean;
    type: TagCode;
    note: string;
    date: Date;
@@ -23,6 +24,13 @@ export const useScratchpadStore = defineStore('scratchpad', {
    actions: {
       changeNotes (notes: ConnectionNote[]) {
          this.connectionNotes = notes;
+         persistentStore.set('connectionNotes', this.connectionNotes);
+      },
+      addNote (note: ConnectionNote) {
+         this.connectionNotes = [
+            note,
+            ...this.connectionNotes
+         ];
          persistentStore.set('connectionNotes', this.connectionNotes);
       }
    }
