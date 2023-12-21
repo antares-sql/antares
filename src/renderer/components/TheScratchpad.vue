@@ -109,6 +109,7 @@
                               :selected-note="selectedNote"
                               @select-note="selectedNote = note.uid"
                               @toggle-note="toggleNote"
+                              @edit-note="startEditNote(note)"
                               @delete-note="deleteNote"
                               @archive-note="archiveNote"
                               @restore-note="restoreNote"
@@ -139,7 +140,12 @@
          </div>
       </div>
    </Teleport>
-   <ModalNewNote v-if="isAddModal" @hide="isAddModal = false" />
+   <ModalNoteNew v-if="isAddModal" @hide="isAddModal = false" />
+   <ModalNoteEdit
+      v-if="isEditModal"
+      :note="noteToEdit"
+      @hide="closeEditModal"
+   />
 </template>
 
 <script setup lang="ts">
@@ -161,11 +167,12 @@ import { useI18n } from 'vue-i18n';
 import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
-import ModalNewNote from '@/components/ModalNewNote.vue';
+import ModalNoteEdit from '@/components/ModalNoteEdit.vue';
+import ModalNoteNew from '@/components/ModalNoteNew.vue';
 import ScratchpadNote from '@/components/ScratchpadNote.vue';
 import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
-import { TagCode, useScratchpadStore } from '@/stores/scratchpad';
+import { ConnectionNote, TagCode, useScratchpadStore } from '@/stores/scratchpad';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
@@ -194,6 +201,7 @@ const localSearchTerm = ref('');
 const showArchived = ref(false);
 const isAddModal = ref(false);
 const isEditModal = ref(false);
+const noteToEdit: Ref<ConnectionNote> = ref(null);
 const selectedTag = ref('all');
 const selectedNote = ref(null);
 
@@ -241,6 +249,11 @@ const toggleNote = (uid: string) => {
    selectedNote.value = selectedNote.value !== uid ? uid : null;
 };
 
+const startEditNote = (note: ConnectionNote) => {
+   isEditModal.value = true;
+   noteToEdit.value = note;
+};
+
 const archiveNote = (uid: string) => {
    const remappedNotes = connectionNotes.value.map(n => {
       if (n.uid === uid)
@@ -262,6 +275,11 @@ const restoreNote = (uid: string) => {
 const deleteNote = (uid: string) => {
    const otherNotes = connectionNotes.value.filter(n => n.uid !== uid);
    changeNotes(otherNotes);
+};
+
+const closeEditModal = () => {
+   isEditModal.value = false;
+   noteToEdit.value = null;
 };
 
 watch(searchTerm, () => {
@@ -310,6 +328,7 @@ onBeforeUnmount(() => {
    position: fixed;
    margin-top: -40px;
    margin-left: 580px;
+   z-index: 9;
 }
 .archived-button {
    border-radius: 50%;

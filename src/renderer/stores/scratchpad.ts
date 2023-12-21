@@ -32,6 +32,15 @@ export const useScratchpadStore = defineStore('scratchpad', {
             ...this.connectionNotes
          ];
          persistentStore.set('connectionNotes', this.connectionNotes);
+      },
+      editNote (note: ConnectionNote) {
+         this.connectionNotes = (this.connectionNotes as ConnectionNote[]).map(n => {
+            if (n.uid === note.uid)
+               n = note;
+
+            return n;
+         });
+         persistentStore.set('connectionNotes', this.connectionNotes);
       }
    }
 });

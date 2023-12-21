@@ -30,7 +30,8 @@
          <div class="tile-content-message" :class="[{'opened': isSelected}]">
             <code
                v-if="note.type === 'query'"
-               class="cut-text"
+               ref="noteParagraph"
+               class="tile-paragraph"
                v-html="highlightWord(note.note)"
             />
             <div
@@ -47,7 +48,7 @@
                <button
                   v-if="note.type === 'todo' && !note.isArchived"
                   class="btn btn-link pl-1"
-                  @click="$emit('archive-note', note.uid)"
+                  @click.stop="$emit('archive-note', note.uid)"
                >
                   <BaseIcon
                      icon-name="mdiCheck"
@@ -58,7 +59,7 @@
                <button
                   v-if="note.type === 'todo' && note.isArchived"
                   class="btn btn-link pl-1"
-                  @click="$emit('restore-note', note.uid)"
+                  @click.stop="$emit('restore-note', note.uid)"
                >
                   <BaseIcon
                      icon-name="mdiRestore"
@@ -69,7 +70,7 @@
                <button
                   v-if="note.type === 'query'"
                   class="btn btn-link pl-1"
-                  @click="copyText(note.note)"
+                  @click.stop="copyText(note.note)"
                >
                   <BaseIcon
                      icon-name="mdiContentCopy"
@@ -80,7 +81,7 @@
                <button
                   v-if=" !note.isArchived"
                   class="btn btn-link pl-1"
-                  @click="null"
+                  @click.stop="$emit('edit-note')"
                >
                   <BaseIcon
                      icon-name="mdiPencil"
@@ -88,7 +89,7 @@
                      :size="22"
                   /> {{ t('general.edit') }}
                </button>
-               <button class="btn btn-link pl-1" @click="$emit('delete-note', note.uid)">
+               <button class="btn btn-link pl-1" @click.stop="$emit('delete-note', note.uid)">
                   <BaseIcon
                      icon-name="mdiDeleteForever"
                      class="pr-1"
@@ -131,7 +132,14 @@ const { t } = useI18n();
 const { formatDate } = useFilters();
 const { getConnectionName } = useConnectionsStore();
 
-defineEmits(['delete-note', 'select-note', 'toggle-note', 'archive-note', 'restore-note']);
+defineEmits([
+   'edit-note',
+   'delete-note',
+   'select-note',
+   'toggle-note',
+   'archive-note',
+   'restore-note'
+]);
 
 const noteParagraph: Ref<HTMLDivElement> = ref(null);
 const noteHeight = ref(useElementBounding(noteParagraph)?.height);
@@ -188,7 +196,7 @@ const highlightWord = (string: string) => {
       right: 2px;
       top: 0px;
       opacity: .7;
-      z-index: 9;
+      z-index: 2;
    }
 
    .tile-icon {
@@ -233,13 +241,14 @@ const highlightWord = (string: string) => {
          }
      }
 
-     code {
+     code, pre {
        max-width: 100%;
        display: inline-block;
        font-size: 100%;
        // color: $primary-color;
        opacity: 0.8;
        font-weight: 600;
+       white-space: break-spaces;
      }
 
      .tile-subtitle {

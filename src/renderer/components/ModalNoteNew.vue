@@ -3,6 +3,7 @@
       size="medium"
       :disable-autofocus="true"
       :close-on-confirm="!!newNote.note.length"
+      :confirm-text="t('general.save')"
       @confirm="createNote"
       @hide="$emit('hide')"
    >
