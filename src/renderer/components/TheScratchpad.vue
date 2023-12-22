@@ -180,7 +180,7 @@ const { t } = useI18n();
 const applicationStore = useApplicationStore();
 const scratchpadStore = useScratchpadStore();
 
-const { connectionNotes } = storeToRefs(scratchpadStore);
+const { connectionNotes, selectedTag } = storeToRefs(scratchpadStore);
 const { changeNotes } = scratchpadStore;
 const { hideScratchpad } = applicationStore;
 const { getConnectionName } = useConnectionsStore();
@@ -202,7 +202,6 @@ const showArchived = ref(false);
 const isAddModal = ref(false);
 const isEditModal = ref(false);
 const noteToEdit: Ref<ConnectionNote> = ref(null);
-const selectedTag = ref('all');
 const selectedNote = ref(null);
 
 const noteTags: ComputedRef<{code: TagCode; name: string}[]> = computed(() => [

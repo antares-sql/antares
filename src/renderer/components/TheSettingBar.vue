@@ -65,7 +65,7 @@
                   content: t('application.note', 2)
                }"
                class="settingbar-element btn btn-link"
-               @click="showScratchpad"
+               @click="showScratchpad()"
             >
                <BaseIcon
                   icon-name="mdiNotebookOutline"

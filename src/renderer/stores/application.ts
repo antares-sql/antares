@@ -1,6 +1,8 @@
 import { Ace } from 'ace-builds';
 import * as Store from 'electron-store';
-import { defineStore } from 'pinia';
+import { defineStore, storeToRefs } from 'pinia';
+
+import { useScratchpadStore } from './scratchpad';
 
 const persistentStore = new Store({ name: 'settings' });
 export type UpdateStatus = 'noupdate' | 'available' | 'checking' | 'nocheck' | 'downloading' | 'downloaded' | 'disabled' | 'link';
@@ -51,8 +53,12 @@ export const useApplicationStore = defineStore('application', {
       hideSettingModal () {
          this.isSettingModal = false;
       },
-      showScratchpad () {
+      showScratchpad (tag?: string) {
          this.isScratchpad = true;
+         if (tag) {
+            const { selectedTag } = storeToRefs(useScratchpadStore());
+            selectedTag.value = tag;
+         }
       },
       hideScratchpad () {
          this.isScratchpad = false;

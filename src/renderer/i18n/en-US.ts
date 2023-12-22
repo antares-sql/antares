@@ -280,7 +280,8 @@ export const enUS = {
       targetTable: 'Target table',
       switchDatabase: 'Switch the database',
       searchForElements: 'Search for elements',
-      searchForSchemas: 'Search for schemas'
+      searchForSchemas: 'Search for schemas',
+      savedQueries: 'Saved queries'
    },
    application: { // Application related terms
       settings: 'Settings',
