@@ -43,7 +43,11 @@
                </div>
             </div>
             <div class="form-group">
-               <label class="form-label">{{ t('general.content') }}</label>
+               <label class="form-label">{{ t('general.content') }} <small
+                  v-if="newNote.type !== 'query'"
+                  style="line-height: 1;"
+                  class="text-gray"
+               >({{ t('application.markdownSupported') }})</small></label>
                <BaseTextEditor
                   v-model="newNote.note"
                   :mode="editorMode"

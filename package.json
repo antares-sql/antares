@@ -147,6 +147,7 @@
     "source-map-support": "~0.5.20",
     "spectre.css": "~0.5.9",
     "sql-formatter": "~13.0.0",
+    "sql-highlight": "~4.4.0",
     "v-mask": "~2.3.0",
     "vue": "~3.3.4",
     "vue-i18n": "~9.2.2",

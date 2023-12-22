@@ -31,8 +31,8 @@
             <code
                v-if="note.type === 'query'"
                ref="noteParagraph"
-               class="tile-paragraph"
-               v-html="highlightWord(note.note)"
+               class="tile-paragraph sql"
+               v-html="highlight(highlightWord(note.note), {html: true})"
             />
             <div
                v-else
@@ -104,6 +104,7 @@
 <script setup lang="ts">
 import { useElementBounding } from '@vueuse/core';
 import { marked } from 'marked';
+import { highlight } from 'sql-highlight';
 import { computed, PropType, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 

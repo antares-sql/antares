@@ -43,7 +43,11 @@
                </div>
             </div>
             <div class="form-group">
-               <label class="form-label">{{ t('general.content') }}</label>
+               <label class="form-label">{{ t('general.content') }} <small
+                  v-if="localNote.type !== 'query'"
+                  style="line-height: 1;"
+                  class="text-gray"
+               >({{ t('application.markdownSupported') }})</small></label>
                <BaseTextEditor
                   v-model="localNote.note"
                   :mode="editorMode"
@@ -110,7 +114,7 @@ watch(() => localNote.value.type, () => {
 });
 
 onBeforeMount(() => {
-   localNote.value = props.note;
+   localNote.value = JSON.parse(JSON.stringify(props.note));
 });
 
 </script>
