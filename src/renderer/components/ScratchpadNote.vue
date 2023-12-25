@@ -70,6 +70,17 @@
                <button
                   v-if="note.type === 'query'"
                   class="btn btn-link pl-1"
+                  @click.stop="$emit('select-query', note.note)"
+               >
+                  <BaseIcon
+                     icon-name="mdiOpenInApp"
+                     class="pr-1"
+                     :size="22"
+                  /> {{ t('general.select') }}
+               </button>
+               <button
+                  v-if="note.type === 'query'"
+                  class="btn btn-link pl-1"
                   @click.stop="copyText(note.note)"
                >
                   <BaseIcon
@@ -139,7 +150,8 @@ defineEmits([
    'select-note',
    'toggle-note',
    'archive-note',
-   'restore-note'
+   'restore-note',
+   'select-query'
 ]);
 
 const noteParagraph: Ref<HTMLDivElement> = ref(null);

@@ -345,6 +345,7 @@ watch(query, (val) => {
          schema: selectedSchema.value,
          content: val
       });
+
       isQuerySaved.value = false;
    }, 200);
 });
@@ -367,6 +368,14 @@ watch(databaseSchemas, () => {
    if (!databaseSchemas.value.includes(selectedSchema.value))
       selectedSchema.value = null;
 }, { deep: true });
+
+watch(() => props.tab.content, () => {
+   query.value = props.tab.content;
+   const editorValue = queryEditor.value.editor.session.getValue();
+
+   if (editorValue !== query.value)// If change not rendered in editor
+      queryEditor.value.editor.session.setValue(query.value);
+});
 
 const runQuery = async (query: string) => {
    if (!query || isQuering.value) return;

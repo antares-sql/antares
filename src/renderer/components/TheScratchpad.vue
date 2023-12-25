@@ -113,6 +113,7 @@
                               @delete-note="deleteNote"
                               @archive-note="archiveNote"
                               @restore-note="restoreNote"
+                              @select-query="selectQuery"
                            />
                         </template>
                      </BaseVirtualScroll>
@@ -179,13 +180,15 @@ const { t } = useI18n();
 
 const applicationStore = useApplicationStore();
 const scratchpadStore = useScratchpadStore();
+const workspacesStore = useWorkspacesStore();
 
 const { connectionNotes, selectedTag } = storeToRefs(scratchpadStore);
 const { changeNotes } = scratchpadStore;
 const { hideScratchpad } = applicationStore;
 const { getConnectionName } = useConnectionsStore();
 const { connections } = storeToRefs(useConnectionsStore());
-const { getSelected: selectedWorkspace } = storeToRefs(useWorkspacesStore());
+const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const { getWorkspaceTab, getWorkspace, newTab, updateTabContent } = workspacesStore;
 
 const localConnection = ref(null);
 const table: Ref<HTMLDivElement> = ref(null);
@@ -274,6 +277,32 @@ const restoreNote = (uid: string) => {
 const deleteNote = (uid: string) => {
    const otherNotes = connectionNotes.value.filter(n => n.uid !== uid);
    changeNotes(otherNotes);
+};
+
+const selectQuery = (query: string) => {
+   const workspace = getWorkspace(selectedWorkspace.value);
+   const selectedTab = getWorkspaceTab(workspace.selectedTab);
+
+   if (selectedTab.type === 'query') {
+      updateTabContent({
+         tab: selectedTab.uid,
+         uid: selectedWorkspace.value,
+         type: 'query',
+         content: query,
+         schema: workspace.breadcrumbs.schema
+      });
+   }
+   else {
+      newTab({
+         uid: selectedWorkspace.value,
+         type: 'query',
+         content: query,
+         autorun: false,
+         schema: workspace.breadcrumbs.schema
+      });
+   }
+
+   hideScratchpad();
 };
 
 const closeEditModal = () => {
