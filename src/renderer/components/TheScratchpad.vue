@@ -283,6 +283,8 @@ const selectQuery = (query: string) => {
    const workspace = getWorkspace(selectedWorkspace.value);
    const selectedTab = getWorkspaceTab(workspace.selectedTab);
 
+   if (workspace.connectionStatus !== 'connected') return;
+
    if (selectedTab.type === 'query') {
       updateTabContent({
          tab: selectedTab.uid,
