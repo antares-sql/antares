@@ -1,6 +1,8 @@
 import { Ace } from 'ace-builds';
 import * as Store from 'electron-store';
-import { defineStore } from 'pinia';
+import { defineStore, storeToRefs } from 'pinia';
+
+import { useScratchpadStore } from './scratchpad';
 
 const persistentStore = new Store({ name: 'settings' });
 export type UpdateStatus = 'noupdate' | 'available' | 'checking' | 'nocheck' | 'downloading' | 'downloaded' | 'disabled' | 'link';
@@ -15,14 +17,12 @@ export const useApplicationStore = defineStore('application', {
       isSettingModal: false,
       isScratchpad: false,
       selectedSettingTab: 'general',
-      selectedConection: {},
       updateStatus: 'noupdate' as UpdateStatus,
       downloadProgress: 0,
       baseCompleter: [] as Ace.Completer[] // Needed to reset ace editor, due global-only ace completer
    }),
    getters: {
       getBaseCompleter: state => state.baseCompleter,
-      getSelectedConnection: state => state.selectedConection,
       getDownloadProgress: state => Number(state.downloadProgress.toFixed(1))
    },
    actions: {
@@ -53,8 +53,12 @@ export const useApplicationStore = defineStore('application', {
       hideSettingModal () {
          this.isSettingModal = false;
       },
-      showScratchpad () {
+      showScratchpad (tag?: string) {
          this.isScratchpad = true;
+         if (tag) {
+            const { selectedTag } = storeToRefs(useScratchpadStore());
+            selectedTag.value = tag;
+         }
       },
       hideScratchpad () {
          this.isScratchpad = false;

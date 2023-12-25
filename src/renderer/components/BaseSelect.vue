@@ -280,7 +280,6 @@ export default defineComponent({
 
          if (props.searchable)
             searchInput.value.focus();
-
          else
             el.value.focus();
 

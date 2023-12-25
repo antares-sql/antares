@@ -54,7 +54,7 @@ const updateWindow = () => {
    const totalScrollHeight = props.items.length * props.itemHeight;
    const offset = 50;
 
-   const scrollTop = localScrollElement.value.scrollTop;
+   const scrollTop = localScrollElement.value?.scrollTop;
 
    const firstVisibleIndex = Math.floor(scrollTop / props.itemHeight);
    const lastVisibleIndex = firstVisibleIndex + visibleItemsCount;

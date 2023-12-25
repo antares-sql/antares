@@ -89,27 +89,37 @@
                <button
                   class="btn btn-dark btn-sm"
                   :disabled="!query || isQuering"
+                  :title="t('general.format')"
                   @click="beautify()"
                >
-                  <BaseIcon
-                     class="mr-1"
-                     icon-name="mdiBrush"
-                     :size="24"
-                  />
-                  <span>{{ t('general.format') }}</span>
+                  <BaseIcon icon-name="mdiBrush" :size="24" />
                </button>
                <button
                   class="btn btn-dark btn-sm"
                   :disabled="isQuering"
+                  :title="t('general.history')"
                   @click="openHistoryModal()"
                >
-                  <BaseIcon
-                     class="mr-1"
-                     icon-name="mdiHistory"
-                     :size="24"
-                  />
-                  <span>{{ t('general.history') }}</span>
+                  <BaseIcon icon-name="mdiHistory" :size="24" />
                </button>
+               <div class="btn-group">
+                  <button
+                     class="btn btn-dark btn-sm mr-0"
+                     :disabled="isQuering || (isQuerySaved || query.length < 5)"
+                     :title="t('general.save')"
+                     @click="saveQuery()"
+                  >
+                     <BaseIcon icon-name="mdiContentSaveOutline" :size="24" />
+                  </button>
+                  <button
+                     class="btn btn-dark btn-sm"
+                     :disabled="isQuering"
+                     :title="t('database.savedQueries')"
+                     @click="openSavedModal()"
+                  >
+                     <BaseIcon icon-name="mdiStarOutline" :size="24" />
+                  </button>
+               </div>
                <div class="dropdown table-dropdown pr-2">
                   <button
                      :disabled="!hasResults || isQuering"
@@ -237,6 +247,7 @@
 <script setup lang="ts">
 import { Ace } from 'ace-builds';
 import { ConnectionParams } from 'common/interfaces/antares';
+import { uidGen } from 'common/libs/uidGen';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
 import { format } from 'sql-formatter';
@@ -252,9 +263,11 @@ import WorkspaceTabQueryEmptyState from '@/components/WorkspaceTabQueryEmptyStat
 import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable.vue';
 import { useResultTables } from '@/composables/useResultTables';
 import Schema from '@/ipc-api/Schema';
+import { useApplicationStore } from '@/stores/application';
 import { useConsoleStore } from '@/stores/console';
 import { useHistoryStore } from '@/stores/history';
 import { useNotificationsStore } from '@/stores/notifications';
+import { useScratchpadStore } from '@/stores/scratchpad';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
@@ -279,6 +292,8 @@ const {
 const { saveHistory } = useHistoryStore();
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
+const { showScratchpad } = useApplicationStore();
+const { addNote } = useScratchpadStore();
 
 const { consoleHeight } = storeToRefs(useConsoleStore());
 const { executeSelected } = storeToRefs(useSettingsStore());
@@ -304,6 +319,7 @@ const resultsCount = ref(0);
 const durationsCount = ref(0);
 const affectedCount = ref(null);
 const editorHeight = ref(200);
+const isQuerySaved = ref(false);
 const isHistoryOpen = ref(false);
 const debounceTimeout = ref(null);
 
@@ -329,6 +345,8 @@ watch(query, (val) => {
          schema: selectedSchema.value,
          content: val
       });
+
+      isQuerySaved.value = false;
    }, 200);
 });
 
@@ -350,6 +368,14 @@ watch(databaseSchemas, () => {
    if (!databaseSchemas.value.includes(selectedSchema.value))
       selectedSchema.value = null;
 }, { deep: true });
+
+watch(() => props.tab.content, () => {
+   query.value = props.tab.content;
+   const editorValue = queryEditor.value.editor.session.getValue();
+
+   if (editorValue !== query.value)// If change not rendered in editor
+      queryEditor.value.editor.session.setValue(query.value);
+});
 
 const runQuery = async (query: string) => {
    if (!query || isQuering.value) return;
@@ -494,6 +520,22 @@ const beautify = () => {
 
 const openHistoryModal = () => {
    isHistoryOpen.value = true;
+};
+
+const saveQuery = () => {
+   addNote({
+      uid: uidGen('N'),
+      cUid: workspace.value.uid,
+      type: 'query',
+      date: new Date(),
+      note: query.value,
+      isArchived: false
+   });
+   isQuerySaved.value = true;
+};
+
+const openSavedModal = () => {
+   showScratchpad('query');
 };
 
 const selectQuery = (sql: string) => {

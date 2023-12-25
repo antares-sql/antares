@@ -21,7 +21,7 @@
             class="titlebar-element"
             @click="openDevTools"
          >
-            <BaseIcon icon-name="mdiCodeTags" :size="24" />
+            <BaseIcon icon-name="mdiBugPlayOutline" :size="24" />
          </div>
          <div
             v-if="isDevelopment"

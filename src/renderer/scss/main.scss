@@ -1,4 +1,4 @@
-/* stylelint-disable selector-class-pattern */
+/* stylelint-disable */
 @import "~spectre.css/src/variables";
 @import "variables";
 @import "transitions";
@@ -109,7 +109,6 @@ option:checked {
 
       > div {
         padding: 0.1rem 0.2rem;
-        /* stylelint-disable-next-line value-no-vendor-prefix */
         min-width: -webkit-fill-available;
       }
     }
@@ -428,4 +427,33 @@ option:checked {
       }
     }
   }
+}
+
+/* sql-highlight */
+code.sql {
+  font-family: monospace;
+}
+
+.sql-hl-keyword {
+  color: $primary-color;
+}
+
+.sql-hl-function {
+  color: darkorchid;
+}
+
+.sql-hl-number {
+  color: $number-color;
+}
+
+.sql-hl-string {
+  color: $string-color;
+}
+
+.sql-hl-special {
+  color: goldenrod;
+}
+
+.sql-hl-bracket {
+  color: darkorchid;
 }

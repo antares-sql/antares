@@ -75,7 +75,7 @@
                                     <code
                                        class="cut-text"
                                        :title="query.sql"
-                                       v-html="highlightWord(query.sql)"
+                                       v-html="highlight(highlightWord(query.sql), {html: true})"
                                     />
                                  </div>
                                  <div class="tile-bottom-content">
@@ -126,7 +126,19 @@
 
 <script setup lang="ts">
 import { ConnectionParams } from 'common/interfaces/antares';
-import { Component, computed, ComputedRef, onBeforeUnmount, onMounted, onUpdated, Prop, Ref, ref, watch } from 'vue';
+import { highlight } from 'sql-highlight';
+import {
+   Component,
+   computed,
+   ComputedRef,
+   onBeforeUnmount,
+   onMounted,
+   onUpdated,
+   Prop,
+   Ref,
+   ref,
+   watch
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseIcon from '@/components/BaseIcon.vue';
@@ -163,7 +175,7 @@ const localSearchTerm = ref('');
 
 const connectionName = computed(() => getConnectionName(props.connection.uid));
 const history: ComputedRef<HistoryRecord[]> = computed(() => (getHistoryByWorkspace(props.connection.uid) || []));
-const filteredHistory = computed(() => history.value.filter(q => q.sql.toLowerCase().search(searchTerm.value.toLowerCase()) >= 0));
+const filteredHistory = computed(() => history.value.filter(q => q.sql.toLowerCase().search(localSearchTerm.value.toLowerCase()) >= 0));
 
 watch(searchTerm, () => {
    clearTimeout(searchTermInterval.value);
