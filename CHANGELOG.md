@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.21-beta.0](https://github.com/antares-sql/antares/compare/v0.7.20...v0.7.21-beta.0) (2023-12-25)
+
+
+### Features
+
+* ability to edit notes ([08e5a13](https://github.com/antares-sql/antares/commit/08e5a13f723bc3ae95b0f529b79f0b558bc2a377))
+* buttons to save and access to saved queryes from query tab ([a52fc3f](https://github.com/antares-sql/antares/commit/a52fc3fd923fec30cfdd3d804554e6fe4534c400))
+* highlithg sql in notes, history and console ([bfa3924](https://github.com/antares-sql/antares/commit/bfa3924d57c2ea2cc2857006d6bd6279865dbc99))
+* new notes system ([eaaf1b7](https://github.com/antares-sql/antares/commit/eaaf1b756a6b5ffb77f7f07f3e4c0971822d48c3))
+* open saved queries in a tab ([9a732ea](https://github.com/antares-sql/antares/commit/9a732ea1971d223f3278ad02d3dd77837fecb377))
+
+
+### Bug Fixes
+
+* JavaScript error at first startup, fixes [#736](https://github.com/antares-sql/antares/issues/736) ([b734b24](https://github.com/antares-sql/antares/commit/b734b246795fb240f6728714be68c22cc221bbe9))
+
 ### [0.7.20](https://github.com/antares-sql/antares/compare/v0.7.20-beta.2...v0.7.20) (2023-12-08)
 
 
