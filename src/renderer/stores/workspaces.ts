@@ -680,7 +680,8 @@ export const useWorkspacesStore = defineStore('workspaces', {
          if (!isSelectedExistent && workspace.tabs.length) {
             if (workspace.customizations.database) {
                const databaseTabs = workspace.tabs.filter(tab => tab.type === 'query' || tab.database === workspace.database);
-               this.selectTab({ uid, tab: databaseTabs[databaseTabs.length - 1].uid });
+               if (databaseTabs.length)
+                  this.selectTab({ uid, tab: databaseTabs[databaseTabs.length - 1].uid });
             }
             else
                this.selectTab({ uid, tab: workspace.tabs[workspace.tabs.length - 1].uid });
