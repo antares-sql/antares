@@ -66,7 +66,7 @@ export default [
       group: 'monetary',
       types: [
          {
-            name: 'money',
+            name: 'MONEY',
             length: false,
             unsigned: true
          }
