@@ -232,6 +232,10 @@ export class PostgreSQLClient extends BaseClient {
          await this.keepAlive();
       }, this._keepaliveMs);
 
+      connection.on('error', err => { // Intercepts errors and converts to rejections
+         Promise.reject(err);
+      });
+
       return connection;
    }
 
