@@ -1,0 +1,47 @@
+name: Create generated-rources.json
+
+on: 
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Install flatpak-node-generator
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.8'
+
+      - name: Install pipx
+        uses: CfirTsabari/actions-pipx@v1
+
+      - name: Clone flatpak-builder-tools repo and flatpak-node-generator
+        run: |
+         cd ../
+         git clone https://github.com/flatpak/flatpak-builder-tools.git
+         cd flatpak-builder-tools/node
+         pipx install .
+
+      # Install Antares
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      
+      - name: Install dependencies
+        run: npm i --lockfile-version 2 #--package-lock-only
+
+      - name: Generate generated-sources.json
+        run: flatpak-node-generator npm -r package-lock.json
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: generated-sources
+          retention-days: 3
+          path: |
+            generated-sources.json
