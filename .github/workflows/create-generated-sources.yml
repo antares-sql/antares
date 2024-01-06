@@ -16,7 +16,7 @@ jobs:
       - name: Install pipx
         uses: CfirTsabari/actions-pipx@v1
 
-      - name: Clone flatpak-builder-tools repo and flatpak-node-generator
+      - name: Install flatpak-node-generator
         run: |
          cd ../
          git clone https://github.com/flatpak/flatpak-builder-tools.git
@@ -31,12 +31,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-      
+
+      # - name: Delete old package-lock.json
+      #   run: rm package-lock.json
+
       - name: Install dependencies
-        run: npm i --lockfile-version 2 #--package-lock-only
+        run: npm i --lockfile-version 2
 
       - name: Generate generated-sources.json
-        run: flatpak-node-generator npm -r package-lock.json
+        run: flatpak-node-generator npm -r package-lock.json --electron-node-headers
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
