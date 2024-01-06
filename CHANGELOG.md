@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.21-beta.1](https://github.com/antares-sql/antares/compare/v0.7.21-beta.0...v0.7.21-beta.1) (2024-01-06)
+
+
+### Bug Fixes
+
+* **PostgreSQL:** error adding MONEY fields to a table ([0f8d2cb](https://github.com/antares-sql/antares/commit/0f8d2cb4ef5c327f96f788179be0b309689b4ce8))
+* **PostgreSQL:** exception deleting a table with one or less tabs open ([23946ff](https://github.com/antares-sql/antares/commit/23946ff2cef6d63e1529e2c8c4357d7fdedc3284))
+* **PostgreSQL:** unhandled error on connection lost, fixes [#740](https://github.com/antares-sql/antares/issues/740) ([cdd2a11](https://github.com/antares-sql/antares/commit/cdd2a11f8e33d6607337989723774d60c7c1a030))
+
 ### [0.7.21-beta.0](https://github.com/antares-sql/antares/compare/v0.7.20...v0.7.21-beta.0) (2023-12-25)
 
 
