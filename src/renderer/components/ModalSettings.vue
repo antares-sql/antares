@@ -411,14 +411,6 @@
                            /> Mastodon</a> • <a
                               class="c-hand"
                               :style="'align-items: center; display: inline-flex;'"
-                              @click="openOutside('https://twitter.com/AntaresSQL')"
-                           ><BaseIcon
-                              icon-name="mdiTwitter"
-                              class="d-inline mr-1"
-                              :size="16"
-                           /> Twitter</a> • <a
-                              class="c-hand"
-                              :style="'align-items: center; display: inline-flex;'"
                               @click="openOutside('https://antares-sql.app/')"
                            ><BaseIcon
                               icon-name="mdiWeb"
