@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.21](https://github.com/antares-sql/antares/compare/v0.7.21-beta.1...v0.7.21) (2024-01-13)
+
+
+### Features
+
+* **SQLite:** enable schema reloat button on sidebar ([20b2734](https://github.com/antares-sql/antares/commit/20b27343cd95998bd83403b7556ea35fcad9fa1b))
+
+
+### Bug Fixes
+
+* **SQLite:** unable to change integer fields length to 0, fixes [#732](https://github.com/antares-sql/antares/issues/732) ([3b9228a](https://github.com/antares-sql/antares/commit/3b9228a7230dcd9f47f5794a83b60d28207bdce1))
+
 ### [0.7.21-beta.1](https://github.com/antares-sql/antares/compare/v0.7.21-beta.0...v0.7.21-beta.1) (2024-01-06)
 
 
