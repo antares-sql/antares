@@ -34,7 +34,6 @@
                </div>
                <div :title="t('general.refresh')">
                   <BaseIcon
-                     v-if="customizations.schemas"
                      icon-name="mdiRefresh"
                      :size="18"
                      class="c-hand mr-2"

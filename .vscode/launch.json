@@ -17,15 +17,6 @@
       "sourceMaps": true,
       "type": "chrome",
       "webRoot": "${workspaceFolder}"
-    },
-    {
-      "name": "Electron: Worker",
-      "cwd": "${workspaceFolder}",
-      "port": 9224,
-      "request": "attach",
-      "sourceMaps": true,
-      "type": "node",
-      "timeout": 1000000
     }
   ],
   "compounds": [

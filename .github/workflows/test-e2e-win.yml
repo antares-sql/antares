@@ -1,9 +1,9 @@
-name: Test end-to-end [WINDOWS]
+name: Test end-to-end
 
 on: 
   push:
     branches:
-        - master
+        - develop
 
 jobs:
   release:
@@ -20,7 +20,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20
       
       - name: Install dependencies
         run: npm i

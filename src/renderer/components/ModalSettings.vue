@@ -166,19 +166,6 @@
                                     </label>
                                  </div>
                               </div>
-                              <div class="form-group column col-12 mb-0">
-                                 <div class="col-5 col-sm-12">
-                                    <label class="form-label">
-                                       {{ t('application.disableScratchpad') }}
-                                    </label>
-                                 </div>
-                                 <div class="col-3 col-sm-12">
-                                    <label class="form-switch d-inline-block" @click.prevent="toggleDisableScratchpad">
-                                       <input type="checkbox" :checked="disableScratchpad">
-                                       <i class="form-icon" />
-                                    </label>
-                                 </div>
-                              </div>
                               <div class="form-group column col-12">
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">
@@ -424,14 +411,6 @@
                            /> Mastodon</a> • <a
                               class="c-hand"
                               :style="'align-items: center; display: inline-flex;'"
-                              @click="openOutside('https://twitter.com/AntaresSQL')"
-                           ><BaseIcon
-                              icon-name="mdiTwitter"
-                              class="d-inline mr-1"
-                              :size="16"
-                           /> Twitter</a> • <a
-                              class="c-hand"
-                              :style="'align-items: center; display: inline-flex;'"
                               @click="openOutside('https://antares-sql.app/')"
                            ><BaseIcon
                               icon-name="mdiWeb"
@@ -499,7 +478,6 @@ const {
    restoreTabs,
    showTableSize,
    disableBlur,
-   disableScratchpad,
    applicationTheme,
    editorTheme,
    editorFontSize
@@ -512,7 +490,6 @@ const {
    changePageSize,
    changeRestoreTabs,
    changeDisableBlur,
-   changeDisableScratchpad,
    changeAutoComplete,
    changeLineWrap,
    changeExecuteSelected,
@@ -669,10 +646,6 @@ const toggleShowTableSize = () => {
 
 const toggleDisableBlur = () => {
    changeDisableBlur(!disableBlur.value);
-};
-
-const toggleDisableScratchpad = () => {
-   changeDisableScratchpad(!disableScratchpad.value);
 };
 
 const toggleAutoComplete = () => {

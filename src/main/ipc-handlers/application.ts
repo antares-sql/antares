@@ -36,9 +36,15 @@ export default () => {
          name: 'session',
          fileExtension: ''
       });
-      const encrypted = sessionStore.get('key') as string;
-      const key = safeStorage.decryptString(Buffer.from(encrypted, 'utf-8'));
-      event.returnValue = key;
+
+      try {
+         const encrypted = sessionStore.get('key') as string;
+         const key = safeStorage.decryptString(Buffer.from(encrypted, 'utf-8'));
+         event.returnValue = key;
+      }
+      catch (error) {
+         event.returnValue = false;
+      }
    });
 
    ipcMain.handle('show-open-dialog', (event, options) => {

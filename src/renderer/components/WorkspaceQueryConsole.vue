@@ -24,7 +24,7 @@
                tabindex="0"
                @contextmenu.prevent="contextMenu($event, wLog)"
             >
-               <span class="type-datetime">{{ moment(wLog.date).format('HH:mm:ss') }}</span>: <code class="query-console-log-sql">{{ wLog.sql }}</code>
+               <span class="type-datetime">{{ moment(wLog.date).format('HH:mm:ss') }}</span>: <code class="query-console-log-sql" v-html="highlight(wLog.sql, {html: true})" />
             </div>
          </div>
       </div>
@@ -47,6 +47,7 @@
 <script setup lang="ts">
 import * as moment from 'moment';
 import { storeToRefs } from 'pinia';
+import { highlight } from 'sql-highlight';
 import { computed, nextTick, onMounted, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 

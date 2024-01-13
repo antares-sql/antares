@@ -66,8 +66,8 @@ export interface Workspace {
    uid: string;
    client?: ClientCode;
    database?: string;
-   connectionStatus: string;
-   selectedTab: string | number;
+   connectionStatus: 'connected' | 'disconnected' | 'failed';
+   selectedTab: string;
    searchTerm: string;
    tabs: WorkspaceTab[];
    structure: WorkspaceStructure[];
@@ -119,12 +119,12 @@ export const useWorkspacesStore = defineStore('workspaces', {
          return state.workspaces.find(workspace => workspace.uid === uid).variables.find(variable => variable.name === name);
       },
       getWorkspaceTab (state) {
-         return (tUid: string) => {
+         return (tUid: string): WorkspaceTab => {
             if (!this.getSelected) return;
             const workspace = state.workspaces.find(workspace => workspace.uid === this.getSelected);
             if ('tabs' in workspace)
                return workspace.tabs.find(tab => tab.uid === tUid);
-            return {};
+            return null;
          };
       },
       getConnected: state => {
@@ -410,7 +410,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
          const workspace: Workspace = {
             uid,
             connectionStatus: 'disconnected',
-            selectedTab: 0,
+            selectedTab: '0',
             searchTerm: '',
             tabs: [],
             structure: [],
@@ -629,18 +629,43 @@ export const useWorkspacesStore = defineStore('workspaces', {
                   : false;
 
                if (existentTab) {
-                  this._replaceTab({ uid, tab: existentTab.uid, type, database: workspaceTabs.database, schema, elementName, elementType });
+                  this._replaceTab({ uid,
+                     tab: existentTab.uid,
+                     type,
+                     database: workspaceTabs.database,
+                     schema,
+                     elementName,
+                     elementType
+                  });
                   tabUid = existentTab.uid;
                }
                else {
                   tabUid = uidGen('T');
-                  this._addTab({ uid, tab: tabUid, content, type, autorun, database: workspaceTabs.database, schema, elementName, elementType });
+                  this._addTab({ uid,
+                     tab: tabUid,
+                     content,
+                     type,
+                     autorun,
+                     database: workspaceTabs.database,
+                     schema,
+                     elementName,
+                     elementType
+                  });
                }
             }
                break;
             default:
                tabUid = uidGen('T');
-               this._addTab({ uid, tab: tabUid, content, type, autorun, database: workspaceTabs.database, schema, elementName, elementType });
+               this._addTab({ uid,
+                  tab: tabUid,
+                  content,
+                  type,
+                  autorun,
+                  database: workspaceTabs.database,
+                  schema,
+                  elementName,
+                  elementType
+               });
                break;
          }
 
@@ -655,7 +680,8 @@ export const useWorkspacesStore = defineStore('workspaces', {
          if (!isSelectedExistent && workspace.tabs.length) {
             if (workspace.customizations.database) {
                const databaseTabs = workspace.tabs.filter(tab => tab.type === 'query' || tab.database === workspace.database);
-               this.selectTab({ uid, tab: databaseTabs[databaseTabs.length - 1].uid });
+               if (databaseTabs.length)
+                  this.selectTab({ uid, tab: databaseTabs[databaseTabs.length - 1].uid });
             }
             else
                this.selectTab({ uid, tab: workspace.tabs[workspace.tabs.length - 1].uid });
