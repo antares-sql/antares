@@ -572,11 +572,11 @@ const pathSelection = (event: Event & {target: {files: {path: string}[]}}, name:
    const { files } = event.target;
    if (!files.length) return;
 
-   (connection.value as unknown as {[key: string]: string})[name] = files[0].path as string;
+   (connection.value as unknown as Record<string, string>)[name] = files[0].path as string;
 };
 
 const pathClear = (name: keyof ConnectionParams) => {
-   (connection.value as unknown as {[key: string]: string})[name] = '';
+   (connection.value as unknown as Record<string, string>)[name] = '';
 };
 
 setDefaults();

@@ -59,7 +59,7 @@ SET row_security = off;\n\n\n`;
       let createSql = '';
       const sequences = [];
       const columnsSql = [];
-      const arrayTypes: {[key: string]: string} = {
+      const arrayTypes: Record<string, string> = {
          _int2: 'smallint',
          _int4: 'integer',
          _int8: 'bigint',
@@ -440,7 +440,7 @@ SET row_security = off;\n\n\n`;
    escapeAndQuote (val: string) {
       // eslint-disable-next-line no-control-regex
       const CHARS_TO_ESCAPE = /[\0\b\t\n\r\x1a"'\\]/g;
-      const CHARS_ESCAPE_MAP: {[key: string]: string} = {
+      const CHARS_ESCAPE_MAP: Record<string, string> = {
          '\0': '\\0',
          '\b': '\\b',
          '\t': '\\t',

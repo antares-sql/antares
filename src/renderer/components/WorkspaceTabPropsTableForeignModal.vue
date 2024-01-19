@@ -258,7 +258,7 @@ const indexesPanel: Ref<HTMLDivElement> = ref(null);
 const foreignProxy = ref([]);
 const selectedForeignID = ref('');
 const modalInnerHeight = ref(400);
-const refFields = ref({} as {[key: string]: TableField[]});
+const refFields = ref({} as Record<string, TableField[]>);
 
 const foreignActions = computed(() => props.workspace.customizations.foreignActions);
 const selectedForeignObj = computed(() => foreignProxy.value.find(foreign => foreign._antares_id === selectedForeignID.value));

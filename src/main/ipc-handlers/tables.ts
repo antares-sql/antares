@@ -10,7 +10,7 @@ import * as moment from 'moment';
 
 import { validateSender } from '../libs/misc/validateSender';
 
-export default (connections: {[key: string]: antares.Client}) => {
+export default (connections: Record<string, antares.Client>) => {
    ipcMain.handle('get-table-columns', async (event, params) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
@@ -249,7 +249,7 @@ export default (connections: {[key: string]: antares.Client}) => {
 
       if (params.primary) {
          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-         const idString = params.rows.map((row: {[key: string]: any}) => {
+         const idString = params.rows.map((row: Record<string, any>) => {
             const fieldName = Object.keys(row)[0].includes('.') ? `${params.table}.${params.primary}` : params.primary;
 
             return typeof row[fieldName] === 'string'
@@ -304,10 +304,10 @@ export default (connections: {[key: string]: antares.Client}) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try { // TODO: move to client classes
-         const rows: {[key: string]: string | number | boolean | Date | Buffer}[] = [];
+         const rows: Record<string, string | number | boolean | Date | Buffer>[] = [];
 
          for (let i = 0; i < +params.repeat; i++) {
-            const insertObj: {[key: string]: string | number | boolean | Date | Buffer} = {};
+            const insertObj: Record<string, string | number | boolean | Date | Buffer> = {};
 
             for (const key in params.row) {
                const type = params.fields[key];
@@ -367,7 +367,7 @@ export default (connections: {[key: string]: antares.Client}) => {
                   insertObj[key] = escapedParam;
                }
                else { // Faker value
-                  const parsedParams: {[key: string]: string | number | boolean | Date | Buffer} = {};
+                  const parsedParams: Record<string, string | number | boolean | Date | Buffer> = {};
                   let fakeValue;
 
                   if (params.locale)
@@ -437,12 +437,12 @@ export default (connections: {[key: string]: antares.Client}) => {
          if (description)
             query.select(`LEFT(${description}, 20) AS foreign_description`);
 
-         const results = await query.run<{[key: string]: string}>();
+         const results = await query.run<Record<string, string>>();
 
-         const parsedResults: {[key: string]: string}[] = [];
+         const parsedResults: Record<string, string>[] = [];
 
          for (const row of results.rows) {
-            const remappedRow: {[key: string]: string} = {};
+            const remappedRow: Record<string, string> = {};
 
             for (const key in row)
                remappedRow[key.toLowerCase()] = row[key];// Thanks Firebird -.-

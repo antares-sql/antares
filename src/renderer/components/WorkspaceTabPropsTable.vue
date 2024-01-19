@@ -382,7 +382,7 @@ const getFieldsData = async () => {
       if (status === 'success') {
          const indexesObj = response
             .filter((index: TableIndex) => index.type !== 'FOREIGN KEY')
-            .reduce((acc: {[key: string]: TableIndex[]}, curr: TableIndex) => {
+            .reduce((acc: Record<string, TableIndex[]>, curr: TableIndex) => {
                acc[curr.name] = acc[curr.name] || [];
                acc[curr.name].push(curr);
                return acc;

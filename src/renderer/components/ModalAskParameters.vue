@@ -73,7 +73,7 @@ const props = defineProps({
 const emit = defineEmits(['confirm', 'close']);
 
 const firstInput: Ref<HTMLInputElement[]> = ref(null);
-const values: Ref<{[key: string]: string}> = ref({});
+const values: Ref<Record<string, string>> = ref({});
 
 const inParameters = computed(() => {
    return props.localRoutine.parameters.filter(param => param.context === 'IN');

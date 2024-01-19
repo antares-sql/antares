@@ -113,7 +113,7 @@ const selectedGroup: Ref<string> = ref('manual');
 const selectedMethod: Ref<string> = ref('');
 const selectedValue: Ref<string> = ref('');
 const debounceTimeout: Ref<NodeJS.Timeout> = ref(null);
-const methodParams: Ref<{[key: string]: string}> = ref({});
+const methodParams: Ref<Record<string, string>> = ref({});
 const enumArray: Ref<string[]> = ref(null);
 
 const fakerGroups = computed(() => {

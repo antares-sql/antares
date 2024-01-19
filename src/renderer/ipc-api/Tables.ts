@@ -64,7 +64,7 @@ export default class {
       primary?: string;
       field: string;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      rows: {[key: string]: any};
+      rows: Record<string, any>;
    }): Promise<IpcResponse> {
       return ipcRenderer.invoke('delete-table-rows', unproxify(params));
    }
@@ -73,9 +73,9 @@ export default class {
       uid: string;
       schema: string;
       table: string;
-      row: {[key: string]: string | number | boolean | Date | Buffer};
+      row: Record<string, string | number | boolean | Date | Buffer>;
       repeat: number;
-      fields: {[key: string]: string};
+      fields: Record<string, string>;
       locale: string;
    }): Promise<IpcResponse> {
       return ipcRenderer.invoke('insert-table-fake-rows', unproxify(params));

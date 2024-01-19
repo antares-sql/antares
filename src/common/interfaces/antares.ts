@@ -363,7 +363,7 @@ export interface QueryBuilderObject {
    offset: number;
    join: string[];
    update: string[];
-   insert: {[key: string]: string | boolean | number }[];
+   insert: Record<string, string | boolean | number>[];
    delete: boolean;
 }
 

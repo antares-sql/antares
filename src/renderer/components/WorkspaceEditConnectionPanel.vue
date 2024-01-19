@@ -569,11 +569,11 @@ const pathSelection = (event: Event & {target: {files: {path: string}[]}}, name:
    const { files } = event.target;
    if (!files.length) return;
 
-   (localConnection.value as unknown as {[key: string]: string})[name] = files[0].path;
+   (localConnection.value as unknown as Record<string, string>)[name] = files[0].path;
 };
 
 const pathClear = (name: keyof ConnectionParams) => {
-   (localConnection.value as unknown as {[key: string]: string})[name] = '';
+   (localConnection.value as unknown as Record<string, string>)[name] = '';
 };
 
 localConnection.value = JSON.parse(JSON.stringify(props.connection));

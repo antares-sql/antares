@@ -695,7 +695,7 @@ const openAsPermanentTab = (tab: WorkspaceTab) => {
       routine: 'routine-props',
       procedure: 'routine-props',
       scheduler: 'scheduler-props'
-   } as {[key: string]: string};
+   } as Record<string, string>;
 
    newTab({
       uid: props.connection.uid,

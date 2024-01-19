@@ -41,7 +41,7 @@ export const escapeAndQuote = (val: string, client: ClientCode) => {
    const { stringsWrapper: sw } = customizations[client];
    // eslint-disable-next-line no-control-regex
    const CHARS_TO_ESCAPE = /[\0\b\t\n\r\x1a"'\\]/g;
-   const CHARS_ESCAPE_MAP: {[key: string]: string} = {
+   const CHARS_ESCAPE_MAP: Record<string, string> = {
       '\0': '\\0',
       '\b': '\\b',
       '\t': '\\t',
@@ -153,9 +153,9 @@ export const valueToSqlString = (args: {
 };
 
 export const jsonToSqlInsert = (args: {
-      json: { [key: string]: any}[];
+      json: Record<string, any>[];
       client: ClientCode;
-      fields: { [key: string]: {type: string; datePrecision: number}};
+      fields: Record<string, {type: string; datePrecision: number}>;
       table: string;
       options?: {sqlInsertAfter: number; sqlInsertDivider: 'bytes' | 'rows'};
    }) => {

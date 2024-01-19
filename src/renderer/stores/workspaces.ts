@@ -86,11 +86,11 @@ export interface Workspace {
       arch: string;
       os: string;
    };
-   engines?: {[key: string]: string | boolean | number}[];
+   engines?: Record<string, string | boolean | number>[];
 }
 
 const persistentStore = new Store({ name: 'tabs' });
-const tabIndex: {[key: string]: number} = {};
+const tabIndex: Record<string, number> = {};
 
 export const useWorkspacesStore = defineStore('workspaces', {
    state: () => ({

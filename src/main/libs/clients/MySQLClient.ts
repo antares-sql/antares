@@ -15,7 +15,7 @@ export class MySQLClient extends BaseClient {
    _connection?: mysql.Connection | mysql.Pool;
    _params: mysql.ConnectionOptions & {schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean};
 
-   private types: {[key: number]: string} = {
+   private types: Record<number, string> = {
       0: 'DECIMAL',
       1: 'TINYINT',
       2: 'SMALLINT',
@@ -582,7 +582,7 @@ export class MySQLClient extends BaseClient {
                }
             })
             .filter(Boolean)
-            .reduce((acc: {[key: string]: { name: string; type: string; length: string; default: string}}, curr) => {
+            .reduce((acc: Record<string, { name: string; type: string; length: string; default: string}>, curr) => {
                acc[curr.name] = curr;
                return acc;
             }, {});

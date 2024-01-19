@@ -18,7 +18,7 @@ export interface TableDeleteParams {
    primary?: string;
    field: string;
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   rows: {[key: string]: any};
+   rows: Record<string, any>;
 }
 
 export type TableFilterOperator = '=' | '!=' | '>' | '<' | '>=' | '<=' | 'IN' | 'NOT IN' | 'LIKE' | 'NOT LIKE' | 'RLIKE' | 'NOT RLIKE' | 'BETWEEN' | 'IS NULL' | 'IS NOT NULL'
@@ -35,17 +35,16 @@ export interface InsertRowsParams {
    uid: string;
    schema: string;
    table: string;
-   row: {[key: string]: {
-         group: string;
-         method: string;
-         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-         params: any;
-         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-         value: any;
-         length: number;
-      };
-   };
+   row: Record<string, {
+      group: string;
+      method: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      params: any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      value: any;
+      length: number;
+   }>;
    repeat: number;
-   fields: {[key: string]: string};
+   fields: Record<string, string>;
    locale: UsableLocale;
 }

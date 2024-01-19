@@ -658,7 +658,7 @@ export class SQLiteClient extends BaseClient {
                let queryAllResult: any[];
                let affectedRows;
                let fields;
-               const detectedTypes: {[key: string]: string} = {};
+               const detectedTypes: Record<string, string> = {};
 
                try {
                   const stmt = connection.prepare(query);

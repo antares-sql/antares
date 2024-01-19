@@ -6,7 +6,7 @@ import { Worker } from 'worker_threads';
 
 import { validateSender } from '../libs/misc/validateSender';
 
-export default (connections: {[key: string]: antares.Client}) => {
+export default (connections: Record<string, antares.Client>) => {
    let exporter: Worker = null;
    let importer: Worker = null;
 

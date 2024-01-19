@@ -13,7 +13,7 @@ import updates from './updates';
 import users from './users';
 import views from './views';
 
-const connections: {[key: string]: antares.Client} = {};
+const connections: Record<string, antares.Client> = {};
 
 export default () => {
    connection(connections);

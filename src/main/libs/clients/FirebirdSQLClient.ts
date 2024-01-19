@@ -13,7 +13,7 @@ export class FirebirdSQLClient extends BaseClient {
    protected _connection?: firebird.Database | firebird.ConnectionPool;
    _params: firebird.Options;
 
-   private _types: {[key: number]: string} ={
+   private _types: Record<number, string> ={
       452: 'CHAR', // Array of char
       448: 'VARCHAR',
       500: 'SMALLINT',
