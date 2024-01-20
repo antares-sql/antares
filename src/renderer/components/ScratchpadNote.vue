@@ -256,9 +256,9 @@ const highlightWord = (string: string) => {
 
      code, pre {
        max-width: 100%;
+       width: 100%;
        display: inline-block;
        font-size: 100%;
-       // color: $primary-color;
        opacity: 0.8;
        font-weight: 600;
        white-space: break-spaces;
@@ -342,6 +342,8 @@ const highlightWord = (string: string) => {
  <style lang="scss">
  .tile-paragraph {
    white-space: initial;
+   word-break: break-word;
+   user-select: text;
 
     h1, h2, h3, h4, h5, h6, p, li {
        margin: 0;
