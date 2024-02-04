@@ -56,8 +56,8 @@ const { t } = useI18n();
 
 const props = defineProps({
    size: {
-      type: String as PropType<'small' | 'medium' | '400' | 'large'>,
-      validator: (prop: string) => ['small', 'medium', '400', 'large'].includes(prop),
+      type: String as PropType<'small' | 'medium' | '400' | 'large' | 'resize'>,
+      validator: (prop: string) => ['small', 'medium', '400', 'large', 'resize'].includes(prop),
       default: 'small'
    },
    hideFooter: {
@@ -88,6 +88,8 @@ const modalSizeClass = computed(() => {
       return 'modal-sm';
    if (props.size === '400')
       return 'modal-400';
+   if (props.size === 'resize')
+      return 'modal-resize';
    else if (props.size === 'large')
       return 'modal-lg';
    else return '';
@@ -118,6 +120,12 @@ onBeforeUnmount(() => {
 <style scoped>
 .modal-400 .modal-container {
   max-width: 400px;
+}
+
+.modal-resize .modal-container {
+  max-width: 95vw;
+  max-height: 95vh;
+  width: auto;
 }
 
 .modal.modal-sm .modal-container {

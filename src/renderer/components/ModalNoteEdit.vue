@@ -1,6 +1,6 @@
 <template>
    <ConfirmModal
-      size="medium"
+      size="resize"
       :disable-autofocus="true"
       :close-on-confirm="!!localNote.note.length"
       :confirm-text="t('general.save')"
@@ -52,6 +52,10 @@
                   v-model="localNote.note"
                   :mode="editorMode"
                   :show-line-numbers="false"
+                  :auto-focus="true"
+                  :height="400"
+                  :width="640"
+                  :resizable="true"
                />
             </div>
          </form>
