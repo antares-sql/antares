@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.22-beta.0](https://github.com/antares-sql/antares/compare/v0.7.21...v0.7.22-beta.0) (2024-02-04)
+
+
+### Features
+
+* **UI:** resizable textarea in new/edito note, closes [#747](https://github.com/antares-sql/antares/issues/747) ([1a0c5da](https://github.com/antares-sql/antares/commit/1a0c5da2f14b99d6f5581b2bf6e916d67d097245))
+
+
+### Improvements
+
+* **UI:** improved notes, fixes [#746](https://github.com/antares-sql/antares/issues/746) ([bb36e98](https://github.com/antares-sql/antares/commit/bb36e98bebc5e1e55735e98d272428df2ab682e8))
+
 ### [0.7.21](https://github.com/antares-sql/antares/compare/v0.7.21-beta.1...v0.7.21) (2024-01-13)
 
 
