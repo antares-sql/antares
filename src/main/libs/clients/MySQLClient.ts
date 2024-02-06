@@ -591,7 +591,7 @@ export class MySQLClient extends BaseClient {
       return rows.map((field) => {
          const numLengthMatch = field.COLUMN_TYPE.match(/int\(([^)]+)\)/);
          const numLength = numLengthMatch ? +numLengthMatch.pop() : field.NUMERIC_PRECISION || null;
-         const enumValues = /(enum)/.test(field.COLUMN_TYPE)
+         const enumValues = /(enum|set)/.test(field.COLUMN_TYPE)
             ? field.COLUMN_TYPE.match(/\(([^)]+)\)/)[0].slice(1, -1)
             : null;
 
