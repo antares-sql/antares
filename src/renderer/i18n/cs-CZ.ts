@@ -233,7 +233,7 @@ export const csCZ = {
       newFunction: 'Nová funkce',
       newScheduler: 'Nový scheduler',
       newTriggerFunction: 'Nová trigger funkce',
-      thereIsNoQueriesYet: 'Nejsou tu žádné dotazy',
+      thereAreNoQueriesYet: 'Nejsou tu žádné dotazy',
       searchForQueries: 'Hledání dotazů',
       killProcess: 'Zabít proces',
       exportSchema: 'Exportovat schéma',

@@ -232,7 +232,7 @@ export const caES = {
       newFunction: 'Nova funció',
       newScheduler: 'Nou planificador',
       newTriggerFunction: 'Nova funció de disparador',
-      thereIsNoQueriesYet: 'Encara no hi ha consultes',
+      thereAreNoQueriesYet: 'Encara no hi ha consultes',
       searchForQueries: 'Cerca consultes',
       killProcess: 'Mata procés',
       exportSchema: 'Exporta esquema',

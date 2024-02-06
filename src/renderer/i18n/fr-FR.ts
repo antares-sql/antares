@@ -229,7 +229,7 @@ export const frFR = {
       newFunction: 'Nouvelle function',
       newScheduler: 'Nouveau déclencheur',
       newTriggerFunction: 'Nouvelle fonction de déclencheur',
-      thereIsNoQueriesYet: 'Il n\'y a pas encore de requête',
+      thereAreNoQueriesYet: 'Il n\'y a pas encore de requête',
       searchForQueries: 'Rechercher des requêtes',
       killProcess: 'Terminer un processus',
       exportSchema: 'Exporter un schéma',

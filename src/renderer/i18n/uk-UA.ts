@@ -238,7 +238,7 @@ export const ukUA = {
       newFunction: 'Нова функція',
       newScheduler: 'Новий планувальник',
       newTriggerFunction: 'Нова функція тригера',
-      thereIsNoQueriesYet: 'Поки що немає запитів',
+      thereAreNoQueriesYet: 'Поки що немає запитів',
       searchForQueries: 'Пошук запитів',
       killProcess: 'Завершити процес',
       exportSchema: 'Експорт схеми',

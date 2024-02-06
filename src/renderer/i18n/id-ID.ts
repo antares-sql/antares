@@ -227,7 +227,7 @@ export const idID = {
       newFunction: 'Fungsi baru',
       newScheduler: 'Penjadwal baru',
       newTriggerFunction: 'Fungsi pemicu baru',
-      thereIsNoQueriesYet: 'Belum ada kueri',
+      thereAreNoQueriesYet: 'Belum ada kueri',
       searchForQueries: 'Telusuri kueri',
       killProcess: 'Membunuh proses',
       exportSchema: 'Skema ekspor',

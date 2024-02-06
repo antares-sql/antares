@@ -100,7 +100,7 @@ export const nlNL = {
       readOnlyMode: 'Alleen lezen modus',
       untrustedConnection: 'Niet vertrouwde verbinding',
       allConnections: 'Alle verbindingen',
-      searchForConnections: 'Search for connections'
+      searchForConnections: 'Zoek naar verbindingen'
    },
    database: {
       schema: 'Schema',
@@ -233,8 +233,8 @@ export const nlNL = {
       newFunction: 'Nieuwe function',
       newScheduler: 'Nieuwe scheduler',
       newTriggerFunction: 'Nieuwe trigger function',
-      thereIsNoQueriesYet: 'There is no queries yet',
-      searchForQueries: 'Search for queries',
+      thereAreNoQueriesYet: 'Er zijn nog geen queries',
+      searchForQueries: 'Zoek naar queries',
       killProcess: 'Sluit proces af',
       exportSchema: 'Exporteer schema',
       importSchema: 'Importeer schema',

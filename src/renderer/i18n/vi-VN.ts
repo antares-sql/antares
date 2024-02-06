@@ -222,7 +222,7 @@ export const viVN = {
       newFunction: 'Chức năng mới',
       newScheduler: 'Bộ lập lịch mới',
       newTriggerFunction: 'Chức năng kích hoạt mới',
-      thereIsNoQueriesYet: 'Không có truy vấn nào',
+      thereAreNoQueriesYet: 'Không có truy vấn nào',
       searchForQueries: 'Tìm kiếm truy vấn',
       killProcess: 'Huỷ quá trình',
       exportSchema: 'Xuất lược đồ',

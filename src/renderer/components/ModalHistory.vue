@@ -115,7 +115,7 @@
                      <BaseIcon icon-name="mdiHistory" :size="48" />
                   </div>
                   <p class="empty-title h5">
-                     {{ t('database.thereIsNoQueriesYet') }}
+                     {{ t('database.thereAreNoQueriesYet') }}
                   </p>
                </div>
             </div>

@@ -228,7 +228,7 @@ export const itIT = {
       newFunction: 'Nuova funzione',
       newScheduler: 'Nuovo scheduler',
       newTriggerFunction: 'Nuova funzione di trigger',
-      thereIsNoQueriesYet: 'Non ci sono ancora query',
+      thereAreNoQueriesYet: 'Non ci sono ancora query',
       searchForQueries: 'Cerca query',
       killProcess: 'Uccidi processo',
       exportSchema: 'Esporta schema',
