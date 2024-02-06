@@ -229,7 +229,7 @@ export const ruRU = {
       newFunction: 'Новая функция',
       newScheduler: 'Новый планировщик',
       newTriggerFunction: 'Новая функция триггера',
-      thereIsNoQueriesYet: 'Запросы пока отсутствуют',
+      thereAreNoQueriesYet: 'Запросы пока отсутствуют',
       searchForQueries: 'Поиск по запросам',
       killProcess: 'Убить процесс',
       exportSchema: 'Экспорт схемы',

@@ -236,7 +236,7 @@ export const zhCN = {
       newFunction: '新函数',
       newScheduler: '新调度器',
       newTriggerFunction: '新触发器函数',
-      thereIsNoQueriesYet: '目前还没有任何查询',
+      thereAreNoQueriesYet: '目前还没有任何查询',
       searchForQueries: '搜索查询',
       killProcess: '终止进程',
       exportSchema: '导出模式(schema)',

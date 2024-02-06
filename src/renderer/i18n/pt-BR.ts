@@ -231,7 +231,7 @@ export const ptBR = {
       newFunction: 'Nova função',
       newScheduler: 'Novo agendento',
       newTriggerFunction: 'Novo gatinho de função',
-      thereIsNoQueriesYet: 'Nenhuma consulta ainda',
+      thereAreNoQueriesYet: 'Nenhuma consulta ainda',
       searchForQueries: 'Pesquisar por consultas',
       killProcess: 'Matar processo',
       exportSchema: 'Exportar banco de dados',

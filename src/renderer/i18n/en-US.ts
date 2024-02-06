@@ -251,7 +251,7 @@ export const enUS = {
       newFunction: 'New function',
       newScheduler: 'New scheduler',
       newTriggerFunction: 'New trigger function',
-      thereIsNoQueriesYet: 'There is no queries yet',
+      thereAreNoQueriesYet: 'There are no queries yet',
       searchForQueries: 'Search for queries',
       killProcess: 'Kill process',
       exportSchema: 'Export schema',

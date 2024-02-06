@@ -228,7 +228,7 @@ export const koKR = {
       newFunction: '새 함수',
       newScheduler: '새 스케줄러',
       newTriggerFunction: '새 트리거 함수',
-      thereIsNoQueriesYet: '아직 쿼리가 없습니다',
+      thereAreNoQueriesYet: '아직 쿼리가 없습니다',
       searchForQueries: '쿼리 검색',
       killProcess: '프로세스 종료',
       exportSchema: '스키마 내보내기',
