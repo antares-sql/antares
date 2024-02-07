@@ -382,7 +382,7 @@ const isBaseSelectField = computed(() => {
 });
 
 const enumArray = computed(() => {
-   if (props.fields[editingField.value] && props.fields[editingField.value].enumValues)
+   if (props.fields[editingField.value] && props.fields[editingField.value].enumValues && props.fields[editingField.value].type !== 'SET')
       return props.fields[editingField.value].enumValues.replaceAll('\'', '').split(',');
    return false;
 });
