@@ -260,11 +260,11 @@ export class MySQLClient extends BaseClient {
       return connection;
    }
 
-   private async getConnection (args: antares.QueryParams, retry?: boolean): Promise<mysql.Pool | mysql.PoolConnection | mysql.Connection> {
+   async getConnection (args?: antares.QueryParams, retry?: boolean): Promise<mysql.Pool | mysql.PoolConnection | mysql.Connection> {
       let connection;
 
       try {
-         if (!args.autocommit && args.tabUid) { // autocommit OFF
+         if (args && !args.autocommit && args.tabUid) { // autocommit OFF
             if (this._connectionsToCommit.has(args.tabUid))
                connection = this._connectionsToCommit.get(args.tabUid);
             else {
@@ -276,12 +276,12 @@ export class MySQLClient extends BaseClient {
          else// autocommit ON
             connection = this.isPool ? await (this._connection as mysql.Pool).getConnection() : this._connection;
 
-         if (args.tabUid && this.isPool) {
+         if (args && args.tabUid && this.isPool) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             this._runningConnections.set(args.tabUid, (connection as any).connection.connectionId);
          }
 
-         if (args.schema)
+         if (args && args.schema)
             await connection.query(`USE \`${args.schema}\``);
 
          return connection;
