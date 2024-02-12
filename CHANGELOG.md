@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.22-beta.1](https://github.com/antares-sql/antares/compare/v0.7.22-beta.0...v0.7.22-beta.1) (2024-02-12)
+
+
+### Features
+
+* update dutch translation + fix spelling mistake ([30ada13](https://github.com/antares-sql/antares/commit/30ada13663e88f89beb3dd7291010837059585d5))
+
+
+### Bug Fixes
+
+* some issues related to previous commit ([259d051](https://github.com/antares-sql/antares/commit/259d051a21e334496d3a52b662f1855ba9a9046d))
+* unable to edit tables containing SET fields, fixes [#755](https://github.com/antares-sql/antares/issues/755) ([d698f27](https://github.com/antares-sql/antares/commit/d698f2798a2423f86e6d786dd3ab80439b372a08))
+
+
+### Improvements
+
+* **MySQL:** improvements in connection handling ([876d5ea](https://github.com/antares-sql/antares/commit/876d5ea48185334e9e2fc981c4282a9c42d22b10))
+
 ### [0.7.22-beta.0](https://github.com/antares-sql/antares/compare/v0.7.21...v0.7.22-beta.0) (2024-02-04)
 
 
