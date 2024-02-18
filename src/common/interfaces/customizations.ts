@@ -19,6 +19,7 @@ export interface Customizations {
    sshConnection?: boolean;
    fileConnection?: boolean;
    cancelQueries?: boolean;
+   singleConnectionMode?: boolean;
    // Tools
    processesList?: boolean;
    usersManagement?: boolean;

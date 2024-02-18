@@ -163,19 +163,27 @@
                            >
                         </div>
                      </div>
-                     <div v-if="clientCustomizations.readOnlyMode" class="form-group columns">
+                     <div v-if="clientCustomizations.readOnlyMode" class="form-group columns mb-0">
                         <div class="column col-5 col-sm-12" />
                         <div class="column col-7 col-sm-12">
-                           <label class="form-checkbox form-inline">
+                           <label class="form-checkbox form-inline my-0">
                               <input v-model="connection.readonly" type="checkbox"><i class="form-icon" /> {{ t('connection.readOnlyMode') }}
                            </label>
                         </div>
                      </div>
-                     <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
+                     <div v-if="!clientCustomizations.fileConnection" class="form-group columns mb-0">
                         <div class="column col-5 col-sm-12" />
                         <div class="column col-7 col-sm-12">
-                           <label class="form-checkbox form-inline">
+                           <label class="form-checkbox form-inline my-0">
                               <input v-model="connection.ask" type="checkbox"><i class="form-icon" /> {{ t('connection.askCredentials') }}
+                           </label>
+                        </div>
+                     </div>
+                     <div v-if="clientCustomizations.singleConnectionMode" class="form-group columns mb-0">
+                        <div class="column col-5 col-sm-12" />
+                        <div class="column col-7 col-sm-12">
+                           <label class="form-checkbox form-inline my-0">
+                              <input v-model="connection.singleConnectionMode" type="checkbox"><i class="form-icon" /> {{ t('connection.singleConnection') }}
                            </label>
                         </div>
                      </div>

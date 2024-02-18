@@ -146,7 +146,7 @@ export default (connections: Record<string, antares.Client>) => {
             uid: conn.uid,
             client: conn.client,
             params,
-            poolSize: 5
+            poolSize: conn.singleConnectionMode ? 0 : 5
          });
 
          await connection.connect();

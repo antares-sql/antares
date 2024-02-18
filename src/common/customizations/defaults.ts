@@ -19,6 +19,7 @@ export const defaults: Customizations = {
    sshConnection: false,
    fileConnection: false,
    cancelQueries: false,
+   singleConnectionMode: false,
    // Tools
    processesList: false,
    usersManagement: false,

@@ -52,6 +52,7 @@ export interface ConnectionParams {
    password: string;
    ask: boolean;
    readonly: boolean;
+   singleConnectionMode: boolean;
    ssl: boolean;
    cert?: string;
    key?: string;
