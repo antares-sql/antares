@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.22-beta.2](https://github.com/antares-sql/antares/compare/v0.7.22-beta.1...v0.7.22-beta.2) (2024-02-18)
+
+
+### Features
+
+* **MySQL:** option to enable single connection mode ([d3f71e6](https://github.com/antares-sql/antares/commit/d3f71e65cef88838f03f95a4b34e197fb61878f8))
+
 ### [0.7.22-beta.1](https://github.com/antares-sql/antares/compare/v0.7.22-beta.0...v0.7.22-beta.1) (2024-02-12)
 
 
