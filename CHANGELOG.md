@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.22](https://github.com/antares-sql/antares/compare/v0.7.22-beta.2...v0.7.22) (2024-02-26)
+
+
+### Bug Fixes
+
+* delete record modal pressing del when editing a field, fixes [#767](https://github.com/antares-sql/antares/issues/767) ([586f901](https://github.com/antares-sql/antares/commit/586f901bae9a80c0e53ac1d804cbae3f05e26d8e))
+
 ### [0.7.22-beta.2](https://github.com/antares-sql/antares/compare/v0.7.22-beta.1...v0.7.22-beta.2) (2024-02-18)
 
 
