@@ -55,10 +55,9 @@ export const useApplicationStore = defineStore('application', {
       },
       showScratchpad (tag?: string) {
          this.isScratchpad = true;
-         if (tag) {
-            const { selectedTag } = storeToRefs(useScratchpadStore());
-            selectedTag.value = tag;
-         }
+         if (!tag) tag = 'all';
+         const { selectedTag } = storeToRefs(useScratchpadStore());
+         selectedTag.value = tag;
       },
       hideScratchpad () {
          this.isScratchpad = false;

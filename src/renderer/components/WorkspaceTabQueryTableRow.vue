@@ -43,6 +43,7 @@
                   autofocus
                   class="editable-field form-input input-sm px-1"
                   @blur="editOFF"
+                  @keyup.delete.stop
                >
                <BaseSelect
                   v-else-if="inputProps.type === 'boolean'"
@@ -50,6 +51,7 @@
                   :options="['true', 'false']"
                   class="form-select small-select editable-field"
                   @blur="editOFF"
+                  @keyup.delete.stop
                />
                <BaseSelect
                   v-else-if="enumArray"
@@ -58,6 +60,7 @@
                   class="form-select small-select editable-field"
                   dropdown-class="small-select"
                   @blur="editOFF"
+                  @keyup.delete.stop
                />
                <input
                   v-else
@@ -67,6 +70,7 @@
                   autofocus
                   class="editable-field form-input input-sm px-1"
                   @blur="editOFF"
+                  @keyup.delete.stop
                >
             </template>
          </template>
