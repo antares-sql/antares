@@ -142,7 +142,7 @@ const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 const { trapRef } = useFocusTrap({ disableAutofocus: true });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const localRow: Ref<{[key: string]: any}> = ref({});
+const localRow: Ref<Record<string, any>> = ref({});
 const fieldsToExclude = ref([]);
 const nInserts = ref(1);
 const isInserting = ref(false);
@@ -225,7 +225,7 @@ const insertRows = async () => {
          delete rowToInsert[key];
    });
 
-   const fieldTypes: {[key: string]: string} = {};
+   const fieldTypes: Record<string, string> = {};
    props.fields.forEach(field => {
       fieldTypes[field.name] = field.type;
    });
@@ -290,7 +290,7 @@ onMounted(() => {
       }
    }, 50);
 
-   const rowObj: {[key: string]: unknown} = {};
+   const rowObj: Record<string, unknown> = {};
 
    if (!props.rowToDuplicate) {
       // Set default values

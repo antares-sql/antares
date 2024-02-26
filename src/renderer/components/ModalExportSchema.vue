@@ -327,7 +327,7 @@ const tables: Ref<{
 }[]> = ref([]);
 const options: Ref<Partial<ExportOptions>> = ref({
    schema: selectedSchema.value,
-   includes: {} as {[key: string]: boolean},
+   includes: {} as Record<string, boolean>,
    outputFormat: 'sql' as 'sql' | 'sql.zip',
    sqlInsertAfter: 250,
    sqlInsertDivider: 'bytes' as 'bytes' | 'rows'

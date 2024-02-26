@@ -1,4 +1,4 @@
-export const localesNames: {[key: string]: string} = {
+export const localesNames: Record<string, string> = {
    'en-US': 'English',
    'it-IT': 'Italiano',
    'ar-SA': 'العربية',

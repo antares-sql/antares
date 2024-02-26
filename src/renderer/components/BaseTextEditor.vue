@@ -4,7 +4,11 @@
          :id="`editor-${id}`"
          class="editor"
          :class="editorClass"
-         :style="{height: `${height}px`}"
+         :style="{
+            height: `${height}px`,
+            width: width ? `${width}px` : null,
+            resize: resizable ? 'both' : 'none'
+         }"
       />
    </div>
 </template>
@@ -17,7 +21,7 @@ import 'ace-builds/webpack-resolver';
 
 import { uidGen } from 'common/libs/uidGen';
 import { storeToRefs } from 'pinia';
-import { onMounted, watch } from 'vue';
+import { PropType, onMounted, watch } from 'vue';
 
 import { useSettingsStore } from '@/stores/settings';
 
@@ -25,10 +29,12 @@ const props = defineProps({
    modelValue: String,
    mode: { type: String, default: 'text' },
    editorClass: { type: String, default: '' },
+   resizable: { type: Boolean, default: false },
    autoFocus: { type: Boolean, default: false },
    readOnly: { type: Boolean, default: false },
    showLineNumbers: { type: Boolean, default: true },
-   height: { type: Number, default: 200 }
+   height: { type: Number, default: 200 },
+   width: { type: [Number, Boolean] as PropType<number|false>, default: false }
 });
 const emit = defineEmits(['update:modelValue']);
 const settingsStore = useSettingsStore();
@@ -132,8 +138,10 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .editor-wrapper {
-  .editor {
-    width: 100%;
-  }
+   .editor {
+      width: 100%;
+      height: 100%;
+      max-width: 90vw;
+   }
 }
 </style>

@@ -198,7 +198,7 @@ export const jaJP = {
       newFunction: '新しい関数',
       newScheduler: '新規スケジューラ',
       newTriggerFunction: '新しいトリガー機能',
-      thereIsNoQueriesYet: 'まだ問い合わせはありません',
+      thereAreNoQueriesYet: 'まだ問い合わせはありません',
       searchForQueries: 'クエリの検索',
       killProcess: 'プロセスの停止'
    },

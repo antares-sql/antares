@@ -6,7 +6,7 @@ import { SslOptions } from 'mysql2';
 import { ClientsFactory } from '../libs/ClientsFactory';
 import { validateSender } from '../libs/misc/validateSender';
 
-export default (connections: {[key: string]: antares.Client}) => {
+export default (connections: Record<string, antares.Client>) => {
    ipcMain.handle('test-connection', async (event, conn: antares.ConnectionParams) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
@@ -146,7 +146,7 @@ export default (connections: {[key: string]: antares.Client}) => {
             uid: conn.uid,
             client: conn.client,
             params,
-            poolSize: 5
+            poolSize: conn.singleConnectionMode ? 0 : 5
          });
 
          await connection.connect();

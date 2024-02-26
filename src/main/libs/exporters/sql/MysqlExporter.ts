@@ -354,7 +354,7 @@ CREATE TABLE \`${view.Name}\`(
    escapeAndQuote (val: string) {
       // eslint-disable-next-line no-control-regex
       const CHARS_TO_ESCAPE = /[\0\b\t\n\r\x1a"'\\]/g;
-      const CHARS_ESCAPE_MAP: {[key: string]: string} = {
+      const CHARS_ESCAPE_MAP: Record<string, string> = {
          '\0': '\\0',
          '\b': '\\b',
          '\t': '\\t',

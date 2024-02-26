@@ -116,7 +116,8 @@ export const enUS = {
       readOnlyMode: 'Read-only mode',
       allConnections: 'All connections',
       searchForConnections: 'Search for connections',
-      keepAliveInterval: 'Keep alive interval'
+      keepAliveInterval: 'Keep alive interval',
+      singleConnection: 'Single connection'
    },
    database: { // Database related terms
       schema: 'Schema',
@@ -251,7 +252,7 @@ export const enUS = {
       newFunction: 'New function',
       newScheduler: 'New scheduler',
       newTriggerFunction: 'New trigger function',
-      thereIsNoQueriesYet: 'There is no queries yet',
+      thereAreNoQueriesYet: 'There are no queries yet',
       searchForQueries: 'Search for queries',
       killProcess: 'Kill process',
       exportSchema: 'Export schema',

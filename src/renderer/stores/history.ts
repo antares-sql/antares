@@ -13,7 +13,7 @@ export interface HistoryRecord {
 
 export const useHistoryStore = defineStore('history', {
    state: () => ({
-      history: persistentStore.get('history', {}) as {[key: string]: HistoryRecord[]},
+      history: persistentStore.get('history', {}) as Record<string, HistoryRecord[]>,
       favorites: persistentStore.get('favorites', {})
    }),
    getters: {

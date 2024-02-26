@@ -71,17 +71,6 @@ On macOS you can run `.dmg` distribution following [this guide](https://support.
 [<img height='56' alt='Download on Flathub' src='https://dl.flathub.org/assets/badges/flathub-badge-en.svg'/>](https://flathub.org/apps/it.fabiodistasio.AntaresSQL) [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/antares) [![Get it from AUR](https://raw.githubusercontent.com/antares-sql/antares/master/docs/aur-badge.svg)](https://aur.archlinux.org/packages/antares-sql-bin) [<img src="https://developer.microsoft.com/store/badges/images/English_get-it-from-MS.png" style="height: 56px">](https://www.microsoft.com/p/antares-sql-client/9nhtb9sq51r1?cid=storebadge&ocid=badge&rtc=1&activetab=pivot:overviewtab)  
 🚀 **[Other Downloads](https://github.com/antares-sql/antares/releases/latest)**
 
-## Coming soon
-
-This is a roadmap with major features will come in near future.
-
-- Database tools.
-- Users management (add/edit/delete).
-- More context menu shortcuts.
-- More keyboard shortcuts.
-- Support for other databases.
-- Apple Silicon distribution
-
 ## Currently supported
 
 ### Databases
@@ -90,6 +79,7 @@ This is a roadmap with major features will come in near future.
 - [x] PostgreSQL
 - [x] SQLite
 - [x] Firebird SQL
+- [ ] DuckDB
 - [ ] SQL Server
 - [ ] More...
 

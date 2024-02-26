@@ -3,7 +3,7 @@ import { ipcMain } from 'electron';
 
 import { validateSender } from '../libs/misc/validateSender';
 
-export default (connections: {[key: string]: antares.Client}) => {
+export default (connections: Record<string, antares.Client>) => {
    ipcMain.handle('get-view-informations', async (event, params) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 

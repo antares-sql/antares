@@ -67,7 +67,7 @@ const props = defineProps({
 
 const emit = defineEmits(['select-row', 'contextmenu', 'stop-refresh']);
 
-const isInlineEditor: Ref<{[key: string]: boolean}> = ref({});
+const isInlineEditor: Ref<Record<string, boolean>> = ref({});
 const isInfoModal = ref(false);
 const editorMode = ref('sql');
 

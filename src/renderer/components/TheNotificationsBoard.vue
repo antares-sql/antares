@@ -32,7 +32,7 @@ const { removeNotification } = notificationsStore;
 const { notifications } = storeToRefs(notificationsStore);
 const { notificationsTimeout } = storeToRefs(settingsStore);
 
-const timeouts: Ref<{[key: string]: NodeJS.Timeout}> = ref({});
+const timeouts: Ref<Record<string, NodeJS.Timeout>> = ref({});
 
 const latestNotifications = computed(() => notifications.value.slice(0, 10));
 

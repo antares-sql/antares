@@ -136,7 +136,7 @@ export abstract class BaseClient {
    }
 
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   insert (arr: {[key: string]: any}[]) {
+   insert (arr: Record<string, any>[]) {
       this._query.insert = [...this._query.insert, ...arr];
       return this;
    }

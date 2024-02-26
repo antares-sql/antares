@@ -165,19 +165,27 @@
                            >
                         </div>
                      </div>
-                     <div v-if="clientCustomizations.readOnlyMode" class="form-group columns">
+                     <div v-if="clientCustomizations.readOnlyMode" class="form-group columns mb-0">
                         <div class="column col-5 col-sm-12" />
                         <div class="column col-7 col-sm-12">
-                           <label class="form-checkbox form-inline">
+                           <label class="form-checkbox form-inline my-0">
                               <input v-model="localConnection.readonly" type="checkbox"><i class="form-icon" /> {{ t('connection.readOnlyMode') }}
                            </label>
                         </div>
                      </div>
-                     <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
+                     <div v-if="!clientCustomizations.fileConnection" class="form-group columns mb-0">
                         <div class="column col-5 col-sm-12" />
                         <div class="column col-7 col-sm-12">
-                           <label class="form-checkbox form-inline">
+                           <label class="form-checkbox form-inline my-0">
                               <input v-model="localConnection.ask" type="checkbox"><i class="form-icon" /> {{ t('connection.askCredentials') }}
+                           </label>
+                        </div>
+                     </div>
+                     <div v-if="clientCustomizations.singleConnectionMode" class="form-group columns mb-0">
+                        <div class="column col-5 col-sm-12" />
+                        <div class="column col-7 col-sm-12">
+                           <label class="form-checkbox form-inline my-0">
+                              <input v-model="localConnection.singleConnectionMode" type="checkbox"><i class="form-icon" /> {{ t('connection.singleConnection') }}
                            </label>
                         </div>
                      </div>
@@ -569,11 +577,11 @@ const pathSelection = (event: Event & {target: {files: {path: string}[]}}, name:
    const { files } = event.target;
    if (!files.length) return;
 
-   (localConnection.value as unknown as {[key: string]: string})[name] = files[0].path;
+   (localConnection.value as unknown as Record<string, string>)[name] = files[0].path;
 };
 
 const pathClear = (name: keyof ConnectionParams) => {
-   (localConnection.value as unknown as {[key: string]: string})[name] = '';
+   (localConnection.value as unknown as Record<string, string>)[name] = '';
 };
 
 localConnection.value = JSON.parse(JSON.stringify(props.connection));

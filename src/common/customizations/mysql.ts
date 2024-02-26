@@ -29,6 +29,7 @@ export const customizations: Customizations = {
    sslConnection: true,
    sshConnection: true,
    cancelQueries: true,
+   singleConnectionMode: true,
    // Tools
    processesList: true,
    // Structure

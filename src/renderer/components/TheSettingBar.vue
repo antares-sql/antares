@@ -186,7 +186,7 @@ if (!connectionsArr.value.length)
    .settingbar-top-elements {
       overflow-x: hidden;
       overflow-y: overlay;
-      // max-height: calc((100vh - 3.5rem) - #{$excluding-size});
+      width: 100%;
 
       &::-webkit-scrollbar {
          width: 3px;

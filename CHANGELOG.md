@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.22-beta.2](https://github.com/antares-sql/antares/compare/v0.7.22-beta.1...v0.7.22-beta.2) (2024-02-18)
+
+
+### Features
+
+* **MySQL:** option to enable single connection mode ([d3f71e6](https://github.com/antares-sql/antares/commit/d3f71e65cef88838f03f95a4b34e197fb61878f8))
+
+### [0.7.22-beta.1](https://github.com/antares-sql/antares/compare/v0.7.22-beta.0...v0.7.22-beta.1) (2024-02-12)
+
+
+### Features
+
+* update dutch translation + fix spelling mistake ([30ada13](https://github.com/antares-sql/antares/commit/30ada13663e88f89beb3dd7291010837059585d5))
+
+
+### Bug Fixes
+
+* some issues related to previous commit ([259d051](https://github.com/antares-sql/antares/commit/259d051a21e334496d3a52b662f1855ba9a9046d))
+* unable to edit tables containing SET fields, fixes [#755](https://github.com/antares-sql/antares/issues/755) ([d698f27](https://github.com/antares-sql/antares/commit/d698f2798a2423f86e6d786dd3ab80439b372a08))
+
+
+### Improvements
+
+* **MySQL:** improvements in connection handling ([876d5ea](https://github.com/antares-sql/antares/commit/876d5ea48185334e9e2fc981c4282a9c42d22b10))
+
+### [0.7.22-beta.0](https://github.com/antares-sql/antares/compare/v0.7.21...v0.7.22-beta.0) (2024-02-04)
+
+
+### Features
+
+* **UI:** resizable textarea in new/edito note, closes [#747](https://github.com/antares-sql/antares/issues/747) ([1a0c5da](https://github.com/antares-sql/antares/commit/1a0c5da2f14b99d6f5581b2bf6e916d67d097245))
+
+
+### Improvements
+
+* **UI:** improved notes, fixes [#746](https://github.com/antares-sql/antares/issues/746) ([bb36e98](https://github.com/antares-sql/antares/commit/bb36e98bebc5e1e55735e98d272428df2ab682e8))
+
 ### [0.7.21](https://github.com/antares-sql/antares/compare/v0.7.21-beta.1...v0.7.21) (2024-01-13)
 
 

@@ -13,7 +13,7 @@ export interface ExportOptions {
       includeContent: boolean;
       includeDropStatement: boolean;
    }[];
-   includes: {[key: string]: boolean};
+   includes: Record<string, boolean>;
    outputFormat: 'sql' | 'sql.zip';
    outputFile: string;
    sqlInsertAfter: number;

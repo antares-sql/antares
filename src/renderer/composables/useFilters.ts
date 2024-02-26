@@ -28,7 +28,7 @@ export function useFilters () {
       return `(${num})`;
    };
 
-   const parseKeys = (keys: {[key: number]: string}[]) => {
+   const parseKeys = (keys: Record<number, string>[]) => {
       const isMacOS = process.platform === 'darwin';
       return (keys as string[]).map(k => (
          k.split('+')

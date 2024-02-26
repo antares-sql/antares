@@ -88,8 +88,8 @@ export class PostgreSQLClient extends BaseClient {
    private _keepaliveTimer: NodeJS.Timer;
    private _keepaliveMs: number;
    protected _connection?: pg.Client | pg.Pool;
-   private types: {[key: string]: string} = {};
-   private _arrayTypes: {[key: string]: string} = {
+   private types: Record<string, string> = {};
+   private _arrayTypes: Record<string, string> = {
       _int2: 'SMALLINT',
       _int4: 'INTEGER',
       _int8: 'BIGINT',
@@ -656,7 +656,7 @@ export class PostgreSQLClient extends BaseClient {
       let createSql = '';
       const sequences = [];
       const columnsSql = [];
-      const arrayTypes: {[key: string]: string} = {
+      const arrayTypes: Record<string, string> = {
          _int2: 'smallint',
          _int4: 'integer',
          _int8: 'bigint',

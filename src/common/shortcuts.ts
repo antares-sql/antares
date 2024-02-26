@@ -1,4 +1,4 @@
-export const shortcutEvents: { [key: string]: { l18n: string; l18nParam?: string | number; context?: 'tab' }} = {
+export const shortcutEvents: Record<string, { l18n: string; l18nParam?: string | number; context?: 'tab' }> = {
    'run-or-reload': { l18n: 'application.runOrReload', context: 'tab' },
    'open-new-tab': { l18n: 'application.openNewTab', context: 'tab' },
    'close-tab': { l18n: 'application.closeTab', context: 'tab' },
