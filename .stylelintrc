@@ -5,14 +5,14 @@
   ],
   "fix": true,
   "formatter": "verbose",
+  "customSyntax": "postcss-html",
   "plugins": [
     "stylelint-scss"
   ],
   "rules": {
     "at-rule-no-unknown": null,
     "no-descending-specificity": null,
-    "font-family-no-missing-generic-family-keyword": null,
-    "declaration-colon-newline-after": "always-multi-line"
+    "font-family-no-missing-generic-family-keyword": null
   },
   "syntax": "scss"
 }
