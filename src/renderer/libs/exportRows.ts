@@ -31,7 +31,7 @@ export const exportRows = (args: {
          const csv = [];
          const sd = args.csvOptions.stringDelimiter === 'single'
             ? '\''
-            : args.csvOptions.stringDelimiter === 'single'
+            : args.csvOptions.stringDelimiter === 'double'
                ? '"'
                : '';
 

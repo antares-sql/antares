@@ -19,6 +19,15 @@ module.exports = {
             'revert',
             'perf'
          ]
+      ],
+      'subject-case': [
+         2,
+         'never',
+         [
+            'upper-case',
+            'pascal-case',
+            'start-case'
+         ]
       ]
    }
 };
