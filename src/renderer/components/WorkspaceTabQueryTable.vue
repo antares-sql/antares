@@ -31,7 +31,7 @@
             :class="{ 'active': resultsetIndex === index }"
             @click="selectResultset(index)"
          >
-            <a>{{ result.fields ? result.fields[0]?.table : '' }} ({{ result.rows.length }})</a>
+            <a>{{ result.fields ? result.fields[0]?.tableAlias ?? result.fields[0]?.table : `${t('general.results')} #${index}` }} ({{ result.rows.length }})</a>
          </li>
       </ul>
       <div ref="table" class="table table-hover">
@@ -44,7 +44,7 @@
                   :title="`${field.type} ${fieldLength(field) ? `(${fieldLength(field)})` : ''}`"
                >
                   <div ref="columnResize" class="column-resizable">
-                     <div class="table-column-title" @click="sort(field.name)">
+                     <div class="table-column-title" @click="sort(field)">
                         <div v-if="field.key" :title="keyName(field.key)">
                            <BaseIcon
                               icon-name="mdiKey"
@@ -56,8 +56,8 @@
                         </div>
                         <span>{{ field.alias || field.name }}</span>
                         <BaseIcon
-                           v-if="isSortable && currentSort === field.name || currentSort === `${field.table}.${field.name}`"
-                           :icon-name="currentSortDir === 'asc' ? 'mdiSortAscending' : 'mdiSortDescending'"
+                           v-if="isSortable && currentSort[resultsetIndex]?.field === field.name || currentSort[resultsetIndex]?.field === `${field.tableAlias || field.table}.${field.name}`"
+                           :icon-name="currentSort[resultsetIndex].dir === 'asc' ? 'mdiSortAscending' : 'mdiSortDescending'"
                            :size="18"
                            class="sort-icon ml-1"
                         />
@@ -314,8 +314,7 @@ const hasFocus = ref(false);
 const contextEvent = ref(null);
 const selectedCell = ref(null);
 const selectedRows = ref([]);
-const currentSort = ref('');
-const currentSortDir = ref('asc');
+const currentSort: Ref<{field: string; dir: 'asc' | 'desc'}[]> = ref([]);
 const resultsetIndex = ref(0);
 const scrollElement = ref(null);
 const rowHeight = ref(23);
@@ -358,14 +357,16 @@ const isHardSort = computed(() => {
 });
 
 const sortedResults = computed(() => {
-   if (currentSort.value && !isHardSort.value) {
+   if (currentSort.value[resultsetIndex.value] && !isHardSort.value) {
+      const sortObj = currentSort.value[resultsetIndex.value];
+
       return [...localResults.value].sort((a: any, b: any) => {
          let modifier = 1;
-         let valA = typeof a[currentSort.value] === 'string' ? a[currentSort.value].toLowerCase() : a[currentSort.value];
+         let valA = typeof a[sortObj.field] === 'string' ? a[sortObj.field].toLowerCase() : a[sortObj.field];
          if (!isNaN(valA)) valA = Number(valA);
-         let valB = typeof b[currentSort.value] === 'string' ? b[currentSort.value].toLowerCase() : b[currentSort.value];
+         let valB = typeof b[sortObj.field] === 'string' ? b[sortObj.field].toLowerCase() : b[sortObj.field];
          if (!isNaN(valB)) valB = Number(valB);
-         if (currentSortDir.value === 'desc') modifier = -1;
+         if (sortObj.dir === 'desc') modifier = -1;
          if (valA < valB) return -1 * modifier;
          if (valA > valB) return 1 * modifier;
          return 0;
@@ -784,32 +785,42 @@ const contextMenu = (event: MouseEvent, cell: any) => {
    isContext.value = true;
 };
 
-const sort = (field: string) => {
+const sort = (field: TableField) => {
    if (!isSortable.value) return;
 
    selectedRows.value = [];
+   let fieldName = field.name;
+   const hasTableInFieldname = Object.keys(localResults.value[0]).find(k => k !== '_antares_id').includes('.');
 
-   if (props.mode === 'query')
-      field = `${getTable(resultsetIndex.value)}.${field}`;
+   if (props.mode === 'query' && hasTableInFieldname)
+      fieldName = `${field.tableAlias || field.table}.${field.name}`;
 
-   if (field === currentSort.value) {
-      if (currentSortDir.value === 'asc')
-         currentSortDir.value = 'desc';
+   if (fieldName === currentSort.value[resultsetIndex.value]?.field) {
+      if (currentSort.value[resultsetIndex.value].dir === 'asc')
+         currentSort.value[resultsetIndex.value].dir = 'desc';
       else
          resetSort();
    }
    else {
-      currentSortDir.value = 'asc';
-      currentSort.value = field;
+      currentSort.value[resultsetIndex.value] = {
+         field: fieldName,
+         dir: 'asc'
+      };
    }
 
-   if (isHardSort.value)
-      emit('hard-sort', { field: currentSort.value, dir: currentSortDir.value });
+   if (isHardSort.value) {
+      emit('hard-sort', {
+         field: currentSort.value[resultsetIndex.value].field,
+         dir: currentSort.value[resultsetIndex.value].dir
+      });
+   }
 };
 
 const resetSort = () => {
-   currentSort.value = '';
-   currentSortDir.value = 'asc';
+   currentSort.value[resultsetIndex.value] = {
+      field: null,
+      dir: 'asc'
+   };
 };
 
 const selectResultset = (index: number) => {
