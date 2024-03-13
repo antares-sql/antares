@@ -70,23 +70,21 @@ export class ShortcutRegister {
    }
 
    private setLocalShortcuts () {
+      const isMenuVisible = process.platform === 'darwin';
+      const submenu = [];
       for (const shortcut of this.shortcuts) {
          if (shortcut.os.includes(process.platform)) {
             for (const key of shortcut.keys) {
                try {
-                  this._menu.append(new MenuItem({
-                     label: '.',
-                     visible: false,
-                     submenu: [{
-                        label: String(key),
-                        accelerator: key,
-                        visible: false,
-                        click: () => {
-                           this._mainWindow.webContents.send(shortcut.event);
-                           if (isDevelopment) console.log('LOCAL EVENT:', shortcut);
-                        }
-                     }]
-                  }));
+                  submenu.push({
+                     label: String(shortcut.event),
+                     accelerator: key,
+                     visible: isMenuVisible,
+                     click: () => {
+                        this._mainWindow.webContents.send(shortcut.event);
+                        if (isDevelopment) console.log('LOCAL EVENT:', shortcut);
+                     }
+                  });
                }
                catch (error) {
                   if (isDevelopment) console.log(error);
@@ -96,6 +94,11 @@ export class ShortcutRegister {
             }
          }
       }
+      this._menu.append(new MenuItem({
+         label: 'Shortcut',
+         visible: isMenuVisible,
+         submenu
+      }));
    }
 
    private setGlobalShortcuts () {
