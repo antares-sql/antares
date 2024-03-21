@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.23-beta.0](https://github.com/antares-sql/antares/compare/v0.7.22...v0.7.23-beta.0) (2024-03-21)
+
+
+### Bug Fixes
+
+* CSV export does not escape strings when needed, fixes [#770](https://github.com/antares-sql/antares/issues/770) ([dd5b417](https://github.com/antares-sql/antares/commit/dd5b41716a10cf9500f2c611b232f5b5b0756a68))
+* query result sort not working with aliased tables, fixes [#765](https://github.com/antares-sql/antares/issues/765) ([de9dac3](https://github.com/antares-sql/antares/commit/de9dac3e8abf3b3261f8c54c88cf2386a5be2207))
+* shortcut not working on mac os ([0bb5ced](https://github.com/antares-sql/antares/commit/0bb5cedda6a67ccbeea8c127b799f533395101a2))
+
 ### [0.7.22](https://github.com/antares-sql/antares/compare/v0.7.22-beta.2...v0.7.22) (2024-02-26)
 
 
