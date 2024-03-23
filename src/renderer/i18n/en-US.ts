@@ -79,7 +79,8 @@ export const enUS = {
       search: 'Search',
       title: 'Title',
       archive: 'Archive', // verb
-      undo: 'Undo'
+      undo: 'Undo',
+      moveTo: 'Move to'
    },
    connection: { // Database connection
       connection: 'Connection',
@@ -363,6 +364,7 @@ export const enUS = {
       editFolder: 'Edit folder',
       folderName: 'Folder name',
       deleteFolder: 'Delete folder',
+      newFolder: 'New folder',
       editConnectionAppearance: 'Edit connection appearance',
       defaultCopyType: 'Default copy type',
       showTableSize: 'Show table size in sidebar',

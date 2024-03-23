@@ -66,7 +66,7 @@ export interface Workspace {
    uid: string;
    client?: ClientCode;
    database?: string;
-   connectionStatus: 'connected' | 'disconnected' | 'failed';
+   connectionStatus: 'connected' | 'connecting' | 'disconnected' | 'failed';
    selectedTab: string;
    searchTerm: string;
    tabs: WorkspaceTab[];

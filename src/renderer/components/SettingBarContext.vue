@@ -15,6 +15,43 @@
                :size="18"
             /> {{ t('connection.disconnect') }}</span>
       </div>
+      <div v-if="!contextConnection.isFolder" class="context-element">
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiFolderMove"
+               :size="18"
+            /> {{ t('general.moveTo') }}</span>
+         <BaseIcon
+            class="text-light ml-1"
+            icon-name="mdiChevronRight"
+            :size="18"
+         />
+         <div class="context-submenu">
+            <div class="context-element" @click.stop="moveToFolder(null)">
+               <span class="d-flex">
+                  <BaseIcon
+                     class="text-light mt-1 mr-1"
+                     icon-name="mdiFolderPlus"
+                     :size="18"
+                  /> {{ t('application.newFolder') }}</span>
+            </div>
+            <div
+               v-for="folder in parsedFolders"
+               :key="folder.uid"
+               class="context-element"
+               @click.stop="moveToFolder(folder.uid)"
+            >
+               <span class="d-flex">
+                  <BaseIcon
+                     class="text-light mt-1 mr-1"
+                     icon-name="mdiFolder"
+                     :size="18"
+                     :style="`color: ${folder.color}!important`"
+                  /> {{ folder.name || t('general.folder') }}</span>
+            </div>
+         </div>
+      </div>
       <div class="context-element" @click.stop="showAppearanceModal">
          <span class="d-flex">
             <BaseIcon
@@ -79,6 +116,7 @@
 
 <script setup lang="ts">
 import { uidGen } from 'common/libs/uidGen';
+import { storeToRefs } from 'pinia';
 import { computed, Prop, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -98,8 +136,11 @@ const {
    getConnectionByUid,
    getConnectionName,
    addConnection,
-   deleteConnection
+   deleteConnection,
+   addFolder
 } = connectionsStore;
+
+const { getFolders: folders } = storeToRefs(connectionsStore);
 
 const workspacesStore = useWorkspacesStore();
 
@@ -121,11 +162,22 @@ const isConnectionEdit = ref(false);
 
 const connectionName = computed(() => props.contextConnection.name || getConnectionName(props.contextConnection.uid) || t('general.folder', 1));
 const isConnected = computed(() => getWorkspace(props.contextConnection.uid)?.connectionStatus === 'connected');
+const parsedFolders = computed(() => folders.value.filter(f => !f.connections.includes(props.contextConnection.uid)));
 
 const confirmDeleteConnection = () => {
    if (isConnected.value)
       disconnectWorkspace(props.contextConnection.uid);
    deleteConnection(props.contextConnection);
+   closeContext();
+};
+
+const moveToFolder = (folderUid?: string) => {
+   if (!folderUid) {
+      addFolder({
+         connections: [props.contextConnection.uid]
+      });
+   }
+
    closeContext();
 };
 

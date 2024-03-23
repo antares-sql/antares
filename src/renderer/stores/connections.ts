@@ -90,8 +90,12 @@ export const useConnectionsStore = defineStore('connections', {
          });
          persistentStore.set('connectionsOrder', this.connectionsOrder);
       },
-      addFolder (params: {after: string; connections: [string, string]}) {
-         const index = this.connectionsOrder.findIndex((conn: SidebarElement) => conn.uid === params.after);
+      addFolder (params: {after?: string; connections: [string, string?]}) {
+         const index = params.after
+            ? this.connectionsOrder.findIndex((conn: SidebarElement) => conn.uid === params.after)
+            : this.connectionsOrder.length;
+
+         this.removeFromFolders(params.connections);
 
          this.connectionsOrder.splice(index, 0, {
             isFolder: true,
@@ -101,6 +105,15 @@ export const useConnectionsStore = defineStore('connections', {
             connections: params.connections
          });
          persistentStore.set('connectionsOrder', this.connectionsOrder);
+      },
+      removeFromFolders (...connections: string[]) { // Removes connections from folders
+         this.connectionsOrder = (this.connectionsOrder as SidebarElement[]).map(el => {
+            if (el.isFolder)
+               el.connections = el.connections.filter(uid => !connections.includes(uid));
+            return el;
+         });
+
+         this.clearEmptyFolders();
       },
       addToFolder (params: {folder: string; connection: string}) {
          this.connectionsOrder = this.connectionsOrder.map((conn: SidebarElement) => {
@@ -113,11 +126,7 @@ export const useConnectionsStore = defineStore('connections', {
          this.clearEmptyFolders();
       },
       deleteConnection (connection: SidebarElement | ConnectionParams) {
-         this.connectionsOrder = (this.connectionsOrder as SidebarElement[]).map(el => { // Removes connection from folders
-            if (el.isFolder && el.connections.includes(connection.uid))
-               el.connections = el.connections.filter(uid => uid !== connection.uid);
-            return el;
-         });
+         this.removeFromFolders(connection.uid);
          this.connectionsOrder = (this.connectionsOrder as SidebarElement[]).filter(el => el.uid !== connection.uid);
          this.lastConnections = (this.lastConnections as SidebarElement[]).filter(el => el.uid !== connection.uid);
 
