@@ -332,7 +332,7 @@ export const enUS = {
       wrapLongLines: 'Wrap long lines',
       markdownSupported: 'Markdown supported',
       plantATree: 'Plant a Tree',
-      dataTabPageSize: 'DATA tab page size',
+      dataTabPageSize: 'Results per page',
       noOpenTabs: 'There are no open tabs, navigate on the left bar or:',
       restorePreviousSession: 'Restore previous session',
       closeTab: 'Close tab',

@@ -1,6 +1,7 @@
 import { ClientCode } from 'common/interfaces/antares';
 import { jsonToSqlInsert } from 'common/libs/sqlUtils';
 import * as json2php from 'json2php';
+import * as moment from 'moment';
 
 export const exportRows = (args: {
    type: 'csv' | 'json'| 'sql' | 'php';
@@ -41,6 +42,7 @@ export const exportRows = (args: {
          for (const row of args.content) {
             csv.push(Object.values(row).map(col => {
                if (typeof col === 'string') return `${sd}${col}${sd}`;
+               if (col instanceof Date) return `${sd}${moment(col).format('YYYY-MM-DD HH:mm:ss')}${sd}`;
                if (col instanceof Buffer) return col.toString('base64');
                if (col instanceof Uint8Array) return Buffer.from(col).toString('base64');
                return col;
