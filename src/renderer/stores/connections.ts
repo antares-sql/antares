@@ -95,7 +95,7 @@ export const useConnectionsStore = defineStore('connections', {
             ? this.connectionsOrder.findIndex((conn: SidebarElement) => conn.uid === params.after)
             : this.connectionsOrder.length;
 
-         this.removeFromFolders(params.connections);
+         this.removeFromFolders(...params.connections);
 
          this.connectionsOrder.splice(index, 0, {
             isFolder: true,
@@ -116,6 +116,8 @@ export const useConnectionsStore = defineStore('connections', {
          this.clearEmptyFolders();
       },
       addToFolder (params: {folder: string; connection: string}) {
+         this.removeFromFolders(params.connection);
+
          this.connectionsOrder = this.connectionsOrder.map((conn: SidebarElement) => {
             if (conn.uid === params.folder)
                conn.connections.push(params.connection);

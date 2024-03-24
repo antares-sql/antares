@@ -365,6 +365,7 @@ export const enUS = {
       folderName: 'Folder name',
       deleteFolder: 'Delete folder',
       newFolder: 'New folder',
+      outOfFolder: 'Out of folder',
       editConnectionAppearance: 'Edit connection appearance',
       defaultCopyType: 'Default copy type',
       showTableSize: 'Show table size in sidebar',

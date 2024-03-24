@@ -37,7 +37,7 @@
                   /> {{ t('application.newFolder') }}</span>
             </div>
             <div
-               v-for="folder in parsedFolders"
+               v-for="folder in filteredFolders"
                :key="folder.uid"
                class="context-element"
                @click.stop="moveToFolder(folder.uid)"
@@ -49,6 +49,19 @@
                      :size="18"
                      :style="`color: ${folder.color}!important`"
                   /> {{ folder.name || t('general.folder') }}</span>
+            </div>
+
+            <div
+               v-if="isInFolder"
+               class="context-element"
+               @click="outOfFolder"
+            >
+               <span class="d-flex">
+                  <BaseIcon
+                     class="text-light mt-1 mr-1"
+                     icon-name="mdiFolderOff"
+                     :size="18"
+                  /> {{ t('application.outOfFolder') }}</span>
             </div>
          </div>
       </div>
@@ -137,7 +150,9 @@ const {
    getConnectionName,
    addConnection,
    deleteConnection,
-   addFolder
+   addFolder,
+   addToFolder,
+   removeFromFolders
 } = connectionsStore;
 
 const { getFolders: folders } = storeToRefs(connectionsStore);
@@ -162,7 +177,8 @@ const isConnectionEdit = ref(false);
 
 const connectionName = computed(() => props.contextConnection.name || getConnectionName(props.contextConnection.uid) || t('general.folder', 1));
 const isConnected = computed(() => getWorkspace(props.contextConnection.uid)?.connectionStatus === 'connected');
-const parsedFolders = computed(() => folders.value.filter(f => !f.connections.includes(props.contextConnection.uid)));
+const filteredFolders = computed(() => folders.value.filter(f => !f.connections.includes(props.contextConnection.uid)));
+const isInFolder = computed(() => folders.value.some(f => f.connections.includes(props.contextConnection.uid)));
 
 const confirmDeleteConnection = () => {
    if (isConnected.value)
@@ -177,7 +193,18 @@ const moveToFolder = (folderUid?: string) => {
          connections: [props.contextConnection.uid]
       });
    }
+   else {
+      addToFolder({
+         folder: folderUid,
+         connection: props.contextConnection.uid
+      });
+   }
 
+   closeContext();
+};
+
+const outOfFolder = () => {
+   removeFromFolders(props.contextConnection.uid);
    closeContext();
 };
 
