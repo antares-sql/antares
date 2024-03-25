@@ -292,6 +292,10 @@ const props = defineProps({
    results: Array as Prop<QueryResult[]>,
    connUid: String,
    mode: String as Prop<'table' | 'query'>,
+   page: {
+      type: Number,
+      required: false
+   },
    isSelected: Boolean,
    elementType: { type: String, default: 'table' }
 });
@@ -868,6 +872,7 @@ const downloadTable = (format: 'csv' | 'json' | 'sql' | 'php', table: string, po
       },
       client: workspaceClient.value,
       table,
+      page: props.page,
       sqlOptions: popup ? { ...sqlExportOptions.value } : null,
       csvOptions: popup ? { ...csvExportOptions.value } : null
    });

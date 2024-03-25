@@ -7,6 +7,7 @@ export const exportRows = (args: {
    type: 'csv' | 'json'| 'sql' | 'php';
    content: object[];
    table: string;
+   page?: number;
    client?: ClientCode;
    fields?: {
       [key: string]: {type: string; datePrecision: number};
@@ -83,7 +84,7 @@ export const exportRows = (args: {
 
    const file = new Blob([content], { type: mime });
    const downloadLink = document.createElement('a');
-   downloadLink.download = `${args.sqlOptions?.targetTable || args.table}.${args.type}`;
+   downloadLink.download = `${args.sqlOptions?.targetTable || args.table}${args.page ? `-${args.page}` : ''}.${args.type}`;
    downloadLink.href = window.URL.createObjectURL(file);
    downloadLink.style.display = 'none';
    document.body.appendChild(downloadLink);
