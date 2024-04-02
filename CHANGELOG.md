@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.23-beta.1](https://github.com/antares-sql/antares/compare/v0.7.23-beta.0...v0.7.23-beta.1) (2024-04-02)
+
+
+### Features
+
+* add the page reference in the export file name, closes [#772](https://github.com/antares-sql/antares/issues/772) ([2064294](https://github.com/antares-sql/antares/commit/2064294119ed9dfab2a9968dfb5b35d52e2ae03b))
+* move connections out of folder from context menu, related to [#773](https://github.com/antares-sql/antares/issues/773) ([62e3115](https://github.com/antares-sql/antares/commit/62e311586073ae7ee4896305198c7168f637c1af))
+* move connections to folders from context menu, related to [#773](https://github.com/antares-sql/antares/issues/773) ([9aef287](https://github.com/antares-sql/antares/commit/9aef287a983754158cdbdc9b2a72db9ab82f76c8))
+
+
+### Bug Fixes
+
+* bad format of timestamp fields on CSV export, fixes 776 ([65ec4c5](https://github.com/antares-sql/antares/commit/65ec4c5da6187a7ab2dfff59326cd12bfa788c3b))
+
 ### [0.7.23-beta.0](https://github.com/antares-sql/antares/compare/v0.7.22...v0.7.23-beta.0) (2024-03-21)
 
 
