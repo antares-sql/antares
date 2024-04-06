@@ -37,6 +37,7 @@ export interface WorkspaceTab {
    isChanged?: boolean;
    content?: string;
    autorun?: boolean;
+   filePath?: string;
 }
 
 export interface WorkspaceStructure {
@@ -492,7 +493,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
             }
             : workspace);
       },
-      _addTab ({ uid, tab, content, type, autorun, schema, database, elementName, elementType }: WorkspaceTab) {
+      _addTab ({ uid, tab, content, type, autorun, schema, database, elementName, elementType, filePath }: WorkspaceTab) {
          if (type === 'query')
             tabIndex[uid] = tabIndex[uid] ? ++tabIndex[uid] : 1;
 
@@ -506,7 +507,8 @@ export const useWorkspacesStore = defineStore('workspaces', {
             elementName,
             elementType,
             content: content || '',
-            autorun: !!autorun
+            autorun: !!autorun,
+            filePath: filePath || ''
          };
 
          this.workspaces = (this.workspaces as Workspace[]).map(workspace => {
@@ -522,14 +524,14 @@ export const useWorkspacesStore = defineStore('workspaces', {
 
          persistentStore.set(uid, (this.workspaces as Workspace[]).find(workspace => workspace.uid === uid).tabs);
       },
-      _replaceTab ({ uid, tab: tUid, type, schema, content, elementName, elementType }: WorkspaceTab) {
+      _replaceTab ({ uid, tab: tUid, type, schema, content, elementName, elementType, filePath }: WorkspaceTab) {
          this.workspaces = (this.workspaces as Workspace[]).map(workspace => {
             if (workspace.uid === uid) {
                return {
                   ...workspace,
                   tabs: workspace.tabs.map(tab => {
                      if (tab.uid === tUid)
-                        return { ...tab, type, schema, content, elementName, elementType };
+                        return { ...tab, type, schema, content, elementName, elementType, filePath };
 
                      return tab;
                   })
@@ -541,7 +543,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
 
          persistentStore.set(uid, (this.workspaces as Workspace[]).find(workspace => workspace.uid === uid).tabs);
       },
-      newTab ({ uid, content, type, autorun, schema, elementName, elementType }: WorkspaceTab) {
+      newTab ({ uid, content, type, autorun, schema, elementName, elementType, filePath }: WorkspaceTab) {
          let tabUid;
          const workspaceTabs = (this.workspaces as Workspace[]).find(workspace => workspace.uid === uid);
 
@@ -562,7 +564,8 @@ export const useWorkspacesStore = defineStore('workspaces', {
                   database: workspaceTabs.database,
                   schema,
                   elementName,
-                  elementType
+                  elementType,
+                  filePath
                });
                break;
             case 'temp-data':
@@ -594,21 +597,22 @@ export const useWorkspacesStore = defineStore('workspaces', {
                               type: tab.type.replace('temp-', ''),
                               schema: tab.schema,
                               elementName: tab.elementName,
-                              elementType: tab.elementType
+                              elementType: tab.elementType,
+                              filePath: tab.filePath
                            });
 
                            tabUid = uidGen('T');
-                           this._addTab({ uid, tab: tabUid, content, type, autorun, database: workspaceTabs.database, schema, elementName, elementType });
+                           this._addTab({ uid, tab: tabUid, content, type, autorun, database: workspaceTabs.database, schema, elementName, elementType, filePath });
                         }
                         else {
-                           this._replaceTab({ uid, tab: tab.uid, type, schema, elementName, elementType });
+                           this._replaceTab({ uid, tab: tab.uid, type, schema, elementName, elementType, filePath });
                            tabUid = tab.uid;
                         }
                      }
                   }
                   else {
                      tabUid = uidGen('T');
-                     this._addTab({ uid, tab: tabUid, content, type, autorun, database: workspaceTabs.database, schema, elementName, elementType });
+                     this._addTab({ uid, tab: tabUid, content, type, autorun, database: workspaceTabs.database, schema, elementName, elementType, filePath });
                   }
                }
             }
@@ -635,7 +639,8 @@ export const useWorkspacesStore = defineStore('workspaces', {
                      database: workspaceTabs.database,
                      schema,
                      elementName,
-                     elementType
+                     elementType,
+                     filePath
                   });
                   tabUid = existentTab.uid;
                }
@@ -649,7 +654,8 @@ export const useWorkspacesStore = defineStore('workspaces', {
                      database: workspaceTabs.database,
                      schema,
                      elementName,
-                     elementType
+                     elementType,
+                     filePath
                   });
                }
             }
@@ -664,7 +670,8 @@ export const useWorkspacesStore = defineStore('workspaces', {
                   database: workspaceTabs.database,
                   schema,
                   elementName,
-                  elementType
+                  elementType,
+                  filePath
                });
                break;
          }
@@ -687,8 +694,8 @@ export const useWorkspacesStore = defineStore('workspaces', {
                this.selectTab({ uid, tab: workspace.tabs[workspace.tabs.length - 1].uid });
          }
       },
-      updateTabContent ({ uid, tab, type, schema, content }: WorkspaceTab) {
-         this._replaceTab({ uid, tab, type, schema, content });
+      updateTabContent ({ uid, tab, type, schema, content, elementName, filePath }: WorkspaceTab) {
+         this._replaceTab({ uid, tab, type, schema, content, elementName, filePath });
       },
       renameTabs ({ uid, schema, elementName, elementNewName }: WorkspaceTab) {
          this.workspaces = (this.workspaces as Workspace[]).map(workspace => {

@@ -46,7 +46,7 @@
                         :size="18"
                      />
                      <span>
-                        <span>{{ cutText(element.content || 'Query', 20, true) }} #{{ element.index }}</span>
+                        <span>{{ cutText(element.elementName || element.content || 'Query', 20, true) }} #{{ element.index }}</span>
                         <span
                            class="btn btn-clear"
                            :title="t('general.close')"
