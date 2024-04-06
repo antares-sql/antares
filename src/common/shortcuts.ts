@@ -6,6 +6,9 @@ export const shortcutEvents: Record<string, { l18n: string; l18nParam?: string |
    'kill-query': { l18n: 'database.killQuery', context: 'tab' },
    'query-history': { l18n: 'database.queryHistory', context: 'tab' },
    'clear-query': { l18n: 'database.clearQuery', context: 'tab' },
+   // 'save-file': { l18n: 'application.saveFile', context: 'tab' },
+   'open-file': { l18n: 'application.openFile', context: 'tab' },
+   'save-file-as': { l18n: 'application.saveFileAs', context: 'tab' },
    'next-tab': { l18n: 'application.nextTab' },
    'prev-tab': { l18n: 'application.previousTab' },
    'open-all-connections': { l18n: 'application.openAllConnections' },
@@ -118,6 +121,21 @@ const shortcuts: ShortcutRecord[] = [
    {
       event: 'toggle-console',
       keys: ['CommandOrControl+`'],
+      os: ['darwin', 'linux', 'win32']
+   },
+   // {
+   //    event: 'save-file',
+   //    keys: ['CommandOrControl+S'],
+   //    os: ['darwin', 'linux', 'win32']
+   // },
+   {
+      event: 'open-file',
+      keys: ['CommandOrControl+O'],
+      os: ['darwin', 'linux', 'win32']
+   },
+   {
+      event: 'save-file-as',
+      keys: ['Shift+CommandOrControl+S'],
       os: ['darwin', 'linux', 'win32']
    }
 ];
