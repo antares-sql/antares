@@ -42,7 +42,7 @@
                   >
                      <BaseIcon
                         class="mt-1 mr-1"
-                        icon-name="mdiCodeTags"
+                        :icon-name="element.filePath ? 'mdiFileCodeOutline' : 'mdiCodeTags'"
                         :size="18"
                      />
                      <span>
