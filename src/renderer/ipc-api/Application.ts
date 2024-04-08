@@ -36,7 +36,7 @@ export default class {
       return ipcRenderer.invoke('read-file', path);
    }
 
-   static writeFile (path: string, content:any) {
+   static writeFile (path: string, content: unknown) {
       return ipcRenderer.invoke('write-file', path, content);
    }
 }

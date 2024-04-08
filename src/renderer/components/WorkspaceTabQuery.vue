@@ -19,7 +19,10 @@
          <div ref="resizer" class="query-area-resizer" />
          <div ref="queryAreaFooter" class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
-               <div @mouseenter="setCancelButtonVisibility(true)" @mouseleave="setCancelButtonVisibility(false)">
+               <div
+                  @mouseenter="setCancelButtonVisibility(true)"
+                  @mouseleave="setCancelButtonVisibility(false)"
+               >
                   <button
                      v-if="showCancel && isQuering"
                      class="btn btn-primary btn-sm cancellable"
@@ -109,7 +112,7 @@
                      :title="t('general.save')"
                      @click="saveQuery()"
                   >
-                     <BaseIcon icon-name="mdiContentSaveOutline" :size="24" />
+                     <BaseIcon icon-name="mdiHeartPlusOutline" :size="24" />
                   </button>
                   <button
                      class="btn btn-dark btn-sm"
@@ -117,13 +120,13 @@
                      :title="t('database.savedQueries')"
                      @click="openSavedModal()"
                   >
-                     <BaseIcon icon-name="mdiStarOutline" :size="24" />
+                     <BaseIcon icon-name="mdiNotebookHeartOutline" :size="24" />
                   </button>
                </div>
                <div class="btn-group">
                   <button
                      class="btn btn-dark btn-sm mr-0"
-                     :disabled="!filePath"
+                     :disabled="!filePath || lastSavedQuery === query"
                      :title="t('application.saveFile')"
                      @click="saveFile()"
                   >
@@ -275,7 +278,7 @@ import { uidGen } from 'common/libs/uidGen';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
 import { format } from 'sql-formatter';
-import { Component, computed, onBeforeUnmount, onMounted, Prop, Ref, ref, watch } from 'vue';
+import { Component, computed, onBeforeUnmount, onMounted, Prop, Ref, ref, toRaw, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseIcon from '@/components/BaseIcon.vue';
@@ -338,6 +341,7 @@ const queryName = ref('');
 const query = ref('');
 const filePath = ref('');
 const lastQuery = ref('');
+const lastSavedQuery = ref('');
 const isCancelling = ref(false);
 const showCancel = ref(false);
 const autocommit = ref(true);
@@ -361,6 +365,9 @@ const databaseSchemas = computed(() => {
 });
 const hasResults = computed(() => results.value.length && results.value[0].rows);
 const hasAffected = computed(() => affectedCount.value || (!resultsCount.value && affectedCount.value !== null));
+const isChanged = computed(() => {
+   return filePath.value && lastSavedQuery.value !== query.value;
+});
 
 watch(query, (val) => {
    clearTimeout(debounceTimeout.value);
@@ -424,6 +431,10 @@ watch(() => props.tab.content, () => {
 
    if (editorValue !== query.value)// If change not rendered in editor
       queryEditor.value.editor.session.setValue(query.value);
+});
+
+watch(isChanged, (val) => {
+   setUnsavedChanges({ uid: props.connection.uid, tUid: props.tabUid, isChanged: val });
 });
 
 const runQuery = async (query: string) => {
@@ -725,23 +736,27 @@ const openFile = async () => {
 };
 
 const saveFileAs = async () => {
-   const result = await Application.showSaveDialog({ filters: [{ name: 'SQL', extensions: ['sql'] }], defaultPath: `${queryName.value || 'query'}.sql` });
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   const result: any = await Application.showSaveDialog({ filters: [{ name: 'SQL', extensions: ['sql'] }], defaultPath: `${queryName.value || 'query'}.sql` });
    if (result && !result.canceled) {
       await Application.writeFile(result.filePath, query.value);
-      addNotification({ status: 'success', message: t('general.actionSuccessful', { action: 'SAVE FILE' }) });
+      addNotification({ status: 'success', message: t('general.actionSuccessful', { action: t('application.saveFile') }) });
       queryName.value = result.filePath.split('/').pop().split('\\').pop();
       filePath.value = result.filePath;
+      lastSavedQuery.value = toRaw(query.value);
    }
 };
 
 const saveFile = async () => {
    await Application.writeFile(filePath.value, query.value);
-   addNotification({ status: 'success', message: t('general.actionSuccessful', { action: 'SAVE FILE' }) });
+   addNotification({ status: 'success', message: t('general.actionSuccessful', { action: t('application.saveFile') }) });
+   lastSavedQuery.value = toRaw(query.value);
 };
 
 const loadFileContent = async (file: string) => {
    const content = await Application.readFile(file);
    query.value = content;
+   lastSavedQuery.value = content;
 };
 
 onMounted(() => {
@@ -844,4 +859,4 @@ onBeforeUnmount(() => {
     min-height: 200px;
   }
 }
-</style>
+</style>filePathsfilePathsfilePaths
