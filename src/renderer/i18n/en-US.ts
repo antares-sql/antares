@@ -399,7 +399,11 @@ export const enUS = {
       editNote: 'Edit note',
       showArchivedNotes: 'Show archived notes',
       hideArchivedNotes: 'Hide archived notes',
-      tag: 'Tag' // Note tag
+      tag: 'Tag', // Note tag,
+      saveFile: 'Save file',
+      saveFileAs: 'Save file as',
+      openFile: 'Open file'
+
    },
    faker: { // Faker.js methods, used in random generated content
       address: 'Address',

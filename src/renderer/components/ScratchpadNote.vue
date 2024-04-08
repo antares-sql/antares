@@ -14,7 +14,7 @@
       <div class="tile-icon">
          <BaseIcon
             :icon-name="note.type === 'query'
-               ? 'mdiStarOutline'
+               ? 'mdiHeartOutline'
                : note.type === 'todo'
                   ? note.isArchived
                      ? 'mdiCheckboxMarkedOutline'

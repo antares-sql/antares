@@ -120,6 +120,30 @@
                      <BaseIcon icon-name="mdiStarOutline" :size="24" />
                   </button>
                </div>
+               <div class="btn-group">
+                  <button
+                     class="btn btn-dark btn-sm mr-0"
+                     :disabled="!filePath"
+                     :title="t('application.saveFile')"
+                     @click="saveFile()"
+                  >
+                     <BaseIcon icon-name="mdiContentSaveCheckOutline" :size="24" />
+                  </button>
+                  <button
+                     class="btn btn-dark btn-sm mr-0"
+                     :title="t('application.saveFileAs')"
+                     @click="saveFileAs()"
+                  >
+                     <BaseIcon icon-name="mdiContentSavePlusOutline" :size="24" />
+                  </button>
+                  <button
+                     class="btn btn-dark btn-sm"
+                     :title="t('application.openFile')"
+                     @click="openFile()"
+                  >
+                     <BaseIcon icon-name="mdiFolderOpenOutline" :size="24" />
+                  </button>
+               </div>
                <div class="dropdown table-dropdown pr-2">
                   <button
                      :disabled="!hasResults || isQuering"
@@ -262,6 +286,7 @@ import QueryEditor from '@/components/QueryEditor.vue';
 import WorkspaceTabQueryEmptyState from '@/components/WorkspaceTabQueryEmptyState.vue';
 import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable.vue';
 import { useResultTables } from '@/composables/useResultTables';
+import Application from '@/ipc-api/Application';
 import Schema from '@/ipc-api/Schema';
 import { useApplicationStore } from '@/stores/application';
 import { useConsoleStore } from '@/stores/console';
@@ -302,13 +327,16 @@ const {
    getWorkspace,
    changeBreadcrumbs,
    updateTabContent,
-   setUnsavedChanges
+   setUnsavedChanges,
+   newTab
 } = workspacesStore;
 
 const queryEditor: Ref<Component & { editor: Ace.Editor; $el: HTMLElement }> = ref(null);
 const queryAreaFooter: Ref<HTMLDivElement> = ref(null);
 const resizer: Ref<HTMLDivElement> = ref(null);
+const queryName = ref('');
 const query = ref('');
+const filePath = ref('');
 const lastQuery = ref('');
 const isCancelling = ref(false);
 const showCancel = ref(false);
@@ -339,11 +367,32 @@ watch(query, (val) => {
 
    debounceTimeout.value = setTimeout(() => {
       updateTabContent({
+         elementName: queryName.value,
+         filePath: filePath.value,
          uid: props.connection.uid,
          tab: props.tab.uid,
          type: 'query',
          schema: selectedSchema.value,
          content: val
+
+      });
+
+      isQuerySaved.value = false;
+   }, 200);
+});
+
+watch(queryName, (val) => {
+   clearTimeout(debounceTimeout.value);
+
+   debounceTimeout.value = setTimeout(() => {
+      updateTabContent({
+         elementName: val,
+         filePath: filePath.value,
+         uid: props.connection.uid,
+         tab: props.tab.uid,
+         type: 'query',
+         schema: selectedSchema.value,
+         content: query.value
       });
 
       isQuerySaved.value = false;
@@ -529,7 +578,8 @@ const saveQuery = () => {
       type: 'query',
       date: new Date(),
       note: query.value,
-      isArchived: false
+      isArchived: false,
+      title: queryName.value
    });
    isQuerySaved.value = true;
 };
@@ -596,6 +646,8 @@ const rollbackTab = async () => {
 defineExpose({ resizeResults });
 
 query.value = props.tab.content as string;
+queryName.value = props.tab.elementName as string;
+filePath.value = props.tab.filePath as string;
 selectedSchema.value = props.tab.schema || breadcrumbsSchema.value;
 
 window.addEventListener('resize', onWindowResize);
@@ -630,6 +682,68 @@ const historyListener = () => {
       openHistoryModal();
 };
 
+const openFileListener = () => {
+   const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
+   if (props.isSelected && !hasModalOpen)
+      openFile();
+};
+
+const saveFileAsListener = () => {
+   const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
+   if (props.isSelected && !hasModalOpen)
+      saveFileAs();
+};
+
+const saveContentListener = () => {
+   const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
+   if (props.isSelected && !hasModalOpen && filePath)
+      saveFile();
+};
+
+const openFile = async () => {
+   const result = await Application.showOpenDialog({ properties: ['openFile'], filters: [{ name: 'SQL', extensions: ['sql', 'txt'] }] });
+   if (result && !result.canceled) {
+      const file = result.filePaths[0];
+      const content = await Application.readFile(file);
+      const fileName = file.split('/').pop().split('\\').pop();
+      if (props.tab.filePath && props.tab.filePath !== file) {
+         newTab({
+            uid: props.connection.uid,
+            type: 'query',
+            filePath: file,
+            content: '',
+            schema: selectedSchema.value,
+            elementName: fileName
+         });
+      }
+      else {
+         filePath.value = file;
+         queryName.value = fileName;
+         query.value = content;
+      }
+   }
+};
+
+const saveFileAs = async () => {
+   const result = await Application.showSaveDialog({ filters: [{ name: 'SQL', extensions: ['sql'] }], defaultPath: `${queryName.value || 'query'}.sql` });
+   if (result && !result.canceled) {
+      await Application.writeFile(result.filePath, query.value);
+      addNotification({ status: 'success', message: t('general.actionSuccessful', { action: 'SAVE FILE' }) });
+      queryName.value = result.filePath.split('/').pop().split('\\').pop();
+      filePath.value = result.filePath;
+   }
+};
+
+const saveFile = async () => {
+   await Application.writeFile(filePath.value, query.value);
+   addNotification({ status: 'success', message: t('general.actionSuccessful', { action: 'SAVE FILE' }) });
+};
+
+const loadFileContent = async (file: string) => {
+   const content = await Application.readFile(file);
+   query.value = content;
+};
+
 onMounted(() => {
    const localResizer = resizer.value;
 
@@ -638,6 +752,9 @@ onMounted(() => {
    ipcRenderer.on('kill-query', killQueryListener);
    ipcRenderer.on('clear-query', clearQueryListener);
    ipcRenderer.on('query-history', historyListener);
+   ipcRenderer.on('open-file', openFileListener);
+   ipcRenderer.on('save-file-as', saveFileAsListener);
+   ipcRenderer.on('save-content', saveContentListener);
 
    localResizer.addEventListener('mousedown', (e: MouseEvent) => {
       e.preventDefault();
@@ -648,6 +765,9 @@ onMounted(() => {
 
    if (props.tab.autorun)
       runQuery(query.value);
+
+   if (props.tab.filePath)
+      loadFileContent(props.tab.filePath);
 });
 
 onBeforeUnmount(() => {
@@ -663,6 +783,9 @@ onBeforeUnmount(() => {
    ipcRenderer.removeListener('kill-query', killQueryListener);
    ipcRenderer.removeListener('clear-query', clearQueryListener);
    ipcRenderer.removeListener('query-history', historyListener);
+   ipcRenderer.removeListener('open-file', openFileListener);
+   ipcRenderer.removeListener('save-file-as', saveFileAsListener);
+   ipcRenderer.removeListener('save-content', saveContentListener);
 });
 </script>
 

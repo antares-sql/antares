@@ -42,11 +42,11 @@
                   >
                      <BaseIcon
                         class="mt-1 mr-1"
-                        icon-name="mdiCodeTags"
+                        :icon-name="element.filePath ? 'mdiFileCodeOutline' : 'mdiCodeTags'"
                         :size="18"
                      />
                      <span>
-                        <span>{{ cutText(element.content || 'Query', 20, true) }} #{{ element.index }}</span>
+                        <span>{{ cutText(element.elementName || element.content || 'Query', 20, true) }} #{{ element.index }}</span>
                         <span
                            class="btn btn-clear"
                            :title="t('general.close')"
