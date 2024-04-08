@@ -19,7 +19,7 @@ export const shortcutEvents: Record<string, { l18n: string; l18nParam?: string |
    'save-content': { l18n: 'application.saveContent' },
    'create-connection': { l18n: 'connection.createNewConnection' },
    'open-settings': { l18n: 'application.openSettings' },
-   'open-scratchpad': { l18n: 'application.openScratchpad' }
+   'open-scratchpad': { l18n: 'application.openNotes' }
 };
 
 interface ShortcutRecord {

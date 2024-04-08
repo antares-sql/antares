@@ -402,7 +402,8 @@ export const enUS = {
       tag: 'Tag', // Note tag,
       saveFile: 'Save file',
       saveFileAs: 'Save file as',
-      openFile: 'Open file'
+      openFile: 'Open file',
+      openNotes: 'Open notes'
 
    },
    faker: { // Faker.js methods, used in random generated content
