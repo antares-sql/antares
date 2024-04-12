@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.24-beta.0](https://github.com/antares-sql/antares/compare/v0.7.23...v0.7.24-beta.0) (2024-04-12)
+
+
+### Features
+
+* add shortcut open,save, and save as file ([6b56c60](https://github.com/antares-sql/antares/commit/6b56c60b68647bc7182548a137cccc3413e3fbd5))
+* add translation for  open,save, and save as file ([f7204dc](https://github.com/antares-sql/antares/commit/f7204dc0ae721534eaefbde097d1c26c1d72ad41))
+* open,save, and save as file in query tab ([c1e58eb](https://github.com/antares-sql/antares/commit/c1e58eb695de78fbf1d2b26c608692f0962373df))
+* unsaved file reminder closing file tabs ([8d8650f](https://github.com/antares-sql/antares/commit/8d8650fbe76c79fd66be857d049b3baaa9ab1f9f))
+
+
+### Bug Fixes
+
+* **translation:** missing translation for "Open notes" shortcut ([0565ae1](https://github.com/antares-sql/antares/commit/0565ae12042901b9d67fe3e0ea269562ec444994))
+
 ### [0.7.23](https://github.com/antares-sql/antares/compare/v0.7.23-beta.1...v0.7.23) (2024-04-07)
 
 ### [0.7.23-beta.1](https://github.com/antares-sql/antares/compare/v0.7.23-beta.0...v0.7.23-beta.1) (2024-04-02)
