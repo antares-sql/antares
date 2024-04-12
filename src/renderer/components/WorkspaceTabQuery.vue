@@ -97,32 +97,6 @@
                >
                   <BaseIcon icon-name="mdiBrush" :size="24" />
                </button>
-               <button
-                  class="btn btn-dark btn-sm"
-                  :disabled="isQuering"
-                  :title="t('general.history')"
-                  @click="openHistoryModal()"
-               >
-                  <BaseIcon icon-name="mdiHistory" :size="24" />
-               </button>
-               <div class="btn-group">
-                  <button
-                     class="btn btn-dark btn-sm mr-0"
-                     :disabled="isQuering || (isQuerySaved || query.length < 5)"
-                     :title="t('general.save')"
-                     @click="saveQuery()"
-                  >
-                     <BaseIcon icon-name="mdiHeartPlusOutline" :size="24" />
-                  </button>
-                  <button
-                     class="btn btn-dark btn-sm"
-                     :disabled="isQuering"
-                     :title="t('database.savedQueries')"
-                     @click="openSavedModal()"
-                  >
-                     <BaseIcon icon-name="mdiNotebookHeartOutline" :size="24" />
-                  </button>
-               </div>
                <div class="btn-group">
                   <button
                      class="btn btn-dark btn-sm mr-0"
@@ -147,6 +121,32 @@
                      <BaseIcon icon-name="mdiFolderOpenOutline" :size="24" />
                   </button>
                </div>
+               <div class="btn-group">
+                  <button
+                     class="btn btn-dark btn-sm mr-0"
+                     :disabled="isQuering || (isQuerySaved || query.length < 5)"
+                     :title="t('application.saveAsNote')"
+                     @click="saveQuery()"
+                  >
+                     <BaseIcon icon-name="mdiHeartPlusOutline" :size="24" />
+                  </button>
+                  <button
+                     class="btn btn-dark btn-sm"
+                     :disabled="isQuering"
+                     :title="t('database.savedQueries')"
+                     @click="openSavedModal()"
+                  >
+                     <BaseIcon icon-name="mdiNotebookHeartOutline" :size="24" />
+                  </button>
+               </div>
+               <button
+                  class="btn btn-dark btn-sm"
+                  :disabled="isQuering"
+                  :title="t('general.history')"
+                  @click="openHistoryModal()"
+               >
+                  <BaseIcon icon-name="mdiHistory" :size="24" />
+               </button>
                <div class="dropdown table-dropdown pr-2">
                   <button
                      :disabled="!hasResults || isQuering"
@@ -731,6 +731,7 @@ const openFile = async () => {
          filePath.value = file;
          queryName.value = fileName;
          query.value = content;
+         lastSavedQuery.value = content;
       }
    }
 };

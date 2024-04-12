@@ -397,6 +397,7 @@ export const enUS = {
       thereAreNoNotesYet: 'There are no notes yet',
       addNote: 'Add note',
       editNote: 'Edit note',
+      saveAsNote: 'Save as note',
       showArchivedNotes: 'Show archived notes',
       hideArchivedNotes: 'Hide archived notes',
       tag: 'Tag', // Note tag,
