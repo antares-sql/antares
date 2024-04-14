@@ -91,7 +91,7 @@
                   <BaseIcon icon-name="mdiMagnify" :size="24" />
                </button>
                <button
-                  v-if="isTable"
+                  v-if="isTable && !connection.readonly"
                   class="btn btn-dark btn-sm"
                   :disabled="isQuering"
                   @click="showFakerModal()"
