@@ -579,6 +579,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
                      tab.schema === schema &&
                      tab.elementName === elementName &&
                      tab.elementType === elementType &&
+                     tab.database === workspaceTabs.database &&
                      [type, type.replace('temp-', '')].includes(tab.type))
                   : false;
 
@@ -629,6 +630,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
                      tab.schema === schema &&
                      tab.elementName === elementName &&
                      tab.elementType === elementType &&
+                     tab.database === workspaceTabs.database &&
                      [`temp-${type}`, type].includes(tab.type))
                   : false;
 

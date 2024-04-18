@@ -513,7 +513,13 @@ const selectMisc = ({ schema, misc, type }: { schema: string; misc: { name: stri
 };
 
 const openDataTab = ({ schema, table }: { schema: string; table: TableInfos }) => {
-   newTab({ uid: props.connection.uid, elementName: table.name, schema: props.database.name, type: 'data', elementType: table.type });
+   newTab({
+      uid: props.connection.uid,
+      elementName: table.name,
+      schema: props.database.name,
+      type: 'data',
+      elementType: table.type
+   });
    setBreadcrumbs({ schema, [table.type]: table.name });
 };
 
