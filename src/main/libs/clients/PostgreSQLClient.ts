@@ -210,6 +210,10 @@ export class PostgreSQLClient extends BaseClient {
       if (this._params.readonly)
          await connection.query('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY');
 
+      connection.on('error', err => { // Intercepts errors and converts to rejections
+         Promise.reject(err);
+      });
+
       return connection;
    }
 
