@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.24-beta.1](https://github.com/antares-sql/antares/compare/v0.7.24-beta.0...v0.7.24-beta.1) (2024-04-30)
+
+
+### Features
+
+* accent color based on folder color, closes [#762](https://github.com/antares-sql/antares/issues/762) ([058fc2f](https://github.com/antares-sql/antares/commit/058fc2fc0b34cde5aa19233a4a999ef3624dae71))
+
+
+### Bug Fixes
+
+* **PostgreSQL:** better handle connection errors, should fix [#794](https://github.com/antares-sql/antares/issues/794) ([33bbc0e](https://github.com/antares-sql/antares/commit/33bbc0e7e6be370c944e979a34ab2cb19562d1e3))
+* **PostgreSQL:** issue with similar tabs on differend databases ([23c59b4](https://github.com/antares-sql/antares/commit/23c59b4d4e8f250acad75f54d157c7c162e1c4f8))
+
+
+### Improvements
+
+* **UI:** hide "insert row" button in read-only mode, closes [#695](https://github.com/antares-sql/antares/issues/695) ([6600197](https://github.com/antares-sql/antares/commit/6600197b8286ced4c79378883594d21e69a83d8c))
+* **UI:** improvements on light theme ([ece2ee0](https://github.com/antares-sql/antares/commit/ece2ee05cc90a58c1926e882e3ccf4f057f02d68))
+
 ### [0.7.24-beta.0](https://github.com/antares-sql/antares/compare/v0.7.23...v0.7.24-beta.0) (2024-04-12)
 
 
