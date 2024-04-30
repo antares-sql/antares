@@ -1,4 +1,10 @@
 /* stylelint-disable */
+:root {
+  --primary-color: #e36929;
+  --primary-color-dark: color-mix(in srgb, var(--primary-color), #000 30%);
+  --primary-color-shadow: 0 0 0 0.1rem rgba(227, 105, 41, 0.2);
+}
+
 @import "~spectre.css/src/variables";
 @import "variables";
 @import "transitions";
@@ -16,12 +22,16 @@ body {
   user-select: none;
 }
 
+a {
+  color: var(--primary-color);
+}
+
 ::selection,
 option:hover,
 option:focus,
 option:active,
 option:checked {
-  background-color: $primary-color;
+  background-color: var(--primary-color);
   color: $light-color;
 }
 
@@ -248,7 +258,7 @@ option:checked {
       height: 2px;
       width: 0;
       transition: width 0.2s;
-      background-color: $primary-color;
+      background-color: var(--primary-color);
       position: absolute;
       bottom: 0;
     }
@@ -300,8 +310,22 @@ option:checked {
   height: auto;
 }
 
+.form-checkbox input:checked + .form-icon, .form-radio input:checked + .form-icon, .form-switch input:checked + .form-icon {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.form-checkbox input:focus + .form-icon, .form-radio input:focus + .form-icon, .form-switch input:focus + .form-icon {
+  box-shadow: 0 0 0 0.1rem var(--primary-color-shadow);
+  border-color: var(--primary-color);
+}
+
 .form-select {
   cursor: pointer;
+
+  &:focus {
+    box-shadow: 0 0 0 0.1rem var(--primary-color-shadow);
+  }
 
   &.small-select {
     height: 21px;
@@ -311,7 +335,8 @@ option:checked {
 
   &.select {
     &.select--open {
-      border-color: $primary-color !important;
+      border-color: var(--primary-color) !important;
+      box-shadow: 0 0 0 0.1rem var(--primary-color-shadow) !important;
 
       @include control-shadow();
     }
@@ -336,19 +361,28 @@ option:checked {
   z-index: 401 !important;
   border: 1px solid transparent;
   border-radius: $border-radius;
-  box-shadow: 0 8px 17px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
+  box-shadow:
+    0 8px 17px 0 rgb(0 0 0 / 20%),
+    0 6px 20px 0 rgb(0 0 0 / 19%);
 }
 
 .select__option--selected {
-  background: rgba($primary-color, 0.25);
+  background: rgba(var(--primary-color), 0.25);
 }
 
 .select__option--highlight {
-  background: $primary-color;
+  background: var(--primary-color);
+  text-shadow: 0 0 15px #000;
 }
 
-.form-input[type="file"] {
-  overflow: hidden;
+.form-input {
+  &[type="file"] {
+    overflow: hidden;
+  }
+  &:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.1rem var(--primary-color-shadow);
+  }
 }
 
 .input-group .input-group-addon {
@@ -370,13 +404,34 @@ option:checked {
 }
 
 .btn {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+
+  &:not(.btn-link) {
+    text-shadow: 0 0 15px #000;
+  }
+
+  &:hover {
+    border-color: var(--primary-color-dark);
+  }
+
   &:focus {
-    box-shadow: 0 0 3px 1px rgba($primary-color, 90%);
+    box-shadow: 0 0 3px 1px rgba(var(--primary-color), 90%);
   }
 
   &.btn-success:focus {
-    border-color: $primary-color;
-    box-shadow: 0 0 3px 1px rgba($primary-color, 90%);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 3px 1px rgba(var(--primary-color), 90%);
+  }
+
+  &.btn-primary {
+    background: var(--primary-color);
+    border-color: var(--primary-color-dark);
+
+    &:hover {
+      background: var(--primary-color-dark);
+      border-color: var(--primary-color-dark);
+    }
   }
 }
 
@@ -435,7 +490,7 @@ code.sql {
 }
 
 .sql-hl-keyword {
-  color: $primary-color;
+  color: var(--primary-color);
 }
 
 .sql-hl-function {

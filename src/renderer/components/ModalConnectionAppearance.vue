@@ -204,7 +204,7 @@ onBeforeUnmount(() => {
          cursor: pointer;
 
          &.selected {
-            outline: 2px solid $primary-color;
+            outline: 2px solid var(--primary-color);
             border-radius: 8px;
          }
      }

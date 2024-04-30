@@ -501,7 +501,7 @@ const toggleSearchMethod = () => {
     transition: background 0.2s;
 
     &:hover {
-      background: rgba($primary-color, 50%);
+      background: rgba(var(--primary-color), 50%);
     }
   }
 

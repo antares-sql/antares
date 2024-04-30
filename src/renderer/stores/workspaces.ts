@@ -530,8 +530,17 @@ export const useWorkspacesStore = defineStore('workspaces', {
                return {
                   ...workspace,
                   tabs: workspace.tabs.map(tab => {
-                     if (tab.uid === tUid)
-                        return { ...tab, type, schema, content, elementName, elementType, filePath };
+                     if (tab.uid === tUid) {
+                        return {
+                           ...tab,
+                           type,
+                           schema,
+                           content,
+                           elementName,
+                           elementType,
+                           filePath
+                        };
+                     }
 
                      return tab;
                   })
@@ -603,17 +612,47 @@ export const useWorkspacesStore = defineStore('workspaces', {
                            });
 
                            tabUid = uidGen('T');
-                           this._addTab({ uid, tab: tabUid, content, type, autorun, database: workspaceTabs.database, schema, elementName, elementType, filePath });
+                           this._addTab({
+                              uid,
+                              tab: tabUid,
+                              content,
+                              type,
+                              autorun,
+                              database: workspaceTabs.database,
+                              schema,
+                              elementName,
+                              elementType,
+                              filePath
+                           });
                         }
                         else {
-                           this._replaceTab({ uid, tab: tab.uid, type, schema, elementName, elementType, filePath });
+                           this._replaceTab({
+                              uid,
+                              tab: tab.uid,
+                              type,
+                              schema,
+                              elementName,
+                              elementType,
+                              filePath
+                           });
                            tabUid = tab.uid;
                         }
                      }
                   }
                   else {
                      tabUid = uidGen('T');
-                     this._addTab({ uid, tab: tabUid, content, type, autorun, database: workspaceTabs.database, schema, elementName, elementType, filePath });
+                     this._addTab({
+                        uid,
+                        tab: tabUid,
+                        content,
+                        type,
+                        autorun,
+                        database: workspaceTabs.database,
+                        schema,
+                        elementName,
+                        elementType,
+                        filePath
+                     });
                   }
                }
             }

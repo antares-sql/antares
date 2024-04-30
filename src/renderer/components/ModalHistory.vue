@@ -287,7 +287,7 @@ onBeforeUnmount(() => {
       max-width: 100%;
       display: inline-block;
       font-size: 100%;
-      // color: $primary-color;
+      // color: var(--primary-color);
       opacity: 0.8;
       font-weight: 600;
     }

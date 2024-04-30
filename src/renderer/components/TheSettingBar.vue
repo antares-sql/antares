@@ -233,6 +233,7 @@ if (!connectionsArr.value.length)
          border-radius: 0;
          padding: 0;
          position: relative;
+         border: none;
 
          &:hover {
             opacity: 1;

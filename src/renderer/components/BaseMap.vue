@@ -99,7 +99,7 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: $primary-color;
+  background: var(--primary-color);
   border-radius: 50%;
   box-shadow: 0 0 5px 1px darken($body-font-color-dark, 40%);
 }

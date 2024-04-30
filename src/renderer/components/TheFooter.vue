@@ -85,10 +85,11 @@
 <script setup lang="ts">
 import { shell } from 'electron';
 import { storeToRefs } from 'pinia';
-import { computed, ComputedRef } from 'vue';
+import { computed, ComputedRef, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseIcon from '@/components/BaseIcon.vue';
+import { hexToRGBA } from '@/libs/hexToRgba';
 import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
 import { useConsoleStore } from '@/stores/console';
@@ -117,7 +118,11 @@ const { getWorkspace } = workspacesStore;
 const { getConnectionFolder, getConnectionByUid } = connectionsStore;
 
 const workspace = computed(() => getWorkspace(workspaceUid.value));
-const footerColor = computed(() => getConnectionFolder(workspaceUid.value)?.color || '#E36929');
+const footerColor = computed(() => {
+   if (getConnectionFolder(workspaceUid.value)?.color)
+      return getConnectionFolder(workspaceUid.value).color;
+   return '#E36929';
+});
 const connectionInfos = computed(() => getConnectionByUid(workspaceUid.value));
 const version: ComputedRef<DatabaseInfos> = computed(() => {
    return getWorkspace(workspaceUid.value) ? workspace.value.version : null;
@@ -127,6 +132,11 @@ const versionString = computed(() => {
    if (version.value)
       return `${version.value.name} ${version.value.number} (${version.value.arch} ${version.value.os})`;
    return '';
+});
+
+watch(footerColor, () => {
+   document.querySelector<HTMLBodyElement>(':root').style.setProperty('--primary-color', footerColor.value);
+   document.querySelector<HTMLBodyElement>(':root').style.setProperty('--primary-color-shadow', hexToRGBA(footerColor.value, 0.2));
 });
 
 const openOutside = (link: string) => shell.openExternal(link);

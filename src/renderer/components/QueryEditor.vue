@@ -409,7 +409,7 @@ defineExpose({ editor });
     position: absolute;
     left: 3px;
     top: 2px;
-    color: $primary-color;
+    color: var(--primary-color);
     display: inline-block;
     font: normal normal normal 24px/1 "Material Design Icons", sans-serif;
     font-size: inherit;

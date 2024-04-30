@@ -703,7 +703,7 @@ onBeforeUnmount(() => {
 
           &.selected {
             img {
-              box-shadow: 0 0 0 3px $primary-color;
+              box-shadow: 0 0 0 3px var(--primary-color);
             }
           }
 
@@ -731,7 +731,7 @@ onBeforeUnmount(() => {
 
       .badge-update::after {
         bottom: initial;
-        background: $primary-color;
+        background: var(--primary-color);
       }
 
       .form-label {
