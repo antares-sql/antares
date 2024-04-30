@@ -12,6 +12,14 @@
     }
   }
 
+  .form-select,
+  .form-input,
+  .form-select:not([multiple], [size]),
+  .form-checkbox .form-icon,
+  .form-radio .form-icon {
+    background-color: #f5f5f5;
+  }
+
   .form-input:disabled,
   .form-input.disabled,
   .form-select:disabled,
@@ -44,7 +52,43 @@
     }
   }
 
+  .tab {
+    border-bottom: 0.05rem solid #c5c5c5;
+
+    .tab-item {
+      a {
+        color: $body-font-color;
+        opacity: .7;
+  
+        &:hover {
+          color: $body-font-color;
+          opacity: 1;
+        }
+      }
+
+      &.active {
+        a {
+          color: $body-font-color;
+          opacity: 1;
+        }
+  
+        .tab-link {
+          border-color: transparent;
+        }
+  
+        &::after {
+          width: 100%;
+        }
+      }
+    }
+  }
+
   .btn {
+    &.btn-clear:focus, &.btn-clear:hover {
+      background: #e0e0e0;
+      opacity: 0.95;
+    }
+
     &.btn-link {
       color: rgba($body-font-color, 0.8);
 
@@ -72,7 +116,7 @@
       }
 
       &.active {
-        background-color: $primary-color;
+        background-color: var(--primary-color);
       }
     }
   }
@@ -181,7 +225,7 @@
       .settingbar-element {
         .settingbar-element-icon {
           &.badge-update::after {
-            background: $primary-color;
+            background: var(--primary-color);
           }
         }
       }
@@ -230,6 +274,10 @@
     .workspace-tabs {
       .tab-block {
         .tab-item {
+          > a {
+            color: $body-font-color;
+          }
+
           &.tools-dropdown {
             background-color: $body-bg;
           }
@@ -241,19 +289,25 @@
   .workspace-query-results {
     .table {
       .th {
-        background: $body-bg;
-        border-color: lighten($bg-color-light-gray, 2%);
+        background: #D8D8D8;
+        border-color: transparent;
+        border-radius: 0;
+      }
+
+      .th:first-child {
+        border-left: 2px solid transparent;
       }
 
       .tr {
         background-color: lighten($bg-color-light-gray, 2%);
 
         .td:first-child {
-          border-left: 2px solid $body-bg;
+          border-left: 2px solid #0000001f;
         }
 
         .td {
-          border-color: $body-bg;
+          border-color: #0000001f;
+          border-radius: 1px;
 
           &:focus,
           &.selected {
@@ -272,7 +326,7 @@
 
   .connection-panel {
     .panel {
-      background: rgba($bg-color-light-gray, 100%);
+      background: #e0e0e0;
     }
   }
 
@@ -343,7 +397,7 @@
   }
 
   #footer {
-    background: $primary-color;
+    background: var(--primary-color);
     box-shadow: 0 0 1px 0 #000;
 
     .footer-elements {
