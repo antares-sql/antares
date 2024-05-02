@@ -24,6 +24,10 @@ body {
 
 a {
   color: var(--primary-color);
+
+  &:hover {
+    color: var(--primary-color-dark)
+  }
 }
 
 ::selection,
@@ -197,6 +201,14 @@ option:checked {
 
 .rotate {
   animation: rotation 0.8s infinite linear;
+}
+
+.loading {
+  &::after {
+    border: 0.1rem solid var(--primary-color);
+    border-right-color: transparent;
+    border-top-color: transparent;
+  }
 }
 
 /* Override */

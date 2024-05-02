@@ -1,8 +1,8 @@
 <template>
    <div
       id="footer"
-      :class="[lightColors.includes(footerColor) ? 'text-dark' : 'text-light']"
-      :style="`background-color: ${footerColor};`"
+      :class="[lightColors.includes(accentColor) ? 'text-dark' : 'text-light']"
+      :style="`background-color: ${accentColor};`"
    >
       <div class="footer-left-elements">
          <ul class="footer-elements">
@@ -118,7 +118,7 @@ const { getWorkspace } = workspacesStore;
 const { getConnectionFolder, getConnectionByUid } = connectionsStore;
 
 const workspace = computed(() => getWorkspace(workspaceUid.value));
-const footerColor = computed(() => {
+const accentColor = computed(() => {
    if (getConnectionFolder(workspaceUid.value)?.color)
       return getConnectionFolder(workspaceUid.value).color;
    return '#E36929';
@@ -134,12 +134,17 @@ const versionString = computed(() => {
    return '';
 });
 
-watch(footerColor, () => {
-   document.querySelector<HTMLBodyElement>(':root').style.setProperty('--primary-color', footerColor.value);
-   document.querySelector<HTMLBodyElement>(':root').style.setProperty('--primary-color-shadow', hexToRGBA(footerColor.value, 0.2));
+watch(accentColor, () => {
+   changeAccentColor();
 });
 
 const openOutside = (link: string) => shell.openExternal(link);
+const changeAccentColor = () => {
+   document.querySelector<HTMLBodyElement>(':root').style.setProperty('--primary-color', accentColor.value);
+   document.querySelector<HTMLBodyElement>(':root').style.setProperty('--primary-color-shadow', hexToRGBA(accentColor.value, 0.2));
+};
+
+changeAccentColor();
 </script>
 
 <style lang="scss">
