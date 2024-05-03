@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.24](https://github.com/antares-sql/antares/compare/v0.7.24-beta.1...v0.7.24) (2024-05-03)
+
+
+### Bug Fixes
+
+* missing accent color change ([09c274a](https://github.com/antares-sql/antares/commit/09c274a724b5020efc650aaf7eecb2404343a6fc))
+
 ### [0.7.24-beta.1](https://github.com/antares-sql/antares/compare/v0.7.24-beta.0...v0.7.24-beta.1) (2024-04-30)
 
 
