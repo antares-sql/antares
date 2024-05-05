@@ -65,7 +65,7 @@ export const zhCN = {
       actionSuccessful: '{action} 成功',
       outputFormat: '输出格式',
       singleFile: '单个 {ext} 文件',
-      zipCompressedFile: 'ZIP 压缩 {ext} 文件'
+      zipCompressedFile: 'ZIP 压缩 {ext} 文件',
       copyName: '复制名称',
       search: '搜索',
       title: '标题',
