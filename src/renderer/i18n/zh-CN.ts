@@ -65,9 +65,16 @@ export const zhCN = {
       actionSuccessful: '{action} 成功',
       outputFormat: '输出格式',
       singleFile: '单个 {ext} 文件',
-      zipCompressedFile: 'ZIP 压缩 {ext} 文件'
+      zipCompressedFile: 'ZIP 压缩 {ext} 文件',
+      copyName: '复制名称',
+      search: '搜索',
+      title: '标题',
+      archive: '归档',
+      undo: '重做',
+      moveTo: '移动到'
    },
    connection: { // 数据库连接
+      connection: '连接',
       connectionName: '连接名称',
       hostName: '主机名',
       client: '数据库类型',
@@ -101,7 +108,8 @@ export const zhCN = {
       readOnlyMode: '只读模式',
       allConnections: '所有连接',
       searchForConnections: '搜索连接',
-      keepAliveInterval: '保持活跃间隔'
+      keepAliveInterval: '保持活跃间隔',
+      singleConnection: '单一连接'
    },
    database: { // 数据库相关术语
       schema: '模式(schema)',
@@ -265,12 +273,11 @@ export const zhCN = {
       targetTable: '目标表',
       switchDatabase: '切换数据库',
       searchForElements: '搜索元素',
-      searchForSchemas: '搜索模式(schema)'
+      searchForSchemas: '搜索模式(schema)',
+      savedQueries: '已保存的查询'
    },
    application: { // 应用程序相关术语
       settings: '设置',
-      scratchpad: '草稿栏',
-      disableScratchpad: '禁用草稿栏',
       console: '控制台',
       general: '常规',
       themes: '主题',
@@ -375,7 +382,19 @@ export const zhCN = {
       ignoreDuplicates: '忽略重复',
       wrongImportPassword: '错误的导入密码',
       wrongFileFormat: '错误的文件格式',
-      dataImportSuccess: '数据已成功导入'
+      dataImportSuccess: '数据已成功导入',
+      note: '笔记 | 笔记',
+      thereAreNoNotesYet: '目前还没有笔记',
+      addNote: '添加笔记',
+      editNote: '编辑笔记',
+      saveAsNote: '另存为笔记',
+      showArchivedNotes: '显示归档笔记',
+      hideArchivedNotes: '隐藏归档笔记',
+      tag: '笔记标签', // Note tag,
+      saveFile: '保存文件',
+      saveFileAs: '将文件另存为',
+      openFile: '打开文件',
+      openNotes: '打开笔记'
    },
    faker: { // Faker.js 方法，用于随机生成的内容
       address: '地址',
