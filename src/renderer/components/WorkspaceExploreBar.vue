@@ -19,6 +19,8 @@
                   v-model="selectedDatabase"
                   :options="databases"
                   class="form-select select-sm text-bold my-0"
+                  @keypress.stop=""
+                  @keydown.stop=""
                />
             </div>
             <span v-else class="workspace-explorebar-title">{{ connectionName }}</span>
