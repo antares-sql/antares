@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.25-beta.0](https://github.com/antares-sql/antares/compare/v0.7.24...v0.7.25-beta.0) (2024-05-26)
+
+
+### Features
+
+* update japanese translation ([bb3c87b](https://github.com/antares-sql/antares/commit/bb3c87b2cf6fa38e3cfb68317c02aa350aae7887))
+
+
+### Bug Fixes
+
+* missing resizebars on mouse over ([25123e3](https://github.com/antares-sql/antares/commit/25123e34ef860d8bf019c496097e68e0101c9ab9))
+* **PostgreSQL:** unable to search for databases, fixes [#798](https://github.com/antares-sql/antares/issues/798) ([d1bb50b](https://github.com/antares-sql/antares/commit/d1bb50b2bb48d3445080990c28fdc656cf27a6d3))
+
 ### [0.7.24](https://github.com/antares-sql/antares/compare/v0.7.24-beta.1...v0.7.24) (2024-05-03)
 
 
