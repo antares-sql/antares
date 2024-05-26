@@ -151,6 +151,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/bagusindrayana"><img src="https://avatars.githubusercontent.com/u/36830534?v=4?s=100" width="100px;" alt="Bagus Indrayana"/><br /><sub><b>Bagus Indrayana</b></sub></a><br /><a href="https://github.com/antares-sql/antares/commits?author=bagusindrayana" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/penguinlab"><img src="https://avatars.githubusercontent.com/u/10959317?v=4?s=100" width="100px;" alt="Naoki Ishikawa"/><br /><sub><b>Naoki Ishikawa</b></sub></a><br /><a href="#translation-penguinlab" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://fazevedo.dev"><img src="https://avatars.githubusercontent.com/u/1640325?v=4?s=100" width="100px;" alt="Filipe Azevedo"/><br /><sub><b>Filipe Azevedo</b></sub></a><br /><a href="https://github.com/antares-sql/antares/commits?author=mangas" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

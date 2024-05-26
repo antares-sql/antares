@@ -284,6 +284,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "mangas",
+      "name": "Filipe Azevedo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1640325?v=4",
+      "profile": "https://fazevedo.dev",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
