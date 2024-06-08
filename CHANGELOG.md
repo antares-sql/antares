@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.25-beta.1](https://github.com/antares-sql/antares/compare/v0.7.25-beta.0...v0.7.25-beta.1) (2024-06-08)
+
+
+### Bug Fixes
+
+* issue switching table after using a filter, fixes[#691](https://github.com/antares-sql/antares/issues/691) ([4a1697d](https://github.com/antares-sql/antares/commit/4a1697d63351b9990efff5804b95d92ac2fc9783))
+
 ### [0.7.25-beta.0](https://github.com/antares-sql/antares/compare/v0.7.24...v0.7.25-beta.0) (2024-05-26)
 
 
