@@ -31,6 +31,7 @@ export const customizations: Customizations = {
    schemas: true,
    tables: true,
    views: true,
+   materializedViews: true,
    triggers: true,
    triggerFunctions: true,
    routines: true,
