@@ -234,6 +234,18 @@ export abstract class BaseClient {
       throw new Error('Method "getVariables" not implemented');
    }
 
+   getMaterializedViewInformations (...args: any) {
+      throw new Error('Method "getMaterializedViewInformations" not implemented');
+   }
+
+   dropMaterializedView (...args: any) {
+      throw new Error('Method "dropMaterializedView" not implemented');
+   }
+
+   createMaterializedView (...args: any) {
+      throw new Error('Method "createMaterializedView" not implemented');
+   }
+
    getEventInformations (...args: any) {
       throw new Error('Method "getEventInformations" not implemented');
    }

@@ -41,6 +41,18 @@
                   /> {{ t('database.view') }}</span>
             </div>
             <div
+               v-if="workspace.customizations.materializedViewAdd"
+               class="context-element"
+               @click="openCreateMaterializedViewTab"
+            >
+               <span class="d-flex">
+                  <BaseIcon
+                     class="text-light mt-1 mr-1"
+                     icon-name="mdiTableEye"
+                     :size="18"
+                  /> {{ t('database.materializedview') }}</span>
+            </div>
+            <div
                v-if="workspace.customizations.triggerAdd"
                class="context-element"
                @click="openCreateTriggerTab"
@@ -221,6 +233,7 @@ const props = defineProps({
 const emit = defineEmits([
    'open-create-table-tab',
    'open-create-view-tab',
+   'open-create-materialized-view-tab',
    'open-create-trigger-tab',
    'open-create-routine-tab',
    'open-create-function-tab',
@@ -255,6 +268,10 @@ const openCreateTableTab = () => {
 
 const openCreateViewTab = () => {
    emit('open-create-view-tab');
+};
+
+const openCreateMaterializedViewTab = () => {
+   emit('open-create-materialized-view-tab');
 };
 
 const openCreateTriggerTab = () => {

@@ -16,6 +16,18 @@
             /> {{ t('database.createNewView') }}</span>
       </div>
       <div
+         v-if="props.selectedMisc === 'materializedview'"
+         class="context-element"
+         @click="emit('open-create-materializedview-tab')"
+      >
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiTableCog"
+               :size="18"
+            /> {{ t('database.createNewMaterializedView') }}</span>
+      </div>
+      <div
          v-if="props.selectedMisc === 'trigger'"
          class="context-element"
          @click="emit('open-create-trigger-tab')"
@@ -94,6 +106,7 @@ const props = defineProps({
 
 const emit = defineEmits([
    'open-create-view-tab',
+   'open-create-materializedview-tab',
    'open-create-trigger-tab',
    'open-create-routine-tab',
    'open-create-function-tab',

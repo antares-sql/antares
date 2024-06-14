@@ -305,7 +305,7 @@ const customizations = computed(() => {
 });
 
 const isTable = computed(() => {
-   return !workspace.value.breadcrumbs.view;
+   return props.elementType === 'table';
 });
 
 const fields = computed(() => {
@@ -499,8 +499,8 @@ const openTableSettingTab = () => {
       uid: workspace.value.uid,
       elementName: props.table,
       schema: props.schema,
-      type: isTable.value ? 'table-props' : 'view-props',
-      elementType: isTable.value ? 'table' : 'view'
+      type: isTable.value ? 'table-props' : props.elementType === 'view' ? 'view-props' : 'materialized-view-props',
+      elementType: props.elementType
    });
 
    changeBreadcrumbs({

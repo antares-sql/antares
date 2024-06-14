@@ -46,6 +46,8 @@ export interface Customizations {
    tableDdl?: boolean;
    viewAdd?: boolean;
    viewSettings?: boolean;
+   materializedViewAdd?: boolean;
+   materializedViewSettings?: boolean;
    triggerAdd?: boolean;
    triggerFunctionAdd?: boolean;
    routineAdd?: boolean;

@@ -116,6 +116,55 @@
             </details>
          </div>
 
+         <div v-if="filteredMatViews.length && customizations.materializedViews" class="database-misc">
+            <details class="accordion">
+               <summary
+                  class="accordion-header misc-name"
+                  :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.trigger}"
+                  @contextmenu.prevent="showMiscFolderContext($event, 'materializedview')"
+               >
+                  <BaseIcon
+                     class="misc-icon mr-1"
+                     icon-name="mdiFolderEye"
+                     :size="18"
+                  />
+                  <BaseIcon
+                     class="misc-icon open-folder mr-1"
+                     icon-name="mdiFolderOpen"
+                     :size="18"
+                  />
+                  {{ t('database.materializedview', 2) }}
+               </summary>
+               <div class="accordion-body">
+                  <div>
+                     <ul class="menu menu-nav pt-0">
+                        <li
+                           v-for="view of filteredMatViews"
+                           :key="view.name"
+                           class="menu-item"
+                           :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.view === view.name}"
+                           @mousedown.left="selectTable({schema: database.name, table: view})"
+                           @dblclick="openDataTab({schema: database.name, table: view})"
+                           @contextmenu.prevent="showTableContext($event, view)"
+                        >
+                           <a class="table-name">
+                              <div v-if="checkLoadingStatus(view.name, 'table')" class="icon loading mr-1" />
+                              <BaseIcon
+                                 v-else
+                                 class="table-icon mr-1"
+                                 icon-name="mdiTableEye"
+                                 :size="18"
+                                 :style="`min-width: 18px`"
+                              />
+                              <span v-html="highlightWord(view.name)" />
+                           </a>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+            </details>
+         </div>
+
          <div v-if="filteredTriggers.length && customizations.triggers" class="database-misc">
             <details class="accordion">
                <summary
@@ -438,7 +487,14 @@ const filteredViews = computed(() => {
    if (props.searchMethod === 'elements')
       return props.database.tables.filter(table => table.name.search(searchTerm.value) >= 0 && table.type === 'view');
    else
-      return props.database.tables;
+      return props.database.tables.filter(table => table.type === 'view');
+});
+
+const filteredMatViews = computed(() => {
+   if (props.searchMethod === 'elements')
+      return props.database.tables.filter(table => table.name.search(searchTerm.value) >= 0 && table.type === 'materializedview');
+   else
+      return props.database.tables.filter(table => table.type === 'materializedview');
 });
 
 const filteredTriggers = computed(() => {

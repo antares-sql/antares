@@ -558,6 +558,8 @@ export const useWorkspacesStore = defineStore('workspaces', {
 
          switch (type) {
             case 'new-table':
+            case 'new-view':
+            case 'new-materialized-view':
             case 'new-trigger':
             case 'new-trigger-function':
             case 'new-function':
@@ -659,6 +661,8 @@ export const useWorkspacesStore = defineStore('workspaces', {
                break;
             case 'data':
             case 'table-props':
+            case 'view-props':
+            case 'materialized-view-props':
             case 'trigger-props':
             case 'trigger-function-props':
             case 'function-props':
