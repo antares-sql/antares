@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.25-beta.2](https://github.com/antares-sql/antares/compare/v0.7.25-beta.1...v0.7.25-beta.2) (2024-06-16)
+
+
+### Features
+
+* **PostgreSQL:** support to materialized views, closes [#804](https://github.com/antares-sql/antares/issues/804) ([0b9898f](https://github.com/antares-sql/antares/commit/0b9898f3e714d2cb24d100f55dd3858a644de162))
+
+
+### Improvements
+
+* **UI:** views grouped in folders ([a973ec3](https://github.com/antares-sql/antares/commit/a973ec3c60398cb16685a4f991c43ec4ee74c986))
+
 ### [0.7.25-beta.1](https://github.com/antares-sql/antares/compare/v0.7.25-beta.0...v0.7.25-beta.1) (2024-06-08)
 
 
