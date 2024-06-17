@@ -18,6 +18,7 @@ jobs:
       - name: npm install & build
         run: |
           npm install
+          npm install "dmg-license" --save-optional
           npm run build
 
       - name: Upload Artifact
@@ -45,12 +46,13 @@ jobs:
       - name: npm install & build
         run: |
           npm install
+          npm install "dmg-license" --save-optional
           npm run build
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: macos-build-beta
+          name: macos-build-develop
           retention-days: 3
           path: |
             build
