@@ -63,7 +63,7 @@
                   >
                      <BaseIcon
                         class="mt-1 mr-1"
-                        :icon-name="element.elementType === 'view' ? 'mdiTableEye' : 'mdiTable'"
+                        :icon-name="['view', 'materializedview'].includes(element.elementType) ? 'mdiTableEye' : 'mdiTable'"
                         :size="18"
                      />
                      <span :title="`${t('general.data').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
@@ -80,7 +80,7 @@
                   <a v-else-if="element.type === 'data'" class="tab-link">
                      <BaseIcon
                         class="mt-1 mr-1"
-                        :icon-name="element.elementType === 'view' ? 'mdiTableEye' : 'mdiTable'"
+                        :icon-name="['view', 'materializedview'].includes(element.elementType) ? 'mdiTableEye' : 'mdiTable'"
                         :size="18"
                      />
                      <span :title="`${t('general.data').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
@@ -158,6 +158,27 @@
                   </a>
 
                   <a
+                     v-else-if="element.type === 'materialized-view-props'"
+                     class="tab-link"
+                     :class="{'badge': element.isChanged}"
+                  >
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiWrenchCog"
+                        :size="18"
+                     />
+                     <span :title="`${t('application.settings').toUpperCase()}: ${t(`database.view`)}`">
+                        {{ cutText(element.elementName, 20, true) }}
+                        <span
+                           class="btn btn-clear"
+                           :title="t('general.close')"
+                           @mousedown.left.stop
+                           @click.stop="closeTab(element)"
+                        />
+                     </span>
+                  </a>
+
+                  <a
                      v-else-if="element.type === 'new-view'"
                      class="tab-link"
                      :class="{'badge': element.isChanged}"
@@ -169,6 +190,27 @@
                      />
                      <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
                         {{ t('database.newView') }}
+                        <span
+                           class="btn btn-clear"
+                           :title="t('general.close')"
+                           @mousedown.left.stop
+                           @click.stop="closeTab(element)"
+                        />
+                     </span>
+                  </a>
+
+                  <a
+                     v-else-if="element.type === 'new-materialized-view'"
+                     class="tab-link"
+                     :class="{'badge': element.isChanged}"
+                  >
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiShapeSquarePlus"
+                        :size="18"
+                     />
+                     <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
+                        {{ t('database.newMaterializedView') }}
                         <span
                            class="btn btn-clear"
                            :title="t('general.close')"
@@ -446,8 +488,24 @@
                :is-selected="selectedTab === tab.uid && isSelected"
                :schema="tab.schema"
             />
+            <WorkspaceTabNewMaterializedView
+               v-else-if="tab.type === 'new-materialized-view'"
+               :tab-uid="tab.uid"
+               :tab="tab"
+               :connection="connection"
+               :is-selected="selectedTab === tab.uid && isSelected"
+               :schema="tab.schema"
+            />
             <WorkspaceTabPropsView
                v-else-if="tab.type === 'view-props'"
+               :tab-uid="tab.uid"
+               :is-selected="selectedTab === tab.uid && isSelected"
+               :connection="connection"
+               :view="tab.elementName"
+               :schema="tab.schema"
+            />
+            <WorkspaceTabPropsMaterializedView
+               v-else-if="tab.type === 'materialized-view-props'"
                :tab-uid="tab.uid"
                :is-selected="selectedTab === tab.uid && isSelected"
                :connection="connection"
@@ -596,6 +654,9 @@ import Connection from '@/ipc-api/Connection';
 import { useConsoleStore } from '@/stores/console';
 import { useWorkspacesStore, WorkspaceTab } from '@/stores/workspaces';
 
+import WorkspaceTabNewMaterializedView from './WorkspaceTabNewMaterializedView.vue';
+import WorkspaceTabPropsMaterializedView from './WorkspaceTabPropsMaterializedView.vue';
+
 const { t } = useI18n();
 
 const { cutText } = useFilters();
@@ -638,7 +699,6 @@ const draggableTabs = computed<WorkspaceTab[]>({
    get () {
       if (workspace.value.customizations.database)
          return workspace.value.tabs.filter(tab => tab.type === 'query' || tab.database === workspace.value.database);
-
       else
          return workspace.value.tabs;
    },
@@ -689,6 +749,7 @@ const openAsPermanentTab = (tab: WorkspaceTab) => {
    const permanentTabs = {
       table: 'data',
       view: 'data',
+      materializedView: 'data',
       trigger: 'trigger-props',
       triggerFunction: 'trigger-function-props',
       function: 'function-props',

@@ -305,7 +305,7 @@ const customizations = computed(() => {
 });
 
 const isTable = computed(() => {
-   return !workspace.value.breadcrumbs.view;
+   return props.elementType === 'table';
 });
 
 const fields = computed(() => {
@@ -441,6 +441,25 @@ const resizeScroller = () => {
 const updateFilters = (clausoles: TableFilterClausole[]) => {
    filters.value = clausoles;
    results.value = [];
+
+   const permanentTabs = {
+      table: 'data',
+      view: 'data',
+      trigger: 'trigger-props',
+      triggerFunction: 'trigger-function-props',
+      function: 'function-props',
+      routine: 'routine-props',
+      procedure: 'routine-props',
+      scheduler: 'scheduler-props'
+   } as Record<string, string>;
+
+   newTab({
+      uid: props.connection.uid,
+      schema: props.schema,
+      elementName: props.table,
+      type: permanentTabs[props.elementType],
+      elementType: props.elementType
+   });
    getTableData();
 };
 
@@ -480,8 +499,8 @@ const openTableSettingTab = () => {
       uid: workspace.value.uid,
       elementName: props.table,
       schema: props.schema,
-      type: isTable.value ? 'table-props' : 'view-props',
-      elementType: isTable.value ? 'table' : 'view'
+      type: isTable.value ? 'table-props' : props.elementType === 'view' ? 'view-props' : 'materialized-view-props',
+      elementType: props.elementType
    });
 
    changeBreadcrumbs({

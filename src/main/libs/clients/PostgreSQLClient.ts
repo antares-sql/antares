@@ -335,12 +335,33 @@ export class PostgreSQLClient extends BaseClient {
             ORDER BY table_name
          `);
 
+         let { rows: matViews } = await this.raw<antares.QueryResult<ShowTableResult>>(`
+            SELECT schemaname AS schema_name,
+               matviewname AS table_name,
+               matviewowner AS owner,
+               ispopulated AS is_populated,
+               definition,
+               'materializedview' AS table_type
+            FROM pg_matviews
+            WHERE schemaname = '${db.database}'
+            ORDER BY schema_name,
+               table_name;
+         `);
+
          if (tables.length) {
             tables = tables.map(table => {
                table.Db = db.database;
                return table;
             });
             tablesArr.push(...tables);
+         }
+
+         if (matViews.length) {
+            matViews = matViews.map(view => {
+               view.Db = db.database;
+               return view;
+            });
+            tablesArr.push(...matViews);
          }
 
          let { rows: triggers } = await this.raw<antares.QueryResult<ShowTriggersResult>>(`
@@ -378,7 +399,11 @@ export class PostgreSQLClient extends BaseClient {
 
                return {
                   name: table.table_name,
-                  type: table.table_type === 'VIEW' ? 'view' : 'table',
+                  type: table.table_type === 'VIEW'
+                     ? 'view'
+                     : table.table_type === 'materializedview'
+                        ? 'materializedview'
+                        : 'table',
                   rows: table.reltuples,
                   size: tableSize,
                   collation: table.Collation,
@@ -1056,8 +1081,29 @@ export class PostgreSQLClient extends BaseClient {
       })[0];
    }
 
+   async getMaterializedViewInformations ({ schema, view }: { schema: string; view: string }) {
+      const sql = `SELECT "definition" FROM "pg_matviews" WHERE "matviewname"='${view}' AND "schemaname"='${schema}'`;
+      const results = await this.raw(sql);
+
+      return results.rows.map(row => {
+         return {
+            algorithm: '',
+            definer: '',
+            security: '',
+            updateOption: '',
+            sql: row.definition,
+            name: view
+         };
+      })[0];
+   }
+
    async dropView (params: { schema: string; view: string }) {
       const sql = `DROP VIEW "${params.schema}"."${params.view}"`;
+      return await this.raw(sql);
+   }
+
+   async dropMaterializedView (params: { schema: string; view: string }) {
+      const sql = `DROP MATERIALIZED VIEW "${params.schema}"."${params.view}"`;
       return await this.raw(sql);
    }
 
@@ -1070,8 +1116,22 @@ export class PostgreSQLClient extends BaseClient {
       return await this.raw(sql);
    }
 
+   async alterMaterializedView ({ view }: { view: antares.AlterViewParams }) {
+      let sql = `CREATE OR REPLACE MATERIALIZED VIEW "${view.schema}"."${view.oldName}" AS ${view.sql}`;
+
+      if (view.name !== view.oldName)
+         sql += `; ALTER VIEW "${view.schema}"."${view.oldName}" RENAME TO "${view.name}"`;
+
+      return await this.raw(sql);
+   }
+
    async createView (params: antares.CreateViewParams) {
       const sql = `CREATE VIEW "${params.schema}"."${params.name}" AS ${params.sql}`;
+      return await this.raw(sql);
+   }
+
+   async createMaterializedView (params: antares.CreateViewParams) {
+      const sql = `CREATE MATERIALIZED VIEW "${params.schema}"."${params.name}" AS ${params.sql}`;
       return await this.raw(sql);
    }
 

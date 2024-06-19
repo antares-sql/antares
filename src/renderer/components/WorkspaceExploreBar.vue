@@ -19,6 +19,8 @@
                   v-model="selectedDatabase"
                   :options="databases"
                   class="form-select select-sm text-bold my-0"
+                  @keypress.stop=""
+                  @keydown.stop=""
                />
             </div>
             <span v-else class="workspace-explorebar-title">{{ connectionName }}</span>
@@ -109,6 +111,7 @@
          @close-context="closeDatabaseContext"
          @open-create-table-tab="openCreateElementTab('table')"
          @open-create-view-tab="openCreateElementTab('view')"
+         @open-create-materialized-view-tab="openCreateElementTab('materialized-view')"
          @open-create-trigger-tab="openCreateElementTab('trigger')"
          @open-create-routine-tab="openCreateElementTab('routine')"
          @open-create-function-tab="openCreateElementTab('function')"
@@ -139,10 +142,12 @@
          :selected-misc="selectedMisc"
          :selected-schema="selectedSchema"
          :context-event="miscContextEvent"
+         @open-create-view-tab="openCreateElementTab('view')"
+         @open-create-materializedview-tab="openCreateElementTab('materialized-view')"
          @open-create-trigger-tab="openCreateElementTab('trigger')"
+         @open-create-trigger-function-tab="openCreateElementTab('trigger-function')"
          @open-create-routine-tab="openCreateElementTab('routine')"
          @open-create-function-tab="openCreateElementTab('function')"
-         @open-create-trigger-function-tab="openCreateElementTab('trigger-function')"
          @open-create-scheduler-tab="openCreateElementTab('scheduler')"
          @close-context="closeMiscFolderContext"
          @reload="refresh"
@@ -501,7 +506,7 @@ const toggleSearchMethod = () => {
     transition: background 0.2s;
 
     &:hover {
-      background: rgba(var(--primary-color), 50%);
+      background: var(--primary-color-dark);
     }
   }
 

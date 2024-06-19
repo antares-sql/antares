@@ -48,6 +48,18 @@
             /> {{ t('application.settings') }}</span>
       </div>
       <div
+         v-if="selectedTable && selectedTable.type === 'materializedview' && customizations.materializedViewSettings"
+         class="context-element"
+         @click="openMaterializedViewSettingTab"
+      >
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiWrenchCog"
+               :size="18"
+            /> {{ t('application.settings') }}</span>
+      </div>
+      <div
          v-if="selectedTable && selectedTable.type === 'table' && customizations.tableDuplicate"
          class="context-element"
          @click="duplicateTable"
@@ -228,6 +240,23 @@ const openViewSettingTab = () => {
       elementName: props.selectedTable.name,
       schema: props.selectedSchema,
       type: 'view-props'
+   });
+
+   changeBreadcrumbs({
+      schema: props.selectedSchema,
+      view: props.selectedTable.name
+   });
+
+   closeContext();
+};
+
+const openMaterializedViewSettingTab = () => {
+   newTab({
+      uid: selectedWorkspace.value,
+      elementType: 'table',
+      elementName: props.selectedTable.name,
+      schema: props.selectedSchema,
+      type: 'materialized-view-props'
    });
 
    changeBreadcrumbs({

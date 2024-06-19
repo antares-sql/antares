@@ -1,9 +1,10 @@
 name: Test end-to-end
 
 on: 
-  push:
-    branches:
-        - develop
+  workflow_dispatch: {}
+  # push:
+  #   branches:
+  #       - develop
 
 jobs:
   release:

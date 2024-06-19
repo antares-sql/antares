@@ -28,6 +28,7 @@ export interface Customizations {
    schemas?: boolean;
    tables?: boolean;
    views?: boolean;
+   materializedViews?: boolean;
    triggers?: boolean;
    triggerFunctions?: boolean;
    routines?: boolean;
@@ -45,6 +46,8 @@ export interface Customizations {
    tableDdl?: boolean;
    viewAdd?: boolean;
    viewSettings?: boolean;
+   materializedViewAdd?: boolean;
+   materializedViewSettings?: boolean;
    triggerAdd?: boolean;
    triggerFunctionAdd?: boolean;
    routineAdd?: boolean;

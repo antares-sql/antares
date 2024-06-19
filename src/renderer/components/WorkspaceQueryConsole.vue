@@ -145,7 +145,7 @@ onMounted(() => {
     transition: background 0.2s;
 
     &:hover {
-      background: rgba(var(--primary-color), 50%);
+      background: var(--primary-color-dark);
     }
   }
 

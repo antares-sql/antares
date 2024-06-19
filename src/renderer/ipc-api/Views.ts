@@ -19,4 +19,20 @@ export default class {
    static createView (params: CreateViewParams & { uid: string }): Promise<IpcResponse> {
       return ipcRenderer.invoke('create-view', unproxify(params));
    }
+
+   static createMaterializedView (params: CreateViewParams & { uid: string }): Promise<IpcResponse> {
+      return ipcRenderer.invoke('create-materialized-view', unproxify(params));
+   }
+
+   static getMaterializedViewInformations (params: { uid: string; schema: string; view: string }): Promise<IpcResponse> {
+      return ipcRenderer.invoke('get-materialized-view-informations', unproxify(params));
+   }
+
+   static dropMaterializedView (params: { uid: string; schema: string; view: string }): Promise<IpcResponse> {
+      return ipcRenderer.invoke('drop-materialized-view', unproxify(params));
+   }
+
+   static alterMaterializedView (params: { view: AlterViewParams & { uid: string }}): Promise<IpcResponse> {
+      return ipcRenderer.invoke('alter-materialized-view', unproxify(params));
+   }
 }
