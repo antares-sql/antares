@@ -57,8 +57,21 @@
                      >
                         <div class="panel">
                            <div class="panel-header p-2 text-center p-relative">
-                              <figure class="avatar avatar-lg pt-1 mb-1">
-                                 <i class="settingbar-element-icon dbi" :class="[`dbi-${connection.client}`]" />
+                              <figure class="avatar avatar-lg pt-1 mb-1 bg-dark">
+                                 <div
+                                    v-if="connection.icon"
+                                    class="settingbar-connection-icon"
+                                 >
+                                    <BaseIcon
+                                       :icon-name="camelize(connection.icon)"
+                                       :size="42"
+                                    />
+                                 </div>
+                                 <div
+                                    v-else
+                                    class="settingbar-element-icon dbi ml-1"
+                                    :class="[`dbi-${connection.client}`]"
+                                 />
                               </figure>
                               <div class="panel-title h6 text-ellipsis">
                                  {{ getConnectionName(connection.uid) }}
@@ -136,7 +149,19 @@
                               </div>
                            </div>
                            <div class="panel-footer text-center py-0">
-                              <div v-if="connection.ssl" class="chip bg-success mt-2">
+                              <div
+                                 v-if="connection.folderName"
+                                 class="chip mt-2 bg-dark"
+                              >
+                                 <BaseIcon
+                                    icon-name="mdiFolder"
+                                    class="mr-1"
+                                    :style="[connection.color ? `color: ${connection.color};`: '']"
+                                    :size="18"
+                                 />
+                                 {{ connection.folderName }}
+                              </div>
+                              <div v-if="connection.ssl" class="chip bg-dark mt-2">
                                  <BaseIcon
                                     icon-name="mdiShieldKey"
                                     class="mr-1"
@@ -144,7 +169,7 @@
                                  />
                                  SSL
                               </div>
-                              <div v-if="connection.ssh" class="chip bg-success mt-2">
+                              <div v-if="connection.ssh" class="chip bg-dark mt-2">
                                  <BaseIcon
                                     icon-name="mdiConsoleNetwork"
                                     class="mr-1"
@@ -152,7 +177,7 @@
                                  />
                                  SSH
                               </div>
-                              <div v-if="connection.readonly" class="chip bg-success mt-2">
+                              <div v-if="connection.readonly" class="chip bg-dark mt-2">
                                  <BaseIcon
                                     icon-name="mdiLock"
                                     class="mr-1"
@@ -209,6 +234,7 @@ import { useI18n } from 'vue-i18n';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
+import { camelize } from '@/libs/camelize';
 import { useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
@@ -218,7 +244,9 @@ const connectionsStore = useConnectionsStore();
 const workspacesStore = useWorkspacesStore();
 
 const { connections,
-   lastConnections
+   connectionsOrder,
+   lastConnections,
+   getFolders: folders
 } = storeToRefs(connectionsStore);
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
@@ -236,7 +264,8 @@ const clients = new Map([
    ['mysql', 'MySQL'],
    ['maria', 'MariaDB'],
    ['pg', 'PostgreSQL'],
-   ['sqlite', 'SQLite']
+   ['sqlite', 'SQLite'],
+   ['firebird', 'Firebird SQL']
 ]);
 
 const searchTerm = ref('');
@@ -244,12 +273,17 @@ const isConfirmModal = ref(false);
 const connectionHover: Ref<string> = ref(null);
 const selectedConnection: Ref<ConnectionParams> = ref(null);
 
-const sortedConnections = computed(() => {
+const remappedConnections = computed(() => {
    return connections.value
       .map(c => {
          const connTime = lastConnections.value.find((lc) => lc.uid === c.uid)?.time || 0;
+         const connIcon = connectionsOrder.value.find((co) => co.uid === c.uid).icon;
+         const folder = folders.value.find(f => f.connections.includes(c.uid));
          return {
             ...c,
+            icon: connIcon,
+            color: folder?.color,
+            folderName: folder?.name,
             time: connTime
          };
       })
@@ -261,7 +295,7 @@ const sortedConnections = computed(() => {
 });
 
 const filteredConnections = computed(() => {
-   return sortedConnections.value.filter(connection => {
+   return remappedConnections.value.filter(connection => {
       return connection.name?.toLocaleLowerCase().includes(searchTerm.value.toLocaleLowerCase()) ||
          connection.host?.toLocaleLowerCase().includes(searchTerm.value.toLocaleLowerCase()) ||
          connection.database?.toLocaleLowerCase().includes(searchTerm.value.toLocaleLowerCase()) ||
