@@ -11,7 +11,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.8'
+          python-version: '3.11'
 
       - name: Install pipx
         uses: CfirTsabari/actions-pipx@v1
@@ -30,7 +30,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
 
       # - name: Delete old package-lock.json
       #   run: rm package-lock.json
