@@ -38,7 +38,7 @@ const connStringConstruct = (args: ConnectionParams & { pgConnString?: string })
    args.sshPort = stringArgs.sshPort;
 
    // ssl mode
-   args.ssl = checkForSSl(args.pgConnString);
+   args.ssl = checkForSSl(args.pgConnString) || args.ssl;
    args.cert = stringArgs.sslcert;
    args.key = stringArgs.sslkey;
    args.ca = stringArgs.sslrootcert;
