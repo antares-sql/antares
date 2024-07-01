@@ -598,6 +598,22 @@ localConnection.value = JSON.parse(JSON.stringify(props.connection));
     min-width: 450px;
     border-radius: $border-radius;
 
+    .panel-nav {
+      .tab-block {
+         background: transparent;
+         margin: 0.2rem 0 0.15rem 0;
+
+         .tab-item {
+            background: transparent;
+            flex: 1 0 0;
+
+            > a {
+               padding: 8px 4px 6px 4px
+            }
+         }
+      }
+    }
+
     .panel-body {
       flex: initial;
     }

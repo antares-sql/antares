@@ -55,7 +55,7 @@
 
 <script setup lang="ts">
 import { ImportState } from 'common/interfaces/importer';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, IpcRendererEvent } from 'electron';
 import * as moment from 'moment';
 import { storeToRefs } from 'pinia';
 import { computed, onBeforeUnmount, Ref, ref } from 'vue';
@@ -63,6 +63,7 @@ import { useI18n } from 'vue-i18n';
 
 import BaseIcon from '@/components/BaseIcon.vue';
 import Schema from '@/ipc-api/Schema';
+import { useConsoleStore } from '@/stores/console';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
@@ -118,23 +119,35 @@ const startImport = async (file: string) => {
       else {
          progressStatus.value = response;
          addNotification({ status: 'error', message: response });
+         useConsoleStore().putLog('debug', {
+            level: 'error',
+            process: 'worker',
+            message: response,
+            date: new Date()
+         });
       }
       refreshSchema({ uid, schema: props.selectedSchema });
       completed.value = true;
    }
    catch (err) {
       addNotification({ status: 'error', message: err.stack });
+      useConsoleStore().putLog('debug', {
+         level: 'error',
+         process: 'worker',
+         message: err.stack,
+         date: new Date()
+      });
    }
 
    isImporting.value = false;
 };
 
-const updateProgress = (event: Event, state: ImportState) => {
+const updateProgress = (event: IpcRendererEvent, state: ImportState) => {
    progressPercentage.value = parseFloat(Number(state.percentage).toFixed(1));
    queryCount.value = Number(state.queryCount);
 };
 
-const handleQueryError = (event: Event, err: { time: string; message: string }) => {
+const handleQueryError = (event: IpcRendererEvent, err: { time: string; message: string }) => {
    queryErrors.value.push(err);
 };
 

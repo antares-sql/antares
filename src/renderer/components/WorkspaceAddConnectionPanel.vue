@@ -1,440 +1,446 @@
 <template>
-   <div class="connection-panel">
-      <div class="panel">
-         <div class="panel-nav">
-            <ul class="tab tab-block">
-               <li
-                  class="tab-item c-hand"
-                  :class="{'active': selectedTab === 'general'}"
-                  @click="selectTab('general')"
-               >
-                  <a class="tab-link">{{ t('application.general') }}</a>
-               </li>
-               <li
-                  v-if="clientCustomizations.sslConnection"
-                  class="tab-item c-hand"
-                  :class="{'active': selectedTab === 'ssl'}"
-                  @click="selectTab('ssl')"
-               >
-                  <a class="tab-link">{{ t('connection.ssl') }}</a>
-               </li>
-               <li
-                  v-if="clientCustomizations.sshConnection"
-                  class="tab-item c-hand"
-                  :class="{'active': selectedTab === 'ssh'}"
-                  @click="selectTab('ssh')"
-               >
-                  <a class="tab-link">{{ t('connection.sshTunnel') }}</a>
-               </li>
-            </ul>
-         </div>
-         <div v-if="selectedTab === 'general'" class="panel-body py-0">
-            <div>
-               <form class="form-horizontal">
-                  <fieldset class="m-0" :disabled="isBusy">
-                     <div class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.connectionName') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <input
-                              ref="firstInput"
-                              v-model="connection.name"
-                              class="form-input"
-                              type="text"
-                           >
-                        </div>
-                     </div>
-                     <div class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.client') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <BaseSelect
-                              v-model="connection.client"
-                              :options="clients"
-                              option-track-by="slug"
-                              option-label="name"
-                              class="form-select"
-                           />
-                        </div>
-                     </div>
-                     <div v-if="connection.client === 'pg'" class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.connectionString') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <input
-                              ref="pgString"
-                              v-model="connection.pgConnString"
-                              class="form-input"
-                              type="text"
-                           >
-                        </div>
-                     </div>
-                     <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.hostName') }}/IP</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <input
-                              v-model="connection.host"
-                              class="form-input"
-                              type="text"
-                           >
-                        </div>
-                     </div>
-                     <div v-if="clientCustomizations.fileConnection" class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('database.database') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <BaseUploadInput
-                              :model-value="connection.databasePath"
-                              :message="t('general.browse')"
-                              @clear="pathClear('databasePath')"
-                              @change="pathSelection($event, 'databasePath')"
-                           />
-                        </div>
-                     </div>
-                     <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.port') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <input
-                              v-model="connection.port"
-                              class="form-input"
-                              type="number"
-                              min="1"
-                              max="65535"
-                           >
-                        </div>
-                     </div>
-                     <div v-if="clientCustomizations.database" class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('database.database') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <input
-                              v-model="connection.database"
-                              class="form-input"
-                              type="text"
-                              :placeholder="clientCustomizations.defaultDatabase"
-                           >
-                        </div>
-                     </div>
-                     <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.user') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <input
-                              v-model="connection.user"
-                              class="form-input"
-                              type="text"
-                              :disabled="connection.ask"
-                           >
-                        </div>
-                     </div>
-                     <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.password') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <input
-                              v-model="connection.password"
-                              class="form-input"
-                              type="password"
-                              :disabled="connection.ask"
-                           >
-                        </div>
-                     </div>
-                     <div v-if="clientCustomizations.connectionSchema" class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('database.schema') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <input
-                              v-model="connection.schema"
-                              class="form-input"
-                              type="text"
-                              :placeholder="t('general.all')"
-                           >
-                        </div>
-                     </div>
-                     <div v-if="clientCustomizations.readOnlyMode" class="form-group columns mb-0">
-                        <div class="column col-5 col-sm-12" />
-                        <div class="column col-7 col-sm-12">
-                           <label class="form-checkbox form-inline my-0">
-                              <input v-model="connection.readonly" type="checkbox"><i class="form-icon" /> {{ t('connection.readOnlyMode') }}
-                           </label>
-                        </div>
-                     </div>
-                     <div v-if="!clientCustomizations.fileConnection" class="form-group columns mb-0">
-                        <div class="column col-5 col-sm-12" />
-                        <div class="column col-7 col-sm-12">
-                           <label class="form-checkbox form-inline my-0">
-                              <input v-model="connection.ask" type="checkbox"><i class="form-icon" /> {{ t('connection.askCredentials') }}
-                           </label>
-                        </div>
-                     </div>
-                     <div v-if="clientCustomizations.singleConnectionMode" class="form-group columns mb-0">
-                        <div class="column col-5 col-sm-12" />
-                        <div class="column col-7 col-sm-12">
-                           <label class="form-checkbox form-inline my-0">
-                              <input v-model="connection.singleConnectionMode" type="checkbox"><i class="form-icon" /> {{ t('connection.singleConnection') }}
-                           </label>
-                        </div>
-                     </div>
-                  </fieldset>
-               </form>
+   <div class="connection-panel-wrapper p-relative">
+      <div class="connection-panel">
+         <div class="panel">
+            <div class="panel-nav">
+               <ul class="tab tab-block">
+                  <li
+                     class="tab-item c-hand"
+                     :class="{'active': selectedTab === 'general'}"
+                     @click="selectTab('general')"
+                  >
+                     <a class="tab-link">{{ t('application.general') }}</a>
+                  </li>
+                  <li
+                     v-if="clientCustomizations.sslConnection"
+                     class="tab-item c-hand"
+                     :class="{'active': selectedTab === 'ssl'}"
+                     @click="selectTab('ssl')"
+                  >
+                     <a class="tab-link">{{ t('connection.ssl') }}</a>
+                  </li>
+                  <li
+                     v-if="clientCustomizations.sshConnection"
+                     class="tab-item c-hand"
+                     :class="{'active': selectedTab === 'ssh'}"
+                     @click="selectTab('ssh')"
+                  >
+                     <a class="tab-link">{{ t('connection.sshTunnel') }}</a>
+                  </li>
+               </ul>
             </div>
-         </div>
-         <div v-if="selectedTab === 'ssl'" class="panel-body py-0">
-            <div>
-               <form class="form-horizontal">
-                  <div class="form-group columns">
-                     <div class="column col-5 col-sm-12">
-                        <label class="form-label cut-text">
-                           {{ t('connection.enableSsl') }}
-                        </label>
-                     </div>
-                     <div class="column col-7 col-sm-12">
-                        <label class="form-switch d-inline-block" @click.prevent="toggleSsl">
-                           <input type="checkbox" :checked="connection.ssl">
-                           <i class="form-icon" />
-                        </label>
-                     </div>
-                  </div>
-                  <fieldset class="m-0" :disabled="isBusy || !connection.ssl">
-                     <div class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.privateKey') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <BaseUploadInput
-                              :model-value="connection.key"
-                              :message="t('general.browse')"
-                              @clear="pathClear('key')"
-                              @change="pathSelection($event, 'key')"
-                           />
-                        </div>
-                     </div>
-                     <div class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.certificate') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <BaseUploadInput
-                              :model-value="connection.cert"
-                              :message="t('general.browse')"
-                              @clear="pathClear('cert')"
-                              @change="pathSelection($event, 'cert')"
-                           />
-                        </div>
-                     </div>
-                     <div class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.caCertificate') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <BaseUploadInput
-                              :model-value="connection.ca"
-                              :message="t('general.browse')"
-                              @clear="pathClear('ca')"
-                              @change="pathSelection($event, 'ca')"
-                           />
-                        </div>
-                     </div>
-                     <div class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.ciphers') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <input
-                              ref="firstInput"
-                              v-model="connection.ciphers"
-                              class="form-input"
-                              type="text"
-                           >
-                        </div>
-                     </div>
-                     <div class="form-group columns">
-                        <div class="column col-5 col-sm-12" />
-                        <div class="column col-7 col-sm-12">
-                           <label class="form-checkbox form-inline">
-                              <input v-model="connection.untrustedConnection" type="checkbox"><i class="form-icon" /> {{ t('connection.untrustedConnection') }}
-                           </label>
-                        </div>
-                     </div>
-                  </fieldset>
-               </form>
-            </div>
-         </div>
-         <div v-if="selectedTab === 'ssh'" class="panel-body py-0">
-            <div>
-               <form class="form-horizontal">
-                  <div class="form-group columns">
-                     <div class="column col-5 col-sm-12">
-                        <label class="form-label cut-text">
-                           {{ t('connection.enableSsh') }}
-                        </label>
-                     </div>
-                     <div class="column col-7 col-sm-12">
-                        <label class="form-switch d-inline-block" @click.prevent="toggleSsh">
-                           <input type="checkbox" :checked="connection.ssh">
-                           <i class="form-icon" />
-                        </label>
-                     </div>
-                  </div>
-                  <fieldset class="m-0" :disabled="isBusy || !connection.ssh">
-                     <div class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.hostName') }}/IP</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <input
-                              v-model="connection.sshHost"
-                              class="form-input"
-                              type="text"
-                           >
-                        </div>
-                     </div>
-                     <div class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.user') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <input
-                              v-model="connection.sshUser"
-                              class="form-input"
-                              type="text"
-                           >
-                        </div>
-                     </div>
-                     <div class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.password') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <input
-                              v-model="connection.sshPass"
-                              class="form-input"
-                              type="password"
-                           >
-                        </div>
-                     </div>
-                     <div class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.port') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <input
-                              v-model="connection.sshPort"
-                              class="form-input"
-                              type="number"
-                              min="1"
-                              max="65535"
-                           >
-                        </div>
-                     </div>
-                     <div class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.privateKey') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <BaseUploadInput
-                              :model-value="connection.sshKey"
-                              :message="t('general.browse')"
-                              @clear="pathClear('sshKey')"
-                              @change="pathSelection($event, 'sshKey')"
-                           />
-                        </div>
-                     </div>
-                     <div class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.passphrase') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <input
-                              v-model="connection.sshPassphrase"
-                              class="form-input"
-                              type="password"
-                           >
-                        </div>
-                     </div>
-                     <div class="form-group columns">
-                        <div class="column col-5 col-sm-12">
-                           <label class="form-label cut-text">{{ t('connection.keepAliveInterval') }}</label>
-                        </div>
-                        <div class="column col-7 col-sm-12">
-                           <div class="input-group">
+            <div v-if="selectedTab === 'general'" class="panel-body py-0">
+               <div>
+                  <form class="form-horizontal">
+                     <fieldset class="m-0" :disabled="isBusy">
+                        <div class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.connectionName') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
                               <input
-                                 v-model="connection.sshKeepAliveInterval"
+                                 ref="firstInput"
+                                 v-model="connection.name"
+                                 class="form-input"
+                                 type="text"
+                              >
+                           </div>
+                        </div>
+                        <div class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.client') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <BaseSelect
+                                 v-model="connection.client"
+                                 :options="clients"
+                                 option-track-by="slug"
+                                 option-label="name"
+                                 class="form-select"
+                              />
+                           </div>
+                        </div>
+                        <div v-if="connection.client === 'pg'" class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.connectionString') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <input
+                                 ref="pgString"
+                                 v-model="connection.pgConnString"
+                                 class="form-input"
+                                 type="text"
+                              >
+                           </div>
+                        </div>
+                        <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.hostName') }}/IP</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <input
+                                 v-model="connection.host"
+                                 class="form-input"
+                                 type="text"
+                              >
+                           </div>
+                        </div>
+                        <div v-if="clientCustomizations.fileConnection" class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('database.database') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <BaseUploadInput
+                                 :model-value="connection.databasePath"
+                                 :message="t('general.browse')"
+                                 @clear="pathClear('databasePath')"
+                                 @change="pathSelection($event, 'databasePath')"
+                              />
+                           </div>
+                        </div>
+                        <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.port') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <input
+                                 v-model="connection.port"
                                  class="form-input"
                                  type="number"
                                  min="1"
+                                 max="65535"
                               >
-                              <span class="input-group-addon">{{ t('general.seconds') }}</span>
                            </div>
                         </div>
+                        <div v-if="clientCustomizations.database" class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('database.database') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <input
+                                 v-model="connection.database"
+                                 class="form-input"
+                                 type="text"
+                                 :placeholder="clientCustomizations.defaultDatabase"
+                              >
+                           </div>
+                        </div>
+                        <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.user') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <input
+                                 v-model="connection.user"
+                                 class="form-input"
+                                 type="text"
+                                 :disabled="connection.ask"
+                              >
+                           </div>
+                        </div>
+                        <div v-if="!clientCustomizations.fileConnection" class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.password') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <input
+                                 v-model="connection.password"
+                                 class="form-input"
+                                 type="password"
+                                 :disabled="connection.ask"
+                              >
+                           </div>
+                        </div>
+                        <div v-if="clientCustomizations.connectionSchema" class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('database.schema') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <input
+                                 v-model="connection.schema"
+                                 class="form-input"
+                                 type="text"
+                                 :placeholder="t('general.all')"
+                              >
+                           </div>
+                        </div>
+                        <div v-if="clientCustomizations.readOnlyMode" class="form-group columns mb-0">
+                           <div class="column col-5 col-sm-12" />
+                           <div class="column col-7 col-sm-12">
+                              <label class="form-checkbox form-inline my-0">
+                                 <input v-model="connection.readonly" type="checkbox"><i class="form-icon" /> {{ t('connection.readOnlyMode') }}
+                              </label>
+                           </div>
+                        </div>
+                        <div v-if="!clientCustomizations.fileConnection" class="form-group columns mb-0">
+                           <div class="column col-5 col-sm-12" />
+                           <div class="column col-7 col-sm-12">
+                              <label class="form-checkbox form-inline my-0">
+                                 <input v-model="connection.ask" type="checkbox"><i class="form-icon" /> {{ t('connection.askCredentials') }}
+                              </label>
+                           </div>
+                        </div>
+                        <div v-if="clientCustomizations.singleConnectionMode" class="form-group columns mb-0">
+                           <div class="column col-5 col-sm-12" />
+                           <div class="column col-7 col-sm-12">
+                              <label class="form-checkbox form-inline my-0">
+                                 <input v-model="connection.singleConnectionMode" type="checkbox"><i class="form-icon" /> {{ t('connection.singleConnection') }}
+                              </label>
+                           </div>
+                        </div>
+                     </fieldset>
+                  </form>
+               </div>
+            </div>
+            <div v-if="selectedTab === 'ssl'" class="panel-body py-0">
+               <div>
+                  <form class="form-horizontal">
+                     <div class="form-group columns">
+                        <div class="column col-5 col-sm-12">
+                           <label class="form-label cut-text">
+                              {{ t('connection.enableSsl') }}
+                           </label>
+                        </div>
+                        <div class="column col-7 col-sm-12">
+                           <label class="form-switch d-inline-block" @click.prevent="toggleSsl">
+                              <input type="checkbox" :checked="connection.ssl">
+                              <i class="form-icon" />
+                           </label>
+                        </div>
                      </div>
-                  </fieldset>
-               </form>
+                     <fieldset class="m-0" :disabled="isBusy || !connection.ssl">
+                        <div class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.privateKey') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <BaseUploadInput
+                                 :model-value="connection.key"
+                                 :message="t('general.browse')"
+                                 @clear="pathClear('key')"
+                                 @change="pathSelection($event, 'key')"
+                              />
+                           </div>
+                        </div>
+                        <div class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.certificate') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <BaseUploadInput
+                                 :model-value="connection.cert"
+                                 :message="t('general.browse')"
+                                 @clear="pathClear('cert')"
+                                 @change="pathSelection($event, 'cert')"
+                              />
+                           </div>
+                        </div>
+                        <div class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.caCertificate') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <BaseUploadInput
+                                 :model-value="connection.ca"
+                                 :message="t('general.browse')"
+                                 @clear="pathClear('ca')"
+                                 @change="pathSelection($event, 'ca')"
+                              />
+                           </div>
+                        </div>
+                        <div class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.ciphers') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <input
+                                 ref="firstInput"
+                                 v-model="connection.ciphers"
+                                 class="form-input"
+                                 type="text"
+                              >
+                           </div>
+                        </div>
+                        <div class="form-group columns">
+                           <div class="column col-5 col-sm-12" />
+                           <div class="column col-7 col-sm-12">
+                              <label class="form-checkbox form-inline">
+                                 <input v-model="connection.untrustedConnection" type="checkbox"><i class="form-icon" /> {{ t('connection.untrustedConnection') }}
+                              </label>
+                           </div>
+                        </div>
+                     </fieldset>
+                  </form>
+               </div>
+            </div>
+            <div v-if="selectedTab === 'ssh'" class="panel-body py-0">
+               <div>
+                  <form class="form-horizontal">
+                     <div class="form-group columns">
+                        <div class="column col-5 col-sm-12">
+                           <label class="form-label cut-text">
+                              {{ t('connection.enableSsh') }}
+                           </label>
+                        </div>
+                        <div class="column col-7 col-sm-12">
+                           <label class="form-switch d-inline-block" @click.prevent="toggleSsh">
+                              <input type="checkbox" :checked="connection.ssh">
+                              <i class="form-icon" />
+                           </label>
+                        </div>
+                     </div>
+                     <fieldset class="m-0" :disabled="isBusy || !connection.ssh">
+                        <div class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.hostName') }}/IP</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <input
+                                 v-model="connection.sshHost"
+                                 class="form-input"
+                                 type="text"
+                              >
+                           </div>
+                        </div>
+                        <div class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.user') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <input
+                                 v-model="connection.sshUser"
+                                 class="form-input"
+                                 type="text"
+                              >
+                           </div>
+                        </div>
+                        <div class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.password') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <input
+                                 v-model="connection.sshPass"
+                                 class="form-input"
+                                 type="password"
+                              >
+                           </div>
+                        </div>
+                        <div class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.port') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <input
+                                 v-model="connection.sshPort"
+                                 class="form-input"
+                                 type="number"
+                                 min="1"
+                                 max="65535"
+                              >
+                           </div>
+                        </div>
+                        <div class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.privateKey') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <BaseUploadInput
+                                 :model-value="connection.sshKey"
+                                 :message="t('general.browse')"
+                                 @clear="pathClear('sshKey')"
+                                 @change="pathSelection($event, 'sshKey')"
+                              />
+                           </div>
+                        </div>
+                        <div class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.passphrase') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <input
+                                 v-model="connection.sshPassphrase"
+                                 class="form-input"
+                                 type="password"
+                              >
+                           </div>
+                        </div>
+                        <div class="form-group columns">
+                           <div class="column col-5 col-sm-12">
+                              <label class="form-label cut-text">{{ t('connection.keepAliveInterval') }}</label>
+                           </div>
+                           <div class="column col-7 col-sm-12">
+                              <div class="input-group">
+                                 <input
+                                    v-model="connection.sshKeepAliveInterval"
+                                    class="form-input"
+                                    type="number"
+                                    min="1"
+                                 >
+                                 <span class="input-group-addon">{{ t('general.seconds') }}</span>
+                              </div>
+                           </div>
+                        </div>
+                     </fieldset>
+                  </form>
+               </div>
+            </div>
+            <div class="panel-footer">
+               <button
+                  id="connection-test"
+                  class="btn btn-gray mr-2 d-flex"
+                  :class="{'loading': isTesting}"
+                  :disabled="isBusy"
+                  @click="startTest"
+               >
+                  <BaseIcon
+                     icon-name="mdiLightningBolt"
+                     :size="24"
+                     class="mr-1"
+                  />
+                  {{ t('connection.testConnection') }}
+               </button>
+               <button
+                  id="connection-save"
+                  class="btn btn-primary mr-2 d-flex"
+                  :disabled="isBusy"
+                  @click="saveConnection"
+               >
+                  <BaseIcon
+                     icon-name="mdiContentSave"
+                     :size="24"
+                     class="mr-1"
+                  />
+                  {{ t('general.save') }}
+               </button>
             </div>
          </div>
-         <div class="panel-footer">
-            <button
-               id="connection-test"
-               class="btn btn-gray mr-2 d-flex"
-               :class="{'loading': isTesting}"
-               :disabled="isBusy"
-               @click="startTest"
-            >
-               <BaseIcon
-                  icon-name="mdiLightningBolt"
-                  :size="24"
-                  class="mr-1"
-               />
-               {{ t('connection.testConnection') }}
-            </button>
-            <button
-               id="connection-save"
-               class="btn btn-primary mr-2 d-flex"
-               :disabled="isBusy"
-               @click="saveConnection"
-            >
-               <BaseIcon
-                  icon-name="mdiContentSave"
-                  :size="24"
-                  class="mr-1"
-               />
-               {{ t('general.save') }}
-            </button>
-         </div>
+         <ModalAskCredentials
+            v-if="isAsking"
+            @close-asking="closeAsking"
+            @credentials="continueTest"
+         />
       </div>
-      <ModalAskCredentials
-         v-if="isAsking"
-         @close-asking="closeAsking"
-         @credentials="continueTest"
-      />
    </div>
+   <DebugConsole v-if="isConsoleOpen" />
 </template>
 
 <script setup lang="ts">
 import customizations from 'common/customizations';
 import { ConnectionParams } from 'common/interfaces/antares';
 import { uidGen } from 'common/libs/uidGen';
+import { storeToRefs } from 'pinia';
 import { computed, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import BaseUploadInput from '@/components/BaseUploadInput.vue';
+import DebugConsole from '@/components/DebugConsole.vue';
 import ModalAskCredentials from '@/components/ModalAskCredentials.vue';
 import Connection from '@/ipc-api/Connection';
 import { useConnectionsStore } from '@/stores/connections';
+import { useConsoleStore } from '@/stores/console';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
@@ -443,6 +449,7 @@ const { t } = useI18n();
 const { addConnection } = useConnectionsStore();
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
+const { isConsoleOpen } = storeToRefs(useConsoleStore());
 
 const { connectWorkspace, selectWorkspace } = workspacesStore;
 

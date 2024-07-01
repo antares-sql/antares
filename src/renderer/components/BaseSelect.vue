@@ -365,7 +365,11 @@ export default defineComponent({
       };
 
       const handleWheelEvent = (e) => {
-         if (!e.target.className.includes('select__')) deactivate();
+         try {
+            if (!e.target.className.includes('select__')) deactivate();
+         }
+         catch (_) {
+         }
       };
 
       onMounted(() => {

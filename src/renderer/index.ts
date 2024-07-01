@@ -12,7 +12,7 @@ import { createApp } from 'vue';
 import App from '@/App.vue';
 import { i18n } from '@/i18n';
 import { useApplicationStore } from '@/stores/application';
-import { useConsoleStore } from '@/stores/console';
+import { QueryLog, useConsoleStore } from '@/stores/console';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -37,11 +37,17 @@ i18n.global.locale = locale;
 // IPC exceptions
 ipcRenderer.on('unhandled-exception', (event, error) => {
    useNotificationsStore().addNotification({ status: 'error', message: error.message });
+   useConsoleStore().putLog('debug', {
+      level: 'error',
+      process: 'main',
+      message: error.message,
+      date: new Date()
+   });
 });
 
 // IPC query logs
-ipcRenderer.on('query-log', (event, logRecord) => {
-   useConsoleStore().putLog(logRecord);
+ipcRenderer.on('query-log', (event, logRecord: QueryLog) => {
+   useConsoleStore().putLog('query', logRecord);
 });
 
 ipcRenderer.on('toggle-console', () => {

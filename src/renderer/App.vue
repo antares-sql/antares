@@ -10,9 +10,7 @@
                   :key="connection.uid"
                   :connection="connection"
                />
-               <div class="connection-panel-wrapper p-relative">
-                  <WorkspaceAddConnectionPanel v-if="selectedWorkspace === 'NEW'" />
-               </div>
+               <WorkspaceAddConnectionPanel v-if="selectedWorkspace === 'NEW'" />
             </div>
             <TheFooter />
             <TheNotificationsBoard />
@@ -48,6 +46,8 @@ import { useSchemaExportStore } from '@/stores/schemaExport';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
+import { useConsoleStore } from './stores/console';
+
 const { t } = useI18n();
 
 const TheTitleBar = defineAsyncComponent(() => import(/* webpackChunkName: "TheTitleBar" */'@/components/TheTitleBar.vue'));
@@ -79,6 +79,8 @@ const { changeApplicationTheme } = settingsStore;
 const schemaExportStore = useSchemaExportStore();
 const { hideExportModal } = schemaExportStore;
 const { isExportModal: isExportSchemaModal } = storeToRefs(schemaExportStore);
+
+const consoleStore = useConsoleStore();
 
 const isAllConnectionsModal: Ref<boolean> = ref(false);
 
@@ -151,6 +153,60 @@ onMounted(() => {
          e.preventDefault();
       }
    });
+});
+
+// Console messages
+const oldLog = console.log;
+const oldWarn = console.warn;
+const oldInfo = console.info;
+const oldError = console.error;
+
+console.log = function (...args) {
+   consoleStore.putLog('debug', {
+      level: 'log',
+      process: 'renderer',
+      message: args.join(' '),
+      date: new Date()
+   });
+   oldLog.apply(this, args);
+};
+
+console.info = function (...args) {
+   consoleStore.putLog('debug', {
+      level: 'info',
+      process: 'renderer',
+      message: args.join(' '),
+      date: new Date()
+   });
+   oldInfo.apply(this, args);
+};
+
+console.warn = function (...args) {
+   consoleStore.putLog('debug', {
+      level: 'warn',
+      process: 'renderer',
+      message: args.join(' '),
+      date: new Date()
+   });
+   oldWarn.apply(this, args);
+};
+
+console.error = function (...args) {
+   consoleStore.putLog('debug', {
+      level: 'error',
+      process: 'renderer',
+      message: args.join(' '),
+      date: new Date()
+   });
+   oldError.apply(this, args);
+};
+
+window.addEventListener('unhandledrejection', (event) => {
+   console.error(event.reason);
+});
+
+window.addEventListener('error', (event) => {
+   console.error(event.error, '| File name:', event.filename.split('/').pop().split('?')[0]);
 });
 </script>
 

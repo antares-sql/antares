@@ -282,7 +282,7 @@
 import { ClientCode, SchemaInfos } from 'common/interfaces/antares';
 import { Customizations } from 'common/interfaces/customizations';
 import { ExportOptions, ExportState } from 'common/interfaces/exporter';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, IpcRendererEvent } from 'electron';
 import * as moment from 'moment';
 import { storeToRefs } from 'pinia';
 import { computed, onBeforeUnmount, Ref, ref } from 'vue';
@@ -293,6 +293,7 @@ import BaseSelect from '@/components/BaseSelect.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import Application from '@/ipc-api/Application';
 import Schema from '@/ipc-api/Schema';
+import { useConsoleStore } from '@/stores/console';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSchemaExportStore } from '@/stores/schemaExport';
 import { useWorkspacesStore } from '@/stores/workspaces';
@@ -384,16 +385,28 @@ const startExport = async () => {
       else {
          progressStatus.value = response;
          addNotification({ status: 'error', message: response });
+         useConsoleStore().putLog('debug', {
+            level: 'error',
+            process: 'worker',
+            message: response,
+            date: new Date()
+         });
       }
    }
    catch (err) {
       addNotification({ status: 'error', message: err.stack });
+      useConsoleStore().putLog('debug', {
+         level: 'error',
+         process: 'worker',
+         message: err.stack,
+         date: new Date()
+      });
    }
 
    isExporting.value = false;
 };
 
-const updateProgress = (event: Event, state: ExportState) => {
+const updateProgress = (event: IpcRendererEvent, state: ExportState) => {
    progressPercentage.value = Number((state.currentItemIndex / state.totalItems * 100).toFixed(1));
    switch (state.op) {
       case 'PROCESSING':

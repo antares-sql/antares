@@ -43,11 +43,7 @@
 
       <div class="footer-right-elements">
          <ul class="footer-elements">
-            <li
-               v-if="workspace?.connectionStatus === 'connected'"
-               class="footer-element footer-link"
-               @click="toggleConsole()"
-            >
+            <li class="footer-element footer-link" @click="toggleConsole()">
                <BaseIcon
                   icon-name="mdiConsoleLine"
                   class="mr-1"

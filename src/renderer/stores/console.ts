@@ -1,56 +1,63 @@
 import { defineStore } from 'pinia';
 
-import { useWorkspacesStore } from './workspaces';
 const logsSize = 1000;
 
-export interface ConsoleRecord {
+export type LogType = 'query' | 'debug'
+export interface QueryLog {
    cUid: string;
    sql: string;
    date: Date;
 }
 
+export interface DebugLog {
+   level: 'log' | 'info' | 'warn' | 'error';
+   process: 'renderer' | 'main' | 'worker';
+   message: string;
+   date: Date;
+}
+
 export const useConsoleStore = defineStore('console', {
    state: () => ({
-      records: [] as ConsoleRecord[],
-      consolesHeight: new Map<string, number>(),
-      consolesOpened: new Set([])
+      isConsoleOpen: false,
+      queryLogs: [] as QueryLog[],
+      debugLogs: [] as DebugLog[],
+      selectedTab: 'query' as LogType,
+      consoleHeight: 0
    }),
    getters: {
-      getLogsByWorkspace: state => (uid: string) => state.records.filter(r => r.cUid === uid),
-      isConsoleOpen: state => (uid: string) => state.consolesOpened.has(uid),
-      consoleHeight: state => {
-         const uid = useWorkspacesStore().getSelected;
-         return state.consolesHeight.get(uid) || 0;
-      }
+      getLogsByWorkspace: state => (uid: string) => state.queryLogs.filter(r => r.cUid === uid)
    },
    actions: {
-      putLog (record: ConsoleRecord) {
-         this.records.push(record);
+      putLog (type: LogType, record: QueryLog | DebugLog) {
+         if (type === 'query') {
+            this.queryLogs.push(record);
 
-         if (this.records.length > logsSize)
-            this.records = this.records.slice(0, logsSize);
+            if (this.queryLogs.length > logsSize)
+               this.queryLogs = this.queryLogs.slice(0, logsSize);
+         }
+         else if (type === 'debug') {
+            this.debugLogs.push(record);
+
+            if (this.debugLogs.length > logsSize)
+               this.debugLogs = this.debugLogs.slice(0, logsSize);
+         }
       },
       openConsole () {
-         const uid = useWorkspacesStore().getSelected;
-         this.consolesOpened.add(uid);
-         this.consolesHeight.set(uid, 250);
+         this.isConsoleOpen = true;
+         this.consoleHeight = 250;
       },
       closeConsole () {
-         const uid = useWorkspacesStore().getSelected;
-         this.consolesOpened.delete(uid);
-         this.consolesHeight.set(uid, 0);
+         this.isConsoleOpen = false;
+         this.consoleHeight = 0;
       },
       resizeConsole (height: number) {
-         const uid = useWorkspacesStore().getSelected;
          if (height < 30)
             this.closeConsole();
          else
-            this.consolesHeight.set(uid, height);
+            this.consoleHeight = height;
       },
       toggleConsole () {
-         const uid = useWorkspacesStore().getSelected;
-
-         if (this.consolesOpened.has(uid))
+         if (this.isConsoleOpen)
             this.closeConsole();
          else
             this.openConsole();

@@ -173,11 +173,11 @@
     }
   }
 
-  .query-console {
+  .console {
     border-top: 1px solid darken($bg-color-light-gray, 15%);
     background-color: $bg-color-light;
 
-    .query-console-log {
+    .console-log {
       &:hover,
       &:focus {
         background: $bg-color-light-gray;

@@ -407,8 +407,9 @@ export const enUS = {
       saveFile: 'Save file',
       saveFileAs: 'Save file as',
       openFile: 'Open file',
-      openNotes: 'Open notes'
-
+      openNotes: 'Open notes',
+      debugConsole: 'Debug console', // <- console tab name
+      executedQueries: 'Executed queries' // <- console tab name
    },
    faker: { // Faker.js methods, used in random generated content
       address: 'Address',
