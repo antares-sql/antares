@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.26-beta.0](https://github.com/antares-sql/antares/compare/v0.7.25...v0.7.26-beta.0) (2024-07-01)
+
+
+### Features
+
+* in-app debug console, closes [#824](https://github.com/antares-sql/antares/issues/824) ([3e223b4](https://github.com/antares-sql/antares/commit/3e223b475ea57b24a6782feeabecad9c5596e271))
+
+
+### Bug Fixes
+
+* **PostgreSQL:** issue with ssl enabled and connection strings, fixes [#786](https://github.com/antares-sql/antares/issues/786) ([4a38656](https://github.com/antares-sql/antares/commit/4a38656b7e1094d3a9df28ce263c272f2014adb7))
+
+
+### Improvements
+
+* **UI:** improved all connections modal, closes [#761](https://github.com/antares-sql/antares/issues/761) ([25b7ae5](https://github.com/antares-sql/antares/commit/25b7ae57c6a4be9e825dddc7a52a49b67e03771b))
+
 ### [0.7.25](https://github.com/antares-sql/antares/compare/v0.7.25-beta.2...v0.7.25) (2024-06-19)
 
 ### [0.7.25-beta.2](https://github.com/antares-sql/antares/compare/v0.7.25-beta.1...v0.7.25-beta.2) (2024-06-16)
