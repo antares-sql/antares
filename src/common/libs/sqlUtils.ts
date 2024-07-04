@@ -163,7 +163,7 @@ export const jsonToSqlInsert = (args: {
    const sqlInsertAfter = options && options.sqlInsertAfter ? options.sqlInsertAfter : 1;
    const sqlInsertDivider = options && options.sqlInsertDivider ? options.sqlInsertDivider : 'rows';
    const { elementsWrapper: ew } = customizations[client];
-   const fieldNames = Object.keys(json[0]).map(key => `${ew}${key}${ew}`);
+   const fieldNames = Object.keys(json[0]).map(key => `${ew}${key.split('.').pop()}${ew}`);
    let insertStmt = `INSERT INTO ${ew}${table}${ew} (${fieldNames.join(', ')}) VALUES `;
    let insertsString = '';
    let queryLength = 0;
