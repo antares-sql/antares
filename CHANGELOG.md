@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.26-beta.1](https://github.com/antares-sql/antares/compare/v0.7.26-beta.0...v0.7.26-beta.1) (2024-07-11)
+
+
+### Features
+
+* custom SVG icons for connections, closes [#663](https://github.com/antares-sql/antares/issues/663) ([171b6f9](https://github.com/antares-sql/antares/commit/171b6f924acc7d7696f4f850a704af0baf616b87))
+
+
+### Bug Fixes
+
+* table name in column list on export as SQL features, fixes [#822](https://github.com/antares-sql/antares/issues/822) ([f7419d8](https://github.com/antares-sql/antares/commit/f7419d8e9c4fe8ea80dbf9b2612ff44a66f50365))
+
 ### [0.7.26-beta.0](https://github.com/antares-sql/antares/compare/v0.7.25...v0.7.26-beta.0) (2024-07-01)
 
 
