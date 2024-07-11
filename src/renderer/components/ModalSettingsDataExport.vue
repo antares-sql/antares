@@ -169,7 +169,7 @@ const emit = defineEmits(['close']);
 const { trapRef } = useFocusTrap();
 
 const { getConnectionName } = useConnectionsStore();
-const { connectionsOrder, connections } = storeToRefs(useConnectionsStore());
+const { connectionsOrder, connections, customIcons } = storeToRefs(useConnectionsStore());
 const localConnections = unproxify<ConnectionParams[]>(connections.value);
 const localConnectionsOrder = unproxify<SidebarElement[]>(connectionsOrder.value);
 
@@ -246,7 +246,8 @@ const exportData = () => {
 
       const exportObj = encrypt(JSON.stringify({
          connections: filteredConnections,
-         connectionsOrder: filteredOrders
+         connectionsOrder: filteredOrders,
+         customIcons
       }), options.value.passkey);
 
       // console.log(exportObj, JSON.parse(decrypt(exportObj, options.value.passkey)));

@@ -312,6 +312,7 @@ export const enUS = {
       color: 'Color',
       label: 'Label',
       icon: 'Icon',
+      customIcon: 'Custom icon',
       fileName: 'File name',
       choseFile: 'Choose file',
       data: 'Data',
@@ -409,7 +410,8 @@ export const enUS = {
       openFile: 'Open file',
       openNotes: 'Open notes',
       debugConsole: 'Debug console', // <- console tab name
-      executedQueries: 'Executed queries' // <- console tab name
+      executedQueries: 'Executed queries', // <- console tab name
+      sizeLimitError: 'Maximum size of {size} exceeded'
    },
    faker: { // Faker.js methods, used in random generated content
       address: 'Address',

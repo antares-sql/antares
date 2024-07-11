@@ -5,7 +5,11 @@ import { ipcRenderer } from 'electron';
 import * as Store from 'electron-store';
 import { defineStore } from 'pinia';
 
+import { i18n } from '@/i18n';
 import { useWorkspacesStore } from '@/stores/workspaces';
+
+import { useNotificationsStore } from './notifications';
+
 let key = localStorage.getItem('key');
 
 export interface SidebarElement {
@@ -16,7 +20,10 @@ export interface SidebarElement {
    color?: string;
    name?: string;
    icon?: null | string;
+   hasCustomIcon?: boolean;
 }
+
+export interface CustomIcon {base64: string; uid: string}
 
 if (!key) { // If no key in local storace
    const storedKey = ipcRenderer.sendSync('get-key');// Ask for key stored on disk
@@ -44,7 +51,8 @@ export const useConnectionsStore = defineStore('connections', {
    state: () => ({
       connections: persistentStore.get('connections', []) as ConnectionParams[],
       lastConnections: persistentStore.get('lastConnections', []) as {uid: string; time: number}[],
-      connectionsOrder: persistentStore.get('connectionsOrder', []) as SidebarElement[]
+      connectionsOrder: persistentStore.get('connectionsOrder', []) as SidebarElement[],
+      customIcons: persistentStore.get('custom_icons', []) as CustomIcon[]
    }),
    getters: {
       getConnectionByUid: state => (uid:string) => state.connections.find(connection => connection.uid === uid),
@@ -74,7 +82,8 @@ export const useConnectionsStore = defineStore('connections', {
          .find(connection => connection.uid === uid),
       getFolders: state => state.connectionsOrder.filter(conn => conn.isFolder),
       getConnectionFolder: state => (uid:string) => state.connectionsOrder
-         .find(folder => folder.isFolder && folder.connections.includes(uid))
+         .find(folder => folder.isFolder && folder.connections.includes(uid)),
+      getIconByUid: state => (uid:string) => state.customIcons.find(i => i.uid === uid)
    },
    actions: {
       addConnection (connection: ConnectionParams) {
@@ -198,7 +207,8 @@ export const useConnectionsStore = defineStore('connections', {
                   client: conn.client,
                   uid: conn.uid,
                   icon: conn.icon,
-                  name: conn.name
+                  name: conn.name,
+                  hasCustomIcon: conn.hasCustomIcon
                });
 
                connIndex = connections.findIndex((conn, i) => conn.uid === el.uid && i !== el.index);
@@ -247,15 +257,41 @@ export const useConnectionsStore = defineStore('connections', {
          this.connectionsOrder = (this.connectionsOrder as SidebarElement[]).filter(el => !emptyFolders.includes(el.uid));
          persistentStore.set('connectionsOrder', this.connectionsOrder);
       },
+      // Custom Icons
+      addIcon (svg: string) {
+         if (svg.length > 16384) {
+            const { t } = i18n.global;
+            useNotificationsStore().addNotification({
+               status: 'error',
+               message: t('application.sizeLimitError', { size: '16KB' })
+            });
+            return;
+         }
+
+         const icon: CustomIcon = {
+            uid: uidGen('I'),
+            base64: svg
+         };
+
+         this.customIcons.push(icon);
+         persistentStore.set('custom_icons', this.customIcons);
+      },
+      removeIcon (uid: string) {
+         this.customIcons = this.customIcons.filter((i: CustomIcon) => i.uid !== uid);
+         persistentStore.set('custom_icons', this.customIcons);
+      },
       importConnections (importObj: {
          connections: ConnectionParams[];
          connectionsOrder: SidebarElement[];
+         customIcons: CustomIcon[];
       }) {
          this.connections = [...this.connections, ...importObj.connections];
          this.connectionsOrder = [...this.connectionsOrder, ...importObj.connectionsOrder];
+         this.customIcons = [...this.customIcons, ...importObj.customIcons];
 
          persistentStore.set('connections', this.connections);
          persistentStore.set('connectionsOrder', this.connectionsOrder);
+         persistentStore.set('customIcons', this.customIcons);
       }
    }
 });

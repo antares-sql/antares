@@ -70,6 +70,7 @@
                >
                   <BaseIcon
                      :icon-name="camelize(getConnectionOrderByUid(element).icon)"
+                     :type="getConnectionOrderByUid(element).hasCustomIcon ? 'custom' : 'mdi'"
                      :size="36"
                   />
                </div>

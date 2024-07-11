@@ -64,6 +64,7 @@
                                  >
                                     <BaseIcon
                                        :icon-name="camelize(connection.icon)"
+                                       :type="connection.hasCustomIcon ? 'custom' : 'mdi'"
                                        :size="42"
                                     />
                                  </div>
@@ -278,12 +279,15 @@ const remappedConnections = computed(() => {
       .map(c => {
          const connTime = lastConnections.value.find((lc) => lc.uid === c.uid)?.time || 0;
          const connIcon = connectionsOrder.value.find((co) => co.uid === c.uid).icon;
+         const connHasCustomIcon = connectionsOrder.value.find((co) => co.uid === c.uid).hasCustomIcon;
          const folder = folders.value.find(f => f.connections.includes(c.uid));
+
          return {
             ...c,
             icon: connIcon,
             color: folder?.color,
             folderName: folder?.name,
+            hasCustomIcon: connHasCustomIcon,
             time: connTime
          };
       })

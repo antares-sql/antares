@@ -56,6 +56,7 @@
                      >
                         <BaseIcon
                            :icon-name="camelize(element.icon)"
+                           :type="element.hasCustomIcon ? 'custom' : 'mdi'"
                            :size="36"
                         />
                      </div>

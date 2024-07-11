@@ -32,8 +32,8 @@ export default class {
       return ipcRenderer.invoke('unregister-shortcuts');
    }
 
-   static readFile (path: string): Promise<string> {
-      return ipcRenderer.invoke('read-file', path);
+   static readFile (params: {filePath: string; encoding: string}): Promise<string> {
+      return ipcRenderer.invoke('read-file', params);
    }
 
    static writeFile (path: string, content: unknown) {

@@ -87,10 +87,10 @@ export default () => {
       shortCutRegister.unregister();
    });
 
-   ipcMain.handle('read-file', (event, filePath) => {
+   ipcMain.handle('read-file', (event, { filePath, encoding }) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
       try {
-         const content = fs.readFileSync(filePath, 'utf-8');
+         const content = fs.readFileSync(filePath, encoding);
          return content;
       }
       catch (error) {

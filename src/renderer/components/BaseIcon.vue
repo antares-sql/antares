@@ -1,10 +1,18 @@
 <template>
    <SvgIcon
+      v-if="type === 'mdi'"
       :type="type"
       :path="iconPath"
       :size="size"
       :rotate="rotate"
       :class="iconFlip"
+   />
+   <svg
+      v-else
+      :width="size"
+      :height="size"
+      :viewBox="`0 0 ${size} ${size}`"
+      v-html="iconPath"
    />
 </template>
 
@@ -12,6 +20,10 @@
 import SvgIcon from '@jamescoyle/vue-icon';
 import * as Icons from '@mdi/js';
 import { computed, PropType } from 'vue';
+
+import { useConnectionsStore } from '@/stores/connections';
+
+const { getIconByUid } = useConnectionsStore();
 
 const props = defineProps({
    iconName: {
@@ -23,7 +35,7 @@ const props = defineProps({
       default: 48
    },
    type: {
-      type: String,
+      type: String as PropType<'mdi' | 'custom'>,
       default: () => 'mdi'
    },
    flip: {
@@ -37,7 +49,18 @@ const props = defineProps({
 });
 
 const iconPath = computed(() => {
-   return (Icons as {[k:string]: string})[props.iconName];
+   if (props.type === 'mdi')
+      return (Icons as {[k:string]: string})[props.iconName];
+   else if (props.type === 'custom') {
+      const base64 = getIconByUid(props.iconName)?.base64;
+      const svgString = Buffer
+         .from(base64, 'base64')
+         .toString('utf-8')
+         .replaceAll(/width="[^"]*"|height="[^"]*"/g, '');
+
+      return svgString;
+   }
+   return null;
 });
 
 const iconFlip = computed(() => {

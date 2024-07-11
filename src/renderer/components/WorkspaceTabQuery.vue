@@ -715,7 +715,7 @@ const openFile = async () => {
    const result = await Application.showOpenDialog({ properties: ['openFile'], filters: [{ name: 'SQL', extensions: ['sql', 'txt'] }] });
    if (result && !result.canceled) {
       const file = result.filePaths[0];
-      const content = await Application.readFile(file);
+      const content = await Application.readFile({ filePath: file, encoding: 'utf-8' });
       const fileName = file.split('/').pop().split('\\').pop();
       if (props.tab.filePath && props.tab.filePath !== file) {
          newTab({
@@ -755,7 +755,7 @@ const saveFile = async () => {
 };
 
 const loadFileContent = async (file: string) => {
-   const content = await Application.readFile(file);
+   const content = await Application.readFile({ filePath: file, encoding: 'utf-8' });
    query.value = content;
    lastSavedQuery.value = content;
 };
