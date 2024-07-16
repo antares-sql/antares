@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.27](https://github.com/antares-sql/antares/compare/v0.7.26...v0.7.27) (2024-07-16)
+
+
+### Bug Fixes
+
+* issue with new console and languages different than english, fixes [#837](https://github.com/antares-sql/antares/issues/837) ([59f7d3c](https://github.com/antares-sql/antares/commit/59f7d3c67083ac7e32bd29c9b7e6e044f2060c2f))
+
 ### [0.7.26](https://github.com/antares-sql/antares/compare/v0.7.26-beta.1...v0.7.26) (2024-07-15)
 
 ### [0.7.26-beta.1](https://github.com/antares-sql/antares/compare/v0.7.26-beta.0...v0.7.26-beta.1) (2024-07-11)
