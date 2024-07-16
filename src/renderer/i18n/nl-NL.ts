@@ -15,7 +15,7 @@ export const nlNL = {
       results: 'Resultaten',
       size: 'Grootte',
       mimeType: 'Mime-Type',
-      download: 'Download',
+      download: 'Download', // Same as English
       add: 'Toevoegen',
       data: 'Data',
       properties: 'Eigenschappen',
@@ -407,7 +407,7 @@ export const nlNL = {
       openNotes: 'Open notities',
       debugConsole: 'Debug Console',
       executedQueries: 'Voer queries uit',
-      sizeLimitError: 'Maximum grootte {size} overschreven'
+      sizeLimitError: 'Maximum grootte {size} overschreden'
    },
    faker: {
       address: 'Adres',
