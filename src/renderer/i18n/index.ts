@@ -46,6 +46,8 @@ export type AvailableLocale = keyof typeof messages
 
 const i18n = createI18n<[NestedPartial<MessageSchema>], AvailableLocale>({
    fallbackLocale: 'en-US',
+   silentTranslationWarn: true,
+   silentFallbackWarn: true,
    allowComposition: true,
    messages
 });

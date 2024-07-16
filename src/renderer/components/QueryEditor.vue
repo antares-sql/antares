@@ -341,7 +341,7 @@ onMounted(() => {
                         lastTableFields.value = res.response.map((field: { name: string }) => field.name);
                      editor.value.completers = [tableFieldsCompleter.value];
                      editor.value.execCommand('startAutocomplete');
-                  }).catch(console.log);
+                  }).catch(console.error);
                }
                else
                   editor.value.completers = customCompleter.value;
