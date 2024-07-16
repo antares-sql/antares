@@ -65,7 +65,13 @@ export const nlNL = {
       outputFormat: 'Uitvoerformaat',
       singleFile: 'Enkel {ext}-bestand',
       zipCompressedFile: 'ZIP gecomprimeerd {ext}-bestand',
-      include: 'Inclusief'
+      include: 'Inclusief',
+      search: 'Zoek',
+      copyName: 'Kopieer naam',
+      title: 'Titel',
+      archive: 'Archief',
+      undo: 'Ongedaan maken',
+      moveTo: 'Verplaats naar'
    },
    connection: {
       connectionName: 'Naam verbinding',
@@ -100,7 +106,10 @@ export const nlNL = {
       readOnlyMode: 'Alleen lezen modus',
       untrustedConnection: 'Niet vertrouwde verbinding',
       allConnections: 'Alle verbindingen',
-      searchForConnections: 'Zoek naar verbindingen'
+      searchForConnections: 'Zoek naar verbindingen',
+      singleConnection: 'Enkele verbinding',
+      connection: 'Verbinding',
+      keepAliveInterval: 'Keep alive interval'
    },
    database: {
       schema: 'Schema',
@@ -260,7 +269,15 @@ export const nlNL = {
       targetTable: 'Doeltabel',
       switchDatabase: 'Wissel van database',
       importQueryErrors: 'Waarschuwing: {n} fout is opgetreden | Waarschuwing: {n} fouten opgetreden',
-      executedQueries: '{n} query uitgevoerd | {n} queries uitgevoerd'
+      executedQueries: '{n} query uitgevoerd | {n} queries uitgevoerd',
+      insert: 'Invoegen',
+      exportTable: 'Exporteer tabel',
+      savedQueries: 'Opgeslagen queries',
+      searchForElements: 'Zoek naar elementen',
+      searchForSchemas: 'Zoek naar schema\'s',
+      materializedview: 'Materialized view | Materialized views',
+      createNewMaterializedView: 'Materialized view maken',
+      newMaterializedView: 'Nieuwe materialized view'
    },
    application: {
       settings: 'Instellingen',
@@ -367,7 +384,30 @@ export const nlNL = {
       wrongFileFormat: 'Bestand is geen geldig .antares bestand',
       required: 'Verplicht',
       choseFile: 'Selecteer bestand',
-      password: 'Wachtwoord'
+      password: 'Wachtwoord',
+      note: 'Notitie',
+      data: 'Data',
+      event: 'Event',
+      key: 'Key',
+      customIcon: 'Aangepast pictogram',
+      fileName: 'bestandsnaam',
+      newFolder: 'Nieuwe map',
+      outOfFolder: 'Out of folder',
+      dataImportSuccess: 'Data succesvol geïmporteerd',
+      thereAreNoNotesYet: 'Er zijn nog geen notities',
+      addNote: 'Voeg notitie toe',
+      editNote: 'Bewerk notitie',
+      saveAsNote: 'Sla op als notitie',
+      showArchivedNotes: 'Toon gearchiveerde notities',
+      hideArchivedNotes: 'Verberg gearchiveerde notities',
+      tag: 'Tag',
+      saveFile: 'Bestand opslaan',
+      saveFileAs: 'Bestand opslaan als',
+      openFile: 'Open bestand',
+      openNotes: 'Open notities',
+      debugConsole: 'Debug Console',
+      executedQueries: 'Voer queries uit',
+      sizeLimitError: 'Maximum grootte {size} overschreven'
    },
    faker: {
       address: 'Adres',
