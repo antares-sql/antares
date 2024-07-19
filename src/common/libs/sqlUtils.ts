@@ -40,7 +40,7 @@ export const objectToGeoJSON = (val: any) => {
 export const escapeAndQuote = (val: string, client: ClientCode) => {
    const { stringsWrapper: sw } = customizations[client];
    // eslint-disable-next-line no-control-regex
-   const CHARS_TO_ESCAPE = /[\0\b\t\n\r\x1a"'\\]/g;
+   const CHARS_TO_ESCAPE = sw === '"' ? /[\0\b\t\n\r\x1a"'\\]/g : /[\0\b\t\n\r\x1a'\\]/g;
    const CHARS_ESCAPE_MAP: Record<string, string> = {
       '\0': '\\0',
       '\b': '\\b',
@@ -48,10 +48,13 @@ export const escapeAndQuote = (val: string, client: ClientCode) => {
       '\n': '\\n',
       '\r': '\\r',
       '\x1a': '\\Z',
-      '"': '\\"',
       '\'': '\\\'',
       '\\': '\\\\'
    };
+
+   if (sw === '"')
+      CHARS_ESCAPE_MAP['"'] = '\\"';
+
    let chunkIndex = CHARS_TO_ESCAPE.lastIndex = 0;
    let escapedVal = '';
    let match;
@@ -97,10 +100,19 @@ export const valueToSqlString = (args: {
    }
    else if ('isArray' in field && field.isArray) {
       let localVal;
-      if (Array.isArray(val))
-         localVal = JSON.stringify(val).replaceAll('[', '{').replaceAll(']', '}');
-      else
-         localVal = typeof val === 'string' ? val.replaceAll('[', '{').replaceAll(']', '}') : '';
+      if (Array.isArray(val)) {
+         localVal = JSON
+            .stringify(val)
+            .replaceAll('[', '{')
+            .replaceAll(']', '}');
+      }
+      else {
+         localVal = typeof val === 'string'
+            ? val
+               .replaceAll('[', '{')
+               .replaceAll(']', '}')
+            : '';
+      }
       parsedValue = `'${localVal}'`;
    }
    else if (TEXT_SEARCH.includes(field.type))
