@@ -206,7 +206,6 @@ const importData = () => {
                      .includes(c.uid) ||
                      (c.isFolder && c.connections.every(c => newConnectionsUid.includes(c))));
             }
-
             importConnections(importObj);
 
             addNotification({
@@ -216,6 +215,7 @@ const importData = () => {
             closeModal();
          }
          catch (error) {
+            console.error(error);
             addNotification({
                status: 'error',
                message: t('application.wrongImportPassword')
@@ -223,6 +223,7 @@ const importData = () => {
          }
       }
       catch (error) {
+         console.error(error);
          addNotification({
             status: 'error',
             message: t('application.wrongFileFormat')

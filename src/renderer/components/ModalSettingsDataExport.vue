@@ -247,7 +247,7 @@ const exportData = () => {
       const exportObj = encrypt(JSON.stringify({
          connections: filteredConnections,
          connectionsOrder: filteredOrders,
-         customIcons
+         customIcons: customIcons.value
       }), options.value.passkey);
 
       // console.log(exportObj, JSON.parse(decrypt(exportObj, options.value.passkey)));
