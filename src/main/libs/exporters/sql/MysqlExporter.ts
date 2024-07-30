@@ -336,7 +336,8 @@ CREATE TABLE \`${view.Name}\`(
       const connection = await this._client.getConnection();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const stream = (connection as any).connection.query(sql).stream();
-      const dispose = () => connection.end();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const dispose = () => (connection as any).release();
 
       stream.on('end', dispose);
       stream.on('error', dispose);

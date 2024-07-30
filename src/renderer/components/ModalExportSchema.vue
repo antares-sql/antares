@@ -380,6 +380,7 @@ const startExport = async () => {
 
    try {
       const { status, response } = await Schema.export(params);
+
       if (status === 'success')
          progressStatus.value = response.cancelled ? t('general.aborted') : t('general.completed');
       else {

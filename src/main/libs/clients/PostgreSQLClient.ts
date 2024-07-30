@@ -591,8 +591,8 @@ export class PostgreSQLClient extends BaseClient {
       }
       /* eslint-enable camelcase */
 
-      if (schema !== 'public')
-         await this.use(schema);
+      // if (schema !== 'public')
+      await this.use(schema);
 
       const { rows } = await this.raw<antares.QueryResult<ShowIntexesResult>>(`WITH ndx_list AS (
          SELECT pg_index.indexrelid, pg_class.oid
@@ -636,35 +636,7 @@ export class PostgreSQLClient extends BaseClient {
       }, {} as {table: string; schema: string}[]);
    }
 
-   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    async getTableDll ({ schema, table }: { schema: string; table: string }) {
-      // const { rows } = await this.raw<antares.QueryResult<{'ddl'?: string}>>(`
-      //    SELECT
-      //       'CREATE TABLE ' || relname || E'\n(\n' ||
-      //             array_to_string(
-      //                array_agg('    ' || column_name || ' ' ||  type || ' '|| not_null)
-      //                , E',\n'
-      //             ) || E'\n);\n' AS ddl
-      //    FROM (
-      //          SELECT
-      //             a.attname AS column_name
-      //             , pg_catalog.format_type(a.atttypid, a.atttypmod) AS type
-      //             , CASE WHEN a.attnotnull THEN 'NOT NULL' ELSE 'NULL' END AS not_null
-      //             , c.relname
-      //          FROM pg_attribute a, pg_class c, pg_type t
-      //          WHERE a.attnum > 0
-      //             AND a.attrelid = c.oid
-      //             AND a.atttypid = t.oid
-      //             AND c.relname = '${table}'
-      //          ORDER BY a.attnum
-      //    ) AS tabledefinition
-      //    GROUP BY relname
-      // `);
-
-      // if (rows.length)
-      //    return rows[0].ddl;
-      // else return '';
-
       /* eslint-disable camelcase */
       interface SequenceRecord {
          sequence_catalog: string;
@@ -706,6 +678,34 @@ export class PostgreSQLClient extends BaseClient {
 
       if (!rows.length) return '';
 
+      const indexes = await this.getTableIndexes({ schema, table });
+      const primaryKey = indexes
+         .filter(i => i.type === 'PRIMARY')
+         .reduce((acc, cur) => {
+            if (!Object.keys(acc).length) {
+               cur.column = `"${cur.column}"`;
+               acc = cur;
+            }
+            else
+               acc.column += `, "${cur.column}"`;
+            return acc;
+         }, {} as { name: string; column: string; type: string});
+
+      const remappedIndexes = indexes
+         .filter(i => i.type !== 'PRIMARY')
+         .reduce((acc, cur) => {
+            const existingIndex = acc.findIndex(i => i.name === cur.name);
+
+            if (existingIndex >= 0)
+               acc[existingIndex].column += `, "${cur.column}"`;
+            else {
+               cur.column = `"${cur.column}"`;
+               acc.push(cur);
+            }
+
+            return acc;
+         }, [] as { name: string; column: string; type: string}[]);
+
       for (const column of rows) {
          let fieldType = column.data_type;
          if (fieldType === 'USER-DEFINED') fieldType = `"${schema}".${column.udt_name}`;
@@ -733,6 +733,9 @@ export class PostgreSQLClient extends BaseClient {
          columnsSql.push(columnArr.join(' '));
       }
 
+      if (primaryKey)
+         columnsSql.push(`CONSTRAINT "${primaryKey.name}" PRIMARY KEY (${primaryKey.column})`);
+
       // Table sequences
       for (let sequence of sequences) {
          if (sequence.includes('.')) sequence = sequence.split('.')[1];
@@ -749,25 +752,22 @@ export class PostgreSQLClient extends BaseClient {
    INCREMENT BY ${rows[0].increment}
    MINVALUE ${rows[0].minimum_value}
    MAXVALUE ${rows[0].maximum_value}
-   CACHE 1;\n`;
+   CACHE 1;\n\n`;
          }
       }
 
       // Table create
-      createSql += `\nCREATE TABLE "${schema}"."${table}"(
+      createSql += `CREATE TABLE "${schema}"."${table}"(
    ${columnsSql.join(',\n   ')}
 );\n`;
 
       // Table indexes
       createSql += '\n';
-      const { rows: indexes } = await this.select('*')
-         .schema('pg_catalog')
-         .from('pg_indexes')
-         .where({ schemaname: `= '${schema}'`, tablename: `= '${table}'` })
-         .run<{indexdef: string}>();
 
-      for (const index of indexes)
-         createSql += `${index.indexdef};\n`;
+      for (const index of remappedIndexes) {
+         if (index.type !== 'PRIMARY')
+            createSql += `CREATE ${index.type}${index.type === 'UNIQUE' ? ' INDEX' : ''} "${index.name}" ON "${schema}"."${table}" (${index.column});\n`;
+      }
 
       return createSql;
    }
