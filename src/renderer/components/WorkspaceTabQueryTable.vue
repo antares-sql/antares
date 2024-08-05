@@ -291,6 +291,7 @@ const { consoleHeight } = storeToRefs(consoleStore);
 const props = defineProps({
    results: Array as Prop<QueryResult[]>,
    connUid: String,
+   isQuering: Boolean,
    mode: String as Prop<'table' | 'query'>,
    page: {
       type: Number,
@@ -790,7 +791,7 @@ const contextMenu = (event: MouseEvent, cell: any) => {
 };
 
 const sort = (field: TableField) => {
-   if (!isSortable.value) return;
+   if (!isSortable.value || props.isQuering) return;
 
    selectedRows.value = [];
    let fieldName = field.name;

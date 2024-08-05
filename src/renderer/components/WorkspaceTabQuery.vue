@@ -253,6 +253,7 @@
             v-if="results"
             v-show="!isQuering"
             ref="queryTable"
+            :is-quering="isQuering"
             :results="results"
             :tab-uid="tab.uid"
             :conn-uid="connection.uid"
