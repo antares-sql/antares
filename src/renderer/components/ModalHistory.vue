@@ -75,7 +75,7 @@
                                     <code
                                        class="cut-text"
                                        :title="query.sql"
-                                       v-html="highlight(highlightWord(query.sql), {html: true})"
+                                       v-html="highlight(query.sql, {html: true})"
                                     />
                                  </div>
                                  <div class="tile-bottom-content">
@@ -209,17 +209,6 @@ const resizeResults = () => {
 
 const refreshScroller = () => resizeResults();
 const closeModal = () => emit('close');
-
-const highlightWord = (string: string) => {
-   string = string.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-
-   if (searchTerm.value) {
-      const regexp = new RegExp(`(${searchTerm.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-      return string.replace(regexp, '<span class="text-primary text-bold">$1</span>');
-   }
-   else
-      return string;
-};
 
 const onKey = (e: KeyboardEvent) => {
    e.stopPropagation();

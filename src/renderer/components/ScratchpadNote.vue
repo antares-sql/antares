@@ -32,7 +32,7 @@
                v-if="note.type === 'query'"
                ref="noteParagraph"
                class="tile-paragraph sql"
-               v-html="highlight(highlightWord(note.note), {html: true})"
+               v-html="highlight(note.note, {html: true})"
             />
             <div
                v-else
