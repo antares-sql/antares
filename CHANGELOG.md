@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.28-beta.0](https://github.com/antares-sql/antares/compare/v0.7.27...v0.7.28-beta.0) (2024-08-06)
+
+
+### Features
+
+* add missing Dutch strings ([e794d20](https://github.com/antares-sql/antares/commit/e794d207ad75e0f5380f57df579912893e5edb6a))
+* **translation:** Add more faker translations ([74e97e6](https://github.com/antares-sql/antares/commit/74e97e660df089ed8273565942118e112f6b3220))
+
+
+### Bug Fixes
+
+* disabled column sort during loadings ([72bacde](https://github.com/antares-sql/antares/commit/72bacdeabf833880482a839c4735505573d33bdc))
+* html tags searching in history or saved queries, fixes [#847](https://github.com/antares-sql/antares/issues/847) ([6cb21ff](https://github.com/antares-sql/antares/commit/6cb21ff7926c74469b421c47b434612b3894b4c2))
+* **PostgreSQL:** issue exporting tables with primary keys ([c434855](https://github.com/antares-sql/antares/commit/c434855879de16f83e17784e38e931decdd94873))
+* **PostgreSQL:** wrong export formato of JSON fields ([8e7965a](https://github.com/antares-sql/antares/commit/8e7965a0f94a17ed73d5c8913f66e4e9cf0b11c7))
+* **translation:** Spelling error ([f5d236b](https://github.com/antares-sql/antares/commit/f5d236b521a3534754de0b1031513f8eb83b3cc0))
+* wrong password message importing app data ([ba0ffcc](https://github.com/antares-sql/antares/commit/ba0ffcc6f56c5506c1768c05d43bb07f7b090a68))
+
 ### [0.7.27](https://github.com/antares-sql/antares/compare/v0.7.26...v0.7.27) (2024-07-16)
 
 
