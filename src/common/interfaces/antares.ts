@@ -18,7 +18,7 @@ export type Importer = MySQLImporter | PostgreSQLImporter
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface IpcResponse<T = any> {
-   status: 'success' | 'error';
+   status: 'success' | 'error' | 'abort';
    response?: T;
 }
 

@@ -15,6 +15,10 @@ export default class {
       return ipcRenderer.invoke('connect', unproxify(newParams));
    }
 
+   static abortConnection (uid: string): void {
+      ipcRenderer.send('abort-connection', uid);
+   }
+
    static checkConnection (uid: string): Promise<boolean> {
       return ipcRenderer.invoke('check-connection', uid);
    }

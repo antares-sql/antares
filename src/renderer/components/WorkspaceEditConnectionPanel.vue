@@ -387,20 +387,35 @@
             </div>
          </div>
          <div class="panel-footer">
-            <button
-               id="connection-test"
-               class="btn btn-gray mr-2 d-flex"
-               :class="{'loading': isTesting}"
-               :disabled="isBusy"
-               @click="startTest"
+            <div
+               @mouseenter="setCancelTestButtonVisibility(true)"
+               @mouseleave="setCancelTestButtonVisibility(false)"
             >
-               <BaseIcon
-                  icon-name="mdiLightningBolt"
-                  :size="24"
-                  class="mr-1"
-               />
-               {{ t('connection.testConnection') }}
-            </button>
+               <button
+                  v-if="showTestCancel && isTesting"
+                  class="btn btn-gray mr-2 cancellable"
+                  :title="t('general.cancel')"
+                  @click="abortConnection()"
+               >
+                  <BaseIcon icon-name="mdiWindowClose" :size="24" />
+                  <span class="d-invisible pr-1">{{ t('connection.testConnection') }}</span>
+               </button>
+               <button
+                  v-else
+                  id="connection-test"
+                  class="btn btn-gray mr-2 d-flex"
+                  :class="{'loading': isTesting}"
+                  :disabled="isBusy"
+                  @click="startTest"
+               >
+                  <BaseIcon
+                     icon-name="mdiLightningBolt"
+                     :size="24"
+                     class="mr-1"
+                  />
+                  {{ t('connection.testConnection') }}
+               </button>
+            </div>
             <button
                id="connection-save"
                class="btn btn-primary mr-2 d-flex"
@@ -414,20 +429,35 @@
                />
                {{ t('general.save') }}
             </button>
-            <button
-               id="connection-connect"
-               class="btn btn-success d-flex"
-               :class="{'loading': isConnecting}"
-               :disabled="isBusy"
-               @click="startConnection"
+            <div
+               @mouseenter="setCancelConnectButtonVisibility(true)"
+               @mouseleave="setCancelConnectButtonVisibility(false)"
             >
-               <BaseIcon
-                  icon-name="mdiConnection"
-                  :size="24"
-                  class="mr-1"
-               />
-               {{ t('connection.connect') }}
-            </button>
+               <button
+                  v-if="showConnectCancel && isConnecting"
+                  class="btn btn-success cancellable"
+                  :title="t('general.cancel')"
+                  @click="abortConnection()"
+               >
+                  <BaseIcon icon-name="mdiWindowClose" :size="24" />
+                  <span class="d-invisible pr-1">{{ t('connection.connect') }}</span>
+               </button>
+               <button
+                  v-else
+                  id="connection-connect"
+                  class="btn btn-success d-flex"
+                  :class="{'loading': isConnecting}"
+                  :disabled="isBusy"
+                  @click="startConnection"
+               >
+                  <BaseIcon
+                     icon-name="mdiConnection"
+                     :size="24"
+                     class="mr-1"
+                  />
+                  {{ t('connection.connect') }}
+               </button>
+            </div>
          </div>
       </div>
       <ModalAskCredentials
@@ -476,6 +506,9 @@ const localConnection: Ref<ConnectionParams & { pgConnString: string }> = ref(nu
 const isConnecting = ref(false);
 const isTesting = ref(false);
 const isAsking = ref(false);
+const showTestCancel = ref(false);
+const showConnectCancel = ref(false);
+const abortController: Ref<AbortController> = ref(new AbortController());
 const selectedTab = ref('general');
 
 const clientCustomizations = computed(() => {
@@ -501,7 +534,7 @@ const startConnection = async () => {
    if (localConnection.value.ask)
       isAsking.value = true;
    else {
-      await connectWorkspace(localConnection.value);
+      await connectWorkspace(localConnection.value, { signal: abortController.value.signal }).catch(() => undefined);
       isConnecting.value = false;
    }
 };
@@ -516,7 +549,7 @@ const startTest = async () => {
          const res = await Connection.makeTest(localConnection.value);
          if (res.status === 'error')
             addNotification({ status: 'error', message: res.response.message || res.response.toString() });
-         else
+         else if (res.status === 'success')
             addNotification({ status: 'success', message: t('connection.connectionSuccessfullyMade') });
       }
       catch (err) {
@@ -527,20 +560,36 @@ const startTest = async () => {
    }
 };
 
+const setCancelTestButtonVisibility = (val: boolean) => {
+   showTestCancel.value = val;
+};
+
+const setCancelConnectButtonVisibility = (val: boolean) => {
+   showConnectCancel.value = val;
+};
+
+const abortConnection = (): void => {
+   abortController.value.abort();
+   Connection.abortConnection(localConnection.value.uid);
+   isTesting.value = false;
+   isConnecting.value = false;
+   abortController.value = new AbortController();
+};
+
 const continueTest = async (credentials: {user: string; password: string }) => { // if "Ask for credentials" is true
    isAsking.value = false;
    const params = Object.assign({}, localConnection.value, credentials);
    try {
       if (isConnecting.value) {
          const params = Object.assign({}, props.connection, credentials);
-         await connectWorkspace(params);
+         await connectWorkspace(params, { signal: abortController.value.signal }).catch(() => undefined);
          isConnecting.value = false;
       }
       else {
          const res = await Connection.makeTest(params);
          if (res.status === 'error')
             addNotification({ status: 'error', message: res.response.message || res.response.toString() });
-         else
+         else if (res.status === 'success')
             addNotification({ status: 'success', message: t('connection.connectionSuccessfullyMade') });
       }
    }

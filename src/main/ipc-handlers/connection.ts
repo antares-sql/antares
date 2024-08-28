@@ -5,10 +5,20 @@ import { SslOptions } from 'mysql2';
 
 import { ClientsFactory } from '../libs/ClientsFactory';
 import { validateSender } from '../libs/misc/validateSender';
+const isAborting: Record<string, boolean> = {};
 
 export default (connections: Record<string, antares.Client>) => {
    ipcMain.handle('test-connection', async (event, conn: antares.ConnectionParams) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
+      let isLocalAborted = false;
+      const abortChecker = setInterval(() => { // Intercepts abort request
+         if (isAborting[conn.uid]) {
+            isAborting[conn.uid] = false;
+            isLocalAborted = true;
+            clearInterval(abortChecker);
+         }
+      }, 50);
 
       const params = {
          host: conn.host,
@@ -65,19 +75,27 @@ export default (connections: Record<string, antares.Client>) => {
             client: conn.client,
             params
          });
-         await connection.connect();
 
-         if (conn.client === 'firebird')
-            connection.raw('SELECT rdb$get_context(\'SYSTEM\', \'DB_NAME\') FROM rdb$database');
-         else
-            await connection.select('1+1').run();
+         await connection.connect();
+         if (isLocalAborted) {
+            connection.destroy();
+            return;
+         }
+
+         await connection.ping();
 
          connection.destroy();
+         clearInterval(abortChecker);
 
          return { status: 'success' };
       }
       catch (err) {
-         return { status: 'error', response: err.toString() };
+         clearInterval(abortChecker);
+
+         if (!isLocalAborted)
+            return { status: 'error', response: err.toString() };
+         else
+            return { status: 'abort', response: 'Connection aborted' };
       }
    });
 
@@ -87,6 +105,15 @@ export default (connections: Record<string, antares.Client>) => {
 
    ipcMain.handle('connect', async (event, conn: antares.ConnectionParams) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
+      let isLocalAborted = false;
+      const abortChecker = setInterval(() => { // Intercepts abort request
+         if (isAborting[conn.uid]) {
+            isAborting[conn.uid] = false;
+            isLocalAborted = true;
+            clearInterval(abortChecker);
+         }
+      }, 50);
 
       const params = {
          host: conn.host,
@@ -150,16 +177,34 @@ export default (connections: Record<string, antares.Client>) => {
          });
 
          await connection.connect();
+         if (isLocalAborted) {
+            connection.destroy();
+            return { status: 'abort', response: 'Connection aborted' };
+         }
 
          const structure = await connection.getStructure(new Set());
+         if (isLocalAborted) {
+            connection.destroy();
+            return { status: 'abort', response: 'Connection aborted' };
+         }
 
          connections[conn.uid] = connection;
+         clearInterval(abortChecker);
 
          return { status: 'success', response: structure };
       }
       catch (err) {
-         return { status: 'error', response: err.toString() };
+         clearInterval(abortChecker);
+
+         if (!isLocalAborted)
+            return { status: 'error', response: err.toString() };
+         else
+            return { status: 'abort', response: 'Connection aborted' };
       }
+   });
+
+   ipcMain.on('abort-connection', (event, uid) => {
+      isAborting[uid] = true;
    });
 
    ipcMain.handle('disconnect', (event, uid) => {
