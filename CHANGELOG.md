@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.28](https://github.com/antares-sql/antares/compare/v0.7.28-beta.0...v0.7.28) (2024-08-20)
+
 ### [0.7.28-beta.0](https://github.com/antares-sql/antares/compare/v0.7.27...v0.7.28-beta.0) (2024-08-06)
 
 
