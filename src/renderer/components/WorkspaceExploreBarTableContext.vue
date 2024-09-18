@@ -60,7 +60,7 @@
             /> {{ t('application.settings') }}</span>
       </div>
       <div
-         v-if="selectedTable && selectedTable.type === 'table' && customizations.tableDuplicate"
+         v-if="selectedTable && selectedTable.type === 'table' && customizations.tableDuplicate && !connection.readonly"
          class="context-element"
          @click="duplicateTable"
       >
@@ -72,7 +72,7 @@
             /> {{ t('database.duplicateTable') }}</span>
       </div>
       <div
-         v-if="selectedTable && selectedTable.type === 'table'"
+         v-if="selectedTable && selectedTable.type === 'table' && !connection.readonly"
          class="context-element"
          @click="showEmptyModal"
       >
@@ -83,7 +83,11 @@
                :size="18"
             /> {{ t('database.emptyTable') }}</span>
       </div>
-      <div class="context-element" @click="showDeleteModal">
+      <div
+         v-if="!connection.readonly"
+         class="context-element"
+         @click="showDeleteModal"
+      >
          <span class="d-flex">
             <BaseIcon
                class="text-light mt-1 mr-1"
@@ -151,6 +155,7 @@ import BaseContextMenu from '@/components/BaseContextMenu.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
 import Tables from '@/ipc-api/Tables';
 import { copyText } from '@/libs/copyText';
+import { useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSchemaExportStore } from '@/stores/schemaExport';
 import { useWorkspacesStore } from '@/stores/workspaces';
@@ -168,6 +173,7 @@ const emit = defineEmits(['close-context', 'duplicate-table', 'reload', 'delete-
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
 const { showExportModal } = useSchemaExportStore();
+const { getConnectionByUid } = useConnectionsStore();
 
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
@@ -185,6 +191,7 @@ const forceTruncate = ref(false);
 
 const workspace = computed(() => getWorkspace(selectedWorkspace.value));
 const customizations = computed(() => workspace.value && workspace.value.customizations ? workspace.value.customizations : null);
+const connection = computed(() => getConnectionByUid(selectedWorkspace.value));
 
 const showTableExportModal = () => {
    showExportModal(props.selectedSchema, props.selectedTable.name);
