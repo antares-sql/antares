@@ -494,16 +494,27 @@ export class PostgreSQLClient extends BaseClient {
          column_default: string;
          character_set_name: string;
          collation_name: string;
+         column_comment: string;
       }
       /* eslint-enable camelcase */
 
-      const { rows } = await this
-         .select('*')
-         .schema('information_schema')
-         .from('columns')
-         .where({ table_schema: `= '${schema}'`, table_name: `= '${table}'` })
-         .orderBy({ ordinal_position: 'ASC' })
-         .run<TableColumnsResult>();
+      // Table columns
+      const { rows } = await this.raw<antares.QueryResult<TableColumnsResult>>(`
+         WITH comments AS (
+            SELECT attr.attname AS column, des.description AS comment, pgc.relname
+            FROM pg_attribute AS attr, pg_description AS des, pg_class AS pgc
+            WHERE pgc.oid = attr.attrelid
+            AND des.objoid = pgc.oid
+            AND pg_table_is_visible(pgc.oid)
+            AND attr.attnum = des.objsubid
+         )
+         SELECT cols.*, comments.comment AS column_comment
+         FROM "information_schema"."columns" AS cols
+         LEFT JOIN comments ON comments.column = cols.column_name AND comments.relname = cols.table_name
+         WHERE cols.table_schema = '${schema}'
+         AND cols.table_name = '${table}'
+         ORDER BY "ordinal_position" ASC
+      `);
 
       return rows.map(field => {
          let type = field.data_type;
@@ -532,7 +543,7 @@ export class PostgreSQLClient extends BaseClient {
             collation: field.collation_name,
             autoIncrement: false,
             onUpdate: null,
-            comment: ''
+            comment: field.column_comment
          };
       });
    }
@@ -869,6 +880,7 @@ export class PostgreSQLClient extends BaseClient {
       const newIndexes: string[] = [];
       const manageIndexes: string[] = [];
       const newForeigns: string[] = [];
+      const modifyComment: string[] = [];
 
       let sql = `CREATE TABLE "${schema}"."${options.name}"`;
 
@@ -884,6 +896,8 @@ export class PostgreSQLClient extends BaseClient {
             ${field.nullable ? 'NULL' : 'NOT NULL'}
             ${field.default !== null ? `DEFAULT ${field.default || '\'\''}` : ''}
             ${field.onUpdate ? `ON UPDATE ${field.onUpdate}` : ''}`);
+         if (field.comment != null)
+            modifyComment.push(`COMMENT ON COLUMN "${schema}"."${options.name}"."${field.name}" IS '${field.comment}'`);
       });
 
       // ADD INDEX
@@ -904,8 +918,12 @@ export class PostgreSQLClient extends BaseClient {
          newForeigns.push(`CONSTRAINT "${foreign.constraintName}" FOREIGN KEY ("${foreign.field}") REFERENCES "${schema}"."${foreign.refTable}" ("${foreign.refField}") ON UPDATE ${foreign.onUpdate} ON DELETE ${foreign.onDelete}`);
       });
 
-      sql = `${sql} (${[...newColumns, ...newIndexes, ...newForeigns].join(', ')})`;
-      if (manageIndexes.length) sql = `${sql}; ${manageIndexes.join(';')}`;
+      sql = `${sql} (${[...newColumns, ...newIndexes, ...newForeigns].join(', ')}); `;
+      if (manageIndexes.length) sql = `${sql} ${manageIndexes.join(';')}; `;
+      // TABLE COMMENT
+      if (options.comment) sql = `${sql} COMMENT ON TABLE "${schema}"."${options.name}" IS '${options.comment}'; `;
+      // FIELDS COMMENT
+      if (modifyComment.length) sql = `${sql} ${modifyComment.join(';')}; `;
 
       return await this.raw(sql);
    }
@@ -930,6 +948,7 @@ export class PostgreSQLClient extends BaseClient {
       const renameColumns: string[] = [];
       const createSequences: string[] = [];
       const manageIndexes: string[] = [];
+      const modifyComment: string[] = [];
 
       // ADD FIELDS
       additions.forEach(addition => {
@@ -943,6 +962,8 @@ export class PostgreSQLClient extends BaseClient {
             ${addition.nullable ? 'NULL' : 'NOT NULL'}
             ${addition.default !== null ? `DEFAULT ${addition.default || '\'\''}` : ''}
             ${addition.onUpdate ? `ON UPDATE ${addition.onUpdate}` : ''}`);
+         if (addition.comment != null)
+            modifyComment.push(`COMMENT ON COLUMN "${schema}"."${table}"."${addition.name}" IS '${addition.comment}'`);
       });
 
       // ADD INDEX
@@ -995,6 +1016,8 @@ export class PostgreSQLClient extends BaseClient {
 
          if (change.orgName !== change.name)
             renameColumns.push(`ALTER TABLE "${schema}"."${table}" RENAME COLUMN "${change.orgName}" TO "${change.name}"`);
+         if (change.comment != null)
+            modifyComment.push(`COMMENT ON COLUMN "${schema}"."${table}"."${change.name}" IS '${change.comment}'`);
       });
 
       // CHANGE INDEX
@@ -1042,8 +1065,11 @@ export class PostgreSQLClient extends BaseClient {
       if (alterColumns.length) sql += `ALTER TABLE "${schema}"."${table}" ${alterColumns.join(', ')}; `;
       if (createSequences.length) sql = `${createSequences.join(';')}; ${sql}`;
       if (manageIndexes.length) sql = `${manageIndexes.join(';')}; ${sql}`;
+      // TABLE COMMENT
+      if (options.comment) sql = `${sql} COMMENT ON TABLE ${schema}.${table} IS '${options.comment}'; `;
+      // FIELDS COMMENT
+      if (modifyComment.length) sql = `${sql} ${modifyComment.join(';')}; `;
       if (options.name) sql += `ALTER TABLE "${schema}"."${table}" RENAME TO "${options.name}"; `;
-
       // RENAME
       if (renameColumns.length) sql = `${renameColumns.join(';')}; ${sql}`;
 
