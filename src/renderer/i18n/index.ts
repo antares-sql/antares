@@ -17,6 +17,8 @@ import { ruRU } from './ru-RU';
 import { ukUA } from './uk-UA';
 import { viVN } from './vi-VN';
 import { zhCN } from './zh-CN';
+import { zhTW } from './zh-TW';
+
 const messages = {
    'en-US': enUS,
    'it-IT': itIT,
@@ -34,7 +36,8 @@ const messages = {
    'nl-NL': nlNL,
    'ca-ES': caES,
    'cs-CZ': csCZ,
-   'uk-UA': ukUA
+   'uk-UA': ukUA,
+   'zh-TW': zhTW
 };
 
 type NestedPartial<T> = {

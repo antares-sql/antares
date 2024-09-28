@@ -62,6 +62,7 @@ export const customizations: Customizations = {
    indexes: true,
    foreigns: true,
    nullable: true,
+   comment: true,
    tableArray: true,
    procedureSql: '$procedure$\r\n\r\n$procedure$',
    procedureContext: true,

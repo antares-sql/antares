@@ -293,6 +293,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "zwei-c",
+      "name": "CHANG, CHIH WEI",
+      "avatar_url": "https://avatars.githubusercontent.com/u/55912811?v=4",
+      "profile": "https://github.com/zwei-c",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "mirrorb",
+      "name": "GaoChun",
+      "avatar_url": "https://avatars.githubusercontent.com/u/34116207?v=4",
+      "profile": "https://github.com/mirrorb",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
