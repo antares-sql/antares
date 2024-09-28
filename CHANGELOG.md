@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.29-beta.1](https://github.com/antares-sql/antares/compare/v0.7.29-beta.0...v0.7.29-beta.1) (2024-09-28)
+
+
+### Features
+
+* **PostgreSQL:** table and field comments ([ebd1a75](https://github.com/antares-sql/antares/commit/ebd1a7544594eb4498560cc64de4b94146ee8439))
+* **translation:** traditional chinese translation, closes [#869](https://github.com/antares-sql/antares/issues/869) ([b70ed12](https://github.com/antares-sql/antares/commit/b70ed124eb753091a6afe637d75e59ee9771c8eb))
+
 ### [0.7.29-beta.0](https://github.com/antares-sql/antares/compare/v0.7.28...v0.7.29-beta.0) (2024-09-23)
 
 
