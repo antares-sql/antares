@@ -153,6 +153,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/penguinlab"><img src="https://avatars.githubusercontent.com/u/10959317?v=4?s=100" width="100px;" alt="Naoki Ishikawa"/><br /><sub><b>Naoki Ishikawa</b></sub></a><br /><a href="#translation-penguinlab" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://fazevedo.dev"><img src="https://avatars.githubusercontent.com/u/1640325?v=4?s=100" width="100px;" alt="Filipe Azevedo"/><br /><sub><b>Filipe Azevedo</b></sub></a><br /><a href="https://github.com/antares-sql/antares/commits?author=mangas" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/zwei-c"><img src="https://avatars.githubusercontent.com/u/55912811?v=4?s=100" width="100px;" alt="CHANG, CHIH WEI"/><br /><sub><b>CHANG, CHIH WEI</b></sub></a><br /><a href="#translation-zwei-c" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/mirrorb"><img src="https://avatars.githubusercontent.com/u/34116207?v=4?s=100" width="100px;" alt="GaoChun"/><br /><sub><b>GaoChun</b></sub></a><br /><a href="https://github.com/antares-sql/antares/commits?author=mirrorb" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
