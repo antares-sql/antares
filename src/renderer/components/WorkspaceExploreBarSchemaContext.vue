@@ -3,7 +3,7 @@
       :context-event="contextEvent"
       @close-context="closeContext"
    >
-      <div class="context-element">
+      <div v-if="!connection.readonly" class="context-element">
          <span class="d-flex">
             <BaseIcon
                class="text-light mt-1 mr-1"
@@ -135,7 +135,7 @@
             /> {{ t('database.export') }}</span>
       </div>
       <div
-         v-if="workspace.customizations.schemaImport"
+         v-if="workspace.customizations.schemaImport && !connection.readonly"
          class="context-element"
          @click="initImport"
       >
@@ -147,7 +147,7 @@
             /> {{ t('database.import') }}</span>
       </div>
       <div
-         v-if="workspace.customizations.schemaEdit"
+         v-if="workspace.customizations.schemaEdit && !connection.readonly"
          class="context-element"
          @click="showEditModal"
       >
@@ -159,7 +159,7 @@
             /> {{ t('database.editSchema') }}</span>
       </div>
       <div
-         v-if="workspace.customizations.schemaDrop"
+         v-if="workspace.customizations.schemaDrop && !connection.readonly"
          class="context-element"
          @click="showDeleteModal"
       >
@@ -219,6 +219,7 @@ import ModalImportSchema from '@/components/ModalImportSchema.vue';
 import Application from '@/ipc-api/Application';
 import Schema from '@/ipc-api/Schema';
 import { copyText } from '@/libs/copyText';
+import { useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSchemaExportStore } from '@/stores/schemaExport';
 import { useWorkspacesStore } from '@/stores/workspaces';
@@ -248,7 +249,9 @@ const workspacesStore = useWorkspacesStore();
 const schemaExportStore = useSchemaExportStore();
 const { showExportModal } = schemaExportStore;
 
+const connectionsStore = useConnectionsStore();
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
+const { getConnectionByUid } = connectionsStore;
 
 const {
    getWorkspace,
@@ -261,6 +264,7 @@ const isEditModal = ref(false);
 const isImportSchemaModal = ref(false);
 
 const workspace = computed(() => getWorkspace(selectedWorkspace.value));
+const connection = computed(() => getConnectionByUid(selectedWorkspace.value));
 
 const openCreateTableTab = () => {
    emit('open-create-table-tab');

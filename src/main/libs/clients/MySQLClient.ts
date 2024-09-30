@@ -214,6 +214,10 @@ export class MySQLClient extends BaseClient {
       }
    }
 
+   ping () {
+      return this.select('1+1').run();
+   }
+
    destroy () {
       this._connection.end();
       clearInterval(this._keepaliveTimer);
@@ -228,12 +232,13 @@ export class MySQLClient extends BaseClient {
       const dbConfig = await this.getDbConfig();
       const connection = await mysql.createConnection({
          ...dbConfig,
-         typeCast: (field, next) => {
-            if (field.type === 'DATETIME')
-               return field.string();
-            else
-               return next();
-         }
+         dateStrings: true
+         // typeCast: (field, next) => {
+         //    if (field.type === 'DATETIME')
+         //       return field.string();
+         //    else
+         //       return next();
+         // }
       });
 
       return connection;
@@ -245,12 +250,13 @@ export class MySQLClient extends BaseClient {
          ...dbConfig,
          connectionLimit: this._poolSize,
          enableKeepAlive: true,
-         typeCast: (field, next) => {
-            if (field.type === 'DATETIME')
-               return field.string();
-            else
-               return next();
-         }
+         dateStrings: true
+         // typeCast: (field, next) => {
+         //    if (field.type === 'DATETIME')
+         //       return field.string();
+         //    else
+         //       return next();
+         // }
       });
 
       this._keepaliveTimer = setInterval(async () => {

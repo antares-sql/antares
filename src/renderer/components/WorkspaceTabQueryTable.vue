@@ -38,7 +38,7 @@
          <div class="thead">
             <div class="tr">
                <div
-                  v-for="(field, index) in fields"
+                  v-for="(field, index) in filteredFields"
                   :key="index"
                   class="th c-hand"
                   :title="`${field.type} ${fieldLength(field) ? `(${fieldLength(field)})` : ''}`"
@@ -383,6 +383,11 @@ const sortedResults = computed(() => {
 
 const resultsWithRows = computed(() => props.results.filter(result => result.rows.length));
 const fields = computed(() => resultsWithRows.value.length ? resultsWithRows.value[resultsetIndex.value].fields : []);
+const filteredFields = computed(() => fields.value.reduce((acc, cur) => {
+   if (acc.findIndex(f => JSON.stringify(f) === JSON.stringify(cur)))
+      acc.push(cur);
+   return acc;
+}, [] as TableField[]));
 const keyUsage = computed(() => resultsWithRows.value.length ? resultsWithRows.value[resultsetIndex.value].keys : []);
 
 const fieldsObj = computed(() => {

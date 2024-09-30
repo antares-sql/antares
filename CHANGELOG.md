@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.29-beta.1](https://github.com/antares-sql/antares/compare/v0.7.29-beta.0...v0.7.29-beta.1) (2024-09-28)
+
+
+### Features
+
+* **PostgreSQL:** table and field comments ([ebd1a75](https://github.com/antares-sql/antares/commit/ebd1a7544594eb4498560cc64de4b94146ee8439))
+* **translation:** traditional chinese translation, closes [#869](https://github.com/antares-sql/antares/issues/869) ([b70ed12](https://github.com/antares-sql/antares/commit/b70ed124eb753091a6afe637d75e59ee9771c8eb))
+
+### [0.7.29-beta.0](https://github.com/antares-sql/antares/compare/v0.7.28...v0.7.29-beta.0) (2024-09-23)
+
+
+### Features
+
+* cancel button when waiting to connect database, closes [#830](https://github.com/antares-sql/antares/issues/830) ([b6a7124](https://github.com/antares-sql/antares/commit/b6a7124f33397a2ae7da654b5867f6982ac5810e))
+* update czech translation ([0506b65](https://github.com/antares-sql/antares/commit/0506b653d74d8cd5e848bc2ec4d29d4b0247c880))
+
+
+### Bug Fixes
+
+* mismatch between table field columns and results with duplicate fields, fixes [#848](https://github.com/antares-sql/antares/issues/848) ([da8cc39](https://github.com/antares-sql/antares/commit/da8cc39157a4b507d3d377ee1e888b8f8a52b7c5))
+
+
+### Improvements
+
+* **UI:** hide edit/delete functions in readonly mode ([37d44c9](https://github.com/antares-sql/antares/commit/37d44c95ee559f3ee1345e91fca5e2c1e86c5fbf))
+
 ### [0.7.28](https://github.com/antares-sql/antares/compare/v0.7.28-beta.0...v0.7.28) (2024-08-20)
 
 ### [0.7.28-beta.0](https://github.com/antares-sql/antares/compare/v0.7.27...v0.7.28-beta.0) (2024-08-06)

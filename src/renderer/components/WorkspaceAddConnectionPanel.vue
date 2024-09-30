@@ -386,20 +386,35 @@
                </div>
             </div>
             <div class="panel-footer">
-               <button
-                  id="connection-test"
-                  class="btn btn-gray mr-2 d-flex"
-                  :class="{'loading': isTesting}"
-                  :disabled="isBusy"
-                  @click="startTest"
+               <div
+                  @mouseenter="setCancelTestButtonVisibility(true)"
+                  @mouseleave="setCancelTestButtonVisibility(false)"
                >
-                  <BaseIcon
-                     icon-name="mdiLightningBolt"
-                     :size="24"
-                     class="mr-1"
-                  />
-                  {{ t('connection.testConnection') }}
-               </button>
+                  <button
+                     v-if="showTestCancel && isTesting"
+                     class="btn btn-gray mr-2 cancellable"
+                     :title="t('general.cancel')"
+                     @click="abortConnection()"
+                  >
+                     <BaseIcon icon-name="mdiWindowClose" :size="24" />
+                     <span class="d-invisible pr-1">{{ t('connection.testConnection') }}</span>
+                  </button>
+                  <button
+                     v-else
+                     id="connection-test"
+                     class="btn btn-gray mr-2 d-flex"
+                     :class="{'loading': isTesting}"
+                     :disabled="isBusy"
+                     @click="startTest"
+                  >
+                     <BaseIcon
+                        icon-name="mdiLightningBolt"
+                        :size="24"
+                        class="mr-1"
+                     />
+                     {{ t('connection.testConnection') }}
+                  </button>
+               </div>
                <button
                   id="connection-save"
                   class="btn btn-primary mr-2 d-flex"
@@ -494,6 +509,8 @@ const firstInput: Ref<HTMLInputElement> = ref(null);
 const isConnecting = ref(false);
 const isTesting = ref(false);
 const isAsking = ref(false);
+const showTestCancel = ref(false);
+const abortController: Ref<AbortController> = ref(new AbortController());
 const selectedTab = ref('general');
 
 const clientCustomizations = computed(() => {
@@ -516,6 +533,10 @@ const setDefaults = () => {
    connection.value.database = clientCustomizations.value.defaultDatabase;
 };
 
+const setCancelTestButtonVisibility = (val: boolean) => {
+   showTestCancel.value = val;
+};
+
 const startTest = async () => {
    isTesting.value = true;
 
@@ -526,7 +547,7 @@ const startTest = async () => {
          const res = await Connection.makeTest(connection.value);
          if (res.status === 'error')
             addNotification({ status: 'error', message: res.response.message || res.response.toString() });
-         else
+         else if (res.status === 'success')
             addNotification({ status: 'success', message: t('connection.connectionSuccessfullyMade') });
       }
       catch (err) {
@@ -537,13 +558,21 @@ const startTest = async () => {
    }
 };
 
+const abortConnection = (): void => {
+   abortController.value.abort();
+   Connection.abortConnection(connection.value.uid);
+   isTesting.value = false;
+   isConnecting.value = false;
+   abortController.value = new AbortController();
+};
+
 const continueTest = async (credentials: { user: string; password: string }) => { // if "Ask for credentials" is true
    isAsking.value = false;
    const params = Object.assign({}, connection.value, credentials);
 
    try {
       if (isConnecting.value) {
-         await connectWorkspace(params);
+         await connectWorkspace(params, { signal: abortController.value.signal }).catch(() => undefined);
          isConnecting.value = false;
       }
       else {

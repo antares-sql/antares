@@ -35,6 +35,10 @@ export class SQLiteClient extends BaseClient {
       });
    }
 
+   ping () {
+      return this.select('1+1').run();
+   }
+
    destroy () {
       this._connection.close();
    }

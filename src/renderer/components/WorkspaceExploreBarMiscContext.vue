@@ -16,7 +16,7 @@
             /> {{ t('general.run') }}</span>
       </div>
       <div
-         v-if="selectedMisc.type === 'trigger' && customizations.triggerEnableDisable"
+         v-if="selectedMisc.type === 'trigger' && customizations.triggerEnableDisable && !connection.readonly"
          class="context-element"
          @click="toggleTrigger"
       >
@@ -36,7 +36,7 @@
          </span>
       </div>
       <div
-         v-if="selectedMisc.type === 'scheduler'"
+         v-if="selectedMisc.type === 'scheduler' && !connection.readonly"
          class="context-element"
          @click="toggleScheduler"
       >
@@ -63,7 +63,11 @@
                :size="18"
             /> {{ t('general.copyName') }}</span>
       </div>
-      <div class="context-element" @click="showDeleteModal">
+      <div
+         v-if="!connection.readonly"
+         class="context-element"
+         @click="showDeleteModal"
+      >
          <span class="d-flex">
             <BaseIcon
                class="text-light mt-1 mr-1"
@@ -117,6 +121,7 @@ import Routines from '@/ipc-api/Routines';
 import Schedulers from '@/ipc-api/Schedulers';
 import Triggers from '@/ipc-api/Triggers';
 import { copyText } from '@/libs/copyText';
+import { useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
@@ -132,6 +137,7 @@ const emit = defineEmits(['close-context', 'reload']);
 
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
+const { getConnectionByUid } = useConnectionsStore();
 
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
@@ -154,6 +160,7 @@ const workspace = computed(() => {
 const customizations = computed(() => {
    return getWorkspace(selectedWorkspace.value).customizations;
 });
+const connection = computed(() => getConnectionByUid(selectedWorkspace.value));
 
 const deleteMessage = computed(() => {
    switch (props.selectedMisc.type) {

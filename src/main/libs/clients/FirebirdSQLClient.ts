@@ -109,6 +109,10 @@ export class FirebirdSQLClient extends BaseClient {
       return firebird.pool(this._poolSize, { ...this._params, blobAsText: true });
    }
 
+   ping () {
+      return this.raw('SELECT rdb$get_context(\'SYSTEM\', \'DB_NAME\') FROM rdb$database');
+   }
+
    destroy () {
       if (this._poolSize)
          return (this._connection as firebird.ConnectionPool).destroy();
