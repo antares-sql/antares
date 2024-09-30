@@ -255,6 +255,11 @@
           }
         }
 
+        
+        &.result-tabs .tab-item {
+          background: transparent;
+        }
+
         .workspace-query-runner .workspace-query-runner-footer .workspace-query-buttons .btn {
           color: $body-font-color-dark;
         }

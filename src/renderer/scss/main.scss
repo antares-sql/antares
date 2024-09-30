@@ -256,6 +256,10 @@ option:checked {
     }
 
     &.active {
+      a {
+        border-bottom-color: transparent;
+      }
+
       .tab-link {
         border-color: transparent;
       }

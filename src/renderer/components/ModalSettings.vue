@@ -612,7 +612,7 @@ const otherContributors = computed(() => {
    return contributors
       .split(',')
       .filter(c => !c.includes(appAuthor))
-      .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+      .sort((a, b) => a.toLowerCase().trim().localeCompare(b.toLowerCase()));
 });
 
 const selectTab = (tab: string) => {

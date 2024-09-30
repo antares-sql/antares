@@ -141,8 +141,11 @@ onMounted(() => {
 
       while (node) {
          if (node.nodeName.match(/^(input|textarea)$/i) || node.isContentEditable) {
-            InputMenu.popup({ window: getCurrentWindow() });
-            break;
+            if (!node.parentNode.className.split(' ').includes('editor-query')) {
+               InputMenu.popup({ window: getCurrentWindow() });
+               console.log(node.parentNode.className);
+               break;
+            }
          }
          node = node.parentNode;
       }

@@ -3,6 +3,7 @@
       <div
          :id="`editor-${id}`"
          class="editor"
+         :class="editorClasses"
          :style="{height: `${height}px`}"
       />
    </div>
@@ -54,7 +55,8 @@ const props = defineProps({
    schema: { type: String, default: '' },
    autoFocus: { type: Boolean, default: false },
    readOnly: { type: Boolean, default: false },
-   height: { type: Number, default: 200 }
+   height: { type: Number, default: 200 },
+   editorClasses: { type: String, default: '' }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -405,18 +407,17 @@ defineExpose({ editor });
 
 .ace_gutter-cell.ace_breakpoint {
   &::before {
-    content: '\F0403';
+    content: '';
     position: absolute;
-    left: 3px;
-    top: 2px;
-    color: var(--primary-color);
+    left: 0px;
+    top: 8px;
     display: inline-block;
-    font: normal normal normal 24px/1 "Material Design Icons", sans-serif;
-    font-size: inherit;
-    text-rendering: auto;
-    line-height: inherit;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-top: 8px solid transparent;
+    border-right: 8px solid var(--primary-color);
+    transform: rotate(-45deg);
   }
 }
 </style>
