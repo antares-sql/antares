@@ -921,7 +921,7 @@ export class PostgreSQLClient extends BaseClient {
       sql = `${sql} (${[...newColumns, ...newIndexes, ...newForeigns].join(', ')}); `;
       if (manageIndexes.length) sql = `${sql} ${manageIndexes.join(';')}; `;
       // TABLE COMMENT
-      if (options.comment) sql = `${sql} COMMENT ON TABLE "${schema}"."${options.name}" IS '${options.comment}'; `;
+      if (options.comment != null) sql = `${sql} COMMENT ON TABLE "${schema}"."${options.name}" IS '${options.comment}'; `;
       // FIELDS COMMENT
       if (modifyComment.length) sql = `${sql} ${modifyComment.join(';')}; `;
 
@@ -1066,7 +1066,7 @@ export class PostgreSQLClient extends BaseClient {
       if (createSequences.length) sql = `${createSequences.join(';')}; ${sql}`;
       if (manageIndexes.length) sql = `${manageIndexes.join(';')}; ${sql}`;
       // TABLE COMMENT
-      if (options.comment) sql = `${sql} COMMENT ON TABLE ${schema}.${table} IS '${options.comment}'; `;
+      if (options.comment != null) sql = `${sql} COMMENT ON TABLE ${schema}.${table} IS '${options.comment}'; `;
       // FIELDS COMMENT
       if (modifyComment.length) sql = `${sql} ${modifyComment.join(';')}; `;
       if (options.name) sql += `ALTER TABLE "${schema}"."${table}" RENAME TO "${options.name}"; `;
