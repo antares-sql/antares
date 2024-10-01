@@ -663,7 +663,7 @@ export class MySQLClient extends BaseClient {
             charset: field.CHARACTER_SET_NAME,
             collation: field.COLLATION_NAME,
             autoIncrement: field.EXTRA.includes('auto_increment'),
-            generated: field.EXTRA.toLowerCase().includes('generated'),
+            generated: ['VIRTUAL GENERATED', 'VIRTUAL STORED'].includes(field.EXTRA),
             onUpdate: field.EXTRA.toLowerCase().includes('on update')
                ? field.EXTRA.substr(field.EXTRA.indexOf('on update') + 9, field.EXTRA.length).trim()
                : '',
