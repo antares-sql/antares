@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.29-beta.2](https://github.com/antares-sql/antares/compare/v0.7.29-beta.1...v0.7.29-beta.2) (2024-10-02)
+
+
+### Features
+
+* **UI:** new context menu and some minor improvements to query tabs, closes [#867](https://github.com/antares-sql/antares/issues/867) ([14aeebe](https://github.com/antares-sql/antares/commit/14aeebed9cd8e475548f5e0ade105f4b11954cb2))
+
+
+### Bug Fixes
+
+* **MySQL:** incorrect representation of the DATE if the year is prior to 1900, fixes [#860](https://github.com/antares-sql/antares/issues/860) ([7969294](https://github.com/antares-sql/antares/commit/7969294a93a51861c57d4396c7a0d89ecc7e8a84))
+* **MySQL:** missing exported values for DEFAULT_GENERATED table fields, fixes [#854](https://github.com/antares-sql/antares/issues/854) ([2cda4a1](https://github.com/antares-sql/antares/commit/2cda4a1fa1c80f3567e160caf0b93bc19d76fbaa))
+* **PostgreSQL:** error changing the comment for a specific table name ([eb749f0](https://github.com/antares-sql/antares/commit/eb749f0f66bf6547053e30b1503c8b2990ae5950))
+* **PostgreSQL:** unable to change table comment to empty ([d78e59d](https://github.com/antares-sql/antares/commit/d78e59dd0910d3ea6ec5183a8748420b2db57050))
+
 ### [0.7.29-beta.1](https://github.com/antares-sql/antares/compare/v0.7.29-beta.0...v0.7.29-beta.1) (2024-09-28)
 
 
