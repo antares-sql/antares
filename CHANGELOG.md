@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.29-beta.3](https://github.com/antares-sql/antares/compare/v0.7.29-beta.2...v0.7.29-beta.3) (2024-10-08)
+
+
+### Features
+
+* **translation:** add hebrew translation, closes [#878](https://github.com/antares-sql/antares/issues/878) ([2f3f5de](https://github.com/antares-sql/antares/commit/2f3f5de8d6b02cfbf5217adfcb09a61e13d1e901))
+
+
+### Improvements
+
+* **MySQL:** made some common errors related to corrupted tables non-blocking, closes [#877](https://github.com/antares-sql/antares/issues/877) ([9a0ad80](https://github.com/antares-sql/antares/commit/9a0ad80bb55f84bd6c90cc1e9b63b33512d336a8))
+
 ### [0.7.29-beta.2](https://github.com/antares-sql/antares/compare/v0.7.29-beta.1...v0.7.29-beta.2) (2024-10-02)
 
 
