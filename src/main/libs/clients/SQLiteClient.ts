@@ -612,7 +612,7 @@ export class SQLiteClient extends BaseClient {
    }
 
    async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {
-      this._logger({ cUid: this._cUid, sql });// TODO: replace BLOB content with a placeholder
+      this._logger({ cUid: this._cUid, content: sql, level: 'query' });// TODO: replace BLOB content with a placeholder
 
       args = {
          nest: false,

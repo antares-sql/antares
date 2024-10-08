@@ -1024,7 +1024,7 @@ export class FirebirdSQLClient extends BaseClient {
          alias: string;
        }
 
-      this._logger({ cUid: this._cUid, sql });
+      this._logger({ cUid: this._cUid, content: sql, level: 'query' });
 
       args = {
          nest: false,

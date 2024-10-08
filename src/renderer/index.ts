@@ -44,6 +44,15 @@ ipcRenderer.on('unhandled-exception', (event, error) => {
       date: new Date()
    });
 });
+ipcRenderer.on('non-blocking-exception', (event, error) => {
+   useNotificationsStore().addNotification({ status: 'error', message: error.message });
+   useConsoleStore().putLog('debug', {
+      level: 'error',
+      process: 'main',
+      message: error.message,
+      date: new Date()
+   });
+});
 
 // IPC query logs
 ipcRenderer.on('query-log', (event, logRecord: QueryLog) => {

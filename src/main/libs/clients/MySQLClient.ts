@@ -354,10 +354,21 @@ export class MySQLClient extends BaseClient {
       if (this._params.schema)
          filteredDatabases = filteredDatabases.filter(db => db.Database === this._params.schema);
 
-      const { rows: functions } = await this.raw('SHOW FUNCTION STATUS');
-      const { rows: procedures } = await this.raw('SHOW PROCEDURE STATUS');
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      let functions: any[] = [];
+      let procedures: any[] = [];
       let schedulers: any[] = [];
+      /* eslint-enable @typescript-eslint/no-explicit-any */
+
+      try {
+         const { rows: functionRows } = await this.raw('SHOW FUNCTION STATUS');
+         const { rows: procedureRows } = await this.raw('SHOW PROCEDURE STATUS');
+         functions = functionRows;
+         procedures = procedureRows;
+      }
+      catch (err) {
+         this._logger({ content: err.sqlMessage, cUid: this._cUid, level: 'error' });
+      }
 
       try { // Avoid exception with event_scheduler DISABLED with MariaDB 10
          const { rows } = await this.raw('SELECT *, EVENT_SCHEMA AS `Db`, EVENT_NAME AS `Name` FROM information_schema.`EVENTS`');
@@ -1667,7 +1678,7 @@ export class MySQLClient extends BaseClient {
    }
 
    async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {
-      this._logger({ cUid: this._cUid, sql });
+      this._logger({ cUid: this._cUid, content: sql, level: 'query' });
 
       args = {
          nest: false,

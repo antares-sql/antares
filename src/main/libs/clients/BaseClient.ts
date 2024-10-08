@@ -3,14 +3,25 @@ import mysql from 'mysql2/promise';
 import * as pg from 'pg';
 import SSH2Promise = require('@fabio286/ssh2-promise');
 
-const queryLogger = ({ sql, cUid }: {sql: string; cUid: string}) => {
-   // Remove comments, newlines and multiple spaces
-   const escapedSql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '').replace(/\s\s+/g, ' ');
-   if (process.type !== undefined) {
-      const mainWindow = require('electron').webContents.fromId(1);
-      mainWindow.send('query-log', { cUid, sql: escapedSql, date: new Date() });
+export type LoggerLevel = 'query' | 'error'
+
+const ipcLogger = ({ content, cUid, level }: {content: string; cUid: string; level: LoggerLevel}) => {
+   if (level === 'error') {
+      if (process.type !== undefined) {
+         const mainWindow = require('electron').webContents.fromId(1);
+         mainWindow.send('non-blocking-exception', { cUid, message: content, date: new Date() });
+      }
+      if (process.env.NODE_ENV === 'development' && process.type === 'browser') console.log(content);
    }
-   if (process.env.NODE_ENV === 'development' && process.type === 'browser') console.log(escapedSql);
+   else if (level === 'query') {
+      // Remove comments, newlines and multiple spaces
+      const escapedSql = content.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '').replace(/\s\s+/g, ' ');
+      if (process.type !== undefined) {
+         const mainWindow = require('electron').webContents.fromId(1);
+         mainWindow.send('query-log', { cUid, sql: escapedSql, date: new Date() });
+      }
+      if (process.env.NODE_ENV === 'development' && process.type === 'browser') console.log(escapedSql);
+   }
 };
 
 /**
@@ -22,7 +33,7 @@ export abstract class BaseClient {
    protected _params: mysql.ConnectionOptions | pg.ClientConfig | { databasePath: string; readonly: boolean};
    protected _poolSize: number;
    protected _ssh?: SSH2Promise;
-   protected _logger: (args: {sql: string; cUid: string}) => void;
+   protected _logger: (args: {content: string; cUid: string; level: LoggerLevel}) => void;
    protected _queryDefaults: antares.QueryBuilderObject;
    protected _query: antares.QueryBuilderObject;
 
@@ -31,7 +42,7 @@ export abstract class BaseClient {
       this._cUid = args.uid;
       this._params = args.params;
       this._poolSize = args.poolSize || undefined;
-      this._logger = args.logger || queryLogger;
+      this._logger = args.logger || ipcLogger;
 
       this._queryDefaults = {
          schema: '',

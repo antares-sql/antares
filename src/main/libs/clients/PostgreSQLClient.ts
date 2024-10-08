@@ -1645,7 +1645,7 @@ export class PostgreSQLClient extends BaseClient {
    }
 
    async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {
-      this._logger({ cUid: this._cUid, sql });
+      this._logger({ cUid: this._cUid, content: sql, level: 'query' });
 
       args = {
          nest: false,
