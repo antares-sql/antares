@@ -7,6 +7,7 @@ import { deDE } from './de-DE';
 import { enUS } from './en-US';
 import { esES } from './es-ES';
 import { frFR } from './fr-FR';
+import { heIL } from './he-IL';
 import { idID } from './id-ID';
 import { itIT } from './it-IT';
 import { jaJP } from './ja-JP';
@@ -37,7 +38,8 @@ const messages = {
    'ca-ES': caES,
    'cs-CZ': csCZ,
    'uk-UA': ukUA,
-   'zh-TW': zhTW
+   'zh-TW': zhTW,
+   'he-IL': heIL
 };
 
 type NestedPartial<T> = {
