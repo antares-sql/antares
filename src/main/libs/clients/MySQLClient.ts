@@ -1714,9 +1714,10 @@ export class MySQLClient extends BaseClient {
             connection.query({ sql: query, nestTables }).then(async ([response, fields]) => {
                timeStop = new Date();
                const queryResult = response;
+               const fieldsArr = fields ? Array.isArray(fields[0]) ? fields[0] : fields : false;// Some times fields are nested in an array
 
-               let remappedFields = fields
-                  ? fields.map(field => {
+               let remappedFields = fieldsArr
+                  ? fieldsArr.map(field => {
                      if (!field || Array.isArray(field))
                         return undefined;
 
@@ -1785,7 +1786,7 @@ export class MySQLClient extends BaseClient {
 
                resolve({
                   duration: timeStop.getTime() - timeStart.getTime(),
-                  rows: Array.isArray(queryResult) ? queryResult.some(el => Array.isArray(el)) ? [] : queryResult : false,
+                  rows: Array.isArray(queryResult) ? queryResult.some(el => Array.isArray(el)) ? queryResult[0] : queryResult : false,
                   report: !Array.isArray(queryResult) ? queryResult : false,
                   fields: remappedFields,
                   keys: keysArr
