@@ -366,12 +366,21 @@ const sortedResults = computed(() => {
       const sortObj = currentSort.value[resultsetIndex.value];
 
       return [...localResults.value].sort((a: any, b: any) => {
-         let modifier = 1;
-         let valA = typeof a[sortObj.field] === 'string' ? a[sortObj.field].toLowerCase() : a[sortObj.field];
-         if (!isNaN(valA)) valA = Number(valA);
-         let valB = typeof b[sortObj.field] === 'string' ? b[sortObj.field].toLowerCase() : b[sortObj.field];
-         if (!isNaN(valB)) valB = Number(valB);
-         if (sortObj.dir === 'desc') modifier = -1;
+         const modifier = sortObj.dir === 'desc' ? -1 : 1;
+         let valA = a[sortObj.field];
+         let valB = b[sortObj.field];
+
+         // Handle null values
+         if (valA === null && valB !== null) return sortObj.dir === 'asc' ? -1 : 1;
+         if (valA !== null && valB === null) return sortObj.dir === 'asc' ? 1 : -1;
+         if (valA === null && valB === null) return 0;
+
+         valA = typeof valA === 'string' ? valA.toLowerCase() : valA;
+         valB = typeof valB === 'string' ? valB.toLowerCase() : valB;
+
+         if (!isNaN(valA)) valA = String(Number(valA));
+         if (!isNaN(valB)) valB = String(Number(valB));
+
          if (valA < valB) return -1 * modifier;
          if (valA > valB) return 1 * modifier;
          return 0;
