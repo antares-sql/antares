@@ -378,8 +378,8 @@ const sortedResults = computed(() => {
          valA = typeof valA === 'string' ? valA.toLowerCase() : valA;
          valB = typeof valB === 'string' ? valB.toLowerCase() : valB;
 
-         if (!isNaN(valA)) valA = String(Number(valA));
-         if (!isNaN(valB)) valB = String(Number(valB));
+         if (typeof valA !== 'number' && !isNaN(valA)) valA = String(Number(valA));
+         if (typeof valB !== 'number' && !isNaN(valB)) valB = String(Number(valB));
 
          if (valA < valB) return -1 * modifier;
          if (valA > valB) return 1 * modifier;
