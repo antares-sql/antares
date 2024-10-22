@@ -320,6 +320,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "SawGoD",
+      "name": "Nikita Karelikov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/67802757?v=4",
+      "profile": "http://telegram.dog/SawGoD",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "contributorsPerLine": 7,
