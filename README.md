@@ -155,6 +155,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/zwei-c"><img src="https://avatars.githubusercontent.com/u/55912811?v=4?s=100" width="100px;" alt="CHANG, CHIH WEI"/><br /><sub><b>CHANG, CHIH WEI</b></sub></a><br /><a href="#translation-zwei-c" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mirrorb"><img src="https://avatars.githubusercontent.com/u/34116207?v=4?s=100" width="100px;" alt="GaoChun"/><br /><sub><b>GaoChun</b></sub></a><br /><a href="https://github.com/antares-sql/antares/commits?author=mirrorb" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/LeviEyal"><img src="https://avatars.githubusercontent.com/u/48846533?v=4?s=100" width="100px;" alt="Eyal Levi"/><br /><sub><b>Eyal Levi</b></sub></a><br /><a href="#translation-LeviEyal" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://telegram.dog/SawGoD"><img src="https://avatars.githubusercontent.com/u/67802757?v=4?s=100" width="100px;" alt="Nikita Karelikov"/><br /><sub><b>Nikita Karelikov</b></sub></a><br /><a href="#translation-SawGoD" title="Translation">🌍</a></td>
     </tr>
   </tbody>
 </table>
