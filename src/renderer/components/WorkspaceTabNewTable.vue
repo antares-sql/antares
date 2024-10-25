@@ -72,6 +72,19 @@
                   />
                   <span>{{ t('database.foreignKeys') }}</span>
                </button>
+               <button
+                  class="btn btn-dark btn-sm ml-2 mr-0"
+                  :disabled="isSaving || !localFields.length"
+                  :title="t('database.manageTableChecks')"
+                  @click="showTableChecksModal"
+               >
+                  <BaseIcon
+                     class="mr-1"
+                     icon-name="mdiTableCheck"
+                     :size="24"
+                  />
+                  <span>{{ t('database.tableChecks') }}</span>
+               </button>
             </div>
             <div class="workspace-query-info">
                <div class="d-flex" :title="t('database.schema')">
@@ -183,11 +196,19 @@
          @hide="hideForeignModal"
          @foreigns-update="foreignsUpdate"
       />
+      <WorkspaceTabPropsTableChecksModal
+         v-if="isTableChecksModal"
+         :local-checks="localTableChecks"
+         table="new"
+         :workspace="workspace"
+         @hide="hideTableChecksModal"
+         @checks-update="checksUpdate"
+      />
    </div>
 </template>
 
 <script setup lang="ts">
-import { ConnectionParams, TableField, TableForeign, TableIndex, TableOptions } from 'common/interfaces/antares';
+import { ConnectionParams, TableCheck, TableField, TableForeign, TableIndex, TableOptions } from 'common/interfaces/antares';
 import { uidGen } from 'common/libs/uidGen';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
@@ -198,6 +219,7 @@ import BaseIcon from '@/components/BaseIcon.vue';
 import BaseLoader from '@/components/BaseLoader.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import WorkspaceTabNewTableEmptyState from '@/components/WorkspaceTabNewTableEmptyState.vue';
+import WorkspaceTabPropsTableChecksModal from '@/components/WorkspaceTabPropsTableChecksModal.vue';
 import WorkspaceTabPropsTableFields from '@/components/WorkspaceTabPropsTableFields.vue';
 import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTableForeignModal.vue';
 import WorkspaceTabPropsTableIndexesModal from '@/components/WorkspaceTabPropsTableIndexesModal.vue';
@@ -236,12 +258,16 @@ const isLoading = ref(false);
 const isSaving = ref(false);
 const isIndexesModal = ref(false);
 const isForeignModal = ref(false);
+const isTableChecksModal = ref(false);
+
 const originalFields: Ref<TableField[]> = ref([]);
 const localFields: Ref<TableField[]> = ref([]);
 const originalKeyUsage: Ref<TableForeign[]> = ref([]);
 const localKeyUsage: Ref<TableForeign[]> = ref([]);
 const originalIndexes: Ref<TableIndex[]> = ref([]);
 const localIndexes: Ref<TableIndex[]> = ref([]);
+const originalTableChecks: Ref<TableCheck[]> = ref([]);
+const localTableChecks: Ref<TableCheck[]> = ref([]);
 const tableOptions: Ref<TableOptions> = ref(null);
 const localOptions: Ref<TableOptions> = ref(null);
 const newFieldsCounter = ref(0);
@@ -274,6 +300,7 @@ const isChanged = computed(() => {
    return JSON.stringify(originalFields.value) !== JSON.stringify(localFields.value) ||
       JSON.stringify(originalKeyUsage.value) !== JSON.stringify(localKeyUsage.value) ||
       JSON.stringify(originalIndexes.value) !== JSON.stringify(localIndexes.value) ||
+      JSON.stringify(originalTableChecks.value) !== JSON.stringify(localTableChecks.value) ||
       JSON.stringify(tableOptions.value) !== JSON.stringify(localOptions.value);
 });
 
@@ -291,6 +318,7 @@ const saveChanges = async () => {
       fields: localFields.value,
       foreigns: localKeyUsage.value,
       indexes: localIndexes.value,
+      checks: localTableChecks.value,
       options: localOptions.value
    };
 
@@ -326,6 +354,7 @@ const clearChanges = () => {
    localFields.value = JSON.parse(JSON.stringify(originalFields.value));
    localIndexes.value = JSON.parse(JSON.stringify(originalIndexes.value));
    localKeyUsage.value = JSON.parse(JSON.stringify(originalKeyUsage.value));
+   localTableChecks.value = JSON.parse(JSON.stringify(originalTableChecks.value));
 
    tableOptions.value = {
       name: '',
@@ -446,8 +475,20 @@ const hideForeignModal = () => {
    isForeignModal.value = false;
 };
 
+const showTableChecksModal = () => {
+   isTableChecksModal.value = true;
+};
+
+const hideTableChecksModal = () => {
+   isTableChecksModal.value = false;
+};
+
 const foreignsUpdate = (foreigns: TableForeign[]) => {
    localKeyUsage.value = foreigns;
+};
+
+const checksUpdate = (checks: TableCheck[]) => {
+   localTableChecks.value = checks;
 };
 
 const saveContentListener = () => {

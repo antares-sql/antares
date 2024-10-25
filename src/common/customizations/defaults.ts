@@ -55,6 +55,7 @@ export const defaults: Customizations = {
    tableArray: false,
    tableRealCount: false,
    tableDuplicate: false,
+   tableCheck: false,
    viewSettings: false,
    triggerSettings: false,
    triggerFunctionSettings: false,

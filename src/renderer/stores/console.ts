@@ -10,7 +10,7 @@ export interface QueryLog {
 }
 
 export interface DebugLog {
-   level: 'log' | 'info' | 'warn' | 'error';
+   level: 'log' | 'info' | 'warn' | 'error' | string;
    process: 'renderer' | 'main' | 'worker';
    message: string;
    date: Date;

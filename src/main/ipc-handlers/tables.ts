@@ -87,6 +87,19 @@ export default (connections: Record<string, antares.Client>) => {
       }
    });
 
+   ipcMain.handle('get-table-checks', async (event, params) => {
+      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+
+      try {
+         const result = await connections[params.uid].getTableChecks(params);
+
+         return { status: 'success', response: result };
+      }
+      catch (err) {
+         return { status: 'error', response: err.toString() };
+      }
+   });
+
    ipcMain.handle('get-table-ddl', async (event, params) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 

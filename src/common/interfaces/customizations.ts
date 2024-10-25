@@ -43,6 +43,7 @@ export interface Customizations {
    tableArray?: boolean;
    tableRealCount?: boolean;
    tableTruncateDisableFKCheck?: boolean;
+   tableCheck?: boolean;
    tableDdl?: boolean;
    viewAdd?: boolean;
    viewSettings?: boolean;
