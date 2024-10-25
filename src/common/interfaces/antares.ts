@@ -173,7 +173,7 @@ export interface CreateTableParams {
    fields: TableField[];
    foreigns: TableForeign[];
    indexes: TableIndex[];
-   checks: TableCheck[];
+   checks?: TableCheck[];
    options: TableOptions;
 }
 
@@ -201,7 +201,7 @@ export interface AlterTableParams {
       changes: TableForeign[];
       deletions: TableForeign[];
    };
-   checkChanges: {
+   checkChanges?: {
       additions: TableCheck[];
       changes: TableCheck[];
       deletions: TableCheck[];
