@@ -189,6 +189,10 @@ export abstract class BaseClient {
       throw new Error('Method "dropSchema" not implemented');
    }
 
+   getTableChecks (...args: any) {
+      throw new Error('Method "getTableDll" not implemented');
+   }
+
    getTableDll (...args: any) {
       throw new Error('Method "getTableDll" not implemented');
    }

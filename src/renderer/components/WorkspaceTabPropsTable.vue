@@ -62,7 +62,7 @@
                <button
                   class="btn btn-dark btn-sm mr-0"
                   :disabled="isSaving"
-                  :title="t('database.manageIndexes')"
+                  :title="t('database.manageForeignKeys')"
                   @click="showForeignModal"
                >
                   <BaseIcon
@@ -71,6 +71,19 @@
                      :size="24"
                   />
                   <span>{{ t('database.foreignKeys') }}</span>
+               </button>
+               <button
+                  class="btn btn-dark btn-sm ml-2 mr-0"
+                  :disabled="isSaving"
+                  :title="t('database.manageTableChecks')"
+                  @click="showTableChecksModal"
+               >
+                  <BaseIcon
+                     class="mr-1"
+                     icon-name="mdiTableCheck"
+                     :size="24"
+                  />
+                  <span>{{ t('database.tableChecks') }}</span>
                </button>
 
                <div class="divider-vert py-3" />
@@ -218,11 +231,19 @@
          :workspace="workspace"
          @hide="hideDdlModal"
       />
+      <WorkspaceTabPropsTableChecksModal
+         v-if="isTableChecksModal"
+         :local-checks="localTableChecks"
+         :table="table"
+         :workspace="workspace"
+         @hide="hideTableChecksModal"
+         @checks-update="checksUpdate"
+      />
    </div>
 </template>
 
 <script setup lang="ts">
-import { AlterTableParams, TableField, TableForeign, TableIndex, TableInfos, TableOptions } from 'common/interfaces/antares';
+import { AlterTableParams, TableCheck, TableField, TableForeign, TableIndex, TableInfos, TableOptions } from 'common/interfaces/antares';
 import { uidGen } from 'common/libs/uidGen';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
@@ -232,6 +253,7 @@ import { useI18n } from 'vue-i18n';
 import BaseIcon from '@/components/BaseIcon.vue';
 import BaseLoader from '@/components/BaseLoader.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import WorkspaceTabPropsTableChecksModal from '@/components/WorkspaceTabPropsTableChecksModal.vue';
 import WorkspaceTabPropsTableDdlModal from '@/components/WorkspaceTabPropsTableDdlModal.vue';
 import WorkspaceTabPropsTableFields from '@/components/WorkspaceTabPropsTableFields.vue';
 import WorkspaceTabPropsTableForeignModal from '@/components/WorkspaceTabPropsTableForeignModal.vue';
@@ -273,13 +295,17 @@ const isLoading = ref(false);
 const isSaving = ref(false);
 const isIndexesModal = ref(false);
 const isForeignModal = ref(false);
+const isTableChecksModal = ref(false);
 const isDdlModal = ref(false);
+
 const originalFields: Ref<TableField[]> = ref([]);
 const localFields: Ref<TableField[]> = ref([]);
 const originalKeyUsage: Ref<TableForeign[]> = ref([]);
 const localKeyUsage: Ref<TableForeign[]> = ref([]);
 const originalIndexes: Ref<TableIndex[]> = ref([]);
 const localIndexes: Ref<TableIndex[]> = ref([]);
+const originalTableChecks: Ref<TableCheck[]> = ref([]);
+const localTableChecks: Ref<TableCheck[]> = ref([]);
 const tableOptions: Ref<TableOptions> = ref(null);
 const localOptions: Ref<TableOptions> = ref({} as TableOptions);
 const lastTable = ref(null);
@@ -307,6 +333,7 @@ const isChanged = computed(() => {
    return JSON.stringify(originalFields.value) !== JSON.stringify(localFields.value) ||
       JSON.stringify(originalKeyUsage.value) !== JSON.stringify(localKeyUsage.value) ||
       JSON.stringify(originalIndexes.value) !== JSON.stringify(localIndexes.value) ||
+      JSON.stringify(originalTableChecks.value) !== JSON.stringify(localTableChecks.value) ||
       JSON.stringify(tableOptions.value) !== JSON.stringify(localOptions.value);
 });
 
@@ -430,6 +457,27 @@ const getFieldsData = async () => {
       addNotification({ status: 'error', message: err.stack });
    }
 
+   if (workspace.value.customizations.tableCheck) {
+      try { // Table checks
+         const { status, response } = await Tables.getTableChecks(params);
+
+         if (status === 'success') {
+            originalTableChecks.value = response.map((check: TableCheck) => {
+               return {
+                  _antares_id: uidGen(),
+                  ...check
+               };
+            });
+            localTableChecks.value = JSON.parse(JSON.stringify(originalTableChecks.value));
+         }
+         else
+            addNotification({ status: 'error', message: response });
+      }
+      catch (err) {
+         addNotification({ status: 'error', message: err.stack });
+      }
+   }
+
    isLoading.value = false;
 };
 
@@ -527,6 +575,33 @@ const saveChanges = async () => {
    // Foreigns Deletions
    foreignChanges.deletions = originalKeyUsage.value.filter(foreign => !localForeignIDs.includes(foreign._antares_id));
 
+   // CHECKS
+   const checkChanges = {
+      additions: [] as TableCheck[],
+      changes: [] as TableCheck[],
+      deletions: [] as TableCheck[]
+   };
+   const originalCheckIDs = originalTableChecks.value.reduce((acc, curr) => [...acc, curr._antares_id], []);
+   const localCheckIDs = localTableChecks.value.reduce((acc, curr) => [...acc, curr._antares_id], []);
+
+   // Check Additions
+   checkChanges.additions = localTableChecks.value.filter(check => !originalCheckIDs.includes(check._antares_id));
+
+   // Check Changes
+   originalTableChecks.value.forEach(originalCheck => {
+      const lI = localTableChecks.value.findIndex(localCheck => localCheck._antares_id === originalCheck._antares_id);
+      if (JSON.stringify(originalCheck) !== JSON.stringify(localTableChecks.value[lI])) {
+         if (localTableChecks.value[lI]) {
+            checkChanges.changes.push({
+               ...localTableChecks.value[lI]
+            });
+         }
+      }
+   });
+
+   // Check Deletions
+   checkChanges.deletions = originalTableChecks.value.filter(check => !localCheckIDs.includes(check._antares_id));
+
    // ALTER
    const params = {
       uid: props.connection.uid,
@@ -543,6 +618,7 @@ const saveChanges = async () => {
       deletions,
       indexChanges,
       foreignChanges,
+      checkChanges,
       options
    } as unknown as AlterTableParams;
 
@@ -583,6 +659,7 @@ const clearChanges = () => {
    localFields.value = JSON.parse(JSON.stringify(originalFields.value));
    localIndexes.value = JSON.parse(JSON.stringify(originalIndexes.value));
    localKeyUsage.value = JSON.parse(JSON.stringify(originalKeyUsage.value));
+   localTableChecks.value = JSON.parse(JSON.stringify(originalTableChecks.value));
    localOptions.value = JSON.parse(JSON.stringify(tableOptions.value));
    newFieldsCounter.value = 0;
 };
@@ -702,6 +779,14 @@ const hideForeignModal = () => {
    isForeignModal.value = false;
 };
 
+const showTableChecksModal = () => {
+   isTableChecksModal.value = true;
+};
+
+const hideTableChecksModal = () => {
+   isTableChecksModal.value = false;
+};
+
 const showDdlModal = () => {
    isDdlModal.value = true;
 };
@@ -712,6 +797,10 @@ const hideDdlModal = () => {
 
 const foreignsUpdate = (foreigns: TableForeign[]) => {
    localKeyUsage.value = foreigns;
+};
+
+const checksUpdate = (checks: TableCheck[]) => {
+   localTableChecks.value = checks;
 };
 
 const saveContentListener = () => {

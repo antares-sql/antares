@@ -168,6 +168,8 @@ export class PostgreSQLClient extends BaseClient {
          try {
             this._ssh = new SSH2Promise({
                ...this._params.ssh,
+               reconnect: true,
+               reconnectTries: 3,
                debug: process.env.NODE_ENV !== 'production' ? (s) => console.log(s) : null
             });
 

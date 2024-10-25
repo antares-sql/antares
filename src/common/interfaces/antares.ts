@@ -159,6 +159,13 @@ export interface TableForeign {
    oldName?: string;
 }
 
+export interface TableCheck {
+   // eslint-disable-next-line camelcase
+   _antares_id?: string;
+   name: string;
+   clause: string;
+}
+
 export interface CreateTableParams {
    /** Connection UID */
    uid?: string;
@@ -166,6 +173,7 @@ export interface CreateTableParams {
    fields: TableField[];
    foreigns: TableForeign[];
    indexes: TableIndex[];
+   checks: TableCheck[];
    options: TableOptions;
 }
 
@@ -192,6 +200,11 @@ export interface AlterTableParams {
       additions: TableForeign[];
       changes: TableForeign[];
       deletions: TableForeign[];
+   };
+   checkChanges: {
+      additions: TableCheck[];
+      changes: TableCheck[];
+      deletions: TableCheck[];
    };
    options: TableOptions;
 }
