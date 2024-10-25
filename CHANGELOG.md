@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.30-beta.0](https://github.com/antares-sql/antares/compare/v0.7.29...v0.7.30-beta.0) (2024-10-25)
+
+
+### Features
+
+* **MySQL:** check constraints management support ([6365e07](https://github.com/antares-sql/antares/commit/6365e075349e00caa1454cce862e918f2069878f))
+
+
+### Bug Fixes
+
+* incorrect behavior in sorting tables with null/empty values, fixes [#883](https://github.com/antares-sql/antares/issues/883) ([b6c5dff](https://github.com/antares-sql/antares/commit/b6c5dff15c165261e9a11a389ed415e59c7b7628))
+* incorrect behavior sorting tables with numeric values ([60e1e59](https://github.com/antares-sql/antares/commit/60e1e595057c3ba7f36e0f829dba11b470e1069b))
+* **MySQL:** routines do not return results, fixes [#885](https://github.com/antares-sql/antares/issues/885) ([dba490f](https://github.com/antares-sql/antares/commit/dba490f22634f87d3af5a3a4c0866fc3095c9842))
+
+
+### Improvements
+
+* added more notifications in debug console ([dfa7cf9](https://github.com/antares-sql/antares/commit/dfa7cf9905a4d0a79eaed823a14477574b329dfa))
+
 ### [0.7.29](https://github.com/antares-sql/antares/compare/v0.7.29-beta.3...v0.7.29) (2024-10-14)
 
 ### [0.7.29-beta.3](https://github.com/antares-sql/antares/compare/v0.7.29-beta.2...v0.7.29-beta.3) (2024-10-08)
