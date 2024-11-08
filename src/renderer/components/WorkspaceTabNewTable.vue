@@ -73,6 +73,7 @@
                   <span>{{ t('database.foreignKeys') }}</span>
                </button>
                <button
+                  v-if="workspace.customizations.tableCheck"
                   class="btn btn-dark btn-sm ml-2 mr-0"
                   :disabled="isSaving || !localFields.length"
                   :title="t('database.manageTableChecks')"
