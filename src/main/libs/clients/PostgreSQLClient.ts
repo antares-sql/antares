@@ -155,6 +155,7 @@ export class PostgreSQLClient extends BaseClient {
          host: this._params.host,
          port: this._params.port,
          user: this._params.user,
+         connectionString: this._params.connectionString,
          database: 'postgres' as string,
          password: this._params.password,
          ssl: null as ConnectionOptions

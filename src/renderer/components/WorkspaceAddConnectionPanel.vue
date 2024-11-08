@@ -67,7 +67,7 @@
                            <div class="column col-7 col-sm-12">
                               <input
                                  ref="pgString"
-                                 v-model="connection.pgConnString"
+                                 v-model="connection.connString"
                                  class="form-input"
                                  type="text"
                               >
@@ -502,8 +502,8 @@ const connection = ref({
    sshKey: '',
    sshPort: 22,
    sshKeepAliveInterval: 1800,
-   pgConnString: ''
-}) as Ref<ConnectionParams & { pgConnString: string }>;
+   connString: ''
+}) as Ref<ConnectionParams & { connString: string }>;
 
 const firstInput: Ref<HTMLInputElement> = ref(null);
 const isConnecting = ref(false);

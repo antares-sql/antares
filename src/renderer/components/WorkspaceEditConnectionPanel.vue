@@ -68,7 +68,7 @@
                         <div class="column col-7 col-sm-12">
                            <input
                               ref="pgString"
-                              v-model="localConnection.pgConnString"
+                              v-model="localConnection.connString"
                               class="form-input"
                               type="text"
                            >
@@ -502,7 +502,7 @@ const clients = [
 ];
 
 const firstInput: Ref<HTMLInputElement> = ref(null);
-const localConnection: Ref<ConnectionParams & { pgConnString: string }> = ref(null);
+const localConnection: Ref<ConnectionParams & { connString: string }> = ref(null);
 const isConnecting = ref(false);
 const isTesting = ref(false);
 const isAsking = ref(false);

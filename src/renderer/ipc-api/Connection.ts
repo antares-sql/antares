@@ -1,18 +1,15 @@
 import { ConnectionParams, IpcResponse } from 'common/interfaces/antares';
 import { ipcRenderer } from 'electron';
 
-import connStringConstruct from '../libs/connStringDecode';
 import { unproxify } from '../libs/unproxify';
 
 export default class {
-   static makeTest (params: ConnectionParams & { pgConnString?: string }): Promise<IpcResponse> {
-      const newParams = connStringConstruct(params) as ConnectionParams;
-      return ipcRenderer.invoke('test-connection', unproxify(newParams));
+   static makeTest (params: ConnectionParams & { connString?: string }): Promise<IpcResponse> {
+      return ipcRenderer.invoke('test-connection', unproxify(params));
    }
 
-   static connect (params: ConnectionParams & { pgConnString?: string }): Promise<IpcResponse> {
-      const newParams = connStringConstruct(params) as ConnectionParams;
-      return ipcRenderer.invoke('connect', unproxify(newParams));
+   static connect (params: ConnectionParams & { connString?: string }): Promise<IpcResponse> {
+      return ipcRenderer.invoke('connect', unproxify(params));
    }
 
    static abortConnection (uid: string): void {

@@ -147,7 +147,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
          else
             this.selectedWorkspace = uid;
       },
-      async connectWorkspace (connection: ConnectionParams & { pgConnString?: string }, args?: {mode?: string; signal?: AbortSignal}) {
+      async connectWorkspace (connection: ConnectionParams & { connString?: string }, args?: {mode?: string; signal?: AbortSignal}) {
          this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === connection.uid
             ? {
                ...workspace,
@@ -427,7 +427,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
 
          this.selectTab({ uid, tab: 0 });
       },
-      async switchConnection (connection: ConnectionParams & { pgConnString?: string }) {
+      async switchConnection (connection: ConnectionParams & { connString?: string }) {
          await Connection.disconnect(connection.uid);
          return this.connectWorkspace(connection, { mode: 'switch' });
       },

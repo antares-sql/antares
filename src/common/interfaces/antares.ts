@@ -57,6 +57,7 @@ export interface ConnectionParams {
    cert?: string;
    key?: string;
    ca?: string;
+   connString?: string;
    untrustedConnection: boolean;
    ciphers?: string;
    ssh: boolean;
