@@ -1,13 +1,13 @@
 
 <!-- markdownlint-disable -->
 <p align="center">
-    <img width="800" src="https://raw.githubusercontent.com/Fabio286/antares/master/docs/gh-logo.png">
+    <img width="800" src="https://raw.githubusercontent.com/antares-sql/antares/master/docs/gh-logo.png">
 </p>
 <!-- markdownlint-restore -->
 
 # Antares SQL Client
 
-![GitHub package.json version](https://img.shields.io/github/package-json/v/fabio286/antares) ![GitHub](https://img.shields.io/github/license/fabio286/antares) ![Test e2e](https://github.com/antares-sql/antares/actions/workflows/test-e2e-win.yml/badge.svg?branch=develop) ![Mastodon Follow](https://img.shields.io/mastodon/follow/%20110860460902482117?domain=https%3A%2F%2Ffosstodon.org&style=social) [![Plant a Tree](https://raw.githubusercontent.com/Fabio286/treedom-badge/master/svg/plant-a-tree.svg)](https://www.treedom.net/en/user/fabio-di-stasio/event/antares-for-the-planet)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/antares-sql/antares) ![GitHub](https://img.shields.io/github/license/antares-sql/antares) ![Test e2e](https://github.com/antares-sql/antares/actions/workflows/test-e2e-win.yml/badge.svg?branch=develop) ![Mastodon Follow](https://img.shields.io/mastodon/follow/%20110860460902482117?domain=https%3A%2F%2Ffosstodon.org&style=social) [![Plant a Tree](https://raw.githubusercontent.com/antares-sql/treedom-badge/master/svg/plant-a-tree.svg)](https://www.treedom.net/en/user/fabio-di-stasio/event/antares-for-the-planet)
 
 Antares is an SQL client based on [Electron.js](https://github.com/electron/electron) and [Vue.js](https://github.com/vuejs/vue) that aims to become a useful tool, especially for developers.  
 Our target is to support as many databases as possible, and all major operating systems, including the ARM versions.  
@@ -16,7 +16,7 @@ Our target is to support as many databases as possible, and all major operating 
 However, there are all the features necessary to have a pleasant database management experience, so give it a chance and send us your feedback, we would really appreciate it.  
 We are actively working on it, hoping to provide new cool features, improvements and fixes as soon as possible.  
 
-🔗 If you are curious to try Antares you can download and install the [latest release](https://github.com/Fabio286/antares/releases/latest).  
+🔗 If you are curious to try Antares you can download and install the [latest release](https://github.com/antares-sql/antares/releases/latest).  
 👁 To stay tuned for new releases follow Antares SQL on [Mastodon](https://fosstodon.org/@AntaresSQL).  
 🌟 Don't forget to **leave a star** if you appreciate this project.  
 
@@ -60,7 +60,7 @@ On Linux you can simply download and run the `.AppImage` distribution, install f
 
 ### Windows
 
-On Windows you can choose between downloading the app from Microsoft Store or downloading the `.exe` from our [website](https://antares-sql.app/downloads) or [this github repo](https://github.com/Fabio286/antares/releases/latest). Distributions that are not from Microsoft Store are not signed with a certificate, so to install you need to click on "More info" and then "Run anyway" on SmartScreen prompt.
+On Windows you can choose between downloading the app from Microsoft Store or downloading the `.exe` from our [website](https://antares-sql.app/downloads) or [this github repo](https://github.com/antares-sql/antares/releases/latest). Distributions that are not from Microsoft Store are not signed with a certificate, so to install you need to click on "More info" and then "Run anyway" on SmartScreen prompt.
 
 ### MacOS
 
@@ -99,8 +99,8 @@ On macOS you can run `.dmg` distribution following [this guide](https://support.
 
 ## How to contribute
 
-- 🌍 [Translate Antares](https://github.com/Fabio286/antares/wiki/Translate-Antares)
-- 📖 [Contributors Guide](https://github.com/Fabio286/antares/wiki/Contributors-Guide)
+- 🌍 [Translate Antares](https://github.com/antares-sql/antares/wiki/Translate-Antares)
+- 📖 [Contributors Guide](https://github.com/antares-sql/antares/wiki/Contributors-Guide)
 - 🚧 [Project Board](https://github.com/orgs/antares-sql/projects/3/views/2)
 
 ## Contributors ✨
