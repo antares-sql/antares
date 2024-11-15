@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.30-beta.1](https://github.com/antares-sql/antares/compare/v0.7.30-beta.0...v0.7.30-beta.1) (2024-11-15)
+
+
+### Bug Fixes
+
+* missing support check for table check features ([2ee9cfc](https://github.com/antares-sql/antares/commit/2ee9cfcf0bbcf86e8a194d2eff78801300ce7cb3))
+
+
+### Improvements
+
+* **PostgreSQL:** improved support of connection strings, closes [#893](https://github.com/antares-sql/antares/issues/893) ([f0d312f](https://github.com/antares-sql/antares/commit/f0d312fb59fd98d6e4501bc407959b91eb0650f2))
+
 ### [0.7.30-beta.0](https://github.com/antares-sql/antares/compare/v0.7.29...v0.7.30-beta.0) (2024-10-25)
 
 
