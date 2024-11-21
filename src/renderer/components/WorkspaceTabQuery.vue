@@ -745,7 +745,7 @@ const saveFileAs = async () => {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    const result: any = await Application.showSaveDialog({
       filters: [{ name: 'SQL', extensions: ['sql'] }],
-      defaultPath: (!queryName.value.includes('.sql') ? `${queryName.value}.sql` :queryName.value) || 'query.sql'
+      defaultPath: (queryName.value !== undefined && !queryName.value.includes('.sql') ? `${queryName.value}.sql` : queryName.value) || 'query.sql'
    });
 
    if (result && !result.canceled) {
