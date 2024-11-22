@@ -329,6 +329,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "carvalhods",
+      "name": "David Carvalho",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6569255?v=4",
+      "profile": "https://github.com/carvalhods",
+      "contributions": [
+        "platform"
+      ]
     }
   ],
   "contributorsPerLine": 7,

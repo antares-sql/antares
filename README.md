@@ -157,6 +157,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/LeviEyal"><img src="https://avatars.githubusercontent.com/u/48846533?v=4?s=100" width="100px;" alt="Eyal Levi"/><br /><sub><b>Eyal Levi</b></sub></a><br /><a href="#translation-LeviEyal" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://telegram.dog/SawGoD"><img src="https://avatars.githubusercontent.com/u/67802757?v=4?s=100" width="100px;" alt="Nikita Karelikov"/><br /><sub><b>Nikita Karelikov</b></sub></a><br /><a href="#translation-SawGoD" title="Translation">🌍</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/carvalhods"><img src="https://avatars.githubusercontent.com/u/6569255?v=4?s=100" width="100px;" alt="David Carvalho"/><br /><sub><b>David Carvalho</b></sub></a><br /><a href="#platform-carvalhods" title="Packaging/porting to new platform">📦</a></td>
+    </tr>
   </tbody>
 </table>
 
