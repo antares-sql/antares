@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.30](https://github.com/antares-sql/antares/compare/v0.7.30-beta.1...v0.7.30) (2024-12-04)
+
+
+### Bug Fixes
+
+* issue saving queries as file ([a54b8d7](https://github.com/antares-sql/antares/commit/a54b8d719c6454500b885050c9ce6feaf7cfae1f))
+
 ### [0.7.30-beta.1](https://github.com/antares-sql/antares/compare/v0.7.30-beta.0...v0.7.30-beta.1) (2024-11-15)
 
 
