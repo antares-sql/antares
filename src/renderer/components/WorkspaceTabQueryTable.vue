@@ -284,7 +284,7 @@ const settingsStore = useSettingsStore();
 const consoleStore = useConsoleStore();
 const { getWorkspace } = useWorkspacesStore();
 
-const { dataTabLimit: pageSize, defaultCopyType } = storeToRefs(settingsStore);
+const { /* dataTabLimit: pageSize, */ defaultCopyType } = storeToRefs(settingsStore);
 
 const { consoleHeight } = storeToRefs(consoleStore);
 
@@ -357,37 +357,37 @@ const isSortable = computed(() => {
    return fields.value.every(field => field.name);
 });
 
-const isHardSort = computed(() => {
-   return props.mode === 'table' && localResults.value.length === pageSize.value;
-});
+// const isHardSort = computed(() => {
+//    return props.mode === 'table' && localResults.value.length === pageSize.value;
+// });
 
 const sortedResults = computed(() => {
-   if (currentSort.value[resultsetIndex.value] && !isHardSort.value) {
-      const sortObj = currentSort.value[resultsetIndex.value];
+   // if (currentSort.value[resultsetIndex.value] && !isHardSort.value) {
+   //    const sortObj = currentSort.value[resultsetIndex.value];
 
-      return [...localResults.value].sort((a: any, b: any) => {
-         const modifier = sortObj.dir === 'desc' ? -1 : 1;
-         let valA = a[sortObj.field];
-         let valB = b[sortObj.field];
+   //    return [...localResults.value].sort((a: any, b: any) => {
+   //       const modifier = sortObj.dir === 'desc' ? -1 : 1;
+   //       let valA = a[sortObj.field];
+   //       let valB = b[sortObj.field];
 
-         // Handle null values
-         if (valA === null && valB !== null) return sortObj.dir === 'asc' ? -1 : 1;
-         if (valA !== null && valB === null) return sortObj.dir === 'asc' ? 1 : -1;
-         if (valA === null && valB === null) return 0;
+   //       // Handle null values
+   //       if (valA === null && valB !== null) return sortObj.dir === 'asc' ? -1 : 1;
+   //       if (valA !== null && valB === null) return sortObj.dir === 'asc' ? 1 : -1;
+   //       if (valA === null && valB === null) return 0;
 
-         valA = typeof valA === 'string' ? valA.toLowerCase() : valA;
-         valB = typeof valB === 'string' ? valB.toLowerCase() : valB;
+   //       valA = typeof valA === 'string' ? valA.toLowerCase() : valA;
+   //       valB = typeof valB === 'string' ? valB.toLowerCase() : valB;
 
-         if (typeof valA !== 'number' && !isNaN(valA)) valA = String(Number(valA));
-         if (typeof valB !== 'number' && !isNaN(valB)) valB = String(Number(valB));
+   //       if (typeof valA !== 'number' && !isNaN(valA)) valA = String(Number(valA));
+   //       if (typeof valB !== 'number' && !isNaN(valB)) valB = String(Number(valB));
 
-         if (valA < valB) return -1 * modifier;
-         if (valA > valB) return 1 * modifier;
-         return 0;
-      });
-   }
-   else
-      return localResults.value;
+   //       if (valA < valB) return -1 * modifier;
+   //       if (valA > valB) return 1 * modifier;
+   //       return 0;
+   //    });
+   // }
+   // else
+   return localResults.value;
 });
 
 const resultsWithRows = computed(() => props.results.filter(result => result.rows.length));
@@ -827,12 +827,12 @@ const sort = (field: TableField) => {
       };
    }
 
-   if (isHardSort.value) {
-      emit('hard-sort', {
-         field: currentSort.value[resultsetIndex.value].field,
-         dir: currentSort.value[resultsetIndex.value].dir
-      });
-   }
+   // if (isHardSort.value) {
+   emit('hard-sort', {
+      field: currentSort.value[resultsetIndex.value].field,
+      dir: currentSort.value[resultsetIndex.value].dir
+   });
+   // }
 };
 
 const resetSort = () => {
