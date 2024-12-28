@@ -338,6 +338,15 @@
       "contributions": [
         "platform"
       ]
+    },
+    {
+      "login": "r4f4dev",
+      "name": "r4f4dev",
+      "avatar_url": "https://avatars.githubusercontent.com/u/65920592?v=4",
+      "profile": "https://github.com/r4f4dev",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "contributorsPerLine": 7,
