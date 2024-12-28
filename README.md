@@ -159,6 +159,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/carvalhods"><img src="https://avatars.githubusercontent.com/u/6569255?v=4?s=100" width="100px;" alt="David Carvalho"/><br /><sub><b>David Carvalho</b></sub></a><br /><a href="#platform-carvalhods" title="Packaging/porting to new platform">📦</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/r4f4dev"><img src="https://avatars.githubusercontent.com/u/65920592?v=4?s=100" width="100px;" alt="r4f4dev"/><br /><sub><b>r4f4dev</b></sub></a><br /><a href="#translation-r4f4dev" title="Translation">🌍</a></td>
     </tr>
   </tbody>
 </table>
