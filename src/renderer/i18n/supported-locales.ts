@@ -17,5 +17,6 @@ export const localesNames: Record<string, string> = {
    'ca-ES': 'Català',
    'cs-CZ': 'Čeština',
    'uk-UA': 'Українська',
+   'uz-UZ': 'O`zbek',
    'he-IL': 'עברית'
 };
