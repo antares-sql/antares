@@ -477,10 +477,14 @@ const searchTerm = computed(() => {
 });
 
 const filteredTables = computed(() => {
-   if (props.searchMethod === 'elements')
-      return props.database.tables.filter(table => table.name.search(searchTerm.value) >= 0 && table.type === 'table');
-   else
-      return props.database.tables;
+  if (props.searchMethod === 'elements') {
+    const searchTermLower = searchTerm.value.toLowerCase();
+    return props.database.tables.filter(table => 
+      table.name.toLowerCase().includes(searchTermLower) && table.type === 'table'
+    );
+  } else {
+    return props.database.tables;
+  }
 });
 
 const filteredViews = computed(() => {
