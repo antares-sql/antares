@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.31-beta.0](https://github.com/antares-sql/antares/compare/v0.7.30...v0.7.31-beta.0) (2025-01-06)
+
+
+### Features
+
+* **language:** add uzbek language support ([fb9c258](https://github.com/antares-sql/antares/commit/fb9c258cc10e4d85242ca533a66a95f4101d472c))
+
+
+### Bug Fixes
+
+* prevent delete confirmation modal from triggering on non-delete key presses, fixes [#906](https://github.com/antares-sql/antares/issues/906) ([8de99da](https://github.com/antares-sql/antares/commit/8de99dae7b6eb72bd6833c607d3c3a5db9508ebb))
+
 ### [0.7.30](https://github.com/antares-sql/antares/compare/v0.7.30-beta.1...v0.7.30) (2024-12-04)
 
 
