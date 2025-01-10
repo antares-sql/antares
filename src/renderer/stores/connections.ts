@@ -25,12 +25,13 @@ export interface SidebarElement {
 
 export interface CustomIcon {base64: string; uid: string}
 
-if (!key) { // If no key in local storace
+if (!key) { // If no key in local storage
    const storedKey = ipcRenderer.sendSync('get-key');// Ask for key stored on disk
 
-   if (!storedKey) { // Of nop stored key on disk
+   if (!storedKey) { // If not stored key on disk
       const newKey = crypto.randomBytes(16).toString('hex');
       localStorage.setItem('key', newKey);
+      ipcRenderer.send('set-key', newKey);
       key = newKey;
    }
    else {
