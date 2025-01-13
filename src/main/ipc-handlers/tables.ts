@@ -235,12 +235,24 @@ export default (connections: Record<string, antares.Client>) => {
                if (typeof orgRow[key] === 'string')
                   orgRow[key] = `'${orgRow[key]}'`;
                else if (typeof orgRow[key] === 'object') {
-                  orgRow[key] = `CAST('${JSON.stringify(orgRow[key])}' AS JSON)`;
+                  switch (connections[params.uid]._client) {
+                     case 'mysql':
+                        orgRow[key] = `CAST('${JSON.stringify(orgRow[key])}' AS JSON)`;
+                        break;
+                     case 'maria':
+                        orgRow[key] = `'${JSON.stringify(orgRow[key])}'`;
+                        break;
+                     case 'pg':
+                        orgRow[key] = `::text='${JSON.stringify(orgRow[key])}'`;
+                        break;
+                     case 'firebird':
+                     case 'sqlite':
+                  }
                }
 
                if (orgRow[key] === null)
                   orgRow[key] = `IS ${orgRow[key]}`;
-               else
+               else if (!String(orgRow[key]).includes('::text='))
                   orgRow[key] = `= ${orgRow[key]}`;
             }
 
