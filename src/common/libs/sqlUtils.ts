@@ -8,6 +8,7 @@ import customizations from '../customizations';
 import { ClientCode } from '../interfaces/antares';
 import { getArrayDepth } from './getArrayDepth';
 import hexToBinary, { HexChar } from './hexToBinary';
+import * as antares from 'common/interfaces/antares';
 
 /**
  * Escapes a string fo SQL use
@@ -208,4 +209,21 @@ export const jsonToSqlInsert = (args: {
       insertsString += insertStmt+';';
 
    return insertsString;
+};
+
+export const formatJsonForSqlWhere = (jsonValue: object, clientType: antares.ClientCode) => {
+   const formattedValue = JSON.stringify(jsonValue);
+
+   switch (clientType) {
+      case 'mysql':
+         return ` = CAST('${formattedValue}' AS JSON)`;
+      case 'maria':
+         return ` = '${formattedValue}'`;
+      case 'pg':
+         return `::text = '${formattedValue}'`;
+      case 'firebird':
+      case 'sqlite':
+      default:
+         return ` = '${formattedValue}'`;
+   }
 };
