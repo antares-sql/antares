@@ -234,6 +234,9 @@ export default (connections: Record<string, antares.Client>) => {
             for (const key in orgRow) {
                if (typeof orgRow[key] === 'string')
                   orgRow[key] = `'${orgRow[key]}'`;
+               else if (typeof orgRow[key] === 'object') {
+                  orgRow[key] = `CAST('${JSON.stringify(orgRow[key])}' AS JSON)`;
+               }
 
                if (orgRow[key] === null)
                   orgRow[key] = `IS ${orgRow[key]}`;
