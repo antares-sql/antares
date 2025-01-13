@@ -339,6 +339,8 @@ onMounted(() => {
       for (const field of props.fields) {
          if (typeof props.rowToDuplicate[field.name] !== 'object')
             rowObj[field.name] = { value: props.rowToDuplicate[field.name] };
+         else if (field.type === 'JSON')
+            rowObj[field.name] = { value: JSON.stringify(props.rowToDuplicate[field.name]) };
 
          if (field.autoIncrement || !!field.onUpdate)// Disable by default auto increment or "on update" fields
             fieldsToExclude.value = [...fieldsToExclude.value, field.name];
