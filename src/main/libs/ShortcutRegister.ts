@@ -24,6 +24,21 @@ export class ShortcutRegister {
       this._menuTemplate = args.menuTemplate || {};
       this._mode = args.mode;
       this.shortcuts = shortcutsStore.get('shortcuts', defaultShortcuts) as ShortcutRecord[];
+
+      globalShortcut.register('CommandOrControl+=', () => {
+         const currentZoom = this._mainWindow.webContents.getZoomLevel();
+         this._mainWindow.webContents.setZoomLevel(currentZoom + 1);
+      });
+      globalShortcut.register('CommandOrControl+-', () => {
+         const currentZoom = this._mainWindow.webContents.getZoomLevel();
+         this._mainWindow.webContents.setZoomLevel(currentZoom - 1);
+      });
+      globalShortcut.register('CommandOrControl+0', () => {
+         this._mainWindow.webContents.setZoomLevel(0);
+      });
+      globalShortcut.register('F11', () => {
+         this._mainWindow.setFullScreen(!this._mainWindow.isFullScreen());
+      });
    }
 
    public static getInstance (args?: { mainWindow?: BrowserWindow; menuTemplate?: OsMenu; mode?: ShortcutMode }) {
