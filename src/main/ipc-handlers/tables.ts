@@ -3,7 +3,7 @@ import { ARRAY, BIT, BLOB, BOOLEAN, DATE, DATETIME, FLOAT, LONG_TEXT, NUMBER, TE
 import * as antares from 'common/interfaces/antares';
 import { InsertRowsParams } from 'common/interfaces/tableApis';
 import { fakerCustom } from 'common/libs/fakerCustom';
-import { sqlEscaper } from 'common/libs/sqlUtils';
+import { formatJsonForSqlWhere, sqlEscaper } from 'common/libs/sqlUtils';
 import { ipcMain } from 'electron';
 import * as fs from 'fs';
 import * as moment from 'moment';
@@ -233,9 +233,10 @@ export default (connections: Record<string, antares.Client>) => {
 
             for (const key in orgRow) {
                if (typeof orgRow[key] === 'string')
-                  orgRow[key] = `'${orgRow[key]}'`;
-
-               if (orgRow[key] === null)
+                  orgRow[key] = ` = '${orgRow[key]}'`;
+               else if (typeof orgRow[key] === 'object' && orgRow[key] !== null)
+                  orgRow[key] = formatJsonForSqlWhere(orgRow[key], connections[params.uid]._client);
+               else if (orgRow[key] === null)
                   orgRow[key] = `IS ${orgRow[key]}`;
                else
                   orgRow[key] = `= ${orgRow[key]}`;
