@@ -347,6 +347,24 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "salvymc",
+      "name": "Salvatore Forino",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10051897?v=4",
+      "profile": "https://github.com/salvymc",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "JoseGonzalez84",
+      "name": "José González",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16820141?v=4",
+      "profile": "https://gadev.com.es/",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "contributorsPerLine": 7,
