@@ -416,7 +416,11 @@ export const enUS = {
       openNotes: 'Open notes',
       debugConsole: 'Debug console', // <- console tab name
       executedQueries: 'Executed queries', // <- console tab name
-      sizeLimitError: 'Maximum size of {size} exceeded'
+      sizeLimitError: 'Maximum size of {size} exceeded',
+      fullScreen: 'Full screen',
+      zoomIn: 'Zoom in',
+      zoomOut: 'Zoom out',
+      zoomReset: 'Reset zoom'
    },
    faker: { // Faker.js methods, used in random generated content
       address: 'Address',

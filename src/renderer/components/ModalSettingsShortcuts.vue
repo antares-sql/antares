@@ -42,7 +42,7 @@
                   tabindex="0"
                >
                   <div class="td py-1">
-                     {{ t(shortcutEvents[shortcut.event].l18n, {param: shortcutEvents[shortcut.event].l18nParam}) }}
+                     {{ t(shortcutEvents[shortcut.event].i18n, {param: shortcutEvents[shortcut.event].i18nParam}) }}
                   </div>
                   <div
                      class="td py-1"
@@ -167,7 +167,7 @@
          </template>
          <template #body>
             <div class="mb-2">
-               {{ t('general.deleteConfirm') }} <b>{{ t(shortcutEvents[shortcutToDelete.event].l18n, {param: shortcutEvents[shortcutToDelete.event].l18nParam}) }} (<span v-html="parseKeys(shortcutToDelete.keys)" />)</b>?
+               {{ t('general.deleteConfirm') }} <b>{{ t(shortcutEvents[shortcutToDelete.event].i18n, {param: shortcutEvents[shortcutToDelete.event].i18nParam}) }} (<span v-html="parseKeys(shortcutToDelete.keys)" />)</b>?
             </div>
          </template>
       </ConfirmModal>
@@ -233,7 +233,7 @@ const { shortcuts } = storeToRefs(settingsStore);
 const eventOptions = computed(() => {
    return Object.keys(shortcutEvents)
       .map(key => {
-         return { value: key, label: t(shortcutEvents[key].l18n, { param: shortcutEvents[key].l18nParam }) };
+         return { value: key, label: t(shortcutEvents[key].i18n, { param: shortcutEvents[key].i18nParam }) };
       })
       .sort((a, b) => {
          if (a.label < b.label) return -1;
