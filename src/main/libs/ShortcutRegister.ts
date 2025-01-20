@@ -81,7 +81,15 @@ export class ShortcutRegister {
                      accelerator: key,
                      visible: isMenuVisible,
                      click: () => {
-                        this._mainWindow.webContents.send(shortcut.event);
+                        if (shortcut.isFunction) {
+                           if (shortcut.event in this) {
+                              type exporterMethods = 'setFullScreen' | 'setZoomIn' | 'setZoomOut' | 'setZoomReset';
+                              this[shortcut.event as exporterMethods]();
+                           }
+                        }
+                        else
+                           this._mainWindow.webContents.send(shortcut.event);
+
                         if (isDevelopment) console.log('LOCAL EVENT:', shortcut);
                      }
                   });
@@ -119,6 +127,24 @@ export class ShortcutRegister {
             }
          }
       }
+   }
+
+   setFullScreen () {
+      this._mainWindow.setFullScreen(!this._mainWindow.isFullScreen());
+   }
+
+   setZoomIn () {
+      const currentZoom = this._mainWindow.webContents.getZoomLevel();
+      this._mainWindow.webContents.setZoomLevel(currentZoom + 1);
+   }
+
+   setZoomOut () {
+      const currentZoom = this._mainWindow.webContents.getZoomLevel();
+      this._mainWindow.webContents.setZoomLevel(currentZoom - 1);
+   }
+
+   setZoomReset () {
+      this._mainWindow.webContents.setZoomLevel(0);
    }
 
    reload () {

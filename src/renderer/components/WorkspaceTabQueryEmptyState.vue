@@ -7,7 +7,7 @@
                :key="i"
                class="mb-4"
             >
-               {{ t(shortcutEvents[shortcut.event].l18n, {param: shortcutEvents[shortcut.event].l18nParam}) }}
+               {{ t(shortcutEvents[shortcut.event].i18n, {param: shortcutEvents[shortcut.event].i18nParam}) }}
             </div>
          </div>
          <div class="column col-16">
