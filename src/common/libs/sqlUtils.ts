@@ -2,13 +2,13 @@
 /* eslint-disable no-useless-escape */
 import { lineString, point, polygon } from '@turf/helpers';
 import { BIT, BLOB, DATE, DATETIME, FLOAT, IS_MULTI_SPATIAL, NUMBER, SPATIAL, TEXT_SEARCH } from 'common/fieldTypes';
+import * as antares from 'common/interfaces/antares';
 import * as moment from 'moment';
 
 import customizations from '../customizations';
 import { ClientCode } from '../interfaces/antares';
 import { getArrayDepth } from './getArrayDepth';
 import hexToBinary, { HexChar } from './hexToBinary';
-import * as antares from 'common/interfaces/antares';
 
 /**
  * Escapes a string fo SQL use
