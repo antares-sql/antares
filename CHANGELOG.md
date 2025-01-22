@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.31-beta.1](https://github.com/antares-sql/antares/compare/v0.7.31-beta.0...v0.7.31-beta.1) (2025-01-22)
+
+
+### Features
+
+* zoom in/out and fullscreen shortcuts ([47ac729](https://github.com/antares-sql/antares/commit/47ac729d2f5cced2c503358f7d45a1795f232a20))
+
+
+### Bug Fixes
+
+* cannot update column value with composite primary key and JSON column, fixes [#916](https://github.com/antares-sql/antares/issues/916) ([0029967](https://github.com/antares-sql/antares/commit/002996761997444ff689bf2384dae64ccb9ef8f7))
+* fail to duplicate JSON row ([507dc7d](https://github.com/antares-sql/antares/commit/507dc7d55b342240bf18fd58e6bc71709e8e33a0))
+* saved connections lost opening a second window after first app run ([4a2b592](https://github.com/antares-sql/antares/commit/4a2b5926f4783d0b9b1e28485e9293a25ddd31f3))
+
+
+### Improvements
+
+* **translation:** update spanish translation ([d3ae45e](https://github.com/antares-sql/antares/commit/d3ae45ec94b3538e84ac3013b285034caea695cf))
+
 ### [0.7.31-beta.0](https://github.com/antares-sql/antares/compare/v0.7.30...v0.7.31-beta.0) (2025-01-06)
 
 
