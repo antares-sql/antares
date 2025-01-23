@@ -697,14 +697,14 @@ const fillCell = (event: { name: string; group: string; type: string }) => {
 
    fakeValue = (fakerCustom as any)[event.group][event.name]();
    const isDateType = [...DATE, ...DATETIME].includes(selectedCell.value.type);
-   if (['string', 'number'].includes(typeof fakeValue)) {
+   if (isDateType)
+      fakeValue = moment(fakeValue).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`);
+   else if (['string', 'number'].includes(typeof fakeValue)) {
       if (typeof fakeValue === 'number')
          fakeValue = String(fakeValue);
-      if (selectedCell.value.length && !isDateType)
+      if (selectedCell.value.length)
          fakeValue = fakeValue.substring(0, selectedCell.value.length < 1024 ? Number(selectedCell.value.length) : 1024);
    }
-   else if (isDateType)
-      fakeValue = moment(fakeValue).format(`YYYY-MM-DD HH:mm:ss${datePrecision}`);
    else if (TIME.includes(selectedCell.value.type))
       fakeValue = moment(fakeValue).format(`HH:mm:ss${datePrecision}`);
 
