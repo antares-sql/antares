@@ -21,7 +21,23 @@
                   <a class="tab-link" @click="selectedTab = 'debug'">{{ t('application.debugConsole') }}</a>
                </li>
             </ul>
-            <button class="btn btn-clear mr-1" @click="resizeConsole(0)" />
+            <div class="d-flex">
+               <div
+                  v-if="isDevelopment"
+                  class="c-hand mr-2"
+                  @click="openDevTools()"
+               >
+                  <BaseIcon icon-name="mdiBugPlayOutline" :size="22" />
+               </div>
+               <div
+                  v-if="isDevelopment"
+                  class="c-hand mr-2"
+                  @click="reload()"
+               >
+                  <BaseIcon icon-name="mdiRefresh" :size="22" />
+               </div>
+               <button class="btn btn-clear mr-1" @click="resizeConsole(0)" />
+            </div>
          </div>
          <div
             v-show="selectedTab === 'query'"
@@ -71,6 +87,7 @@
    </BaseContextMenu>
 </template>
 <script setup lang="ts">
+import { getCurrentWindow } from '@electron/remote';
 import * as moment from 'moment';
 import { storeToRefs } from 'pinia';
 import { highlight } from 'sql-highlight';
@@ -112,6 +129,8 @@ const isHover = ref(false);
 const isContext = ref(false);
 const contextContent: Ref<string> = ref(null);
 const contextEvent: Ref<MouseEvent> = ref(null);
+const w = ref(getCurrentWindow());
+const isDevelopment = ref(process.env.NODE_ENV === 'development');
 
 const resize = (e: MouseEvent) => {
    const el = queryConsole.value;
@@ -140,6 +159,14 @@ const contextMenu = (event: MouseEvent, wLog: {date: Date; sql?: string; message
 const copyLog = () => {
    copyText(contextContent.value);
    isContext.value = false;
+};
+
+const openDevTools = () => {
+   w.value.webContents.openDevTools();
+};
+
+const reload = () => {
+   w.value.reload();
 };
 
 watch(workspaceQueryLogs, async () => {
