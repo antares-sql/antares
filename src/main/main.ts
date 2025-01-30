@@ -43,7 +43,8 @@ async function createMainWindow () {
          spellcheck: false
       },
       autoHideMenuBar: true,
-      titleBarStyle: isLinux ? 'default' :'hidden',
+      frame: !isLinux,
+      titleBarStyle: 'hidden',
       titleBarOverlay: isWindows
          ? {
             color: appTheme === 'dark' ? '#3f3f3f' : '#fff',

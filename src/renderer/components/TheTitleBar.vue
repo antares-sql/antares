@@ -1,6 +1,5 @@
 <template>
    <div
-      v-if="!isLinux"
       id="titlebar"
       @dblclick="toggleFullScreen"
    >
@@ -21,16 +20,39 @@
             class="titlebar-element"
             @click="openDevTools"
          >
-            <BaseIcon icon-name="mdiBugPlayOutline" :size="24" />
+            <BaseIcon icon-name="mdiBugPlayOutline" :size="18" />
          </div>
          <div
             v-if="isDevelopment"
             class="titlebar-element"
             @click="reload"
          >
-            <BaseIcon icon-name="mdiRefresh" :size="24" />
+            <BaseIcon icon-name="mdiRefresh" :size="18" />
          </div>
          <div v-if="isWindows" :style="'width: 140px;'" />
+         <div v-if="isLinux" class="d-flex">
+            <div
+               v-if="isDevelopment"
+               class="titlebar-element"
+               @click="minimize"
+            >
+               <BaseIcon icon-name="mdiWindowMinimize" :size="18" />
+            </div>
+            <div
+               v-if="isDevelopment"
+               class="titlebar-element"
+               @click="toggleFullScreen"
+            >
+               <BaseIcon :icon-name="isMaximized ? 'mdiWindowRestore' : 'mdiWindowMaximize'" :size="18" />
+            </div>
+            <div
+               v-if="isDevelopment"
+               class="titlebar-element"
+               @click="closeApp"
+            >
+               <BaseIcon icon-name="mdiClose" :size="18" />
+            </div>
+         </div>
       </div>
    </div>
 </template>
@@ -74,6 +96,18 @@ const windowTitle = computed(() => {
    return [connectionName, ...breadcrumbs].join(' • ');
 });
 
+const openDevTools = () => {
+   w.value.webContents.openDevTools();
+};
+
+const reload = () => {
+   w.value.reload();
+};
+
+const minimize = () => {
+   w.value.minimize();
+};
+
 const toggleFullScreen = () => {
    if (isMaximized.value)
       w.value.unmaximize();
@@ -81,12 +115,8 @@ const toggleFullScreen = () => {
       w.value.maximize();
 };
 
-const openDevTools = () => {
-   w.value.webContents.openDevTools();
-};
-
-const reload = () => {
-   w.value.reload();
+const closeApp = () => {
+   ipcRenderer.send('close-app');
 };
 
 const onResize = () => {
