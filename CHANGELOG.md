@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.31-beta.2](https://github.com/antares-sql/antares/compare/v0.7.31-beta.1...v0.7.31-beta.2) (2025-01-30)
+
+
+### Features
+
+* add developer tools and refresh buttons to console in development mode ([592d7b3](https://github.com/antares-sql/antares/commit/592d7b35170f8437ebc15221c97985e889fccb40))
+
+
+### Bug Fixes
+
+* fail to fill cell to datetime column(Postgre) fixes [#924](https://github.com/antares-sql/antares/issues/924) ([d3d7ab3](https://github.com/antares-sql/antares/commit/d3d7ab38c029fc5ec23767c6c86c49a96e4e329c))
+* reorder condition when format the update data ([e493db5](https://github.com/antares-sql/antares/commit/e493db5112478ff121e4e77f69c21747c5d2e032))
+
 ### [0.7.31-beta.1](https://github.com/antares-sql/antares/compare/v0.7.31-beta.0...v0.7.31-beta.1) (2025-01-22)
 
 
