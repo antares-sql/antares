@@ -31,25 +31,13 @@
          </div>
          <div v-if="isWindows" :style="'width: 140px;'" />
          <div v-if="isLinux" class="d-flex">
-            <div
-               v-if="isDevelopment"
-               class="titlebar-element"
-               @click="minimize"
-            >
+            <div class="titlebar-element" @click="minimize">
                <BaseIcon icon-name="mdiWindowMinimize" :size="18" />
             </div>
-            <div
-               v-if="isDevelopment"
-               class="titlebar-element"
-               @click="toggleFullScreen"
-            >
+            <div class="titlebar-element" @click="toggleFullScreen">
                <BaseIcon :icon-name="isMaximized ? 'mdiWindowRestore' : 'mdiWindowMaximize'" :size="18" />
             </div>
-            <div
-               v-if="isDevelopment"
-               class="titlebar-element"
-               @click="closeApp"
-            >
+            <div class="titlebar-element" @click="closeApp">
                <BaseIcon icon-name="mdiClose" :size="18" />
             </div>
          </div>
