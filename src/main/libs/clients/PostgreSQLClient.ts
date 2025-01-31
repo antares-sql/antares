@@ -466,7 +466,7 @@ export class PostgreSQLClient extends BaseClient {
                procedures: remappedProcedures,
                triggers: remappedTriggers,
                triggerFunctions: remappedTriggerFunctions,
-               schedulers: []
+               schedulers: [] as null[]
             };
          }
          else {
@@ -532,7 +532,7 @@ export class PostgreSQLClient extends BaseClient {
 
          return {
             name: field.column_name,
-            key: null,
+            key: null as null,
             type: type.toUpperCase(),
             isArray,
             schema: field.table_schema,
@@ -542,14 +542,14 @@ export class PostgreSQLClient extends BaseClient {
             datePrecision: field.datetime_precision,
             charLength: field.character_maximum_length,
             nullable: field.is_nullable.includes('YES'),
-            unsigned: null,
-            zerofill: null,
+            unsigned: null as null,
+            zerofill: null as null,
             order: field.ordinal_position,
             default: field.column_default,
             charset: field.character_set_name,
             collation: field.collation_name,
             autoIncrement: false,
-            onUpdate: null,
+            onUpdate: null as null,
             comment: field.column_comment
          };
       });
@@ -1252,9 +1252,9 @@ export class PostgreSQLClient extends BaseClient {
       return results.rows.map(async row => {
          if (!row.pg_get_functiondef) {
             return {
-               definer: null,
+               definer: null as null,
                sql: '',
-               parameters: [],
+               parameters: [] as null[],
                name: routine,
                comment: '',
                security: 'DEFINER',
@@ -1303,8 +1303,8 @@ export class PostgreSQLClient extends BaseClient {
             name: routine,
             comment: '',
             security: row.pg_get_functiondef.includes('SECURITY DEFINER') ? 'DEFINER' : 'INVOKER',
-            deterministic: null,
-            dataAccess: null,
+            deterministic: null as null,
+            dataAccess: null as null,
             language: row.pg_get_functiondef.match(/(?<=LANGUAGE )(.*)(?<=[\S+\n\r\s])/gm)[0]
          };
       })[0];
@@ -1368,9 +1368,9 @@ export class PostgreSQLClient extends BaseClient {
       return results.rows.map(async row => {
          if (!row.pg_get_functiondef) {
             return {
-               definer: null,
+               definer: null as null,
                sql: '',
-               parameters: [],
+               parameters: [] as null[],
                name: func,
                comment: '',
                security: 'DEFINER',
@@ -1418,8 +1418,8 @@ export class PostgreSQLClient extends BaseClient {
             name: func,
             comment: '',
             security: row.pg_get_functiondef.includes('SECURITY DEFINER') ? 'DEFINER' : 'INVOKER',
-            deterministic: null,
-            dataAccess: null,
+            deterministic: null as null,
+            dataAccess: null as null,
             language: row.pg_get_functiondef.match(/(?<=LANGUAGE )(.*)(?<=[\S+\n\r\s])/gm)[0],
             returns: row.pg_get_functiondef.match(/(?<=RETURNS )(.*)(?<=[\S+\n\r\s])/gm)[0].replace('SETOF ', '').toUpperCase()
          };
@@ -1665,9 +1665,7 @@ export class PostgreSQLClient extends BaseClient {
       const resultsArr: antares.QueryResult[] = [];
       let paramsArr = [];
       const queries = args.split
-         ? sql.split(/(?!\B'[^']*);(?![^']*'\B)/gm)
-            .filter(Boolean)
-            .map(q => q.trim())
+         ? this._querySplitter(sql, 'pg')
          : [sql];
 
       let connection: pg.Client | pg.PoolClient;

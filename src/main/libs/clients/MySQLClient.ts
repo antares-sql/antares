@@ -1755,9 +1755,7 @@ export class MySQLClient extends BaseClient {
       const resultsArr: antares.QueryResult[] = [];
       let paramsArr = [];
       const queries = args.split
-         ? sql.split(/((?:[^;'"]*(?:"(?:\\.|[^"])*"|'(?:\\.|[^'])*')[^;'"]*)+)|;/gm)
-            .filter(Boolean)
-            .map(q => q.trim())
+         ? this._querySplitter(sql, 'mysql')
          : [sql];
 
       const connection = await this.getConnection(args);

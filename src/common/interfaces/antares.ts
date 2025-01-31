@@ -34,6 +34,7 @@ export interface ClientParams {
       | { databasePath: string; readonly: boolean };
    poolSize?: number;
    logger?: () => void;
+   querySplitter?: (sql: string, clieng?: string) => string[];
 }
 
 /**
