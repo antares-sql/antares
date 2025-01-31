@@ -3,6 +3,7 @@
 declare module '@/App.vue';
 declare module 'v-mask';
 declare module 'json2php';
+declare module '*/encoding_charset.js';
 declare module 'vuedraggable' {// <- to export as default
   const draggableComponent: import('vue').DefineComponent<{
     list: {

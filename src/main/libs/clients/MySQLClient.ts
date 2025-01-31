@@ -4,7 +4,9 @@ import dataTypes from 'common/data-types/mysql';
 import * as antares from 'common/interfaces/antares';
 import * as mysql from 'mysql2/promise';
 
+import * as EncodingToCharset from '../../../../node_modules/mysql2/lib/constants/encoding_charset.js';
 import { BaseClient } from './BaseClient';
+EncodingToCharset.utf8mb3 = 192; // To fix https://github.com/sidorares/node-mysql2/issues/1398 until not included in mysql2
 
 export class MySQLClient extends BaseClient {
    private _schema?: string;
