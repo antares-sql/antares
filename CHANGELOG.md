@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.31-beta.4](https://github.com/antares-sql/antares/compare/v0.7.31-beta.3...v0.7.31-beta.4) (2025-01-31)
+
+
+### Bug Fixes
+
+* **Linux:** missing window management icons ([d34e56a](https://github.com/antares-sql/antares/commit/d34e56a517784dea16a7a53bc2249072a3b96596))
+
 ### [0.7.31-beta.3](https://github.com/antares-sql/antares/compare/v0.7.31-beta.2...v0.7.31-beta.3) (2025-01-31)
 
 
