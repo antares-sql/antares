@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.31-beta.3](https://github.com/antares-sql/antares/compare/v0.7.31-beta.2...v0.7.31-beta.3) (2025-01-31)
+
+
+### Features
+
+* implement a better query splitter for SQL queries, fixes [#926](https://github.com/antares-sql/antares/issues/926) ([96ae09f](https://github.com/antares-sql/antares/commit/96ae09fecad0c1fc8926d5dcf64cc779abe5ed49))
+* **Linux:** update title bar for better Linux experience ([8e54f7b](https://github.com/antares-sql/antares/commit/8e54f7b80135768a33934bc9336239dee38401a5))
+
+
+### Bug Fixes
+
+* **MySQL:** adjust utf8mb3 encoding to resolve compatibility issue, fixes [#646](https://github.com/antares-sql/antares/issues/646) ([27387f1](https://github.com/antares-sql/antares/commit/27387f18a107fc6c09afec5f85134496ce764355))
+
 ### [0.7.31-beta.2](https://github.com/antares-sql/antares/compare/v0.7.31-beta.1...v0.7.31-beta.2) (2025-01-30)
 
 
