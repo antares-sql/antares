@@ -128,8 +128,8 @@ app.on('ready', async () => {
    if (isWindows)
       mainWindow.show();
 
-   if (isDevelopment && !isWindows)// Because on Windows you can open devtools from title-bar
-      mainWindow.webContents.openDevTools();
+   // if (isDevelopment && !isWindows)
+   //    mainWindow.webContents.openDevTools();
 
    process.on('uncaughtException', error => {
       mainWindow.webContents.send('unhandled-exception', error);
