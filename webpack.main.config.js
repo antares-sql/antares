@@ -1,8 +1,7 @@
 const path = require('path');
-const webpack = require('webpack');
 const ProgressPlugin = require('progress-webpack-plugin');
 
-const { dependencies, devDependencies, version } = require('./package.json');
+const { dependencies, devDependencies } = require('./package.json');
 
 const externals = Object.keys(dependencies).concat(Object.keys(devDependencies));
 const isDevMode = process.env.NODE_ENV === 'development';
@@ -48,13 +47,7 @@ module.exports = { // Main
       }
    },
    plugins: [
-      new ProgressPlugin(true),
-      new webpack.DefinePlugin({
-         'process.env': {
-            PACKAGE_VERSION: `"${version}"`,
-            DISTRIBUTION: `"${process.env.DISTRIBUTION || 'none'}"`
-         }
-      })
+      new ProgressPlugin(true)
    ],
    module: {
       rules: [
