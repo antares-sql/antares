@@ -1,3 +1,5 @@
+import { match } from 'ciaplu';
+
 function isJSON (str: string) {
    try {
       if (!['{', '['].includes(str.trim()[0]))
@@ -176,17 +178,13 @@ function isMD (str: string) {
 }
 
 export function langDetector (str: string) {
-   if (!str || !str.trim().length)
-      return 'text';
-   if (isJSON(str))
-      return 'json';
-   if (isHTML(str))
-      return 'html';
-   if (isSVG(str))
-      return 'svg';
-   if (isXML(str))
-      return 'xml';
-   if (isMD(str))
-      return 'markdown';
-   return 'text';
+   return match(str)
+      .when(() => !str || !str.trim().length, () => 'text')
+      .when(isJSON, () => 'json')
+      .when(isHTML, () => 'html')
+      .when(isSVG, () => 'svg')
+      .when(isXML, () => 'xml')
+      .when(isMD, () => 'markdown')
+      .otherwise(() => 'text')
+      .return();
 }
