@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
+// @ts-check
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
@@ -7,13 +7,18 @@ const unzip = require('unzip-crx-3');
 const { antares } = require('../package.json');
 
 const extensionID = antares.devtoolsId;
+const chromiumVersion = '124';
 const destFolder = path.resolve(__dirname, `../misc/${extensionID}`);
-const filePath = path.resolve(__dirname, `${destFolder}${extensionID}.crx`);
-const fileUrl = `https://clients2.google.com/service/update2/crx?response=redirect&acceptformat=crx2,crx3&x=id%3D${extensionID}%26uc&prodversion=32`;
+const filePath = path.resolve(__dirname, `${destFolder}/${extensionID}.crx`);
+const fileUrl = `https://clients2.google.com/service/update2/crx?response=redirect&acceptformat=crx2,crx3&x=id%3D${extensionID}%26uc&prodversion=${chromiumVersion}`;
+
+if (!fs.existsSync(destFolder))
+   fs.mkdirSync(destFolder, { recursive: true });
+
 const fileStream = fs.createWriteStream(filePath);
 
 const downloadFile = url => {
-   return new Promise((resolve, reject) => {
+   return /** @type {Promise<void>} */(new Promise((resolve, reject) => {
       const request = https.get(url);
 
       request.on('response', response => {
@@ -33,7 +38,7 @@ const downloadFile = url => {
       });
       request.on('error', reject);
       request.end();
-   });
+   }));
 };
 
 (async () => {
