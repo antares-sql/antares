@@ -538,7 +538,7 @@ const closeContext = () => {
 };
 
 const showDeleteConfirmModal = (e: any) => {
-   if (e.code !== 'Delete') return;
+   if (e && e.code !== 'Delete') return;
    if (e && e.path && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.path[0].tagName))
       return;
    if (selectedRows.value.length === 0) return;
@@ -563,6 +563,7 @@ const deleteSelected = () => {
       table: getTable(resultsetIndex.value),
       rows
    };
+   console.log(params);
    emit('delete-selected', params);
 };
 
