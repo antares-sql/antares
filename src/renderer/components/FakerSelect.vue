@@ -127,7 +127,7 @@ const fakerGroups = computed(() => {
       localType.value = 'datetime';
    else if (TIME.includes(props.type))
       localType.value = 'time';
-   else if (UUID.includes(props.type))
+   else if (UUID.includes(props.type) || (BLOB.includes(props.type) && props.field.key === 'pri'))
       localType.value = 'uuid';
    else
       localType.value = 'none';
@@ -177,7 +177,7 @@ const inputProps = () => {
       return { type: 'text', mask: datetimeMask };
    }
 
-   if (BLOB.includes(props.type))
+   if (BLOB.includes(props.type) && props.field.key !== 'pri')
       return { type: 'file', mask: false };
 
    if (BIT.includes(props.type))
