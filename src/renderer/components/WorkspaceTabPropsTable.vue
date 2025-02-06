@@ -458,6 +458,8 @@ const getFieldsData = async () => {
       addNotification({ status: 'error', message: err.stack });
    }
 
+   isLoading.value = false;
+
    if (workspace.value.customizations.tableCheck) {
       try { // Table checks
          const { status, response } = await Tables.getTableChecks(params);
@@ -478,8 +480,6 @@ const getFieldsData = async () => {
          addNotification({ status: 'error', message: err.stack });
       }
    }
-
-   isLoading.value = false;
 };
 
 const saveChanges = async () => {
