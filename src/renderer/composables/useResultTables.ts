@@ -56,10 +56,10 @@ export function useResultTables (uid: string, reloadTable: () => void) {
          if (status === 'success')
             reloadTable();
          else
-            this.addNotification({ status: 'error', message: response });
+            addNotification({ status: 'error', message: response });
       }
       catch (err) {
-         this.addNotification({ status: 'error', message: err.stack });
+         addNotification({ status: 'error', message: err.stack });
          isQuering.value = false;
       }
    }
