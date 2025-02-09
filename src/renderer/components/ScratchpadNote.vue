@@ -47,65 +47,50 @@
             <div class="tile-history-buttons">
                <button
                   v-if="note.type === 'todo' && !note.isArchived"
-                  class="btn btn-link pl-1"
+                  class="btn btn-dark tooltip tooltip-left"
+                  :data-tooltip="t('general.archive')"
                   @click.stop="$emit('archive-note', note.uid)"
                >
-                  <BaseIcon
-                     icon-name="mdiCheck"
-                     class="pr-1"
-                     :size="22"
-                  /> {{ t('general.archive') }}
+                  <BaseIcon icon-name="mdiCheck" :size="22" />
                </button>
                <button
                   v-if="note.type === 'todo' && note.isArchived"
-                  class="btn btn-link pl-1"
+                  class="btn btn-dark tooltip tooltip-left"
+                  :data-tooltip="t('general.undo')"
                   @click.stop="$emit('restore-note', note.uid)"
                >
-                  <BaseIcon
-                     icon-name="mdiRestore"
-                     class="pr-1"
-                     :size="22"
-                  /> {{ t('general.undo') }}
+                  <BaseIcon icon-name="mdiRestore" :size="22" />
                </button>
                <button
                   v-if="note.type === 'query'"
-                  class="btn btn-link pl-1"
+                  class="btn btn-dark tooltip tooltip-left"
+                  :data-tooltip="t('general.select')"
                   @click.stop="$emit('select-query', note.note)"
                >
-                  <BaseIcon
-                     icon-name="mdiOpenInApp"
-                     class="pr-1"
-                     :size="22"
-                  /> {{ t('general.select') }}
+                  <BaseIcon icon-name="mdiOpenInApp" :size="22" />
                </button>
                <button
                   v-if="note.type === 'query'"
-                  class="btn btn-link pl-1"
+                  class="btn btn-dark tooltip tooltip-left"
+                  :data-tooltip="t('general.copy')"
                   @click.stop="copyText(note.note)"
                >
-                  <BaseIcon
-                     icon-name="mdiContentCopy"
-                     class="pr-1"
-                     :size="22"
-                  /> {{ t('general.copy') }}
+                  <BaseIcon icon-name="mdiContentCopy" :size="18" />
                </button>
                <button
                   v-if=" !note.isArchived"
-                  class="btn btn-link pl-1"
+                  class="btn btn-dark tooltip tooltip-left"
+                  :data-tooltip="t('general.edit')"
                   @click.stop="$emit('edit-note')"
                >
-                  <BaseIcon
-                     icon-name="mdiPencil"
-                     class="pr-1"
-                     :size="22"
-                  /> {{ t('general.edit') }}
+                  <BaseIcon icon-name="mdiPencil" :size="22" />
                </button>
-               <button class="btn btn-link pl-1" @click.stop="$emit('delete-note', note.uid)">
-                  <BaseIcon
-                     icon-name="mdiDeleteForever"
-                     class="pr-1"
-                     :size="22"
-                  /> {{ t('general.delete') }}
+               <button
+                  class="btn btn-dark tooltip tooltip-left"
+                  :data-tooltip="t('general.delete')"
+                  @click.stop="$emit('delete-note', note.uid)"
+               >
+                  <BaseIcon icon-name="mdiDeleteForever" :size="22" />
                </button>
             </div>
          </div>
@@ -278,11 +263,14 @@ const highlightWord = (string: string) => {
 
           button {
              font-size: 0.7rem;
-             height: 1rem;
              line-height: 1rem;
              display: inline-flex;
              align-items: center;
              justify-content: center;
+             margin: 0 5px;
+             padding: 0;
+             height: 24px;
+             width: 24px;
           }
        }
      }
