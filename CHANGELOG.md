@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.31-beta.5](https://github.com/antares-sql/antares/compare/v0.7.31-beta.4...v0.7.31-beta.5) (2025-02-09)
+
+
+### Bug Fixes
+
+* **devtoolsInstaller:** improve file path handling and increase chromium version ([7595e89](https://github.com/antares-sql/antares/commit/7595e892238d2a93c454e9c1f236915fb458eed1))
+* improve BLOB primary fields management, fixes [#938](https://github.com/antares-sql/antares/issues/938) ([72f8d42](https://github.com/antares-sql/antares/commit/72f8d4249f7f587d3e92b46cf7709ddab42107d4))
+* **Linux:** restored AppImage auto updates ([0479e53](https://github.com/antares-sql/antares/commit/0479e5307c9a9d5f791e1c61fa772d331f6f7f1f))
+* replace 'this.addNotification' with 'addNotification' in useResultTables.ts ([580bef7](https://github.com/antares-sql/antares/commit/580bef76ba390fc85df0892265f31392b80301bd))
+* unable to delete rows from context menu ([0f93d70](https://github.com/antares-sql/antares/commit/0f93d70417871f02f9f64f203f6654fa1bf2004b))
+
+
+### Improvements
+
+* improve button styles of notes ([48cfa67](https://github.com/antares-sql/antares/commit/48cfa67889bd83228c109b7966c4acea4e542fc6))
+* **MySQL:** long loading in table settings when no checks present ([9cda38e](https://github.com/antares-sql/antares/commit/9cda38e9d10e3000473863560d8be8f426a5ed17))
+
 ### [0.7.31-beta.4](https://github.com/antares-sql/antares/compare/v0.7.31-beta.3...v0.7.31-beta.4) (2025-01-31)
 
 
