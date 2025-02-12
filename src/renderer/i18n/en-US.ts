@@ -401,6 +401,7 @@ export const enUS = {
       ignoreDuplicates: 'Ignore duplicates',
       wrongImportPassword: 'Wrong import password',
       wrongFileFormat: 'Wrong file format',
+      invalidFile: 'Invalid file',
       dataImportSuccess: 'Data successfully imported',
       note: 'Note | Notes',
       thereAreNoNotesYet: 'There are no notes yet',

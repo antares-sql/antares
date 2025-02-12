@@ -39,11 +39,11 @@ const props = defineProps({
       default: () => 'mdi'
    },
    flip: {
-      type: String as PropType<'horizontal' | 'vertical' | 'both'>,
+      type: String as PropType<'horizontal' | 'vertical' | 'both' | null>,
       default: () => null
    },
    rotate: {
-      type: Number,
+      type: Number as PropType<number | null>,
       default: () => null
    }
 });
@@ -55,8 +55,7 @@ const iconPath = computed(() => {
       const base64 = getIconByUid(props.iconName)?.base64;
       const svgString = Buffer
          .from(base64, 'base64')
-         .toString('utf-8')
-         .replaceAll(/width="[^"]*"|height="[^"]*"/g, '');
+         .toString('utf-8');
 
       return svgString;
    }

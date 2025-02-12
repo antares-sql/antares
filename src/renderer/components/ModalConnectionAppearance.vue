@@ -131,8 +131,10 @@ import Application from '@/ipc-api/Application';
 import { camelize } from '@/libs/camelize';
 import { unproxify } from '@/libs/unproxify';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
+import { useNotificationsStore } from '@/stores/notifications';
 
 const connectionsStore = useConnectionsStore();
+const { addNotification } = useNotificationsStore();
 
 const { addIcon, removeIcon, updateConnectionOrder, getConnectionName } = connectionsStore;
 const { customIcons } = storeToRefs(connectionsStore);
@@ -225,12 +227,56 @@ const removeIconHandler = () => {
    isContext.value = false;
 };
 
+const adjustSVGContent = (svgContent: string) => {
+   try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(svgContent, 'image/svg+xml');
+
+      const parseError = doc.querySelector('parsererror');
+      if (parseError) {
+         addNotification({ status: 'error', message: parseError.textContent });
+         return null;
+      }
+
+      const svg = doc.documentElement;
+      if (svg.tagName.toLowerCase() !== 'svg') {
+         addNotification({ status: 'error', message: t('application.invalidFIle') });
+         return null;
+      }
+
+      if (!svg.hasAttribute('viewBox')) {
+         const width = svg.getAttribute('width') || '36';
+         const height = svg.getAttribute('height') || '36';
+         svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      }
+
+      svg.removeAttribute('width');
+      svg.removeAttribute('height');
+
+      const serializer = new XMLSerializer();
+      return serializer.serializeToString(svg);
+   }
+   catch (error) {
+      addNotification({ status: 'error', message: error.stack });
+      return null;
+   }
+};
+
 const openFile = async () => {
-   const result = await Application.showOpenDialog({ properties: ['openFile'], filters: [{ name: '"SVG"', extensions: ['svg'] }] });
+   const result = await Application.showOpenDialog({
+      properties: ['openFile'],
+      filters: [{ name: '"SVG"', extensions: ['svg'] }]
+   });
+
    if (result && !result.canceled) {
       const file = result.filePaths[0];
-      const content = await Application.readFile({ filePath: file, encoding: 'base64url' });
-      addIcon(content);
+      let content = await Application.readFile({ filePath: file, encoding: 'utf-8' });
+
+      content = adjustSVGContent(content);
+
+      const base64Content = Buffer.from(content).toString('base64');
+
+      addIcon(base64Content);
    }
 };
 
