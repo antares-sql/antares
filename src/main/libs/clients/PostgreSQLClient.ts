@@ -179,7 +179,7 @@ export class PostgreSQLClient extends BaseClient {
                remotePort: this._params.port
             });
 
-            dbConfig.host = (this._ssh.config as SSHConfig[] & { host: string }).host;
+            dbConfig.host = this._ssh.config[0].host;
             dbConfig.port = tunnel.localPort;
          }
          catch (err) {

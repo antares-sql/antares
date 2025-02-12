@@ -64,9 +64,9 @@ export default (connections: Record<string, antares.Client>) => {
             username: conn.sshUser,
             password: conn.sshPass,
             port: conn.sshPort ? conn.sshPort : 22,
-            privateKey: conn.sshKey ? fs.readFileSync(conn.sshKey).toString() : null,
+            privateKey: conn.sshKey ? fs.readFileSync(conn.sshKey).toString() : undefined,
             passphrase: conn.sshPassphrase,
-            keepaliveInterval: conn.sshKeepAliveInterval ? conn.sshKeepAliveInterval*1000 : null
+            keepaliveInterval: conn.sshKeepAliveInterval ? conn.sshKeepAliveInterval*1000 : undefined
          };
       }
 
@@ -90,11 +90,12 @@ export default (connections: Record<string, antares.Client>) => {
 
          return { status: 'success' };
       }
-      catch (err) {
+      catch (error) {
          clearInterval(abortChecker);
-
-         if (!isLocalAborted)
-            return { status: 'error', response: err.toString() };
+         if (error instanceof AggregateError)
+            throw new Error(error.errors.reduce((acc, curr) => acc +' | '+ curr.message, ''));
+         else if (!isLocalAborted)
+            return { status: 'error', response: error.toString() };
          else
             return { status: 'abort', response: 'Connection aborted' };
       }

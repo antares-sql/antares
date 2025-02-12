@@ -132,11 +132,21 @@ app.on('ready', async () => {
    //    mainWindow.webContents.openDevTools();
 
    process.on('uncaughtException', error => {
-      mainWindow.webContents.send('unhandled-exception', error);
+      if (error instanceof AggregateError) {
+         for (const e of error.errors)
+            mainWindow.webContents.send('unhandled-exception', e);
+      }
+      else
+         mainWindow.webContents.send('unhandled-exception', error);
    });
 
    process.on('unhandledRejection', error => {
-      mainWindow.webContents.send('unhandled-exception', error);
+      if (error instanceof AggregateError) {
+         for (const e of error.errors)
+            mainWindow.webContents.send('unhandled-exception', e);
+      }
+      else
+         mainWindow.webContents.send('unhandled-exception', error);
    });
 });
 

@@ -173,7 +173,7 @@ export class MySQLClient extends BaseClient {
                remotePort: this._params.port
             });
 
-            dbConfig.host = (this._ssh.config as SSHConfig[] & { host: string }).host;
+            dbConfig.host = this._ssh.config[0].host;
             dbConfig.port = tunnel.localPort;
          }
          catch (err) {
@@ -302,6 +302,8 @@ export class MySQLClient extends BaseClient {
             await this.connect();
             return this.getConnection(args, true);
          }
+         else if (error instanceof AggregateError)
+            throw new Error(error.errors.reduce((acc, curr) => acc +' | '+ curr.message, ''));
          else
             throw new Error(error.message);
       }
