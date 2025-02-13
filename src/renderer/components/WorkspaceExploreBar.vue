@@ -143,7 +143,7 @@
          :selected-schema="selectedSchema"
          :context-event="miscContextEvent"
          @open-create-view-tab="openCreateElementTab('view')"
-         @open-create-materializedview-tab="openCreateElementTab('materialized-view')"
+         @open-create-materializedView-tab="openCreateElementTab('materialized-view')"
          @open-create-trigger-tab="openCreateElementTab('trigger')"
          @open-create-trigger-function-tab="openCreateElementTab('trigger-function')"
          @open-create-routine-tab="openCreateElementTab('routine')"

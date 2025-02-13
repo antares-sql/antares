@@ -195,7 +195,7 @@ const saveChanges = async () => {
             uid: props.connection.uid,
             schema: props.schema,
             elementName: localView.value.name,
-            elementType: 'materializedview',
+            elementType: 'materializedView',
             type: 'materialized-view-props'
          });
 

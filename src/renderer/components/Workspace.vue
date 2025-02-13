@@ -64,7 +64,7 @@
                      >
                         <BaseIcon
                            class="mt-1 mr-1"
-                           :icon-name="['view', 'materializedview'].includes(element.elementType) ? 'mdiTableEye' : 'mdiTable'"
+                           :icon-name="['view', 'materializedView'].includes(element.elementType) ? 'mdiTableEye' : 'mdiTable'"
                            :size="18"
                         />
                         <span :title="`${t('general.data').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
@@ -81,7 +81,7 @@
                      <a v-else-if="element.type === 'data'" class="tab-link">
                         <BaseIcon
                            class="mt-1 mr-1"
-                           :icon-name="['view', 'materializedview'].includes(element.elementType) ? 'mdiTableEye' : 'mdiTable'"
+                           :icon-name="['view', 'materializedView'].includes(element.elementType) ? 'mdiTableEye' : 'mdiTable'"
                            :size="18"
                         />
                         <span :title="`${t('general.data').toUpperCase()}: ${t(`database.${element.elementType}`)}`">

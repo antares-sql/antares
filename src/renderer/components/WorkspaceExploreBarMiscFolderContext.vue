@@ -16,9 +16,9 @@
             /> {{ t('database.createNewView') }}</span>
       </div>
       <div
-         v-if="props.selectedMisc === 'materializedview'"
+         v-if="props.selectedMisc === 'materializedView'"
          class="context-element"
-         @click="emit('open-create-materializedview-tab')"
+         @click="emit('open-create-materializedView-tab')"
       >
          <span class="d-flex">
             <BaseIcon
@@ -106,7 +106,7 @@ const props = defineProps({
 
 const emit = defineEmits([
    'open-create-view-tab',
-   'open-create-materializedview-tab',
+   'open-create-materializedView-tab',
    'open-create-trigger-tab',
    'open-create-routine-tab',
    'open-create-function-tab',

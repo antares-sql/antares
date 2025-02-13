@@ -50,7 +50,7 @@
                      class="text-light mt-1 mr-1"
                      icon-name="mdiTableEye"
                      :size="18"
-                  /> {{ t('database.materializedview') }}</span>
+                  /> {{ t('database.materializedView') }}</span>
             </div>
             <div
                v-if="workspace.customizations.triggerAdd"

@@ -275,7 +275,7 @@ export const nlNL = {
       savedQueries: 'Opgeslagen queries',
       searchForElements: 'Zoek naar elementen',
       searchForSchemas: 'Zoek naar schema\'s',
-      materializedview: 'Materialized view | Materialized views',
+      materializedView: 'Materialized view | Materialized views',
       createNewMaterializedView: 'Materialized view maken',
       newMaterializedView: 'Nieuwe materialized view'
    },

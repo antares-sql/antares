@@ -270,7 +270,7 @@ export const uzUZ = {
       importQueryErrors: 'Diqqat: {n} xato yuz berdi | Diqqat: {n} xatolar yuz berdi',
       executedQueries: '{n} soʻrov bajarildi | {n} soʻrovlar bajarildi',
       insert: 'Kiritish',
-      materializedview: 'Materializatsiya qilingan ko‘rinish | Materializatsiya qilingan ko‘rinishlar',
+      materializedView: 'Materializatsiya qilingan ko‘rinish | Materializatsiya qilingan ko‘rinishlar',
       exportTable: 'Jadvalni eksport qilish',
       createNewMaterializedView: 'Yangi materializatsiya qilingan ko‘rinish yaratish',
       newMaterializedView: 'Yangi materializatsiya qilingan ko‘rinish',

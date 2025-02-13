@@ -48,7 +48,7 @@
             /> {{ t('application.settings') }}</span>
       </div>
       <div
-         v-if="selectedTable && selectedTable.type === 'materializedview' && customizations.materializedViewSettings"
+         v-if="selectedTable && selectedTable.type === 'materializedView' && customizations.materializedViewSettings"
          class="context-element"
          @click="openMaterializedViewSettingTab"
       >

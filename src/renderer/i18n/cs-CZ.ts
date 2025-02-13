@@ -141,7 +141,7 @@ export const csCZ = {
       total: 'Celkem',
       table: 'Tabulka | Tabulky',
       view: 'Pohled | Pohledy',
-      materializedview: 'Materializovaný pohled',
+      materializedView: 'Materializovaný pohled',
       definer: 'Definér',
       algorithm: 'Algoritmus',
       trigger: 'Trigger | Triggery',

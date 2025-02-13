@@ -132,7 +132,7 @@ export const zhCN = {
       total: '总计',
       table: '表 | 表',
       view: '视图 | 视图',
-      materializedview: '实体化视图 | 实体化视图',
+      materializedView: '实体化视图 | 实体化视图',
       definer: '定义者',
       algorithm: '算法',
       trigger: '触发器 | 触发器',

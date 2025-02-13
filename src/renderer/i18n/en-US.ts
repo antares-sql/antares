@@ -141,7 +141,7 @@ export const enUS = {
       total: 'Total',
       table: 'Table | Tables',
       view: 'View | Views',
-      materializedview: 'Materialized view | Materialized views',
+      materializedView: 'Materialized view | Materialized views',
       definer: 'Definer',
       algorithm: 'Algorithm',
       trigger: 'Trigger | Triggers',

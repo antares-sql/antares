@@ -227,7 +227,7 @@ const saveChanges = async () => {
                schema: props.schema,
                elementName: oldName,
                elementNewName: localView.value.name,
-               elementType: 'materializedview'
+               elementType: 'materializedView'
             });
 
             changeBreadcrumbs({ schema: props.schema, view: localView.value.name });

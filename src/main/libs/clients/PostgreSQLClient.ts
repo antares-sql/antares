@@ -348,7 +348,7 @@ export class PostgreSQLClient extends BaseClient {
                matviewowner AS owner,
                ispopulated AS is_populated,
                definition,
-               'materializedview' AS table_type
+               'materializedView' AS table_type
             FROM pg_matviews
             WHERE schemaname = '${db.database}'
             ORDER BY schema_name,
@@ -408,8 +408,8 @@ export class PostgreSQLClient extends BaseClient {
                   name: table.table_name,
                   type: table.table_type === 'VIEW'
                      ? 'view'
-                     : table.table_type === 'materializedview'
-                        ? 'materializedview'
+                     : table.table_type === 'materializedView'
+                        ? 'materializedView'
                         : 'table',
                   rows: table.reltuples,
                   size: tableSize,

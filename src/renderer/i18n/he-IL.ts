@@ -140,7 +140,7 @@ export const heIL = {
       total: 'סך הכל',
       table: 'טבלה | טבלאות',
       view: 'תצוגה | תצוגות',
-      materializedview: 'תצוגה ממומשת | תצוגות ממומשות',
+      materializedView: 'תצוגה ממומשת | תצוגות ממומשות',
       definer: 'מגדיר',
       algorithm: 'אלגוריתם',
       trigger: 'טריגר | טריגרים',

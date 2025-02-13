@@ -141,7 +141,7 @@ export const esES = {
       total: 'Total',
       table: 'Tabla | Tablas',
       view: 'Vista | Vistas',
-      materializedview: 'Vista Materializada | Vistas Materializadas',
+      materializedView: 'Vista Materializada | Vistas Materializadas',
       definer: 'Definidor',
       algorithm: 'Algoritmo',
       trigger: 'Disparador | Disparadores',
