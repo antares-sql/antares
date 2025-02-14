@@ -134,7 +134,7 @@
     "ciaplu": "^2.2.0",
     "cpu-features": "^0.0.10",
     "cross-env": "~7.0.2",
-    "css-loader": "~6.5.0",
+    "css-loader": "~7.1.2",
     "electron-log": "~5.0.1",
     "electron-store": "~8.1.0",
     "electron-updater": "~4.6.5",
