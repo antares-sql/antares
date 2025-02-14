@@ -1,5 +1,7 @@
 /* stylelint-disable function-no-unknown */
 .theme-light {
+  background: $body-bg;
+  
   ::-webkit-scrollbar-track {
     background: #fff;
   }
