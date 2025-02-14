@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.32](https://github.com/antares-sql/antares/compare/v0.7.31...v0.7.32) (2025-02-14)
+
+
+### Bug Fixes
+
+* black background with light theme, fixes [#945](https://github.com/antares-sql/antares/issues/945) ([1d7053c](https://github.com/antares-sql/antares/commit/1d7053ce032efec8377d9500f2e24618f6381ab4))
+* enhance SVG support in connection customization, fixes [#939](https://github.com/antares-sql/antares/issues/939) ([49a3589](https://github.com/antares-sql/antares/commit/49a3589536d2e75a14125be7b874e29b60fb56c4))
+* improve error handling in SSH connection ([704f708](https://github.com/antares-sql/antares/commit/704f70819b21a42194d8f68cf9b58ba337f1ada7))
+* **PostgreSQL:** error with materialized view tabs ([41e797f](https://github.com/antares-sql/antares/commit/41e797f9e27db66370d3ae7750c057f708af76f9))
+
 ### [0.7.31](https://github.com/antares-sql/antares/compare/v0.7.31-beta.5...v0.7.31) (2025-02-11)
 
 ### [0.7.31-beta.5](https://github.com/antares-sql/antares/compare/v0.7.31-beta.4...v0.7.31-beta.5) (2025-02-09)
