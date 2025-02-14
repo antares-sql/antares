@@ -173,13 +173,13 @@ export class MySQLClient extends BaseClient {
                remotePort: this._params.port
             });
 
-            // dbConfig.host = this._ssh.config[0].host;
+            dbConfig.host = undefined;
             dbConfig.port = tunnel.localPort;
          }
          catch (err) {
             if (this._ssh) {
-               this._ssh.close();
                this._ssh.closeTunnel();
+               this._ssh.close();
             }
             throw err;
          }
@@ -227,8 +227,8 @@ export class MySQLClient extends BaseClient {
       clearInterval(this._keepaliveTimer);
       this._keepaliveTimer = undefined;
       if (this._ssh) {
-         this._ssh.close();
          this._ssh.closeTunnel();
+         this._ssh.close();
       }
    }
 
