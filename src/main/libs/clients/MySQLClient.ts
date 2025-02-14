@@ -173,7 +173,7 @@ export class MySQLClient extends BaseClient {
                remotePort: this._params.port
             });
 
-            dbConfig.host = this._ssh.config[0].host;
+            // dbConfig.host = this._ssh.config[0].host;
             dbConfig.port = tunnel.localPort;
          }
          catch (err) {
