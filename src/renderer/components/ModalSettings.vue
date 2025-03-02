@@ -132,7 +132,7 @@
                                     <BaseSelect
                                        v-model="localQueryLimit"
                                        class="form-select"
-                                       :options="pageSizes"
+                                       :options="queryLimits"
                                        @change="changeQueryLimit(+localQueryLimit)"
                                     />
                                  </div>
@@ -526,6 +526,7 @@ const { getWorkspace } = workspacesStore;
 
 const appAuthor = 'Fabio Di Stasio';
 const pageSizes = [30, 40, 100, 250, 500, 1000];
+const queryLimits = [50, 100, 250, 500, 1000, 5000, 10000];
 const contributors = process.env.APP_CONTRIBUTORS;
 const appLogo = require('../images/logo.svg');
 const darkPreview = require('../images/dark.png');
