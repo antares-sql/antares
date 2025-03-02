@@ -443,6 +443,7 @@ watch(isChanged, (val) => {
 const runQuery = async (query: string) => {
    if (!query || isQuering.value) return;
    isQuering.value = true;
+   console.log({ query });
 
    if (executeSelected.value) {
       const selectedQuery = queryEditor.value.editor.getSelectedText();
@@ -452,8 +453,10 @@ const runQuery = async (query: string) => {
    const limitRegex = /\blimit\s+\d+/i;
 
    // If LIMIT exists, return the original query
-   if (!limitRegex.test(query))
-      query = query.trim().replace(/;?$/, ` LIMIT ${queryRowLimit.value};`);
+   query = query.split(';').map(q => {
+      q = q.trim();
+      return limitRegex.test(q) || q === '' ? q : `${q} LIMIT ${queryRowLimit.value}`;
+   }).join(';\n');
 
    clearTabData();
    queryTable.value.resetSort();
