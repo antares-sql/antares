@@ -451,11 +451,12 @@ const runQuery = async (query: string) => {
    }
    // Regex to check if query already has a LIMIT clause
    const limitRegex = /\blimit\s+\d+/i;
+   const selectRegex = /^\s*select\s+/i;
 
    // If LIMIT exists, return the original query
    query = query.split(';').map(q => {
       q = q.trim();
-      return limitRegex.test(q) || q === '' ? q : `${q} LIMIT ${queryRowLimit.value}`;
+      return selectRegex.test(q) && !limitRegex.test(q) && q !== '' ? `${q} LIMIT ${queryRowLimit.value}` : q;
    }).join(';\n');
 
    clearTabData();
