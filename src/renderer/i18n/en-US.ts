@@ -343,6 +343,7 @@ export const enUS = {
       markdownSupported: 'Markdown supported',
       plantATree: 'Plant a Tree',
       dataTabPageSize: 'Results per page',
+      queryRowLimit: 'Default query limit',
       noOpenTabs: 'There are no open tabs, navigate on the left bar or:',
       restorePreviousSession: 'Restore previous session',
       closeTab: 'Close tab',

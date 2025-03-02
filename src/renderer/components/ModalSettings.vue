@@ -122,6 +122,21 @@
                                     />
                                  </div>
                               </div>
+                              <div class="form-group column col-12">
+                                 <div class="col-5 col-sm-12">
+                                    <label class="form-label">
+                                       {{ t('application.queryRowLimit') }}
+                                    </label>
+                                 </div>
+                                 <div class="col-3 col-sm-12">
+                                    <BaseSelect
+                                       v-model="localQueryLimit"
+                                       class="form-select"
+                                       :options="queryLimits"
+                                       @change="changeQueryLimit(+localQueryLimit)"
+                                    />
+                                 </div>
+                              </div>
                               <div class="form-group column col-12 mb-0">
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">
@@ -470,6 +485,7 @@ const {
 const {
    locale: selectedLocale,
    dataTabLimit: pageSize,
+   queryRowLimit: queryLimit,
    autoComplete: selectedAutoComplete,
    lineWrap: selectedLineWrap,
    executeSelected: selectedExecuteSelected,
@@ -488,6 +504,7 @@ const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 const {
    changeLocale,
    changePageSize,
+   changeQueryLimit,
    changeRestoreTabs,
    changeDisableBlur,
    changeAutoComplete,
@@ -509,6 +526,7 @@ const { getWorkspace } = workspacesStore;
 
 const appAuthor = 'Fabio Di Stasio';
 const pageSizes = [30, 40, 100, 250, 500, 1000];
+const queryLimits = [50, 100, 250, 500, 1000, 5000, 10000];
 const contributors = process.env.APP_CONTRIBUTORS;
 const appLogo = require('../images/logo.svg');
 const darkPreview = require('../images/dark.png');
@@ -532,6 +550,7 @@ ORDER BY
 const localLocale: Ref<AvailableLocale> = ref(null);
 const defaultCopyType: Ref<string> = ref(null);
 const localPageSize: Ref<number> = ref(null);
+const localQueryLimit: Ref<number> = ref(null);
 const localTimeout: Ref<number> = ref(null);
 const localEditorTheme: Ref<string> = ref(null);
 const selectedTab: Ref<string> = ref('general');
@@ -663,6 +682,7 @@ const toggleExecuteSelected = () => {
 localLocale.value = selectedLocale.value;
 defaultCopyType.value = selectedCopyType.value;
 localPageSize.value = pageSize.value as number;
+localQueryLimit.value = queryLimit.value as number;
 localTimeout.value = notificationsTimeout.value as number;
 localEditorTheme.value = editorTheme.value as string;
 selectedTab.value = selectedSettingTab.value;

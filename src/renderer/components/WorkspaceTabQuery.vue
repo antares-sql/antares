@@ -327,7 +327,7 @@ const { showScratchpad } = useApplicationStore();
 const { addNote } = useScratchpadStore();
 
 const { consoleHeight } = storeToRefs(useConsoleStore());
-const { executeSelected } = storeToRefs(useSettingsStore());
+const { executeSelected, queryRowLimit } = storeToRefs(useSettingsStore());
 
 const {
    getWorkspace,
@@ -448,6 +448,12 @@ const runQuery = async (query: string) => {
       const selectedQuery = queryEditor.value.editor.getSelectedText();
       if (selectedQuery) query = selectedQuery;
    }
+   // Regex to check if query already has a LIMIT clause
+   const limitRegex = /\blimit\s+\d+/i;
+
+   // If LIMIT exists, return the original query
+   if (!limitRegex.test(query))
+      query = query.trim().replace(/;?$/, ` LIMIT ${queryRowLimit.value};`);
 
    clearTabData();
    queryTable.value.resetSort();
