@@ -586,7 +586,7 @@ const beautify = () => {
 
       const formattedQuery = format(query.value, {
          language,
-         uppercase: true
+         keywordCase: 'upper'
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
       queryEditor.value.editor.session.setValue(formattedQuery);
