@@ -327,7 +327,7 @@ const { showScratchpad } = useApplicationStore();
 const { addNote } = useScratchpadStore();
 
 const { consoleHeight } = storeToRefs(useConsoleStore());
-const { executeSelected } = storeToRefs(useSettingsStore());
+const { executeSelected, queryRowLimit } = storeToRefs(useSettingsStore());
 
 const {
    getWorkspace,
@@ -443,11 +443,21 @@ watch(isChanged, (val) => {
 const runQuery = async (query: string) => {
    if (!query || isQuering.value) return;
    isQuering.value = true;
+   console.log({ query });
 
    if (executeSelected.value) {
       const selectedQuery = queryEditor.value.editor.getSelectedText();
       if (selectedQuery) query = selectedQuery;
    }
+   // Regex to check if query already has a LIMIT clause
+   const limitRegex = /\blimit\s+\d+/i;
+   const selectRegex = /^\s*select\s+/i;
+
+   // If LIMIT exists, return the original query
+   query = query.split(';').map(q => {
+      q = q.trim();
+      return selectRegex.test(q) && !limitRegex.test(q) && q !== '' ? `${q} LIMIT ${queryRowLimit.value}` : q;
+   }).join(';\n');
 
    clearTabData();
    queryTable.value.resetSort();
@@ -576,7 +586,7 @@ const beautify = () => {
 
       const formattedQuery = format(query.value, {
          language,
-         uppercase: true
+         keywordCase: 'upper'
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
       queryEditor.value.editor.session.setValue(formattedQuery);
