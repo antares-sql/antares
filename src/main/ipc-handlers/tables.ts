@@ -440,16 +440,17 @@ export default (connections: Record<string, antares.Client>) => {
 
    ipcMain.handle('get-foreign-list', async (event, { uid, schema, table, column, description }) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+      const { elementsWrapper: ew } = customizations[connections[uid]._client];
 
       try {
          const query = connections[uid]
-            .select(`${column} AS foreign_column`)
+            .select(`${ew}${column}${ew} AS foreign_column`)
             .schema(schema)
             .from(table)
             .orderBy('foreign_column ASC');
 
          if (description)
-            query.select(`LEFT(${description}, 20) AS foreign_description`);
+            query.select(`LEFT(${ew}${description}${ew}, 20) AS foreign_description`);
 
          const results = await query.run<Record<string, string>>();
 
