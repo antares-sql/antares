@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.34](https://github.com/antares-sql/antares/compare/v0.7.33...v0.7.34) (2025-02-14)
+
+
+### Bug Fixes
+
+* issue with some SSH connections, definitely ([eb706c3](https://github.com/antares-sql/antares/commit/eb706c3e51e9cb7577febd291a33594c0650a34a))
+
 ### [0.7.33](https://github.com/antares-sql/antares/compare/v0.7.32...v0.7.33) (2025-02-14)
 
 
