@@ -527,14 +527,14 @@ watch(() => props.connection, () => {
    localConnection.value = JSON.parse(JSON.stringify(props.connection));
 });
 
-const startConnection = async () => {
+const startConnection = async (): Promise<void> => {
    await saveConnection();
    isConnecting.value = true;
 
    if (localConnection.value.ask)
       isAsking.value = true;
    else {
-      await connectWorkspace(localConnection.value, { signal: abortController.value.signal }).catch(() => undefined);
+      await connectWorkspace(localConnection.value, { signal: abortController.value.signal }).catch((): void => undefined);
       isConnecting.value = false;
    }
 };
@@ -582,7 +582,7 @@ const continueTest = async (credentials: {user: string; password: string }) => {
    try {
       if (isConnecting.value) {
          const params = Object.assign({}, props.connection, credentials);
-         await connectWorkspace(params, { signal: abortController.value.signal }).catch(() => undefined);
+         await connectWorkspace(params, { signal: abortController.value.signal }).catch((): void => undefined);
          isConnecting.value = false;
       }
       else {
