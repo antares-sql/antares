@@ -2,6 +2,7 @@ import SSH2Promise = require('@fabio286/ssh2-promise');
 import SSHConfig from '@fabio286/ssh2-promise/lib/sshConfig';
 import dataTypes from 'common/data-types/mysql';
 import * as antares from 'common/interfaces/antares';
+import { removeComments } from 'common/libs/sqlUtils';
 import * as mysql from 'mysql2/promise';
 
 import * as EncodingToCharset from '../../../../node_modules/mysql2/lib/constants/encoding_charset.js';
@@ -1751,7 +1752,7 @@ export class MySQLClient extends BaseClient {
       };
 
       if (!args.comments)
-         sql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '');// Remove comments
+         sql = removeComments(sql);
 
       const nestTables = args.nest ? '.' : false;
       const resultsArr: antares.QueryResult[] = [];

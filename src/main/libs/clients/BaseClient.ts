@@ -1,8 +1,8 @@
 import * as antares from 'common/interfaces/antares';
+import { querySplitter } from 'common/libs/sqlUtils';
 import mysql from 'mysql2/promise';
 import * as pg from 'pg';
 import SSH2Promise = require('@fabio286/ssh2-promise');
-import { querySplitter } from 'common/libs/querySplitter';
 
 import { ipcLogger, LoggerLevel } from '../misc/ipcLogger';
 
