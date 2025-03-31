@@ -221,7 +221,7 @@ export default (connections: Record<string, antares.Client>) => {
                .update({ [params.field]: `= ${escapedParam}` })
                .schema(params.schema)
                .from(params.table)
-               .where({ [params.primary]: `= ${id}` })
+               .where({ [params.primary]: `= ${sqlEscaper(id)}` })
                .limit(1)
                .run();
          }
@@ -233,7 +233,7 @@ export default (connections: Record<string, antares.Client>) => {
 
             for (const key in orgRow) {
                if (typeof orgRow[key] === 'string')
-                  orgRow[key] = ` = '${orgRow[key]}'`;
+                  orgRow[key] = ` = '${sqlEscaper(orgRow[key])}'`;
                else if (typeof orgRow[key] === 'object' && orgRow[key] !== null)
                   orgRow[key] = formatJsonForSqlWhere(orgRow[key], connections[params.uid]._client);
                else if (orgRow[key] === null)
@@ -290,7 +290,7 @@ export default (connections: Record<string, antares.Client>) => {
             for (const row of params.rows) {
                for (const key in row) {
                   if (typeof row[key] === 'string')
-                     row[key] = `'${row[key]}'`;
+                     row[key] = `'${sqlEscaper(row[key])}'`;
 
                   if (row[key] === null)
                      row[key] = 'IS NULL';
