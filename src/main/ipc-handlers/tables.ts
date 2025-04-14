@@ -221,7 +221,7 @@ export default (connections: Record<string, antares.Client>) => {
                .update({ [params.field]: `= ${escapedParam}` })
                .schema(params.schema)
                .from(params.table)
-               .where({ [params.primary]: `= ${sqlEscaper(id)}` })
+               .where({ [params.primary]: `= ${typeof id === 'string' ? sqlEscaper(id) : id}` })
                .limit(1)
                .run();
          }
