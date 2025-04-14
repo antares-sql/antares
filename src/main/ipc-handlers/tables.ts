@@ -135,7 +135,7 @@ export default (connections: Record<string, antares.Client>) => {
       try { // TODO: move to client classes
          let escapedParam;
          let reload = false;
-         const id = typeof params.id === 'number' ? params.id : `${sw}${params.id}${sw}`;
+         const id = typeof params.id === 'number' ? params.id : `${sw}${sqlEscaper(params.id)}${sw}`;
 
          if ([...NUMBER, ...FLOAT].includes(params.type))
             escapedParam = params.content;
@@ -221,7 +221,7 @@ export default (connections: Record<string, antares.Client>) => {
                .update({ [params.field]: `= ${escapedParam}` })
                .schema(params.schema)
                .from(params.table)
-               .where({ [params.primary]: `= ${typeof id === 'string' ? sqlEscaper(id) : id}` })
+               .where({ [params.primary]: `= ${id}` })
                .limit(1)
                .run();
          }
