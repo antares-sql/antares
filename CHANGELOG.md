@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.35-beta.1](https://github.com/antares-sql/antares/compare/v0.7.35-beta.0...v0.7.35-beta.1) (2025-04-28)
+
+
+### Bug Fixes
+
+* handle id type correctly in update-table-cell where clause, fixes [#974](https://github.com/antares-sql/antares/issues/974) ([8f84892](https://github.com/antares-sql/antares/commit/8f84892f079e5eb56c69170eb4f7bbbebd1fda72))
+* if webcontents with id 1 not found use first webcontents ([b3cf201](https://github.com/antares-sql/antares/commit/b3cf20101b938a4b47c454c7a94b32b3820bce8e))
+* improve SQL parameter escaping in update-table-cell, ensuring correct handling of id types ([994aa69](https://github.com/antares-sql/antares/commit/994aa69fd00afc7e24e593b1a6c6667535e090c2))
+* **MySQL:** handle absence of CHECK_CONSTRAINTS table, fixes [#981](https://github.com/antares-sql/antares/issues/981) ([86f5052](https://github.com/antares-sql/antares/commit/86f50521d05da0afdc9506d74e6ab007e2ae0a84))
+
 ### [0.7.35-beta.0](https://github.com/antares-sql/antares/compare/v0.7.34...v0.7.35-beta.0) (2025-04-04)
 
 
