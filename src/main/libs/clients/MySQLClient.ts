@@ -696,7 +696,12 @@ export class MySQLClient extends BaseClient {
       return rows.length ? rows[0].count : 0;
    }
 
-   async getTableChecks ({ schema, table }: { schema: string; table: string }): Promise<antares.TableCheck[]> {
+   async getTableChecks ({ schema, table }: { schema: string; table: string }): Promise<antares.TableCheck[] | false> {
+      const { rows: checkTableExists } = await this.raw('SELECT table_name FROM information_schema.tables WHERE table_schema = "information_schema" AND table_name = "CHECK_CONSTRAINTS"');
+
+      if (!checkTableExists.length)// check if CHECK_CONSTRAINTS table exists
+         return false;
+
       const { rows } = await this.raw(`
             SELECT 
                CONSTRAINT_NAME as name, 

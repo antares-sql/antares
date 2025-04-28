@@ -73,7 +73,7 @@
                   <span>{{ t('database.foreignKeys') }}</span>
                </button>
                <button
-                  v-if="workspace.customizations.tableCheck"
+                  v-if="workspace.customizations.tableCheck && originalTableChecks !== false"
                   class="btn btn-dark btn-sm ml-2 mr-0"
                   :disabled="isSaving"
                   :title="t('database.manageTableChecks')"
@@ -234,7 +234,7 @@
       />
       <WorkspaceTabPropsTableChecksModal
          v-if="isTableChecksModal"
-         :local-checks="localTableChecks"
+         :local-checks="localTableChecks || []"
          :table="table"
          :workspace="workspace"
          @hide="hideTableChecksModal"
@@ -305,8 +305,8 @@ const originalKeyUsage: Ref<TableForeign[]> = ref([]);
 const localKeyUsage: Ref<TableForeign[]> = ref([]);
 const originalIndexes: Ref<TableIndex[]> = ref([]);
 const localIndexes: Ref<TableIndex[]> = ref([]);
-const originalTableChecks: Ref<TableCheck[]> = ref([]);
-const localTableChecks: Ref<TableCheck[]> = ref([]);
+const originalTableChecks: Ref<TableCheck[] | false> = ref([]);
+const localTableChecks: Ref<TableCheck[] | false> = ref(false);
 const tableOptions: Ref<TableOptions> = ref(null);
 const localOptions: Ref<TableOptions> = ref({} as TableOptions);
 const lastTable = ref(null);
@@ -465,13 +465,19 @@ const getFieldsData = async () => {
          const { status, response } = await Tables.getTableChecks(params);
 
          if (status === 'success') {
-            originalTableChecks.value = response.map((check: TableCheck) => {
-               return {
-                  _antares_id: uidGen(),
-                  ...check
-               };
-            });
-            localTableChecks.value = JSON.parse(JSON.stringify(originalTableChecks.value));
+            if (response === false) {
+               originalTableChecks.value = false;
+               localTableChecks.value = false;
+            }
+            else {
+               originalTableChecks.value = response.map((check: TableCheck) => {
+                  return {
+                     _antares_id: uidGen(),
+                     ...check
+                  };
+               });
+               localTableChecks.value = JSON.parse(JSON.stringify(originalTableChecks.value));
+            }
          }
          else
             addNotification({ status: 'error', message: response });
@@ -577,31 +583,67 @@ const saveChanges = async () => {
    foreignChanges.deletions = originalKeyUsage.value.filter(foreign => !localForeignIDs.includes(foreign._antares_id));
 
    // CHECKS
+   if (originalTableChecks.value !== false && localTableChecks.value !== false) {
+      const checkChanges = {
+         additions: [] as TableCheck[],
+         changes: [] as TableCheck[],
+         deletions: [] as TableCheck[]
+      };
+      const originalCheckIDs = originalTableChecks.value.reduce((acc, curr) => [...acc, curr._antares_id], []);
+      const localCheckIDs = localTableChecks.value.reduce((acc, curr) => [...acc, curr._antares_id], []);
+
+      // Check Additions
+      checkChanges.additions = localTableChecks.value.filter(check => !originalCheckIDs.includes(check._antares_id));
+
+      // Check Changes
+      originalTableChecks.value.forEach(originalCheck => {
+         const lI = Array.isArray(localTableChecks.value)
+            ? localTableChecks.value.findIndex(localCheck => localCheck._antares_id === originalCheck._antares_id)
+            : -1;
+         if (Array.isArray(localTableChecks.value) && JSON.stringify(originalCheck) !== JSON.stringify(localTableChecks.value[lI])) {
+            if (localTableChecks.value[lI]) {
+               checkChanges.changes.push({
+                  ...localTableChecks.value[lI]
+               });
+            }
+         }
+      });
+
+      // Check Deletions
+      checkChanges.deletions = originalTableChecks.value.filter(check => !localCheckIDs.includes(check._antares_id));
+   }
+
+   // CHECKS
    const checkChanges = {
       additions: [] as TableCheck[],
       changes: [] as TableCheck[],
       deletions: [] as TableCheck[]
    };
-   const originalCheckIDs = originalTableChecks.value.reduce((acc, curr) => [...acc, curr._antares_id], []);
-   const localCheckIDs = localTableChecks.value.reduce((acc, curr) => [...acc, curr._antares_id], []);
 
-   // Check Additions
-   checkChanges.additions = localTableChecks.value.filter(check => !originalCheckIDs.includes(check._antares_id));
+   if (originalTableChecks.value !== false && localTableChecks.value !== false) {
+      const originalCheckIDs = originalTableChecks.value.reduce((acc, curr) => [...acc, curr._antares_id], []);
+      const localCheckIDs = localTableChecks.value.reduce((acc, curr) => [...acc, curr._antares_id], []);
 
-   // Check Changes
-   originalTableChecks.value.forEach(originalCheck => {
-      const lI = localTableChecks.value.findIndex(localCheck => localCheck._antares_id === originalCheck._antares_id);
-      if (JSON.stringify(originalCheck) !== JSON.stringify(localTableChecks.value[lI])) {
-         if (localTableChecks.value[lI]) {
-            checkChanges.changes.push({
-               ...localTableChecks.value[lI]
-            });
+      // Check Additions
+      checkChanges.additions = localTableChecks.value.filter(check => !originalCheckIDs.includes(check._antares_id));
+
+      // Check Changes
+      originalTableChecks.value.forEach(originalCheck => {
+         const lI = Array.isArray(localTableChecks.value)
+            ? localTableChecks.value.findIndex(localCheck => localCheck._antares_id === originalCheck._antares_id)
+            : -1;
+         if (Array.isArray(localTableChecks.value) && JSON.stringify(originalCheck) !== JSON.stringify(localTableChecks.value[lI])) {
+            if (localTableChecks.value[lI]) {
+               checkChanges.changes.push({
+                  ...localTableChecks.value[lI]
+               });
+            }
          }
-      }
-   });
+      });
 
-   // Check Deletions
-   checkChanges.deletions = originalTableChecks.value.filter(check => !localCheckIDs.includes(check._antares_id));
+      // Check Deletions
+      checkChanges.deletions = originalTableChecks.value.filter(check => !localCheckIDs.includes(check._antares_id));
+   }
 
    // ALTER
    const params = {
