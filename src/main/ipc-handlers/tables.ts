@@ -221,7 +221,7 @@ export default (connections: Record<string, antares.Client>) => {
                .update({ [params.field]: `= ${escapedParam}` })
                .schema(params.schema)
                .from(params.table)
-               .where({ [params.primary]: `= ${id}` })
+               .where({ [params.primary]: `= ${typeof id === 'string' ? sqlEscaper(id) : id}` })
                .limit(1)
                .run();
          }
@@ -233,7 +233,7 @@ export default (connections: Record<string, antares.Client>) => {
 
             for (const key in orgRow) {
                if (typeof orgRow[key] === 'string')
-                  orgRow[key] = ` = '${orgRow[key]}'`;
+                  orgRow[key] = ` = '${sqlEscaper(orgRow[key])}'`;
                else if (typeof orgRow[key] === 'object' && orgRow[key] !== null)
                   orgRow[key] = formatJsonForSqlWhere(orgRow[key], connections[params.uid]._client);
                else if (orgRow[key] === null)
@@ -290,7 +290,7 @@ export default (connections: Record<string, antares.Client>) => {
             for (const row of params.rows) {
                for (const key in row) {
                   if (typeof row[key] === 'string')
-                     row[key] = `'${row[key]}'`;
+                     row[key] = `'${sqlEscaper(row[key])}'`;
 
                   if (row[key] === null)
                      row[key] = 'IS NULL';
@@ -440,16 +440,17 @@ export default (connections: Record<string, antares.Client>) => {
 
    ipcMain.handle('get-foreign-list', async (event, { uid, schema, table, column, description }) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+      const { elementsWrapper: ew } = customizations[connections[uid]._client];
 
       try {
          const query = connections[uid]
-            .select(`${column} AS foreign_column`)
+            .select(`${ew}${column}${ew} AS foreign_column`)
             .schema(schema)
             .from(table)
             .orderBy('foreign_column ASC');
 
          if (description)
-            query.select(`LEFT(${description}, 20) AS foreign_description`);
+            query.select(`LEFT(${ew}${description}${ew}, 20) AS foreign_description`);
 
          const results = await query.run<Record<string, string>>();
 

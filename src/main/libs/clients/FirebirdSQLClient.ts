@@ -1,6 +1,7 @@
 import dataTypes from 'common/data-types/firebird';
 import { FLOAT, NUMBER } from 'common/fieldTypes';
 import * as antares from 'common/interfaces/antares';
+import { removeComments } from 'common/libs/sqlUtils';
 import * as firebird from 'node-firebird';
 import * as path from 'path';
 
@@ -1036,7 +1037,7 @@ export class FirebirdSQLClient extends BaseClient {
       };
 
       if (!args.comments)
-         sql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '');// Remove comments
+         sql = removeComments(sql);
 
       const resultsArr = [];
       let paramsArr = [];

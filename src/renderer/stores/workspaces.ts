@@ -151,7 +151,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
          this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === connection.uid
             ? {
                ...workspace,
-               structure: [],
+               structure: [] as WorkspaceStructure[],
                breadcrumbs: {},
                loadedSchemas: new Set(),
                database: connection.database,
@@ -167,7 +167,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
                this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === connection.uid
                   ? {
                      ...workspace,
-                     structure: [],
+                     structure: [] as WorkspaceStructure[],
                      breadcrumbs: {},
                      loadedSchemas: new Set(),
                      connectionStatus: 'disconnected'
@@ -187,7 +187,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
                      this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === connection.uid
                         ? {
                            ...workspace,
-                           structure: [],
+                           structure: [] as WorkspaceStructure[],
                            breadcrumbs: {},
                            loadedSchemas: new Set(),
                            connectionStatus: 'failed'
@@ -200,9 +200,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
                      return reject(new Error('Connection aborted by user'));
                   else {
                      let clientCustomizations: Customizations;
-                     const { updateLastConnection } = connectionsStore;
-
-                     updateLastConnection(connection.uid);
+                     connectionsStore.updateLastConnection(connection.uid);
 
                      switch (connection.client) {
                         case 'mysql':
@@ -418,7 +416,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
          this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === uid
             ? {
                ...workspace,
-               structure: [],
+               structure: [] as WorkspaceStructure[],
                breadcrumbs: {},
                loadedSchemas: new Set(),
                connectionStatus: 'disconnected'

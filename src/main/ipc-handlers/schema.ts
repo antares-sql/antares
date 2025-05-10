@@ -183,6 +183,7 @@ export default (connections: Record<string, antares.Client>) => {
          const result = await connections[uid].raw(query, {
             nest: true,
             details: true,
+            comments: false,
             schema,
             tabUid,
             autocommit

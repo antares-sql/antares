@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.35-beta.0](https://github.com/antares-sql/antares/compare/v0.7.34...v0.7.35-beta.0) (2025-04-04)
+
+
+### Bug Fixes
+
+* custom connection icon disappears during connection, fixes [#939](https://github.com/antares-sql/antares/issues/939) ([1d1be55](https://github.com/antares-sql/antares/commit/1d1be55d3d4ea621364c37e75de616046371feeb))
+* escape SQL parameters in update and delete for where clauses, fixes [#964](https://github.com/antares-sql/antares/issues/964) ([ba63b04](https://github.com/antares-sql/antares/commit/ba63b049a3a059e77256141dc7b761efbbbf8c1e))
+* improved handling of query comments, fixes [#963](https://github.com/antares-sql/antares/issues/963) and [#580](https://github.com/antares-sql/antares/issues/580) ([d912faa](https://github.com/antares-sql/antares/commit/d912faa85042219315c9c5658d7f20fda560af44))
+* use custom elements wrapper for foreign column and description in query ([973b0fc](https://github.com/antares-sql/antares/commit/973b0fc4be1dac25757e430e4520d6fc2212f93b))
+
+
+### Improvements
+
+* **translation:** update Spanish translations, closes [#962](https://github.com/antares-sql/antares/issues/962) ([acea18e](https://github.com/antares-sql/antares/commit/acea18e6f061adab7e79d1249e0e68555a620db5))
+
 ### [0.7.34](https://github.com/antares-sql/antares/compare/v0.7.33...v0.7.34) (2025-02-14)
 
 

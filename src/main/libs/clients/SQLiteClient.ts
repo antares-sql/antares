@@ -2,6 +2,7 @@ import * as sqlite from 'better-sqlite3';
 import dataTypes from 'common/data-types/sqlite';
 import { DATETIME, FLOAT, NUMBER, TIME } from 'common/fieldTypes';
 import * as antares from 'common/interfaces/antares';
+import { removeComments } from 'common/libs/sqlUtils';
 
 import { BaseClient } from './BaseClient';
 
@@ -624,7 +625,7 @@ export class SQLiteClient extends BaseClient {
       };
 
       if (!args.comments)
-         sql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '');// Remove comments
+         sql = removeComments(sql);
 
       const resultsArr = [];
       let paramsArr = [];

@@ -2,6 +2,7 @@ import SSH2Promise = require('@fabio286/ssh2-promise');
 import SSHConfig from '@fabio286/ssh2-promise/lib/sshConfig';
 import dataTypes from 'common/data-types/postgresql';
 import * as antares from 'common/interfaces/antares';
+import { removeComments } from 'common/libs/sqlUtils';
 import * as pg from 'pg';
 import * as pgAst from 'pgsql-ast-parser';
 import { ConnectionOptions } from 'tls';
@@ -1660,7 +1661,7 @@ export class PostgreSQLClient extends BaseClient {
       };
 
       if (!args.comments)
-         sql = sql.replace(/(\/\*(.|[\r\n])*?\*\/)|(--(.*|[\r\n]))/gm, '');// Remove comments
+         sql = removeComments(sql);
 
       const resultsArr: antares.QueryResult[] = [];
       let paramsArr = [];
