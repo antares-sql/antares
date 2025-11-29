@@ -122,24 +122,14 @@
                      <BaseIcon icon-name="mdiFolderOpenOutline" :size="24" />
                   </button>
                </div>
-               <div class="btn-group">
-                  <button
-                     class="btn btn-dark btn-sm mr-0"
-                     :disabled="isQuering || (isQuerySaved || query.length < 5)"
-                     :title="t('application.saveAsNote')"
-                     @click="saveQuery()"
-                  >
-                     <BaseIcon icon-name="mdiHeartPlusOutline" :size="24" />
-                  </button>
-                  <button
-                     class="btn btn-dark btn-sm"
-                     :disabled="isQuering"
-                     :title="t('database.savedQueries')"
-                     @click="openSavedModal()"
-                  >
-                     <BaseIcon icon-name="mdiNotebookHeartOutline" :size="24" />
-                  </button>
-               </div>
+               <button
+                  class="btn btn-dark btn-sm"
+                  :disabled="isQuering || (isQuerySaved || query.length < 5)"
+                  :title="t('database.savedQueries')"
+                  @click="saveQuery()"
+               >
+                  <BaseIcon icon-name="mdiBookmarkPlusOutline" :size="24" />
+               </button>
                <button
                   class="btn btn-dark btn-sm"
                   :disabled="isQuering"
@@ -197,6 +187,30 @@
                </div>
             </div>
             <div class="workspace-query-info">
+               <div
+                  v-if="saveStatus === 'saving'"
+                  class="d-flex save-status saving"
+                  :title="t('database.autoSaving')"
+               >
+                  <BaseIcon
+                     class="mr-1 mt-1 rotating"
+                     icon-name="mdiLoading"
+                     :size="16"
+                  />
+                  <span>{{ t('database.autoSaving') }}</span>
+               </div>
+               <div
+                  v-else-if="saveStatus === 'saved'"
+                  class="d-flex save-status saved"
+                  :title="t('database.autoSaved')"
+               >
+                  <BaseIcon
+                     class="mr-1 mt-1"
+                     icon-name="mdiCheck"
+                     :size="16"
+                  />
+                  <span>{{ t('database.autoSaved') }}</span>
+               </div>
                <div
                   v-if="results.length"
                   class="d-flex"
@@ -277,7 +291,6 @@
 import { getCurrentWindow, Menu } from '@electron/remote';
 import { Ace } from 'ace-builds';
 import { ConnectionParams } from 'common/interfaces/antares';
-import { uidGen } from 'common/libs/uidGen';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
 import { format } from 'sql-formatter';
@@ -294,11 +307,10 @@ import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable.vue';
 import { useResultTables } from '@/composables/useResultTables';
 import Application from '@/ipc-api/Application';
 import Schema from '@/ipc-api/Schema';
-import { useApplicationStore } from '@/stores/application';
 import { useConsoleStore } from '@/stores/console';
 import { useHistoryStore } from '@/stores/history';
 import { useNotificationsStore } from '@/stores/notifications';
-import { useScratchpadStore } from '@/stores/scratchpad';
+import { extractQueryUidFromMarker, isSavedQueryMarker, useSavedQueriesStore } from '@/stores/savedQueries';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
@@ -323,8 +335,8 @@ const {
 const { saveHistory } = useHistoryStore();
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
-const { showScratchpad } = useApplicationStore();
-const { addNote } = useScratchpadStore();
+const savedQueriesStore = useSavedQueriesStore();
+const { addQuery, updateQuery } = savedQueriesStore;
 
 const { consoleHeight } = storeToRefs(useConsoleStore());
 const { executeSelected } = storeToRefs(useSettingsStore());
@@ -356,7 +368,10 @@ const affectedCount = ref(null);
 const editorHeight = ref(200);
 const isQuerySaved = ref(false);
 const isHistoryOpen = ref(false);
-const debounceTimeout = ref(null);
+const queryDebounceTimeout = ref(null);
+const nameDebounceTimeout = ref(null);
+const isSaving = ref(false);
+const saveStatus = ref<'idle' | 'saving' | 'saved'>('idle');
 
 const workspace = computed(() => getWorkspace(props.connection.uid));
 const breadcrumbsSchema = computed(() => workspace.value.breadcrumbs.schema || null);
@@ -373,45 +388,113 @@ const isChanged = computed(() => {
 });
 
 watch(query, (val) => {
-   clearTimeout(debounceTimeout.value);
+   clearTimeout(queryDebounceTimeout.value);
 
-   debounceTimeout.value = setTimeout(() => {
+   const elementType = props.tab.elementType;
+   const connectionUid = props.connection.uid;
+   const tabUid = props.tab.uid;
+   const currentSchema = selectedSchema.value;
+   const currentElementName = queryName.value;
+   const currentFilePath = filePath.value;
+   const isTabSavedQuery = isSavedQueryMarker(elementType);
+   const queryUid = extractQueryUidFromMarker(elementType);
+
+   if (isTabSavedQuery) {
+      saveStatus.value = 'saving';
+      isSaving.value = true;
+   }
+
+   queryDebounceTimeout.value = setTimeout(() => {
       updateTabContent({
-         elementName: queryName.value,
-         filePath: filePath.value,
-         uid: props.connection.uid,
-         tab: props.tab.uid,
+         elementName: currentElementName,
+         filePath: currentFilePath,
+         uid: connectionUid,
+         tab: tabUid,
          type: 'query',
-         schema: selectedSchema.value,
-         content: val
-
+         schema: currentSchema,
+         content: val,
+         elementType
       });
 
-      isQuerySaved.value = false;
-   }, 200);
+      if (isTabSavedQuery && queryUid) {
+         updateQuery({
+            connectionUid,
+            queryUid,
+            sql: val,
+            schema: currentSchema
+         });
+         isQuerySaved.value = true;
+         saveStatus.value = 'saved';
+         isSaving.value = false;
+
+         setTimeout(() => {
+            if (saveStatus.value === 'saved')
+               saveStatus.value = 'idle';
+         }, 2000);
+      }
+      else {
+         isQuerySaved.value = false;
+         saveStatus.value = 'idle';
+         isSaving.value = false;
+      }
+   }, 500);
 });
 
 watch(queryName, (val) => {
-   clearTimeout(debounceTimeout.value);
+   clearTimeout(nameDebounceTimeout.value);
 
-   debounceTimeout.value = setTimeout(() => {
+   const elementType = props.tab.elementType;
+   const connectionUid = props.connection.uid;
+   const tabUid = props.tab.uid;
+   const currentSchema = selectedSchema.value;
+   const currentFilePath = filePath.value;
+   const currentQuery = query.value;
+   const isTabSavedQuery = isSavedQueryMarker(elementType);
+   const queryUid = extractQueryUidFromMarker(elementType);
+
+   if (isTabSavedQuery) {
+      saveStatus.value = 'saving';
+      isSaving.value = true;
+   }
+
+   nameDebounceTimeout.value = setTimeout(() => {
       updateTabContent({
          elementName: val,
-         filePath: filePath.value,
-         uid: props.connection.uid,
-         tab: props.tab.uid,
+         filePath: currentFilePath,
+         uid: connectionUid,
+         tab: tabUid,
          type: 'query',
-         schema: selectedSchema.value,
-         content: query.value
+         schema: currentSchema,
+         content: currentQuery,
+         elementType
       });
 
-      isQuerySaved.value = false;
-   }, 200);
+      if (isTabSavedQuery && queryUid) {
+         updateQuery({
+            connectionUid,
+            queryUid,
+            name: val
+         });
+         isQuerySaved.value = true;
+         saveStatus.value = 'saved';
+         isSaving.value = false;
+
+         setTimeout(() => {
+            if (saveStatus.value === 'saved')
+               saveStatus.value = 'idle';
+         }, 2000);
+      }
+      else {
+         isQuerySaved.value = false;
+         saveStatus.value = 'idle';
+         isSaving.value = false;
+      }
+   }, 500);
 });
 
 watch(() => props.isSelected, (val) => {
    if (val) {
-      changeBreadcrumbs({ schema: selectedSchema.value, query: `Query #${props.tab.index}` });
+      changeBreadcrumbs({ schema: selectedSchema.value, query: 'New Query' });
       setTimeout(() => {
          if (queryEditor.value)
             queryEditor.value.editor.focus();
@@ -420,7 +503,7 @@ watch(() => props.isSelected, (val) => {
 });
 
 watch(selectedSchema, () => {
-   changeBreadcrumbs({ schema: selectedSchema.value, query: `Query #${props.tab.index}` });
+   changeBreadcrumbs({ schema: selectedSchema.value, query: 'New Query' });
 });
 
 watch(databaseSchemas, () => {
@@ -434,6 +517,11 @@ watch(() => props.tab.content, () => {
 
    if (editorValue !== query.value)// If change not rendered in editor
       queryEditor.value.editor.session.setValue(query.value);
+});
+
+watch(() => props.tab.elementName, (newName) => {
+   if (newName !== queryName.value)
+      queryName.value = newName as string;
 });
 
 watch(isChanged, (val) => {
@@ -588,20 +676,15 @@ const openHistoryModal = () => {
 };
 
 const saveQuery = () => {
-   addNote({
-      uid: uidGen('N'),
-      cUid: workspace.value.uid,
-      type: 'query',
-      date: new Date(),
-      note: query.value,
-      isArchived: false,
-      title: queryName.value
+   addQuery({
+      connectionUid: workspace.value.uid,
+      name: queryName.value || t('database.newQuery'),
+      sql: query.value,
+      schema: breadcrumbsSchema.value,
+      database: workspace.value.database
    });
    isQuerySaved.value = true;
-};
-
-const openSavedModal = () => {
-   showScratchpad('query');
+   addNotification({ status: 'success', message: t('general.actionSuccessful', { action: t('general.save') }) });
 };
 
 const selectQuery = (sql: string) => {
@@ -662,7 +745,30 @@ const rollbackTab = async () => {
 defineExpose({ resizeResults });
 
 query.value = props.tab.content as string;
-queryName.value = props.tab.elementName as string;
+if (isSavedQueryMarker(props.tab.elementType)) {
+   const queryUid = extractQueryUidFromMarker(props.tab.elementType);
+
+   const savedQuery = queryUid ? savedQueriesStore.getQueryById(props.connection.uid, queryUid) : null;
+   if (savedQuery) {
+      query.value = savedQuery.sql;
+      queryName.value = savedQuery.name;
+      updateTabContent({
+         elementName: savedQuery.name,
+         filePath: filePath.value,
+         uid: props.connection.uid,
+         tab: props.tab.uid,
+         type: 'query',
+         schema: selectedSchema.value,
+         content: query.value,
+         elementType: props.tab.elementType
+      });
+   }
+   else
+      queryName.value = props.tab.elementName as string;
+}
+else
+   queryName.value = props.tab.elementName as string;
+
 filePath.value = props.tab.filePath as string;
 selectedSchema.value = props.tab.schema || breadcrumbsSchema.value;
 
@@ -926,6 +1032,23 @@ onBeforeUnmount(() => {
         > div + div {
           padding-left: 0.6rem;
         }
+
+        .save-status {
+          font-size: 0.75rem;
+          align-items: center;
+
+          &.saving {
+            color: var(--primary-color);
+          }
+
+          &.saved {
+            color: var(--success-color, #28a745);
+          }
+
+          .rotating {
+            animation: rotate 1s linear infinite;
+          }
+        }
       }
     }
   }
@@ -934,4 +1057,13 @@ onBeforeUnmount(() => {
     min-height: 200px;
   }
 }
-</style>filePathsfilePathsfilePaths
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>
