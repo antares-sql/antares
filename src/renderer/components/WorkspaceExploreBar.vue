@@ -53,7 +53,25 @@
                </div>
             </span>
          </div>
-         <div class="workspace-explorebar-search">
+         <div v-if="workspace.connectionStatus === 'connected'" class="workspace-explorebar-tabs">
+            <button
+               class="tab-btn"
+               :class="{ active: activeTab === 'database' }"
+               @click="activeTab = 'database'"
+            >
+               <BaseIcon icon-name="mdiDatabase" :size="14" />
+               <span>{{ t('connection.databases') }}</span>
+            </button>
+            <button
+               class="tab-btn"
+               :class="{ active: activeTab === 'queries' }"
+               @click="activeTab = 'queries'"
+            >
+               <BaseIcon icon-name="mdiBookmarkMultiple" :size="14" />
+               <span>{{ t('database.savedQueries') }}</span>
+            </button>
+         </div>
+         <div v-if="activeTab === 'database'" class="workspace-explorebar-search">
             <div v-if="workspace.connectionStatus === 'connected'" class="input-group has-icon-right">
                <div
                   class="input-group-addon px-1 py-0 p-vcentered c-hand"
@@ -84,7 +102,11 @@
                />
             </div>
          </div>
-         <div class="workspace-explorebar-body" @click="explorebar.focus()">
+         <div
+            v-if="activeTab === 'database'"
+            class="workspace-explorebar-body"
+            @click="explorebar.focus()"
+         >
             <WorkspaceExploreBarSchema
                v-for="db of filteredSchemas"
                :key="db.name"
@@ -96,6 +118,11 @@
                @show-table-context="openTableContext"
                @show-misc-context="openMiscContext"
                @show-misc-folder-context="openMiscFolderContext"
+            />
+         </div>
+         <div v-else class="workspace-explorebar-body">
+            <WorkspaceExploreSavedQueries
+               :connection-uid="connection.uid"
             />
          </div>
       </div>
@@ -143,7 +170,7 @@
          :selected-schema="selectedSchema"
          :context-event="miscContextEvent"
          @open-create-view-tab="openCreateElementTab('view')"
-         @open-create-materializedView-tab="openCreateElementTab('materialized-view')"
+         @open-create-materialized-view-tab="openCreateElementTab('materialized-view')"
          @open-create-trigger-tab="openCreateElementTab('trigger')"
          @open-create-trigger-function-tab="openCreateElementTab('trigger-function')"
          @open-create-routine-tab="openCreateElementTab('routine')"
@@ -169,6 +196,7 @@ import MiscFolderContext from '@/components/WorkspaceExploreBarMiscFolderContext
 import WorkspaceExploreBarSchema from '@/components/WorkspaceExploreBarSchema.vue';
 import DatabaseContext from '@/components/WorkspaceExploreBarSchemaContext.vue';
 import TableContext from '@/components/WorkspaceExploreBarTableContext.vue';
+import WorkspaceExploreSavedQueries from '@/components/WorkspaceExploreSavedQueries.vue';
 import Databases from '@/ipc-api/Databases';
 import Tables from '@/ipc-api/Tables';
 import Views from '@/ipc-api/Views';
@@ -228,6 +256,7 @@ const selectedTable = ref(null);
 const selectedMisc = ref(null);
 const searchTerm = ref('');
 const searchMethod: Ref<'elements' | 'schemas'> = ref('elements');
+const activeTab: Ref<'database' | 'queries'> = ref('database');
 
 const workspace = computed(() => {
    return getWorkspace(props.connection.uid);
@@ -576,6 +605,49 @@ const toggleSearchMethod = () => {
          font-size: 0.6rem;
          height: 1.2rem;
          line-height: 1rem;
+      }
+    }
+
+    .workspace-explorebar-tabs {
+      width: 100%;
+      display: flex;
+      padding: 0 0.1rem;
+      margin-bottom: 0.25rem;
+      gap: 2px;
+
+      .tab-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.25rem;
+        padding: 0.3rem 0.4rem;
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        border: none;
+        border-radius: $border-radius;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+        opacity: 0.6;
+        transition: opacity 0.2s, background 0.2s;
+
+        &:hover {
+          opacity: 0.8;
+          background: var(--bg-color-light-dark);
+        }
+
+        &.active {
+          opacity: 1;
+          background: var(--bg-color-light-dark);
+        }
+
+        span {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
       }
     }
 
