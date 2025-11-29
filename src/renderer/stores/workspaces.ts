@@ -761,8 +761,8 @@ export const useWorkspacesStore = defineStore('workspaces', {
                this.selectTab({ uid, tab: workspace.tabs[workspace.tabs.length - 1].uid });
          }
       },
-      updateTabContent ({ uid, tab, type, schema, content, elementName, filePath }: WorkspaceTab) {
-         this._replaceTab({ uid, tab, type, schema, content, elementName, filePath });
+      updateTabContent ({ uid, tab, type, schema, content, elementName, elementType, filePath }: WorkspaceTab) {
+         this._replaceTab({ uid, tab, type, schema, content, elementName, elementType, filePath });
       },
       renameTabs ({ uid, schema, elementName, elementNewName }: WorkspaceTab) {
          this.workspaces = (this.workspaces as Workspace[]).map(workspace => {

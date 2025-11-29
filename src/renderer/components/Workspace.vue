@@ -47,7 +47,7 @@
                            :size="18"
                         />
                         <span>
-                           <span>{{ cutText(element.elementName || element.content || 'Query', 20, true) }} #{{ element.index }}</span>
+                           <span>{{ cutText(element.elementName || element.content || 'Query', 20, true) }}</span>
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
@@ -654,6 +654,7 @@ import WorkspaceTabTable from '@/components/WorkspaceTabTable.vue';
 import { useFilters } from '@/composables/useFilters';
 import Connection from '@/ipc-api/Connection';
 import { useConsoleStore } from '@/stores/console';
+import { getSavedQueryMarker, useSavedQueriesStore } from '@/stores/savedQueries';
 import { useWorkspacesStore, WorkspaceTab } from '@/stores/workspaces';
 
 import WorkspaceTabNewMaterializedView from './WorkspaceTabNewMaterializedView.vue';
@@ -663,6 +664,7 @@ const { t } = useI18n();
 
 const { cutText } = useFilters();
 const workspacesStore = useWorkspacesStore();
+const savedQueriesStore = useSavedQueriesStore();
 
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
@@ -740,7 +742,23 @@ watch(queryTabs, (newVal, oldVal) => {
 });
 
 const addQueryTab = () => {
-   newTab({ uid: props.connection.uid, type: 'query', schema: workspace.value.breadcrumbs.schema });
+   const newQueryItem = savedQueriesStore.addQuery({
+      connectionUid: props.connection.uid,
+      name: t('database.newQuery'),
+      sql: '',
+      schema: workspace.value.breadcrumbs.schema,
+      database: workspace.value.database
+   });
+
+   newTab({
+      uid: props.connection.uid,
+      type: 'query',
+      content: '',
+      elementName: newQueryItem.name,
+      elementType: getSavedQueryMarker(newQueryItem.uid),
+      autorun: false,
+      schema: newQueryItem.schema || workspace.value.breadcrumbs.schema
+   });
 };
 
 const getSelectedTab = () => {

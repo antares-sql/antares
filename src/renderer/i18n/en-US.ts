@@ -80,7 +80,9 @@ export const enUS = {
       title: 'Title',
       archive: 'Archive', // verb
       undo: 'Undo',
-      moveTo: 'Move to'
+      moveTo: 'Move to',
+      rename: 'Rename',
+      root: 'Root'
    },
    connection: { // Database connection
       connection: 'Connection',
@@ -118,7 +120,8 @@ export const enUS = {
       allConnections: 'All connections',
       searchForConnections: 'Search for connections',
       keepAliveInterval: 'Keep alive interval',
-      singleConnection: 'Single connection'
+      singleConnection: 'Single connection',
+      databases: 'Databses'
    },
    database: { // Database related terms
       schema: 'Schema',
@@ -291,7 +294,18 @@ export const enUS = {
       switchDatabase: 'Switch the database',
       searchForElements: 'Search for elements',
       searchForSchemas: 'Search for schemas',
-      savedQueries: 'Saved queries'
+      savedQueries: 'Saved queries',
+      newQuery: 'New query',
+      newFolder: 'New folder',
+      newSubfolder: 'New subfolder',
+      createNewQuery: 'Create new query',
+      noSavedQueries: 'No saved queries',
+      openInNewTab: 'Open in new tab',
+      deleteFolderContents: 'Delete folder contents',
+      emptyQuery: 'Empty query',
+      rename: 'Rename',
+      autoSaving: 'Saving...',
+      autoSaved: 'Saved'
    },
    application: { // Application related terms
       settings: 'Settings',
