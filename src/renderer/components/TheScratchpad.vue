@@ -209,10 +209,10 @@ const selectedNote = ref(null);
 
 const noteTags: ComputedRef<{code: TagCode; name: string}[]> = computed(() => [
    { code: 'note', name: t('application.note') },
-   { code: 'todo', name: 'TODO' },
-   { code: 'query', name: 'Query' }
+   { code: 'todo', name: 'TODO' }
 ]);
 const filteredNotes = computed(() => connectionNotes.value.filter(n => (
+   n.type !== 'query' &&
    (n.type === selectedTag.value || selectedTag.value === 'all') &&
    (n.cUid === localConnection.value || localConnection.value === null) &&
    (!n.isArchived || showArchived.value) &&
@@ -291,7 +291,8 @@ const selectQuery = (query: string) => {
          uid: selectedWorkspace.value,
          type: 'query',
          content: query,
-         schema: workspace.breadcrumbs.schema
+         schema: workspace.breadcrumbs.schema,
+         elementType: selectedTab.elementType
       });
    }
    else {
