@@ -541,37 +541,49 @@ const closeContext = () => {
    isContext.value = false;
 };
 
+/**
+ * Escapes an identifier (schema, table, or field name) for safe use in SQL queries.
+ * Handles embedded quote characters by doubling them according to database conventions.
+ * @param client - The database client type ('pg', 'mysql', 'maria', 'sqlite', 'firebird', etc.)
+ * @param identifier - The identifier to escape
+ * @returns The escaped and quoted identifier
+ */
+const escapeIdentifier = (client: string, identifier: unknown): string => {
+   // Validate identifier is a string
+   if (typeof identifier !== 'string')
+      throw new Error(`Invalid identifier: expected string, got ${typeof identifier}`);
+
+   switch (client) {
+      case 'mysql':
+      case 'maria':
+         // MySQL/MariaDB: escape backticks by doubling them, wrap in backticks
+         return '`' + identifier.replace(/`/g, '``') + '`';
+      case 'pg':
+      case 'sqlite':
+      case 'firebird':
+      default:
+         // PostgreSQL, SQLite, Firebird, and others: escape double quotes by doubling them, wrap in double quotes
+         return '"' + identifier.replace(/"/g, '""') + '"';
+   }
+};
+
 const buildForeignKeyQuery = (fk: QueryForeign, value: any): string => {
    const schema = fk.refSchema;
    const table = fk.refTable;
    const field = fk.refField;
+   const client = workspaceClient.value;
 
-   // Quote identifiers based on client
+   // Quote and escape identifiers based on client
    let quotedTable: string;
-   let quotedField: string;
 
-   switch (workspaceClient.value) {
-      case 'pg':
-         quotedTable = schema ? `"${schema}"."${table}"` : `"${table}"`;
-         quotedField = `"${field}"`;
-         break;
-      case 'mysql':
-      case 'maria':
-         quotedTable = schema ? `\`${schema}\`.\`${table}\`` : `\`${table}\``;
-         quotedField = `\`${field}\``;
-         break;
-      case 'sqlite':
-         quotedTable = `"${table}"`;
-         quotedField = `"${field}"`;
-         break;
-      case 'firebird':
-         quotedTable = schema ? `"${schema}"."${table}"` : `"${table}"`;
-         quotedField = `"${field}"`;
-         break;
-      default:
-         quotedTable = schema ? `"${schema}"."${table}"` : `"${table}"`;
-         quotedField = `"${field}"`;
-   }
+   // Build the quoted table reference (with optional schema)
+   if (schema && typeof schema === 'string')
+      quotedTable = `${escapeIdentifier(client, schema)}.${escapeIdentifier(client, table)}`;
+
+   else
+      quotedTable = escapeIdentifier(client, table);
+
+   const quotedField = escapeIdentifier(client, field);
 
    // Format the value for the WHERE clause
    let formattedValue: string;
