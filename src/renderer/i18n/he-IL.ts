@@ -80,7 +80,8 @@ export const heIL = {
       title: 'כותרת',
       archive: 'ארכיון', // verb
       undo: 'ביטול פעולה',
-      moveTo: 'העבר אל'
+      moveTo: 'העבר אל',
+      click: 'לחיצה'
    },
    connection: { // Database connection
       connection: 'חיבור',
@@ -238,6 +239,7 @@ export const heIL = {
       fakeDataLanguage: 'שפת נתונים מזויפים',
       queryDuration: 'משך השאילתה',
       setNull: 'הגדר NULL',
+      goToForeignKey: 'עבור לשורת המפתח הזר',
       processesList: 'רשימת תהליכים',
       processInfo: 'מידע על תהליך',
       manageUsers: 'נהל משתמשים',

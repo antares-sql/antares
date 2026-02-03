@@ -21,7 +21,8 @@ export const arSA = {
       insert: 'أدرج',
       seconds: 'ثواني',
       deleteConfirm: 'هل أنت متأكد من حذف الإتصال؟',
-      uploadFile: 'رفع ملف'
+      uploadFile: 'رفع ملف',
+      click: 'انقر'
    },
    connection: {
       connectionName: 'إسم الإتصال',
@@ -52,7 +53,8 @@ export const arSA = {
       deleteRows: 'حذف صف | حذف {count} صفوف',
       confirmToDeleteRows: 'هل أنت متأكد من حذف صف واحد؟? | هل أنت متأكد من حذف {count} صف?',
       addNewRow: 'إضافة صف جديد',
-      numberOfInserts: 'عدد الإدراجات'
+      numberOfInserts: 'عدد الإدراجات',
+      goToForeignKey: 'انتقل إلى صف المفتاح الخارجي'
    },
    application: {
       settings: 'الإعدادات',

@@ -133,6 +133,20 @@
          </span>
       </div>
       <div
+         v-if="selectedRows.length === 1 && foreignKey && selectedCell.value !== null"
+         class="context-element"
+         @click="goToForeignKey"
+      >
+         <span class="d-flex">
+            <BaseIcon
+               icon-name="mdiKeyLink"
+               class="mr-1 mt-1 text-light"
+               :size="18"
+            /> {{ t('database.goToForeignKey') }}
+         </span>
+         <span class="text-light ml-2"> (Ctrl+{{ t('general.click') }})</span>
+      </div>
+      <div
          v-if="selectedCell.isEditable"
          class="context-element"
          @click="showConfirmModal"
@@ -150,6 +164,7 @@
 
 <script setup lang="ts">
 import { DATE, DATETIME, FLOAT, LONG_TEXT, NUMBER, TEXT, TIME, UUID } from 'common/fieldTypes';
+import { QueryForeign } from 'common/interfaces/antares';
 import { computed, Prop } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -162,6 +177,7 @@ const props = defineProps({
    contextEvent: MouseEvent,
    selectedRows: Array,
    selectedCell: Object,
+   keyUsage: Array as Prop<QueryForeign[]>,
    mode: String as Prop<'table' | 'query'>
 });
 
@@ -172,7 +188,8 @@ const emit = defineEmits([
    'copy-cell',
    'copy-row',
    'duplicate-row',
-   'fill-cell'
+   'fill-cell',
+   'go-to-foreign-key'
 ]);
 
 const fakerMethods = {
@@ -227,6 +244,14 @@ const fakerGroup = computed(() => {
       return false;
 });
 
+const foreignKey = computed(() => {
+   if (!props.keyUsage || !props.selectedCell) return null;
+   let fieldName = props.selectedCell.field;
+   if (fieldName && fieldName.includes('.'))
+      fieldName = fieldName.split('.').pop();
+   return props.keyUsage.find(key => key.field === fieldName) || null;
+});
+
 const showConfirmModal = () => {
    emit('show-delete-modal');
 };
@@ -257,6 +282,13 @@ const duplicateRow = () => {
 
 const fillCell = (method: {name: string; group: string}) => {
    emit('fill-cell', { ...method, type: fakerGroup.value });
+   closeContext();
+};
+
+const goToForeignKey = () => {
+   if (foreignKey.value)
+      emit('go-to-foreign-key', foreignKey.value);
+
    closeContext();
 };
 </script>

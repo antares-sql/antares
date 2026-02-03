@@ -71,7 +71,8 @@ export const uzUZ = {
       title: 'Sarlavha',
       archive: 'Arxiv',
       undo: 'Bekor qilish',
-      moveTo: 'Koʻchirish'
+      moveTo: 'Koʻchirish',
+      click: 'Bosish'
    },
    connection: {
       connectionName: 'Ulanish nomi',
@@ -224,6 +225,7 @@ export const uzUZ = {
       fakeDataLanguage: 'Soxta maʼlumotlar tili',
       queryDuration: 'Soʻrov davomiyligi',
       setNull: 'NULL qiymatni oʻrnatish',
+      goToForeignKey: 'Tashqi kalit qatoriga oʻtish',
       processesList: 'Jarayonlar roʻyxati',
       processInfo: 'Jarayon maʼlumotlari',
       manageUsers: 'Foydalanuvchilarni boshqarish',

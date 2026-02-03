@@ -64,7 +64,8 @@ export const ptBR = {
       actionSuccessful: '{action} teve sucesso',
       outputFormat: 'Formato da saída',
       singleFile: 'Arquivo {ext} único',
-      zipCompressedFile: 'Arquivo compactado {ext} ZIP'
+      zipCompressedFile: 'Arquivo compactado {ext} ZIP',
+      click: 'Clique'
    },
    connection: {
       connectionName: 'Nome da Conexão',
@@ -213,6 +214,7 @@ export const ptBR = {
       fakeDataLanguage: 'Linguagem de dados fake',
       queryDuration: 'Tempo de Consulta',
       setNull: 'Setar NULL',
+      goToForeignKey: 'Ir para a linha da chave estrangeira',
       processesList: 'Lista de processos',
       processInfo: 'Informação de processos',
       manageUsers: 'Gerenciar usuários',

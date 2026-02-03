@@ -71,7 +71,8 @@ export const nlNL = {
       title: 'Titel',
       archive: 'Archief',
       undo: 'Ongedaan maken',
-      moveTo: 'Verplaats naar'
+      moveTo: 'Verplaats naar',
+      click: 'Klik'
    },
    connection: {
       connectionName: 'Naam verbinding',
@@ -224,6 +225,7 @@ export const nlNL = {
       fakeDataLanguage: 'Fake data language',
       queryDuration: 'Query duration',
       setNull: 'Zet op NULL',
+      goToForeignKey: 'Ga naar de foreign key rij',
       processesList: 'Proceslijst',
       processInfo: 'Procesinformatie',
       manageUsers: 'Beheer gebruikers',

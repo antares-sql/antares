@@ -14,6 +14,7 @@
          :context-event="contextEvent"
          :selected-rows="selectedRows"
          :selected-cell="selectedCell"
+         :key-usage="keyUsage"
          :mode="mode"
          @show-delete-modal="showDeleteConfirmModal"
          @set-null="setNull"
@@ -21,6 +22,7 @@
          @fill-cell="fillCell"
          @copy-row="copyRow"
          @duplicate-row="duplicateRow"
+         @go-to-foreign-key="goToForeignKey"
          @close-context="closeContext"
       />
       <ul v-if="resultsWithRows.length > 1" class="tab tab-block result-tabs">
@@ -98,6 +100,7 @@
                   @select-row="selectRow"
                   @update-field="updateField($event, row)"
                   @contextmenu="contextMenu"
+                  @ctrl-click-cell="handleForeignKeyClick"
                />
             </template>
          </BaseVirtualScroll>
@@ -253,7 +256,7 @@
 <script setup lang="ts">
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BLOB, DATE, DATETIME, LONG_TEXT, TEXT, TIME } from 'common/fieldTypes';
-import { QueryResult, TableField } from 'common/interfaces/antares';
+import { QueryForeign, QueryResult, TableField } from 'common/interfaces/antares';
 import { TableUpdateParams } from 'common/interfaces/tableApis';
 import { fakerCustom } from 'common/libs/fakerCustom';
 import { jsonToSqlInsert } from 'common/libs/sqlUtils';
@@ -282,7 +285,8 @@ const { t } = useI18n();
 
 const settingsStore = useSettingsStore();
 const consoleStore = useConsoleStore();
-const { getWorkspace } = useWorkspacesStore();
+const workspacesStore = useWorkspacesStore();
+const { getWorkspace, newTab } = workspacesStore;
 
 const { /* dataTabLimit: pageSize, */ defaultCopyType } = storeToRefs(settingsStore);
 
@@ -535,6 +539,88 @@ const updateField = (payload: { field: string; type: string; content: any }, row
 
 const closeContext = () => {
    isContext.value = false;
+};
+
+const buildForeignKeyQuery = (fk: QueryForeign, value: any): string => {
+   const schema = fk.refSchema;
+   const table = fk.refTable;
+   const field = fk.refField;
+
+   // Quote identifiers based on client
+   let quotedTable: string;
+   let quotedField: string;
+
+   switch (workspaceClient.value) {
+      case 'pg':
+         quotedTable = schema ? `"${schema}"."${table}"` : `"${table}"`;
+         quotedField = `"${field}"`;
+         break;
+      case 'mysql':
+      case 'maria':
+         quotedTable = schema ? `\`${schema}\`.\`${table}\`` : `\`${table}\``;
+         quotedField = `\`${field}\``;
+         break;
+      case 'sqlite':
+         quotedTable = `"${table}"`;
+         quotedField = `"${field}"`;
+         break;
+      case 'firebird':
+         quotedTable = schema ? `"${schema}"."${table}"` : `"${table}"`;
+         quotedField = `"${field}"`;
+         break;
+      default:
+         quotedTable = schema ? `"${schema}"."${table}"` : `"${table}"`;
+         quotedField = `"${field}"`;
+   }
+
+   // Format the value for the WHERE clause
+   let formattedValue: string;
+   if (value === null)
+      return `SELECT * FROM ${quotedTable} WHERE ${quotedField} IS NULL`;
+
+   else if (typeof value === 'string')
+      formattedValue = `'${value.replace(/'/g, '\'\'')}'`;
+
+   else if (typeof value === 'number' || typeof value === 'bigint')
+      formattedValue = String(value);
+
+   else if (typeof value === 'boolean')
+      formattedValue = value ? 'TRUE' : 'FALSE';
+
+   else
+      formattedValue = `'${String(value).replace(/'/g, '\'\'')}'`;
+
+   return `SELECT * FROM ${quotedTable} WHERE ${quotedField} = ${formattedValue}`;
+};
+
+const goToForeignKey = (fk: QueryForeign) => {
+   if (!selectedCell.value) return;
+
+   // Get the current cell value
+   const selectedRow = localResults.value.find((row: any) => row._antares_id === selectedRows.value[0]);
+   if (!selectedRow) return;
+
+   // Find the actual field value - handle both "field" and "table.field" formats
+   let cellValue: any;
+   const orgField = selectedCell.value.orgField;
+   if (orgField in selectedRow)
+      cellValue = selectedRow[orgField];
+
+   else {
+      // Try with just the field name
+      const fieldName = orgField.includes('.') ? orgField.split('.').pop() : orgField;
+      const matchingKey = Object.keys(selectedRow).find(k => k === fieldName || k.endsWith(`.${fieldName}`));
+      if (matchingKey)
+         cellValue = selectedRow[matchingKey];
+   }
+
+   const sql = buildForeignKeyQuery(fk, cellValue);
+   newTab({ uid: props.connUid, content: sql, type: 'query', schema: fk.refSchema || workspaceSchema.value, autorun: true });
+};
+
+const handleForeignKeyClick = (payload: { keyUsage: QueryForeign; value: any }) => {
+   const sql = buildForeignKeyQuery(payload.keyUsage, payload.value);
+   newTab({ uid: props.connUid, content: sql, type: 'query', schema: payload.keyUsage.refSchema || workspaceSchema.value, autorun: true });
 };
 
 const showDeleteConfirmModal = (e: any) => {

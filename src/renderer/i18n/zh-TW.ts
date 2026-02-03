@@ -72,7 +72,8 @@ export const zhTW = {
       title: '標題',
       archive: '封存',
       undo: '重做',
-      moveTo: '移動到'
+      moveTo: '移動到',
+      click: '點擊'
    },
    connection: {
       // 資料庫連接
@@ -230,6 +231,7 @@ export const zhTW = {
       fakeDataLanguage: '僞造的數據語言',
       queryDuration: '查詢持續時間',
       setNull: '設定 NULL',
+      goToForeignKey: '轉到外鍵行',
       processesList: '進程列表',
       processInfo: '進程信息',
       manageUsers: '管理使用者',

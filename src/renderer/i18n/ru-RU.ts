@@ -71,7 +71,8 @@ export const ruRU = {
       title: 'Название',
       archive: 'Архив',
       undo: 'Отменить',
-      moveTo: 'Переместить в'
+      moveTo: 'Переместить в',
+      click: 'Клик'
    },
    connection: {
       connectionName: 'Название соединения',
@@ -224,6 +225,7 @@ export const ruRU = {
       fakeDataLanguage: 'Язык поддельных данных',
       queryDuration: 'Длительность запроса',
       setNull: 'Установить NULL',
+      goToForeignKey: 'Перейти к строке внешнего ключа',
       processesList: 'Список процессов',
       processInfo: 'Информация о процессе',
       manageUsers: 'Управление пользователями',
