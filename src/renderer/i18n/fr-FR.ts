@@ -63,7 +63,8 @@ export const frFR = {
       actionSuccessful: '{action} réussie',
       outputFormat: 'Format de sortie',
       singleFile: 'Fichier seul avec l\'extension {ext}',
-      zipCompressedFile: 'Fichier compréssé avec l\'extension {ext}'
+      zipCompressedFile: 'Fichier compréssé avec l\'extension {ext}',
+      click: 'Clic'
    },
    connection: {
       connectionName: 'Nom de la connexion',
@@ -211,6 +212,7 @@ export const frFR = {
       fakeDataLanguage: 'Langue des fausses données',
       queryDuration: 'Temps de requête',
       setNull: 'Définir comme NULL',
+      goToForeignKey: 'Aller à la ligne de la clé étrangère',
       processesList: 'Liste des processus',
       processInfo: 'Information sur le processus',
       manageUsers: 'Organisation des utilisateurs',

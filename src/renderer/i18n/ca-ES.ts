@@ -64,7 +64,8 @@ export const caES = {
       actionSuccessful: '{action} realitzat amb èxit',
       outputFormat: 'Format de sortida',
       singleFile: 'Arxiu {ext} únic',
-      zipCompressedFile: 'Arxiu {ext} comprimit en ZIP'
+      zipCompressedFile: 'Arxiu {ext} comprimit en ZIP',
+      click: 'Clic'
    },
    connection: {
       connectionName: 'Nom de la connexió',
@@ -214,6 +215,7 @@ export const caES = {
       fakeDataLanguage: 'Idioma de dades fictícies',
       queryDuration: 'Durada de la consulta',
       setNull: 'Estableix NULL',
+      goToForeignKey: 'Ves a la fila de la clau estrangera',
       processesList: 'Llista de processos',
       processInfo: 'Informació del procés',
       manageUsers: 'Gestiona usuaris',

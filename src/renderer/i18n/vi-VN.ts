@@ -58,7 +58,8 @@ export const viVN = {
       actionSuccessful: '{action} thành công',
       outputFormat: 'Định dạng đầu ra',
       singleFile: 'Một tệp {ext}',
-      zipCompressedFile: 'Tệp nén zip {ext}'
+      zipCompressedFile: 'Tệp nén zip {ext}',
+      click: 'Nhấp'
    },
    connection: {
       connectionName: 'Tên kết nối',
@@ -204,6 +205,7 @@ export const viVN = {
       fakeDataLanguage: 'Ngôn ngữ dữ liệu giả mạo',
       queryDuration: 'Thời lượng truy vấn',
       setNull: 'Đặt NULL',
+      goToForeignKey: 'Đi đến hàng khóa ngoại',
       processesList: 'Danh sách quy trình',
       processInfo: 'Thông tin quá trình',
       manageUsers: 'Quản lý người dùng',

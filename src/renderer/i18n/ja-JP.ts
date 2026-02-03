@@ -71,7 +71,8 @@ export const jaJP = {
       title: 'タイトル',
       archive: 'アーカイブ',
       undo: '元に戻す',
-      moveTo: '移動'
+      moveTo: '移動',
+      click: 'クリック'
    },
    connection: {
       connection: '接続',
@@ -227,6 +228,7 @@ export const jaJP = {
       fakeDataLanguage: 'フェイクデータの言語',
       queryDuration: 'クエリ実行時間',
       setNull: 'NULL の設定',
+      goToForeignKey: '外部キー行に移動',
       processesList: 'プロセス一覧',
       processInfo: 'プロセス情報',
       manageUsers: 'ユーザーの管理',

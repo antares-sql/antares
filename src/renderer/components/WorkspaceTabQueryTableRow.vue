@@ -15,7 +15,8 @@
             id: row._antares_id,
             orgField: cKey,
             type: fields[cKey].type,
-            length: fields[cKey].charLength || fields[cKey].length
+            length: fields[cKey].charLength || fields[cKey].length,
+            value: col
          })"
       >
          <template v-if="cKey !== '_antares_id'">
@@ -271,7 +272,7 @@ const props = defineProps({
    selectedCell: { type: String, default: null }
 });
 
-const emit = defineEmits(['update-field', 'select-row', 'contextmenu', 'start-editing', 'stop-editing']);
+const emit = defineEmits(['update-field', 'select-row', 'contextmenu', 'start-editing', 'stop-editing', 'ctrl-click-cell']);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isInlineEditor: Ref<any> = ref({});
@@ -558,7 +559,21 @@ const prepareToDelete = () => {
    willBeDeleted.value = true;
 };
 
-const selectRow = (event: Event, field: string) => {
+const selectRow = (event: MouseEvent, field: string) => {
+   // Check for CTRL+Click on a foreign key column
+   if ((event.ctrlKey || event.metaKey) && isForeignKey(field)) {
+      const cellValue = props.row[field];
+      // Don't navigate if the value is NULL
+      if (cellValue !== null) {
+         event.preventDefault();
+         event.stopPropagation();
+         const keyUsageInfo = getKeyUsage(field);
+         if (keyUsageInfo) {
+            emit('ctrl-click-cell', { keyUsage: keyUsageInfo, value: cellValue });
+            return;
+         }
+      }
+   }
    emit('select-row', event, props.row, field);
 };
 
@@ -575,6 +590,7 @@ const openContext = (event: MouseEvent, payload: {
    isEditable?: boolean;
    type: string;
    length: number | false;
+   value?: unknown;
 }) => {
    payload.field = props.fields[payload.orgField].name;// Ensures field name only
    payload.isEditable = isEditable.value;
