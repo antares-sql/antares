@@ -329,6 +329,7 @@ export const ptBR = {
       openSettings: 'Abrir Configurações',
       openScratchpad: 'Abrir scratchpad',
       runOrReload: 'Executar ou recarregar',
+      runQueryAtCursor: 'Executar consulta da linha do cursor',
       openFilter: 'Abrir Filtro',
       nextResultsPage: 'Próxima página de resultados',
       previousResultsPage: 'Página de resultados anterior',

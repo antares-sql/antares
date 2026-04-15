@@ -367,6 +367,7 @@ export const enUS = {
       openAllConnections: 'Open all connections',
       openSettings: 'Open settings',
       runOrReload: 'Run or reload',
+      runQueryAtCursor: 'Run query at cursor',
       openFilter: 'Open filter',
       nextResultsPage: 'Next results page',
       previousResultsPage: 'Previous results page',

@@ -1,5 +1,6 @@
 export const shortcutEvents: Record<string, { i18n: string; i18nParam?: string | number; context?: 'tab' | 'main' }> = {
    'run-or-reload': { i18n: 'application.runOrReload', context: 'tab' },
+   'run-query-at-cursor': { i18n: 'application.runQueryAtCursor', context: 'tab' },
    'open-new-tab': { i18n: 'application.openNewTab', context: 'tab' },
    'close-tab': { i18n: 'application.closeTab', context: 'tab' },
    'format-query': { i18n: 'database.formatQuery', context: 'tab' },
@@ -41,6 +42,11 @@ const shortcuts: ShortcutRecord[] = [
    {
       event: 'run-or-reload',
       keys: ['F5'],
+      os: ['darwin', 'linux', 'win32']
+   },
+   {
+      event: 'run-query-at-cursor',
+      keys: ['CommandOrControl+Enter'],
       os: ['darwin', 'linux', 'win32']
    },
    {
