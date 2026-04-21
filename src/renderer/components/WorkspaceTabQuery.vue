@@ -276,7 +276,8 @@
 <script setup lang="ts">
 import { getCurrentWindow, Menu } from '@electron/remote';
 import { Ace } from 'ace-builds';
-import { ConnectionParams } from 'common/interfaces/antares';
+import { ClientCode, ConnectionParams } from 'common/interfaces/antares';
+import { querySplitter } from 'common/libs/sqlUtils';
 import { uidGen } from 'common/libs/uidGen';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
@@ -371,6 +372,37 @@ const hasAffected = computed(() => affectedCount.value || (!resultsCount.value &
 const isChanged = computed(() => {
    return filePath.value && lastSavedQuery.value !== query.value;
 });
+
+const getCurrentQueryAtCursor = () => {
+   if (!queryEditor.value?.editor) return '';
+
+   const editorInstance = queryEditor.value.editor;
+   const session = editorInstance.session as Ace.EditSession & {
+      doc: {
+         positionToIndex: (position: Ace.Point) => number;
+      };
+   };
+   const cursorPosition = editorInstance.getCursorPosition();
+   const cursorIndex = session.doc.positionToIndex(cursorPosition);
+   const allQueries = querySplitter(query.value, workspace.value.client as ClientCode);
+
+   if (!allQueries.length) return '';
+
+   let currentStart = 0;
+   for (const localQuery of allQueries) {
+      const localIndex = query.value.indexOf(localQuery, currentStart);
+      if (localIndex === -1) continue;
+
+      const localEnd = localIndex + localQuery.length;
+      const isInsideQuery = cursorIndex >= localIndex && cursorIndex <= localEnd;
+      if (isInsideQuery)
+         return localQuery;
+
+      currentStart = localEnd;
+   }
+
+   return '';
+};
 
 watch(query, (val) => {
    clearTimeout(debounceTimeout.value);
@@ -674,6 +706,15 @@ const reloadListener = () => {
       runQuery(query.value);
 };
 
+const runQueryAtCursorListener = () => {
+   const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
+   if (!props.isSelected || hasModalOpen) return;
+
+   const queryAtCursor = getCurrentQueryAtCursor();
+   if (queryAtCursor)
+      runQuery(queryAtCursor);
+};
+
 const formatListener = () => {
    const hasModalOpen = !!document.querySelectorAll('.modal.active').length;
    if (props.isSelected && !hasModalOpen)
@@ -777,6 +818,7 @@ onMounted(() => {
    const localResizer = resizer.value;
 
    ipcRenderer.on('run-or-reload', reloadListener);
+   ipcRenderer.on('run-query-at-cursor', runQueryAtCursorListener);
    ipcRenderer.on('format-query', formatListener);
    ipcRenderer.on('kill-query', killQueryListener);
    ipcRenderer.on('clear-query', clearQueryListener);
@@ -869,6 +911,7 @@ onBeforeUnmount(() => {
    Schema.destroyConnectionToCommit(params);
 
    ipcRenderer.removeListener('run-or-reload', reloadListener);
+   ipcRenderer.removeListener('run-query-at-cursor', runQueryAtCursorListener);
    ipcRenderer.removeListener('format-query', formatListener);
    ipcRenderer.removeListener('kill-query', killQueryListener);
    ipcRenderer.removeListener('clear-query', clearQueryListener);
