@@ -28,6 +28,9 @@
       </div>
       <div class="tile-content">
          <div class="tile-content-message" :class="[{'opened': isSelected}]">
+            <div v-if="queryTitle" class="tile-query-title">
+               {{ queryTitle }}
+            </div>
             <code
                v-if="note.type === 'query'"
                ref="noteParagraph"
@@ -144,6 +147,12 @@ const noteHeight = ref(useElementBounding(noteParagraph)?.height);
 
 const isSelected = computed(() => props.selectedNote === props.note.uid);
 const isBig = computed(() => noteHeight.value > 75);
+const queryTitle = computed(() => {
+   if (props.note.type !== 'query' || !props.note.title || props.note.title === `QUERY: ${props.note.uid}`)
+      return '';
+
+   return props.note.title;
+});
 
 const parseMarkdown = (text: string) => {
    const renderer = {
@@ -247,6 +256,13 @@ const highlightWord = (string: string) => {
        opacity: 0.8;
        font-weight: 600;
        white-space: break-spaces;
+     }
+
+     .tile-query-title {
+       font-weight: 600;
+       overflow: hidden;
+       text-overflow: ellipsis;
+       white-space: nowrap;
      }
 
      .tile-subtitle {

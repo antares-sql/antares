@@ -42,6 +42,14 @@
                   />
                </div>
             </div>
+            <div v-if="localNote.type === 'query'" class="form-group">
+               <label class="form-label">{{ t('general.name') }}</label>
+               <input
+                  v-model="localNote.title"
+                  class="form-input"
+                  type="text"
+               >
+            </div>
             <div class="form-group">
                <label class="form-label">{{ t('general.content') }} <small
                   v-if="localNote.type !== 'query'"
@@ -101,7 +109,7 @@ const localNote: Ref<ConnectionNote> = ref({
 
 const updateNote = () => {
    if (localNote.value.note) {
-      if (!localNote.value.title)// Set a default title
+      if (!localNote.value.title && localNote.value.type !== 'query')
          localNote.value.title = `${localNote.value.type.toLocaleUpperCase()}: ${localNote.value.uid}`;
 
       localNote.value.date = new Date();
@@ -119,6 +127,8 @@ watch(() => localNote.value.type, () => {
 
 onBeforeMount(() => {
    localNote.value = JSON.parse(JSON.stringify(props.note));
+   if (localNote.value.type === 'query' && localNote.value.title === `QUERY: ${localNote.value.uid}`)
+      localNote.value.title = '';
 });
 
 </script>
