@@ -43,8 +43,32 @@ export const querySplitter =(sql: string, dbType: ClientCode): string[] => {
       for (let i = 0; i < line.length; i++) {
          const char = line[i];
 
+         // Handle dollar-quoted blocks in PostgreSQL, only outside regular strings (e.g. '$2b$12$...')
+         if (dbType === 'pg' && !insideString && char === '$') {
+            const match = line.slice(i).match(dollarTagRegex);
+
+            if (match && match.index === 0) {
+               const tag = match[0];
+
+               if (!insideDollarTag) {
+                  insideDollarTag = true;
+                  dollarTagDelimiter = tag;
+                  currentQuery += tag;
+                  i += tag.length - 1;
+                  continue;
+               }
+               else if (dollarTagDelimiter === tag) {
+                  insideDollarTag = false;
+                  dollarTagDelimiter = null;
+                  currentQuery += tag;
+                  i += tag.length - 1;
+                  continue;
+               }
+            }
+         }
+
          // Handle string boundaries
-         if ((char === '\'' || char === '"') && (!insideString || char === stringDelimiter)) {
+         if (!insideDollarTag && (char === '\'' || char === '"') && (!insideString || char === stringDelimiter)) {
             if (!insideString) {
                insideString = true;
                stringDelimiter = char;
@@ -56,28 +80,6 @@ export const querySplitter =(sql: string, dbType: ClientCode): string[] => {
          }
 
          currentQuery += char;
-
-         if (dbType === 'pg') {
-         // Handle dollar-quoted blocks in PostgreSQL
-            if (!insideString && line.slice(i).match(dollarTagRegex)) {
-               const match = line.slice(i).match(dollarTagRegex);
-               if (match) {
-                  const tag = match[0];
-                  if (!insideDollarTag) {
-                     insideDollarTag = true;
-                     dollarTagDelimiter = tag;
-                     currentQuery += tag;
-                     i += tag.length - 1;
-                  }
-                  else if (dollarTagDelimiter === tag) {
-                     insideDollarTag = false;
-                     dollarTagDelimiter = null;
-                     currentQuery += tag;
-                     i += tag.length - 1;
-                  }
-               }
-            }
-         }
 
          // Check BEGIN-END blocks
          if (!insideString && !insideDollarTag) {
