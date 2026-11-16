@@ -1,4 +1,4 @@
-import * as sqlite from 'better-sqlite3';
+import sqlite = require('better-sqlite3');
 import dataTypes from 'common/data-types/sqlite';
 import { DATETIME, FLOAT, NUMBER, TIME } from 'common/fieldTypes';
 import * as antares from 'common/interfaces/antares';

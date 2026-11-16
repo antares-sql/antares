@@ -1,0 +1,72 @@
+# Test databases for Antares integration tests.
+# Used both locally (`npm run test:db:up`) and in CI (.github/workflows/test.yml).
+# Host ports are non-standard on purpose, to avoid clashing with databases already running locally.
+# Credentials are test-only: never reuse them elsewhere.
+
+name: antares-test
+
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: antares
+      MYSQL_DATABASE: antares_test
+    ports:
+      - "33306:3306"
+    command: ["--log-bin-trust-function-creators=1"]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-pantares"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+    tmpfs:
+      - /var/lib/mysql
+
+  mariadb:
+    image: mariadb:11.4
+    environment:
+      MARIADB_ROOT_PASSWORD: antares
+      MARIADB_DATABASE: antares_test
+    ports:
+      - "33307:3306"
+    command: ["--log-bin-trust-function-creators=1"]
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+    tmpfs:
+      - /var/lib/mysql
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: antares
+      POSTGRES_DB: antares_test
+    ports:
+      - "55432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d antares_test"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+    tmpfs:
+      - /var/lib/postgresql/data
+
+  firebird:
+    image: firebirdsql/firebird:5
+    environment:
+      FIREBIRD_ROOT_PASSWORD: antares
+      FIREBIRD_DATABASE: antares_test.fdb
+      FIREBIRD_DATABASE_DEFAULT_CHARSET: UTF8
+      # node-firebird supports legacy SRP (SHA-1) auth and no wire encryption
+      FIREBIRD_CONF_AuthServer: Srp256;Srp
+      FIREBIRD_CONF_WireCrypt: Enabled
+    ports:
+      - "33050:3050"
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /var/lib/firebird/data/antares_test.fdb"]
+      interval: 3s
+      timeout: 5s
+      retries: 40

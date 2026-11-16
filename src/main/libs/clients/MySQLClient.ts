@@ -5,7 +5,7 @@ import * as antares from 'common/interfaces/antares';
 import { removeComments } from 'common/libs/sqlUtils';
 import * as mysql from 'mysql2/promise';
 
-import * as EncodingToCharset from '../../../../node_modules/mysql2/lib/constants/encoding_charset.js';
+import EncodingToCharset = require('../../../../node_modules/mysql2/lib/constants/encoding_charset.js');
 import { BaseClient } from './BaseClient';
 EncodingToCharset.utf8mb3 = 192; // To fix https://github.com/sidorares/node-mysql2/issues/1398 until not included in mysql2
 
@@ -13,7 +13,7 @@ export class MySQLClient extends BaseClient {
    private _schema?: string;
    private _runningConnections: Map<string, number>;
    private _connectionsToCommit: Map<string, mysql.Connection | mysql.PoolConnection>;
-   private _keepaliveTimer: NodeJS.Timer;
+   private _keepaliveTimer: NodeJS.Timeout;
    private _keepaliveMs: number;
    private sqlMode?: string[];
    _connection?: mysql.Connection | mysql.Pool;
@@ -324,6 +324,18 @@ export class MySQLClient extends BaseClient {
       return this.raw(`USE \`${schema}\``);
    }
 
+   /**
+    * Reads the "show table size" user setting.
+    * Isolated in its own method so tests can stub it (electron-store needs Electron).
+    */
+   protected _getShowTableSizeSetting (): boolean {
+      const Store = require('electron-store');
+
+      Store.initRenderer();
+      const settingsStore = new Store({ name: 'settings' });
+      return settingsStore.get('show_table_size', false);
+   }
+
    async getStructure (schemas: Set<string>) {
       /* eslint-disable camelcase */
       interface ShowTableResult {
@@ -389,15 +401,10 @@ export class MySQLClient extends BaseClient {
       const triggersArr: ShowTriggersResult[] = [];
       let schemaSize = 0;
 
-      const Store = require('electron-store');
-
-      Store.initRenderer();
-      const settingsStore = new Store({ name: 'settings' });
+      const showTableSize = this._getShowTableSizeSetting();
 
       for (const db of filteredDatabases) {
          if (!schemas.has(db.Database)) continue;
-
-         const showTableSize = settingsStore.get('show_table_size', false);
 
          if (showTableSize) {
             let { rows: tables } = await this.raw<antares.QueryResult<ShowTableResult>>(`

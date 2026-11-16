@@ -1,0 +1,1638 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`firebird client SQL generation > alterRoutine 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE PROCEDURE "Antares_get_product_tmp"("p_id" INTEGER(11)) RETURNS ("p_name" VARCHAR(100)) SQL SECURITY DEFINER AS BEGIN SELECT name INTO p_name FROM products WHERE id = p_id; END",
+    },
+    {
+      "sql": "DROP PROCEDURE "Antares_get_product_tmp"",
+    },
+    {
+      "sql": "DROP PROCEDURE "get_product_old"",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE PROCEDURE "get_product"("p_id" INTEGER(11)) RETURNS ("p_name" VARCHAR(100)) SQL SECURITY DEFINER AS BEGIN SELECT name INTO p_name FROM products WHERE id = p_id; END",
+    },
+  ],
+}
+`;
+
+exports[`firebird client SQL generation > alterTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "ALTER TABLE "products" ADD "stock" INTEGER DEFAULT 0 NOT NULL, ADD CONSTRAINT "products_stock_idx" INDEX ("stock"), ALTER COLUMN "name" TO "title", ALTER COLUMN "title" TYPE VARCHAR(150), ALTER COLUMN "title" SET DEFAULT 'unnamed', ALTER COLUMN "title" DROP NOT NULL, DROP CONSTRAINT "products_price_idx", ADD CONSTRAINT "products_price_idx" INDEX ("price"), DROP CONSTRAINT "products_category_fk", ADD CONSTRAINT "products_category_fk" FOREIGN KEY ("category_id") REFERENCES "categories" ("id") ON UPDATE CASCADE ON DELETE CASCADE , DROP "created_at", DROP CONSTRAINT "products_name_uq", DROP CONSTRAINT "products_old_fk"; ALTER TABLE "products" ADD CONSTRAINT "products_supplier_fk" FOREIGN KEY ("supplier_id") REFERENCES "suppliers" ("id") ON UPDATE CASCADE",
+    },
+  ],
+}
+`;
+
+exports[`firebird client SQL generation > alterTrigger 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE TRIGGER "Antares_products_bi_tmp" FOR "products" BEFORE INSERT AS BEGIN SET NEW.price = ABS(NEW.price); END",
+    },
+    {
+      "sql": "DROP TRIGGER "Antares_products_bi_tmp"",
+    },
+    {
+      "sql": "DROP TRIGGER "products_bi_old"",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE TRIGGER "products_bi" FOR "products" BEFORE INSERT AS BEGIN SET NEW.price = ABS(NEW.price); END",
+    },
+  ],
+}
+`;
+
+exports[`firebird client SQL generation > alterView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP VIEW "old_expensive_products"",
+    },
+    {
+      "sql": "CREATE VIEW "expensive_products" AS SELECT * FROM products WHERE price > 100",
+    },
+  ],
+}
+`;
+
+exports[`firebird client SQL generation > createRoutine 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE PROCEDURE "get_product"("p_id" INTEGER(11)) RETURNS ("p_name" VARCHAR(100)) SQL SECURITY DEFINER AS BEGIN SELECT name INTO p_name FROM products WHERE id = p_id; END",
+    },
+  ],
+}
+`;
+
+exports[`firebird client SQL generation > createTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE TABLE "products" ("id" INTEGER NOT NULL, "name" VARCHAR(100) DEFAULT 'unnamed' , "price" DECIMAL(10) DEFAULT 0 NOT NULL, "created_at" TIMESTAMP , CONSTRAINT "PRIMARY" PRIMARY KEY ("id"), CONSTRAINT "products_name_uq" UNIQUE ("name"), CONSTRAINT "products_price_idx" INDEX ("price","created_at")); ALTER TABLE "products" ADD CONSTRAINT "products_category_fk" FOREIGN KEY ("category_id") REFERENCES "categories" ("id") ON UPDATE CASCADE",
+    },
+  ],
+}
+`;
+
+exports[`firebird client SQL generation > createTrigger 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE TRIGGER "products_bi" FOR "products" BEFORE INSERT AS BEGIN SET NEW.price = ABS(NEW.price); END",
+    },
+  ],
+}
+`;
+
+exports[`firebird client SQL generation > createView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE VIEW "expensive_products" AS SELECT * FROM products WHERE price > 100",
+    },
+  ],
+}
+`;
+
+exports[`firebird client SQL generation > delete builder 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DELETE FROM "products" WHERE "id" = 1 ROWS null",
+    },
+  ],
+}
+`;
+
+exports[`firebird client SQL generation > dropRoutine 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP PROCEDURE "get_product"",
+    },
+  ],
+}
+`;
+
+exports[`firebird client SQL generation > dropTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP TABLE "products"",
+    },
+  ],
+}
+`;
+
+exports[`firebird client SQL generation > dropTrigger 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP TRIGGER "products_bi"",
+    },
+  ],
+}
+`;
+
+exports[`firebird client SQL generation > dropView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP VIEW "expensive_products"",
+    },
+  ],
+}
+`;
+
+exports[`firebird client SQL generation > duplicateTable 1`] = `
+{
+  "queries": [],
+}
+`;
+
+exports[`firebird client SQL generation > insert builder 1`] = `
+{
+  "queries": [
+    {
+      "sql": "INSERT INTO "products" ("id", "name") VALUES (1, 'a'), (2, 'b')",
+    },
+  ],
+}
+`;
+
+exports[`firebird client SQL generation > killProcess 1`] = `
+{
+  "queries": [],
+}
+`;
+
+exports[`firebird client SQL generation > select builder 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "schema": "test_schema",
+      },
+      "sql": "SELECT FIRST 50 SKIP 100 id, name FROM "products" WHERE price > 10 AND stock > 0 ORDER BY "name" ASC",
+    },
+  ],
+}
+`;
+
+exports[`firebird client SQL generation > truncateTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DELETE FROM "products"",
+    },
+  ],
+}
+`;
+
+exports[`firebird client SQL generation > truncateTable force 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DELETE FROM "products"",
+    },
+  ],
+}
+`;
+
+exports[`firebird client SQL generation > update builder 1`] = `
+{
+  "queries": [
+    {
+      "sql": "UPDATE FIRST 1 "products" SET "price" 12.5 WHERE "id" = 1",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > alterEvent 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "ALTER DEFINER=\`root\`@\`%\` EVENT \`test_schema\`.\`cleanup_old\` ON SCHEDULE EVERY 1 DAY STARTS '2026-01-01 00:00:00' ON COMPLETION PRESERVE RENAME TO \`test_schema\`.\`cleanup\` ENABLE COMMENT 'Nightly cleanup' DO DELETE FROM products WHERE stock = 0",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > alterFunction 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` FUNCTION \`test_schema\`.\`Antares_product_price_tmp\`(\`p_id\` INT(11)) RETURNS DECIMAL(10) LANGUAGE SQL NOT DETERMINISTIC CONTAINS SQL SQL SECURITY INVOKER COMMENT 'Price of a product' BEGIN RETURN (SELECT price FROM products WHERE id = p_id); END",
+    },
+    {
+      "sql": "DROP FUNCTION \`test_schema\`.\`Antares_product_price_tmp\`",
+    },
+    {
+      "sql": "DROP FUNCTION \`test_schema\`.\`product_price_old\`",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` FUNCTION \`test_schema\`.\`product_price\`(\`p_id\` INT(11)) RETURNS DECIMAL(10) LANGUAGE SQL NOT DETERMINISTIC CONTAINS SQL SQL SECURITY INVOKER COMMENT 'Price of a product' BEGIN RETURN (SELECT price FROM products WHERE id = p_id); END",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > alterRoutine 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` PROCEDURE \`test_schema\`.\`Antares_get_product_tmp\`(IN \`p_id\` INT(11),OUT \`p_name\` VARCHAR(100)) LANGUAGE SQL DETERMINISTIC READS SQL DATA SQL SECURITY DEFINER COMMENT 'Fetch a product' BEGIN SELECT name INTO p_name FROM products WHERE id = p_id; END",
+    },
+    {
+      "sql": "DROP PROCEDURE \`test_schema\`.\`Antares_get_product_tmp\`",
+    },
+    {
+      "sql": "DROP PROCEDURE \`test_schema\`.\`get_product_old\`",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` PROCEDURE \`test_schema\`.\`get_product\`(IN \`p_id\` INT(11),OUT \`p_name\` VARCHAR(100)) LANGUAGE SQL DETERMINISTIC READS SQL DATA SQL SECURITY DEFINER COMMENT 'Fetch a product' BEGIN SELECT name INTO p_name FROM products WHERE id = p_id; END",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > alterSchema 1`] = `
+{
+  "queries": [
+    {
+      "sql": "ALTER DATABASE \`new_schema\` COLLATE utf8mb4_bin",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > alterTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "ALTER TABLE \`test_schema\`.\`products\` DROP CONSTRAINT \`products_price_chk\`;ALTER TABLE \`test_schema\`.\`products\` ADD CONSTRAINT \`products_price_chk\` CHECK (price > 0);ALTER TABLE \`test_schema\`.\`products\` DROP CONSTRAINT \`products_old_chk\`;ALTER TABLE \`test_schema\`.\`products\` ADD COLUMN \`stock\` INT(11) NOT NULL DEFAULT 0 AFTER \`price\`, ADD INDEX \`products_stock_idx\` (\`stock\`), ADD CONSTRAINT \`products_supplier_fk\` FOREIGN KEY (\`supplier_id\`) REFERENCES \`suppliers\` (\`id\`) ON UPDATE CASCADE ON DELETE RESTRICT, ADD CONSTRAINT \`products_stock_chk\` CHECK (stock >= 0);ALTER TABLE \`test_schema\`.\`products\` COMMENT='Updated comment', ENGINE=InnoDB, AUTO_INCREMENT=100, COLLATE='utf8mb4_bin', CHANGE COLUMN \`name\` \`title\` VARCHAR(150) NULL DEFAULT 'unnamed' COMMENT 'Product name' FIRST, DROP INDEX \`products_price_idx\`, ADD INDEX \`products_price_idx\` (\`price\`), DROP FOREIGN KEY \`products_category_fk\`, ADD CONSTRAINT \`products_category_fk\` FOREIGN KEY (\`category_id\`) REFERENCES \`categories\` (\`id\`) ON UPDATE CASCADE ON DELETE CASCADE;ALTER TABLE \`test_schema\`.\`products\` DROP COLUMN \`created_at\`, DROP INDEX \`products_name_uq\`, DROP FOREIGN KEY \`products_old_fk\`;RENAME TABLE \`test_schema\`.\`products\` TO \`test_schema\`.\`items\`",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > alterTrigger 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` TRIGGER \`test_schema\`.\`Antares_products_bi_tmp\` BEFORE INSERT ON \`products\` FOR EACH ROW BEGIN SET NEW.price = ABS(NEW.price); END",
+    },
+    {
+      "sql": "DROP TRIGGER \`test_schema\`.\`Antares_products_bi_tmp\`",
+    },
+    {
+      "sql": "DROP TRIGGER \`test_schema\`.\`products_bi_old\`",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` TRIGGER \`test_schema\`.\`products_bi\` BEFORE INSERT ON \`products\` FOR EACH ROW BEGIN SET NEW.price = ABS(NEW.price); END",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > alterView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "USE \`test_schema\`; ALTER ALGORITHM = MERGE DEFINER=\`root\`@\`%\` SQL SECURITY DEFINER VIEW \`test_schema\`.\`old_expensive_products\` AS SELECT * FROM products WHERE price > 100 WITH CASCADED CHECK OPTION ; RENAME TABLE \`test_schema\`.\`old_expensive_products\` TO \`test_schema\`.\`expensive_products\`",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > createEvent 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` EVENT \`test_schema\`.\`cleanup\` ON SCHEDULE EVERY 1 DAY STARTS '2026-01-01 00:00:00' ON COMPLETION PRESERVE ENABLE COMMENT 'Nightly cleanup' DO DELETE FROM products WHERE stock = 0",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > createFunction 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` FUNCTION \`test_schema\`.\`product_price\`(\`p_id\` INT(11)) RETURNS DECIMAL(10) LANGUAGE SQL NOT DETERMINISTIC CONTAINS SQL SQL SECURITY INVOKER COMMENT 'Price of a product' BEGIN RETURN (SELECT price FROM products WHERE id = p_id); END",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > createRoutine 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` PROCEDURE \`test_schema\`.\`get_product\`(IN \`p_id\` INT(11),OUT \`p_name\` VARCHAR(100)) LANGUAGE SQL DETERMINISTIC READS SQL DATA SQL SECURITY DEFINER COMMENT 'Fetch a product' BEGIN SELECT name INTO p_name FROM products WHERE id = p_id; END",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > createSchema 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE DATABASE \`new_schema\` COLLATE utf8mb4_general_ci",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > createTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE TABLE \`test_schema\`.\`products\` (\`id\` INT(11) NOT NULL AUTO_INCREMENT , \`name\` VARCHAR(100) NULL DEFAULT 'unnamed' COMMENT 'Product name' , \`price\` DECIMAL(10,2) NOT NULL DEFAULT 0 , \`created_at\` DATETIME NULL , PRIMARY KEY (\`id\`), UNIQUE INDEX \`products_name_uq\` (\`name\`), INDEX \`products_price_idx\` (\`price\`,\`created_at\`), CONSTRAINT \`products_category_fk\` FOREIGN KEY (\`category_id\`) REFERENCES \`categories\` (\`id\`) ON UPDATE CASCADE ON DELETE RESTRICT, CONSTRAINT \`products_price_chk\` CHECK (price >= 0)) COMMENT='Products table', COLLATE='utf8mb4_general_ci', ENGINE=InnoDB",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > createTrigger 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` TRIGGER \`test_schema\`.\`products_bi\` BEFORE INSERT ON \`products\` FOR EACH ROW BEGIN SET NEW.price = ABS(NEW.price); END",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > createView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE ALGORITHM = MERGE DEFINER=\`root\`@\`%\` SQL SECURITY DEFINER VIEW \`test_schema\`.\`expensive_products\` AS SELECT * FROM products WHERE price > 100 WITH CASCADED CHECK OPTION",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > delete builder 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DELETE FROM \`test_schema\`.\`products\` WHERE \`id\` = 1",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > disableEvent 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "ALTER EVENT \`test_schema\`.\`cleanup\` DISABLE",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > dropEvent 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP EVENT \`test_schema\`.\`cleanup\`",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > dropFunction 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP FUNCTION \`test_schema\`.\`product_price\`",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > dropRoutine 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP PROCEDURE \`test_schema\`.\`get_product\`",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > dropSchema 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP DATABASE \`new_schema\`",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > dropTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP TABLE \`test_schema\`.\`products\`",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > dropTrigger 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP TRIGGER \`test_schema\`.\`products_bi\`",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > dropView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP VIEW \`test_schema\`.\`expensive_products\`",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > duplicateTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE TABLE \`test_schema\`.\`products_copy\` LIKE \`test_schema\`.\`products\`",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > enableEvent 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "ALTER EVENT \`test_schema\`.\`cleanup\` ENABLE",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > insert builder 1`] = `
+{
+  "queries": [
+    {
+      "sql": "INSERT INTO \`test_schema\`.\`products\` (\`id\`, \`name\`) VALUES (1, 'a'), (2, 'b')",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > killProcess 1`] = `
+{
+  "queries": [
+    {
+      "sql": "KILL 42",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > select builder 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "schema": "test_schema",
+      },
+      "sql": "SELECT id, name FROM \`test_schema\`.\`products\` WHERE price > 10 AND stock > 0 ORDER BY \`name\` ASC LIMIT 50 OFFSET 100",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > truncateTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "TRUNCATE TABLE \`test_schema\`.\`products\`;",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > truncateTable force 1`] = `
+{
+  "queries": [
+    {
+      "sql": "SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0; TRUNCATE TABLE \`test_schema\`.\`products\`; SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1);",
+    },
+  ],
+}
+`;
+
+exports[`maria client SQL generation > update builder 1`] = `
+{
+  "queries": [
+    {
+      "sql": "UPDATE \`test_schema\`.\`products\` SET \`price\` 12.5 WHERE \`id\` = 1 LIMIT 1",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > alterEvent 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "ALTER DEFINER=\`root\`@\`%\` EVENT \`test_schema\`.\`cleanup_old\` ON SCHEDULE EVERY 1 DAY STARTS '2026-01-01 00:00:00' ON COMPLETION PRESERVE RENAME TO \`test_schema\`.\`cleanup\` ENABLE COMMENT 'Nightly cleanup' DO DELETE FROM products WHERE stock = 0",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > alterFunction 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` FUNCTION \`test_schema\`.\`Antares_product_price_tmp\`(\`p_id\` INT(11)) RETURNS DECIMAL(10) LANGUAGE SQL NOT DETERMINISTIC CONTAINS SQL SQL SECURITY INVOKER COMMENT 'Price of a product' BEGIN RETURN (SELECT price FROM products WHERE id = p_id); END",
+    },
+    {
+      "sql": "DROP FUNCTION \`test_schema\`.\`Antares_product_price_tmp\`",
+    },
+    {
+      "sql": "DROP FUNCTION \`test_schema\`.\`product_price_old\`",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` FUNCTION \`test_schema\`.\`product_price\`(\`p_id\` INT(11)) RETURNS DECIMAL(10) LANGUAGE SQL NOT DETERMINISTIC CONTAINS SQL SQL SECURITY INVOKER COMMENT 'Price of a product' BEGIN RETURN (SELECT price FROM products WHERE id = p_id); END",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > alterRoutine 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` PROCEDURE \`test_schema\`.\`Antares_get_product_tmp\`(IN \`p_id\` INT(11),OUT \`p_name\` VARCHAR(100)) LANGUAGE SQL DETERMINISTIC READS SQL DATA SQL SECURITY DEFINER COMMENT 'Fetch a product' BEGIN SELECT name INTO p_name FROM products WHERE id = p_id; END",
+    },
+    {
+      "sql": "DROP PROCEDURE \`test_schema\`.\`Antares_get_product_tmp\`",
+    },
+    {
+      "sql": "DROP PROCEDURE \`test_schema\`.\`get_product_old\`",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` PROCEDURE \`test_schema\`.\`get_product\`(IN \`p_id\` INT(11),OUT \`p_name\` VARCHAR(100)) LANGUAGE SQL DETERMINISTIC READS SQL DATA SQL SECURITY DEFINER COMMENT 'Fetch a product' BEGIN SELECT name INTO p_name FROM products WHERE id = p_id; END",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > alterSchema 1`] = `
+{
+  "queries": [
+    {
+      "sql": "ALTER DATABASE \`new_schema\` COLLATE utf8mb4_bin",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > alterTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "ALTER TABLE \`test_schema\`.\`products\` DROP CONSTRAINT \`products_price_chk\`;ALTER TABLE \`test_schema\`.\`products\` ADD CONSTRAINT \`products_price_chk\` CHECK (price > 0);ALTER TABLE \`test_schema\`.\`products\` DROP CONSTRAINT \`products_old_chk\`;ALTER TABLE \`test_schema\`.\`products\` ADD COLUMN \`stock\` INT(11) NOT NULL DEFAULT 0 AFTER \`price\`, ADD INDEX \`products_stock_idx\` (\`stock\`), ADD CONSTRAINT \`products_supplier_fk\` FOREIGN KEY (\`supplier_id\`) REFERENCES \`suppliers\` (\`id\`) ON UPDATE CASCADE ON DELETE RESTRICT, ADD CONSTRAINT \`products_stock_chk\` CHECK (stock >= 0);ALTER TABLE \`test_schema\`.\`products\` COMMENT='Updated comment', ENGINE=InnoDB, AUTO_INCREMENT=100, COLLATE='utf8mb4_bin', CHANGE COLUMN \`name\` \`title\` VARCHAR(150) NULL DEFAULT 'unnamed' COMMENT 'Product name' FIRST, DROP INDEX \`products_price_idx\`, ADD INDEX \`products_price_idx\` (\`price\`), DROP FOREIGN KEY \`products_category_fk\`, ADD CONSTRAINT \`products_category_fk\` FOREIGN KEY (\`category_id\`) REFERENCES \`categories\` (\`id\`) ON UPDATE CASCADE ON DELETE CASCADE;ALTER TABLE \`test_schema\`.\`products\` DROP COLUMN \`created_at\`, DROP INDEX \`products_name_uq\`, DROP FOREIGN KEY \`products_old_fk\`;RENAME TABLE \`test_schema\`.\`products\` TO \`test_schema\`.\`items\`",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > alterTrigger 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` TRIGGER \`test_schema\`.\`Antares_products_bi_tmp\` BEFORE INSERT ON \`products\` FOR EACH ROW BEGIN SET NEW.price = ABS(NEW.price); END",
+    },
+    {
+      "sql": "DROP TRIGGER \`test_schema\`.\`Antares_products_bi_tmp\`",
+    },
+    {
+      "sql": "DROP TRIGGER \`test_schema\`.\`products_bi_old\`",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` TRIGGER \`test_schema\`.\`products_bi\` BEFORE INSERT ON \`products\` FOR EACH ROW BEGIN SET NEW.price = ABS(NEW.price); END",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > alterView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "USE \`test_schema\`; ALTER ALGORITHM = MERGE DEFINER=\`root\`@\`%\` SQL SECURITY DEFINER VIEW \`test_schema\`.\`old_expensive_products\` AS SELECT * FROM products WHERE price > 100 WITH CASCADED CHECK OPTION ; RENAME TABLE \`test_schema\`.\`old_expensive_products\` TO \`test_schema\`.\`expensive_products\`",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > createEvent 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` EVENT \`test_schema\`.\`cleanup\` ON SCHEDULE EVERY 1 DAY STARTS '2026-01-01 00:00:00' ON COMPLETION PRESERVE ENABLE COMMENT 'Nightly cleanup' DO DELETE FROM products WHERE stock = 0",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > createFunction 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` FUNCTION \`test_schema\`.\`product_price\`(\`p_id\` INT(11)) RETURNS DECIMAL(10) LANGUAGE SQL NOT DETERMINISTIC CONTAINS SQL SQL SECURITY INVOKER COMMENT 'Price of a product' BEGIN RETURN (SELECT price FROM products WHERE id = p_id); END",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > createRoutine 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` PROCEDURE \`test_schema\`.\`get_product\`(IN \`p_id\` INT(11),OUT \`p_name\` VARCHAR(100)) LANGUAGE SQL DETERMINISTIC READS SQL DATA SQL SECURITY DEFINER COMMENT 'Fetch a product' BEGIN SELECT name INTO p_name FROM products WHERE id = p_id; END",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > createSchema 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE DATABASE \`new_schema\` COLLATE utf8mb4_general_ci",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > createTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE TABLE \`test_schema\`.\`products\` (\`id\` INT(11) NOT NULL AUTO_INCREMENT , \`name\` VARCHAR(100) NULL DEFAULT 'unnamed' COMMENT 'Product name' , \`price\` DECIMAL(10,2) NOT NULL DEFAULT 0 , \`created_at\` DATETIME NULL , PRIMARY KEY (\`id\`), UNIQUE INDEX \`products_name_uq\` (\`name\`), INDEX \`products_price_idx\` (\`price\`,\`created_at\`), CONSTRAINT \`products_category_fk\` FOREIGN KEY (\`category_id\`) REFERENCES \`categories\` (\`id\`) ON UPDATE CASCADE ON DELETE RESTRICT, CONSTRAINT \`products_price_chk\` CHECK (price >= 0)) COMMENT='Products table', COLLATE='utf8mb4_general_ci', ENGINE=InnoDB",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > createTrigger 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` TRIGGER \`test_schema\`.\`products_bi\` BEFORE INSERT ON \`products\` FOR EACH ROW BEGIN SET NEW.price = ABS(NEW.price); END",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > createView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE ALGORITHM = MERGE DEFINER=\`root\`@\`%\` SQL SECURITY DEFINER VIEW \`test_schema\`.\`expensive_products\` AS SELECT * FROM products WHERE price > 100 WITH CASCADED CHECK OPTION",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > delete builder 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DELETE FROM \`test_schema\`.\`products\` WHERE \`id\` = 1",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > disableEvent 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "ALTER EVENT \`test_schema\`.\`cleanup\` DISABLE",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > dropEvent 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP EVENT \`test_schema\`.\`cleanup\`",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > dropFunction 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP FUNCTION \`test_schema\`.\`product_price\`",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > dropRoutine 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP PROCEDURE \`test_schema\`.\`get_product\`",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > dropSchema 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP DATABASE \`new_schema\`",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > dropTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP TABLE \`test_schema\`.\`products\`",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > dropTrigger 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP TRIGGER \`test_schema\`.\`products_bi\`",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > dropView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP VIEW \`test_schema\`.\`expensive_products\`",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > duplicateTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE TABLE \`test_schema\`.\`products_copy\` LIKE \`test_schema\`.\`products\`",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > enableEvent 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "ALTER EVENT \`test_schema\`.\`cleanup\` ENABLE",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > insert builder 1`] = `
+{
+  "queries": [
+    {
+      "sql": "INSERT INTO \`test_schema\`.\`products\` (\`id\`, \`name\`) VALUES (1, 'a'), (2, 'b')",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > killProcess 1`] = `
+{
+  "queries": [
+    {
+      "sql": "KILL 42",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > select builder 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "schema": "test_schema",
+      },
+      "sql": "SELECT id, name FROM \`test_schema\`.\`products\` WHERE price > 10 AND stock > 0 ORDER BY \`name\` ASC LIMIT 50 OFFSET 100",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > truncateTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "TRUNCATE TABLE \`test_schema\`.\`products\`;",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > truncateTable force 1`] = `
+{
+  "queries": [
+    {
+      "sql": "SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0; TRUNCATE TABLE \`test_schema\`.\`products\`; SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1);",
+    },
+  ],
+}
+`;
+
+exports[`mysql client SQL generation > update builder 1`] = `
+{
+  "queries": [
+    {
+      "sql": "UPDATE \`test_schema\`.\`products\` SET \`price\` 12.5 WHERE \`id\` = 1 LIMIT 1",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > alterFunction 1`] = `
+{
+  "queries": [
+    {
+      "sql": "SET search_path TO "test_schema"",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE FUNCTION "test_schema"."Antares_product_price_tmp" (IN p_id INTEGER) RETURNS NUMERIC LANGUAGE plpgsql SECURITY INVOKER AS BEGIN RETURN (SELECT price FROM products WHERE id = p_id); END",
+    },
+    {
+      "sql": "DROP FUNCTION "test_schema"."Antares_product_price_tmp"",
+    },
+    {
+      "sql": "DROP FUNCTION "test_schema"."product_price_old"",
+    },
+    {
+      "sql": "SET search_path TO "test_schema"",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE FUNCTION "test_schema"."product_price" (IN p_id INTEGER) RETURNS NUMERIC LANGUAGE plpgsql SECURITY INVOKER AS BEGIN RETURN (SELECT price FROM products WHERE id = p_id); END",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > alterMaterializedView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE OR REPLACE MATERIALIZED VIEW "test_schema"."old_expensive_products" AS SELECT * FROM products WHERE price > 100; ALTER VIEW "test_schema"."old_expensive_products" RENAME TO "expensive_products"",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > alterRoutine 1`] = `
+{
+  "queries": [
+    {
+      "sql": "SET search_path TO "test_schema"",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE PROCEDURE "test_schema"."Antares_get_product_tmp"(IN p_id INTEGER,OUT p_name CHARACTER VARYING) LANGUAGE plpgsql SECURITY DEFINER AS BEGIN SELECT name INTO p_name FROM products WHERE id = p_id; END",
+    },
+    {
+      "sql": "DROP PROCEDURE "test_schema"."Antares_get_product_tmp"",
+    },
+    {
+      "sql": "DROP PROCEDURE "test_schema"."get_product_old"",
+    },
+    {
+      "sql": "SET search_path TO "test_schema"",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE PROCEDURE "test_schema"."get_product"(IN p_id INTEGER,OUT p_name CHARACTER VARYING) LANGUAGE plpgsql SECURITY DEFINER AS BEGIN SELECT name INTO p_name FROM products WHERE id = p_id; END",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > alterSchema 1`] = `
+{
+  "queries": [],
+}
+`;
+
+exports[`pg client SQL generation > alterTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "SET search_path TO "test_schema"",
+    },
+    {
+      "sql": "ALTER TABLE "test_schema"."products" RENAME COLUMN "name" TO "title"; CREATE INDEX "products_stock_idx" ON "test_schema"."products" ("stock");DROP INDEX products_price_idx;CREATE INDEX "products_price_idx" ON "test_schema"."products" ("price"); ALTER TABLE "test_schema"."products" ADD COLUMN "stock" INTEGER NOT NULL DEFAULT 0 , ADD CONSTRAINT "products_supplier_fk" FOREIGN KEY ("supplier_id") REFERENCES "test_schema"."suppliers" (id) ON UPDATE CASCADE ON DELETE RESTRICT, ALTER COLUMN "title" TYPE character varying(150) USING "title"::character varying, ALTER COLUMN "title" DROP NOT NULL, ALTER COLUMN "title" SET DEFAULT 'unnamed', DROP CONSTRAINT "products_category_fk", ADD CONSTRAINT "products_category_fk" FOREIGN KEY (category_id) REFERENCES "test_schema"."categories" ("id") ON UPDATE CASCADE ON DELETE CASCADE, DROP COLUMN "created_at", DROP CONSTRAINT "products_name_uq", DROP CONSTRAINT "products_old_fk"; COMMENT ON TABLE "test_schema"."products" IS 'Updated comment'; COMMENT ON COLUMN "test_schema"."products"."title" IS 'Product name'; ALTER TABLE "test_schema"."products" RENAME TO "items";",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > alterTrigger 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE TRIGGER "Antares_products_bi_tmp" BEFORE INSERT ON "test_schema"."products" FOR EACH ROW BEGIN SET NEW.price = ABS(NEW.price); END",
+    },
+    {
+      "sql": "DROP TRIGGER "Antares_products_bi_tmp" ON "test_schema"."products"",
+    },
+    {
+      "sql": "DROP TRIGGER "products_bi_old" ON "test_schema"."products"",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE TRIGGER "products_bi" BEFORE INSERT ON "test_schema"."products" FOR EACH ROW BEGIN SET NEW.price = ABS(NEW.price); END",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > alterTriggerFunction 1`] = `
+{
+  "queries": [
+    {
+      "sql": "SET search_path TO "test_schema"",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE OR REPLACE FUNCTION "test_schema"."trg_fn" () RETURNS TRIGGER LANGUAGE plpgsql AS BEGIN RETURN (SELECT price FROM products WHERE id = p_id); END",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > alterView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE OR REPLACE VIEW "test_schema"."old_expensive_products" AS SELECT * FROM products WHERE price > 100; ALTER VIEW "test_schema"."old_expensive_products" RENAME TO "expensive_products"",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > createFunction 1`] = `
+{
+  "queries": [
+    {
+      "sql": "SET search_path TO "test_schema"",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE FUNCTION "test_schema"."product_price" (IN p_id INTEGER) RETURNS NUMERIC LANGUAGE plpgsql SECURITY INVOKER AS BEGIN RETURN (SELECT price FROM products WHERE id = p_id); END",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > createMaterializedView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE MATERIALIZED VIEW "test_schema"."expensive_products" AS SELECT * FROM products WHERE price > 100",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > createRoutine 1`] = `
+{
+  "queries": [
+    {
+      "sql": "SET search_path TO "test_schema"",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE PROCEDURE "test_schema"."get_product"(IN p_id INTEGER,OUT p_name CHARACTER VARYING) LANGUAGE plpgsql SECURITY DEFINER AS BEGIN SELECT name INTO p_name FROM products WHERE id = p_id; END",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > createSchema 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE SCHEMA "new_schema"",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > createTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE TABLE "test_schema"."products" ("id" INTEGER NOT NULL , "name" CHARACTER VARYING(100) NULL DEFAULT 'unnamed' , "price" NUMERIC(10,2) NOT NULL DEFAULT 0 , "created_at" TIMESTAMP WITHOUT TIME ZONE NULL , PRIMARY KEY (id), CONSTRAINT "products_name_uq" UNIQUE (name), CONSTRAINT "products_category_fk" FOREIGN KEY ("category_id") REFERENCES "test_schema"."categories" ("id") ON UPDATE CASCADE ON DELETE RESTRICT); CREATE INDEX "products_price_idx" ON "test_schema"."products" (price,created_at); COMMENT ON TABLE "test_schema"."products" IS 'Products table'; COMMENT ON COLUMN "test_schema"."products"."name" IS 'Product name';",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > createTrigger 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE TRIGGER "products_bi" BEFORE INSERT ON "test_schema"."products" FOR EACH ROW BEGIN SET NEW.price = ABS(NEW.price); END",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > createTriggerFunction 1`] = `
+{
+  "queries": [
+    {
+      "sql": "SET search_path TO "test_schema"",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE FUNCTION "test_schema"."trg_fn" () RETURNS TRIGGER LANGUAGE plpgsql AS BEGIN RETURN (SELECT price FROM products WHERE id = p_id); END",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > createView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE VIEW "test_schema"."expensive_products" AS SELECT * FROM products WHERE price > 100",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > delete builder 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DELETE FROM "test_schema"."products" WHERE "id" = 1",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > disableTrigger 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "ALTER TABLE "test_schema"."products_bi" DISABLE TRIGGER "undefined"",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > dropFunction 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP FUNCTION "test_schema"."product_price"",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > dropMaterializedView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP MATERIALIZED VIEW "test_schema"."expensive_products"",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > dropRoutine 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP PROCEDURE "test_schema"."get_product"",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > dropSchema 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP SCHEMA "new_schema" CASCADE",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > dropTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP TABLE "test_schema"."products"",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > dropTrigger 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP TRIGGER "undefined" ON "test_schema"."products_bi"",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > dropView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP VIEW "test_schema"."expensive_products"",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > duplicateTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE TABLE "test_schema"."products_copy" (LIKE "test_schema"."products" INCLUDING ALL)",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > enableTrigger 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "ALTER TABLE "test_schema"."products_bi" ENABLE TRIGGER "undefined"",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > insert builder 1`] = `
+{
+  "queries": [
+    {
+      "sql": "INSERT INTO "test_schema"."products" ("id", "name") VALUES (1, 'a'), (2, 'b')",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > killProcess 1`] = `
+{
+  "queries": [
+    {
+      "sql": "SELECT pg_terminate_backend(42)",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > select builder 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "schema": "test_schema",
+      },
+      "sql": "SELECT id, name FROM "test_schema"."products" WHERE price > 10 AND stock > 0 ORDER BY "name" ASC LIMIT 50 OFFSET 100",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > truncateTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "TRUNCATE TABLE "test_schema"."products"",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > truncateTable force 1`] = `
+{
+  "queries": [
+    {
+      "sql": "TRUNCATE TABLE "test_schema"."products"",
+    },
+  ],
+}
+`;
+
+exports[`pg client SQL generation > update builder 1`] = `
+{
+  "queries": [
+    {
+      "sql": "UPDATE "test_schema"."products" SET "price" 12.5 WHERE "id" = 1",
+    },
+  ],
+}
+`;
+
+exports[`sqlite client SQL generation > alterTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "BEGIN TRANSACTION",
+    },
+    {
+      "sql": "PRAGMA foreign_keys = 0",
+    },
+    {
+      "sql": "CREATE TABLE "Antares_products_tmp" AS SELECT * FROM "products"",
+    },
+    {
+      "sql": "SELECT * FROM "test_schema".sqlite_master WHERE type='trigger' AND tbl_name = 'products'",
+    },
+    {
+      "sql": "DROP TABLE "test_schema"."products"",
+    },
+    {
+      "sql": "CREATE TABLE "test_schema"."products" ("id" INTEGER(11) NOT NULL AUTO_INCREMENT , "title" VARCHAR(150) NULL DEFAULT 'unnamed' , "price" NUMERIC(10) NOT NULL DEFAULT 0 , "stock" INTEGER(11) NOT NULL DEFAULT 0 , PRIMARY KEY ("id"), CONSTRAINT "products_category_fk" FOREIGN KEY ("category_id") REFERENCES "categories" ("id") ON UPDATE CASCADE ON DELETE RESTRICT); CREATE INDEX "products_price_idx" ON "products" ("price","created_at")",
+    },
+    {
+      "sql": "INSERT INTO "products" ("id","title","price") SELECT "id","name","price" FROM "Antares_products_tmp"",
+    },
+    {
+      "sql": "DROP TABLE "test_schema"."Antares_products_tmp"",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE TRIGGER \`test_schema\`.\`products_bi\` BEFORE INSERT ON \`products\` FOR EACH ROW BEGIN SELECT 1; END",
+    },
+    {
+      "sql": "PRAGMA foreign_keys = 1",
+    },
+    {
+      "sql": "COMMIT",
+    },
+  ],
+}
+`;
+
+exports[`sqlite client SQL generation > alterTrigger 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` TRIGGER \`test_schema\`.\`Antares_products_bi_tmp\` BEFORE INSERT ON \`products\` FOR EACH ROW BEGIN SET NEW.price = ABS(NEW.price); END",
+    },
+    {
+      "sql": "DROP TRIGGER \`test_schema\`.\`Antares_products_bi_tmp\`",
+    },
+    {
+      "sql": "DROP TRIGGER \`test_schema\`.\`products_bi_old\`",
+    },
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` TRIGGER \`test_schema\`.\`products_bi\` BEFORE INSERT ON \`products\` FOR EACH ROW BEGIN SET NEW.price = ABS(NEW.price); END",
+    },
+  ],
+}
+`;
+
+exports[`sqlite client SQL generation > alterView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP VIEW "test_schema"."old_expensive_products"",
+    },
+    {
+      "sql": "CREATE VIEW "test_schema"."expensive_products" AS SELECT * FROM products WHERE price > 100",
+    },
+  ],
+}
+`;
+
+exports[`sqlite client SQL generation > createTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE TABLE "test_schema"."products" ("id" INTEGER(11) NOT NULL AUTO_INCREMENT , "name" VARCHAR(100) NULL DEFAULT 'unnamed' , "price" NUMERIC(10) NOT NULL DEFAULT 0 , "created_at" DATETIME NULL , PRIMARY KEY ("id"), CONSTRAINT "products_category_fk" FOREIGN KEY ("category_id") REFERENCES "categories" ("id") ON UPDATE CASCADE ON DELETE RESTRICT); CREATE UNIQUE INDEX "products_name_uq" ON "products" ("name");CREATE INDEX "products_price_idx" ON "products" ("price","created_at")",
+    },
+  ],
+}
+`;
+
+exports[`sqlite client SQL generation > createTrigger 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "split": false,
+      },
+      "sql": "CREATE DEFINER=\`root\`@\`%\` TRIGGER \`test_schema\`.\`products_bi\` BEFORE INSERT ON \`products\` FOR EACH ROW BEGIN SET NEW.price = ABS(NEW.price); END",
+    },
+  ],
+}
+`;
+
+exports[`sqlite client SQL generation > createView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE VIEW "test_schema"."expensive_products" AS SELECT * FROM products WHERE price > 100",
+    },
+  ],
+}
+`;
+
+exports[`sqlite client SQL generation > delete builder 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DELETE FROM "test_schema"."products" WHERE id = 1",
+    },
+  ],
+}
+`;
+
+exports[`sqlite client SQL generation > dropTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP TABLE "test_schema"."products"",
+    },
+  ],
+}
+`;
+
+exports[`sqlite client SQL generation > dropTrigger 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP TRIGGER \`test_schema\`.\`products_bi\`",
+    },
+  ],
+}
+`;
+
+exports[`sqlite client SQL generation > dropView 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DROP VIEW "test_schema"."expensive_products"",
+    },
+  ],
+}
+`;
+
+exports[`sqlite client SQL generation > duplicateTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "CREATE TABLE "test_schema"."products_copy" AS SELECT * FROM "test_schema"."products"",
+    },
+  ],
+}
+`;
+
+exports[`sqlite client SQL generation > insert builder 1`] = `
+{
+  "queries": [
+    {
+      "sql": "INSERT INTO "test_schema"."products" (id, name) VALUES (1, 'a'), (2, 'b')",
+    },
+  ],
+}
+`;
+
+exports[`sqlite client SQL generation > killProcess 1`] = `
+{
+  "queries": [],
+}
+`;
+
+exports[`sqlite client SQL generation > select builder 1`] = `
+{
+  "queries": [
+    {
+      "args": {
+        "schema": "test_schema",
+      },
+      "sql": "SELECT id, name FROM "test_schema"."products" WHERE price > 10 AND stock > 0 ORDER BY name ASC LIMIT 50 OFFSET 100",
+    },
+  ],
+}
+`;
+
+exports[`sqlite client SQL generation > truncateTable 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DELETE FROM "test_schema"."products"",
+    },
+  ],
+}
+`;
+
+exports[`sqlite client SQL generation > truncateTable force 1`] = `
+{
+  "queries": [
+    {
+      "sql": "DELETE FROM "test_schema"."products"",
+    },
+  ],
+}
+`;
+
+exports[`sqlite client SQL generation > update builder 1`] = `
+{
+  "queries": [
+    {
+      "sql": "UPDATE "test_schema"."products" SET price 12.5 WHERE id = 1 LIMIT 1",
+    },
+  ],
+}
+`;

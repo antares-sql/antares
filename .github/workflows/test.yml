@@ -1,0 +1,79 @@
+name: Tests
+
+on:
+  pull_request:
+    branches: [develop, master, beta]
+  push:
+    branches: [develop]
+  workflow_dispatch: {}
+  # Called by the release workflows (build.yml, build-beta.yml) as a gate before building
+  workflow_call:
+    inputs:
+      ref:
+        description: Git ref to test (defaults to the triggering ref)
+        type: string
+        required: false
+        default: ''
+
+concurrency:
+  group: tests-${{ github.workflow }}-${{ inputs.ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # postinstall rebuilds native modules (better-sqlite3) for Electron's ABI:
+      # tests run inside Electron in Node mode (scripts/vitest.js)
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit -p .
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+  integration:
+    name: Integration tests (MySQL, MariaDB, PostgreSQL, SQLite, Firebird)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Start test databases
+        run: npm run test:db:up
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run integration tests
+        run: npm run test:integration
+
+      - name: Database logs
+        if: failure()
+        run: docker compose -f docker/docker-compose.yml logs --tail 200
+
+      - name: Stop test databases
+        if: always()
+        run: npm run test:db:down

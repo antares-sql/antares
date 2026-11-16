@@ -9,7 +9,13 @@ env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+    with:
+      ref: master
+
   release:
+    needs: test
     runs-on: ${{ matrix.os }}
 
     strategy:

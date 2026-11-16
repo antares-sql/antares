@@ -86,7 +86,7 @@ export class PostgreSQLClient extends BaseClient {
    private _schema?: string;
    private _runningConnections: Map<string, number>;
    private _connectionsToCommit: Map<string, pg.Client | pg.PoolClient>;
-   private _keepaliveTimer: NodeJS.Timer;
+   private _keepaliveTimer: NodeJS.Timeout;
    private _keepaliveMs: number;
    protected _connection?: pg.Client | pg.Pool;
    private types: Record<string, string> = {};
