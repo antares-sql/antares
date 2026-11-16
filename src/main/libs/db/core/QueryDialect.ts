@@ -12,6 +12,35 @@ export abstract class QueryDialect {
    /** Quotes a table/schema/column name */
    abstract quoteIdentifier (name: string): string;
 
+   // Literals
+
+   /** SQL string literal (standard SQL: single quotes, quotes doubled) */
+   quoteString (value: string): string {
+      return `'${value.replaceAll('\'', '\'\'')}'`;
+   }
+
+   /** Binary literal */
+   blobLiteral (data: Buffer): string {
+      return `X'${data.toString('hex')}'`;
+   }
+
+   /** Bit string literal, e.g. b'0101' */
+   bitLiteral (bits: string): string {
+      if (!/^[01]*$/.test(bits))
+         throw new Error(`Invalid bit value: ${bits}`);
+      return `b'${bits}'`;
+   }
+
+   /** Boolean value as received from the UI ('true' / 'false' / boolean) */
+   booleanLiteral (value: string | boolean): string {
+      return String(value);
+   }
+
+   /** Equality condition on a JSON column, appended to the column name: `col${jsonEquals(v)}` */
+   jsonEquals (value: unknown): string {
+      return ` = ${this.quoteString(JSON.stringify(value))}`;
+   }
+
    /** Quotes the keys of object clauses: `where({ id: '= 1' })` → `"id" = 1` */
    protected clauseKey (key: string): string {
       return this.quoteIdentifier(key);

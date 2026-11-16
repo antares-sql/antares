@@ -30,7 +30,7 @@ src/
       clients/          BaseClient + one class per engine (all DB introspection/DDL; being split up into db/)
       db/               Target architecture of the clients refactor
         core/           QueryBuilder (one instance per query, no shared state), QueryDialect (pure SQL rendering)
-        engines/<engine>/  Per-engine pieces, e.g. MySQLDialect
+        engines/<engine>/  Per-engine pieces, e.g. MySQLDialect (identifier quoting, string/blob/bit/boolean literals, JSON comparison)
       exporters/ importers/  SQL dump/import logic, run inside worker threads
       parsers/          Engine-specific SQL parsers
       misc/             validateSender (IPC origin check), ipcLogger
@@ -71,6 +71,7 @@ Aliases are defined both in [tsconfig.json](tsconfig.json) `paths` and in each `
 Rules:
 - Everything above the client class must be **client-agnostic**. Engine differences live in the client classes and in `common/customizations/<engine>.ts` (UI checks `workspace.customizations.<flag>` to enable/disable features).
 - Adding a new capability usually touches: `BaseClient`/engine clients → ipc handler → ipc-api → store/component → customizations flag → i18n strings.
+- SQL values in main must go through the engine dialect (`client.dialect.quoteString()`, `blobLiteral()`, ... or `formatValue()` for UI values): never build literals with `sqlEscaper` or engine `switch`es in handlers.
 - Client contract: [contracts.ts](src/main/libs/db/core/contracts.ts). `DatabaseClient` = methods every engine has; optional features are **capability** interfaces (`RoutinesCapability`, `SchedulersCapability`, ...) declared with `implements` on the engine class. Handlers call them through `requireCapability(client, 'routines')`, which throws `UnsupportedCapabilityError` if the engine lacks it. Never add "not implemented" stubs to `BaseClient`. [capabilities.spec.ts](tests/unit/clients/capabilities.spec.ts) checks that every feature enabled in customizations is implemented.
 - Long-running export/import runs in `src/main/workers/*` (separate webpack build output `dist/exporter.js`, `dist/importer.js`).
 

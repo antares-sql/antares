@@ -2,7 +2,6 @@
 /* eslint-disable no-useless-escape */
 import { lineString, point, polygon } from '@turf/helpers';
 import { BIT, BLOB, DATE, DATETIME, FLOAT, IS_MULTI_SPATIAL, NUMBER, SPATIAL, TEXT_SEARCH } from 'common/fieldTypes';
-import * as antares from 'common/interfaces/antares';
 import { ClientCode } from 'common/interfaces/antares';
 import * as moment from 'moment';
 
@@ -379,28 +378,4 @@ export const jsonToSqlInsert = (args: {
       insertsString += insertStmt + ';';
 
    return insertsString;
-};
-
-/**
- * Formats a JSON value for use in an SQL WHERE clause.
- *
- * @param {object} jsonValue - The JSON value to format.
- * @param {ClientCode} clientType - The database type (e.g., 'pg', 'mysql').
- * @returns {string} - The formatted SQL WHERE clause.
- */
-export const formatJsonForSqlWhere = (jsonValue: object, clientType: antares.ClientCode) => {
-   const formattedValue = JSON.stringify(jsonValue);
-
-   switch (clientType) {
-      case 'mysql':
-         return ` = CAST('${formattedValue}' AS JSON)`;
-      case 'maria':
-         return ` = '${formattedValue}'`;
-      case 'pg':
-         return `::text = '${formattedValue}'`;
-      case 'firebird':
-      case 'sqlite':
-      default:
-         return ` = '${formattedValue}'`;
-   }
 };

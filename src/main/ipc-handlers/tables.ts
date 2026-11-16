@@ -1,13 +1,12 @@
-import customizations from 'common/customizations';
-import { ARRAY, BIT, BLOB, BOOLEAN, DATE, DATETIME, FLOAT, LONG_TEXT, NUMBER, TEXT, TEXT_SEARCH } from 'common/fieldTypes';
+import { DATE, DATETIME } from 'common/fieldTypes';
 import { InsertRowsParams } from 'common/interfaces/tableApis';
 import { fakerCustom } from 'common/libs/fakerCustom';
-import { formatJsonForSqlWhere, sqlEscaper } from 'common/libs/sqlUtils';
 import { ipcMain } from 'electron';
 import * as fs from 'fs';
 import * as moment from 'moment';
 
 import { DatabaseClient, requireCapability } from '../libs/db/core/contracts';
+import { formatValue } from '../libs/db/core/formatValue';
 import { validateSender } from '../libs/misc/validateSender';
 
 export default (connections: Record<string, DatabaseClient>) => {
@@ -130,91 +129,12 @@ export default (connections: Record<string, DatabaseClient>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       delete params.row._antares_id;
-      const { stringsWrapper: sw } = customizations[connections[params.uid]._client];
+      const client = connections[params.uid];
 
-      try { // TODO: move to client classes
-         let escapedParam;
-         let reload = false;
-         const id = typeof params.id === 'number' ? params.id : `${sw}${sqlEscaper(params.id)}${sw}`;
-
-         if ([...NUMBER, ...FLOAT].includes(params.type))
-            escapedParam = params.content;
-         else if ([...TEXT, ...LONG_TEXT].includes(params.type)) {
-            switch (connections[params.uid]._client) {
-               case 'mysql':
-               case 'maria':
-                  escapedParam = `"${sqlEscaper(params.content)}"`;
-                  break;
-               case 'pg':
-               case 'sqlite':
-               case 'firebird':
-                  escapedParam = `'${params.content.replaceAll('\'', '\'\'')}'`;
-                  break;
-            }
-         }
-         else if (ARRAY.includes(params.type))
-            escapedParam = `'${params.content}'`;
-         else if (TEXT_SEARCH.includes(params.type))
-            escapedParam = `'${params.content.replaceAll('\'', '\'\'')}'`;
-         else if (BLOB.includes(params.type)) {
-            if (params.content) {
-               let fileBlob;
-
-               switch (connections[params.uid]._client) {
-                  case 'mysql':
-                  case 'maria':
-                     fileBlob = fs.readFileSync(params.content);
-                     escapedParam = `0x${fileBlob.toString('hex')}`;
-                     break;
-                  case 'pg':
-                  case 'firebird':
-                     fileBlob = fs.readFileSync(params.content);
-                     escapedParam = `decode('${fileBlob.toString('hex')}', 'hex')`;
-                     break;
-                  case 'sqlite':
-                     fileBlob = fs.readFileSync(params.content);
-                     escapedParam = `X'${fileBlob.toString('hex')}'`;
-                     break;
-               }
-               reload = true;
-            }
-            else {
-               switch (connections[params.uid]._client) {
-                  case 'mysql':
-                  case 'maria':
-                     escapedParam = '\'\'';
-                     break;
-                  case 'pg':
-                  case 'firebird':
-                     escapedParam = 'decode(\'\', \'hex\')';
-                     break;
-                  case 'sqlite':
-                     escapedParam = 'X\'\'';
-                     break;
-               }
-            }
-         }
-         else if (BIT.includes(params.type)) {
-            escapedParam = `b'${sqlEscaper(params.content)}'`;
-            reload = true;
-         }
-         else if (BOOLEAN.includes(params.type)) {
-            switch (connections[params.uid]._client) {
-               case 'mysql':
-               case 'maria':
-               case 'pg':
-               case 'firebird':
-                  escapedParam = params.content;
-                  break;
-               case 'sqlite':
-                  escapedParam = Number(params.content === 'true');
-                  break;
-            }
-         }
-         else if (params.content === null)
-            escapedParam = 'NULL';
-         else
-            escapedParam = `'${sqlEscaper(params.content)}'`;
+      try {
+         const { sql: escapedParam, reload: valueReload } = formatValue(client.dialect, params.type, params.content, { readFile: fs.readFileSync });
+         let reload = valueReload;
+         const id = typeof params.id === 'number' ? params.id : client.dialect.quoteString(String(params.id));
 
          if (params.primary) { // TODO: handle multiple primary
             await connections[params.uid]
@@ -233,9 +153,9 @@ export default (connections: Record<string, DatabaseClient>) => {
 
             for (const key in orgRow) {
                if (typeof orgRow[key] === 'string')
-                  orgRow[key] = ` = '${sqlEscaper(orgRow[key])}'`;
+                  orgRow[key] = ` = ${client.dialect.quoteString(orgRow[key])}`;
                else if (typeof orgRow[key] === 'object' && orgRow[key] !== null)
-                  orgRow[key] = formatJsonForSqlWhere(orgRow[key], connections[params.uid]._client);
+                  orgRow[key] = client.dialect.jsonEquals(orgRow[key]);
                else if (orgRow[key] === null)
                   orgRow[key] = `IS ${orgRow[key]}`;
                else
@@ -261,13 +181,15 @@ export default (connections: Record<string, DatabaseClient>) => {
    ipcMain.handle('delete-table-rows', async (event, params) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
+      const { dialect } = connections[params.uid];
+
       if (params.primary) {
          // eslint-disable-next-line @typescript-eslint/no-explicit-any
          const idString = params.rows.map((row: Record<string, any>) => {
             const fieldName = Object.keys(row)[0].includes('.') ? `${params.table}.${params.primary}` : params.primary;
 
             return typeof row[fieldName] === 'string'
-               ? `'${row[fieldName]}'`
+               ? dialect.quoteString(row[fieldName])
                : row[fieldName];
          }).join(',');
 
@@ -290,7 +212,7 @@ export default (connections: Record<string, DatabaseClient>) => {
             for (const row of params.rows) {
                for (const key in row) {
                   if (typeof row[key] === 'string')
-                     row[key] = `'${sqlEscaper(row[key])}'`;
+                     row[key] = dialect.quoteString(row[key]);
 
                   if (row[key] === null)
                      row[key] = 'IS NULL';
@@ -317,7 +239,9 @@ export default (connections: Record<string, DatabaseClient>) => {
    ipcMain.handle('insert-table-fake-rows', async (event, params: InsertRowsParams) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
-      try { // TODO: move to client classes
+      const client = connections[params.uid];
+
+      try {
          const rows: Record<string, string | number | boolean | Date | Buffer>[] = [];
 
          for (let i = 0; i < +params.repeat; i++) {
@@ -328,55 +252,7 @@ export default (connections: Record<string, DatabaseClient>) => {
                let escapedParam;
 
                if (!('group' in params.row[key]) || params.row[key].group === 'manual') { // Manual value
-                  if (params.row[key].value === null || params.row[key].value === undefined)
-                     escapedParam = 'NULL';
-                  else if ([...NUMBER, ...FLOAT].includes(type))
-                     escapedParam = params.row[key].value;
-                  else if ([...TEXT, ...LONG_TEXT].includes(type)) {
-                     switch (connections[params.uid]._client) {
-                        case 'mysql':
-                        case 'maria':
-                           escapedParam = `"${sqlEscaper(params.row[key].value)}"`;
-                           break;
-                        case 'pg':
-                        case 'sqlite':
-                        case 'firebird':
-                           escapedParam = `'${params.row[key].value.replaceAll('\'', '\'\'')}'`;
-                           break;
-                     }
-                  }
-                  else if (BLOB.includes(type)) {
-                     if (params.row[key].value) {
-                        let fileBlob;
-
-                        switch (connections[params.uid]._client) {
-                           case 'mysql':
-                           case 'maria':
-                              fileBlob = fs.readFileSync(params.row[key].value);
-                              escapedParam = `0x${fileBlob.toString('hex')}`;
-                              break;
-                           case 'pg':
-                              fileBlob = fs.readFileSync(params.row[key].value);
-                              escapedParam = `decode('${fileBlob.toString('hex')}', 'hex')`;
-                              break;
-                        }
-                     }
-                     else {
-                        switch (connections[params.uid]._client) {
-                           case 'mysql':
-                           case 'maria':
-                              escapedParam = '""';
-                              break;
-                           case 'pg':
-                              escapedParam = 'decode(\'\', \'hex\')';
-                              break;
-                        }
-                     }
-                  }
-                  else if (BIT.includes(type))
-                     escapedParam = `b'${sqlEscaper(params.row[key].value)}'`;
-                  else
-                     escapedParam = `'${sqlEscaper(params.row[key].value)}'`;
+                  escapedParam = formatValue(client.dialect, type, params.row[key].value, { readFile: fs.readFileSync }).sql;
 
                   insertObj[key] = escapedParam;
                }
@@ -403,17 +279,7 @@ export default (connections: Record<string, DatabaseClient>) => {
                      if (params.row[key].length)
                         fakeValue = fakeValue.substring(0, params.row[key].length);
 
-                     switch (connections[params.uid]._client) {
-                        case 'mysql':
-                        case 'maria':
-                           fakeValue = `'${sqlEscaper(fakeValue)}'`;
-                           break;
-                        case 'pg':
-                        case 'sqlite':
-                        case 'firebird':
-                           fakeValue = `'${fakeValue.replaceAll('\'', '\'\'')}'`;
-                           break;
-                     }
+                     fakeValue = client.dialect.quoteString(fakeValue);
                   }
                   else if ([...DATE, ...DATETIME].includes(type))
                      fakeValue = `'${moment(fakeValue).format('YYYY-MM-DD HH:mm:ss.SSSSSS')}'`;
@@ -440,17 +306,17 @@ export default (connections: Record<string, DatabaseClient>) => {
 
    ipcMain.handle('get-foreign-list', async (event, { uid, schema, table, column, description }) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-      const { elementsWrapper: ew } = customizations[connections[uid]._client];
+      const { dialect } = connections[uid];
 
       try {
          const query = connections[uid]
-            .select(`${ew}${column}${ew} AS foreign_column`)
+            .select(`${dialect.quoteIdentifier(column)} AS foreign_column`)
             .schema(schema)
             .from(table)
             .orderBy('foreign_column ASC');
 
          if (description)
-            query.select(`LEFT(${ew}${description}${ew}, 20) AS foreign_description`);
+            query.select(`LEFT(${dialect.quoteIdentifier(description)}, 20) AS foreign_description`);
 
          const results = await query.run<Record<string, string>>();
 

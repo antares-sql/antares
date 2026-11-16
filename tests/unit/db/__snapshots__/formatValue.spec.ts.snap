@@ -1,0 +1,91 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`firebird literals > compares JSON 1`] = `" = '{"a":"it''s","b":[1,2]}'"`;
+
+exports[`firebird literals > quotes strings 1`] = `
+"'it''s "quoted" \\ back\\slash 50% _ünïcødé_
+new line'"
+`;
+
+exports[`firebird literals > renders blobs 1`] = `"X'0001ff6869'"`;
+
+exports[`firebird literals > renders blobs 2`] = `"X''"`;
+
+exports[`firebird literals > renders booleans 1`] = `
+[
+  "true",
+  "false",
+]
+`;
+
+exports[`maria literals > compares JSON 1`] = `" = '{\\"a\\":\\"it\\'s\\",\\"b\\":[1,2]}'"`;
+
+exports[`maria literals > quotes strings 1`] = `
+"'it\\'s \\"quoted\\" \\\\ back\\\\slash 50% _ünïcødé_
+new line'"
+`;
+
+exports[`maria literals > renders blobs 1`] = `"0x0001ff6869"`;
+
+exports[`maria literals > renders blobs 2`] = `"''"`;
+
+exports[`maria literals > renders booleans 1`] = `
+[
+  "true",
+  "false",
+]
+`;
+
+exports[`mysql literals > compares JSON 1`] = `" = CAST('{\\"a\\":\\"it\\'s\\",\\"b\\":[1,2]}' AS JSON)"`;
+
+exports[`mysql literals > quotes strings 1`] = `
+"'it\\'s \\"quoted\\" \\\\ back\\\\slash 50% _ünïcødé_
+new line'"
+`;
+
+exports[`mysql literals > renders blobs 1`] = `"0x0001ff6869"`;
+
+exports[`mysql literals > renders blobs 2`] = `"''"`;
+
+exports[`mysql literals > renders booleans 1`] = `
+[
+  "true",
+  "false",
+]
+`;
+
+exports[`pg literals > compares JSON 1`] = `"::text = '{"a":"it''s","b":[1,2]}'"`;
+
+exports[`pg literals > quotes strings 1`] = `
+"'it''s "quoted" \\ back\\slash 50% _ünïcødé_
+new line'"
+`;
+
+exports[`pg literals > renders blobs 1`] = `"decode('0001ff6869', 'hex')"`;
+
+exports[`pg literals > renders blobs 2`] = `"decode('', 'hex')"`;
+
+exports[`pg literals > renders booleans 1`] = `
+[
+  "true",
+  "false",
+]
+`;
+
+exports[`sqlite literals > compares JSON 1`] = `" = '{"a":"it''s","b":[1,2]}'"`;
+
+exports[`sqlite literals > quotes strings 1`] = `
+"'it''s "quoted" \\ back\\slash 50% _ünïcødé_
+new line'"
+`;
+
+exports[`sqlite literals > renders blobs 1`] = `"X'0001ff6869'"`;
+
+exports[`sqlite literals > renders blobs 2`] = `"X''"`;
+
+exports[`sqlite literals > renders booleans 1`] = `
+[
+  "1",
+  "0",
+]
+`;
