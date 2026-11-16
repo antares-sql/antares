@@ -1,9 +1,9 @@
-import * as antares from 'common/interfaces/antares';
 import { ipcMain } from 'electron';
 
+import { DatabaseClient, requireCapability } from '../libs/db/core/contracts';
 import { validateSender } from '../libs/misc/validateSender';
 
-export default (connections: Record<string, antares.Client>) => {
+export default (connections: Record<string, DatabaseClient>) => {
    ipcMain.handle('get-view-informations', async (event, params) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
@@ -56,7 +56,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         const result = await connections[params.uid].getMaterializedViewInformations(params);
+         const result = await requireCapability(connections[params.uid], 'materializedViews').getMaterializedViewInformations(params);
          return { status: 'success', response: result };
       }
       catch (err) {
@@ -68,7 +68,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         await connections[params.uid].dropMaterializedView(params);
+         await requireCapability(connections[params.uid], 'materializedViews').dropMaterializedView(params);
          return { status: 'success' };
       }
       catch (err) {
@@ -80,7 +80,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         await connections[params.uid].alterView(params);
+         await requireCapability(connections[params.uid], 'materializedViews').alterMaterializedView(params);
          return { status: 'success' };
       }
       catch (err) {
@@ -92,7 +92,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         await connections[params.uid].createMaterializedView(params);
+         await requireCapability(connections[params.uid], 'materializedViews').createMaterializedView(params);
          return { status: 'success' };
       }
       catch (err) {

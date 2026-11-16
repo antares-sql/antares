@@ -1,0 +1,53 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`client capabilities > firebird capabilities 1`] = `
+[
+  "databases",
+  "routines",
+]
+`;
+
+exports[`client capabilities > maria capabilities 1`] = `
+[
+  "schemas",
+  "databaseCollation",
+  "dbConfig",
+  "cancelQueries",
+  "tableCheck",
+  "tableDdl",
+  "routines",
+  "functions",
+  "schedulers",
+]
+`;
+
+exports[`client capabilities > mysql capabilities 1`] = `
+[
+  "schemas",
+  "databaseCollation",
+  "dbConfig",
+  "cancelQueries",
+  "tableCheck",
+  "tableDdl",
+  "routines",
+  "functions",
+  "schedulers",
+]
+`;
+
+exports[`client capabilities > pg capabilities 1`] = `
+[
+  "schemas",
+  "databases",
+  "dbConfig",
+  "cancelQueries",
+  "tableDdl",
+  "materializedViews",
+  "triggerToggle",
+  "routines",
+  "functions",
+  "triggerFunctions",
+]
+`;
+
+exports[`client capabilities > sqlite capabilities 1`] = `[]`;

@@ -1,14 +1,14 @@
-import * as antares from 'common/interfaces/antares';
 import { ipcMain } from 'electron';
 
+import { DatabaseClient, requireCapability } from '../libs/db/core/contracts';
 import { validateSender } from '../libs/misc/validateSender';
 
-export default (connections: Record<string, antares.Client>) => {
+export default (connections: Record<string, DatabaseClient>) => {
    ipcMain.handle('get-function-informations', async (event, params) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         const result = await connections[params.uid].getFunctionInformations(params);
+         const result = await requireCapability(connections[params.uid], 'functions').getFunctionInformations(params);
          return { status: 'success', response: result };
       }
       catch (err) {
@@ -20,7 +20,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         await connections[params.uid].dropFunction(params);
+         await requireCapability(connections[params.uid], 'functions').dropFunction(params);
          return { status: 'success' };
       }
       catch (err) {
@@ -32,7 +32,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         await connections[params.uid].alterFunction(params);
+         await requireCapability(connections[params.uid], 'functions').alterFunction(params);
          return { status: 'success' };
       }
       catch (err) {
@@ -44,7 +44,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         await connections[params.uid].alterTriggerFunction(params);
+         await requireCapability(connections[params.uid], 'triggerFunctions').alterTriggerFunction(params);
          return { status: 'success' };
       }
       catch (err) {
@@ -56,7 +56,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         await connections[params.uid].createFunction(params);
+         await requireCapability(connections[params.uid], 'functions').createFunction(params);
          return { status: 'success' };
       }
       catch (err) {
@@ -68,7 +68,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         await connections[params.uid].createTriggerFunction(params);
+         await requireCapability(connections[params.uid], 'triggerFunctions').createTriggerFunction(params);
          return { status: 'success' };
       }
       catch (err) {

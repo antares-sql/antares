@@ -7,6 +7,7 @@ import * as pg from 'pg';
 import * as pgAst from 'pgsql-ast-parser';
 import { ConnectionOptions } from 'tls';
 
+import { CancelQueriesCapability, DatabaseClient, DatabasesCapability, DbConfigCapability, FunctionsCapability, MaterializedViewsCapability, RoutinesCapability, SchemasCapability, TableDdlCapability, TriggerFunctionsCapability, TriggerToggleCapability } from '../db/core/contracts';
 import { PostgreSQLDialect } from '../db/engines/postgresql/PostgreSQLDialect';
 import { BaseClient } from './BaseClient';
 
@@ -83,7 +84,7 @@ type builtinsTypes =
    'JSONB' |
    'REGNAMESPACE' |
    'REGROLE';
-export class PostgreSQLClient extends BaseClient {
+export class PostgreSQLClient extends BaseClient implements DatabaseClient, SchemasCapability, DatabasesCapability, DbConfigCapability, CancelQueriesCapability, TableDdlCapability, MaterializedViewsCapability, TriggerToggleCapability, RoutinesCapability, FunctionsCapability, TriggerFunctionsCapability {
    protected readonly _dialect = new PostgreSQLDialect();
    private _schema?: string;
    private _runningConnections: Map<string, number>;
@@ -1132,12 +1133,14 @@ export class PostgreSQLClient extends BaseClient {
    }
 
    async alterMaterializedView ({ view }: { view: antares.AlterViewParams }) {
-      let sql = `CREATE OR REPLACE MATERIALIZED VIEW "${view.schema}"."${view.oldName}" AS ${view.sql}`;
+      // PostgreSQL can't replace the query of a materialized view: validate the new definition
+      // on a temporary copy, then drop and recreate it (same approach as alterTrigger/alterRoutine)
+      const tempName = `Antares_${view.name}_tmp`;
 
-      if (view.name !== view.oldName)
-         sql += `; ALTER VIEW "${view.schema}"."${view.oldName}" RENAME TO "${view.name}"`;
-
-      return await this.raw(sql);
+      await this.createMaterializedView({ ...view, name: tempName });
+      await this.dropMaterializedView({ schema: view.schema, view: tempName });
+      await this.dropMaterializedView({ schema: view.schema, view: view.oldName });
+      return await this.createMaterializedView(view);
    }
 
    async createView (params: antares.CreateViewParams) {

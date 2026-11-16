@@ -1027,7 +1027,16 @@ exports[`pg client SQL generation > alterMaterializedView 1`] = `
 {
   "queries": [
     {
-      "sql": "CREATE OR REPLACE MATERIALIZED VIEW "test_schema"."old_expensive_products" AS SELECT * FROM products WHERE price > 100; ALTER VIEW "test_schema"."old_expensive_products" RENAME TO "expensive_products"",
+      "sql": "CREATE MATERIALIZED VIEW "test_schema"."Antares_expensive_products_tmp" AS SELECT * FROM products WHERE price > 100",
+    },
+    {
+      "sql": "DROP MATERIALIZED VIEW "test_schema"."Antares_expensive_products_tmp"",
+    },
+    {
+      "sql": "DROP MATERIALIZED VIEW "test_schema"."old_expensive_products"",
+    },
+    {
+      "sql": "CREATE MATERIALIZED VIEW "test_schema"."expensive_products" AS SELECT * FROM products WHERE price > 100",
     },
   ],
 }

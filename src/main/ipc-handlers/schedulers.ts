@@ -1,14 +1,14 @@
-import * as antares from 'common/interfaces/antares';
 import { ipcMain } from 'electron';
 
+import { DatabaseClient, requireCapability } from '../libs/db/core/contracts';
 import { validateSender } from '../libs/misc/validateSender';
 
-export default (connections: Record<string, antares.Client>) => {
+export default (connections: Record<string, DatabaseClient>) => {
    ipcMain.handle('get-scheduler-informations', async (event, params) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         const result = await connections[params.uid].getEventInformations(params);
+         const result = await requireCapability(connections[params.uid], 'schedulers').getEventInformations(params);
          return { status: 'success', response: result };
       }
       catch (err) {
@@ -20,7 +20,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         await connections[params.uid].dropEvent(params);
+         await requireCapability(connections[params.uid], 'schedulers').dropEvent(params);
          return { status: 'success' };
       }
       catch (err) {
@@ -32,7 +32,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         await connections[params.uid].alterEvent(params);
+         await requireCapability(connections[params.uid], 'schedulers').alterEvent(params);
          return { status: 'success' };
       }
       catch (err) {
@@ -44,7 +44,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         await connections[params.uid].createEvent(params);
+         await requireCapability(connections[params.uid], 'schedulers').createEvent(params);
          return { status: 'success' };
       }
       catch (err) {
@@ -57,9 +57,9 @@ export default (connections: Record<string, antares.Client>) => {
 
       try {
          if (!params.enabled)
-            await connections[params.uid].enableEvent({ ...params });
+            await requireCapability(connections[params.uid], 'schedulers').enableEvent({ ...params });
          else
-            await connections[params.uid].disableEvent({ ...params });
+            await requireCapability(connections[params.uid], 'schedulers').disableEvent({ ...params });
          return { status: 'success' };
       }
       catch (err) {

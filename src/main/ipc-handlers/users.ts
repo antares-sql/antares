@@ -1,9 +1,9 @@
-import * as antares from 'common/interfaces/antares';
 import { ipcMain } from 'electron';
 
+import { DatabaseClient } from '../libs/db/core/contracts';
 import { validateSender } from '../libs/misc/validateSender';
 
-export default (connections: Record<string, antares.Client>) => {
+export default (connections: Record<string, DatabaseClient>) => {
    ipcMain.handle('get-users', async (event, uid) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 

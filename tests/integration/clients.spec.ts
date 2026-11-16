@@ -7,6 +7,7 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+import { hasCapability } from '../../src/main/libs/db/core/contracts';
 import { getTestEngines } from './helpers/engines';
 
 const TABLE = 'it_products';
@@ -157,6 +158,24 @@ for (const engine of getTestEngines()) {
          expect(info.name.toLowerCase()).toBe(VIEW);
 
          await client.dropView({ schema, view: VIEW });
+      });
+
+      it('alters a materialized view', async ({ skip }) => {
+         if (!hasCapability(client, 'materializedViews')) skip();
+         const mv = { schema, algorithm: '', definer: '', security: '', updateOption: '' };
+
+         await client.createMaterializedView({ ...mv, name: 'it_mv', sql: `SELECT * FROM ${qualified(TABLE)}` });
+         try {
+            await client.alterMaterializedView({ view: { ...mv, name: 'it_mv_renamed', oldName: 'it_mv', sql: `SELECT ${q('id')} FROM ${qualified(TABLE)}` } });
+
+            const info = await client.getMaterializedViewInformations({ schema, view: 'it_mv_renamed' });
+            expect(info.name).toBe('it_mv_renamed');
+            expect(info.sql).not.toContain('price');
+         }
+         finally {
+            await dropIfExists(`DROP MATERIALIZED VIEW IF EXISTS ${qualified('it_mv')}`);
+            await dropIfExists(`DROP MATERIALIZED VIEW IF EXISTS ${qualified('it_mv_renamed')}`);
+         }
       });
 
       it('drops the table', async () => {

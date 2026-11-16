@@ -1,9 +1,9 @@
-import * as antares from 'common/interfaces/antares';
 import { ipcMain } from 'electron';
 
+import { DatabaseClient, requireCapability } from '../libs/db/core/contracts';
 import { validateSender } from '../libs/misc/validateSender';
 
-export default (connections: Record<string, antares.Client>) => {
+export default (connections: Record<string, DatabaseClient>) => {
    ipcMain.handle('get-trigger-informations', async (event, params) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
@@ -57,9 +57,9 @@ export default (connections: Record<string, antares.Client>) => {
 
       try {
          if (!params.enabled)
-            await connections[params.uid].enableTrigger(params);
+            await requireCapability(connections[params.uid], 'triggerToggle').enableTrigger(params);
          else
-            await connections[params.uid].disableTrigger(params);
+            await requireCapability(connections[params.uid], 'triggerToggle').disableTrigger(params);
          return { status: 'success' };
       }
       catch (err) {

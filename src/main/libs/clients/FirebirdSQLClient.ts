@@ -5,10 +5,11 @@ import { removeComments } from 'common/libs/sqlUtils';
 import * as firebird from 'node-firebird';
 import * as path from 'path';
 
+import { DatabaseClient, DatabasesCapability, RoutinesCapability } from '../db/core/contracts';
 import { FirebirdDialect } from '../db/engines/firebird/FirebirdDialect';
 import { BaseClient } from './BaseClient';
 
-export class FirebirdSQLClient extends BaseClient {
+export class FirebirdSQLClient extends BaseClient implements DatabaseClient, DatabasesCapability, RoutinesCapability {
    protected readonly _dialect = new FirebirdDialect();
    private _schema?: string;
    private _runningConnections: Map<string, number>;

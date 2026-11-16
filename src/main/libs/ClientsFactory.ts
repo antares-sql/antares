@@ -4,9 +4,10 @@ import { FirebirdSQLClient } from './clients/FirebirdSQLClient';
 import { MySQLClient } from './clients/MySQLClient';
 import { PostgreSQLClient } from './clients/PostgreSQLClient';
 import { SQLiteClient } from './clients/SQLiteClient';
+import { DatabaseClient } from './db/core/contracts';
 
 export class ClientsFactory {
-   static getClient (args: antares.ClientParams) {
+   static getClient (args: antares.ClientParams): DatabaseClient {
       switch (args.client) {
          case 'mysql':
          case 'maria':

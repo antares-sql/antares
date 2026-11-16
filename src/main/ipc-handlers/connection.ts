@@ -4,10 +4,11 @@ import * as fs from 'fs';
 import { SslOptions } from 'mysql2';
 
 import { ClientsFactory } from '../libs/ClientsFactory';
+import { DatabaseClient } from '../libs/db/core/contracts';
 import { validateSender } from '../libs/misc/validateSender';
 const isAborting: Record<string, boolean> = {};
 
-export default (connections: Record<string, antares.Client>) => {
+export default (connections: Record<string, DatabaseClient>) => {
    ipcMain.handle('test-connection', async (event, conn: antares.ConnectionParams) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 

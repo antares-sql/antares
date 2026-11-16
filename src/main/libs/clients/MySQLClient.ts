@@ -6,11 +6,12 @@ import { removeComments } from 'common/libs/sqlUtils';
 import * as mysql from 'mysql2/promise';
 
 import EncodingToCharset = require('../../../../node_modules/mysql2/lib/constants/encoding_charset.js');
+import { CancelQueriesCapability, DatabaseClient, DatabaseCollationCapability, DbConfigCapability, FunctionsCapability, RoutinesCapability, SchedulersCapability, SchemasCapability, TableCheckCapability, TableDdlCapability } from '../db/core/contracts';
 import { MySQLDialect } from '../db/engines/mysql/MySQLDialect';
 import { BaseClient } from './BaseClient';
 EncodingToCharset.utf8mb3 = 192; // To fix https://github.com/sidorares/node-mysql2/issues/1398 until not included in mysql2
 
-export class MySQLClient extends BaseClient {
+export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCapability, DatabaseCollationCapability, DbConfigCapability, CancelQueriesCapability, TableCheckCapability, TableDdlCapability, RoutinesCapability, FunctionsCapability, SchedulersCapability {
    protected readonly _dialect = new MySQLDialect();
    private _schema?: string;
    private _runningConnections: Map<string, number>;

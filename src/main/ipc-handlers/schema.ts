@@ -1,12 +1,12 @@
-import * as antares from 'common/interfaces/antares';
 import * as workers from 'common/interfaces/workers';
 import { dialog, ipcMain } from 'electron';
 import * as fs from 'fs';
 import { Worker } from 'worker_threads';
 
+import { DatabaseClient, requireCapability } from '../libs/db/core/contracts';
 import { validateSender } from '../libs/misc/validateSender';
 
-export default (connections: Record<string, antares.Client>) => {
+export default (connections: Record<string, DatabaseClient>) => {
    let exporter: Worker = null;
    let importer: Worker = null;
 
@@ -14,7 +14,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         await connections[params.uid].createSchema(params);
+         await requireCapability(connections[params.uid], 'schemas').createSchema(params);
 
          return { status: 'success' };
       }
@@ -27,7 +27,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         await connections[params.uid].alterSchema(params);
+         await requireCapability(connections[params.uid], 'schemas').alterSchema(params);
 
          return { status: 'success' };
       }
@@ -40,7 +40,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         await connections[params.uid].dropSchema(params);
+         await requireCapability(connections[params.uid], 'schemas').dropSchema(params);
 
          return { status: 'success' };
       }
@@ -53,7 +53,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         const collation = await connections[params.uid].getDatabaseCollation(
+         const collation = await requireCapability(connections[params.uid], 'databaseCollation').getDatabaseCollation(
             params
          );
 
@@ -234,7 +234,7 @@ export default (connections: Record<string, antares.Client>) => {
                type: 'init',
                client: {
                   name: type,
-                  config: await connections[uid].getDbConfig()
+                  config: await requireCapability(connections[uid], 'dbConfig').getDbConfig()
                },
                tables,
                options: rest
@@ -309,7 +309,7 @@ export default (connections: Record<string, antares.Client>) => {
 
       return new Promise((resolve/*, reject */) => {
          (async () => {
-            const dbConfig = await connections[options.uid].getDbConfig();
+            const dbConfig = await requireCapability(connections[options.uid], 'dbConfig').getDbConfig();
 
             // Init importer thread
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -390,7 +390,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!tabUid) return;
 
       try {
-         await connections[uid].killTabQuery(tabUid);
+         await requireCapability(connections[uid], 'cancelQueries').killTabQuery(tabUid);
          return { status: 'success' };
       }
       catch (err) {

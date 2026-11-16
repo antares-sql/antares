@@ -4,10 +4,11 @@ import { DATETIME, FLOAT, NUMBER, TIME } from 'common/fieldTypes';
 import * as antares from 'common/interfaces/antares';
 import { removeComments } from 'common/libs/sqlUtils';
 
+import { DatabaseClient } from '../db/core/contracts';
 import { SQLiteDialect } from '../db/engines/sqlite/SQLiteDialect';
 import { BaseClient } from './BaseClient';
 
-export class SQLiteClient extends BaseClient {
+export class SQLiteClient extends BaseClient implements DatabaseClient {
    protected readonly _dialect = new SQLiteDialect();
    private _schema?: string;
    private _connectionsToCommit: Map<string, sqlite.Database>;

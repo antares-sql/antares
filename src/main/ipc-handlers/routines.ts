@@ -1,14 +1,14 @@
-import * as antares from 'common/interfaces/antares';
 import { ipcMain } from 'electron';
 
+import { DatabaseClient, requireCapability } from '../libs/db/core/contracts';
 import { validateSender } from '../libs/misc/validateSender';
 
-export default (connections: Record<string, antares.Client>) => {
+export default (connections: Record<string, DatabaseClient>) => {
    ipcMain.handle('get-routine-informations', async (event, params) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         const result = await connections[params.uid].getRoutineInformations(params);
+         const result = await requireCapability(connections[params.uid], 'routines').getRoutineInformations(params);
          return { status: 'success', response: result };
       }
       catch (err) {
@@ -20,7 +20,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         await connections[params.uid].dropRoutine(params);
+         await requireCapability(connections[params.uid], 'routines').dropRoutine(params);
          return { status: 'success' };
       }
       catch (err) {
@@ -32,7 +32,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         await connections[params.uid].alterRoutine(params);
+         await requireCapability(connections[params.uid], 'routines').alterRoutine(params);
          return { status: 'success' };
       }
       catch (err) {
@@ -44,7 +44,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         await connections[params.uid].createRoutine(params);
+         await requireCapability(connections[params.uid], 'routines').createRoutine(params);
          return { status: 'success' };
       }
       catch (err) {

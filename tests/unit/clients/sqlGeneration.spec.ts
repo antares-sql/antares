@@ -120,9 +120,8 @@ for (const { name, create, types } of engines) {
       const probe = create() as AnyClient;
 
       for (const [label, op] of Object.entries(operations)) {
-      // Skip methods the engine doesn't implement (missing, or inherited "not implemented" stubs)
-         const implemented = typeof probe[op.method] === 'function' &&
-         !String(probe[op.method]).includes('not implemented');
+         // Skip methods the engine doesn't implement (optional capabilities)
+         const implemented = typeof probe[op.method] === 'function';
 
          it.skipIf(!implemented)(label, async () => {
             const client = create() as AnyClient;

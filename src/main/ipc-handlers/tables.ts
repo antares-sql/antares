@@ -1,6 +1,5 @@
 import customizations from 'common/customizations';
 import { ARRAY, BIT, BLOB, BOOLEAN, DATE, DATETIME, FLOAT, LONG_TEXT, NUMBER, TEXT, TEXT_SEARCH } from 'common/fieldTypes';
-import * as antares from 'common/interfaces/antares';
 import { InsertRowsParams } from 'common/interfaces/tableApis';
 import { fakerCustom } from 'common/libs/fakerCustom';
 import { formatJsonForSqlWhere, sqlEscaper } from 'common/libs/sqlUtils';
@@ -8,9 +7,10 @@ import { ipcMain } from 'electron';
 import * as fs from 'fs';
 import * as moment from 'moment';
 
+import { DatabaseClient, requireCapability } from '../libs/db/core/contracts';
 import { validateSender } from '../libs/misc/validateSender';
 
-export default (connections: Record<string, antares.Client>) => {
+export default (connections: Record<string, DatabaseClient>) => {
    ipcMain.handle('get-table-columns', async (event, params) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
@@ -91,7 +91,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         const result = await connections[params.uid].getTableChecks(params);
+         const result = await requireCapability(connections[params.uid], 'tableCheck').getTableChecks(params);
 
          return { status: 'success', response: result };
       }
@@ -104,7 +104,7 @@ export default (connections: Record<string, antares.Client>) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
-         const result = await connections[params.uid].getTableDll(params);
+         const result = await requireCapability(connections[params.uid], 'tableDdl').getTableDll(params);
 
          return { status: 'success', response: result };
       }
