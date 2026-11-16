@@ -76,7 +76,6 @@
    </div>
 </template>
 <script setup lang="ts">
-import { getDebugConnections } from 'common/libs/testConnections';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -93,7 +92,7 @@ const isImportModal = ref(false);
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 const applyDebug = () => {
-   useConnectionsStore().applyDebugConnections(getDebugConnections());
+   useConnectionsStore().applyDebugConnections();
    useNotificationsStore().addNotification({
       status: 'success',
       message: t('application.debugConnectionsApplied')

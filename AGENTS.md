@@ -108,6 +108,8 @@ npm run test:integration    # integration tests (ANTARES_TEST_ENGINES=sqlite,pg 
 npm run test:db:down        # stop and remove test DBs
 npm run test:fixtures:record # re-record introspection fixtures (needs test DBs) after changing an introspection query
 npm run test:e2e            # compile + playwright
+node scripts/appDriver.js start --build   # launch the compiled app (isolated profile) and drive it like a user:
+                            # seed, open "Docker PostgreSQL", click, type, press F5, ss... (see .claude/skills/run-app)
 npx tsc --noEmit -p .       # type check (.ts only; .vue files are checked only by the Vue VS Code extension)
 ```
 

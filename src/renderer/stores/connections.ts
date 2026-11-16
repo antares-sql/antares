@@ -1,5 +1,5 @@
 import { ConnectionParams } from 'common/interfaces/antares';
-import { DEBUG_CONNECTION_PREFIX, DEBUG_FOLDER_UID } from 'common/libs/testConnections';
+import { DEBUG_CONNECTION_PREFIX, DEBUG_FOLDER_UID, getDebugConnections } from 'common/libs/testConnections';
 import { uidGen } from 'common/libs/uidGen';
 import * as crypto from 'crypto';
 import { ipcRenderer } from 'electron';
@@ -308,7 +308,7 @@ export const useConnectionsStore = defineStore('connections', {
          persistentStore.set('custom_icons', this.customIcons);
       },
       /** Debug only: adds (or replaces) the connections to the docker test databases in their own folder */
-      applyDebugConnections (connections: ConnectionParams[]) {
+      applyDebugConnections (connections: ConnectionParams[] = getDebugConnections()) {
          const isDebug = (uid: string) => uid.startsWith(DEBUG_CONNECTION_PREFIX);
 
          this.connections = [
