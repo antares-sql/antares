@@ -3,14 +3,13 @@ import { uidGen } from 'common/libs/uidGen';
 import * as crypto from 'crypto';
 import { ipcRenderer } from 'electron';
 import * as Store from 'electron-store';
+import * as fs from 'fs';
 import { defineStore } from 'pinia';
 
 import { i18n } from '@/i18n';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
 import { useNotificationsStore } from './notifications';
-
-let key = localStorage.getItem('key');
 
 export interface SidebarElement {
    isFolder: boolean;
@@ -25,28 +24,57 @@ export interface SidebarElement {
 
 export interface CustomIcon {base64: string; uid: string}
 
-if (!key) { // If no key in local storage
-   const storedKey = ipcRenderer.sendSync('get-key');// Ask for key stored on disk
-
-   if (!storedKey) { // If not stored key on disk
-      const newKey = crypto.randomBytes(16).toString('hex');
-      localStorage.setItem('key', newKey);
-      ipcRenderer.send('set-key', newKey);
-      key = newKey;
+function getEncryptionKey (): string {
+   const cachedKey = localStorage.getItem('key');
+   if (cachedKey) {
+      ipcRenderer.send('set-key', cachedKey);
+      return cachedKey;
    }
-   else {
+
+   const storedKey = ipcRenderer.sendSync('get-key');
+   if (storedKey) {
       localStorage.setItem('key', storedKey);
-      key = storedKey;
+      return storedKey;
+   }
+
+   const newKey = crypto.randomBytes(16).toString('hex');
+   localStorage.setItem('key', newKey);
+   ipcRenderer.send('set-key', newKey);
+   return newKey;
+}
+
+function createPersistentStore (key: string) {
+   try {
+      const store = new Store({
+         name: 'connections',
+         encryptionKey: key,
+         clearInvalidConfig: true
+      });
+      store.get('connections');
+      return store;
+   }
+   catch {
+      try {
+         const corruptStore = new Store({
+            name: 'connections',
+            encryptionKey: key,
+            clearInvalidConfig: false
+         });
+         const configPath = (corruptStore as any).path;
+         if (typeof configPath === 'string' && fs.existsSync(configPath))
+            fs.copyFileSync(configPath, configPath + '.corrupt');
+      }
+      catch {}
+
+      return new Store({
+         name: 'connections',
+         encryptionKey: key,
+         clearInvalidConfig: true
+      });
    }
 }
-else
-   ipcRenderer.send('set-key', key);
 
-const persistentStore = new Store({
-   name: 'connections',
-   encryptionKey: key,
-   clearInvalidConfig: true
-});
+const persistentStore = createPersistentStore(getEncryptionKey());
 
 export const useConnectionsStore = defineStore('connections', {
    state: () => ({

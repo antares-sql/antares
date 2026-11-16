@@ -17,35 +17,41 @@ export default () => {
    });
 
    ipcMain.on('set-key', (event, key) => {
-      if (safeStorage.isEncryptionAvailable()) {
-         const sessionStore = new Store({
-            name: 'session',
-            fileExtension: ''
-         });
-         const encrypted = safeStorage.encryptString(key);
-         sessionStore.set('key', encrypted);
-         event.returnValue = true;
-      }
-   });
-
-   ipcMain.on('get-key', (event) => {
-      if (!safeStorage.isEncryptionAvailable()) {
-         event.returnValue = false;
-         return;
-      }
       const sessionStore = new Store({
          name: 'session',
          fileExtension: ''
       });
 
-      try {
-         const encrypted = sessionStore.get('key') as string;
-         const key = safeStorage.decryptString(Buffer.from(encrypted, 'utf-8'));
-         event.returnValue = key;
+      if (safeStorage.isEncryptionAvailable()) {
+         const encrypted = safeStorage.encryptString(key);
+         sessionStore.set('key', encrypted);
       }
-      catch (error) {
-         event.returnValue = false;
+      else
+         sessionStore.set('key', key);
+
+      event.returnValue = true;
+   });
+
+   ipcMain.on('get-key', (event) => {
+      const sessionStore = new Store({
+         name: 'session',
+         fileExtension: ''
+      });
+
+      if (safeStorage.isEncryptionAvailable()) {
+         try {
+            const encrypted = sessionStore.get('key') as string;
+            const key = safeStorage.decryptString(Buffer.from(encrypted, 'utf-8'));
+            event.returnValue = key;
+            return;
+         }
+         catch {
+            // Fall through to unencrypted fallback
+         }
       }
+
+      const key = sessionStore.get('key') as string | undefined;
+      event.returnValue = key || false;
    });
 
    ipcMain.handle('show-open-dialog', (event, options) => {
