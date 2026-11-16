@@ -37,7 +37,7 @@
     "appId": "com.fabio286.antares",
     "artifactName": "${productName}-${version}-${os}_${arch}.${ext}",
     "asar": true,
-    "buildDependenciesFromSource": true,
+    "buildDependenciesFromSource": false,
     "directories": {
       "output": "build",
       "buildResources": "assets"
@@ -134,7 +134,6 @@
     "better-sqlite3": "~10.0.0",
     "chalk": "~4.1.2",
     "ciaplu": "^2.2.0",
-    "cpu-features": "^0.0.10",
     "cross-env": "~7.0.2",
     "css-loader": "~7.1.2",
     "electron-log": "~5.0.1",

@@ -85,11 +85,9 @@ VS Code debugging: start `npm run debug` (or `debug-runner`) in a terminal, then
 ## Environment gotchas
 
 - **Node**: `.nvmrc` says 18.16, CI uses Node 20. Both work.
-- **Native modules** (`better-sqlite3`, `cpu-features`) must be built for Electron's ABI. `package.json` sets `build.buildDependenciesFromSource: true`, so `install-app-deps` compiles from source → on Windows it needs **Visual Studio 2019/2022 Build Tools with "Desktop development with C++"** (Electron 30 needs C++20; VS 2017 is not enough).
-  - Workaround without a compiler: fetch the prebuilt binary
-    `cd node_modules/better-sqlite3 && node ../prebuild-install/bin.js --runtime electron --target <electron version> --arch x64`
-    then use `npm run debug-runner` (skips the rebuild). `cpu-features` is an optional ssh2 speed-up; ssh2 works without it.
-  - `node-abi` must be recent enough to know the installed Electron version, otherwise `prebuild-install` fails with "Could not detect abi".
+- **Native modules** must match Electron's ABI. `postinstall` / `rebuild:electron` / `build` run electron-builder's native rebuild with `build.buildDependenciesFromSource: false`, so `better-sqlite3` uses its **prebuilt Electron binary** (no C++ toolchain needed). Compilation from source only happens for modules without prebuilds; a C++ toolchain (on Windows: VS 2019/2022 Build Tools, "Desktop development with C++") is then required.
+  - `cpu-features` is an optional ssh2 dependency (not a direct one) and is aliased to `false` in the main/workers webpack configs, so it is never loaded. If it is present in `node_modules` but can't be compiled, delete `node_modules/cpu-features`.
+  - Upgrading Electron: check that the `better-sqlite3` version publishes prebuilds for it, and that `node-abi` knows the new Electron version (otherwise "Could not detect abi").
 - **`ELECTRON_RUN_AS_NODE`**: terminals spawned by VS Code / Electron tools may have it set; Electron then starts as plain Node (`app` is undefined). `scripts/devRunner.js` deletes it before spawning Electron.
 - **TypeScript in VS Code**: the editor's bundled TS (6.x) defaults to `strict: true` and deprecates `baseUrl`. The tsconfig therefore sets `"strict": false` explicitly and avoids `baseUrl`; do not re-add it. The codebase is **not** strict-null-safe — don't "fix" thousands of strictness errors unless that is the task.
 - `validateSender` currently returns `true` on Windows (`TEMP HOTFIX`).
