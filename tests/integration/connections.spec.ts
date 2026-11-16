@@ -3,6 +3,7 @@
  * query cancellation and SSH tunnels.
  */
 import { execSync } from 'child_process';
+import { getTestDatabases, getTestSsh, TestEngineName } from 'common/libs/testConnections';
 import * as path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -115,12 +116,12 @@ const sshSessions = () => Number(execSync(`${compose} exec -T ssh sh -c "netstat
 
 const sshTargets = getTestEngines()
    .filter(e => e.customizations.sshConnection)
-   .map(e => ({ engine: e, remote: { mysql: ['mysql', 3306], maria: ['mariadb', 3306], pg: ['postgres', 5432] }[e.name as 'mysql'] }));
+   .map(e => ({ engine: e, remote: getTestDatabases()[e.name as TestEngineName].remote }));
 
 describe.skipIf(sshTargets.length === 0)('SSH tunnels', () => {
    for (const { engine, remote } of sshTargets) {
       it(`${engine.name} through an SSH tunnel opens one SSH session and closes it on destroy`, async () => {
-         const ssh = { host: '127.0.0.1', port: 32222, username: 'antares', password: 'antares' };
+         const ssh = getTestSsh();
          const before = sshSessions();
          const client = await engine.connect({ overrides: { host: remote[0], port: remote[1], ssh } });
 

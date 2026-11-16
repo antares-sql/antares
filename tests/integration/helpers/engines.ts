@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import customizations from 'common/customizations';
 import { Customizations } from 'common/interfaces/customizations';
+import { getTestDatabases } from 'common/libs/testConnections';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -11,10 +12,9 @@ import { EngineTypes, engineTypes } from '../../unit/clients/fixtures';
 
 /**
  * Test database connections. Defaults match docker/docker-compose.yml;
- * every value can be overridden through environment variables.
+ * every value can be overridden through environment variables (see common/libs/testConnections.ts).
  */
-const env = (key: string, fallback: string) => process.env[key] ?? fallback;
-const host = env('ANTARES_TEST_HOST', '127.0.0.1');
+const db = getTestDatabases();
 
 export type EngineName = 'mysql' | 'maria' | 'pg' | 'sqlite' | 'firebird';
 
@@ -45,10 +45,10 @@ const factories: Record<EngineName, () => Omit<TestEngine, 'name' | 'customizati
       schema: 'antares_test',
       types: engineTypes.mysql,
       connect: opts => connectClient('mysql', {
-         host,
-         port: +env('ANTARES_TEST_MYSQL_PORT', '33306'),
-         user: 'root',
-         password: env('ANTARES_TEST_PASSWORD', 'antares'),
+         host: db.mysql.host,
+         port: db.mysql.port,
+         user: db.mysql.user,
+         password: db.mysql.password,
          schema: ''
       }, opts)
    }),
@@ -56,10 +56,10 @@ const factories: Record<EngineName, () => Omit<TestEngine, 'name' | 'customizati
       schema: 'antares_test',
       types: engineTypes.mysql,
       connect: opts => connectClient('maria', {
-         host,
-         port: +env('ANTARES_TEST_MARIADB_PORT', '33307'),
-         user: 'root',
-         password: env('ANTARES_TEST_PASSWORD', 'antares'),
+         host: db.maria.host,
+         port: db.maria.port,
+         user: db.maria.user,
+         password: db.maria.password,
          schema: ''
       }, opts)
    }),
@@ -67,11 +67,11 @@ const factories: Record<EngineName, () => Omit<TestEngine, 'name' | 'customizati
       schema: 'public',
       types: engineTypes.pg,
       connect: opts => connectClient('pg', {
-         host,
-         port: +env('ANTARES_TEST_PG_PORT', '55432'),
-         user: 'postgres',
-         password: env('ANTARES_TEST_PASSWORD', 'antares'),
-         database: 'antares_test',
+         host: db.pg.host,
+         port: db.pg.port,
+         user: db.pg.user,
+         password: db.pg.password,
+         database: db.pg.database,
          schema: ''
       }, opts)
    }),
@@ -88,11 +88,11 @@ const factories: Record<EngineName, () => Omit<TestEngine, 'name' | 'customizati
       schema: 'antares_test',
       types: engineTypes.firebird,
       connect: opts => connectClient('firebird', {
-         host,
-         port: +env('ANTARES_TEST_FIREBIRD_PORT', '33050'),
-         user: 'SYSDBA',
-         password: env('ANTARES_TEST_PASSWORD', 'antares'),
-         database: '/var/lib/firebird/data/antares_test.fdb'
+         host: db.firebird.host,
+         port: db.firebird.port,
+         user: db.firebird.user,
+         password: db.firebird.password,
+         database: db.firebird.database
       }, opts)
    })
 };

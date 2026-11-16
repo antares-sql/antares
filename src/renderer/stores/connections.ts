@@ -1,4 +1,5 @@
 import { ConnectionParams } from 'common/interfaces/antares';
+import { DEBUG_CONNECTION_PREFIX, DEBUG_FOLDER_UID } from 'common/libs/testConnections';
 import { uidGen } from 'common/libs/uidGen';
 import * as crypto from 'crypto';
 import { ipcRenderer } from 'electron';
@@ -305,6 +306,38 @@ export const useConnectionsStore = defineStore('connections', {
       removeIcon (uid: string) {
          this.customIcons = this.customIcons.filter((i: CustomIcon) => i.uid !== uid);
          persistentStore.set('custom_icons', this.customIcons);
+      },
+      /** Debug only: adds (or replaces) the connections to the docker test databases in their own folder */
+      applyDebugConnections (connections: ConnectionParams[]) {
+         const isDebug = (uid: string) => uid.startsWith(DEBUG_CONNECTION_PREFIX);
+
+         this.connections = [
+            ...(this.connections as ConnectionParams[]).filter(c => !isDebug(c.uid)),
+            ...connections
+         ];
+
+         this.connectionsOrder = [
+            ...(this.connectionsOrder as SidebarElement[])
+               .filter(el => el.uid !== DEBUG_FOLDER_UID && !isDebug(el.uid))
+               .map(el => el.isFolder ? { ...el, connections: el.connections.filter(uid => !isDebug(uid)) } : el),
+            {
+               isFolder: true,
+               uid: DEBUG_FOLDER_UID,
+               name: 'Docker test DBs',
+               color: '#2496ED',
+               connections: connections.map(c => c.uid)
+            },
+            ...connections.map<SidebarElement>(c => ({
+               isFolder: false,
+               uid: c.uid,
+               client: c.client,
+               icon: null,
+               name: null
+            }))
+         ];
+
+         persistentStore.set('connections', this.connections);
+         this.clearEmptyFolders(); // also persists connectionsOrder
       },
       importConnections (importObj: {
          connections: ConnectionParams[];
