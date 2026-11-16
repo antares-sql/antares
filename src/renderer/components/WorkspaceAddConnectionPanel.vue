@@ -60,7 +60,7 @@
                               />
                            </div>
                         </div>
-                        <div v-if="connection.client === 'pg'" class="form-group columns">
+                        <div v-if="clientCustomizations.connectionString" class="form-group columns">
                            <div class="column col-5 col-sm-12">
                               <label class="form-label cut-text">{{ t('connection.connectionString') }}</label>
                            </div>

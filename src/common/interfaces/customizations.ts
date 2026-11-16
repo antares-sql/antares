@@ -103,4 +103,15 @@ export interface Customizations {
    parametersLength?: boolean;
    languages?: string[];
    readOnlyMode?: boolean;
+   /** Connection string field in the connection panel */
+   connectionString?: boolean;
+   // Editor
+   /** Ace editor mode */
+   aceMode?: 'mysql' | 'pgsql' | 'sql';
+   /** sql-formatter language used by "format query" */
+   formatterLanguage?: 'mysql' | 'mariadb' | 'postgresql' | 'sql';
+   /** SQL to run a stored procedure: {name} and {params} placeholders */
+   procedureCall?: string;
+   /** SQL to call a function: {name} and {params} placeholders */
+   functionCall?: string;
 }

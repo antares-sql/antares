@@ -185,6 +185,7 @@
 <script setup lang="ts">
 import { Ace } from 'ace-builds';
 import { AlterRoutineParams, FunctionParam, RoutineInfos } from 'common/interfaces/antares';
+import { buildProcedureCall } from 'common/libs/routineCalls';
 import { uidGen } from 'common/libs/uidGen';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
@@ -366,22 +367,7 @@ const runRoutineCheck = () => {
 const runRoutine = (params?: string[]) => {
    if (!params) params = [];
 
-   let sql;
-   switch (props.connection.client) { // TODO: move in a better place
-      case 'maria':
-      case 'mysql':
-      case 'pg':
-         sql = `CALL ${originalRoutine.value.name}(${params.join(',')})`;
-         break;
-      case 'firebird':
-         sql = `EXECUTE PROCEDURE "${originalRoutine.value.name}"(${params.join(',')})`;
-         break;
-      case 'mssql':
-         sql = `EXEC ${originalRoutine.value.name} ${params.join(',')}`;
-         break;
-      default:
-         sql = `CALL \`${originalRoutine.value.name}\`(${params.join(',')})`;
-   }
+   const sql = buildProcedureCall(props.connection.client, originalRoutine.value.name, params);
 
    newTab({ uid: props.connection.uid, content: sql, type: 'query', autorun: true });
 };

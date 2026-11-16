@@ -5,7 +5,7 @@ import * as sqlite from 'common/customizations/sqlite';
 import { Customizations } from 'common/interfaces/customizations';
 
 export default {
-   maria: mysql.customizations,
+   maria: mysql.mariaCustomizations,
    mysql: mysql.customizations,
    pg: postgresql.customizations,
    sqlite: sqlite.customizations,

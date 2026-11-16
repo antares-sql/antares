@@ -59,5 +59,6 @@ export const customizations: Customizations = {
    parametersLength: true,
    indexes: true,
    foreigns: true,
-   nullable: true
+   nullable: true,
+   procedureCall: 'EXECUTE PROCEDURE "{name}"({params})'
 };

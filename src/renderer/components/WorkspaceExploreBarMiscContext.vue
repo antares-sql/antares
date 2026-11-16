@@ -108,6 +108,7 @@
 
 <script setup lang="ts">
 import { EventInfos, FunctionInfos, IpcResponse, RoutineInfos, TriggerInfos } from 'common/interfaces/antares';
+import { buildFunctionCall, buildProcedureCall } from 'common/libs/routineCalls';
 import { storeToRefs } from 'pinia';
 import { computed, Prop, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -305,22 +306,7 @@ const runRoutineCheck = async () => {
 const runRoutine = (params?: string[]) => {
    if (!params) params = [];
 
-   let sql;
-   switch (workspace.value.client) { // TODO: move in a better place
-      case 'maria':
-      case 'mysql':
-      case 'pg':
-         sql = `CALL ${localElement.value.name}(${params.join(',')})`;
-         break;
-      case 'firebird':
-         sql = `EXECUTE PROCEDURE "${localElement.value.name}"(${params.join(',')})`;
-         break;
-      // case 'mssql':
-      //    sql = `EXEC ${localElement.value.name} ${params.join(',')}`;
-      //    break;
-      default:
-         sql = `CALL \`${localElement.value.name}\`(${params.join(',')})`;
-   }
+   const sql = buildProcedureCall(workspace.value.client, localElement.value.name, params);
 
    newTab({
       uid: workspace.value.uid,
@@ -359,21 +345,7 @@ const runFunctionCheck = async () => {
 const runFunction = (params?: string[]) => {
    if (!params) params = [];
 
-   let sql;
-   switch (workspace.value.client) { // TODO: move in a better place
-      case 'maria':
-      case 'mysql':
-         sql = `SELECT \`${localElement.value.name}\` (${params.join(',')})`;
-         break;
-      case 'pg':
-         sql = `SELECT ${localElement.value.name}(${params.join(',')})`;
-         break;
-      // case 'mssql':
-      //    sql = `SELECT ${localElement.value.name} ${params.join(',')}`;
-      //    break;
-      default:
-         sql = `SELECT \`${localElement.value.name}\` (${params.join(',')})`;
-   }
+   const sql = buildFunctionCall(workspace.value.client, localElement.value.name, params);
 
    newTab({
       uid: workspace.value.uid,

@@ -213,6 +213,7 @@
 <script setup lang="ts">
 import { Ace } from 'ace-builds';
 import { AlterFunctionParams, FunctionInfos, FunctionParam } from 'common/interfaces/antares';
+import { buildFunctionCall } from 'common/libs/routineCalls';
 import { uidGen } from 'common/libs/uidGen';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
@@ -394,21 +395,7 @@ const runFunctionCheck = () => {
 const runFunction = (params?: string[]) => {
    if (!params) params = [];
 
-   let sql;
-   switch (props.connection.client) { // TODO: move in a better place
-      case 'maria':
-      case 'mysql':
-         sql = `SELECT \`${originalFunction.value.name}\` (${params.join(',')})`;
-         break;
-      case 'pg':
-         sql = `SELECT ${originalFunction.value.name}(${params.join(',')})`;
-         break;
-      case 'mssql':
-         sql = `SELECT ${originalFunction.value.name} ${params.join(',')}`;
-         break;
-      default:
-         sql = `SELECT \`${originalFunction.value.name}\` (${params.join(',')})`;
-   }
+   const sql = buildFunctionCall(props.connection.client, originalFunction.value.name, params);
 
    newTab({ uid: props.connection.uid, content: sql, type: 'query', autorun: true });
 };

@@ -199,24 +199,9 @@ export const useWorkspacesStore = defineStore('workspaces', {
                   else if (status === 'abort')
                      return reject(new Error('Connection aborted by user'));
                   else {
-                     let clientCustomizations: Customizations;
                      connectionsStore.updateLastConnection(connection.uid);
 
-                     switch (connection.client) {
-                        case 'mysql':
-                        case 'maria':
-                           clientCustomizations = customizations.mysql;
-                           break;
-                        case 'pg':
-                           clientCustomizations = customizations.pg;
-                           break;
-                        case 'sqlite':
-                           clientCustomizations = customizations.sqlite;
-                           break;
-                        case 'firebird':
-                           clientCustomizations = customizations.firebird;
-                           break;
-                     }
+                     const clientCustomizations: Customizations = customizations[connection.client];
                      const dataTypes = clientCustomizations.dataTypes;
                      const indexTypes = clientCustomizations.indexTypes;
 

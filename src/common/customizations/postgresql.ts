@@ -80,5 +80,10 @@ export const customizations: Customizations = {
    triggerOnlyRename: false,
    triggerEnableDisable: true,
    languages: ['sql', 'plpgsql', 'c', 'internal'],
-   readOnlyMode: true
+   readOnlyMode: true,
+   connectionString: true,
+   aceMode: 'pgsql',
+   formatterLanguage: 'postgresql',
+   procedureCall: 'CALL {name}({params})',
+   functionCall: 'SELECT {name}({params})'
 };

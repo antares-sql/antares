@@ -591,20 +591,7 @@ const stopResize = () => {
 
 const beautify = () => {
    if (queryEditor.value) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let language: any = 'sql';
-
-      switch (workspace.value.client) {
-         case 'mysql':
-            language = 'mysql';
-            break;
-         case 'maria':
-            language = 'mariadb';
-            break;
-         case 'pg':
-            language = 'postgresql';
-            break;
-      }
+      const language = workspace.value.customizations.formatterLanguage ?? 'sql';
 
       const formattedQuery = format(query.value, {
          language,

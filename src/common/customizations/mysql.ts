@@ -88,5 +88,14 @@ export const customizations: Customizations = {
    functionDataAccess: true,
    functionSql: 'BEGIN\r\n\r\nEND',
    parametersLength: true,
-   readOnlyMode: true
+   readOnlyMode: true,
+   aceMode: 'mysql',
+   formatterLanguage: 'mysql',
+   procedureCall: 'CALL {name}({params})',
+   functionCall: 'SELECT `{name}` ({params})'
+};
+
+export const mariaCustomizations: Customizations = {
+   ...customizations,
+   formatterLanguage: 'mariadb'
 };

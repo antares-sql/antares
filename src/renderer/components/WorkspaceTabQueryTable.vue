@@ -259,7 +259,7 @@ import { BLOB, DATE, DATETIME, LONG_TEXT, TEXT, TIME } from 'common/fieldTypes';
 import { QueryForeign, QueryResult, TableField } from 'common/interfaces/antares';
 import { TableUpdateParams } from 'common/interfaces/tableApis';
 import { fakerCustom } from 'common/libs/fakerCustom';
-import { jsonToSqlInsert } from 'common/libs/sqlUtils';
+import { escapeAndQuote, jsonToSqlInsert } from 'common/libs/sqlUtils';
 import { uidGen } from 'common/libs/uidGen';
 import * as json2php from 'json2php';
 import * as moment from 'moment';
@@ -544,46 +544,35 @@ const closeContext = () => {
 /**
  * Escapes an identifier (schema, table, or field name) for safe use in SQL queries.
  * Handles embedded quote characters by doubling them according to database conventions.
- * @param client - The database client type ('pg', 'mysql', 'maria', 'sqlite', 'firebird', etc.)
+ * @param wrapper - The engine identifier quote (customizations.elementsWrapper: ` for MySQL/MariaDB, " for the others)
  * @param identifier - The identifier to escape
  * @returns The escaped and quoted identifier
  */
-const escapeIdentifier = (client: string, identifier: unknown): string => {
+const escapeIdentifier = (wrapper: string, identifier: unknown): string => {
    // Validate identifier is a string
    if (typeof identifier !== 'string')
       throw new Error(`Invalid identifier: expected string, got ${typeof identifier}`);
 
-   switch (client) {
-      case 'mysql':
-      case 'maria':
-         // MySQL/MariaDB: escape backticks by doubling them, wrap in backticks
-         return '`' + identifier.replace(/`/g, '``') + '`';
-      case 'pg':
-      case 'sqlite':
-      case 'firebird':
-      default:
-         // PostgreSQL, SQLite, Firebird, and others: escape double quotes by doubling them, wrap in double quotes
-         return '"' + identifier.replace(/"/g, '""') + '"';
-   }
+   return wrapper + identifier.replaceAll(wrapper, wrapper + wrapper) + wrapper;
 };
 
 const buildForeignKeyQuery = (fk: QueryForeign, value: any): string => {
    const schema = fk.refSchema;
    const table = fk.refTable;
    const field = fk.refField;
-   const client = workspaceClient.value;
+   const wrapper = customizations.value.elementsWrapper || '"';
 
-   // Quote and escape identifiers based on client
+   // Quote and escape identifiers with the engine identifier quote
    let quotedTable: string;
 
    // Build the quoted table reference (with optional schema)
    if (schema && typeof schema === 'string')
-      quotedTable = `${escapeIdentifier(client, schema)}.${escapeIdentifier(client, table)}`;
+      quotedTable = `${escapeIdentifier(wrapper, schema)}.${escapeIdentifier(wrapper, table)}`;
 
    else
-      quotedTable = escapeIdentifier(client, table);
+      quotedTable = escapeIdentifier(wrapper, table);
 
-   const quotedField = escapeIdentifier(client, field);
+   const quotedField = escapeIdentifier(wrapper, field);
 
    // Format the value for the WHERE clause
    let formattedValue: string;
@@ -591,7 +580,7 @@ const buildForeignKeyQuery = (fk: QueryForeign, value: any): string => {
       return `SELECT * FROM ${quotedTable} WHERE ${quotedField} IS NULL`;
 
    else if (typeof value === 'string')
-      formattedValue = `'${value.replace(/'/g, '\'\'')}'`;
+      formattedValue = escapeAndQuote(value, workspaceClient.value);
 
    else if (typeof value === 'number' || typeof value === 'bigint')
       formattedValue = String(value);
@@ -600,7 +589,7 @@ const buildForeignKeyQuery = (fk: QueryForeign, value: any): string => {
       formattedValue = value ? 'TRUE' : 'FALSE';
 
    else
-      formattedValue = `'${String(value).replace(/'/g, '\'\'')}'`;
+      formattedValue = escapeAndQuote(String(value), workspaceClient.value);
 
    return `SELECT * FROM ${quotedTable} WHERE ${quotedField} = ${formattedValue}`;
 };

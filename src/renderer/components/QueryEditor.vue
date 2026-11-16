@@ -158,19 +158,7 @@ const schedulers = computed(() => {
       : [];
 });
 
-const mode = computed(() => {
-   switch (props.workspace.client) {
-      case 'mysql':
-      case 'maria':
-         return 'mysql';
-      // case 'mssql':
-      //    return 'sqlserver';
-      case 'pg':
-         return 'pgsql';
-      default:
-         return 'sql';
-   }
-});
+const mode = computed(() => props.workspace.customizations?.aceMode ?? 'sql');
 
 const lastWord = computed(() => {
    const charsBefore = props.modelValue.slice(0, cursorPosition.value);

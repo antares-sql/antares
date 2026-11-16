@@ -16,7 +16,7 @@ See also [CONTRIBUTING.md](CONTRIBUTING.md) for the original contributor guide.
 | Persistence | `electron-store` (settings, connections; credentials encrypted via `safeStorage`) |
 | DB drivers | `mysql2`, `pg` + `pg-query-stream`, `better-sqlite3` (native), `node-firebird`, SSH tunnels via `@fabio286/ssh2-promise` |
 | Packaging | electron-builder (config in `package.json` → `build`) |
-| Tests | Vitest unit + integration ([tests/unit/](tests/unit/), [tests/integration/](tests/integration/)), Playwright e2e ([tests/app.spec.ts](tests/app.spec.ts), minimal) |
+| Tests | Vitest unit + integration ([tests/unit/](tests/unit/), [tests/integration/](tests/integration/)), Playwright e2e ([tests/app.spec.ts](tests/app.spec.ts), minimal; Playwright 1.28 can't launch Electron 30: needs an upgrade) |
 
 ## Layout
 
@@ -84,6 +84,7 @@ Aliases are defined both in [tsconfig.json](tsconfig.json) `paths` and in each `
 
 Rules:
 - Everything above the client class must be **client-agnostic**. Engine differences live in the client classes and in `common/customizations/<engine>.ts` (UI checks `workspace.customizations.<flag>` to enable/disable features).
+- **Renderer**: never branch on `client === '...'`. Add a flag or value to `Customizations` (e.g. `aceMode`, `formatterLanguage`, `connectionString`, `procedureCall`/`functionCall` templates, `elementsWrapper`) and read it from `workspace.customizations`. Routine/function calls: `common/libs/routineCalls.ts`; literals: `escapeAndQuote()` in `common/libs/sqlUtils.ts`. MariaDB has its own customizations (`mariaCustomizations`, inherits MySQL).
 - Adding a new capability usually touches: `BaseClient`/engine clients → ipc handler → ipc-api → store/component → customizations flag → i18n strings.
 - Adding a new engine: client class (+ Dialect, Ddl, Connections, Parsers under `src/main/libs/db/engines/<engine>/`) → `engines/<engine>/index.ts` definition → register it in `EngineRegistry.ts` → `common/customizations/<engine>.ts` + data types → record introspection fixtures.
 - SQL values in main must go through the engine dialect (`client.dialect.quoteString()`, `blobLiteral()`, ... or `formatValue()` for UI values): never build literals with `sqlEscaper` or engine `switch`es in handlers.

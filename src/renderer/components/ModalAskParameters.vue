@@ -52,8 +52,8 @@
 </template>
 
 <script setup lang="ts">
-import { FLOAT, NUMBER } from 'common/fieldTypes';
-import { FunctionInfos, RoutineInfos } from 'common/interfaces/antares';
+import { ClientCode, FunctionInfos, RoutineInfos } from 'common/interfaces/antares';
+import { formatRoutineArgument } from 'common/libs/routineCalls';
 import { computed, PropType, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -87,23 +87,8 @@ const typeClass = (type: string) => {
 
 const runRoutine = () => {
    const valArr = Object.keys(values.value).reduce((acc, curr, i) => {
-      let qc;
-      switch (props.client) {
-         case 'maria':
-         case 'mysql':
-            qc = '"';
-            break;
-         case 'pg':
-            qc = '\'';
-            break;
-         default:
-            qc = '"';
-      }
-
       const param = props.localRoutine.parameters.find(param => `${i}-${param.name}` === curr);
-
-      const value = [...NUMBER, ...FLOAT].includes(param.type) ? values.value[curr] : `${qc}${values.value[curr]}${qc}`;
-      acc.push(value);
+      acc.push(formatRoutineArgument(props.client as ClientCode, param.type, values.value[curr]));
       return acc;
    }, []);
 
