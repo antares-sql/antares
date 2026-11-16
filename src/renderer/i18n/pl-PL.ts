@@ -118,7 +118,9 @@ export const plPL = {
       allConnections: 'Wszystkie połączenia',
       searchForConnections: 'Szukaj połączeń',
       keepAliveInterval: 'Interwał keep-alive',
-      singleConnection: 'Pojedyncze połączenie'
+      singleConnection: 'Pojedyncze połączenie',
+      showTableSize: 'Pokaż rozmiar tabeli w pasku bocznym',
+      showTableSizeDescription: 'Tylko MySQL/MariaDB. Włączenie tej opcji może wpłynąć na wydajność w schemacie z wieloma tabelami.'
    },
    database: {
       schema: 'Schemat',
@@ -377,8 +379,6 @@ export const plPL = {
       outOfFolder: 'Poza folderem',
       editConnectionAppearance: 'Edytuj wygląd połączenia',
       defaultCopyType: 'Domyślny typ kopiowania',
-      showTableSize: 'Pokaż rozmiar tabeli w pasku bocznym',
-      showTableSizeDescription: 'Tylko MySQL/MariaDB. Włączenie tej opcji może wpłynąć na wydajność w schemacie z wieloma tabelami.',
       switchSearchMethod: 'Zmień metodę wyszukiwania',
       phpArray: 'Tablica PHP',
       closeAllTabs: 'Zamknij wszystkie zakładki',

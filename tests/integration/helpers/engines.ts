@@ -5,7 +5,6 @@ import { getTestDatabases } from 'common/libs/testConnections';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { vi } from 'vitest';
 
 import { ClientsFactory } from '../../../src/main/libs/ClientsFactory';
 import { EngineTypes, engineTypes } from '../../unit/clients/fixtures';
@@ -105,10 +104,6 @@ async function connectClient (client: EngineName, params: Record<string, any>, o
       params: { ...params, ...opts.overrides } as never,
       poolSize: opts.poolSize ?? 5 // same default as the app (ipc-handlers/connection.ts)
    });
-
-   // User settings live in electron-store, which needs a real Electron main process
-   if ('_getShowTableSizeSetting' in connection)
-      vi.spyOn(connection as never, '_getShowTableSizeSetting').mockReturnValue(false as never);
 
    await connection.connect();
    return connection;

@@ -94,6 +94,7 @@ const baseConnection = (): Omit<ConnectionParams, 'uid' | 'client' | 'host' | 'p
    ask: false,
    readonly: false,
    singleConnectionMode: false,
+   showTableSize: false,
    ssl: false,
    cert: '',
    key: '',

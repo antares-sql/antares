@@ -110,7 +110,9 @@ export const jaJP = {
       allConnections: 'すべての接続',
       searchForConnections: '接続を検索',
       keepAliveInterval: 'Keep alive 間隔',
-      singleConnection: '単一接続'
+      singleConnection: '単一接続',
+      showTableSize: 'サイドバーにテーブルのサイズを表示',
+      showTableSizeDescription: 'MySQL/MariaDB のみ。このオプションを有効にすると、多数のテーブルを持つスキーマのパフォーマンスに影響を与える可能性があります。'
    },
    database: {
       schema: 'スキーマ',
@@ -361,8 +363,6 @@ export const jaJP = {
       outOfFolder: 'フォルダーの外',
       editConnectionAppearance: '接続の外観を編集',
       defaultCopyType: 'デフォルトのコピータイプ',
-      showTableSize: 'サイドバーにテーブルのサイズを表示',
-      showTableSizeDescription: 'MySQL/MariaDB のみ。このオプションを有効にすると、多数のテーブルを持つスキーマのパフォーマンスに影響を与える可能性があります。',
       switchSearchMethod: '検索方法を切り替え',
       phpArray: 'PHP 配列',
       closeAllTabs: 'すべてのタブを閉じる',

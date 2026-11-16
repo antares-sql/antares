@@ -120,7 +120,9 @@ export const csCZ = {
       allConnections: 'Všechna připojení',
       searchForConnections: 'Hledat připojení',
       keepAliveInterval: 'Keep alive interval',
-      singleConnection: 'Jediné spojení'
+      singleConnection: 'Jediné spojení',
+      showTableSize: 'Velikost tabulky v panelu',
+      showTableSizeDescription: 'Pouze MySQL/MariaDB. Povolení této možnosti může ovlivnit výkon u schémat s mnoha tabulkami.'
    },
    database: { // Database related terms
       schema: 'Schéma',
@@ -375,8 +377,6 @@ export const csCZ = {
       outOfFolder: 'Mimo složku',
       editConnectionAppearance: 'Upravit vzhled připojení',
       defaultCopyType: 'Výchozí typ kopírování',
-      showTableSize: 'Velikost tabulky v panelu',
-      showTableSizeDescription: 'Pouze MySQL/MariaDB. Povolení této možnosti může ovlivnit výkon u schémat s mnoha tabulkami.',
       switchSearchMethod: 'Přepnout způsob vyhledávání',
       phpArray: 'PHP pole',
       closeAllTabs: 'Zavřít všechny karty',

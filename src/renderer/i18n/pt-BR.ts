@@ -100,7 +100,9 @@ export const ptBR = {
       readOnlyMode: 'Modo somente leitura',
       untrustedConnection: 'Conexão insegura',
       allConnections: 'Todas as conexões',
-      searchForConnections: 'Procurar por conexões'
+      searchForConnections: 'Procurar por conexões',
+      showTableSize: 'Exibir tamanho da tabela na barra lateral',
+      showTableSizeDescription: 'Apenas MySQL/MariaDB. Habilitar essa opcão pode afetar o desempenho no banco com muitas tabelas.'
    },
    database: {
       schema: 'Esquema',
@@ -340,8 +342,6 @@ export const ptBR = {
       deleteFolder: 'Apagar Pasta',
       editConnectionAppearance: 'Editar aparência da conexão',
       defaultCopyType: 'Padrão do tipo de cópia',
-      showTableSize: 'Exibir tamanho da tabela na barra lateral',
-      showTableSizeDescription: 'Apenas MySQL/MariaDB. Habilitar essa opcão pode afetar o desempenho no banco com muitas tabelas.',
       searchForSchemas: 'Procurar banco',
       searchForElements: 'Buscar por elementos',
       switchSearchMethod: 'Alterar o modo da pesquisa',

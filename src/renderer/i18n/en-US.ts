@@ -119,7 +119,9 @@ export const enUS = {
       allConnections: 'All connections',
       searchForConnections: 'Search for connections',
       keepAliveInterval: 'Keep alive interval',
-      singleConnection: 'Single connection'
+      singleConnection: 'Single connection',
+      showTableSize: 'Show table size in sidebar',
+      showTableSizeDescription: 'Enabling this option may affect performance on schemas with many tables.'
    },
    database: { // Database related terms
       schema: 'Schema',
@@ -380,8 +382,6 @@ export const enUS = {
       outOfFolder: 'Out of folder',
       editConnectionAppearance: 'Edit connection appearance',
       defaultCopyType: 'Default copy type',
-      showTableSize: 'Show table size in sidebar',
-      showTableSizeDescription: 'MySQL/MariaDB only. Enable this option may affects performance on schema with many tables.',
       switchSearchMethod: 'Switch search method',
       phpArray: 'PHP array',
       closeAllTabs: 'Close all tabs',

@@ -103,7 +103,9 @@ export const ukUA = {
       readOnlyMode: 'Режим тільки для читання',
       allConnections: 'Усі підключення',
       searchForConnections: 'Пошук підключень',
-      keepAliveInterval: 'Інтервал утримання зв"язку'
+      keepAliveInterval: 'Інтервал утримання зв"язку',
+      showTableSize: 'Показувати розмір таблиці в бічній панелі',
+      showTableSizeDescription: 'Тільки для MySQL/MariaDB. Увімкнення цієї опції може вплинути на продуктивність в схемах з багатьма таблицями.'
    },
 
    database: { // Терміни, пов'язані з базою даних
@@ -356,8 +358,6 @@ export const ukUA = {
       deleteFolder: 'Видалити теку',
       editConnectionAppearance: 'Редагувати вигляд підключення',
       defaultCopyType: 'Тип копіювання за замовчуванням',
-      showTableSize: 'Показувати розмір таблиці в бічній панелі',
-      showTableSizeDescription: 'Тільки для MySQL/MariaDB. Увімкнення цієї опції може вплинути на продуктивність в схемах з багатьма таблицями.',
       switchSearchMethod: 'Перемкнути метод пошуку',
       phpArray: 'Масив PHP',
       closeAllTabs: 'Закрити всі вкладки',

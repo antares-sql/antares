@@ -189,6 +189,14 @@
                            </label>
                         </div>
                      </div>
+                     <div v-if="clientCustomizations.showTableSizeOption" class="form-group columns mb-0">
+                        <div class="column col-5 col-sm-12" />
+                        <div class="column col-7 col-sm-12">
+                           <label class="form-checkbox form-inline my-0" :title="t('connection.showTableSizeDescription')">
+                              <input v-model="localConnection.showTableSize" type="checkbox"><i class="form-icon" /> {{ t('connection.showTableSize') }}
+                           </label>
+                        </div>
+                     </div>
                   </fieldset>
                </form>
             </div>

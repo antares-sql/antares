@@ -60,6 +60,7 @@ describe('buildClientParams', () => {
          password: 'p',
          application_name: 'Antares SQL',
          readonly: false,
+         showTableSize: false,
          connectionString: undefined,
          database: 'main',
          schema: 'app',
@@ -67,6 +68,10 @@ describe('buildClientParams', () => {
          ssl: undefined,
          ssh: undefined
       });
+   });
+
+   it('passes the per-connection table size option', () => {
+      expect(buildClientParams({ ...base, showTableSize: true }).showTableSize).toBe(true);
    });
 
    it('reads SSL files and SSH keys through the injected reader', () => {

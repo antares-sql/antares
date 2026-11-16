@@ -10,6 +10,8 @@ export type MySQLParams = mysql.ConnectionOptions & {
    ssl?: mysql.SslOptions;
    ssh?: SSHConfig;
    readonly: boolean;
+   /** Loads table sizes in the structure (information_schema.TABLES, slower than SHOW FULL TABLES) */
+   showTableSize?: boolean;
 };
 
 export type MySQLConnection = mysql.Pool | mysql.PoolConnection | mysql.Connection;

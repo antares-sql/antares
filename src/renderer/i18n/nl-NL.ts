@@ -110,7 +110,9 @@ export const nlNL = {
       searchForConnections: 'Zoek naar verbindingen',
       singleConnection: 'Enkele verbinding',
       connection: 'Verbinding',
-      keepAliveInterval: 'Keep alive interval'
+      keepAliveInterval: 'Keep alive interval',
+      showTableSize: 'Toon tabelgrootte in de sidebar',
+      showTableSizeDescription: 'Alleen voor MySQL/MariaDB. Bij schema\'s met veel tabellen kan dit de snelheid beïnvloeden.'
    },
    database: {
       schema: 'Schema',
@@ -358,8 +360,6 @@ export const nlNL = {
       deleteFolder: 'Verwijder folder',
       editConnectionAppearance: 'Edit connection appearance',
       defaultCopyType: 'Kopieer standaard',
-      showTableSize: 'Toon tabelgrootte in de sidebar',
-      showTableSizeDescription: 'Alleen voor MySQL/MariaDB. Bij schema\'s met veel tabellen kan dit de snelheid beïnvloeden.',
       searchForSchemas: 'Zoek naar schemas',
       searchForElements: 'Zoek naar elementen',
       switchSearchMethod: 'Switch search method',

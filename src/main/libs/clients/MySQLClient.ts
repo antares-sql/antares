@@ -145,18 +145,6 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
       return this.raw(`USE \`${schema}\``);
    }
 
-   /**
-    * Reads the "show table size" user setting.
-    * Isolated in its own method so tests can stub it (electron-store needs Electron).
-    */
-   protected _getShowTableSizeSetting (): boolean {
-      const Store = require('electron-store');
-
-      Store.initRenderer();
-      const settingsStore = new Store({ name: 'settings' });
-      return settingsStore.get('show_table_size', false);
-   }
-
    async getStructure (schemas: Set<string>) {
       /* eslint-disable camelcase */
       interface ShowTableResult {
@@ -227,7 +215,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
       const triggersArr: ShowTriggersResult[] = [];
       let schemaSize = 0;
 
-      const showTableSize = this._getShowTableSizeSetting();
+      const showTableSize = !!this._params.showTableSize;
 
       for (const db of filteredDatabases) {
          if (!schemas.has(db.Database)) continue;

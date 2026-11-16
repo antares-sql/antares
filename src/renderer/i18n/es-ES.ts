@@ -119,7 +119,9 @@ export const esES = {
       allConnections: 'Todas las conexiones',
       searchForConnections: 'Buscar por conexiones',
       keepAliveInterval: 'Mantenimiento de conexión',
-      singleConnection: 'Conexión única'
+      singleConnection: 'Conexión única',
+      showTableSize: 'Mostrar tamaño de tabla en la barra lateral',
+      showTableSizeDescription: 'Solo para MySQL/MariaDB. Habilitar esta opción puede afectar al rendimiento en esquemas con muchas tablas.'
    },
    database: { // Database related terms
       schema: 'Esquema',
@@ -379,8 +381,6 @@ export const esES = {
       outOfFolder: 'Fuera de la carpeta',
       editConnectionAppearance: 'Modificar apariencia de conexión',
       defaultCopyType: 'Copiar fichero por defecto',
-      showTableSize: 'Mostrar tamaño de tabla en la barra lateral',
-      showTableSizeDescription: 'Solo para MySQL/MariaDB. Habilitar esta opción puede afectar al rendimiento en esquemas con muchas tablas.',
       switchSearchMethod: 'Cambiar método de búsqueda',
       phpArray: 'Array de PHP',
       closeAllTabs: 'Cerrar todas las pestañas',

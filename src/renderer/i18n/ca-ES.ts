@@ -100,7 +100,9 @@ export const caES = {
       readOnlyMode: 'Mode de lectura',
       untrustedConnection: 'Connexió no confiable',
       allConnections: 'Totes les connexions',
-      searchForConnections: 'Cerca connexions'
+      searchForConnections: 'Cerca connexions',
+      showTableSize: 'Mostra la mida de la taula a la barra lateral',
+      showTableSizeDescription: 'Només MySQL/MariaDB. Activar aquesta opció pot afectar el rendiment en esquemes amb moltes taules.'
    },
    database: {
       schema: 'Esquema',
@@ -340,8 +342,6 @@ export const caES = {
       deleteFolder: 'Esborra carpeta',
       editConnectionAppearance: 'Edita l\'aparença de la connexió',
       defaultCopyType: 'Tipus de còpia per defecte',
-      showTableSize: 'Mostra la mida de la taula a la barra lateral',
-      showTableSizeDescription: 'Només MySQL/MariaDB. Activar aquesta opció pot afectar el rendiment en esquemes amb moltes taules.',
       searchForSchemas: 'Cerca esquemes',
       searchForElements: 'Cerca elements',
       switchSearchMethod: 'Canvia el mètode de cerca',

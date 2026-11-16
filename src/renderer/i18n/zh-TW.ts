@@ -112,7 +112,9 @@ export const zhTW = {
       allConnections: '所有連線',
       searchForConnections: '搜索連線',
       keepAliveInterval: '保持活躍間隔',
-      singleConnection: '單一連線'
+      singleConnection: '單一連線',
+      showTableSize: '在側邊欄顯示表大小',
+      showTableSizeDescription: '僅限 MySQL/MariaDB. 啓用此選項可能會影響許多表的模式(schema)的性能.'
    },
    database: {
       // 資料庫庫相關術語
@@ -364,8 +366,6 @@ export const zhTW = {
       deleteFolder: '刪除檔案夾',
       editConnectionAppearance: '編輯連接的外觀',
       defaultCopyType: '預設複製類型',
-      showTableSize: '在側邊欄顯示表大小',
-      showTableSizeDescription: '僅限 MySQL/MariaDB. 啓用此選項可能會影響許多表的模式(schema)的性能.',
       switchSearchMethod: '切換搜索方法',
       phpArray: 'PHP 陣列',
       closeAllTabs: '關閉所有標簽',

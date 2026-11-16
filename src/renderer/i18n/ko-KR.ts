@@ -97,7 +97,9 @@ export const koKR = {
       readOnlyMode: '읽기 전용 모드',
       untrustedConnection: '신뢰할 수 없는 연결',
       allConnections: '모든 연결',
-      searchForConnections: '연결 검색'
+      searchForConnections: '연결 검색',
+      showTableSize: '사이드바에 테이블 크기 표시',
+      showTableSizeDescription: 'MySQL/MariaDB 전용입니다. 이 옵션을 사용하면 많은 테이블이 있는 스키마의 성능에 영향을 줄 수 있습니다.'
    },
    database: {
       schema: '스키마',
@@ -332,8 +334,6 @@ export const koKR = {
       deleteFolder: '폴더 삭제',
       editConnectionAppearance: '연결 형태 수정',
       defaultCopyType: '기본 복사 유형',
-      showTableSize: '사이드바에 테이블 크기 표시',
-      showTableSizeDescription: 'MySQL/MariaDB 전용입니다. 이 옵션을 사용하면 많은 테이블이 있는 스키마의 성능에 영향을 줄 수 있습니다.',
       searchForSchemas: '스키마 검색',
       searchForElements: '요소 검색',
       switchSearchMethod: '검색 방법 전환'

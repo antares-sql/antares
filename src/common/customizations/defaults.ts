@@ -20,6 +20,7 @@ export const defaults: Customizations = {
    fileConnection: false,
    cancelQueries: false,
    singleConnectionMode: false,
+   showTableSizeOption: false,
    // Tools
    processesList: false,
    usersManagement: false,

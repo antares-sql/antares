@@ -119,7 +119,9 @@ export const heIL = {
       allConnections: 'כל החיבורים',
       searchForConnections: 'חפש חיבורים',
       keepAliveInterval: 'מרווח שמירת חיבור',
-      singleConnection: 'חיבור בודד'
+      singleConnection: 'חיבור בודד',
+      showTableSize: 'הצג גודל טבלה בסרגל הצד',
+      showTableSizeDescription: 'MySQL/MariaDB בלבד. הפעלת אפשרות זו עלולה להשפיע על הביצועים בסכימה עם טבלאות רבות.'
    },
    database: { // Database related terms
       schema: 'סכימה',
@@ -374,8 +376,6 @@ export const heIL = {
       outOfFolder: 'מחוץ לתיקייה',
       editConnectionAppearance: 'ערוך מראה חיבור',
       defaultCopyType: 'סוג העתקה ברירת מחדל',
-      showTableSize: 'הצג גודל טבלה בסרגל הצד',
-      showTableSizeDescription: 'MySQL/MariaDB בלבד. הפעלת אפשרות זו עלולה להשפיע על הביצועים בסכימה עם טבלאות רבות.',
       switchSearchMethod: 'החלף שיטת חיפוש',
       phpArray: 'מערך PHP',
       closeAllTabs: 'סגור את כל הכרטיסיות',

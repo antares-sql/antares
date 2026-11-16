@@ -48,6 +48,8 @@ export interface ConnectionParams {
    ask: boolean;
    readonly: boolean;
    singleConnectionMode: boolean;
+   /** Loads table sizes in the structure (MySQL/MariaDB, slower on schemas with many tables) */
+   showTableSize?: boolean;
    ssl: boolean;
    cert?: string;
    key?: string;

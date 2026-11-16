@@ -110,7 +110,9 @@ export const zhCN = {
       allConnections: '所有连接',
       searchForConnections: '搜索连接',
       keepAliveInterval: '保持活跃间隔',
-      singleConnection: '单一连接'
+      singleConnection: '单一连接',
+      showTableSize: '在侧边栏显示表大小',
+      showTableSizeDescription: '仅限 MySQL/MariaDB. 启用此选项可能会影响许多表的模式(schema)的性能.'
    },
    database: { // 数据库相关术语
       schema: '模式(schema)',
@@ -370,8 +372,6 @@ export const zhCN = {
       outOfFolder: '',
       editConnectionAppearance: '编辑连接的外观',
       defaultCopyType: '默认复制类型',
-      showTableSize: '在侧边栏显示表大小',
-      showTableSizeDescription: '仅限 MySQL/MariaDB. 启用此选项可能会影响许多表的模式(schema)的性能.',
       switchSearchMethod: '切换搜索方法',
       phpArray: 'PHP 数组',
       closeAllTabs: '关闭所有标签',

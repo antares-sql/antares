@@ -110,7 +110,10 @@ export const ruRU = {
       searchForConnections: 'Поиск соединений',
       keepAliveInterval: 'Интервал поддержания соединения',
       singleConnection: 'Одно соединение',
-      connection: 'Соединение'
+      connection: 'Соединение',
+      showTableSize: 'Показывать размер таблицы в сайдбаре',
+      showTableSizeDescription:
+         'Только MySQL/MariaDB. Включение этого параметра может повлиять на производительность схемы с большим количеством таблиц.'
    },
    database: {
       schema: 'Схема',
@@ -358,9 +361,6 @@ export const ruRU = {
       deleteFolder: 'Удалить папки',
       editConnectionAppearance: 'Изменить внешний вид соединения',
       defaultCopyType: 'Тип копирования по-умолчанию',
-      showTableSize: 'Показывать размер таблицы в сайдбаре',
-      showTableSizeDescription:
-            'Только MySQL/MariaDB. Включение этого параметра может повлиять на производительность схемы с большим количеством таблиц.',
       searchForSchemas: 'Поиск схем',
       searchForElements: 'Поиск элементов',
       switchSearchMethod: 'Переключить способ поиска',

@@ -20,6 +20,8 @@ export interface ClientConnectionParams {
    // eslint-disable-next-line camelcase
    application_name: string;
    readonly: boolean;
+   /** Loads table sizes in getStructure() (MySQL/MariaDB) */
+   showTableSize: boolean;
    connectionString?: string;
    database: string;
    schema: string;
@@ -45,6 +47,7 @@ export function buildClientParams (conn: antares.ConnectionParams, readFile: Rea
       password: conn.password,
       application_name: 'Antares SQL',
       readonly: conn.readonly,
+      showTableSize: !!conn.showTableSize,
       connectionString: conn.connString,
       database: conn.database || '',
       schema: conn.schema || '',

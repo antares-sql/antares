@@ -30,6 +30,7 @@ export const customizations: Customizations = {
    sshConnection: true,
    cancelQueries: true,
    singleConnectionMode: true,
+   showTableSizeOption: true,
    // Tools
    processesList: true,
    // Structure

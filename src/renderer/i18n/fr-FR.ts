@@ -99,7 +99,9 @@ export const frFR = {
       readOnlyMode: 'Mode lecture seule',
       untrustedConnection: 'Connexion non approuvée',
       allConnections: 'Toutes les connexions',
-      searchForConnections: 'Rechercher des connexions'
+      searchForConnections: 'Rechercher des connexions',
+      showTableSize: 'Afficher la taille de la table dans la barre latérale',
+      showTableSizeDescription: 'MySQL/MariaDB seulement. Activer cette option peut affecter les performances du schéma sur plusieurs tables.'
    },
    database: {
       schema: 'Schéma',
@@ -337,8 +339,6 @@ export const frFR = {
       deleteFolder: 'Supprimer le dossier',
       editConnectionAppearance: 'Editer l\'apparence de la connexion',
       defaultCopyType: 'Type de copie par défaut',
-      showTableSize: 'Afficher la taille de la table dans la barre latérale',
-      showTableSizeDescription: 'MySQL/MariaDB seulement. Activer cette option peut affecter les performances du schéma sur plusieurs tables.',
       searchForSchemas: 'Rechercher des shémas',
       searchForElements: 'Rechercher des éléments',
       switchSearchMethod: 'Changer la méthode de recherche',

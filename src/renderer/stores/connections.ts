@@ -1,3 +1,4 @@
+import customizations from 'common/customizations';
 import { ConnectionParams } from 'common/interfaces/antares';
 import { DEBUG_CONNECTION_PREFIX, DEBUG_FOLDER_UID, getDebugConnections } from 'common/libs/testConnections';
 import { uidGen } from 'common/libs/uidGen';
@@ -72,6 +73,34 @@ function createPersistentStore (key: string) {
 }
 
 const persistentStore = createPersistentStore(getEncryptionKey());
+
+/**
+ * "Show table size" used to be a global setting: moves it to the connections whose engine
+ * supports the option (MySQL/MariaDB) and don't have their own value yet, then removes it.
+ */
+function migrateShowTableSizeSetting () {
+   try {
+      const settingsStore = new Store({ name: 'settings' });
+      if (!settingsStore.has('show_table_size')) return;
+
+      const showTableSize = settingsStore.get('show_table_size') === true;
+      if (showTableSize) {
+         const connections = persistentStore.get('connections', []) as ConnectionParams[];
+         persistentStore.set('connections', connections.map(conn =>
+            customizations[conn.client]?.showTableSizeOption && conn.showTableSize === undefined
+               ? { ...conn, showTableSize }
+               : conn
+         ));
+      }
+
+      settingsStore.delete('show_table_size');
+   }
+   catch (err) {
+      console.error(err);
+   }
+}
+
+migrateShowTableSizeSetting();
 
 export const useConnectionsStore = defineStore('connections', {
    state: () => ({

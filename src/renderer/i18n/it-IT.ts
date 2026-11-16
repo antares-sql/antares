@@ -97,7 +97,9 @@ export const itIT = {
       readOnlyMode: 'Modalità sola lettura',
       untrustedConnection: 'Connessione non affidabile',
       allConnections: 'Tutte le connessioni',
-      searchForConnections: 'Cerca una connessione'
+      searchForConnections: 'Cerca una connessione',
+      showTableSize: 'Mostra dimensioni tabella nella sidebar',
+      showTableSizeDescription: 'Abilitare questa opzione può compromettere le performance in schemi con molte tabelle.'
    },
    database: {
       schema: 'Schema',
@@ -333,8 +335,6 @@ export const itIT = {
       deleteFolder: 'Cancella cartella',
       editConnectionAppearance: 'Modifica aspetto connessione',
       defaultCopyType: 'Tipo di copia default',
-      showTableSize: 'Mostra dimensioni tabella nella sidebar',
-      showTableSizeDescription: 'Solo MySQL/MariaDB. Abilitare questa opzione può compromettere le performance in schemi con molte tabelle.',
       searchForSchemas: 'Cerca schemi',
       searchForElements: 'Cerca elementi',
       switchSearchMethod: 'Cambia metodo di ricerca'

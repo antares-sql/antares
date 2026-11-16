@@ -20,6 +20,8 @@ export interface Customizations {
    fileConnection?: boolean;
    cancelQueries?: boolean;
    singleConnectionMode?: boolean;
+   /** Per-connection option to load table sizes in the structure */
+   showTableSizeOption?: boolean;
    // Tools
    processesList?: boolean;
    usersManagement?: boolean;

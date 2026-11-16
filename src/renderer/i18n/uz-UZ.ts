@@ -110,7 +110,9 @@ export const uzUZ = {
       searchForConnections: 'Ulanishlarni qidirish',
       keepAliveInterval: 'Ulanishni saqlash oraliq vaqti',
       singleConnection: 'Bitta ulanish',
-      connection: 'Ulanish'
+      connection: 'Ulanish',
+      showTableSize: 'Yon panelda jadval oʻlchamini koʻrsatish',
+      showTableSizeDescription: 'Faqat MySQL/MariaDB. Ushbu parametrni yoqish koʻp jadvalli sxemalarda ishlash tezligiga taʼsir qilishi mumkin.'
    },
    database: {
       schema: 'Shema',
@@ -358,8 +360,6 @@ export const uzUZ = {
       deleteFolder: 'Papkani oʻchirish',
       editConnectionAppearance: 'Ulanish tashqi koʻrinishini oʻzgartirish',
       defaultCopyType: 'Odatiy nusxa koʻchirish turi',
-      showTableSize: 'Yon panelda jadval oʻlchamini koʻrsatish',
-      showTableSizeDescription: 'Faqat MySQL/MariaDB. Ushbu parametrni yoqish koʻp jadvalli sxemalarda ishlash tezligiga taʼsir qilishi mumkin.',
       searchForSchemas: 'Sxemalarni qidirish',
       searchForElements: 'Elementlarni qidirish',
       switchSearchMethod: 'Qidiruv usulini almashtirish',
