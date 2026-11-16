@@ -7,6 +7,7 @@ import { CancelQueriesCapability, DatabaseClient, DatabasesCapability, DbConfigC
 import { PostgreSQLConnections, PostgreSQLParams } from '../db/engines/postgresql/PostgreSQLConnections';
 import { PostgreSQLDdl } from '../db/engines/postgresql/PostgreSQLDdl';
 import { PostgreSQLDialect } from '../db/engines/postgresql/PostgreSQLDialect';
+import { parseFunctionDefinition } from '../db/engines/postgresql/PostgreSQLParsers';
 import { BaseClient } from './BaseClient';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -198,8 +199,15 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
       /* eslint-enable camelcase */
 
       const { rows: databases } = await this.raw<antares.QueryResult<{ database: string}>>('SELECT schema_name AS database FROM information_schema.schemata ORDER BY schema_name');
-      const { rows: functions } = await this.raw('SELECT * FROM information_schema.routines WHERE routine_type = \'FUNCTION\'');
-      const { rows: procedures } = await this.raw('SELECT * FROM information_schema.routines WHERE routine_type = \'PROCEDURE\'');
+      // Only the routines of the requested schemas (pg_catalog alone has thousands)
+      const schemaList = [...schemas].map(schema => this._dialect.quoteString(schema)).join(', ');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      type RoutineRow = Record<string, any>;
+      const { rows: routines } = schemaList
+         ? await this.raw<antares.QueryResult<RoutineRow>>(`SELECT * FROM information_schema.routines WHERE routine_type IN ('FUNCTION', 'PROCEDURE') AND routine_schema IN (${schemaList})`)
+         : { rows: [] as RoutineRow[] };
+      const functions = routines.filter(routine => routine.routine_type === 'FUNCTION');
+      const procedures = routines.filter(routine => routine.routine_type === 'PROCEDURE');
 
       const tablesArr: ShowTableResult[] = [];
       const triggersArr: ShowTriggersResult[] = [];
@@ -960,14 +968,12 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
 
          return {
             definer: '',
-            sql: row.pg_get_functiondef.match(/(\$(.*)\$)(.*)(\$(.*)\$)/gs)[0],
             parameters: parameters || [],
             name: routine,
             comment: '',
-            security: row.pg_get_functiondef.includes('SECURITY DEFINER') ? 'DEFINER' : 'INVOKER',
             deterministic: null as null,
             dataAccess: null as null,
-            language: row.pg_get_functiondef.match(/(?<=LANGUAGE )(.*)(?<=[\S+\n\r\s])/gm)[0]
+            ...parseFunctionDefinition(row.pg_get_functiondef)
          };
       })[0];
    }
@@ -1061,15 +1067,12 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
 
          return {
             definer: '',
-            sql: row.pg_get_functiondef.match(/(\$(.*)\$)(.*)(\$(.*)\$)/gs)[0],
             parameters: parameters || [],
             name: func,
             comment: '',
-            security: row.pg_get_functiondef.includes('SECURITY DEFINER') ? 'DEFINER' : 'INVOKER',
             deterministic: null as null,
             dataAccess: null as null,
-            language: row.pg_get_functiondef.match(/(?<=LANGUAGE )(.*)(?<=[\S+\n\r\s])/gm)[0],
-            returns: row.pg_get_functiondef.match(/(?<=RETURNS )(.*)(?<=[\S+\n\r\s])/gm)[0].replace('SETOF ', '').toUpperCase()
+            ...parseFunctionDefinition(row.pg_get_functiondef)
          };
       })[0];
    }

@@ -7,6 +7,7 @@ import { CancelQueriesCapability, DatabaseClient, DatabaseCollationCapability, D
 import { MySQLConnections, MySQLParams } from '../db/engines/mysql/MySQLConnections';
 import { MySQLDdl } from '../db/engines/mysql/MySQLDdl';
 import { MariaDBDialect, MySQLDialect } from '../db/engines/mysql/MySQLDialect';
+import { ColumnRow, mapColumn, parseCreateTableColumns, parseEvent, parseReturnType, parseRoutine, parseTrigger, parseViewAlgorithm } from '../db/engines/mysql/MySQLParsers';
 import { BaseClient } from './BaseClient';
 EncodingToCharset.utf8mb3 = 192; // To fix https://github.com/sidorares/node-mysql2/issues/1398 until not included in mysql2
 
@@ -199,22 +200,27 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
       let schedulers: any[] = [];
       /* eslint-enable @typescript-eslint/no-explicit-any */
 
-      try {
-         const { rows: functionRows } = await this.raw('SHOW FUNCTION STATUS');
-         const { rows: procedureRows } = await this.raw('SHOW PROCEDURE STATUS');
-         functions = functionRows;
-         procedures = procedureRows;
-      }
-      catch (err) {
-         this._logger({ content: err.sqlMessage, cUid: this._cUid, level: 'error' });
-      }
+      // Only the routines/events of the requested schemas
+      const schemaList = [...schemas].map(schema => this._dialect.quoteString(schema)).join(', ');
 
-      try { // Avoid exception with event_scheduler DISABLED with MariaDB 10
-         const { rows } = await this.raw('SELECT *, EVENT_SCHEMA AS `Db`, EVENT_NAME AS `Name` FROM information_schema.`EVENTS`');
-         schedulers = rows;
-      }
-      catch (err) {
-         console.log(err);
+      if (schemaList) {
+         try {
+            const { rows: functionRows } = await this.raw(`SHOW FUNCTION STATUS WHERE \`Db\` IN (${schemaList})`);
+            const { rows: procedureRows } = await this.raw(`SHOW PROCEDURE STATUS WHERE \`Db\` IN (${schemaList})`);
+            functions = functionRows;
+            procedures = procedureRows;
+         }
+         catch (err) {
+            this._logger({ content: err.sqlMessage, cUid: this._cUid, level: 'error' });
+         }
+
+         try { // Avoid exception with event_scheduler DISABLED with MariaDB 10
+            const { rows } = await this.raw(`SELECT *, EVENT_SCHEMA AS \`Db\`, EVENT_NAME AS \`Name\` FROM information_schema.\`EVENTS\` WHERE EVENT_SCHEMA IN (${schemaList})`);
+            schedulers = rows;
+         }
+         catch (err) {
+            console.log(err);
+         }
       }
 
       const tablesArr: ShowTableResult[] = [];
@@ -391,26 +397,6 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    }
 
    async getTableColumns ({ schema, table }: { schema: string; table: string }) {
-      interface TableColumnsResult {
-         COLUMN_TYPE: string;
-         NUMERIC_PRECISION: number;
-         COLUMN_NAME: string;
-         COLUMN_DEFAULT: string;
-         COLUMN_KEY: string;
-         DATA_TYPE: string;
-         TABLE_SCHEMA: string;
-         TABLE_NAME: string;
-         NUMERIC_SCALE: number;
-         DATETIME_PRECISION: number;
-         CHARACTER_MAXIMUM_LENGTH: number;
-         IS_NULLABLE: string;
-         ORDINAL_POSITION: number;
-         CHARACTER_SET_NAME: string;
-         COLLATION_NAME: string;
-         EXTRA: string;
-         COLUMN_COMMENT: string;
-      }
-
       interface CreateTableResult {
          'Create Table'?: string;
          Table: string;
@@ -422,7 +408,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
          .from('COLUMNS')
          .where({ TABLE_SCHEMA: `= '${schema}'`, TABLE_NAME: `= '${table}'` })
          .orderBy({ ORDINAL_POSITION: 'ASC' })
-         .run<TableColumnsResult>();
+         .run<ColumnRow>();
 
       let fields: CreateTableResult[] = [];
       try {
@@ -431,90 +417,9 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
       }
       catch (_) {}
 
-      const remappedFields = fields.map(row => {
-         if (!row['Create Table']) return false;
+      const createColumns = parseCreateTableColumns(fields[0]?.['Create Table']);
 
-         let n = 0;
-         return row['Create Table']
-            .split('')
-            .reduce((acc: string, curr: string) => {
-               if (curr === ')') n--;
-               if (n !== 0) acc += curr;
-               if (curr === '(') n++;
-               return acc;
-            }, '')
-            .replaceAll('\n', '')
-            .split(/,\s?(?![^(]*\))/)
-            .map((f: string) => {
-               try {
-                  const fieldArr = f.trim().split(' ');
-                  const nameAndType = fieldArr.slice(0, 2);
-                  if (nameAndType[0].charAt(0) !== '`') return null;
-
-                  const details = fieldArr.slice(2).join(' ');
-                  let defaultValue = null;
-                  if (details.includes('DEFAULT'))
-                     defaultValue = details.match(/(?<=DEFAULT ).*?$/gs)[0].split(' COMMENT')[0];
-                  const typeAndLength = nameAndType[1].replace(')', '').split('(');
-
-                  return {
-                     name: nameAndType[0].replaceAll('`', ''),
-                     type: typeAndLength[0].toUpperCase(),
-                     length: typeAndLength[1] ? typeAndLength[1] : null,
-                     default: defaultValue
-                  };
-               }
-               catch (err) {
-                  return null;
-               }
-            })
-            .filter(Boolean)
-            .reduce((acc: Record<string, { name: string; type: string; length: string; default: string}>, curr) => {
-               acc[curr.name] = curr;
-               return acc;
-            }, {});
-      })[0];
-
-      return rows.map((field) => {
-         const numLengthMatch = field.COLUMN_TYPE.match(/int\(([^)]+)\)/);
-         const numLength = numLengthMatch ? +numLengthMatch.pop() : field.NUMERIC_PRECISION || null;
-         const enumValues = /(enum|set)/.test(field.COLUMN_TYPE)
-            ? field.COLUMN_TYPE.match(/\(([^)]+)\)/)[0].slice(1, -1)
-            : null;
-
-         const defaultValue = (remappedFields && remappedFields[field.COLUMN_NAME])
-            ? remappedFields[field.COLUMN_NAME].default
-            : field.COLUMN_DEFAULT;
-
-         return {
-            name: field.COLUMN_NAME,
-            key: field.COLUMN_KEY.toLowerCase(),
-            type: (remappedFields && remappedFields[field.COLUMN_NAME])
-               ? remappedFields[field.COLUMN_NAME].type
-               : field.DATA_TYPE.toUpperCase(),
-            schema: field.TABLE_SCHEMA,
-            table: field.TABLE_NAME,
-            numPrecision: field.NUMERIC_PRECISION,
-            numScale: Number(field.NUMERIC_SCALE),
-            numLength,
-            enumValues,
-            datePrecision: field.DATETIME_PRECISION,
-            charLength: field.CHARACTER_MAXIMUM_LENGTH,
-            nullable: field.IS_NULLABLE.includes('YES'),
-            unsigned: field.COLUMN_TYPE.includes('unsigned'),
-            zerofill: field.COLUMN_TYPE.includes('zerofill'),
-            order: field.ORDINAL_POSITION,
-            default: defaultValue,
-            charset: field.CHARACTER_SET_NAME,
-            collation: field.COLLATION_NAME,
-            autoIncrement: field.EXTRA.includes('auto_increment'),
-            generated: ['VIRTUAL GENERATED', 'VIRTUAL STORED'].includes(field.EXTRA),
-            onUpdate: field.EXTRA.toLowerCase().includes('on update')
-               ? field.EXTRA.substr(field.EXTRA.indexOf('on update') + 9, field.EXTRA.length).trim()
-               : '',
-            comment: field.COLUMN_COMMENT
-         };
-      });
+      return rows.map(field => mapColumn(field, createColumns));
    }
 
    async getTableApproximateCount ({ schema, table }: { schema: string; table: string }): Promise<number> {
@@ -756,7 +661,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
        `);
 
       return {
-         algorithm: algorithm[0]['Create View'].match(/(?<=CREATE ALGORITHM=).*?(?=\s)/gs)[0],
+         algorithm: parseViewAlgorithm(algorithm[0]['Create View']),
          definer: viewInfo[0].DEFINER.split('@').map((str: string) => `\`${str}\``).join('@'),
          security: viewInfo[0].SECURITY_TYPE,
          updateOption: viewInfo[0].CHECK_OPTION === 'NONE' ? '' : viewInfo[0].CHECK_OPTION,
@@ -781,16 +686,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
       const sql = `SHOW CREATE TRIGGER \`${schema}\`.\`${trigger}\``;
       const results = await this.raw(sql);
 
-      return results.rows.map(row => {
-         return {
-            definer: row['SQL Original Statement'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
-            sql: row['SQL Original Statement'].match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
-            name: row.Trigger,
-            table: row['SQL Original Statement'].match(/(?<=ON `).*?(?=`)/gs)[0],
-            activation: row['SQL Original Statement'].match(/(BEFORE|AFTER)/gs)[0],
-            event: row['SQL Original Statement'].match(/(INSERT|UPDATE|DELETE)/gs)[0]
-         };
-      })[0];
+      return results.rows.map(row => parseTrigger(row['SQL Original Statement'], row.Trigger))[0];
    }
 
    async dropTrigger (params: { schema: string; trigger: string }) {
@@ -836,9 +732,9 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
       return results.rows.map(async row => {
          if (!row['Create Procedure']) {
             return {
-               definer: null,
+               definer: null as string,
                sql: '',
-               parameters: [],
+               parameters: [] as antares.FunctionParam[],
                name: row.Procedure,
                comment: '',
                security: 'DEFINER',
@@ -865,22 +761,16 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
             };
          });
 
-         let dataAccess = 'CONTAINS SQL';
-         if (row['Create Procedure'].includes('NO SQL'))
-            dataAccess = 'NO SQL';
-         if (row['Create Procedure'].includes('READS SQL DATA'))
-            dataAccess = 'READS SQL DATA';
-         if (row['Create Procedure'].includes('MODIFIES SQL DATA'))
-            dataAccess = 'MODIFIES SQL DATA';
+         const { definer, sql: body, comment, security, deterministic, dataAccess } = parseRoutine(row['Create Procedure']);
 
          return {
-            definer: row['Create Procedure'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
-            sql: row['Create Procedure'].match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
+            definer,
+            sql: body,
             parameters: parameters || [],
             name: row.Procedure,
-            comment: row['Create Procedure'].match(/(?<=COMMENT ').*?(?=')/gs) ? row['Create Procedure'].match(/(?<=COMMENT ').*?(?=')/gs)[0] : '',
-            security: row['Create Procedure'].includes('SQL SECURITY INVOKER') ? 'INVOKER' : 'DEFINER',
-            deterministic: row['Create Procedure'].includes('DETERMINISTIC'),
+            comment,
+            security,
+            deterministic,
             dataAccess
          };
       })[0];
@@ -929,16 +819,16 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
       return results.rows.map(async row => {
          if (!row['Create Function']) {
             return {
-               definer: null,
+               definer: null as string,
                sql: '',
-               parameters: [],
+               parameters: [] as antares.FunctionParam[],
                name: row.Function,
                comment: '',
                security: 'DEFINER',
                deterministic: false,
                dataAccess: 'CONTAINS SQL',
                returns: 'INT',
-               returnsLength: null
+               returnsLength: null as number
             };
          }
 
@@ -960,27 +850,18 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
             };
          });
 
-         let dataAccess = 'CONTAINS SQL';
-         if (row['Create Function'].includes('NO SQL'))
-            dataAccess = 'NO SQL';
-         if (row['Create Function'].includes('READS SQL DATA'))
-            dataAccess = 'READS SQL DATA';
-         if (row['Create Function'].includes('MODIFIES SQL DATA'))
-            dataAccess = 'MODIFIES SQL DATA';
-
-         const output = row['Create Function'].match(/(?<=RETURNS ).*?(?=\s)/gs).length ? row['Create Function'].match(/(?<=RETURNS ).*?(?=\s)/gs)[0].replace(')', '').split('(') : ['', null];
+         const { definer, sql: body, comment, security, deterministic, dataAccess, returns } = parseRoutine(row['Create Function']);
 
          return {
-            definer: row['Create Function'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
-            sql: row['Create Function'].match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
+            definer,
+            sql: body,
             parameters: parameters || [],
             name: row.Function,
-            comment: row['Create Function'].match(/(?<=COMMENT ').*?(?=')/gs) ? row['Create Function'].match(/(?<=COMMENT ').*?(?=')/gs)[0] : '',
-            security: row['Create Function'].includes('SQL SECURITY INVOKER') ? 'INVOKER' : 'DEFINER',
-            deterministic: row['Create Function'].includes('DETERMINISTIC'),
+            comment,
+            security,
+            deterministic,
             dataAccess,
-            returns: output[0].toUpperCase(),
-            returnsLength: +output[1]
+            ...parseReturnType(returns)
          };
       })[0];
    }
@@ -1016,28 +897,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
 
       const results = await this.raw<antares.QueryResult<CreateFunctionResult>>(`SHOW CREATE EVENT \`${schema}\`.\`${scheduler}\``);
 
-      return results.rows.map(row => {
-         const schedule = row['Create Event'];
-         const execution = schedule.includes('EVERY') ? 'EVERY' : 'ONCE';
-         const every = execution === 'EVERY' ? row['Create Event'].match(/(?<=EVERY )(\s*([^\s]+)){0,2}/gs)[0].replaceAll('\'', '').split(' ') : [];
-         const starts = execution === 'EVERY' && schedule.includes('STARTS') ? schedule.match(/(?<=STARTS ').*?(?='\s)/gs)[0] : '';
-         const ends = execution === 'EVERY' && schedule.includes('ENDS') ? schedule.match(/(?<=ENDS ').*?(?='\s)/gs)[0] : '';
-         const at = execution === 'ONCE' && schedule.includes('AT') ? schedule.match(/(?<=AT ').*?(?='\s)/gs)[0] : '';
-
-         return {
-            definer: row['Create Event'].match(/(?<=DEFINER=).*?(?=\s)/gs)[0],
-            sql: row['Create Event'].match(/(?<=DO )(.*)/gs)[0],
-            name: row.Event,
-            comment: row['Create Event'].match(/(?<=COMMENT ').*?(?=')/gs) ? row['Create Event'].match(/(?<=COMMENT ').*?(?=')/gs)[0] : '',
-            state: row['Create Event'].includes('ENABLE') ? 'ENABLE' : row['Create Event'].includes('DISABLE ON SLAVE') ? 'DISABLE ON SLAVE' : 'DISABLE',
-            preserve: row['Create Event'].includes('ON COMPLETION PRESERVE'),
-            execution,
-            every,
-            starts,
-            ends,
-            at
-         };
-      })[0];
+      return results.rows.map(row => parseEvent(row['Create Event'], row.Event))[0];
    }
 
    async dropEvent (params: { schema: string; scheduler: string }) {

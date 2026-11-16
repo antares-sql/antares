@@ -24,6 +24,7 @@
     "test:unit": "node scripts/vitest.js run --project unit",
     "test:unit:watch": "node scripts/vitest.js --project unit",
     "test:integration": "node scripts/vitest.js run --project integration",
+    "test:fixtures:record": "cross-env ANTARES_RECORD_FIXTURES=1 node scripts/vitest.js run --project integration tests/integration/introspection.record.spec.ts",
     "test:db:up": "docker compose -f docker/docker-compose.yml up -d --wait",
     "test:db:down": "docker compose -f docker/docker-compose.yml down -v",
     "test:e2e": "npm run compile && npm run test:e2e-dry",

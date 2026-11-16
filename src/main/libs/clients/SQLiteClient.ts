@@ -7,6 +7,7 @@ import { DatabaseClient } from '../db/core/contracts';
 import { SQLiteConnections, SQLiteParams } from '../db/engines/sqlite/SQLiteConnections';
 import { SQLiteDdl } from '../db/engines/sqlite/SQLiteDdl';
 import { SQLiteDialect } from '../db/engines/sqlite/SQLiteDialect';
+import { parseTrigger, parseViewSelect } from '../db/engines/sqlite/SQLiteParsers';
 import { BaseClient } from './BaseClient';
 
 export class SQLiteClient extends BaseClient implements DatabaseClient {
@@ -305,16 +306,7 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
 
          // Get table triggers before drop
          const { rows: triggers } = await this.raw(`SELECT * FROM "${schema}".sqlite_master WHERE type='trigger' AND tbl_name = '${table}'`);
-         const remappedTriggers = triggers.map((row) => {
-            return {
-               schema,
-               sql: row.sql.match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
-               name: row.name,
-               table: row.sql.match(/(?<=ON `).*?(?=`)/gs)[0],
-               activation: row.sql.match(/(BEFORE|AFTER)/gs)[0],
-               event: row.sql.match(/(INSERT|UPDATE|DELETE)/gs)[0]
-            };
-         });
+         const remappedTriggers = triggers.map(row => ({ schema, ...parseTrigger(row.sql, row.name) }));
 
          await this.dropTable(params);
 
@@ -378,12 +370,7 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
       const sql = `SELECT "sql" FROM "${schema}".sqlite_master WHERE "type"='view' AND name='${view}'`;
       const results = await this.raw(sql);
 
-      return results.rows.map(row => {
-         return {
-            sql: row.sql.match(/(?<=(AS|as)( |\n)).*?$/gs)[0],
-            name: view
-         };
-      })[0];
+      return results.rows.map(row => ({ sql: parseViewSelect(row.sql), name: view }))[0];
    }
 
    async dropView (params: { schema: string; view: string }) {
@@ -408,15 +395,7 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
       const sql = `SELECT "sql" FROM "${schema}".sqlite_master WHERE "type"='trigger' AND name='${trigger}'`;
       const results = await this.raw(sql);
 
-      return results.rows.map(row => {
-         return {
-            sql: row.sql.match(/(BEGIN|begin)(.*)(END|end)/gs)[0],
-            name: trigger,
-            table: row.sql.match(/(?<=ON `).*?(?=`)/gs)[0],
-            activation: row.sql.match(/(BEFORE|AFTER)/gs)[0],
-            event: row.sql.match(/(INSERT|UPDATE|DELETE)/gs)[0]
-         };
-      })[0];
+      return results.rows.map(row => parseTrigger(row.sql, trigger))[0];
    }
 
    async dropTrigger (params: { schema: string; trigger: string }) {

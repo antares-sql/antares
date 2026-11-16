@@ -38,6 +38,7 @@ src/
                         multi-step operations like alterTrigger stay in the client)
                         <Engine>Connections: pool/single connection, query tab transactions, running query ids,
                         keepalive; raw() borrows a connection with acquire() and frees it with lease.release()
+                        <Engine>Parsers: pure parsers of server metadata (SHOW CREATE ..., pg_get_functiondef, ...)
       exporters/ importers/  SQL dump/import logic, run inside worker threads
       parsers/          Engine-specific SQL parsers
       misc/             validateSender (IPC origin check), ipcLogger
@@ -57,6 +58,9 @@ scripts/                devRunner.js (dev server + electron), devtoolsInstaller.
 tests/
   unit/                 Vitest, no I/O. clients/sqlGeneration.spec.ts = SQL snapshots of every client (characterization)
   integration/          Vitest against real DBs from docker/ (pin known, unfixed bugs with `it.fails`)
+  fixtures/introspection/  Rows recorded from the docker DBs + expected outputs: unit tests replay them offline
+                        (clients/introspection.spec.ts). Re-record: `npm run test:fixtures:record`
+  helpers/              rawRecorder (record/replay raw()), offlineClient
 docker/                 docker-compose.yml with test DBs (MySQL, MariaDB, PostgreSQL, Firebird) and an SSH server
                         (tunnel tests) on non-standard ports
 ```
@@ -98,6 +102,7 @@ npm run test:unit:watch     # unit tests in watch mode
 npm run test:db:up          # start test DBs (docker compose, waits until healthy)
 npm run test:integration    # integration tests (ANTARES_TEST_ENGINES=sqlite,pg to pick engines)
 npm run test:db:down        # stop and remove test DBs
+npm run test:fixtures:record # re-record introspection fixtures (needs test DBs) after changing an introspection query
 npm run test:e2e            # compile + playwright
 npx tsc --noEmit -p .       # type check (.ts only; .vue files are checked only by the Vue VS Code extension)
 ```

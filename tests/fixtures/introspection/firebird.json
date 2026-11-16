@@ -1,0 +1,1537 @@
+{
+  "engine": "firebird",
+  "server": "{\"number\":\"5.0.4\",\"name\":\"Firebird SQL\",\"arch\":\"TCPv4\",\"os\":\"172.22.0.1/52336\"}",
+  "calls": [
+    {
+      "method": "getStructure",
+      "params": [
+        {
+          "$set": [
+            "antares_fixtures"
+          ]
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT rdb$get_context('SYSTEM', 'DB_NAME') as name FROM rdb$database",
+          "result": {
+            "rows": [
+              {
+                "NAME": "/var/lib/firebird/data/antares_test.fdb"
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "NAME",
+                "alias": "NAME",
+                "orgName": "RDB$GET_CONTEXT",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 1020
+              }
+            ],
+            "keys": [],
+            "duration": 5
+          }
+        },
+        {
+          "sql": "SELECT rdb$relation_name AS NAME, rdb$format AS FORMAT, rdb$description AS DESCRIPTION, 'table' AS TYPE FROM RDB$RELATIONS a WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0 AND RDB$RELATION_TYPE = 0",
+          "result": {
+            "rows": [
+              {
+                "NAME": "categories                                                     ",
+                "FORMAT": 1,
+                "DESCRIPTION": null,
+                "TYPE": "table"
+              },
+              {
+                "NAME": "products                                                       ",
+                "FORMAT": 1,
+                "DESCRIPTION": null,
+                "TYPE": "table"
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "NAME",
+                "alias": "NAME",
+                "orgName": "RDB$RELATION_NAME",
+                "table": "RDB$RELATIONS",
+                "tableAlias": "RDB$RELATIONS",
+                "orgTable": "RDB$RELATIONS",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "FORMAT",
+                "alias": "FORMAT",
+                "orgName": "RDB$FORMAT",
+                "table": "RDB$RELATIONS",
+                "tableAlias": "RDB$RELATIONS",
+                "orgTable": "RDB$RELATIONS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "DESCRIPTION",
+                "alias": "DESCRIPTION",
+                "orgName": "RDB$DESCRIPTION",
+                "table": "RDB$RELATIONS",
+                "tableAlias": "RDB$RELATIONS",
+                "orgTable": "RDB$RELATIONS",
+                "type": "BLOB-TEXT",
+                "length": 8
+              },
+              {
+                "name": "TYPE",
+                "alias": "TYPE",
+                "orgName": "CONSTANT",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "CHAR",
+                "length": 20
+              }
+            ],
+            "keys": [],
+            "duration": 5
+          }
+        },
+        {
+          "sql": "SELECT DISTINCT RDB$VIEW_NAME AS NAME, 'view' AS TYPE FROM RDB$VIEW_RELATIONS",
+          "result": {
+            "rows": [
+              {
+                "NAME": "cheap_products                                                 ",
+                "TYPE": "view"
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "NAME",
+                "alias": "NAME",
+                "orgName": "RDB$VIEW_NAME",
+                "table": "RDB$VIEW_RELATIONS",
+                "tableAlias": "RDB$VIEW_RELATIONS",
+                "orgTable": "RDB$VIEW_RELATIONS",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "TYPE",
+                "alias": "TYPE",
+                "orgName": "CONSTANT",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "CHAR",
+                "length": 16
+              }
+            ],
+            "keys": [],
+            "duration": 5
+          }
+        },
+        {
+          "sql": "SELECT RDB$TRIGGER_NAME as NAME, RDB$RELATION_NAME as RELATION, RDB$TRIGGER_SOURCE as SOURCE FROM RDB$TRIGGERS WHERE RDB$SYSTEM_FLAG=0 ORDER BY RDB$TRIGGER_NAME;",
+          "result": {
+            "rows": [
+              {
+                "NAME": "products_bi                                                    ",
+                "RELATION": "products                                                       ",
+                "SOURCE": "AS BEGIN NEW.\"price\" = ABS(NEW.\"price\"); END"
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "NAME",
+                "alias": "NAME",
+                "orgName": "RDB$TRIGGER_NAME",
+                "table": "RDB$TRIGGERS",
+                "tableAlias": "RDB$TRIGGERS",
+                "orgTable": "RDB$TRIGGERS",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "RELATION",
+                "alias": "RELATION",
+                "orgName": "RDB$RELATION_NAME",
+                "table": "RDB$TRIGGERS",
+                "tableAlias": "RDB$TRIGGERS",
+                "orgTable": "RDB$TRIGGERS",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "SOURCE",
+                "alias": "SOURCE",
+                "orgName": "RDB$TRIGGER_SOURCE",
+                "table": "RDB$TRIGGERS",
+                "tableAlias": "RDB$TRIGGERS",
+                "orgTable": "RDB$TRIGGERS",
+                "type": "BLOB-TEXT",
+                "length": 8
+              }
+            ],
+            "keys": [],
+            "duration": 7
+          }
+        },
+        {
+          "sql": "SELECT RDB$PROCEDURE_NAME AS NAME, RDB$DESCRIPTION AS COMMENT, RDB$PROCEDURE_SOURCE AS SOURCE, RDB$OWNER_NAME AS DEFINER FROM RDB$PROCEDURES WHERE RDB$SYSTEM_FLAG=0 ORDER BY RDB$PROCEDURE_NAME;",
+          "result": {
+            "rows": [
+              {
+                "NAME": "get_product                                                    ",
+                "COMMENT": null,
+                "SOURCE": "BEGIN SELECT \"name\" FROM \"products\" WHERE \"id\" = :p_id INTO :p_name; SUSPEND; END",
+                "DEFINER": "SYSDBA                                                         "
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "NAME",
+                "alias": "NAME",
+                "orgName": "RDB$PROCEDURE_NAME",
+                "table": "RDB$PROCEDURES",
+                "tableAlias": "RDB$PROCEDURES",
+                "orgTable": "RDB$PROCEDURES",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "COMMENT",
+                "alias": "COMMENT",
+                "orgName": "RDB$DESCRIPTION",
+                "table": "RDB$PROCEDURES",
+                "tableAlias": "RDB$PROCEDURES",
+                "orgTable": "RDB$PROCEDURES",
+                "type": "BLOB-TEXT",
+                "length": 8
+              },
+              {
+                "name": "SOURCE",
+                "alias": "SOURCE",
+                "orgName": "RDB$PROCEDURE_SOURCE",
+                "table": "RDB$PROCEDURES",
+                "tableAlias": "RDB$PROCEDURES",
+                "orgTable": "RDB$PROCEDURES",
+                "type": "BLOB-TEXT",
+                "length": 8
+              },
+              {
+                "name": "DEFINER",
+                "alias": "DEFINER",
+                "orgName": "RDB$OWNER_NAME",
+                "table": "RDB$PROCEDURES",
+                "tableAlias": "RDB$PROCEDURES",
+                "orgTable": "RDB$PROCEDURES",
+                "type": "CHAR",
+                "length": 252
+              }
+            ],
+            "keys": [],
+            "duration": 6
+          }
+        }
+      ],
+      "output": [
+        {
+          "name": "antares_test.fdb",
+          "size": 0,
+          "tables": [
+            {
+              "name": "categories",
+              "type": "table",
+              "rows": false,
+              "size": false
+            },
+            {
+              "name": "products",
+              "type": "table",
+              "rows": false,
+              "size": false
+            },
+            {
+              "name": "cheap_products",
+              "type": "view",
+              "rows": false,
+              "size": false
+            }
+          ],
+          "functions": [],
+          "procedures": [
+            {
+              "name": "get_product",
+              "definer": "SYSDBA                                                         "
+            }
+          ],
+          "triggers": [
+            {
+              "name": "products_bi",
+              "table": "products",
+              "statement": "AS BEGIN NEW.\"price\" = ABS(NEW.\"price\"); END"
+            }
+          ],
+          "schedulers": []
+        }
+      ]
+    },
+    {
+      "method": "getTableColumns",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "table": "products"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT r.RDB$FIELD_NAME AS FIELD_NAME, r.RDB$DESCRIPTION AS DESCRIPTION, r.RDB$DEFAULT_VALUE AS DEFAULT_VALUE, r.RDB$NULL_FLAG AS NOT_NULL, r.RDB$FIELD_POSITION AS FIELD_POSITION, f.RDB$FIELD_LENGTH AS FIELD_LENGTH, f.RDB$FIELD_PRECISION AS FIELD_PRECISION, f.RDB$FIELD_SCALE AS FIELD_SCALE, f.RDB$EXTERNAL_TYPE AS EXTERNAL_TYPE, r.RDB$DEFAULT_SOURCE AS DEFAULT_SOURCE, CASE f.RDB$FIELD_TYPE WHEN 261 THEN 'BLOB' WHEN 14 THEN 'CHAR' WHEN 40 THEN 'CSTRING' WHEN 11 THEN 'D_FLOAT' WHEN 27 THEN 'DOUBLE PRECISION' WHEN 10 THEN 'FLOAT' WHEN 16 THEN 'BIGINT' WHEN 8 THEN 'INTEGER' WHEN 9 THEN 'QUAD' WHEN 7 THEN 'SMALLINT' WHEN 12 THEN 'DATE' WHEN 13 THEN 'TIME' WHEN 35 THEN 'TIMESTAMP' WHEN 37 THEN 'VARCHAR' ELSE 'UNKNOWN' END AS FIELD_TYPE, f.RDB$FIELD_SUB_TYPE AS SUBTYPE, -- coll.RDB$COLLATION_NAME AS COLLATION, cset.RDB$CHARACTER_SET_NAME AS CHARSET FROM RDB$RELATION_FIELDS r LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME -- LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$COLLATION_ID LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID = cset.RDB$CHARACTER_SET_ID WHERE r.RDB$RELATION_NAME='products' ORDER BY r.RDB$FIELD_POSITION;",
+          "result": {
+            "rows": [
+              {
+                "FIELD_NAME": "id                                                             ",
+                "DESCRIPTION": null,
+                "DEFAULT_VALUE": null,
+                "NOT_NULL": 1,
+                "FIELD_POSITION": 0,
+                "FIELD_LENGTH": 4,
+                "FIELD_PRECISION": 0,
+                "FIELD_SCALE": 0,
+                "EXTERNAL_TYPE": null,
+                "DEFAULT_SOURCE": null,
+                "FIELD_TYPE": "INTEGER         ",
+                "SUBTYPE": 0,
+                "CHARSET": null
+              },
+              {
+                "FIELD_NAME": "name                                                           ",
+                "DESCRIPTION": null,
+                "DEFAULT_VALUE": {
+                  "type": "Buffer",
+                  "data": [
+                    5,
+                    21,
+                    15,
+                    4,
+                    0,
+                    7,
+                    0,
+                    117,
+                    110,
+                    110,
+                    97,
+                    109,
+                    101,
+                    100,
+                    76
+                  ]
+                },
+                "NOT_NULL": 1,
+                "FIELD_POSITION": 1,
+                "FIELD_LENGTH": 400,
+                "FIELD_PRECISION": null,
+                "FIELD_SCALE": 0,
+                "EXTERNAL_TYPE": null,
+                "DEFAULT_SOURCE": "DEFAULT 'unnamed'",
+                "FIELD_TYPE": "VARCHAR         ",
+                "SUBTYPE": 0,
+                "CHARSET": "UTF8                                                           "
+              },
+              {
+                "FIELD_NAME": "price                                                          ",
+                "DESCRIPTION": null,
+                "DEFAULT_VALUE": {
+                  "type": "Buffer",
+                  "data": [
+                    5,
+                    21,
+                    8,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    76
+                  ]
+                },
+                "NOT_NULL": 1,
+                "FIELD_POSITION": 2,
+                "FIELD_LENGTH": 8,
+                "FIELD_PRECISION": 10,
+                "FIELD_SCALE": -2,
+                "EXTERNAL_TYPE": null,
+                "DEFAULT_SOURCE": "DEFAULT 0",
+                "FIELD_TYPE": "BIGINT          ",
+                "SUBTYPE": 2,
+                "CHARSET": null
+              },
+              {
+                "FIELD_NAME": "created_at                                                     ",
+                "DESCRIPTION": null,
+                "DEFAULT_VALUE": {
+                  "type": "Buffer",
+                  "data": [
+                    5,
+                    161,
+                    76
+                  ]
+                },
+                "NOT_NULL": null,
+                "FIELD_POSITION": 3,
+                "FIELD_LENGTH": 8,
+                "FIELD_PRECISION": null,
+                "FIELD_SCALE": 0,
+                "EXTERNAL_TYPE": null,
+                "DEFAULT_SOURCE": "DEFAULT CURRENT_TIMESTAMP",
+                "FIELD_TYPE": "TIMESTAMP       ",
+                "SUBTYPE": null,
+                "CHARSET": null
+              },
+              {
+                "FIELD_NAME": "category_id                                                    ",
+                "DESCRIPTION": null,
+                "DEFAULT_VALUE": null,
+                "NOT_NULL": null,
+                "FIELD_POSITION": 4,
+                "FIELD_LENGTH": 4,
+                "FIELD_PRECISION": 0,
+                "FIELD_SCALE": 0,
+                "EXTERNAL_TYPE": null,
+                "DEFAULT_SOURCE": null,
+                "FIELD_TYPE": "INTEGER         ",
+                "SUBTYPE": 0,
+                "CHARSET": null
+              },
+              {
+                "FIELD_NAME": "notes                                                          ",
+                "DESCRIPTION": null,
+                "DEFAULT_VALUE": null,
+                "NOT_NULL": null,
+                "FIELD_POSITION": 5,
+                "FIELD_LENGTH": 8,
+                "FIELD_PRECISION": null,
+                "FIELD_SCALE": 0,
+                "EXTERNAL_TYPE": null,
+                "DEFAULT_SOURCE": null,
+                "FIELD_TYPE": "BLOB            ",
+                "SUBTYPE": 1,
+                "CHARSET": "UTF8                                                           "
+              },
+              {
+                "FIELD_NAME": "flag                                                           ",
+                "DESCRIPTION": null,
+                "DEFAULT_VALUE": null,
+                "NOT_NULL": null,
+                "FIELD_POSITION": 6,
+                "FIELD_LENGTH": 1,
+                "FIELD_PRECISION": null,
+                "FIELD_SCALE": 0,
+                "EXTERNAL_TYPE": null,
+                "DEFAULT_SOURCE": null,
+                "FIELD_TYPE": "UNKNOWN         ",
+                "SUBTYPE": null,
+                "CHARSET": null
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "FIELD_NAME",
+                "alias": "FIELD_NAME",
+                "orgName": "RDB$FIELD_NAME",
+                "table": "RDB$RELATION_FIELDS",
+                "tableAlias": "RDB$RELATION_FIELDS",
+                "orgTable": "RDB$RELATION_FIELDS",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "DESCRIPTION",
+                "alias": "DESCRIPTION",
+                "orgName": "RDB$DESCRIPTION",
+                "table": "RDB$RELATION_FIELDS",
+                "tableAlias": "RDB$RELATION_FIELDS",
+                "orgTable": "RDB$RELATION_FIELDS",
+                "type": "BLOB-TEXT",
+                "length": 8
+              },
+              {
+                "name": "DEFAULT_VALUE",
+                "alias": "DEFAULT_VALUE",
+                "orgName": "RDB$DEFAULT_VALUE",
+                "table": "RDB$RELATION_FIELDS",
+                "tableAlias": "RDB$RELATION_FIELDS",
+                "orgTable": "RDB$RELATION_FIELDS",
+                "type": "BLOB",
+                "length": 8
+              },
+              {
+                "name": "NOT_NULL",
+                "alias": "NOT_NULL",
+                "orgName": "RDB$NULL_FLAG",
+                "table": "RDB$RELATION_FIELDS",
+                "tableAlias": "RDB$RELATION_FIELDS",
+                "orgTable": "RDB$RELATION_FIELDS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "FIELD_POSITION",
+                "alias": "FIELD_POSITION",
+                "orgName": "RDB$FIELD_POSITION",
+                "table": "RDB$RELATION_FIELDS",
+                "tableAlias": "RDB$RELATION_FIELDS",
+                "orgTable": "RDB$RELATION_FIELDS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "FIELD_LENGTH",
+                "alias": "FIELD_LENGTH",
+                "orgName": "RDB$FIELD_LENGTH",
+                "table": "RDB$FIELDS",
+                "tableAlias": "RDB$FIELDS",
+                "orgTable": "RDB$FIELDS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "FIELD_PRECISION",
+                "alias": "FIELD_PRECISION",
+                "orgName": "RDB$FIELD_PRECISION",
+                "table": "RDB$FIELDS",
+                "tableAlias": "RDB$FIELDS",
+                "orgTable": "RDB$FIELDS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "FIELD_SCALE",
+                "alias": "FIELD_SCALE",
+                "orgName": "RDB$FIELD_SCALE",
+                "table": "RDB$FIELDS",
+                "tableAlias": "RDB$FIELDS",
+                "orgTable": "RDB$FIELDS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "EXTERNAL_TYPE",
+                "alias": "EXTERNAL_TYPE",
+                "orgName": "RDB$EXTERNAL_TYPE",
+                "table": "RDB$FIELDS",
+                "tableAlias": "RDB$FIELDS",
+                "orgTable": "RDB$FIELDS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "DEFAULT_SOURCE",
+                "alias": "DEFAULT_SOURCE",
+                "orgName": "RDB$DEFAULT_SOURCE",
+                "table": "RDB$RELATION_FIELDS",
+                "tableAlias": "RDB$RELATION_FIELDS",
+                "orgTable": "RDB$RELATION_FIELDS",
+                "type": "BLOB-TEXT",
+                "length": 8
+              },
+              {
+                "name": "FIELD_TYPE",
+                "alias": "FIELD_TYPE",
+                "orgName": "CASE",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "CHAR",
+                "length": 64
+              },
+              {
+                "name": "SUBTYPE",
+                "alias": "SUBTYPE",
+                "orgName": "RDB$FIELD_SUB_TYPE",
+                "table": "RDB$FIELDS",
+                "tableAlias": "RDB$FIELDS",
+                "orgTable": "RDB$FIELDS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "CHARSET",
+                "alias": "CHARSET",
+                "orgName": "RDB$CHARACTER_SET_NAME",
+                "table": "RDB$CHARACTER_SETS",
+                "tableAlias": "RDB$CHARACTER_SETS",
+                "orgTable": "RDB$CHARACTER_SETS",
+                "type": "CHAR",
+                "length": 252
+              }
+            ],
+            "keys": [],
+            "duration": 21
+          }
+        }
+      ],
+      "output": [
+        {
+          "name": "id",
+          "key": null,
+          "type": "INTEGER",
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numPrecision": null,
+          "numScale": 0,
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": false,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 1,
+          "default": null,
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null
+        },
+        {
+          "name": "name",
+          "key": null,
+          "type": "VARCHAR",
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numPrecision": null,
+          "numScale": 0,
+          "datePrecision": null,
+          "charLength": 400,
+          "nullable": false,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 2,
+          "default": "'unnamed'",
+          "charset": "UTF8                                                           ",
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null
+        },
+        {
+          "name": "price",
+          "key": null,
+          "type": "DECIMAL",
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numPrecision": 10,
+          "numScale": 2,
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": false,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 3,
+          "default": "0",
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null
+        },
+        {
+          "name": "created_at",
+          "key": null,
+          "type": "TIMESTAMP",
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numPrecision": null,
+          "numScale": 0,
+          "datePrecision": null,
+          "charLength": 8,
+          "nullable": true,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 4,
+          "default": "CURRENT_TIMESTAMP",
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null
+        },
+        {
+          "name": "category_id",
+          "key": null,
+          "type": "INTEGER",
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numPrecision": null,
+          "numScale": 0,
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": true,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 5,
+          "default": null,
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null
+        },
+        {
+          "name": "notes",
+          "key": null,
+          "type": "BLOB-TEXT",
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numPrecision": null,
+          "numScale": 0,
+          "datePrecision": null,
+          "charLength": 8,
+          "nullable": true,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 6,
+          "default": null,
+          "charset": "UTF8                                                           ",
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null
+        },
+        {
+          "name": "flag",
+          "key": null,
+          "type": "UNKNOWN",
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numPrecision": null,
+          "numScale": 0,
+          "datePrecision": null,
+          "charLength": 1,
+          "nullable": true,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 7,
+          "default": null,
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null
+        }
+      ]
+    },
+    {
+      "method": "getTableColumns",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "table": "categories"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT r.RDB$FIELD_NAME AS FIELD_NAME, r.RDB$DESCRIPTION AS DESCRIPTION, r.RDB$DEFAULT_VALUE AS DEFAULT_VALUE, r.RDB$NULL_FLAG AS NOT_NULL, r.RDB$FIELD_POSITION AS FIELD_POSITION, f.RDB$FIELD_LENGTH AS FIELD_LENGTH, f.RDB$FIELD_PRECISION AS FIELD_PRECISION, f.RDB$FIELD_SCALE AS FIELD_SCALE, f.RDB$EXTERNAL_TYPE AS EXTERNAL_TYPE, r.RDB$DEFAULT_SOURCE AS DEFAULT_SOURCE, CASE f.RDB$FIELD_TYPE WHEN 261 THEN 'BLOB' WHEN 14 THEN 'CHAR' WHEN 40 THEN 'CSTRING' WHEN 11 THEN 'D_FLOAT' WHEN 27 THEN 'DOUBLE PRECISION' WHEN 10 THEN 'FLOAT' WHEN 16 THEN 'BIGINT' WHEN 8 THEN 'INTEGER' WHEN 9 THEN 'QUAD' WHEN 7 THEN 'SMALLINT' WHEN 12 THEN 'DATE' WHEN 13 THEN 'TIME' WHEN 35 THEN 'TIMESTAMP' WHEN 37 THEN 'VARCHAR' ELSE 'UNKNOWN' END AS FIELD_TYPE, f.RDB$FIELD_SUB_TYPE AS SUBTYPE, -- coll.RDB$COLLATION_NAME AS COLLATION, cset.RDB$CHARACTER_SET_NAME AS CHARSET FROM RDB$RELATION_FIELDS r LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME -- LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$COLLATION_ID LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID = cset.RDB$CHARACTER_SET_ID WHERE r.RDB$RELATION_NAME='categories' ORDER BY r.RDB$FIELD_POSITION;",
+          "result": {
+            "rows": [
+              {
+                "FIELD_NAME": "id                                                             ",
+                "DESCRIPTION": null,
+                "DEFAULT_VALUE": null,
+                "NOT_NULL": 1,
+                "FIELD_POSITION": 0,
+                "FIELD_LENGTH": 4,
+                "FIELD_PRECISION": 0,
+                "FIELD_SCALE": 0,
+                "EXTERNAL_TYPE": null,
+                "DEFAULT_SOURCE": null,
+                "FIELD_TYPE": "INTEGER         ",
+                "SUBTYPE": 0,
+                "CHARSET": null
+              },
+              {
+                "FIELD_NAME": "name                                                           ",
+                "DESCRIPTION": null,
+                "DEFAULT_VALUE": null,
+                "NOT_NULL": 1,
+                "FIELD_POSITION": 1,
+                "FIELD_LENGTH": 200,
+                "FIELD_PRECISION": null,
+                "FIELD_SCALE": 0,
+                "EXTERNAL_TYPE": null,
+                "DEFAULT_SOURCE": null,
+                "FIELD_TYPE": "VARCHAR         ",
+                "SUBTYPE": 0,
+                "CHARSET": "UTF8                                                           "
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "FIELD_NAME",
+                "alias": "FIELD_NAME",
+                "orgName": "RDB$FIELD_NAME",
+                "table": "RDB$RELATION_FIELDS",
+                "tableAlias": "RDB$RELATION_FIELDS",
+                "orgTable": "RDB$RELATION_FIELDS",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "DESCRIPTION",
+                "alias": "DESCRIPTION",
+                "orgName": "RDB$DESCRIPTION",
+                "table": "RDB$RELATION_FIELDS",
+                "tableAlias": "RDB$RELATION_FIELDS",
+                "orgTable": "RDB$RELATION_FIELDS",
+                "type": "BLOB-TEXT",
+                "length": 8
+              },
+              {
+                "name": "DEFAULT_VALUE",
+                "alias": "DEFAULT_VALUE",
+                "orgName": "RDB$DEFAULT_VALUE",
+                "table": "RDB$RELATION_FIELDS",
+                "tableAlias": "RDB$RELATION_FIELDS",
+                "orgTable": "RDB$RELATION_FIELDS",
+                "type": "BLOB",
+                "length": 8
+              },
+              {
+                "name": "NOT_NULL",
+                "alias": "NOT_NULL",
+                "orgName": "RDB$NULL_FLAG",
+                "table": "RDB$RELATION_FIELDS",
+                "tableAlias": "RDB$RELATION_FIELDS",
+                "orgTable": "RDB$RELATION_FIELDS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "FIELD_POSITION",
+                "alias": "FIELD_POSITION",
+                "orgName": "RDB$FIELD_POSITION",
+                "table": "RDB$RELATION_FIELDS",
+                "tableAlias": "RDB$RELATION_FIELDS",
+                "orgTable": "RDB$RELATION_FIELDS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "FIELD_LENGTH",
+                "alias": "FIELD_LENGTH",
+                "orgName": "RDB$FIELD_LENGTH",
+                "table": "RDB$FIELDS",
+                "tableAlias": "RDB$FIELDS",
+                "orgTable": "RDB$FIELDS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "FIELD_PRECISION",
+                "alias": "FIELD_PRECISION",
+                "orgName": "RDB$FIELD_PRECISION",
+                "table": "RDB$FIELDS",
+                "tableAlias": "RDB$FIELDS",
+                "orgTable": "RDB$FIELDS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "FIELD_SCALE",
+                "alias": "FIELD_SCALE",
+                "orgName": "RDB$FIELD_SCALE",
+                "table": "RDB$FIELDS",
+                "tableAlias": "RDB$FIELDS",
+                "orgTable": "RDB$FIELDS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "EXTERNAL_TYPE",
+                "alias": "EXTERNAL_TYPE",
+                "orgName": "RDB$EXTERNAL_TYPE",
+                "table": "RDB$FIELDS",
+                "tableAlias": "RDB$FIELDS",
+                "orgTable": "RDB$FIELDS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "DEFAULT_SOURCE",
+                "alias": "DEFAULT_SOURCE",
+                "orgName": "RDB$DEFAULT_SOURCE",
+                "table": "RDB$RELATION_FIELDS",
+                "tableAlias": "RDB$RELATION_FIELDS",
+                "orgTable": "RDB$RELATION_FIELDS",
+                "type": "BLOB-TEXT",
+                "length": 8
+              },
+              {
+                "name": "FIELD_TYPE",
+                "alias": "FIELD_TYPE",
+                "orgName": "CASE",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "CHAR",
+                "length": 64
+              },
+              {
+                "name": "SUBTYPE",
+                "alias": "SUBTYPE",
+                "orgName": "RDB$FIELD_SUB_TYPE",
+                "table": "RDB$FIELDS",
+                "tableAlias": "RDB$FIELDS",
+                "orgTable": "RDB$FIELDS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "CHARSET",
+                "alias": "CHARSET",
+                "orgName": "RDB$CHARACTER_SET_NAME",
+                "table": "RDB$CHARACTER_SETS",
+                "tableAlias": "RDB$CHARACTER_SETS",
+                "orgTable": "RDB$CHARACTER_SETS",
+                "type": "CHAR",
+                "length": 252
+              }
+            ],
+            "keys": [],
+            "duration": 5
+          }
+        }
+      ],
+      "output": [
+        {
+          "name": "id",
+          "key": null,
+          "type": "INTEGER",
+          "schema": "antares_fixtures",
+          "table": "categories",
+          "numPrecision": null,
+          "numScale": 0,
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": false,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 1,
+          "default": null,
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null
+        },
+        {
+          "name": "name",
+          "key": null,
+          "type": "VARCHAR",
+          "schema": "antares_fixtures",
+          "table": "categories",
+          "numPrecision": null,
+          "numScale": 0,
+          "datePrecision": null,
+          "charLength": 200,
+          "nullable": false,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 2,
+          "default": null,
+          "charset": "UTF8                                                           ",
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null
+        }
+      ]
+    },
+    {
+      "method": "getTableIndexes",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "table": "products"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT ix.rdb$index_name AS INDEX_NAME, sg.rdb$field_name AS FIELD_NAME, rc.rdb$relation_name AS TABLE_NAME, rc.rdb$constraint_type AS INDEX_TYPE, ix.RDB$UNIQUE_FLAG AS INDEX_UNIQUE FROM rdb$indices ix LEFT JOIN rdb$index_segments sg ON ix.rdb$index_name = sg.rdb$index_name LEFT JOIN rdb$relation_constraints rc ON rc.rdb$index_name = ix.rdb$index_name WHERE rc.rdb$relation_name = 'products'",
+          "result": {
+            "rows": [
+              {
+                "INDEX_NAME": "products_category_fk                                           ",
+                "FIELD_NAME": "category_id                                                    ",
+                "TABLE_NAME": "products                                                       ",
+                "INDEX_TYPE": "FOREIGN KEY",
+                "INDEX_UNIQUE": 0
+              },
+              {
+                "INDEX_NAME": "products_name_uq                                               ",
+                "FIELD_NAME": "name                                                           ",
+                "TABLE_NAME": "products                                                       ",
+                "INDEX_TYPE": "UNIQUE     ",
+                "INDEX_UNIQUE": 1
+              },
+              {
+                "INDEX_NAME": "RDB$PRIMARY6                                                   ",
+                "FIELD_NAME": "id                                                             ",
+                "TABLE_NAME": "products                                                       ",
+                "INDEX_TYPE": "PRIMARY KEY",
+                "INDEX_UNIQUE": 1
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "INDEX_NAME",
+                "alias": "INDEX_NAME",
+                "orgName": "RDB$INDEX_NAME",
+                "table": "RDB$INDICES",
+                "tableAlias": "RDB$INDICES",
+                "orgTable": "RDB$INDICES",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "FIELD_NAME",
+                "alias": "FIELD_NAME",
+                "orgName": "RDB$FIELD_NAME",
+                "table": "RDB$INDEX_SEGMENTS",
+                "tableAlias": "RDB$INDEX_SEGMENTS",
+                "orgTable": "RDB$INDEX_SEGMENTS",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "TABLE_NAME",
+                "alias": "TABLE_NAME",
+                "orgName": "RDB$RELATION_NAME",
+                "table": "RDB$RELATION_CONSTRAINTS",
+                "tableAlias": "RDB$RELATION_CONSTRAINTS",
+                "orgTable": "RDB$RELATION_CONSTRAINTS",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "INDEX_TYPE",
+                "alias": "INDEX_TYPE",
+                "orgName": "RDB$CONSTRAINT_TYPE",
+                "table": "RDB$RELATION_CONSTRAINTS",
+                "tableAlias": "RDB$RELATION_CONSTRAINTS",
+                "orgTable": "RDB$RELATION_CONSTRAINTS",
+                "type": "CHAR",
+                "length": 44
+              },
+              {
+                "name": "INDEX_UNIQUE",
+                "alias": "INDEX_UNIQUE",
+                "orgName": "RDB$UNIQUE_FLAG",
+                "table": "RDB$INDICES",
+                "tableAlias": "RDB$INDICES",
+                "orgTable": "RDB$INDICES",
+                "type": "SMALLINT",
+                "length": 2
+              }
+            ],
+            "keys": [],
+            "duration": 5
+          }
+        }
+      ],
+      "output": [
+        {
+          "name": "products_category_fk",
+          "column": "category_id",
+          "indexType": null,
+          "type": "FOREIGN KEY",
+          "cardinality": null,
+          "comment": "",
+          "indexComment": ""
+        },
+        {
+          "name": "products_name_uq",
+          "column": "name",
+          "indexType": null,
+          "type": "UNIQUE",
+          "cardinality": null,
+          "comment": "",
+          "indexComment": ""
+        },
+        {
+          "name": "RDB$PRIMARY6",
+          "column": "id",
+          "indexType": null,
+          "type": "PRIMARY",
+          "cardinality": null,
+          "comment": "",
+          "indexComment": ""
+        }
+      ]
+    },
+    {
+      "method": "getKeyUsage",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "table": "products"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT PK.RDB$RELATION_NAME as PKTABLE_NAME, ISP.RDB$FIELD_NAME as PKCOLUMN_NAME, FK.RDB$RELATION_NAME as FKTABLE_NAME, ISF.RDB$FIELD_NAME as FKCOLUMN_NAME, (ISP.RDB$FIELD_POSITION + 1) as KEY_SEQ, RC.RDB$UPDATE_RULE as UPDATE_RULE, RC.RDB$DELETE_RULE as DELETE_RULE, PK.RDB$CONSTRAINT_NAME as PK_NAME, FK.RDB$CONSTRAINT_NAME as FK_NAME FROM RDB$RELATION_CONSTRAINTS PK, RDB$RELATION_CONSTRAINTS FK, RDB$REF_CONSTRAINTS RC, RDB$INDEX_SEGMENTS ISP, RDB$INDEX_SEGMENTS ISF WHERE FK.RDB$RELATION_NAME = 'products' and FK.RDB$CONSTRAINT_NAME = RC.RDB$CONSTRAINT_NAME and PK.RDB$CONSTRAINT_NAME = RC.RDB$CONST_NAME_UQ and ISP.RDB$INDEX_NAME = PK.RDB$INDEX_NAME and ISF.RDB$INDEX_NAME = FK.RDB$INDEX_NAME and ISP.RDB$FIELD_POSITION = ISF.RDB$FIELD_POSITION ORDER BY 1, 5",
+          "result": {
+            "rows": [
+              {
+                "PKTABLE_NAME": "categories                                                     ",
+                "PKCOLUMN_NAME": "id                                                             ",
+                "FKTABLE_NAME": "products                                                       ",
+                "FKCOLUMN_NAME": "category_id                                                    ",
+                "KEY_SEQ": 1,
+                "UPDATE_RULE": "CASCADE    ",
+                "DELETE_RULE": "SET NULL   ",
+                "PK_NAME": "INTEG_14                                                       ",
+                "FK_NAME": "products_category_fk                                           "
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "PKTABLE_NAME",
+                "alias": "PKTABLE_NAME",
+                "orgName": "RDB$RELATION_NAME",
+                "table": "RDB$RELATION_CONSTRAINTS",
+                "tableAlias": "RDB$RELATION_CONSTRAINTS",
+                "orgTable": "RDB$RELATION_CONSTRAINTS",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "PKCOLUMN_NAME",
+                "alias": "PKCOLUMN_NAME",
+                "orgName": "RDB$FIELD_NAME",
+                "table": "RDB$INDEX_SEGMENTS",
+                "tableAlias": "RDB$INDEX_SEGMENTS",
+                "orgTable": "RDB$INDEX_SEGMENTS",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "FKTABLE_NAME",
+                "alias": "FKTABLE_NAME",
+                "orgName": "RDB$RELATION_NAME",
+                "table": "RDB$RELATION_CONSTRAINTS",
+                "tableAlias": "RDB$RELATION_CONSTRAINTS",
+                "orgTable": "RDB$RELATION_CONSTRAINTS",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "FKCOLUMN_NAME",
+                "alias": "FKCOLUMN_NAME",
+                "orgName": "RDB$FIELD_NAME",
+                "table": "RDB$INDEX_SEGMENTS",
+                "tableAlias": "RDB$INDEX_SEGMENTS",
+                "orgTable": "RDB$INDEX_SEGMENTS",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "KEY_SEQ",
+                "alias": "KEY_SEQ",
+                "orgName": "ADD",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "BIGINT",
+                "length": 8
+              },
+              {
+                "name": "UPDATE_RULE",
+                "alias": "UPDATE_RULE",
+                "orgName": "RDB$UPDATE_RULE",
+                "table": "RDB$REF_CONSTRAINTS",
+                "tableAlias": "RDB$REF_CONSTRAINTS",
+                "orgTable": "RDB$REF_CONSTRAINTS",
+                "type": "CHAR",
+                "length": 44
+              },
+              {
+                "name": "DELETE_RULE",
+                "alias": "DELETE_RULE",
+                "orgName": "RDB$DELETE_RULE",
+                "table": "RDB$REF_CONSTRAINTS",
+                "tableAlias": "RDB$REF_CONSTRAINTS",
+                "orgTable": "RDB$REF_CONSTRAINTS",
+                "type": "CHAR",
+                "length": 44
+              },
+              {
+                "name": "PK_NAME",
+                "alias": "PK_NAME",
+                "orgName": "RDB$CONSTRAINT_NAME",
+                "table": "RDB$RELATION_CONSTRAINTS",
+                "tableAlias": "RDB$RELATION_CONSTRAINTS",
+                "orgTable": "RDB$RELATION_CONSTRAINTS",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "FK_NAME",
+                "alias": "FK_NAME",
+                "orgName": "RDB$CONSTRAINT_NAME",
+                "table": "RDB$RELATION_CONSTRAINTS",
+                "tableAlias": "RDB$RELATION_CONSTRAINTS",
+                "orgTable": "RDB$RELATION_CONSTRAINTS",
+                "type": "CHAR",
+                "length": 252
+              }
+            ],
+            "keys": [],
+            "duration": 6
+          }
+        }
+      ],
+      "output": [
+        {
+          "schema": "antares_fixtures",
+          "table": "products",
+          "field": "category_id",
+          "position": 1,
+          "constraintPosition": null,
+          "constraintName": "products_category_fk",
+          "refSchema": "antares_fixtures",
+          "refTable": "categories",
+          "refField": "id",
+          "onUpdate": "CASCADE",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "method": "getTableOptions",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "table": "products"
+        }
+      ],
+      "queries": [],
+      "output": {
+        "name": "products"
+      }
+    },
+    {
+      "method": "getViewInformations",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "view": "cheap_products"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT rdb$view_source as sql FROM rdb$relations WHERE rdb$relation_name = 'cheap_products'",
+          "result": {
+            "rows": [
+              {
+                "SQL": "SELECT \"id\", \"name\" FROM \"products\" WHERE \"price\" < 10"
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "SQL",
+                "alias": "SQL",
+                "orgName": "RDB$VIEW_SOURCE",
+                "table": "RDB$RELATIONS",
+                "tableAlias": "RDB$RELATIONS",
+                "orgTable": "RDB$RELATIONS",
+                "type": "BLOB-TEXT",
+                "length": 8
+              }
+            ],
+            "keys": [],
+            "duration": 6
+          }
+        }
+      ],
+      "output": {
+        "sql": "SELECT \"id\", \"name\" FROM \"products\" WHERE \"price\" < 10",
+        "name": "cheap_products"
+      }
+    },
+    {
+      "method": "getTriggerInformations",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "trigger": "products_bi"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT RDB$TRIGGER_NAME as name, RDB$RELATION_NAME as relation, RDB$TRIGGER_SOURCE as sql, RDB$TRIGGER_TYPE as type FROM RDB$TRIGGERS WHERE RDB$SYSTEM_FLAG=0 AND RDB$TRIGGER_NAME = 'products_bi';",
+          "result": {
+            "rows": [
+              {
+                "NAME": "products_bi                                                    ",
+                "RELATION": "products                                                       ",
+                "SQL": "AS BEGIN NEW.\"price\" = ABS(NEW.\"price\"); END",
+                "TYPE": 1
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "NAME",
+                "alias": "NAME",
+                "orgName": "RDB$TRIGGER_NAME",
+                "table": "RDB$TRIGGERS",
+                "tableAlias": "RDB$TRIGGERS",
+                "orgTable": "RDB$TRIGGERS",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "RELATION",
+                "alias": "RELATION",
+                "orgName": "RDB$RELATION_NAME",
+                "table": "RDB$TRIGGERS",
+                "tableAlias": "RDB$TRIGGERS",
+                "orgTable": "RDB$TRIGGERS",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "SQL",
+                "alias": "SQL",
+                "orgName": "RDB$TRIGGER_SOURCE",
+                "table": "RDB$TRIGGERS",
+                "tableAlias": "RDB$TRIGGERS",
+                "orgTable": "RDB$TRIGGERS",
+                "type": "BLOB-TEXT",
+                "length": 8
+              },
+              {
+                "name": "TYPE",
+                "alias": "TYPE",
+                "orgName": "RDB$TRIGGER_TYPE",
+                "table": "RDB$TRIGGERS",
+                "tableAlias": "RDB$TRIGGERS",
+                "orgTable": "RDB$TRIGGERS",
+                "type": "BIGINT",
+                "length": 8
+              }
+            ],
+            "keys": [],
+            "duration": 7
+          }
+        }
+      ],
+      "output": {
+        "sql": "BEGIN NEW.\"price\" = ABS(NEW.\"price\"); END",
+        "name": "products_bi",
+        "table": "products",
+        "activation": "BEFORE",
+        "event": [
+          "INSERT"
+        ]
+      }
+    },
+    {
+      "method": "getRoutineInformations",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "routine": "get_product"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT RDB$PROCEDURE_NAME AS NAME, RDB$DESCRIPTION AS COMMENT, RDB$PROCEDURE_SOURCE AS SOURCE, RDB$OWNER_NAME AS DEFINER, RDB$SQL_SECURITY AS SECURITY FROM RDB$PROCEDURES WHERE RDB$SYSTEM_FLAG = 0 AND RDB$PROCEDURE_NAME = 'get_product';",
+          "result": {
+            "rows": [
+              {
+                "NAME": "get_product                                                    ",
+                "COMMENT": null,
+                "SOURCE": "BEGIN SELECT \"name\" FROM \"products\" WHERE \"id\" = :p_id INTO :p_name; SUSPEND; END",
+                "DEFINER": "SYSDBA                                                         ",
+                "SECURITY": null
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "NAME",
+                "alias": "NAME",
+                "orgName": "RDB$PROCEDURE_NAME",
+                "table": "RDB$PROCEDURES",
+                "tableAlias": "RDB$PROCEDURES",
+                "orgTable": "RDB$PROCEDURES",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "COMMENT",
+                "alias": "COMMENT",
+                "orgName": "RDB$DESCRIPTION",
+                "table": "RDB$PROCEDURES",
+                "tableAlias": "RDB$PROCEDURES",
+                "orgTable": "RDB$PROCEDURES",
+                "type": "BLOB-TEXT",
+                "length": 8
+              },
+              {
+                "name": "SOURCE",
+                "alias": "SOURCE",
+                "orgName": "RDB$PROCEDURE_SOURCE",
+                "table": "RDB$PROCEDURES",
+                "tableAlias": "RDB$PROCEDURES",
+                "orgTable": "RDB$PROCEDURES",
+                "type": "BLOB-TEXT",
+                "length": 8
+              },
+              {
+                "name": "DEFINER",
+                "alias": "DEFINER",
+                "orgName": "RDB$OWNER_NAME",
+                "table": "RDB$PROCEDURES",
+                "tableAlias": "RDB$PROCEDURES",
+                "orgTable": "RDB$PROCEDURES",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "SECURITY",
+                "alias": "SECURITY",
+                "orgName": "RDB$SQL_SECURITY",
+                "table": "RDB$PROCEDURES",
+                "tableAlias": "RDB$PROCEDURES",
+                "orgTable": "RDB$PROCEDURES",
+                "type": "BOOLEAN",
+                "length": 1
+              }
+            ],
+            "keys": [],
+            "duration": 6
+          }
+        },
+        {
+          "sql": "SELECT p.RDB$PARAMETER_NAME AS PARAMETER_NAME, p.RDB$PARAMETER_TYPE AS CONTEXT, CASE f.RDB$FIELD_TYPE WHEN 261 THEN 'BLOB' WHEN 14 THEN 'CHAR' WHEN 40 THEN 'CSTRING' WHEN 11 THEN 'D_FLOAT' WHEN 27 THEN 'DOUBLE PRECISION' WHEN 10 THEN 'FLOAT' WHEN 16 THEN 'BIGINT' WHEN 8 THEN 'INTEGER' WHEN 9 THEN 'QUAD' WHEN 7 THEN 'SMALLINT' WHEN 12 THEN 'DATE' WHEN 13 THEN 'TIME' WHEN 35 THEN 'TIMESTAMP' WHEN 37 THEN 'VARCHAR' ELSE 'UNKNOWN' END AS FIELD_TYPE, f.RDB$FIELD_LENGTH AS FIELD_LENGTH, f.RDB$FIELD_PRECISION AS FIELD_PRECISION, f.RDB$FIELD_SCALE AS FIELD_SCALE FROM RDB$PROCEDURE_PARAMETERS p JOIN RDB$FIELDS f ON f.RDB$FIELD_NAME = p.RDB$FIELD_SOURCE WHERE p.RDB$SYSTEM_FLAG = 0 AND RDB$PROCEDURE_NAME = 'get_product' ORDER BY p.RDB$PARAMETER_TYPE, p.RDB$PARAMETER_NUMBER",
+          "result": {
+            "rows": [
+              {
+                "PARAMETER_NAME": "P_ID                                                           ",
+                "CONTEXT": 0,
+                "FIELD_TYPE": "INTEGER         ",
+                "FIELD_LENGTH": 4,
+                "FIELD_PRECISION": 0,
+                "FIELD_SCALE": 0
+              },
+              {
+                "PARAMETER_NAME": "P_NAME                                                         ",
+                "CONTEXT": 1,
+                "FIELD_TYPE": "VARCHAR         ",
+                "FIELD_LENGTH": 400,
+                "FIELD_PRECISION": null,
+                "FIELD_SCALE": 0
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "PARAMETER_NAME",
+                "alias": "PARAMETER_NAME",
+                "orgName": "RDB$PARAMETER_NAME",
+                "table": "RDB$PROCEDURE_PARAMETERS",
+                "tableAlias": "RDB$PROCEDURE_PARAMETERS",
+                "orgTable": "RDB$PROCEDURE_PARAMETERS",
+                "type": "CHAR",
+                "length": 252
+              },
+              {
+                "name": "CONTEXT",
+                "alias": "CONTEXT",
+                "orgName": "RDB$PARAMETER_TYPE",
+                "table": "RDB$PROCEDURE_PARAMETERS",
+                "tableAlias": "RDB$PROCEDURE_PARAMETERS",
+                "orgTable": "RDB$PROCEDURE_PARAMETERS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "FIELD_TYPE",
+                "alias": "FIELD_TYPE",
+                "orgName": "CASE",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "CHAR",
+                "length": 64
+              },
+              {
+                "name": "FIELD_LENGTH",
+                "alias": "FIELD_LENGTH",
+                "orgName": "RDB$FIELD_LENGTH",
+                "table": "RDB$FIELDS",
+                "tableAlias": "RDB$FIELDS",
+                "orgTable": "RDB$FIELDS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "FIELD_PRECISION",
+                "alias": "FIELD_PRECISION",
+                "orgName": "RDB$FIELD_PRECISION",
+                "table": "RDB$FIELDS",
+                "tableAlias": "RDB$FIELDS",
+                "orgTable": "RDB$FIELDS",
+                "type": "SMALLINT",
+                "length": 2
+              },
+              {
+                "name": "FIELD_SCALE",
+                "alias": "FIELD_SCALE",
+                "orgName": "RDB$FIELD_SCALE",
+                "table": "RDB$FIELDS",
+                "tableAlias": "RDB$FIELDS",
+                "orgTable": "RDB$FIELDS",
+                "type": "SMALLINT",
+                "length": 2
+              }
+            ],
+            "keys": [],
+            "duration": 5
+          }
+        }
+      ],
+      "output": {
+        "definer": "SYSDBA                                                         ",
+        "sql": "BEGIN SELECT \"name\" FROM \"products\" WHERE \"id\" = :p_id INTO :p_name; SUSPEND; END",
+        "parameters": [
+          {
+            "name": "P_ID",
+            "type": "INTEGER",
+            "length": null,
+            "context": "IN"
+          },
+          {
+            "name": "P_NAME",
+            "type": "VARCHAR",
+            "length": 400,
+            "context": "OUT"
+          }
+        ],
+        "name": "get_product",
+        "comment": "",
+        "security": "DEFINER",
+        "deterministic": false,
+        "dataAccess": "CONTAINS SQL"
+      }
+    }
+  ]
+}

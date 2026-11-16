@@ -1,0 +1,4406 @@
+{
+  "engine": "maria",
+  "server": "{\"number\":\"11.4.13\",\"name\":\"mariadb.org binary distribution\",\"arch\":\"x86_64\",\"os\":\"debian-linux-gnu\"}",
+  "calls": [
+    {
+      "method": "getStructure",
+      "params": [
+        {
+          "$set": [
+            "antares_fixtures"
+          ]
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SHOW DATABASES",
+          "result": {
+            "rows": [
+              {
+                "Database": "antares_fixtures"
+              },
+              {
+                "Database": "antares_test"
+              },
+              {
+                "Database": "information_schema"
+              },
+              {
+                "Database": "mysql"
+              },
+              {
+                "Database": "performance_schema"
+              },
+              {
+                "Database": "sys"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "SCHEMA_NAME",
+                "alias": "Database",
+                "orgName": "SCHEMA_NAME",
+                "schema": "information_schema",
+                "table": "SCHEMATA",
+                "tableAlias": "SCHEMATA",
+                "orgTable": "SCHEMATA",
+                "type": "VARCHAR",
+                "length": 256
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        },
+        {
+          "sql": "SHOW FUNCTION STATUS WHERE `Db` IN ('antares_fixtures')",
+          "result": {
+            "rows": [
+              {
+                "Db": "antares_fixtures",
+                "Name": "product_price",
+                "Type": "FUNCTION",
+                "Definer": "root@%",
+                "Modified": "2026-11-16 13:38:49",
+                "Created": "2026-11-16 13:38:49",
+                "Security_type": "DEFINER",
+                "Comment": "",
+                "character_set_client": "utf8mb4",
+                "collation_connection": "utf8mb4_unicode_ci",
+                "Database Collation": "utf8mb4_uca1400_ai_ci"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "ROUTINE_SCHEMA",
+                "alias": "Db",
+                "orgName": "ROUTINE_SCHEMA",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "ROUTINE_NAME",
+                "alias": "Name",
+                "orgName": "ROUTINE_NAME",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "ROUTINE_TYPE",
+                "alias": "Type",
+                "orgName": "ROUTINE_TYPE",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "VARCHAR",
+                "length": 52
+              },
+              {
+                "name": "DEFINER",
+                "alias": "Definer",
+                "orgName": "DEFINER",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "VARCHAR",
+                "length": 1536
+              },
+              {
+                "name": "LAST_ALTERED",
+                "alias": "Modified",
+                "orgName": "LAST_ALTERED",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "DATETIME",
+                "length": 0
+              },
+              {
+                "name": "CREATED",
+                "alias": "Created",
+                "orgName": "CREATED",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "DATETIME",
+                "length": 0
+              },
+              {
+                "name": "SECURITY_TYPE",
+                "alias": "Security_type",
+                "orgName": "SECURITY_TYPE",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "VARCHAR",
+                "length": 28
+              },
+              {
+                "name": "ROUTINE_COMMENT",
+                "alias": "Comment",
+                "orgName": "ROUTINE_COMMENT",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "TEXT",
+                "length": 786420
+              },
+              {
+                "name": "CHARACTER_SET_CLIENT",
+                "alias": "character_set_client",
+                "orgName": "CHARACTER_SET_CLIENT",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "VARCHAR",
+                "length": 128
+              },
+              {
+                "name": "COLLATION_CONNECTION",
+                "alias": "collation_connection",
+                "orgName": "COLLATION_CONNECTION",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "DATABASE_COLLATION",
+                "alias": "Database Collation",
+                "orgName": "DATABASE_COLLATION",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "VARCHAR",
+                "length": 256
+              }
+            ],
+            "keys": [],
+            "duration": 2
+          }
+        },
+        {
+          "sql": "SHOW PROCEDURE STATUS WHERE `Db` IN ('antares_fixtures')",
+          "result": {
+            "rows": [
+              {
+                "Db": "antares_fixtures",
+                "Name": "get_product",
+                "Type": "PROCEDURE",
+                "Definer": "root@%",
+                "Modified": "2026-11-16 13:38:49",
+                "Created": "2026-11-16 13:38:49",
+                "Security_type": "DEFINER",
+                "Comment": "Get a product",
+                "character_set_client": "utf8mb4",
+                "collation_connection": "utf8mb4_unicode_ci",
+                "Database Collation": "utf8mb4_uca1400_ai_ci"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "ROUTINE_SCHEMA",
+                "alias": "Db",
+                "orgName": "ROUTINE_SCHEMA",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "ROUTINE_NAME",
+                "alias": "Name",
+                "orgName": "ROUTINE_NAME",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "ROUTINE_TYPE",
+                "alias": "Type",
+                "orgName": "ROUTINE_TYPE",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "VARCHAR",
+                "length": 52
+              },
+              {
+                "name": "DEFINER",
+                "alias": "Definer",
+                "orgName": "DEFINER",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "VARCHAR",
+                "length": 1536
+              },
+              {
+                "name": "LAST_ALTERED",
+                "alias": "Modified",
+                "orgName": "LAST_ALTERED",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "DATETIME",
+                "length": 0
+              },
+              {
+                "name": "CREATED",
+                "alias": "Created",
+                "orgName": "CREATED",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "DATETIME",
+                "length": 0
+              },
+              {
+                "name": "SECURITY_TYPE",
+                "alias": "Security_type",
+                "orgName": "SECURITY_TYPE",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "VARCHAR",
+                "length": 28
+              },
+              {
+                "name": "ROUTINE_COMMENT",
+                "alias": "Comment",
+                "orgName": "ROUTINE_COMMENT",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "TEXT",
+                "length": 786420
+              },
+              {
+                "name": "CHARACTER_SET_CLIENT",
+                "alias": "character_set_client",
+                "orgName": "CHARACTER_SET_CLIENT",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "VARCHAR",
+                "length": 128
+              },
+              {
+                "name": "COLLATION_CONNECTION",
+                "alias": "collation_connection",
+                "orgName": "COLLATION_CONNECTION",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "DATABASE_COLLATION",
+                "alias": "Database Collation",
+                "orgName": "DATABASE_COLLATION",
+                "schema": "information_schema",
+                "table": "ROUTINES",
+                "tableAlias": "ROUTINES",
+                "orgTable": "ROUTINES",
+                "type": "VARCHAR",
+                "length": 256
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        },
+        {
+          "sql": "SELECT *, EVENT_SCHEMA AS `Db`, EVENT_NAME AS `Name` FROM information_schema.`EVENTS` WHERE EVENT_SCHEMA IN ('antares_fixtures')",
+          "result": {
+            "rows": [
+              {
+                "EVENT_CATALOG": "def",
+                "EVENT_SCHEMA": "antares_fixtures",
+                "EVENT_NAME": "cleanup",
+                "DEFINER": "root@%",
+                "TIME_ZONE": "SYSTEM",
+                "EVENT_BODY": "SQL",
+                "EVENT_DEFINITION": "DELETE FROM products WHERE price = 0",
+                "EVENT_TYPE": "RECURRING",
+                "EXECUTE_AT": null,
+                "INTERVAL_VALUE": "1",
+                "INTERVAL_FIELD": "DAY",
+                "SQL_MODE": "IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION",
+                "STARTS": "2030-01-01 00:00:00",
+                "ENDS": null,
+                "STATUS": "DISABLED",
+                "ON_COMPLETION": "NOT PRESERVE",
+                "CREATED": "2026-11-16 13:38:49",
+                "LAST_ALTERED": "2026-11-16 13:38:49",
+                "LAST_EXECUTED": null,
+                "EVENT_COMMENT": "Nightly",
+                "ORIGINATOR": "1",
+                "CHARACTER_SET_CLIENT": "utf8mb4",
+                "COLLATION_CONNECTION": "utf8mb4_unicode_ci",
+                "DATABASE_COLLATION": "utf8mb4_uca1400_ai_ci",
+                "Db": "antares_fixtures",
+                "Name": "cleanup"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "EVENT_CATALOG",
+                "alias": "EVENT_CATALOG",
+                "orgName": "EVENT_CATALOG",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "EVENT_SCHEMA",
+                "alias": "EVENT_SCHEMA",
+                "orgName": "EVENT_SCHEMA",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "EVENT_NAME",
+                "alias": "EVENT_NAME",
+                "orgName": "EVENT_NAME",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "DEFINER",
+                "alias": "DEFINER",
+                "orgName": "DEFINER",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 1536
+              },
+              {
+                "name": "TIME_ZONE",
+                "alias": "TIME_ZONE",
+                "orgName": "TIME_ZONE",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "EVENT_BODY",
+                "alias": "EVENT_BODY",
+                "orgName": "EVENT_BODY",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 32
+              },
+              {
+                "name": "EVENT_DEFINITION",
+                "alias": "EVENT_DEFINITION",
+                "orgName": "EVENT_DEFINITION",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "TEXT",
+                "length": 786420
+              },
+              {
+                "name": "EVENT_TYPE",
+                "alias": "EVENT_TYPE",
+                "orgName": "EVENT_TYPE",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 36
+              },
+              {
+                "name": "EXECUTE_AT",
+                "alias": "EXECUTE_AT",
+                "orgName": "EXECUTE_AT",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "DATETIME",
+                "length": 0
+              },
+              {
+                "name": "INTERVAL_VALUE",
+                "alias": "INTERVAL_VALUE",
+                "orgName": "INTERVAL_VALUE",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 1024
+              },
+              {
+                "name": "INTERVAL_FIELD",
+                "alias": "INTERVAL_FIELD",
+                "orgName": "INTERVAL_FIELD",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 72
+              },
+              {
+                "name": "SQL_MODE",
+                "alias": "SQL_MODE",
+                "orgName": "SQL_MODE",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 32768
+              },
+              {
+                "name": "STARTS",
+                "alias": "STARTS",
+                "orgName": "STARTS",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "DATETIME",
+                "length": 0
+              },
+              {
+                "name": "ENDS",
+                "alias": "ENDS",
+                "orgName": "ENDS",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "DATETIME",
+                "length": 0
+              },
+              {
+                "name": "STATUS",
+                "alias": "STATUS",
+                "orgName": "STATUS",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 72
+              },
+              {
+                "name": "ON_COMPLETION",
+                "alias": "ON_COMPLETION",
+                "orgName": "ON_COMPLETION",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 48
+              },
+              {
+                "name": "CREATED",
+                "alias": "CREATED",
+                "orgName": "CREATED",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "DATETIME",
+                "length": 0
+              },
+              {
+                "name": "LAST_ALTERED",
+                "alias": "LAST_ALTERED",
+                "orgName": "LAST_ALTERED",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "DATETIME",
+                "length": 0
+              },
+              {
+                "name": "LAST_EXECUTED",
+                "alias": "LAST_EXECUTED",
+                "orgName": "LAST_EXECUTED",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "DATETIME",
+                "length": 0
+              },
+              {
+                "name": "EVENT_COMMENT",
+                "alias": "EVENT_COMMENT",
+                "orgName": "EVENT_COMMENT",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "ORIGINATOR",
+                "alias": "ORIGINATOR",
+                "orgName": "ORIGINATOR",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "BIGINT",
+                "length": 10
+              },
+              {
+                "name": "CHARACTER_SET_CLIENT",
+                "alias": "CHARACTER_SET_CLIENT",
+                "orgName": "CHARACTER_SET_CLIENT",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 128
+              },
+              {
+                "name": "COLLATION_CONNECTION",
+                "alias": "COLLATION_CONNECTION",
+                "orgName": "COLLATION_CONNECTION",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "DATABASE_COLLATION",
+                "alias": "DATABASE_COLLATION",
+                "orgName": "DATABASE_COLLATION",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "EVENT_SCHEMA",
+                "alias": "Db",
+                "orgName": "EVENT_SCHEMA",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "EVENT_NAME",
+                "alias": "Name",
+                "orgName": "EVENT_NAME",
+                "schema": "information_schema",
+                "table": "EVENTS",
+                "tableAlias": "EVENTS",
+                "orgTable": "EVENTS",
+                "type": "VARCHAR",
+                "length": 256
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        },
+        {
+          "sql": "SHOW FULL TABLES FROM `antares_fixtures`",
+          "result": {
+            "rows": [
+              {
+                "Tables_in_antares_fixtures": "categories",
+                "Table_type": "BASE TABLE"
+              },
+              {
+                "Tables_in_antares_fixtures": "cheap_products",
+                "Table_type": "VIEW"
+              },
+              {
+                "Tables_in_antares_fixtures": "products",
+                "Table_type": "BASE TABLE"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "TABLE_NAME",
+                "alias": "Tables_in_antares_fixtures",
+                "orgName": "TABLE_NAME",
+                "schema": "information_schema",
+                "table": "TABLE_NAMES",
+                "tableAlias": "TABLE_NAMES",
+                "orgTable": "TABLE_NAMES",
+                "type": "VARCHAR",
+                "length": 292
+              },
+              {
+                "name": "TABLE_TYPE",
+                "alias": "Table_type",
+                "orgName": "TABLE_TYPE",
+                "schema": "information_schema",
+                "table": "TABLE_NAMES",
+                "tableAlias": "TABLE_NAMES",
+                "orgTable": "TABLE_NAMES",
+                "type": "VARCHAR",
+                "length": 256
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        },
+        {
+          "sql": "SHOW TRIGGERS FROM `antares_fixtures`",
+          "result": {
+            "rows": [
+              {
+                "Trigger": "products_bi",
+                "Event": "INSERT",
+                "Table": "products",
+                "Statement": "SET NEW.price = ABS(NEW.price)",
+                "Timing": "BEFORE",
+                "Created": "2026-11-16 13:38:49.39",
+                "sql_mode": "IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION",
+                "Definer": "root@%",
+                "character_set_client": "utf8mb4",
+                "collation_connection": "utf8mb4_unicode_ci",
+                "Database Collation": "utf8mb4_uca1400_ai_ci"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "TRIGGER_NAME",
+                "alias": "Trigger",
+                "orgName": "TRIGGER_NAME",
+                "schema": "information_schema",
+                "table": "TRIGGERS",
+                "tableAlias": "TRIGGERS",
+                "orgTable": "TRIGGERS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "EVENT_MANIPULATION",
+                "alias": "Event",
+                "orgName": "EVENT_MANIPULATION",
+                "schema": "information_schema",
+                "table": "TRIGGERS",
+                "tableAlias": "TRIGGERS",
+                "orgTable": "TRIGGERS",
+                "type": "VARCHAR",
+                "length": 24
+              },
+              {
+                "name": "EVENT_OBJECT_TABLE",
+                "alias": "Table",
+                "orgName": "EVENT_OBJECT_TABLE",
+                "schema": "information_schema",
+                "table": "TRIGGERS",
+                "tableAlias": "TRIGGERS",
+                "orgTable": "TRIGGERS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "ACTION_STATEMENT",
+                "alias": "Statement",
+                "orgName": "ACTION_STATEMENT",
+                "schema": "information_schema",
+                "table": "TRIGGERS",
+                "tableAlias": "TRIGGERS",
+                "orgTable": "TRIGGERS",
+                "type": "TEXT",
+                "length": 786420
+              },
+              {
+                "name": "ACTION_TIMING",
+                "alias": "Timing",
+                "orgName": "ACTION_TIMING",
+                "schema": "information_schema",
+                "table": "TRIGGERS",
+                "tableAlias": "TRIGGERS",
+                "orgTable": "TRIGGERS",
+                "type": "VARCHAR",
+                "length": 24
+              },
+              {
+                "name": "CREATED",
+                "alias": "Created",
+                "orgName": "CREATED",
+                "schema": "information_schema",
+                "table": "TRIGGERS",
+                "tableAlias": "TRIGGERS",
+                "orgTable": "TRIGGERS",
+                "type": "DATETIME",
+                "length": 2
+              },
+              {
+                "name": "SQL_MODE",
+                "alias": "sql_mode",
+                "orgName": "SQL_MODE",
+                "schema": "information_schema",
+                "table": "TRIGGERS",
+                "tableAlias": "TRIGGERS",
+                "orgTable": "TRIGGERS",
+                "type": "VARCHAR",
+                "length": 32768
+              },
+              {
+                "name": "DEFINER",
+                "alias": "Definer",
+                "orgName": "DEFINER",
+                "schema": "information_schema",
+                "table": "TRIGGERS",
+                "tableAlias": "TRIGGERS",
+                "orgTable": "TRIGGERS",
+                "type": "VARCHAR",
+                "length": 1536
+              },
+              {
+                "name": "CHARACTER_SET_CLIENT",
+                "alias": "character_set_client",
+                "orgName": "CHARACTER_SET_CLIENT",
+                "schema": "information_schema",
+                "table": "TRIGGERS",
+                "tableAlias": "TRIGGERS",
+                "orgTable": "TRIGGERS",
+                "type": "VARCHAR",
+                "length": 128
+              },
+              {
+                "name": "COLLATION_CONNECTION",
+                "alias": "collation_connection",
+                "orgName": "COLLATION_CONNECTION",
+                "schema": "information_schema",
+                "table": "TRIGGERS",
+                "tableAlias": "TRIGGERS",
+                "orgTable": "TRIGGERS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "DATABASE_COLLATION",
+                "alias": "Database Collation",
+                "orgName": "DATABASE_COLLATION",
+                "schema": "information_schema",
+                "table": "TRIGGERS",
+                "tableAlias": "TRIGGERS",
+                "orgTable": "TRIGGERS",
+                "type": "VARCHAR",
+                "length": 256
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        }
+      ],
+      "output": [
+        {
+          "name": "antares_fixtures",
+          "size": null,
+          "tables": [
+            {
+              "name": "categories",
+              "type": "table",
+              "size": null
+            },
+            {
+              "name": "cheap_products",
+              "type": "view",
+              "size": null
+            },
+            {
+              "name": "products",
+              "type": "table",
+              "size": null
+            }
+          ],
+          "functions": [
+            {
+              "name": "product_price",
+              "type": "FUNCTION",
+              "definer": "root@%",
+              "created": "2026-11-16 13:38:49",
+              "updated": "2026-11-16 13:38:49",
+              "comment": "",
+              "charset": "utf8mb4",
+              "security": "DEFINER"
+            }
+          ],
+          "procedures": [
+            {
+              "name": "get_product",
+              "type": "PROCEDURE",
+              "definer": "root@%",
+              "created": "2026-11-16 13:38:49",
+              "updated": "2026-11-16 13:38:49",
+              "comment": "Get a product",
+              "charset": "utf8mb4",
+              "security": "DEFINER"
+            }
+          ],
+          "triggers": [
+            {
+              "name": "products_bi",
+              "statement": "SET NEW.price = ABS(NEW.price)",
+              "timing": "BEFORE",
+              "definer": "root@%",
+              "event": "INSERT",
+              "table": "products",
+              "sqlMode": "IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION",
+              "created": "2026-11-16 13:38:49.39",
+              "charset": "utf8mb4"
+            }
+          ],
+          "schedulers": [
+            {
+              "name": "cleanup",
+              "schema": "antares_fixtures",
+              "sql": "DELETE FROM products WHERE price = 0",
+              "execution": "EVERY",
+              "definer": "root@%",
+              "starts": "2030-01-01 00:00:00",
+              "ends": null,
+              "state": "DISABLE ON SLAVE",
+              "enabled": false,
+              "at": null,
+              "every": [
+                "DAY",
+                "1"
+              ],
+              "preserve": true,
+              "comment": "Nightly"
+            }
+          ]
+        },
+        {
+          "name": "antares_test",
+          "size": 0,
+          "tables": [],
+          "functions": [],
+          "procedures": [],
+          "triggers": [],
+          "schedulers": []
+        },
+        {
+          "name": "information_schema",
+          "size": 0,
+          "tables": [],
+          "functions": [],
+          "procedures": [],
+          "triggers": [],
+          "schedulers": []
+        },
+        {
+          "name": "mysql",
+          "size": 0,
+          "tables": [],
+          "functions": [],
+          "procedures": [],
+          "triggers": [],
+          "schedulers": []
+        },
+        {
+          "name": "performance_schema",
+          "size": 0,
+          "tables": [],
+          "functions": [],
+          "procedures": [],
+          "triggers": [],
+          "schedulers": []
+        },
+        {
+          "name": "sys",
+          "size": 0,
+          "tables": [],
+          "functions": [],
+          "procedures": [],
+          "triggers": [],
+          "schedulers": []
+        }
+      ]
+    },
+    {
+      "method": "getTableColumns",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "table": "products"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT * FROM `information_schema`.`COLUMNS` WHERE `TABLE_SCHEMA` = 'antares_fixtures' AND `TABLE_NAME` = 'products' ORDER BY `ORDINAL_POSITION` ASC",
+          "result": {
+            "rows": [
+              {
+                "TABLE_CATALOG": "def",
+                "TABLE_SCHEMA": "antares_fixtures",
+                "TABLE_NAME": "products",
+                "COLUMN_NAME": "id",
+                "ORDINAL_POSITION": "1",
+                "COLUMN_DEFAULT": null,
+                "IS_NULLABLE": "NO",
+                "DATA_TYPE": "int",
+                "CHARACTER_MAXIMUM_LENGTH": null,
+                "CHARACTER_OCTET_LENGTH": null,
+                "NUMERIC_PRECISION": "10",
+                "NUMERIC_SCALE": "0",
+                "DATETIME_PRECISION": null,
+                "CHARACTER_SET_NAME": null,
+                "COLLATION_NAME": null,
+                "COLUMN_TYPE": "int(10) unsigned",
+                "COLUMN_KEY": "PRI",
+                "EXTRA": "auto_increment",
+                "PRIVILEGES": "select,insert,update,references",
+                "COLUMN_COMMENT": "",
+                "IS_GENERATED": "NEVER",
+                "GENERATION_EXPRESSION": null,
+                "IS_SYSTEM_TIME_PERIOD_START": "NO",
+                "IS_SYSTEM_TIME_PERIOD_END": "NO"
+              },
+              {
+                "TABLE_CATALOG": "def",
+                "TABLE_SCHEMA": "antares_fixtures",
+                "TABLE_NAME": "products",
+                "COLUMN_NAME": "name",
+                "ORDINAL_POSITION": "2",
+                "COLUMN_DEFAULT": "'unnamed'",
+                "IS_NULLABLE": "NO",
+                "DATA_TYPE": "varchar",
+                "CHARACTER_MAXIMUM_LENGTH": "100",
+                "CHARACTER_OCTET_LENGTH": "400",
+                "NUMERIC_PRECISION": null,
+                "NUMERIC_SCALE": null,
+                "DATETIME_PRECISION": null,
+                "CHARACTER_SET_NAME": "utf8mb4",
+                "COLLATION_NAME": "utf8mb4_uca1400_ai_ci",
+                "COLUMN_TYPE": "varchar(100)",
+                "COLUMN_KEY": "UNI",
+                "EXTRA": "",
+                "PRIVILEGES": "select,insert,update,references",
+                "COLUMN_COMMENT": "Product name",
+                "IS_GENERATED": "NEVER",
+                "GENERATION_EXPRESSION": null,
+                "IS_SYSTEM_TIME_PERIOD_START": "NO",
+                "IS_SYSTEM_TIME_PERIOD_END": "NO"
+              },
+              {
+                "TABLE_CATALOG": "def",
+                "TABLE_SCHEMA": "antares_fixtures",
+                "TABLE_NAME": "products",
+                "COLUMN_NAME": "price",
+                "ORDINAL_POSITION": "3",
+                "COLUMN_DEFAULT": "0.00",
+                "IS_NULLABLE": "NO",
+                "DATA_TYPE": "decimal",
+                "CHARACTER_MAXIMUM_LENGTH": null,
+                "CHARACTER_OCTET_LENGTH": null,
+                "NUMERIC_PRECISION": "10",
+                "NUMERIC_SCALE": "2",
+                "DATETIME_PRECISION": null,
+                "CHARACTER_SET_NAME": null,
+                "COLLATION_NAME": null,
+                "COLUMN_TYPE": "decimal(10,2)",
+                "COLUMN_KEY": "MUL",
+                "EXTRA": "",
+                "PRIVILEGES": "select,insert,update,references",
+                "COLUMN_COMMENT": "",
+                "IS_GENERATED": "NEVER",
+                "GENERATION_EXPRESSION": null,
+                "IS_SYSTEM_TIME_PERIOD_START": "NO",
+                "IS_SYSTEM_TIME_PERIOD_END": "NO"
+              },
+              {
+                "TABLE_CATALOG": "def",
+                "TABLE_SCHEMA": "antares_fixtures",
+                "TABLE_NAME": "products",
+                "COLUMN_NAME": "status",
+                "ORDINAL_POSITION": "4",
+                "COLUMN_DEFAULT": "'draft'",
+                "IS_NULLABLE": "NO",
+                "DATA_TYPE": "enum",
+                "CHARACTER_MAXIMUM_LENGTH": "9",
+                "CHARACTER_OCTET_LENGTH": "36",
+                "NUMERIC_PRECISION": null,
+                "NUMERIC_SCALE": null,
+                "DATETIME_PRECISION": null,
+                "CHARACTER_SET_NAME": "utf8mb4",
+                "COLLATION_NAME": "utf8mb4_uca1400_ai_ci",
+                "COLUMN_TYPE": "enum('draft','published')",
+                "COLUMN_KEY": "",
+                "EXTRA": "",
+                "PRIVILEGES": "select,insert,update,references",
+                "COLUMN_COMMENT": "",
+                "IS_GENERATED": "NEVER",
+                "GENERATION_EXPRESSION": null,
+                "IS_SYSTEM_TIME_PERIOD_START": "NO",
+                "IS_SYSTEM_TIME_PERIOD_END": "NO"
+              },
+              {
+                "TABLE_CATALOG": "def",
+                "TABLE_SCHEMA": "antares_fixtures",
+                "TABLE_NAME": "products",
+                "COLUMN_NAME": "tags",
+                "ORDINAL_POSITION": "5",
+                "COLUMN_DEFAULT": "NULL",
+                "IS_NULLABLE": "YES",
+                "DATA_TYPE": "set",
+                "CHARACTER_MAXIMUM_LENGTH": "5",
+                "CHARACTER_OCTET_LENGTH": "20",
+                "NUMERIC_PRECISION": null,
+                "NUMERIC_SCALE": null,
+                "DATETIME_PRECISION": null,
+                "CHARACTER_SET_NAME": "utf8mb4",
+                "COLLATION_NAME": "utf8mb4_uca1400_ai_ci",
+                "COLUMN_TYPE": "set('a','b','c')",
+                "COLUMN_KEY": "",
+                "EXTRA": "",
+                "PRIVILEGES": "select,insert,update,references",
+                "COLUMN_COMMENT": "",
+                "IS_GENERATED": "NEVER",
+                "GENERATION_EXPRESSION": null,
+                "IS_SYSTEM_TIME_PERIOD_START": "NO",
+                "IS_SYSTEM_TIME_PERIOD_END": "NO"
+              },
+              {
+                "TABLE_CATALOG": "def",
+                "TABLE_SCHEMA": "antares_fixtures",
+                "TABLE_NAME": "products",
+                "COLUMN_NAME": "created_at",
+                "ORDINAL_POSITION": "6",
+                "COLUMN_DEFAULT": "current_timestamp(3)",
+                "IS_NULLABLE": "YES",
+                "DATA_TYPE": "datetime",
+                "CHARACTER_MAXIMUM_LENGTH": null,
+                "CHARACTER_OCTET_LENGTH": null,
+                "NUMERIC_PRECISION": null,
+                "NUMERIC_SCALE": null,
+                "DATETIME_PRECISION": "3",
+                "CHARACTER_SET_NAME": null,
+                "COLLATION_NAME": null,
+                "COLUMN_TYPE": "datetime(3)",
+                "COLUMN_KEY": "",
+                "EXTRA": "on update current_timestamp(3)",
+                "PRIVILEGES": "select,insert,update,references",
+                "COLUMN_COMMENT": "",
+                "IS_GENERATED": "NEVER",
+                "GENERATION_EXPRESSION": null,
+                "IS_SYSTEM_TIME_PERIOD_START": "NO",
+                "IS_SYSTEM_TIME_PERIOD_END": "NO"
+              },
+              {
+                "TABLE_CATALOG": "def",
+                "TABLE_SCHEMA": "antares_fixtures",
+                "TABLE_NAME": "products",
+                "COLUMN_NAME": "category_id",
+                "ORDINAL_POSITION": "7",
+                "COLUMN_DEFAULT": "NULL",
+                "IS_NULLABLE": "YES",
+                "DATA_TYPE": "int",
+                "CHARACTER_MAXIMUM_LENGTH": null,
+                "CHARACTER_OCTET_LENGTH": null,
+                "NUMERIC_PRECISION": "10",
+                "NUMERIC_SCALE": "0",
+                "DATETIME_PRECISION": null,
+                "CHARACTER_SET_NAME": null,
+                "COLLATION_NAME": null,
+                "COLUMN_TYPE": "int(11)",
+                "COLUMN_KEY": "MUL",
+                "EXTRA": "",
+                "PRIVILEGES": "select,insert,update,references",
+                "COLUMN_COMMENT": "",
+                "IS_GENERATED": "NEVER",
+                "GENERATION_EXPRESSION": null,
+                "IS_SYSTEM_TIME_PERIOD_START": "NO",
+                "IS_SYSTEM_TIME_PERIOD_END": "NO"
+              },
+              {
+                "TABLE_CATALOG": "def",
+                "TABLE_SCHEMA": "antares_fixtures",
+                "TABLE_NAME": "products",
+                "COLUMN_NAME": "data",
+                "ORDINAL_POSITION": "8",
+                "COLUMN_DEFAULT": "NULL",
+                "IS_NULLABLE": "YES",
+                "DATA_TYPE": "longtext",
+                "CHARACTER_MAXIMUM_LENGTH": "4294967295",
+                "CHARACTER_OCTET_LENGTH": "4294967295",
+                "NUMERIC_PRECISION": null,
+                "NUMERIC_SCALE": null,
+                "DATETIME_PRECISION": null,
+                "CHARACTER_SET_NAME": "utf8mb4",
+                "COLLATION_NAME": "utf8mb4_bin",
+                "COLUMN_TYPE": "longtext",
+                "COLUMN_KEY": "",
+                "EXTRA": "",
+                "PRIVILEGES": "select,insert,update,references",
+                "COLUMN_COMMENT": "",
+                "IS_GENERATED": "NEVER",
+                "GENERATION_EXPRESSION": null,
+                "IS_SYSTEM_TIME_PERIOD_START": "NO",
+                "IS_SYSTEM_TIME_PERIOD_END": "NO"
+              },
+              {
+                "TABLE_CATALOG": "def",
+                "TABLE_SCHEMA": "antares_fixtures",
+                "TABLE_NAME": "products",
+                "COLUMN_NAME": "bits",
+                "ORDINAL_POSITION": "9",
+                "COLUMN_DEFAULT": "NULL",
+                "IS_NULLABLE": "YES",
+                "DATA_TYPE": "bit",
+                "CHARACTER_MAXIMUM_LENGTH": null,
+                "CHARACTER_OCTET_LENGTH": null,
+                "NUMERIC_PRECISION": "4",
+                "NUMERIC_SCALE": null,
+                "DATETIME_PRECISION": null,
+                "CHARACTER_SET_NAME": null,
+                "COLLATION_NAME": null,
+                "COLUMN_TYPE": "bit(4)",
+                "COLUMN_KEY": "",
+                "EXTRA": "",
+                "PRIVILEGES": "select,insert,update,references",
+                "COLUMN_COMMENT": "",
+                "IS_GENERATED": "NEVER",
+                "GENERATION_EXPRESSION": null,
+                "IS_SYSTEM_TIME_PERIOD_START": "NO",
+                "IS_SYSTEM_TIME_PERIOD_END": "NO"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "TABLE_CATALOG",
+                "alias": "TABLE_CATALOG",
+                "orgName": "TABLE_CATALOG",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 2048
+              },
+              {
+                "name": "TABLE_SCHEMA",
+                "alias": "TABLE_SCHEMA",
+                "orgName": "TABLE_SCHEMA",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "TABLE_NAME",
+                "alias": "TABLE_NAME",
+                "orgName": "TABLE_NAME",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "COLUMN_NAME",
+                "alias": "COLUMN_NAME",
+                "orgName": "COLUMN_NAME",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "ORDINAL_POSITION",
+                "alias": "ORDINAL_POSITION",
+                "orgName": "ORDINAL_POSITION",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "COLUMN_DEFAULT",
+                "alias": "COLUMN_DEFAULT",
+                "orgName": "COLUMN_DEFAULT",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "TEXT",
+                "length": 786384
+              },
+              {
+                "name": "IS_NULLABLE",
+                "alias": "IS_NULLABLE",
+                "orgName": "IS_NULLABLE",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 12
+              },
+              {
+                "name": "DATA_TYPE",
+                "alias": "DATA_TYPE",
+                "orgName": "DATA_TYPE",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "CHARACTER_MAXIMUM_LENGTH",
+                "alias": "CHARACTER_MAXIMUM_LENGTH",
+                "orgName": "CHARACTER_MAXIMUM_LENGTH",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "CHARACTER_OCTET_LENGTH",
+                "alias": "CHARACTER_OCTET_LENGTH",
+                "orgName": "CHARACTER_OCTET_LENGTH",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "NUMERIC_PRECISION",
+                "alias": "NUMERIC_PRECISION",
+                "orgName": "NUMERIC_PRECISION",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "NUMERIC_SCALE",
+                "alias": "NUMERIC_SCALE",
+                "orgName": "NUMERIC_SCALE",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "DATETIME_PRECISION",
+                "alias": "DATETIME_PRECISION",
+                "orgName": "DATETIME_PRECISION",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "CHARACTER_SET_NAME",
+                "alias": "CHARACTER_SET_NAME",
+                "orgName": "CHARACTER_SET_NAME",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 128
+              },
+              {
+                "name": "COLLATION_NAME",
+                "alias": "COLLATION_NAME",
+                "orgName": "COLLATION_NAME",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "COLUMN_TYPE",
+                "alias": "COLUMN_TYPE",
+                "orgName": "COLUMN_TYPE",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "TEXT",
+                "length": 786420
+              },
+              {
+                "name": "COLUMN_KEY",
+                "alias": "COLUMN_KEY",
+                "orgName": "COLUMN_KEY",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 12
+              },
+              {
+                "name": "EXTRA",
+                "alias": "EXTRA",
+                "orgName": "EXTRA",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 320
+              },
+              {
+                "name": "PRIVILEGES",
+                "alias": "PRIVILEGES",
+                "orgName": "PRIVILEGES",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 320
+              },
+              {
+                "name": "COLUMN_COMMENT",
+                "alias": "COLUMN_COMMENT",
+                "orgName": "COLUMN_COMMENT",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 4096
+              },
+              {
+                "name": "IS_GENERATED",
+                "alias": "IS_GENERATED",
+                "orgName": "IS_GENERATED",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 24
+              },
+              {
+                "name": "GENERATION_EXPRESSION",
+                "alias": "GENERATION_EXPRESSION",
+                "orgName": "GENERATION_EXPRESSION",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "TEXT",
+                "length": 786384
+              },
+              {
+                "name": "IS_SYSTEM_TIME_PERIOD_START",
+                "alias": "IS_SYSTEM_TIME_PERIOD_START",
+                "orgName": "IS_SYSTEM_TIME_PERIOD_START",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 12
+              },
+              {
+                "name": "IS_SYSTEM_TIME_PERIOD_END",
+                "alias": "IS_SYSTEM_TIME_PERIOD_END",
+                "orgName": "IS_SYSTEM_TIME_PERIOD_END",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 12
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        },
+        {
+          "sql": "SHOW CREATE TABLE `antares_fixtures`.`products`",
+          "result": {
+            "rows": [
+              {
+                "Table": "products",
+                "Create Table": "CREATE TABLE `products` (\n  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n  `name` varchar(100) NOT NULL DEFAULT 'unnamed' COMMENT 'Product name',\n  `price` decimal(10,2) NOT NULL DEFAULT 0.00,\n  `status` enum('draft','published') NOT NULL DEFAULT 'draft',\n  `tags` set('a','b','c') DEFAULT NULL,\n  `created_at` datetime(3) DEFAULT current_timestamp(3) ON UPDATE current_timestamp(3),\n  `category_id` int(11) DEFAULT NULL,\n  `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`data`)),\n  `bits` bit(4) DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `products_name_uq` (`name`),\n  KEY `products_price_idx` (`price`,`status`),\n  KEY `products_category_fk` (`category_id`),\n  CONSTRAINT `products_category_fk` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,\n  CONSTRAINT `products_price_chk` CHECK (`price` >= 0)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci COMMENT='Products'"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "",
+                "alias": "Table",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "",
+                "alias": "Create Table",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 4096
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        }
+      ],
+      "output": [
+        {
+          "name": "id",
+          "key": "pri",
+          "type": "INT",
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numPrecision": "10",
+          "numScale": 0,
+          "numLength": 10,
+          "enumValues": null,
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": false,
+          "unsigned": true,
+          "zerofill": false,
+          "order": "1",
+          "default": null,
+          "charset": null,
+          "collation": null,
+          "autoIncrement": true,
+          "generated": false,
+          "onUpdate": "",
+          "comment": ""
+        },
+        {
+          "name": "name",
+          "key": "uni",
+          "type": "VARCHAR",
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numPrecision": null,
+          "numScale": 0,
+          "numLength": null,
+          "enumValues": null,
+          "datePrecision": null,
+          "charLength": "100",
+          "nullable": false,
+          "unsigned": false,
+          "zerofill": false,
+          "order": "2",
+          "default": "'unnamed'",
+          "charset": "utf8mb4",
+          "collation": "utf8mb4_uca1400_ai_ci",
+          "autoIncrement": false,
+          "generated": false,
+          "onUpdate": "",
+          "comment": "Product name"
+        },
+        {
+          "name": "price",
+          "key": "mul",
+          "type": "DECIMAL",
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numPrecision": "10",
+          "numScale": 2,
+          "numLength": "10",
+          "enumValues": null,
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": false,
+          "unsigned": false,
+          "zerofill": false,
+          "order": "3",
+          "default": "0.00",
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "generated": false,
+          "onUpdate": "",
+          "comment": ""
+        },
+        {
+          "name": "status",
+          "key": "",
+          "type": "ENUM",
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numPrecision": null,
+          "numScale": 0,
+          "numLength": null,
+          "enumValues": "'draft','published'",
+          "datePrecision": null,
+          "charLength": "9",
+          "nullable": false,
+          "unsigned": false,
+          "zerofill": false,
+          "order": "4",
+          "default": "'draft'",
+          "charset": "utf8mb4",
+          "collation": "utf8mb4_uca1400_ai_ci",
+          "autoIncrement": false,
+          "generated": false,
+          "onUpdate": "",
+          "comment": ""
+        },
+        {
+          "name": "tags",
+          "key": "",
+          "type": "SET",
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numPrecision": null,
+          "numScale": 0,
+          "numLength": null,
+          "enumValues": "'a','b','c'",
+          "datePrecision": null,
+          "charLength": "5",
+          "nullable": true,
+          "unsigned": false,
+          "zerofill": false,
+          "order": "5",
+          "default": "NULL",
+          "charset": "utf8mb4",
+          "collation": "utf8mb4_uca1400_ai_ci",
+          "autoIncrement": false,
+          "generated": false,
+          "onUpdate": "",
+          "comment": ""
+        },
+        {
+          "name": "created_at",
+          "key": "",
+          "type": "DATETIME",
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numPrecision": null,
+          "numScale": 0,
+          "numLength": null,
+          "enumValues": null,
+          "datePrecision": "3",
+          "charLength": null,
+          "nullable": true,
+          "unsigned": false,
+          "zerofill": false,
+          "order": "6",
+          "default": "current_timestamp(3) ON UPDATE current_timestamp(3)",
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "generated": false,
+          "onUpdate": "current_timestamp(3)",
+          "comment": ""
+        },
+        {
+          "name": "category_id",
+          "key": "mul",
+          "type": "INT",
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numPrecision": "10",
+          "numScale": 0,
+          "numLength": 11,
+          "enumValues": null,
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": true,
+          "unsigned": false,
+          "zerofill": false,
+          "order": "7",
+          "default": "NULL",
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "generated": false,
+          "onUpdate": "",
+          "comment": ""
+        },
+        {
+          "name": "data",
+          "key": "",
+          "type": "LONGTEXT",
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numPrecision": null,
+          "numScale": 0,
+          "numLength": null,
+          "enumValues": null,
+          "datePrecision": null,
+          "charLength": "4294967295",
+          "nullable": true,
+          "unsigned": false,
+          "zerofill": false,
+          "order": "8",
+          "default": "NULL CHECK (json_valid(`data`))",
+          "charset": "utf8mb4",
+          "collation": "utf8mb4_bin",
+          "autoIncrement": false,
+          "generated": false,
+          "onUpdate": "",
+          "comment": ""
+        },
+        {
+          "name": "bits",
+          "key": "",
+          "type": "BIT",
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numPrecision": "4",
+          "numScale": 0,
+          "numLength": "4",
+          "enumValues": null,
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": true,
+          "unsigned": false,
+          "zerofill": false,
+          "order": "9",
+          "default": "NULL",
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "generated": false,
+          "onUpdate": "",
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "method": "getTableColumns",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "table": "categories"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT * FROM `information_schema`.`COLUMNS` WHERE `TABLE_SCHEMA` = 'antares_fixtures' AND `TABLE_NAME` = 'categories' ORDER BY `ORDINAL_POSITION` ASC",
+          "result": {
+            "rows": [
+              {
+                "TABLE_CATALOG": "def",
+                "TABLE_SCHEMA": "antares_fixtures",
+                "TABLE_NAME": "categories",
+                "COLUMN_NAME": "id",
+                "ORDINAL_POSITION": "1",
+                "COLUMN_DEFAULT": null,
+                "IS_NULLABLE": "NO",
+                "DATA_TYPE": "int",
+                "CHARACTER_MAXIMUM_LENGTH": null,
+                "CHARACTER_OCTET_LENGTH": null,
+                "NUMERIC_PRECISION": "10",
+                "NUMERIC_SCALE": "0",
+                "DATETIME_PRECISION": null,
+                "CHARACTER_SET_NAME": null,
+                "COLLATION_NAME": null,
+                "COLUMN_TYPE": "int(11)",
+                "COLUMN_KEY": "PRI",
+                "EXTRA": "auto_increment",
+                "PRIVILEGES": "select,insert,update,references",
+                "COLUMN_COMMENT": "",
+                "IS_GENERATED": "NEVER",
+                "GENERATION_EXPRESSION": null,
+                "IS_SYSTEM_TIME_PERIOD_START": "NO",
+                "IS_SYSTEM_TIME_PERIOD_END": "NO"
+              },
+              {
+                "TABLE_CATALOG": "def",
+                "TABLE_SCHEMA": "antares_fixtures",
+                "TABLE_NAME": "categories",
+                "COLUMN_NAME": "name",
+                "ORDINAL_POSITION": "2",
+                "COLUMN_DEFAULT": null,
+                "IS_NULLABLE": "NO",
+                "DATA_TYPE": "varchar",
+                "CHARACTER_MAXIMUM_LENGTH": "50",
+                "CHARACTER_OCTET_LENGTH": "200",
+                "NUMERIC_PRECISION": null,
+                "NUMERIC_SCALE": null,
+                "DATETIME_PRECISION": null,
+                "CHARACTER_SET_NAME": "utf8mb4",
+                "COLLATION_NAME": "utf8mb4_uca1400_ai_ci",
+                "COLUMN_TYPE": "varchar(50)",
+                "COLUMN_KEY": "",
+                "EXTRA": "",
+                "PRIVILEGES": "select,insert,update,references",
+                "COLUMN_COMMENT": "",
+                "IS_GENERATED": "NEVER",
+                "GENERATION_EXPRESSION": null,
+                "IS_SYSTEM_TIME_PERIOD_START": "NO",
+                "IS_SYSTEM_TIME_PERIOD_END": "NO"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "TABLE_CATALOG",
+                "alias": "TABLE_CATALOG",
+                "orgName": "TABLE_CATALOG",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 2048
+              },
+              {
+                "name": "TABLE_SCHEMA",
+                "alias": "TABLE_SCHEMA",
+                "orgName": "TABLE_SCHEMA",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "TABLE_NAME",
+                "alias": "TABLE_NAME",
+                "orgName": "TABLE_NAME",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "COLUMN_NAME",
+                "alias": "COLUMN_NAME",
+                "orgName": "COLUMN_NAME",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "ORDINAL_POSITION",
+                "alias": "ORDINAL_POSITION",
+                "orgName": "ORDINAL_POSITION",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "COLUMN_DEFAULT",
+                "alias": "COLUMN_DEFAULT",
+                "orgName": "COLUMN_DEFAULT",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "TEXT",
+                "length": 786384
+              },
+              {
+                "name": "IS_NULLABLE",
+                "alias": "IS_NULLABLE",
+                "orgName": "IS_NULLABLE",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 12
+              },
+              {
+                "name": "DATA_TYPE",
+                "alias": "DATA_TYPE",
+                "orgName": "DATA_TYPE",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "CHARACTER_MAXIMUM_LENGTH",
+                "alias": "CHARACTER_MAXIMUM_LENGTH",
+                "orgName": "CHARACTER_MAXIMUM_LENGTH",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "CHARACTER_OCTET_LENGTH",
+                "alias": "CHARACTER_OCTET_LENGTH",
+                "orgName": "CHARACTER_OCTET_LENGTH",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "NUMERIC_PRECISION",
+                "alias": "NUMERIC_PRECISION",
+                "orgName": "NUMERIC_PRECISION",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "NUMERIC_SCALE",
+                "alias": "NUMERIC_SCALE",
+                "orgName": "NUMERIC_SCALE",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "DATETIME_PRECISION",
+                "alias": "DATETIME_PRECISION",
+                "orgName": "DATETIME_PRECISION",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "CHARACTER_SET_NAME",
+                "alias": "CHARACTER_SET_NAME",
+                "orgName": "CHARACTER_SET_NAME",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 128
+              },
+              {
+                "name": "COLLATION_NAME",
+                "alias": "COLLATION_NAME",
+                "orgName": "COLLATION_NAME",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "COLUMN_TYPE",
+                "alias": "COLUMN_TYPE",
+                "orgName": "COLUMN_TYPE",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "TEXT",
+                "length": 786420
+              },
+              {
+                "name": "COLUMN_KEY",
+                "alias": "COLUMN_KEY",
+                "orgName": "COLUMN_KEY",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 12
+              },
+              {
+                "name": "EXTRA",
+                "alias": "EXTRA",
+                "orgName": "EXTRA",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 320
+              },
+              {
+                "name": "PRIVILEGES",
+                "alias": "PRIVILEGES",
+                "orgName": "PRIVILEGES",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 320
+              },
+              {
+                "name": "COLUMN_COMMENT",
+                "alias": "COLUMN_COMMENT",
+                "orgName": "COLUMN_COMMENT",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 4096
+              },
+              {
+                "name": "IS_GENERATED",
+                "alias": "IS_GENERATED",
+                "orgName": "IS_GENERATED",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 24
+              },
+              {
+                "name": "GENERATION_EXPRESSION",
+                "alias": "GENERATION_EXPRESSION",
+                "orgName": "GENERATION_EXPRESSION",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "TEXT",
+                "length": 786384
+              },
+              {
+                "name": "IS_SYSTEM_TIME_PERIOD_START",
+                "alias": "IS_SYSTEM_TIME_PERIOD_START",
+                "orgName": "IS_SYSTEM_TIME_PERIOD_START",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 12
+              },
+              {
+                "name": "IS_SYSTEM_TIME_PERIOD_END",
+                "alias": "IS_SYSTEM_TIME_PERIOD_END",
+                "orgName": "IS_SYSTEM_TIME_PERIOD_END",
+                "schema": "information_schema",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
+                "type": "VARCHAR",
+                "length": 12
+              }
+            ],
+            "keys": [],
+            "duration": 2
+          }
+        },
+        {
+          "sql": "SHOW CREATE TABLE `antares_fixtures`.`categories`",
+          "result": {
+            "rows": [
+              {
+                "Table": "categories",
+                "Create Table": "CREATE TABLE `categories` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(50) NOT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci COMMENT='Categories'"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "",
+                "alias": "Table",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "",
+                "alias": "Create Table",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 4096
+              }
+            ],
+            "keys": [],
+            "duration": 0
+          }
+        }
+      ],
+      "output": [
+        {
+          "name": "id",
+          "key": "pri",
+          "type": "INT",
+          "schema": "antares_fixtures",
+          "table": "categories",
+          "numPrecision": "10",
+          "numScale": 0,
+          "numLength": 11,
+          "enumValues": null,
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": false,
+          "unsigned": false,
+          "zerofill": false,
+          "order": "1",
+          "default": null,
+          "charset": null,
+          "collation": null,
+          "autoIncrement": true,
+          "generated": false,
+          "onUpdate": "",
+          "comment": ""
+        },
+        {
+          "name": "name",
+          "key": "",
+          "type": "VARCHAR",
+          "schema": "antares_fixtures",
+          "table": "categories",
+          "numPrecision": null,
+          "numScale": 0,
+          "numLength": null,
+          "enumValues": null,
+          "datePrecision": null,
+          "charLength": "50",
+          "nullable": false,
+          "unsigned": false,
+          "zerofill": false,
+          "order": "2",
+          "default": null,
+          "charset": "utf8mb4",
+          "collation": "utf8mb4_uca1400_ai_ci",
+          "autoIncrement": false,
+          "generated": false,
+          "onUpdate": "",
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "method": "getTableIndexes",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "table": "products"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SHOW INDEXES FROM `products` FROM `antares_fixtures`",
+          "result": {
+            "rows": [
+              {
+                "Table": "products",
+                "Non_unique": "0",
+                "Key_name": "PRIMARY",
+                "Seq_in_index": 1,
+                "Column_name": "id",
+                "Collation": "A",
+                "Cardinality": "0",
+                "Sub_part": null,
+                "Packed": null,
+                "Null": "",
+                "Index_type": "BTREE",
+                "Comment": "",
+                "Index_comment": "",
+                "Ignored": "NO"
+              },
+              {
+                "Table": "products",
+                "Non_unique": "0",
+                "Key_name": "products_name_uq",
+                "Seq_in_index": 1,
+                "Column_name": "name",
+                "Collation": "A",
+                "Cardinality": "0",
+                "Sub_part": null,
+                "Packed": null,
+                "Null": "",
+                "Index_type": "BTREE",
+                "Comment": "",
+                "Index_comment": "",
+                "Ignored": "NO"
+              },
+              {
+                "Table": "products",
+                "Non_unique": "1",
+                "Key_name": "products_price_idx",
+                "Seq_in_index": 1,
+                "Column_name": "price",
+                "Collation": "A",
+                "Cardinality": "0",
+                "Sub_part": null,
+                "Packed": null,
+                "Null": "",
+                "Index_type": "BTREE",
+                "Comment": "",
+                "Index_comment": "",
+                "Ignored": "NO"
+              },
+              {
+                "Table": "products",
+                "Non_unique": "1",
+                "Key_name": "products_price_idx",
+                "Seq_in_index": 2,
+                "Column_name": "status",
+                "Collation": "A",
+                "Cardinality": "0",
+                "Sub_part": null,
+                "Packed": null,
+                "Null": "",
+                "Index_type": "BTREE",
+                "Comment": "",
+                "Index_comment": "",
+                "Ignored": "NO"
+              },
+              {
+                "Table": "products",
+                "Non_unique": "1",
+                "Key_name": "products_category_fk",
+                "Seq_in_index": 1,
+                "Column_name": "category_id",
+                "Collation": "A",
+                "Cardinality": "0",
+                "Sub_part": null,
+                "Packed": null,
+                "Null": "YES",
+                "Index_type": "BTREE",
+                "Comment": "",
+                "Index_comment": "",
+                "Ignored": "NO"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "TABLE_NAME",
+                "alias": "Table",
+                "orgName": "TABLE_NAME",
+                "schema": "information_schema",
+                "table": "STATISTICS",
+                "tableAlias": "STATISTICS",
+                "orgTable": "STATISTICS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "NON_UNIQUE",
+                "alias": "Non_unique",
+                "orgName": "NON_UNIQUE",
+                "schema": "information_schema",
+                "table": "STATISTICS",
+                "tableAlias": "STATISTICS",
+                "orgTable": "STATISTICS",
+                "type": "BIGINT",
+                "length": 1
+              },
+              {
+                "name": "INDEX_NAME",
+                "alias": "Key_name",
+                "orgName": "INDEX_NAME",
+                "schema": "information_schema",
+                "table": "STATISTICS",
+                "tableAlias": "STATISTICS",
+                "orgTable": "STATISTICS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "SEQ_IN_INDEX",
+                "alias": "Seq_in_index",
+                "orgName": "SEQ_IN_INDEX",
+                "schema": "information_schema",
+                "table": "STATISTICS",
+                "tableAlias": "STATISTICS",
+                "orgTable": "STATISTICS",
+                "type": "INT",
+                "length": 2
+              },
+              {
+                "name": "COLUMN_NAME",
+                "alias": "Column_name",
+                "orgName": "COLUMN_NAME",
+                "schema": "information_schema",
+                "table": "STATISTICS",
+                "tableAlias": "STATISTICS",
+                "orgTable": "STATISTICS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "COLLATION",
+                "alias": "Collation",
+                "orgName": "COLLATION",
+                "schema": "information_schema",
+                "table": "STATISTICS",
+                "tableAlias": "STATISTICS",
+                "orgTable": "STATISTICS",
+                "type": "VARCHAR",
+                "length": 4
+              },
+              {
+                "name": "CARDINALITY",
+                "alias": "Cardinality",
+                "orgName": "CARDINALITY",
+                "schema": "information_schema",
+                "table": "STATISTICS",
+                "tableAlias": "STATISTICS",
+                "orgTable": "STATISTICS",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "SUB_PART",
+                "alias": "Sub_part",
+                "orgName": "SUB_PART",
+                "schema": "information_schema",
+                "table": "STATISTICS",
+                "tableAlias": "STATISTICS",
+                "orgTable": "STATISTICS",
+                "type": "BIGINT",
+                "length": 3
+              },
+              {
+                "name": "PACKED",
+                "alias": "Packed",
+                "orgName": "PACKED",
+                "schema": "information_schema",
+                "table": "STATISTICS",
+                "tableAlias": "STATISTICS",
+                "orgTable": "STATISTICS",
+                "type": "VARCHAR",
+                "length": 40
+              },
+              {
+                "name": "NULLABLE",
+                "alias": "Null",
+                "orgName": "NULLABLE",
+                "schema": "information_schema",
+                "table": "STATISTICS",
+                "tableAlias": "STATISTICS",
+                "orgTable": "STATISTICS",
+                "type": "VARCHAR",
+                "length": 12
+              },
+              {
+                "name": "INDEX_TYPE",
+                "alias": "Index_type",
+                "orgName": "INDEX_TYPE",
+                "schema": "information_schema",
+                "table": "STATISTICS",
+                "tableAlias": "STATISTICS",
+                "orgTable": "STATISTICS",
+                "type": "VARCHAR",
+                "length": 64
+              },
+              {
+                "name": "COMMENT",
+                "alias": "Comment",
+                "orgName": "COMMENT",
+                "schema": "information_schema",
+                "table": "STATISTICS",
+                "tableAlias": "STATISTICS",
+                "orgTable": "STATISTICS",
+                "type": "VARCHAR",
+                "length": 64
+              },
+              {
+                "name": "INDEX_COMMENT",
+                "alias": "Index_comment",
+                "orgName": "INDEX_COMMENT",
+                "schema": "information_schema",
+                "table": "STATISTICS",
+                "tableAlias": "STATISTICS",
+                "orgTable": "STATISTICS",
+                "type": "VARCHAR",
+                "length": 4096
+              },
+              {
+                "name": "IGNORED",
+                "alias": "Ignored",
+                "orgName": "IGNORED",
+                "schema": "information_schema",
+                "table": "STATISTICS",
+                "tableAlias": "STATISTICS",
+                "orgTable": "STATISTICS",
+                "type": "VARCHAR",
+                "length": 12
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        }
+      ],
+      "output": [
+        {
+          "unique": true,
+          "name": "PRIMARY",
+          "column": "id",
+          "indexType": "BTREE",
+          "type": "PRIMARY",
+          "cardinality": "0",
+          "comment": "",
+          "indexComment": ""
+        },
+        {
+          "unique": true,
+          "name": "products_name_uq",
+          "column": "name",
+          "indexType": "BTREE",
+          "type": "UNIQUE",
+          "cardinality": "0",
+          "comment": "",
+          "indexComment": ""
+        },
+        {
+          "unique": false,
+          "name": "products_price_idx",
+          "column": "price",
+          "indexType": "BTREE",
+          "type": "INDEX",
+          "cardinality": "0",
+          "comment": "",
+          "indexComment": ""
+        },
+        {
+          "unique": false,
+          "name": "products_price_idx",
+          "column": "status",
+          "indexType": "BTREE",
+          "type": "INDEX",
+          "cardinality": "0",
+          "comment": "",
+          "indexComment": ""
+        },
+        {
+          "unique": false,
+          "name": "products_category_fk",
+          "column": "category_id",
+          "indexType": "BTREE",
+          "type": "INDEX",
+          "cardinality": "0",
+          "comment": "",
+          "indexComment": ""
+        }
+      ]
+    },
+    {
+      "method": "getKeyUsage",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "table": "products"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT * FROM `information_schema`.`KEY_COLUMN_USAGE` WHERE `TABLE_SCHEMA` = 'antares_fixtures' AND `TABLE_NAME` = 'products' AND `REFERENCED_TABLE_NAME` IS NOT NULL",
+          "result": {
+            "rows": [
+              {
+                "CONSTRAINT_CATALOG": "def",
+                "CONSTRAINT_SCHEMA": "antares_fixtures",
+                "CONSTRAINT_NAME": "products_category_fk",
+                "TABLE_CATALOG": "def",
+                "TABLE_SCHEMA": "antares_fixtures",
+                "TABLE_NAME": "products",
+                "COLUMN_NAME": "category_id",
+                "ORDINAL_POSITION": "1",
+                "POSITION_IN_UNIQUE_CONSTRAINT": "1",
+                "REFERENCED_TABLE_SCHEMA": "antares_fixtures",
+                "REFERENCED_TABLE_NAME": "categories",
+                "REFERENCED_COLUMN_NAME": "id"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "CONSTRAINT_CATALOG",
+                "alias": "CONSTRAINT_CATALOG",
+                "orgName": "CONSTRAINT_CATALOG",
+                "schema": "information_schema",
+                "table": "KEY_COLUMN_USAGE",
+                "tableAlias": "KEY_COLUMN_USAGE",
+                "orgTable": "KEY_COLUMN_USAGE",
+                "type": "VARCHAR",
+                "length": 2048
+              },
+              {
+                "name": "CONSTRAINT_SCHEMA",
+                "alias": "CONSTRAINT_SCHEMA",
+                "orgName": "CONSTRAINT_SCHEMA",
+                "schema": "information_schema",
+                "table": "KEY_COLUMN_USAGE",
+                "tableAlias": "KEY_COLUMN_USAGE",
+                "orgTable": "KEY_COLUMN_USAGE",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "CONSTRAINT_NAME",
+                "alias": "CONSTRAINT_NAME",
+                "orgName": "CONSTRAINT_NAME",
+                "schema": "information_schema",
+                "table": "KEY_COLUMN_USAGE",
+                "tableAlias": "KEY_COLUMN_USAGE",
+                "orgTable": "KEY_COLUMN_USAGE",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "TABLE_CATALOG",
+                "alias": "TABLE_CATALOG",
+                "orgName": "TABLE_CATALOG",
+                "schema": "information_schema",
+                "table": "KEY_COLUMN_USAGE",
+                "tableAlias": "KEY_COLUMN_USAGE",
+                "orgTable": "KEY_COLUMN_USAGE",
+                "type": "VARCHAR",
+                "length": 2048
+              },
+              {
+                "name": "TABLE_SCHEMA",
+                "alias": "TABLE_SCHEMA",
+                "orgName": "TABLE_SCHEMA",
+                "schema": "information_schema",
+                "table": "KEY_COLUMN_USAGE",
+                "tableAlias": "KEY_COLUMN_USAGE",
+                "orgTable": "KEY_COLUMN_USAGE",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "TABLE_NAME",
+                "alias": "TABLE_NAME",
+                "orgName": "TABLE_NAME",
+                "schema": "information_schema",
+                "table": "KEY_COLUMN_USAGE",
+                "tableAlias": "KEY_COLUMN_USAGE",
+                "orgTable": "KEY_COLUMN_USAGE",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "COLUMN_NAME",
+                "alias": "COLUMN_NAME",
+                "orgName": "COLUMN_NAME",
+                "schema": "information_schema",
+                "table": "KEY_COLUMN_USAGE",
+                "tableAlias": "KEY_COLUMN_USAGE",
+                "orgTable": "KEY_COLUMN_USAGE",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "ORDINAL_POSITION",
+                "alias": "ORDINAL_POSITION",
+                "orgName": "ORDINAL_POSITION",
+                "schema": "information_schema",
+                "table": "KEY_COLUMN_USAGE",
+                "tableAlias": "KEY_COLUMN_USAGE",
+                "orgTable": "KEY_COLUMN_USAGE",
+                "type": "BIGINT",
+                "length": 10
+              },
+              {
+                "name": "POSITION_IN_UNIQUE_CONSTRAINT",
+                "alias": "POSITION_IN_UNIQUE_CONSTRAINT",
+                "orgName": "POSITION_IN_UNIQUE_CONSTRAINT",
+                "schema": "information_schema",
+                "table": "KEY_COLUMN_USAGE",
+                "tableAlias": "KEY_COLUMN_USAGE",
+                "orgTable": "KEY_COLUMN_USAGE",
+                "type": "BIGINT",
+                "length": 10
+              },
+              {
+                "name": "REFERENCED_TABLE_SCHEMA",
+                "alias": "REFERENCED_TABLE_SCHEMA",
+                "orgName": "REFERENCED_TABLE_SCHEMA",
+                "schema": "information_schema",
+                "table": "KEY_COLUMN_USAGE",
+                "tableAlias": "KEY_COLUMN_USAGE",
+                "orgTable": "KEY_COLUMN_USAGE",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "REFERENCED_TABLE_NAME",
+                "alias": "REFERENCED_TABLE_NAME",
+                "orgName": "REFERENCED_TABLE_NAME",
+                "schema": "information_schema",
+                "table": "KEY_COLUMN_USAGE",
+                "tableAlias": "KEY_COLUMN_USAGE",
+                "orgTable": "KEY_COLUMN_USAGE",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "REFERENCED_COLUMN_NAME",
+                "alias": "REFERENCED_COLUMN_NAME",
+                "orgName": "REFERENCED_COLUMN_NAME",
+                "schema": "information_schema",
+                "table": "KEY_COLUMN_USAGE",
+                "tableAlias": "KEY_COLUMN_USAGE",
+                "orgTable": "KEY_COLUMN_USAGE",
+                "type": "VARCHAR",
+                "length": 256
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        },
+        {
+          "sql": "SELECT * FROM `information_schema`.`REFERENTIAL_CONSTRAINTS` WHERE `CONSTRAINT_SCHEMA` = 'antares_fixtures' AND `TABLE_NAME` = 'products' AND `REFERENCED_TABLE_NAME` IS NOT NULL",
+          "result": {
+            "rows": [
+              {
+                "CONSTRAINT_CATALOG": "def",
+                "CONSTRAINT_SCHEMA": "antares_fixtures",
+                "CONSTRAINT_NAME": "products_category_fk",
+                "UNIQUE_CONSTRAINT_CATALOG": "def",
+                "UNIQUE_CONSTRAINT_SCHEMA": "antares_fixtures",
+                "UNIQUE_CONSTRAINT_NAME": "PRIMARY",
+                "MATCH_OPTION": "NONE",
+                "UPDATE_RULE": "CASCADE",
+                "DELETE_RULE": "SET NULL",
+                "TABLE_NAME": "products",
+                "REFERENCED_TABLE_NAME": "categories"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "CONSTRAINT_CATALOG",
+                "alias": "CONSTRAINT_CATALOG",
+                "orgName": "CONSTRAINT_CATALOG",
+                "schema": "information_schema",
+                "table": "REFERENTIAL_CONSTRAINTS",
+                "tableAlias": "REFERENTIAL_CONSTRAINTS",
+                "orgTable": "REFERENTIAL_CONSTRAINTS",
+                "type": "VARCHAR",
+                "length": 2048
+              },
+              {
+                "name": "CONSTRAINT_SCHEMA",
+                "alias": "CONSTRAINT_SCHEMA",
+                "orgName": "CONSTRAINT_SCHEMA",
+                "schema": "information_schema",
+                "table": "REFERENTIAL_CONSTRAINTS",
+                "tableAlias": "REFERENTIAL_CONSTRAINTS",
+                "orgTable": "REFERENTIAL_CONSTRAINTS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "CONSTRAINT_NAME",
+                "alias": "CONSTRAINT_NAME",
+                "orgName": "CONSTRAINT_NAME",
+                "schema": "information_schema",
+                "table": "REFERENTIAL_CONSTRAINTS",
+                "tableAlias": "REFERENTIAL_CONSTRAINTS",
+                "orgTable": "REFERENTIAL_CONSTRAINTS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "UNIQUE_CONSTRAINT_CATALOG",
+                "alias": "UNIQUE_CONSTRAINT_CATALOG",
+                "orgName": "UNIQUE_CONSTRAINT_CATALOG",
+                "schema": "information_schema",
+                "table": "REFERENTIAL_CONSTRAINTS",
+                "tableAlias": "REFERENTIAL_CONSTRAINTS",
+                "orgTable": "REFERENTIAL_CONSTRAINTS",
+                "type": "VARCHAR",
+                "length": 2048
+              },
+              {
+                "name": "UNIQUE_CONSTRAINT_SCHEMA",
+                "alias": "UNIQUE_CONSTRAINT_SCHEMA",
+                "orgName": "UNIQUE_CONSTRAINT_SCHEMA",
+                "schema": "information_schema",
+                "table": "REFERENTIAL_CONSTRAINTS",
+                "tableAlias": "REFERENTIAL_CONSTRAINTS",
+                "orgTable": "REFERENTIAL_CONSTRAINTS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "UNIQUE_CONSTRAINT_NAME",
+                "alias": "UNIQUE_CONSTRAINT_NAME",
+                "orgName": "UNIQUE_CONSTRAINT_NAME",
+                "schema": "information_schema",
+                "table": "REFERENTIAL_CONSTRAINTS",
+                "tableAlias": "REFERENTIAL_CONSTRAINTS",
+                "orgTable": "REFERENTIAL_CONSTRAINTS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "MATCH_OPTION",
+                "alias": "MATCH_OPTION",
+                "orgName": "MATCH_OPTION",
+                "schema": "information_schema",
+                "table": "REFERENTIAL_CONSTRAINTS",
+                "tableAlias": "REFERENTIAL_CONSTRAINTS",
+                "orgTable": "REFERENTIAL_CONSTRAINTS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "UPDATE_RULE",
+                "alias": "UPDATE_RULE",
+                "orgName": "UPDATE_RULE",
+                "schema": "information_schema",
+                "table": "REFERENTIAL_CONSTRAINTS",
+                "tableAlias": "REFERENTIAL_CONSTRAINTS",
+                "orgTable": "REFERENTIAL_CONSTRAINTS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "DELETE_RULE",
+                "alias": "DELETE_RULE",
+                "orgName": "DELETE_RULE",
+                "schema": "information_schema",
+                "table": "REFERENTIAL_CONSTRAINTS",
+                "tableAlias": "REFERENTIAL_CONSTRAINTS",
+                "orgTable": "REFERENTIAL_CONSTRAINTS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "TABLE_NAME",
+                "alias": "TABLE_NAME",
+                "orgName": "TABLE_NAME",
+                "schema": "information_schema",
+                "table": "REFERENTIAL_CONSTRAINTS",
+                "tableAlias": "REFERENTIAL_CONSTRAINTS",
+                "orgTable": "REFERENTIAL_CONSTRAINTS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "REFERENCED_TABLE_NAME",
+                "alias": "REFERENCED_TABLE_NAME",
+                "orgName": "REFERENCED_TABLE_NAME",
+                "schema": "information_schema",
+                "table": "REFERENTIAL_CONSTRAINTS",
+                "tableAlias": "REFERENTIAL_CONSTRAINTS",
+                "orgTable": "REFERENTIAL_CONSTRAINTS",
+                "type": "VARCHAR",
+                "length": 256
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        }
+      ],
+      "output": [
+        {
+          "schema": "antares_fixtures",
+          "table": "products",
+          "field": "category_id",
+          "position": "1",
+          "constraintPosition": "1",
+          "constraintName": "products_category_fk",
+          "refSchema": "antares_fixtures",
+          "refTable": "categories",
+          "refField": "id",
+          "onUpdate": "CASCADE",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "method": "getTableOptions",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "table": "products"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SHOW TABLE STATUS FROM `antares_fixtures` WHERE Name = 'products'",
+          "result": {
+            "rows": [
+              {
+                "Name": "products",
+                "Engine": "InnoDB",
+                "Version": "11",
+                "Row_format": "Dynamic",
+                "Rows": "0",
+                "Avg_row_length": "0",
+                "Data_length": "16384",
+                "Max_data_length": "0",
+                "Index_length": "49152",
+                "Data_free": "0",
+                "Auto_increment": "1",
+                "Create_time": "2026-11-16 13:38:49",
+                "Update_time": null,
+                "Check_time": null,
+                "Collation": "utf8mb4_uca1400_ai_ci",
+                "Checksum": null,
+                "Create_options": "",
+                "Comment": "Products",
+                "Max_index_length": "0",
+                "Temporary": "N"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "TABLE_NAME",
+                "alias": "Name",
+                "orgName": "TABLE_NAME",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "ENGINE",
+                "alias": "Engine",
+                "orgName": "ENGINE",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "VERSION",
+                "alias": "Version",
+                "orgName": "VERSION",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "ROW_FORMAT",
+                "alias": "Row_format",
+                "orgName": "ROW_FORMAT",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "VARCHAR",
+                "length": 40
+              },
+              {
+                "name": "TABLE_ROWS",
+                "alias": "Rows",
+                "orgName": "TABLE_ROWS",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "AVG_ROW_LENGTH",
+                "alias": "Avg_row_length",
+                "orgName": "AVG_ROW_LENGTH",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "DATA_LENGTH",
+                "alias": "Data_length",
+                "orgName": "DATA_LENGTH",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "MAX_DATA_LENGTH",
+                "alias": "Max_data_length",
+                "orgName": "MAX_DATA_LENGTH",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "INDEX_LENGTH",
+                "alias": "Index_length",
+                "orgName": "INDEX_LENGTH",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "DATA_FREE",
+                "alias": "Data_free",
+                "orgName": "DATA_FREE",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "AUTO_INCREMENT",
+                "alias": "Auto_increment",
+                "orgName": "AUTO_INCREMENT",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "CREATE_TIME",
+                "alias": "Create_time",
+                "orgName": "CREATE_TIME",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "DATETIME",
+                "length": 0
+              },
+              {
+                "name": "UPDATE_TIME",
+                "alias": "Update_time",
+                "orgName": "UPDATE_TIME",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "DATETIME",
+                "length": 0
+              },
+              {
+                "name": "CHECK_TIME",
+                "alias": "Check_time",
+                "orgName": "CHECK_TIME",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "DATETIME",
+                "length": 0
+              },
+              {
+                "name": "TABLE_COLLATION",
+                "alias": "Collation",
+                "orgName": "TABLE_COLLATION",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "CHECKSUM",
+                "alias": "Checksum",
+                "orgName": "CHECKSUM",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "CREATE_OPTIONS",
+                "alias": "Create_options",
+                "orgName": "CREATE_OPTIONS",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "VARCHAR",
+                "length": 8192
+              },
+              {
+                "name": "TABLE_COMMENT",
+                "alias": "Comment",
+                "orgName": "TABLE_COMMENT",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "VARCHAR",
+                "length": 8192
+              },
+              {
+                "name": "MAX_INDEX_LENGTH",
+                "alias": "Max_index_length",
+                "orgName": "MAX_INDEX_LENGTH",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "TEMPORARY",
+                "alias": "Temporary",
+                "orgName": "TEMPORARY",
+                "schema": "information_schema",
+                "table": "TABLES",
+                "tableAlias": "TABLES",
+                "orgTable": "TABLES",
+                "type": "VARCHAR",
+                "length": 4
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        }
+      ],
+      "output": {
+        "name": "products",
+        "type": "table",
+        "rows": "0",
+        "created": "2026-11-16 13:38:49",
+        "updated": null,
+        "engine": "InnoDB",
+        "comment": "Products",
+        "size": "1638449152",
+        "autoIncrement": "1",
+        "collation": "utf8mb4_uca1400_ai_ci"
+      }
+    },
+    {
+      "method": "getViewInformations",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "view": "cheap_products"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SHOW CREATE VIEW `antares_fixtures`.`cheap_products`",
+          "result": {
+            "rows": [
+              {
+                "View": "cheap_products",
+                "Create View": "CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `cheap_products` AS select `products`.`id` AS `id`,`products`.`name` AS `name` from `products` where `products`.`price` < 10",
+                "character_set_client": "utf8mb4",
+                "collation_connection": "utf8mb4_unicode_ci"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "",
+                "alias": "View",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "",
+                "alias": "Create View",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 4096
+              },
+              {
+                "name": "",
+                "alias": "character_set_client",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 128
+              },
+              {
+                "name": "",
+                "alias": "collation_connection",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 256
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        },
+        {
+          "sql": "SELECT * FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_SCHEMA = 'antares_fixtures' AND TABLE_NAME = 'cheap_products'",
+          "result": {
+            "rows": [
+              {
+                "TABLE_CATALOG": "def",
+                "TABLE_SCHEMA": "antares_fixtures",
+                "TABLE_NAME": "cheap_products",
+                "VIEW_DEFINITION": "select `antares_fixtures`.`products`.`id` AS `id`,`antares_fixtures`.`products`.`name` AS `name` from `antares_fixtures`.`products` where `antares_fixtures`.`products`.`price` < 10",
+                "CHECK_OPTION": "NONE",
+                "IS_UPDATABLE": "YES",
+                "DEFINER": "root@%",
+                "SECURITY_TYPE": "DEFINER",
+                "CHARACTER_SET_CLIENT": "utf8mb4",
+                "COLLATION_CONNECTION": "utf8mb4_unicode_ci",
+                "ALGORITHM": "UNDEFINED"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "TABLE_CATALOG",
+                "alias": "TABLE_CATALOG",
+                "orgName": "TABLE_CATALOG",
+                "schema": "information_schema",
+                "table": "VIEWS",
+                "tableAlias": "VIEWS",
+                "orgTable": "VIEWS",
+                "type": "VARCHAR",
+                "length": 2048
+              },
+              {
+                "name": "TABLE_SCHEMA",
+                "alias": "TABLE_SCHEMA",
+                "orgName": "TABLE_SCHEMA",
+                "schema": "information_schema",
+                "table": "VIEWS",
+                "tableAlias": "VIEWS",
+                "orgTable": "VIEWS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "TABLE_NAME",
+                "alias": "TABLE_NAME",
+                "orgName": "TABLE_NAME",
+                "schema": "information_schema",
+                "table": "VIEWS",
+                "tableAlias": "VIEWS",
+                "orgTable": "VIEWS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "VIEW_DEFINITION",
+                "alias": "VIEW_DEFINITION",
+                "orgName": "VIEW_DEFINITION",
+                "schema": "information_schema",
+                "table": "VIEWS",
+                "tableAlias": "VIEWS",
+                "orgTable": "VIEWS",
+                "type": "TEXT",
+                "length": 786420
+              },
+              {
+                "name": "CHECK_OPTION",
+                "alias": "CHECK_OPTION",
+                "orgName": "CHECK_OPTION",
+                "schema": "information_schema",
+                "table": "VIEWS",
+                "tableAlias": "VIEWS",
+                "orgTable": "VIEWS",
+                "type": "VARCHAR",
+                "length": 32
+              },
+              {
+                "name": "IS_UPDATABLE",
+                "alias": "IS_UPDATABLE",
+                "orgName": "IS_UPDATABLE",
+                "schema": "information_schema",
+                "table": "VIEWS",
+                "tableAlias": "VIEWS",
+                "orgTable": "VIEWS",
+                "type": "VARCHAR",
+                "length": 12
+              },
+              {
+                "name": "DEFINER",
+                "alias": "DEFINER",
+                "orgName": "DEFINER",
+                "schema": "information_schema",
+                "table": "VIEWS",
+                "tableAlias": "VIEWS",
+                "orgTable": "VIEWS",
+                "type": "VARCHAR",
+                "length": 1536
+              },
+              {
+                "name": "SECURITY_TYPE",
+                "alias": "SECURITY_TYPE",
+                "orgName": "SECURITY_TYPE",
+                "schema": "information_schema",
+                "table": "VIEWS",
+                "tableAlias": "VIEWS",
+                "orgTable": "VIEWS",
+                "type": "VARCHAR",
+                "length": 28
+              },
+              {
+                "name": "CHARACTER_SET_CLIENT",
+                "alias": "CHARACTER_SET_CLIENT",
+                "orgName": "CHARACTER_SET_CLIENT",
+                "schema": "information_schema",
+                "table": "VIEWS",
+                "tableAlias": "VIEWS",
+                "orgTable": "VIEWS",
+                "type": "VARCHAR",
+                "length": 128
+              },
+              {
+                "name": "COLLATION_CONNECTION",
+                "alias": "COLLATION_CONNECTION",
+                "orgName": "COLLATION_CONNECTION",
+                "schema": "information_schema",
+                "table": "VIEWS",
+                "tableAlias": "VIEWS",
+                "orgTable": "VIEWS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "ALGORITHM",
+                "alias": "ALGORITHM",
+                "orgName": "ALGORITHM",
+                "schema": "information_schema",
+                "table": "VIEWS",
+                "tableAlias": "VIEWS",
+                "orgTable": "VIEWS",
+                "type": "VARCHAR",
+                "length": 40
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        }
+      ],
+      "output": {
+        "algorithm": "UNDEFINED",
+        "definer": "`root`@`%`",
+        "security": "DEFINER",
+        "updateOption": "",
+        "sql": "select `antares_fixtures`.`products`.`id` AS `id`,`antares_fixtures`.`products`.`name` AS `name` from `antares_fixtures`.`products` where `antares_fixtures`.`products`.`price` < 10",
+        "name": "cheap_products"
+      }
+    },
+    {
+      "method": "getTriggerInformations",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "trigger": "products_bi"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SHOW CREATE TRIGGER `antares_fixtures`.`products_bi`",
+          "result": {
+            "rows": [
+              {
+                "Trigger": "products_bi",
+                "sql_mode": "IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION",
+                "SQL Original Statement": "CREATE DEFINER=`root`@`%` TRIGGER products_bi BEFORE INSERT ON products FOR EACH ROW SET NEW.price = ABS(NEW.price)",
+                "character_set_client": "utf8mb4",
+                "collation_connection": "utf8mb4_unicode_ci",
+                "Database Collation": "utf8mb4_uca1400_ai_ci",
+                "Created": "2026-11-16 13:38:49.39"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "",
+                "alias": "Trigger",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 768
+              },
+              {
+                "name": "",
+                "alias": "sql_mode",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 408
+              },
+              {
+                "name": "",
+                "alias": "SQL Original Statement",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 4096
+              },
+              {
+                "name": "",
+                "alias": "character_set_client",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 128
+              },
+              {
+                "name": "",
+                "alias": "collation_connection",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "",
+                "alias": "Database Collation",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "",
+                "alias": "Created",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "DATETIME",
+                "length": 2
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        }
+      ],
+      "output": {
+        "definer": "`root`@`%`",
+        "sql": "SET NEW.price = ABS(NEW.price)",
+        "name": "products_bi",
+        "table": "products",
+        "activation": "BEFORE",
+        "event": "INSERT"
+      }
+    },
+    {
+      "method": "getTableChecks",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "table": "products"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT table_name FROM information_schema.tables WHERE table_schema = \"information_schema\" AND table_name = \"CHECK_CONSTRAINTS\"",
+          "result": {
+            "rows": [
+              {
+                "table_name": "CHECK_CONSTRAINTS"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "TABLE_NAME",
+                "alias": "table_name",
+                "orgName": "TABLE_NAME",
+                "schema": "information_schema",
+                "table": "tables",
+                "tableAlias": "tables",
+                "orgTable": "TABLES",
+                "type": "VARCHAR",
+                "length": 256
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        },
+        {
+          "sql": "SELECT CONSTRAINT_NAME as name, CHECK_CLAUSE as clausole FROM information_schema.CHECK_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = \"antares_fixtures\" AND CONSTRAINT_NAME IN ( SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA = \"antares_fixtures\" AND TABLE_NAME = \"products\" AND CONSTRAINT_TYPE = 'CHECK' )",
+          "result": {
+            "rows": [
+              {
+                "name": "data",
+                "clausole": "json_valid(`data`)"
+              },
+              {
+                "name": "products_price_chk",
+                "clausole": "`price` >= 0"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "CONSTRAINT_NAME",
+                "alias": "name",
+                "orgName": "CONSTRAINT_NAME",
+                "schema": "information_schema",
+                "table": "CHECK_CONSTRAINTS",
+                "tableAlias": "CHECK_CONSTRAINTS",
+                "orgTable": "CHECK_CONSTRAINTS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "CHECK_CLAUSE",
+                "alias": "clausole",
+                "orgName": "CHECK_CLAUSE",
+                "schema": "information_schema",
+                "table": "CHECK_CONSTRAINTS",
+                "tableAlias": "CHECK_CONSTRAINTS",
+                "orgTable": "CHECK_CONSTRAINTS",
+                "type": "TEXT",
+                "length": 786384
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        }
+      ],
+      "output": [
+        {
+          "name": "data",
+          "clause": "json_valid(`data`)"
+        },
+        {
+          "name": "products_price_chk",
+          "clause": "`price` >= 0"
+        }
+      ]
+    },
+    {
+      "method": "getTableDll",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "table": "products"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SHOW CREATE TABLE `antares_fixtures`.`products`",
+          "result": {
+            "rows": [
+              {
+                "Table": "products",
+                "Create Table": "CREATE TABLE `products` (\n  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n  `name` varchar(100) NOT NULL DEFAULT 'unnamed' COMMENT 'Product name',\n  `price` decimal(10,2) NOT NULL DEFAULT 0.00,\n  `status` enum('draft','published') NOT NULL DEFAULT 'draft',\n  `tags` set('a','b','c') DEFAULT NULL,\n  `created_at` datetime(3) DEFAULT current_timestamp(3) ON UPDATE current_timestamp(3),\n  `category_id` int(11) DEFAULT NULL,\n  `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`data`)),\n  `bits` bit(4) DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `products_name_uq` (`name`),\n  KEY `products_price_idx` (`price`,`status`),\n  KEY `products_category_fk` (`category_id`),\n  CONSTRAINT `products_category_fk` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,\n  CONSTRAINT `products_price_chk` CHECK (`price` >= 0)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci COMMENT='Products'"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "",
+                "alias": "Table",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "",
+                "alias": "Create Table",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 4096
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        }
+      ],
+      "output": "CREATE TABLE `products` (\n  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n  `name` varchar(100) NOT NULL DEFAULT 'unnamed' COMMENT 'Product name',\n  `price` decimal(10,2) NOT NULL DEFAULT 0.00,\n  `status` enum('draft','published') NOT NULL DEFAULT 'draft',\n  `tags` set('a','b','c') DEFAULT NULL,\n  `created_at` datetime(3) DEFAULT current_timestamp(3) ON UPDATE current_timestamp(3),\n  `category_id` int(11) DEFAULT NULL,\n  `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`data`)),\n  `bits` bit(4) DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `products_name_uq` (`name`),\n  KEY `products_price_idx` (`price`,`status`),\n  KEY `products_category_fk` (`category_id`),\n  CONSTRAINT `products_category_fk` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,\n  CONSTRAINT `products_price_chk` CHECK (`price` >= 0)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci COMMENT='Products'"
+    },
+    {
+      "method": "getRoutineInformations",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "routine": "get_product"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SHOW CREATE PROCEDURE `antares_fixtures`.`get_product`",
+          "result": {
+            "rows": [
+              {
+                "Procedure": "get_product",
+                "sql_mode": "IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION",
+                "Create Procedure": "CREATE DEFINER=`root`@`%` PROCEDURE `get_product`(IN p_id INT, OUT p_name VARCHAR(100))\n    READS SQL DATA\n    COMMENT 'Get a product'\nBEGIN SELECT name INTO p_name FROM products WHERE id = p_id; END",
+                "character_set_client": "utf8mb4",
+                "collation_connection": "utf8mb4_unicode_ci",
+                "Database Collation": "utf8mb4_uca1400_ai_ci"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "",
+                "alias": "Procedure",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "",
+                "alias": "sql_mode",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 408
+              },
+              {
+                "name": "",
+                "alias": "Create Procedure",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 4096
+              },
+              {
+                "name": "",
+                "alias": "character_set_client",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 128
+              },
+              {
+                "name": "",
+                "alias": "collation_connection",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "",
+                "alias": "Database Collation",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 128
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        },
+        {
+          "sql": "SELECT * FROM information_schema.parameters WHERE SPECIFIC_NAME = 'get_product' AND SPECIFIC_SCHEMA = 'antares_fixtures' ORDER BY ORDINAL_POSITION",
+          "result": {
+            "rows": [
+              {
+                "SPECIFIC_CATALOG": "def",
+                "SPECIFIC_SCHEMA": "antares_fixtures",
+                "SPECIFIC_NAME": "get_product",
+                "ORDINAL_POSITION": 1,
+                "PARAMETER_MODE": "IN",
+                "PARAMETER_NAME": "p_id",
+                "DATA_TYPE": "int",
+                "CHARACTER_MAXIMUM_LENGTH": null,
+                "CHARACTER_OCTET_LENGTH": null,
+                "NUMERIC_PRECISION": 10,
+                "NUMERIC_SCALE": 0,
+                "DATETIME_PRECISION": null,
+                "CHARACTER_SET_NAME": null,
+                "COLLATION_NAME": null,
+                "DTD_IDENTIFIER": "int(11)",
+                "ROUTINE_TYPE": "PROCEDURE"
+              },
+              {
+                "SPECIFIC_CATALOG": "def",
+                "SPECIFIC_SCHEMA": "antares_fixtures",
+                "SPECIFIC_NAME": "get_product",
+                "ORDINAL_POSITION": 2,
+                "PARAMETER_MODE": "OUT",
+                "PARAMETER_NAME": "p_name",
+                "DATA_TYPE": "varchar",
+                "CHARACTER_MAXIMUM_LENGTH": 100,
+                "CHARACTER_OCTET_LENGTH": 400,
+                "NUMERIC_PRECISION": null,
+                "NUMERIC_SCALE": null,
+                "DATETIME_PRECISION": null,
+                "CHARACTER_SET_NAME": "utf8mb4",
+                "COLLATION_NAME": "utf8mb4_uca1400_ai_ci",
+                "DTD_IDENTIFIER": "varchar(100)",
+                "ROUTINE_TYPE": "PROCEDURE"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "SPECIFIC_CATALOG",
+                "alias": "SPECIFIC_CATALOG",
+                "orgName": "SPECIFIC_CATALOG",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 2048
+              },
+              {
+                "name": "SPECIFIC_SCHEMA",
+                "alias": "SPECIFIC_SCHEMA",
+                "orgName": "SPECIFIC_SCHEMA",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "SPECIFIC_NAME",
+                "alias": "SPECIFIC_NAME",
+                "orgName": "SPECIFIC_NAME",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "ORDINAL_POSITION",
+                "alias": "ORDINAL_POSITION",
+                "orgName": "ORDINAL_POSITION",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "INT",
+                "length": 21
+              },
+              {
+                "name": "PARAMETER_MODE",
+                "alias": "PARAMETER_MODE",
+                "orgName": "PARAMETER_MODE",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 20
+              },
+              {
+                "name": "PARAMETER_NAME",
+                "alias": "PARAMETER_NAME",
+                "orgName": "PARAMETER_NAME",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "DATA_TYPE",
+                "alias": "DATA_TYPE",
+                "orgName": "DATA_TYPE",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "CHARACTER_MAXIMUM_LENGTH",
+                "alias": "CHARACTER_MAXIMUM_LENGTH",
+                "orgName": "CHARACTER_MAXIMUM_LENGTH",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "INT",
+                "length": 21
+              },
+              {
+                "name": "CHARACTER_OCTET_LENGTH",
+                "alias": "CHARACTER_OCTET_LENGTH",
+                "orgName": "CHARACTER_OCTET_LENGTH",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "INT",
+                "length": 21
+              },
+              {
+                "name": "NUMERIC_PRECISION",
+                "alias": "NUMERIC_PRECISION",
+                "orgName": "NUMERIC_PRECISION",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "INT",
+                "length": 21
+              },
+              {
+                "name": "NUMERIC_SCALE",
+                "alias": "NUMERIC_SCALE",
+                "orgName": "NUMERIC_SCALE",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "INT",
+                "length": 21
+              },
+              {
+                "name": "DATETIME_PRECISION",
+                "alias": "DATETIME_PRECISION",
+                "orgName": "DATETIME_PRECISION",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "CHARACTER_SET_NAME",
+                "alias": "CHARACTER_SET_NAME",
+                "orgName": "CHARACTER_SET_NAME",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "COLLATION_NAME",
+                "alias": "COLLATION_NAME",
+                "orgName": "COLLATION_NAME",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "DTD_IDENTIFIER",
+                "alias": "DTD_IDENTIFIER",
+                "orgName": "DTD_IDENTIFIER",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "TEXT",
+                "length": 786420
+              },
+              {
+                "name": "ROUTINE_TYPE",
+                "alias": "ROUTINE_TYPE",
+                "orgName": "ROUTINE_TYPE",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 36
+              }
+            ],
+            "keys": [],
+            "duration": 2
+          }
+        }
+      ],
+      "output": {
+        "definer": "`root`@`%`",
+        "sql": "BEGIN SELECT name INTO p_name FROM products WHERE id = p_id; END",
+        "parameters": [
+          {
+            "name": "p_id",
+            "type": "INT",
+            "length": 10,
+            "context": "IN"
+          },
+          {
+            "name": "p_name",
+            "type": "VARCHAR",
+            "length": 100,
+            "context": "OUT"
+          }
+        ],
+        "name": "get_product",
+        "comment": "Get a product",
+        "security": "DEFINER",
+        "deterministic": false,
+        "dataAccess": "READS SQL DATA"
+      }
+    },
+    {
+      "method": "getFunctionInformations",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "func": "product_price"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SHOW CREATE FUNCTION `antares_fixtures`.`product_price`",
+          "result": {
+            "rows": [
+              {
+                "Function": "product_price",
+                "sql_mode": "IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION",
+                "Create Function": "CREATE DEFINER=`root`@`%` FUNCTION `product_price`(p_id INT) RETURNS decimal(10,2)\n    READS SQL DATA\n    DETERMINISTIC\nBEGIN RETURN (SELECT price FROM products WHERE id = p_id); END",
+                "character_set_client": "utf8mb4",
+                "collation_connection": "utf8mb4_unicode_ci",
+                "Database Collation": "utf8mb4_uca1400_ai_ci"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "",
+                "alias": "Function",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "",
+                "alias": "sql_mode",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 408
+              },
+              {
+                "name": "",
+                "alias": "Create Function",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 4096
+              },
+              {
+                "name": "",
+                "alias": "character_set_client",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 128
+              },
+              {
+                "name": "",
+                "alias": "collation_connection",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "",
+                "alias": "Database Collation",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 128
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        },
+        {
+          "sql": "SELECT * FROM information_schema.parameters WHERE SPECIFIC_NAME = 'product_price' AND SPECIFIC_SCHEMA = 'antares_fixtures' ORDER BY ORDINAL_POSITION",
+          "result": {
+            "rows": [
+              {
+                "SPECIFIC_CATALOG": "def",
+                "SPECIFIC_SCHEMA": "antares_fixtures",
+                "SPECIFIC_NAME": "product_price",
+                "ORDINAL_POSITION": 0,
+                "PARAMETER_MODE": null,
+                "PARAMETER_NAME": null,
+                "DATA_TYPE": "decimal",
+                "CHARACTER_MAXIMUM_LENGTH": null,
+                "CHARACTER_OCTET_LENGTH": null,
+                "NUMERIC_PRECISION": 10,
+                "NUMERIC_SCALE": 2,
+                "DATETIME_PRECISION": null,
+                "CHARACTER_SET_NAME": null,
+                "COLLATION_NAME": null,
+                "DTD_IDENTIFIER": "decimal(10,2)",
+                "ROUTINE_TYPE": "FUNCTION"
+              },
+              {
+                "SPECIFIC_CATALOG": "def",
+                "SPECIFIC_SCHEMA": "antares_fixtures",
+                "SPECIFIC_NAME": "product_price",
+                "ORDINAL_POSITION": 1,
+                "PARAMETER_MODE": "IN",
+                "PARAMETER_NAME": "p_id",
+                "DATA_TYPE": "int",
+                "CHARACTER_MAXIMUM_LENGTH": null,
+                "CHARACTER_OCTET_LENGTH": null,
+                "NUMERIC_PRECISION": 10,
+                "NUMERIC_SCALE": 0,
+                "DATETIME_PRECISION": null,
+                "CHARACTER_SET_NAME": null,
+                "COLLATION_NAME": null,
+                "DTD_IDENTIFIER": "int(11)",
+                "ROUTINE_TYPE": "FUNCTION"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "SPECIFIC_CATALOG",
+                "alias": "SPECIFIC_CATALOG",
+                "orgName": "SPECIFIC_CATALOG",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 2048
+              },
+              {
+                "name": "SPECIFIC_SCHEMA",
+                "alias": "SPECIFIC_SCHEMA",
+                "orgName": "SPECIFIC_SCHEMA",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "SPECIFIC_NAME",
+                "alias": "SPECIFIC_NAME",
+                "orgName": "SPECIFIC_NAME",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "ORDINAL_POSITION",
+                "alias": "ORDINAL_POSITION",
+                "orgName": "ORDINAL_POSITION",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "INT",
+                "length": 21
+              },
+              {
+                "name": "PARAMETER_MODE",
+                "alias": "PARAMETER_MODE",
+                "orgName": "PARAMETER_MODE",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 20
+              },
+              {
+                "name": "PARAMETER_NAME",
+                "alias": "PARAMETER_NAME",
+                "orgName": "PARAMETER_NAME",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "DATA_TYPE",
+                "alias": "DATA_TYPE",
+                "orgName": "DATA_TYPE",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "CHARACTER_MAXIMUM_LENGTH",
+                "alias": "CHARACTER_MAXIMUM_LENGTH",
+                "orgName": "CHARACTER_MAXIMUM_LENGTH",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "INT",
+                "length": 21
+              },
+              {
+                "name": "CHARACTER_OCTET_LENGTH",
+                "alias": "CHARACTER_OCTET_LENGTH",
+                "orgName": "CHARACTER_OCTET_LENGTH",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "INT",
+                "length": 21
+              },
+              {
+                "name": "NUMERIC_PRECISION",
+                "alias": "NUMERIC_PRECISION",
+                "orgName": "NUMERIC_PRECISION",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "INT",
+                "length": 21
+              },
+              {
+                "name": "NUMERIC_SCALE",
+                "alias": "NUMERIC_SCALE",
+                "orgName": "NUMERIC_SCALE",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "INT",
+                "length": 21
+              },
+              {
+                "name": "DATETIME_PRECISION",
+                "alias": "DATETIME_PRECISION",
+                "orgName": "DATETIME_PRECISION",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "BIGINT",
+                "length": 21
+              },
+              {
+                "name": "CHARACTER_SET_NAME",
+                "alias": "CHARACTER_SET_NAME",
+                "orgName": "CHARACTER_SET_NAME",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "COLLATION_NAME",
+                "alias": "COLLATION_NAME",
+                "orgName": "COLLATION_NAME",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "DTD_IDENTIFIER",
+                "alias": "DTD_IDENTIFIER",
+                "orgName": "DTD_IDENTIFIER",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "TEXT",
+                "length": 786420
+              },
+              {
+                "name": "ROUTINE_TYPE",
+                "alias": "ROUTINE_TYPE",
+                "orgName": "ROUTINE_TYPE",
+                "schema": "information_schema",
+                "table": "parameters",
+                "tableAlias": "parameters",
+                "orgTable": "PARAMETERS",
+                "type": "VARCHAR",
+                "length": 36
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        }
+      ],
+      "output": {
+        "definer": "`root`@`%`",
+        "sql": "BEGIN RETURN (SELECT price FROM products WHERE id = p_id); END",
+        "parameters": [
+          {
+            "name": "p_id",
+            "type": "INT",
+            "length": 10,
+            "context": "IN"
+          }
+        ],
+        "name": "product_price",
+        "comment": "",
+        "security": "DEFINER",
+        "deterministic": true,
+        "dataAccess": "READS SQL DATA",
+        "returns": "DECIMAL",
+        "returnsLength": null
+      }
+    },
+    {
+      "method": "getEventInformations",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "scheduler": "cleanup"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SHOW CREATE EVENT `antares_fixtures`.`cleanup`",
+          "result": {
+            "rows": [
+              {
+                "Event": "cleanup",
+                "sql_mode": "IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION",
+                "time_zone": "SYSTEM",
+                "Create Event": "CREATE DEFINER=`root`@`%` EVENT `cleanup` ON SCHEDULE EVERY 1 DAY STARTS '2030-01-01 00:00:00' ON COMPLETION NOT PRESERVE DISABLE COMMENT 'Nightly' DO DELETE FROM products WHERE price = 0",
+                "character_set_client": "utf8mb4",
+                "collation_connection": "utf8mb4_unicode_ci",
+                "Database Collation": "utf8mb4_uca1400_ai_ci"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "",
+                "alias": "Event",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "",
+                "alias": "sql_mode",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 408
+              },
+              {
+                "name": "",
+                "alias": "time_zone",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 24
+              },
+              {
+                "name": "",
+                "alias": "Create Event",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 748
+              },
+              {
+                "name": "",
+                "alias": "character_set_client",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 128
+              },
+              {
+                "name": "",
+                "alias": "collation_connection",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 256
+              },
+              {
+                "name": "",
+                "alias": "Database Collation",
+                "orgName": "",
+                "schema": "",
+                "table": "",
+                "tableAlias": "",
+                "orgTable": "",
+                "type": "VARCHAR",
+                "length": 256
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        }
+      ],
+      "output": {
+        "definer": "`root`@`%`",
+        "sql": "DELETE FROM products WHERE price = 0",
+        "name": "cleanup",
+        "comment": "Nightly",
+        "state": "DISABLE",
+        "preserve": false,
+        "execution": "EVERY",
+        "every": [
+          "1",
+          "DAY"
+        ],
+        "starts": "2030-01-01 00:00:00",
+        "ends": "",
+        "at": ""
+      }
+    }
+  ]
+}

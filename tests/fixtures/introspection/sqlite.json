@@ -1,0 +1,1208 @@
+{
+  "engine": "sqlite",
+  "server": "{\"number\":\"3.45.3\",\"name\":\"SQLite\",\"arch\":\"x64\",\"os\":\"Windows_NT 10.0.26320\"}",
+  "calls": [
+    {
+      "method": "getStructure",
+      "params": [
+        {
+          "$set": [
+            "main"
+          ]
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT * FROM pragma_database_list",
+          "result": {
+            "rows": [
+              {
+                "seq": 0,
+                "name": "main",
+                "file": "C:\\Users\\fabio\\AppData\\Local\\Temp\\antares-it-12204.db"
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "seq",
+                "alias": "seq",
+                "orgName": "seq",
+                "schema": "main",
+                "table": "pragma_database_list",
+                "tableAlias": "pragma_database_list",
+                "orgTable": "pragma_database_list",
+                "type": "number",
+                "length": null
+              },
+              {
+                "name": "name",
+                "alias": "name",
+                "orgName": "name",
+                "schema": "main",
+                "table": "pragma_database_list",
+                "tableAlias": "pragma_database_list",
+                "orgTable": "pragma_database_list",
+                "type": "string",
+                "length": null
+              },
+              {
+                "name": "file",
+                "alias": "file",
+                "orgName": "file",
+                "schema": "main",
+                "table": "pragma_database_list",
+                "tableAlias": "pragma_database_list",
+                "orgTable": "pragma_database_list",
+                "type": "string",
+                "length": null
+              }
+            ],
+            "keys": [],
+            "duration": 0
+          }
+        },
+        {
+          "sql": "SELECT * FROM \"main\".sqlite_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite\\_%' ESCAPE '\\' ORDER BY name",
+          "result": {
+            "rows": [
+              {
+                "type": "table",
+                "name": "categories",
+                "tbl_name": "categories",
+                "rootpage": 2,
+                "sql": "CREATE TABLE categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(50) NOT NULL)"
+              },
+              {
+                "type": "view",
+                "name": "cheap_products",
+                "tbl_name": "cheap_products",
+                "rootpage": 0,
+                "sql": "CREATE VIEW cheap_products AS SELECT id, name FROM products WHERE price < 10"
+              },
+              {
+                "type": "table",
+                "name": "products",
+                "tbl_name": "products",
+                "rootpage": 4,
+                "sql": "CREATE TABLE products (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            name VARCHAR(100) NOT NULL DEFAULT 'unnamed',\n            price NUMERIC(10,2) NOT NULL DEFAULT 0,\n            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n            category_id INTEGER REFERENCES categories(id) ON UPDATE CASCADE ON DELETE SET NULL,\n            data TEXT,\n            CONSTRAINT products_price_chk CHECK (price >= 0)\n         )"
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "type",
+                "alias": "type",
+                "orgName": "type",
+                "schema": "main",
+                "table": "sqlite_master",
+                "tableAlias": "sqlite_master",
+                "orgTable": "sqlite_master",
+                "type": "TEXT",
+                "length": null
+              },
+              {
+                "name": "name",
+                "alias": "name",
+                "orgName": "name",
+                "schema": "main",
+                "table": "sqlite_master",
+                "tableAlias": "sqlite_master",
+                "orgTable": "sqlite_master",
+                "type": "TEXT",
+                "length": null
+              },
+              {
+                "name": "tbl_name",
+                "alias": "tbl_name",
+                "orgName": "tbl_name",
+                "schema": "main",
+                "table": "sqlite_master",
+                "tableAlias": "sqlite_master",
+                "orgTable": "sqlite_master",
+                "type": "TEXT",
+                "length": null
+              },
+              {
+                "name": "rootpage",
+                "alias": "rootpage",
+                "orgName": "rootpage",
+                "schema": "main",
+                "table": "sqlite_master",
+                "tableAlias": "sqlite_master",
+                "orgTable": "sqlite_master",
+                "type": "INT",
+                "length": null
+              },
+              {
+                "name": "sql",
+                "alias": "sql",
+                "orgName": "sql",
+                "schema": "main",
+                "table": "sqlite_master",
+                "tableAlias": "sqlite_master",
+                "orgTable": "sqlite_master",
+                "type": "TEXT",
+                "length": null
+              }
+            ],
+            "keys": [],
+            "duration": 0
+          }
+        },
+        {
+          "sql": "SELECT * FROM \"main\".sqlite_master WHERE type='trigger'",
+          "result": {
+            "rows": [
+              {
+                "type": "trigger",
+                "name": "products_bi",
+                "tbl_name": "products",
+                "rootpage": 0,
+                "sql": "CREATE TRIGGER products_bi BEFORE INSERT ON `products` BEGIN SELECT 1; END"
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "type",
+                "alias": "type",
+                "orgName": "type",
+                "schema": "main",
+                "table": "sqlite_master",
+                "tableAlias": "sqlite_master",
+                "orgTable": "sqlite_master",
+                "type": "TEXT",
+                "length": null
+              },
+              {
+                "name": "name",
+                "alias": "name",
+                "orgName": "name",
+                "schema": "main",
+                "table": "sqlite_master",
+                "tableAlias": "sqlite_master",
+                "orgTable": "sqlite_master",
+                "type": "TEXT",
+                "length": null
+              },
+              {
+                "name": "tbl_name",
+                "alias": "tbl_name",
+                "orgName": "tbl_name",
+                "schema": "main",
+                "table": "sqlite_master",
+                "tableAlias": "sqlite_master",
+                "orgTable": "sqlite_master",
+                "type": "TEXT",
+                "length": null
+              },
+              {
+                "name": "rootpage",
+                "alias": "rootpage",
+                "orgName": "rootpage",
+                "schema": "main",
+                "table": "sqlite_master",
+                "tableAlias": "sqlite_master",
+                "orgTable": "sqlite_master",
+                "type": "INT",
+                "length": null
+              },
+              {
+                "name": "sql",
+                "alias": "sql",
+                "orgName": "sql",
+                "schema": "main",
+                "table": "sqlite_master",
+                "tableAlias": "sqlite_master",
+                "orgTable": "sqlite_master",
+                "type": "TEXT",
+                "length": null
+              }
+            ],
+            "keys": [],
+            "duration": 0
+          }
+        }
+      ],
+      "output": [
+        {
+          "name": "main",
+          "size": 0,
+          "tables": [
+            {
+              "name": "categories",
+              "type": "table",
+              "rows": false,
+              "size": false
+            },
+            {
+              "name": "cheap_products",
+              "type": "view",
+              "rows": false,
+              "size": false
+            },
+            {
+              "name": "products",
+              "type": "table",
+              "rows": false,
+              "size": false
+            }
+          ],
+          "functions": [],
+          "procedures": [],
+          "triggers": [
+            {
+              "name": "products_bi",
+              "table": "products"
+            }
+          ],
+          "schedulers": []
+        }
+      ]
+    },
+    {
+      "method": "getTableColumns",
+      "params": [
+        {
+          "schema": "main",
+          "table": "products"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT * FROM \"main\".pragma_table_info('products')",
+          "result": {
+            "rows": [
+              {
+                "cid": 0,
+                "name": "id",
+                "type": "INTEGER",
+                "notnull": 0,
+                "dflt_value": null,
+                "pk": 1
+              },
+              {
+                "cid": 1,
+                "name": "name",
+                "type": "VARCHAR(100)",
+                "notnull": 1,
+                "dflt_value": "'unnamed'",
+                "pk": 0
+              },
+              {
+                "cid": 2,
+                "name": "price",
+                "type": "NUMERIC(10,2)",
+                "notnull": 1,
+                "dflt_value": "0",
+                "pk": 0
+              },
+              {
+                "cid": 3,
+                "name": "created_at",
+                "type": "DATETIME",
+                "notnull": 0,
+                "dflt_value": "CURRENT_TIMESTAMP",
+                "pk": 0
+              },
+              {
+                "cid": 4,
+                "name": "category_id",
+                "type": "INTEGER",
+                "notnull": 0,
+                "dflt_value": null,
+                "pk": 0
+              },
+              {
+                "cid": 5,
+                "name": "data",
+                "type": "TEXT",
+                "notnull": 0,
+                "dflt_value": null,
+                "pk": 0
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "cid",
+                "alias": "cid",
+                "orgName": "cid",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "number",
+                "length": null
+              },
+              {
+                "name": "name",
+                "alias": "name",
+                "orgName": "name",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "string",
+                "length": null
+              },
+              {
+                "name": "type",
+                "alias": "type",
+                "orgName": "type",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "string",
+                "length": null
+              },
+              {
+                "name": "notnull",
+                "alias": "notnull",
+                "orgName": "notnull",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "number",
+                "length": null
+              },
+              {
+                "name": "dflt_value",
+                "alias": "dflt_value",
+                "orgName": "dflt_value",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "object",
+                "length": null
+              },
+              {
+                "name": "pk",
+                "alias": "pk",
+                "orgName": "pk",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "number",
+                "length": null
+              }
+            ],
+            "keys": [],
+            "duration": 0
+          }
+        }
+      ],
+      "output": [
+        {
+          "name": "id",
+          "key": null,
+          "type": "INTEGER",
+          "schema": "main",
+          "table": "products",
+          "numLength": null,
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": true,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 1,
+          "default": null,
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null,
+          "comment": ""
+        },
+        {
+          "name": "name",
+          "key": null,
+          "type": "VARCHAR",
+          "schema": "main",
+          "table": "products",
+          "numLength": null,
+          "datePrecision": null,
+          "charLength": 100,
+          "nullable": false,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 2,
+          "default": "'unnamed'",
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null,
+          "comment": ""
+        },
+        {
+          "name": "price",
+          "key": null,
+          "type": "NUMERIC",
+          "schema": "main",
+          "table": "products",
+          "numLength": "10,2",
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": false,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 3,
+          "default": "0",
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null,
+          "comment": ""
+        },
+        {
+          "name": "created_at",
+          "key": null,
+          "type": "DATETIME",
+          "schema": "main",
+          "table": "products",
+          "numLength": null,
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": true,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 4,
+          "default": "CURRENT_TIMESTAMP",
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null,
+          "comment": ""
+        },
+        {
+          "name": "category_id",
+          "key": null,
+          "type": "INTEGER",
+          "schema": "main",
+          "table": "products",
+          "numLength": null,
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": true,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 5,
+          "default": null,
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null,
+          "comment": ""
+        },
+        {
+          "name": "data",
+          "key": null,
+          "type": "TEXT",
+          "schema": "main",
+          "table": "products",
+          "numLength": null,
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": true,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 6,
+          "default": null,
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null,
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "method": "getTableColumns",
+      "params": [
+        {
+          "schema": "main",
+          "table": "categories"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT * FROM \"main\".pragma_table_info('categories')",
+          "result": {
+            "rows": [
+              {
+                "cid": 0,
+                "name": "id",
+                "type": "INTEGER",
+                "notnull": 0,
+                "dflt_value": null,
+                "pk": 1
+              },
+              {
+                "cid": 1,
+                "name": "name",
+                "type": "VARCHAR(50)",
+                "notnull": 1,
+                "dflt_value": null,
+                "pk": 0
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "cid",
+                "alias": "cid",
+                "orgName": "cid",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "number",
+                "length": null
+              },
+              {
+                "name": "name",
+                "alias": "name",
+                "orgName": "name",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "string",
+                "length": null
+              },
+              {
+                "name": "type",
+                "alias": "type",
+                "orgName": "type",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "string",
+                "length": null
+              },
+              {
+                "name": "notnull",
+                "alias": "notnull",
+                "orgName": "notnull",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "number",
+                "length": null
+              },
+              {
+                "name": "dflt_value",
+                "alias": "dflt_value",
+                "orgName": "dflt_value",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "object",
+                "length": null
+              },
+              {
+                "name": "pk",
+                "alias": "pk",
+                "orgName": "pk",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "number",
+                "length": null
+              }
+            ],
+            "keys": [],
+            "duration": 0
+          }
+        }
+      ],
+      "output": [
+        {
+          "name": "id",
+          "key": null,
+          "type": "INTEGER",
+          "schema": "main",
+          "table": "categories",
+          "numLength": null,
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": true,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 1,
+          "default": null,
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null,
+          "comment": ""
+        },
+        {
+          "name": "name",
+          "key": null,
+          "type": "VARCHAR",
+          "schema": "main",
+          "table": "categories",
+          "numLength": null,
+          "datePrecision": null,
+          "charLength": 50,
+          "nullable": false,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 2,
+          "default": null,
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null,
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "method": "getTableIndexes",
+      "params": [
+        {
+          "schema": "main",
+          "table": "products"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT * FROM \"main\".pragma_table_info('products') WHERE pk != 0",
+          "result": {
+            "rows": [
+              {
+                "cid": 0,
+                "name": "id",
+                "type": "INTEGER",
+                "notnull": 0,
+                "dflt_value": null,
+                "pk": 1
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "cid",
+                "alias": "cid",
+                "orgName": "cid",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "number",
+                "length": null
+              },
+              {
+                "name": "name",
+                "alias": "name",
+                "orgName": "name",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "string",
+                "length": null
+              },
+              {
+                "name": "type",
+                "alias": "type",
+                "orgName": "type",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "string",
+                "length": null
+              },
+              {
+                "name": "notnull",
+                "alias": "notnull",
+                "orgName": "notnull",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "number",
+                "length": null
+              },
+              {
+                "name": "dflt_value",
+                "alias": "dflt_value",
+                "orgName": "dflt_value",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "object",
+                "length": null
+              },
+              {
+                "name": "pk",
+                "alias": "pk",
+                "orgName": "pk",
+                "schema": "main",
+                "table": "pragma_table_info",
+                "tableAlias": "pragma_table_info",
+                "orgTable": "pragma_table_info",
+                "type": "number",
+                "length": null
+              }
+            ],
+            "keys": [],
+            "duration": 0
+          }
+        },
+        {
+          "sql": "SELECT * FROM \"main\".pragma_index_list('products');",
+          "result": {
+            "rows": [
+              {
+                "seq": 0,
+                "name": "products_price_idx",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0
+              },
+              {
+                "seq": 1,
+                "name": "products_name_uq",
+                "unique": 1,
+                "origin": "c",
+                "partial": 0
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "seq",
+                "alias": "seq",
+                "orgName": "seq",
+                "schema": "main",
+                "table": "pragma_index_list",
+                "tableAlias": "pragma_index_list",
+                "orgTable": "pragma_index_list",
+                "type": "number",
+                "length": null
+              },
+              {
+                "name": "name",
+                "alias": "name",
+                "orgName": "name",
+                "schema": "main",
+                "table": "pragma_index_list",
+                "tableAlias": "pragma_index_list",
+                "orgTable": "pragma_index_list",
+                "type": "string",
+                "length": null
+              },
+              {
+                "name": "unique",
+                "alias": "unique",
+                "orgName": "unique",
+                "schema": "main",
+                "table": "pragma_index_list",
+                "tableAlias": "pragma_index_list",
+                "orgTable": "pragma_index_list",
+                "type": "number",
+                "length": null
+              },
+              {
+                "name": "origin",
+                "alias": "origin",
+                "orgName": "origin",
+                "schema": "main",
+                "table": "pragma_index_list",
+                "tableAlias": "pragma_index_list",
+                "orgTable": "pragma_index_list",
+                "type": "string",
+                "length": null
+              },
+              {
+                "name": "partial",
+                "alias": "partial",
+                "orgName": "partial",
+                "schema": "main",
+                "table": "pragma_index_list",
+                "tableAlias": "pragma_index_list",
+                "orgTable": "pragma_index_list",
+                "type": "number",
+                "length": null
+              }
+            ],
+            "keys": [],
+            "duration": 0
+          }
+        },
+        {
+          "sql": "SELECT * FROM \"main\".pragma_index_info('products_price_idx');",
+          "result": {
+            "rows": [
+              {
+                "seqno": 0,
+                "cid": 2,
+                "name": "price"
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "seqno",
+                "alias": "seqno",
+                "orgName": "seqno",
+                "schema": "main",
+                "table": "pragma_index_info",
+                "tableAlias": "pragma_index_info",
+                "orgTable": "pragma_index_info",
+                "type": "number",
+                "length": null
+              },
+              {
+                "name": "cid",
+                "alias": "cid",
+                "orgName": "cid",
+                "schema": "main",
+                "table": "pragma_index_info",
+                "tableAlias": "pragma_index_info",
+                "orgTable": "pragma_index_info",
+                "type": "number",
+                "length": null
+              },
+              {
+                "name": "name",
+                "alias": "name",
+                "orgName": "name",
+                "schema": "main",
+                "table": "pragma_index_info",
+                "tableAlias": "pragma_index_info",
+                "orgTable": "pragma_index_info",
+                "type": "string",
+                "length": null
+              }
+            ],
+            "keys": [],
+            "duration": 0
+          }
+        },
+        {
+          "sql": "SELECT * FROM \"main\".pragma_index_info('products_name_uq');",
+          "result": {
+            "rows": [
+              {
+                "seqno": 0,
+                "cid": 1,
+                "name": "name"
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "seqno",
+                "alias": "seqno",
+                "orgName": "seqno",
+                "schema": "main",
+                "table": "pragma_index_info",
+                "tableAlias": "pragma_index_info",
+                "orgTable": "pragma_index_info",
+                "type": "number",
+                "length": null
+              },
+              {
+                "name": "cid",
+                "alias": "cid",
+                "orgName": "cid",
+                "schema": "main",
+                "table": "pragma_index_info",
+                "tableAlias": "pragma_index_info",
+                "orgTable": "pragma_index_info",
+                "type": "number",
+                "length": null
+              },
+              {
+                "name": "name",
+                "alias": "name",
+                "orgName": "name",
+                "schema": "main",
+                "table": "pragma_index_info",
+                "tableAlias": "pragma_index_info",
+                "orgTable": "pragma_index_info",
+                "type": "string",
+                "length": null
+              }
+            ],
+            "keys": [],
+            "duration": 0
+          }
+        }
+      ],
+      "output": [
+        {
+          "name": "PRIMARY",
+          "column": "id",
+          "type": "PRIMARY"
+        },
+        {
+          "name": "products_price_idx",
+          "column": "price",
+          "indexType": null,
+          "type": "INDEX",
+          "cardinality": null,
+          "comment": "",
+          "indexComment": ""
+        },
+        {
+          "name": "products_name_uq",
+          "column": "name",
+          "indexType": null,
+          "type": "UNIQUE",
+          "cardinality": null,
+          "comment": "",
+          "indexComment": ""
+        }
+      ]
+    },
+    {
+      "method": "getKeyUsage",
+      "params": [
+        {
+          "schema": "main",
+          "table": "products"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT * FROM \"main\".pragma_foreign_key_list('products');",
+          "result": {
+            "rows": [
+              {
+                "id": 0,
+                "seq": 0,
+                "table": "categories",
+                "from": "category_id",
+                "to": "id",
+                "on_update": "CASCADE",
+                "on_delete": "SET NULL",
+                "match": "NONE"
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "id",
+                "alias": "id",
+                "orgName": "id",
+                "schema": "main",
+                "table": "pragma_foreign_key_list",
+                "tableAlias": "pragma_foreign_key_list",
+                "orgTable": "pragma_foreign_key_list",
+                "type": "number",
+                "length": null
+              },
+              {
+                "name": "seq",
+                "alias": "seq",
+                "orgName": "seq",
+                "schema": "main",
+                "table": "pragma_foreign_key_list",
+                "tableAlias": "pragma_foreign_key_list",
+                "orgTable": "pragma_foreign_key_list",
+                "type": "number",
+                "length": null
+              },
+              {
+                "name": "table",
+                "alias": "table",
+                "orgName": "table",
+                "schema": "main",
+                "table": "pragma_foreign_key_list",
+                "tableAlias": "pragma_foreign_key_list",
+                "orgTable": "pragma_foreign_key_list",
+                "type": "string",
+                "length": null
+              },
+              {
+                "name": "from",
+                "alias": "from",
+                "orgName": "from",
+                "schema": "main",
+                "table": "pragma_foreign_key_list",
+                "tableAlias": "pragma_foreign_key_list",
+                "orgTable": "pragma_foreign_key_list",
+                "type": "string",
+                "length": null
+              },
+              {
+                "name": "to",
+                "alias": "to",
+                "orgName": "to",
+                "schema": "main",
+                "table": "pragma_foreign_key_list",
+                "tableAlias": "pragma_foreign_key_list",
+                "orgTable": "pragma_foreign_key_list",
+                "type": "string",
+                "length": null
+              },
+              {
+                "name": "on_update",
+                "alias": "on_update",
+                "orgName": "on_update",
+                "schema": "main",
+                "table": "pragma_foreign_key_list",
+                "tableAlias": "pragma_foreign_key_list",
+                "orgTable": "pragma_foreign_key_list",
+                "type": "string",
+                "length": null
+              },
+              {
+                "name": "on_delete",
+                "alias": "on_delete",
+                "orgName": "on_delete",
+                "schema": "main",
+                "table": "pragma_foreign_key_list",
+                "tableAlias": "pragma_foreign_key_list",
+                "orgTable": "pragma_foreign_key_list",
+                "type": "string",
+                "length": null
+              },
+              {
+                "name": "match",
+                "alias": "match",
+                "orgName": "match",
+                "schema": "main",
+                "table": "pragma_foreign_key_list",
+                "tableAlias": "pragma_foreign_key_list",
+                "orgTable": "pragma_foreign_key_list",
+                "type": "string",
+                "length": null
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        }
+      ],
+      "output": [
+        {
+          "schema": "main",
+          "table": "products",
+          "field": "category_id",
+          "position": 1,
+          "constraintPosition": null,
+          "constraintName": 0,
+          "refSchema": "main",
+          "refTable": "categories",
+          "refField": "id",
+          "onUpdate": "CASCADE",
+          "onDelete": "SET NULL"
+        }
+      ]
+    },
+    {
+      "method": "getTableOptions",
+      "params": [
+        {
+          "schema": "main",
+          "table": "products"
+        }
+      ],
+      "queries": [],
+      "output": {
+        "name": "products"
+      }
+    },
+    {
+      "method": "getViewInformations",
+      "params": [
+        {
+          "schema": "main",
+          "view": "cheap_products"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT \"sql\" FROM \"main\".sqlite_master WHERE \"type\"='view' AND name='cheap_products'",
+          "result": {
+            "rows": [
+              {
+                "sql": "CREATE VIEW cheap_products AS SELECT id, name FROM products WHERE price < 10"
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "sql",
+                "alias": "sql",
+                "orgName": "sql",
+                "schema": "main",
+                "table": "sqlite_master",
+                "tableAlias": "sqlite_master",
+                "orgTable": "sqlite_master",
+                "type": "TEXT",
+                "length": null
+              }
+            ],
+            "keys": [],
+            "duration": 0
+          }
+        }
+      ],
+      "output": {
+        "sql": "SELECT id, name FROM products WHERE price < 10",
+        "name": "cheap_products"
+      }
+    },
+    {
+      "method": "getTriggerInformations",
+      "params": [
+        {
+          "schema": "main",
+          "trigger": "products_bi"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT \"sql\" FROM \"main\".sqlite_master WHERE \"type\"='trigger' AND name='products_bi'",
+          "result": {
+            "rows": [
+              {
+                "sql": "CREATE TRIGGER products_bi BEFORE INSERT ON `products` BEGIN SELECT 1; END"
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "sql",
+                "alias": "sql",
+                "orgName": "sql",
+                "schema": "main",
+                "table": "sqlite_master",
+                "tableAlias": "sqlite_master",
+                "orgTable": "sqlite_master",
+                "type": "TEXT",
+                "length": null
+              }
+            ],
+            "keys": [],
+            "duration": 0
+          }
+        }
+      ],
+      "output": {
+        "sql": "BEGIN SELECT 1; END",
+        "name": "products_bi",
+        "table": "products",
+        "activation": "BEFORE",
+        "event": "INSERT"
+      }
+    }
+  ]
+}
