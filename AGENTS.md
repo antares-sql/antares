@@ -12,7 +12,7 @@ See also [CONTRIBUTING.md](CONTRIBUTING.md) for the original contributor guide.
 | Shell | Electron 30 (`@electron/remote` enabled, `nodeIntegration: true`, `contextIsolation: false`) |
 | UI | Vue 3 (mostly `<script setup lang="ts">`), Pinia, vue-i18n, Spectre.css + SCSS, Ace editor |
 | Bundling | webpack 5 (three configs: main, renderer, workers), `ts-loader`, `babel-loader`, `vue-loader` |
-| Language | TypeScript **4.6** (project-local, non-strict) |
+| Language | TypeScript **5.8** (project-local, non-strict) |
 | Persistence | `electron-store` (settings, connections; credentials encrypted via `safeStorage`) |
 | DB drivers | `mysql2`, `pg` + `pg-query-stream`, `better-sqlite3` (native), `node-firebird`, SSH tunnels via `@fabio286/ssh2-promise` |
 | Packaging | electron-builder (config in `package.json` → `build`) |
