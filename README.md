@@ -163,6 +163,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/salvymc"><img src="https://avatars.githubusercontent.com/u/10051897?v=4&size=100" width="100px" height="100px" alt="Salvatore Forino"/><br /><sub><b>Salvatore Forino</b></sub></a><br /><a href="https://github.com/antares-sql/antares/commits?author=salvymc" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://gadev.com.es/"><img src="https://avatars.githubusercontent.com/u/16820141?v=4&size=100" width="100px" height="100px" alt="José González"/><br /><sub><b>José González</b></sub></a><br /><a href="#translation-JoseGonzalez84" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/krisbag86"><img src="https://avatars.githubusercontent.com/u/287030699?v=4&size=100" width="100px" height="100px" alt="krisbag86"/><br /><sub><b>krisbag86</b></sub></a><br /><a href="#translation-krisbag86" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://ohansyah.github.io/"><img src="https://avatars.githubusercontent.com/u/43288867?v=4&size=100" width="100px" height="100px" alt="Ohansyah"/><br /><sub><b>Ohansyah</b></sub></a><br /><a href="https://github.com/antares-sql/antares/commits?author=ohansyah" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
