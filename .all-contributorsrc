@@ -374,6 +374,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "Kovania",
+      "name": "Kova53",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18170201?v=4",
+      "profile": "https://hit53.fr",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
