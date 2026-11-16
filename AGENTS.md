@@ -29,8 +29,12 @@ src/
       ClientsFactory.ts Picks client class from `client` ('mysql'|'maria'|'pg'|'sqlite'|'firebird')
       clients/          BaseClient + one class per engine (all DB introspection/DDL; being split up into db/)
       db/               Target architecture of the clients refactor
-        core/           QueryBuilder (one instance per query, no shared state), QueryDialect (pure SQL rendering)
-        engines/<engine>/  Per-engine pieces, e.g. MySQLDialect (identifier quoting, string/blob/bit/boolean literals, JSON comparison)
+        core/           QueryBuilder (one instance per query, no shared state), QueryDialect (pure SQL rendering),
+                        DdlGenerator (base of DDL builders), contracts.ts (client interfaces), formatValue.ts
+        engines/<engine>/  Per-engine pieces:
+                        <Engine>Dialect: identifier quoting, literals, JSON comparison
+                        <Engine>Ddl: pure CREATE/ALTER/DROP builders returning SQL (clients only execute it;
+                        multi-step operations like alterTrigger stay in the client)
       exporters/ importers/  SQL dump/import logic, run inside worker threads
       parsers/          Engine-specific SQL parsers
       misc/             validateSender (IPC origin check), ipcLogger

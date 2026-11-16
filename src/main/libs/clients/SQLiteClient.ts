@@ -1,14 +1,15 @@
 import sqlite = require('better-sqlite3');
-import dataTypes from 'common/data-types/sqlite';
 import { DATETIME, FLOAT, NUMBER, TIME } from 'common/fieldTypes';
 import * as antares from 'common/interfaces/antares';
 import { removeComments } from 'common/libs/sqlUtils';
 
 import { DatabaseClient } from '../db/core/contracts';
+import { SQLiteDdl } from '../db/engines/sqlite/SQLiteDdl';
 import { SQLiteDialect } from '../db/engines/sqlite/SQLiteDialect';
 import { BaseClient } from './BaseClient';
 
 export class SQLiteClient extends BaseClient implements DatabaseClient {
+   protected readonly _ddl = new SQLiteDdl();
    protected readonly _dialect = new SQLiteDialect();
    private _schema?: string;
    private _connectionsToCommit: Map<string, sqlite.Database>;
@@ -23,9 +24,7 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
    }
 
    getTypeInfo (type: string): antares.TypeInformations {
-      return dataTypes
-         .reduce((acc, group) => [...acc, ...group.types], [])
-         .filter(_type => _type.name === type.toUpperCase())[0];
+      return this._ddl.getTypeInfo(type);
    }
 
    async connect () {
@@ -287,60 +286,7 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
    }
 
    async createTable (params: antares.CreateTableParams) {
-      const {
-         schema,
-         fields,
-         foreigns,
-         indexes,
-         options
-      } = params;
-      const newColumns: string[] = [];
-      const newIndexes: string[] = [];
-      const manageIndexes: string[] = [];
-      const newForeigns: string[] = [];
-
-      let sql = `CREATE TABLE "${schema}"."${options.name}"`;
-
-      // ADD FIELDS
-      fields.forEach(field => {
-         const typeInfo = this.getTypeInfo(field.type);
-         const length = typeInfo?.length
-            ? field.enumValues ||
-              field.numLength ||
-              field.numPrecision ||
-              field.charLength ||
-              field.datePrecision
-            : false;
-
-         newColumns.push(`"${field.name}" 
-            ${field.type.toUpperCase()}${length ? `(${length})` : ''} 
-            ${field.unsigned ? 'UNSIGNED' : ''} 
-            ${field.nullable ? 'NULL' : 'NOT NULL'}
-            ${field.autoIncrement ? 'AUTO_INCREMENT' : ''}
-            ${field.default !== null ? `DEFAULT ${field.default || '\'\''}` : ''}
-            ${field.onUpdate ? `ON UPDATE ${field.onUpdate}` : ''}`);
-      });
-
-      // ADD INDEX
-      indexes.forEach(index => {
-         const fields = index.fields.map(field => `"${field}"`).join(',');
-         const type = index.type;
-
-         if (type === 'PRIMARY')
-            newIndexes.push(`PRIMARY KEY (${fields})`);
-         else
-            manageIndexes.push(`CREATE ${type === 'UNIQUE' ? type : ''} INDEX "${index.name}" ON "${options.name}" (${fields})`);
-      });
-
-      // ADD FOREIGN KEYS
-      foreigns.forEach(foreign => {
-         newForeigns.push(`CONSTRAINT "${foreign.constraintName}" FOREIGN KEY ("${foreign.field}") REFERENCES "${foreign.refTable}" ("${foreign.refField}") ON UPDATE ${foreign.onUpdate} ON DELETE ${foreign.onDelete}`);
-      });
-
-      sql = `${sql} (${[...newColumns, ...newIndexes, ...newForeigns].join(', ')})`;
-      if (manageIndexes.length) sql = `${sql}; ${manageIndexes.join(';')}`;
-
-      return await this.raw(sql);
+      return await this.raw(this._ddl.createTable(params));
    }
 
    async alterTable (params: antares.AlterTableParams) {
@@ -419,19 +365,16 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
       }
    }
 
-   async duplicateTable (params: { schema: string; table: string }) { // TODO: retrive table informations and create a copy
-      const sql = `CREATE TABLE "${params.schema}"."${params.table}_copy" AS SELECT * FROM "${params.schema}"."${params.table}"`;
-      return await this.raw(sql);
+   async duplicateTable (params: { schema: string; table: string }) {
+      return await this.raw(this._ddl.duplicateTable(params));
    }
 
    async truncateTable (params: { schema: string; table: string }) {
-      const sql = `DELETE FROM "${params.schema}"."${params.table}"`;
-      return await this.raw(sql);
+      return await this.raw(this._ddl.truncateTable(params));
    }
 
    async dropTable (params: { schema: string; table: string }) {
-      const sql = `DROP TABLE "${params.schema}"."${params.table}"`;
-      return await this.raw(sql);
+      return await this.raw(this._ddl.dropTable(params));
    }
 
    async getViewInformations ({ schema, view }: { schema: string; view: string }) {
@@ -447,8 +390,7 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
    }
 
    async dropView (params: { schema: string; view: string }) {
-      const sql = `DROP VIEW "${params.schema}"."${params.view}"`;
-      return await this.raw(sql);
+      return await this.raw(this._ddl.dropView(params));
    }
 
    async alterView ({ view }: { view: antares.AlterViewParams }) {
@@ -462,8 +404,7 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
    }
 
    async createView (params: antares.CreateViewParams) {
-      const sql = `CREATE VIEW "${params.schema}"."${params.name}" AS ${params.sql}`;
-      return await this.raw(sql);
+      return await this.raw(this._ddl.createView(params));
    }
 
    async getTriggerInformations ({ schema, trigger }: { schema: string; trigger: string }) {
@@ -482,8 +423,7 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
    }
 
    async dropTrigger (params: { schema: string; trigger: string }) {
-      const sql = `DROP TRIGGER \`${params.schema}\`.\`${params.trigger}\``;
-      return await this.raw(sql);
+      return await this.raw(this._ddl.dropTrigger(params));
    }
 
    async alterTrigger ({ trigger } : {trigger: antares.AlterTriggerParams}) {
@@ -502,8 +442,7 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
    }
 
    async createTrigger (params: antares.CreateTriggerParams) {
-      const sql = `CREATE ${params.definer ? `DEFINER=${params.definer} ` : ''}TRIGGER \`${params.schema}\`.\`${params.name}\` ${params.activation} ${params.event} ON \`${params.table}\` FOR EACH ROW ${params.sql}`;
-      return await this.raw(sql, { split: false });
+      return await this.raw(this._ddl.createTrigger(params), { split: false });
    }
 
    async getEngines () {

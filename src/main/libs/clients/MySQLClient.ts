@@ -1,17 +1,18 @@
 import SSH2Promise = require('@fabio286/ssh2-promise');
 import SSHConfig from '@fabio286/ssh2-promise/lib/sshConfig';
-import dataTypes from 'common/data-types/mysql';
 import * as antares from 'common/interfaces/antares';
 import { removeComments } from 'common/libs/sqlUtils';
 import * as mysql from 'mysql2/promise';
 
 import EncodingToCharset = require('../../../../node_modules/mysql2/lib/constants/encoding_charset.js');
 import { CancelQueriesCapability, DatabaseClient, DatabaseCollationCapability, DbConfigCapability, FunctionsCapability, RoutinesCapability, SchedulersCapability, SchemasCapability, TableCheckCapability, TableDdlCapability } from '../db/core/contracts';
+import { MySQLDdl } from '../db/engines/mysql/MySQLDdl';
 import { MariaDBDialect, MySQLDialect } from '../db/engines/mysql/MySQLDialect';
 import { BaseClient } from './BaseClient';
 EncodingToCharset.utf8mb3 = 192; // To fix https://github.com/sidorares/node-mysql2/issues/1398 until not included in mysql2
 
 export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCapability, DatabaseCollationCapability, DbConfigCapability, CancelQueriesCapability, TableCheckCapability, TableDdlCapability, RoutinesCapability, FunctionsCapability, SchedulersCapability {
+   protected readonly _ddl = new MySQLDdl();
    protected readonly _dialect = this._client === 'maria' ? new MariaDBDialect() : new MySQLDialect();
    private _schema?: string;
    private _runningConnections: Map<string, number>;
@@ -118,9 +119,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    }
 
    getTypeInfo (type: string): antares.TypeInformations {
-      return dataTypes
-         .reduce((acc, group) => [...acc, ...group.types], [])
-         .filter((_type) => _type.name === type.toUpperCase())[0];
+      return this._ddl.getTypeInfo(type);
    }
 
    async getDbConfig (): Promise<mysql.ConnectionOptions> {
@@ -867,15 +866,15 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    }
 
    async createSchema (params: { name: string; collation: string }) {
-      return await this.raw(`CREATE DATABASE \`${params.name}\` COLLATE ${params.collation}`);
+      return await this.raw(this._ddl.createSchema(params));
    }
 
    async alterSchema (params: { name: string; collation: string }) {
-      return await this.raw(`ALTER DATABASE \`${params.name}\` COLLATE ${params.collation}`);
+      return await this.raw(this._ddl.alterSchema(params));
    }
 
    async dropSchema (params: { database: string }) {
-      return await this.raw(`DROP DATABASE \`${params.database}\``);
+      return await this.raw(this._ddl.dropSchema(params));
    }
 
    async getDatabaseCollation (params: { database: string }) {
@@ -889,242 +888,23 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    }
 
    async createTable (params: antares.CreateTableParams) {
-      const {
-         schema,
-         fields,
-         foreigns,
-         indexes,
-         checks,
-         options
-      } = params;
-      const newColumns: string[] = [];
-      const newIndexes: string[] = [];
-      const newForeigns: string[] = [];
-      const newChecks: string[] = [];
-
-      let sql = `CREATE TABLE \`${schema}\`.\`${options.name}\``;
-
-      // ADD FIELDS
-      fields.forEach(field => {
-         const typeInfo = this.getTypeInfo(field.type);
-         const length = typeInfo.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
-
-         newColumns.push(`\`${field.name}\` 
-            ${field.type.toUpperCase()}${length ? `(${length}${field.numScale ? `,${field.numScale}` : ''})` : ''} 
-            ${field.unsigned ? 'UNSIGNED' : ''} 
-            ${field.zerofill ? 'ZEROFILL' : ''}
-            ${field.nullable ? 'NULL' : 'NOT NULL'}
-            ${field.autoIncrement ? 'AUTO_INCREMENT' : ''}
-            ${field.default !== null ? `DEFAULT ${field.default || '\'\''}` : ''}
-            ${field.comment ? `COMMENT '${field.comment}'` : ''}
-            ${field.collation ? `COLLATE ${field.collation}` : ''}
-            ${field.onUpdate ? `ON UPDATE ${field.onUpdate}` : ''}`);
-      });
-
-      // ADD INDEX
-      indexes.forEach(index => {
-         const fields = index.fields.map(field => `\`${field}\``).join(',');
-         let type = index.type;
-
-         if (type === 'PRIMARY')
-            newIndexes.push(`PRIMARY KEY (${fields})`);
-         else {
-            if (type === 'UNIQUE')
-               type = 'UNIQUE INDEX';
-
-            newIndexes.push(`${type} \`${index.name}\` (${fields})`);
-         }
-      });
-
-      // ADD FOREIGN KEYS
-      foreigns.forEach(foreign => {
-         newForeigns.push(`CONSTRAINT \`${foreign.constraintName}\` FOREIGN KEY (\`${foreign.field}\`) REFERENCES \`${foreign.refTable}\` (\`${foreign.refField}\`) ON UPDATE ${foreign.onUpdate} ON DELETE ${foreign.onDelete}`);
-      });
-
-      // ADD TABLE CHECKS
-      checks.forEach(check => {
-         if (!check.clause.trim().length) return;
-         newChecks.push(`${check.name ? `CONSTRAINT \`${check.name}\` ` : ''}CHECK (${check.clause})`);
-      });
-
-      sql = `${sql} (${[...newColumns, ...newIndexes, ...newForeigns, ...newChecks].join(', ')}) COMMENT='${options.comment}', COLLATE='${options.collation}', ENGINE=${options.engine}`;
-
-      return await this.raw(sql);
+      return await this.raw(this._ddl.createTable(params));
    }
 
    async alterTable (params: antares.AlterTableParams) {
-      const {
-         table,
-         schema,
-         additions,
-         deletions,
-         changes,
-         indexChanges,
-         foreignChanges,
-         checkChanges,
-         options
-      } = params;
-
-      const sql = `ALTER TABLE \`${schema}\`.\`${table}\` `;
-      const alterColumnsAdd: string[] = [];
-      const alterColumnsChange: string[] = [];
-      const alterColumnsDrop: string[] = [];
-      const alterQueryes: string[] = [];
-
-      // OPTIONS
-      if ('comment' in options) alterColumnsChange.push(`COMMENT='${options.comment}'`);
-      if ('engine' in options) alterColumnsChange.push(`ENGINE=${options.engine}`);
-      if ('autoIncrement' in options) alterColumnsChange.push(`AUTO_INCREMENT=${+options.autoIncrement}`);
-      if ('collation' in options) alterColumnsChange.push(`COLLATE='${options.collation}'`);
-
-      // ADD FIELDS
-      additions.forEach(addition => {
-         const typeInfo = this.getTypeInfo(addition.type);
-         const length = typeInfo.length ? addition.enumValues || addition.numLength || addition.charLength || addition.datePrecision : false;
-
-         alterColumnsAdd.push(`ADD COLUMN \`${addition.name}\` 
-            ${addition.type.toUpperCase()}${length ? `(${length}${addition.numScale ? `,${addition.numScale}` : ''})` : ''} 
-            ${addition.unsigned ? 'UNSIGNED' : ''} 
-            ${addition.zerofill ? 'ZEROFILL' : ''}
-            ${addition.nullable ? 'NULL' : 'NOT NULL'}
-            ${addition.autoIncrement ? 'AUTO_INCREMENT' : ''}
-            ${addition.default !== null ? `DEFAULT ${addition.default || '\'\''}` : ''}
-            ${addition.comment ? `COMMENT '${addition.comment}'` : ''}
-            ${addition.collation ? `COLLATE ${addition.collation}` : ''}
-            ${addition.onUpdate ? `ON UPDATE ${addition.onUpdate}` : ''}
-            ${addition.after ? `AFTER \`${addition.after}\`` : 'FIRST'}`);
-      });
-
-      // ADD INDEX
-      indexChanges.additions.forEach(addition => {
-         const fields = addition.fields.map(field => `\`${field}\``).join(',');
-         let type = addition.type;
-
-         if (type === 'PRIMARY')
-            alterColumnsAdd.push(`ADD PRIMARY KEY (${fields})`);
-         else {
-            if (type === 'UNIQUE')
-               type = 'UNIQUE INDEX';
-
-            alterColumnsAdd.push(`ADD ${type} \`${addition.name}\` (${fields})`);
-         }
-      });
-
-      // ADD FOREIGN KEYS
-      foreignChanges.additions.forEach(addition => {
-         alterColumnsAdd.push(`ADD CONSTRAINT \`${addition.constraintName}\` FOREIGN KEY (\`${addition.field}\`) REFERENCES \`${addition.refTable}\` (\`${addition.refField}\`) ON UPDATE ${addition.onUpdate} ON DELETE ${addition.onDelete}`);
-      });
-
-      // ADD TABLE CHECKS
-      checkChanges.additions.forEach(addition => {
-         if (!addition.clause.trim().length) return;
-         alterColumnsAdd.push(`ADD ${addition.name ? `CONSTRAINT \`${addition.name}\` ` : ''}CHECK (${addition.clause})`);
-      });
-
-      // CHANGE FIELDS
-      changes.forEach(change => {
-         const typeInfo = this.getTypeInfo(change.type);
-         const length = typeInfo.length ? change.enumValues || change.numLength || change.charLength || change.datePrecision : false;
-
-         alterColumnsChange.push(`CHANGE COLUMN \`${change.orgName}\` \`${change.name}\` 
-            ${change.type.toUpperCase()}${length ? `(${length}${change.numScale ? `,${change.numScale}` : ''})` : ''} 
-            ${change.unsigned ? 'UNSIGNED' : ''} 
-            ${change.zerofill ? 'ZEROFILL' : ''}
-            ${change.nullable ? 'NULL' : 'NOT NULL'}
-            ${change.autoIncrement ? 'AUTO_INCREMENT' : ''}
-            ${change.collation ? `COLLATE ${change.collation}` : ''}
-            ${change.default !== null ? `DEFAULT ${change.default || '\'\''}` : ''}
-            ${change.comment ? `COMMENT '${change.comment}'` : ''}
-            ${change.onUpdate ? `ON UPDATE ${change.onUpdate}` : ''}
-            ${change.after ? `AFTER \`${change.after}\`` : 'FIRST'}`);
-      });
-
-      // CHANGE INDEX
-      indexChanges.changes.forEach(change => {
-         if (change.oldType === 'PRIMARY')
-            alterColumnsChange.push('DROP PRIMARY KEY');
-         else
-            alterColumnsChange.push(`DROP INDEX \`${change.oldName}\``);
-
-         const fields = change.fields.map(field => `\`${field}\``).join(',');
-         let type = change.type;
-
-         if (type === 'PRIMARY')
-            alterColumnsChange.push(`ADD PRIMARY KEY (${fields})`);
-         else {
-            if (type === 'UNIQUE')
-               type = 'UNIQUE INDEX';
-
-            alterColumnsChange.push(`ADD ${type} \`${change.name}\` (${fields})`);
-         }
-      });
-
-      // CHANGE FOREIGN KEYS
-      foreignChanges.changes.forEach(change => {
-         alterColumnsChange.push(`DROP FOREIGN KEY \`${change.oldName}\``);
-         alterColumnsChange.push(`ADD CONSTRAINT \`${change.constraintName}\` FOREIGN KEY (\`${change.field}\`) REFERENCES \`${change.refTable}\` (\`${change.refField}\`) ON UPDATE ${change.onUpdate} ON DELETE ${change.onDelete}`);
-      });
-
-      // CHANGE CHECK TABLE
-      checkChanges.changes.forEach(change => {
-         if (!change.clause.trim().length) return;
-         alterQueryes.push(`${sql} DROP CONSTRAINT \`${change.name}\``);
-         alterQueryes.push(`${sql} ADD ${change.name ? `CONSTRAINT \`${change.name}\` ` : ''}CHECK (${change.clause})`);
-      });
-
-      // DROP FIELDS
-      deletions.forEach(deletion => {
-         alterColumnsDrop.push(`DROP COLUMN \`${deletion.name}\``);
-      });
-
-      // DROP INDEX
-      indexChanges.deletions.forEach(deletion => {
-         if (deletion.type === 'PRIMARY')
-            alterColumnsDrop.push('DROP PRIMARY KEY');
-         else
-            alterColumnsDrop.push(`DROP INDEX \`${deletion.name}\``);
-      });
-
-      // DROP FOREIGN KEYS
-      foreignChanges.deletions.forEach(deletion => {
-         alterColumnsDrop.push(`DROP FOREIGN KEY \`${deletion.constraintName}\``);
-      });
-
-      // DROP CHECK TABLE
-      checkChanges.deletions.forEach(deletion => {
-         alterQueryes.push(`${sql} DROP CONSTRAINT \`${deletion.name}\``);
-      });
-
-      if (alterColumnsAdd.length) alterQueryes.push(sql+alterColumnsAdd.join(', '));
-      if (alterColumnsChange.length) alterQueryes.push(sql+alterColumnsChange.join(', '));
-      if (alterColumnsDrop.length) alterQueryes.push(sql+alterColumnsDrop.join(', '));
-
-      // RENAME
-      if (options.name) alterQueryes.push(`RENAME TABLE \`${schema}\`.\`${table}\` TO \`${schema}\`.\`${options.name}\``);
-
-      return await this.raw(alterQueryes.join(';'));
+      return await this.raw(this._ddl.alterTable(params));
    }
 
    async duplicateTable (params: { schema: string; table: string }) {
-      const sql = `CREATE TABLE \`${params.schema}\`.\`${params.table}_copy\` LIKE \`${params.schema}\`.\`${params.table}\``;
-      return await this.raw(sql);
+      return await this.raw(this._ddl.duplicateTable(params));
    }
 
    async truncateTable (params: { schema: string; table: string; force: boolean }) {
-      let sql = `TRUNCATE TABLE \`${params.schema}\`.\`${params.table}\`;`;
-      if (params.force) {
-         sql = `
-            SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-            ${sql}
-            SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1);
-         `;
-      }
-      return await this.raw(sql);
+      return await this.raw(this._ddl.truncateTable(params));
    }
 
    async dropTable (params: { schema: string; table: string }) {
-      const sql = `DROP TABLE \`${params.schema}\`.\`${params.table}\``;
-      return await this.raw(sql);
+      return await this.raw(this._ddl.dropTable(params));
    }
 
    async getViewInformations ({ schema, view }: { schema: string; view: string }) {
@@ -1147,27 +927,15 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    }
 
    async dropView (params: { schema: string; view: string }) {
-      const sql = `DROP VIEW \`${params.schema}\`.\`${params.view}\``;
-      return await this.raw(sql);
+      return await this.raw(this._ddl.dropView(params));
    }
 
-   async alterView ({ view }: { view: antares.AlterViewParams }) {
-      let sql = `
-         USE \`${view.schema}\`; 
-         ALTER ALGORITHM = ${view.algorithm}${view.definer ? ` DEFINER=${view.definer}` : ''} 
-         SQL SECURITY ${view.security} 
-         VIEW \`${view.schema}\`.\`${view.oldName}\` AS ${view.sql} ${view.updateOption ? `WITH ${view.updateOption} CHECK OPTION` : ''}
-      `;
-
-      if (view.name !== view.oldName)
-         sql += `; RENAME TABLE \`${view.schema}\`.\`${view.oldName}\` TO \`${view.schema}\`.\`${view.name}\``;
-
-      return await this.raw(sql);
+   async alterView (params: { view: antares.AlterViewParams }) {
+      return await this.raw(this._ddl.alterView(params));
    }
 
    async createView (params: antares.CreateViewParams) {
-      const sql = `CREATE ALGORITHM = ${params.algorithm} ${params.definer ? `DEFINER=${params.definer} ` : ''}SQL SECURITY ${params.security} VIEW \`${params.schema}\`.\`${params.name}\` AS ${params.sql} ${params.updateOption ? `WITH ${params.updateOption} CHECK OPTION` : ''}`;
-      return await this.raw(sql);
+      return await this.raw(this._ddl.createView(params));
    }
 
    async getTriggerInformations ({ schema, trigger }: { schema: string; trigger: string }) {
@@ -1187,8 +955,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    }
 
    async dropTrigger (params: { schema: string; trigger: string }) {
-      const sql = `DROP TRIGGER \`${params.schema}\`.\`${params.trigger}\``;
-      return await this.raw(sql);
+      return await this.raw(this._ddl.dropTrigger(params));
    }
 
    async alterTrigger ({ trigger } : {trigger: antares.AlterTriggerParams}) {
@@ -1207,8 +974,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    }
 
    async createTrigger (params: antares.CreateTriggerParams) {
-      const sql = `CREATE ${params.definer ? `DEFINER=${params.definer} ` : ''}TRIGGER \`${params.schema}\`.\`${params.name}\` ${params.activation} ${params.event} ON \`${params.table}\` FOR EACH ROW ${params.sql}`;
-      return await this.raw(sql, { split: false });
+      return await this.raw(this._ddl.createTrigger(params), { split: false });
    }
 
    async getRoutineInformations ({ schema, routine }: { schema: string; routine: string }) {
@@ -1282,8 +1048,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    }
 
    async dropRoutine (params: { schema: string; routine: string }) {
-      const sql = `DROP PROCEDURE \`${params.schema}\`.\`${params.routine}\``;
-      return await this.raw(sql);
+      return await this.raw(this._ddl.dropRoutine(params));
    }
 
    async alterRoutine ({ routine }: {routine: antares.AlterRoutineParams}) {
@@ -1302,22 +1067,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    }
 
    async createRoutine (params: antares.CreateRoutineParams) {
-      const parameters = 'parameters' in params
-         ? params.parameters.reduce((acc: string[], curr) => {
-            acc.push(`${curr.context} \`${curr.name}\` ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
-            return acc;
-         }, []).join(',')
-         : '';
-
-      const sql = `CREATE ${params.definer ? `DEFINER=${params.definer} ` : ''}PROCEDURE \`${params.schema}\`.\`${params.name}\`(${parameters})
-         LANGUAGE SQL
-         ${params.deterministic ? 'DETERMINISTIC' : 'NOT DETERMINISTIC'}
-         ${params.dataAccess}
-         SQL SECURITY ${params.security}
-         COMMENT '${params.comment}'
-         ${params.sql}`;
-
-      return await this.raw(sql, { split: false });
+      return await this.raw(this._ddl.createRoutine(params), { split: false });
    }
 
    async getFunctionInformations ({ schema, func }: { schema: string; func: string }) {
@@ -1397,8 +1147,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    }
 
    async dropFunction (params: { schema: string; func: string }) {
-      const sql = `DROP FUNCTION \`${params.schema}\`.\`${params.func}\``;
-      return await this.raw(sql);
+      return await this.raw(this._ddl.dropFunction(params));
    }
 
    async alterFunction ({ func }: { func: antares.AlterFunctionParams }) {
@@ -1417,24 +1166,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    }
 
    async createFunction (params: antares.CreateFunctionParams) {
-      const parameters = 'parameters' in params
-         ? params.parameters.reduce((acc: string[], curr) => {
-            acc.push(`\`${curr.name}\` ${curr.type}${curr.length ? `(${curr.length})` : ''}`);
-            return acc;
-         }, []).join(',')
-         : '';
-
-      const body = params.returns ? params.sql : 'BEGIN\n  RETURN 0;\nEND';
-
-      const sql = `CREATE ${params.definer ? `DEFINER=${params.definer} ` : ''}FUNCTION \`${params.schema}\`.\`${params.name}\`(${parameters}) RETURNS ${params.returns || 'SMALLINT'}${params.returnsLength ? `(${params.returnsLength})` : ''}
-         LANGUAGE SQL
-         ${params.deterministic ? 'DETERMINISTIC' : 'NOT DETERMINISTIC'}
-         ${params.dataAccess}
-         SQL SECURITY ${params.security}
-         COMMENT '${params.comment}'
-         ${body}`;
-
-      return await this.raw(sql, { split: false });
+      return await this.raw(this._ddl.createFunction(params), { split: false });
    }
 
    async getEventInformations ({ schema, scheduler }: { schema: string; scheduler: string }) {
@@ -1470,50 +1202,23 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    }
 
    async dropEvent (params: { schema: string; scheduler: string }) {
-      const sql = `DROP EVENT \`${params.schema}\`.\`${params.scheduler}\``;
-      return await this.raw(sql);
+      return await this.raw(this._ddl.dropEvent(params));
    }
 
-   async alterEvent ({ scheduler }: { scheduler: antares.AlterEventParams }) {
-      if (scheduler.execution === 'EVERY' && scheduler.every[0].includes('-'))
-         scheduler.every[0] = `'${scheduler.every[0]}'`;
-
-      const sql = `ALTER ${scheduler.definer ? ` DEFINER=${scheduler.definer}` : ''} EVENT \`${scheduler.schema}\`.\`${scheduler.oldName}\` 
-      ON SCHEDULE
-         ${scheduler.execution === 'EVERY'
-      ? `EVERY ${scheduler.every.join(' ')}${scheduler.starts ? ` STARTS '${scheduler.starts}'` : ''}${scheduler.ends ? ` ENDS '${scheduler.ends}'` : ''}`
-      : `AT '${scheduler.at}'`}
-      ON COMPLETION${!scheduler.preserve ? ' NOT' : ''} PRESERVE
-      ${scheduler.name !== scheduler.oldName ? `RENAME TO \`${scheduler.schema}\`.\`${scheduler.name}\`` : ''}
-      ${scheduler.state}
-      COMMENT '${scheduler.comment}'
-      DO ${scheduler.sql}`;
-
-      return await this.raw(sql, { split: false });
+   async alterEvent (params: { scheduler: antares.AlterEventParams }) {
+      return await this.raw(this._ddl.alterEvent(params), { split: false });
    }
 
    async createEvent (params: antares.CreateEventParams) {
-      const sql = `CREATE ${params.definer ? ` DEFINER=${params.definer}` : ''} EVENT \`${params.schema}\`.\`${params.name}\` 
-      ON SCHEDULE
-         ${params.execution === 'EVERY'
-      ? `EVERY ${params.every.join(' ')}${params.starts ? ` STARTS '${params.starts}'` : ''}${params.ends ? ` ENDS '${params.ends}'` : ''}`
-      : `AT '${params.at}'`}
-      ON COMPLETION${!params.preserve ? ' NOT' : ''} PRESERVE
-      ${params.state}
-      COMMENT '${params.comment}'
-      DO ${params.sql}`;
-
-      return await this.raw(sql, { split: false });
+      return await this.raw(this._ddl.createEvent(params), { split: false });
    }
 
-   async enableEvent ({ schema, scheduler }: { schema: string; scheduler: string }) {
-      const sql = `ALTER EVENT \`${schema}\`.\`${scheduler}\` ENABLE`;
-      return await this.raw(sql, { split: false });
+   async enableEvent (params: { schema: string; scheduler: string }) {
+      return await this.raw(this._ddl.enableEvent(params), { split: false });
    }
 
-   async disableEvent ({ schema, scheduler }: { schema: string; scheduler: string }) {
-      const sql = `ALTER EVENT \`${schema}\`.\`${scheduler}\` DISABLE`;
-      return await this.raw(sql, { split: false });
+   async disableEvent (params: { schema: string; scheduler: string }) {
+      return await this.raw(this._ddl.disableEvent(params), { split: false });
    }
 
    async getCollations () {
@@ -1651,7 +1356,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    }
 
    async killProcess (id: number) {
-      return await this.raw(`KILL ${id}`);
+      return await this.raw(this._ddl.killProcess(id));
    }
 
    async killTabQuery (tabUid: string) {
