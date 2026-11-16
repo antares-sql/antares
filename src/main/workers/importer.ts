@@ -6,11 +6,7 @@ import * as mysql from 'mysql2';
 import * as pg from 'pg';
 import { parentPort } from 'worker_threads';
 
-import { MySQLClient } from '../libs/clients/MySQLClient';
-import { PostgreSQLClient } from '../libs/clients/PostgreSQLClient';
-import { ClientsFactory } from '../libs/ClientsFactory';
-import MySQLImporter from '../libs/importers/sql/MySQLlImporter';
-import PostgreSQLImporter from '../libs/importers/sql/PostgreSQLImporter';
+import { createClient, getEngine } from '../libs/db/EngineRegistry';
 let importer: antares.Importer;
 
 log.transports.file.fileName = 'workers.log';
@@ -27,32 +23,25 @@ const importHandler = async (data: {
    const { type, dbConfig, options } = data;
    if (type === 'init') {
       try {
-         const connection = await ClientsFactory.getClient({
+         const engine = getEngine(options.type);
+         if (!engine.createImporter) {
+            parentPort.postMessage({
+               type: 'error',
+               payload: `"${options.type}" importer not aviable`
+            });
+            return;
+         }
+
+         const connection = createClient({
             client: options.type,
             params: {
                ...dbConfig,
                schema: options.schema
             },
             poolSize: 1
-         }) as MySQLClient | PostgreSQLClient;
+         });
 
-         const pool = await connection.getConnectionPool();
-
-         switch (options.type) {
-            case 'mysql':
-            case 'maria':
-               importer = new MySQLImporter(pool as unknown as mysql.Pool, options);
-               break;
-            case 'pg':
-               importer = new PostgreSQLImporter(pool as unknown as pg.PoolClient, options);
-               break;
-            default:
-               parentPort.postMessage({
-                  type: 'error',
-                  payload: `"${options.type}" importer not aviable`
-               });
-               return;
-         }
+         importer = await engine.createImporter(connection, options);
 
          importer.once('error', err => {
             log.error(err.toString());

@@ -3,7 +3,7 @@ import * as exporter from 'common/interfaces/exporter';
 import { valueToSqlString } from 'common/libs/sqlUtils';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import * as QueryStream from 'pg-query-stream';
+import QueryStream = require('pg-query-stream');
 
 import { PostgreSQLClient } from '../../clients/PostgreSQLClient';
 import { SqlExporter } from './SqlExporter';
@@ -329,35 +329,8 @@ SET row_security = off;\n\n\n`;
       return stream;
    }
 
+   /** Standard SQL string literal (the dump sets standard_conforming_strings = on) */
    escapeAndQuote (val: string) {
-      // eslint-disable-next-line no-control-regex
-      const CHARS_TO_ESCAPE = /[\0\b\t\n\r\x1a"'\\]/g;
-      const CHARS_ESCAPE_MAP: Record<string, string> = {
-         '\0': '\\0',
-         '\b': '\\b',
-         '\t': '\\t',
-         '\n': '\\n',
-         '\r': '\\r',
-         '\x1a': '\\Z',
-         '"': '\\"',
-         '\'': '\\\'',
-         '\\': '\\\\'
-      };
-      let chunkIndex = CHARS_TO_ESCAPE.lastIndex = 0;
-      let escapedVal = '';
-      let match;
-
-      while ((match = CHARS_TO_ESCAPE.exec(val))) {
-         escapedVal += val.slice(chunkIndex, match.index) + CHARS_ESCAPE_MAP[match[0]];
-         chunkIndex = CHARS_TO_ESCAPE.lastIndex;
-      }
-
-      if (chunkIndex === 0)
-         return `'${val}'`;
-
-      if (chunkIndex < val.length)
-         return `'${escapedVal + val.slice(chunkIndex)}'`;
-
-      return `'${escapedVal}'`;
+      return this._client.dialect.quoteString(val);
    }
 }

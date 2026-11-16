@@ -2,9 +2,10 @@ import { ipcMain } from 'electron';
 
 import { DatabaseClient } from '../libs/db/core/contracts';
 import { validateSender } from '../libs/misc/validateSender';
+import { IpcMainLike } from './handle';
 
-export default (connections: Record<string, DatabaseClient>) => {
-   ipcMain.handle('get-users', async (event, uid) => {
+export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = ipcMain) => {
+   ipc.handle('get-users', async (event, uid) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {

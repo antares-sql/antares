@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import moment = require('moment');
 
 import { MySQLClient } from '../../clients/MySQLClient';
 import { PostgreSQLClient } from '../../clients/PostgreSQLClient';
@@ -14,7 +14,7 @@ export class SqlExporter extends BaseExporter {
    }
 
    get host () {
-      return this._client._params.host;
+      return this._client.host;
    }
 
    async getServerVersion () {

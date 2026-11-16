@@ -3,129 +3,73 @@ import { InsertRowsParams } from 'common/interfaces/tableApis';
 import { fakerCustom } from 'common/libs/fakerCustom';
 import { ipcMain } from 'electron';
 import * as fs from 'fs';
-import * as moment from 'moment';
+import moment = require('moment');
 
 import { DatabaseClient, requireCapability } from '../libs/db/core/contracts';
 import { formatValue } from '../libs/db/core/formatValue';
 import { validateSender } from '../libs/misc/validateSender';
+import { createHandle, IpcMainLike } from './handle';
 
-export default (connections: Record<string, DatabaseClient>) => {
-   ipcMain.handle('get-table-columns', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = ipcMain) => {
+   const handle = createHandle(ipc);
 
-      try {
-         const result = await connections[params.uid].getTableColumns(params);
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('get-table-columns', async (params) => {
+      return await connections[params.uid].getTableColumns(params);
    });
 
-   ipcMain.handle('get-table-data', async (event, { uid, schema, table, limit, page, sortParams, where }) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+   handle('get-table-data', async ({ uid, schema, table, limit, page, sortParams, where }) => {
+      const offset = (page - 1) * limit;
+      const query = connections[uid]
+         .select('*')
+         .schema(schema)
+         .from(table)
+         .limit(limit)
+         .offset(offset);
 
-      try {
-         const offset = (page - 1) * limit;
-         const query = connections[uid]
-            .select('*')
-            .schema(schema)
-            .from(table)
-            .limit(limit)
-            .offset(offset);
+      if (sortParams && sortParams.field && sortParams.dir)
+         query.orderBy({ [sortParams.field]: sortParams.dir.toUpperCase() });
 
-         if (sortParams && sortParams.field && sortParams.dir)
-            query.orderBy({ [sortParams.field]: sortParams.dir.toUpperCase() });
+      if (where)
+         query.where(where);
 
-         if (where)
-            query.where(where);
+      const result = await query.run({ details: true, schema });
 
-         const result = await query.run({ details: true, schema });
-
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+      return result;
    });
 
-   ipcMain.handle('get-table-count', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         const result = await connections[params.uid].getTableApproximateCount(params);
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('get-table-count', async (params) => {
+      return await connections[params.uid].getTableApproximateCount(params);
    });
 
-   ipcMain.handle('get-table-options', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         const result = await connections[params.uid].getTableOptions(params);
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('get-table-options', async (params) => {
+      return await connections[params.uid].getTableOptions(params);
    });
 
-   ipcMain.handle('get-table-indexes', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+   handle('get-table-indexes', async (params) => {
+      const result = await connections[params.uid].getTableIndexes(params);
 
-      try {
-         const result = await connections[params.uid].getTableIndexes(params);
-
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+      return result;
    });
 
-   ipcMain.handle('get-table-checks', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+   handle('get-table-checks', async (params) => {
+      const result = await requireCapability(connections[params.uid], 'tableCheck').getTableChecks(params);
 
-      try {
-         const result = await requireCapability(connections[params.uid], 'tableCheck').getTableChecks(params);
-
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+      return result;
    });
 
-   ipcMain.handle('get-table-ddl', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+   handle('get-table-ddl', async (params) => {
+      const result = await requireCapability(connections[params.uid], 'tableDdl').getTableDll(params);
 
-      try {
-         const result = await requireCapability(connections[params.uid], 'tableDdl').getTableDll(params);
-
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+      return result;
    });
 
-   ipcMain.handle('get-key-usage', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+   handle('get-key-usage', async (params) => {
+      const result = await connections[params.uid].getKeyUsage(params);
 
-      try {
-         const result = await connections[params.uid].getKeyUsage(params);
-
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+      return result;
    });
 
-   ipcMain.handle('update-table-cell', async (event, params) => {
+   ipc.handle('update-table-cell', async (event, params) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       delete params.row._antares_id;
@@ -178,7 +122,7 @@ export default (connections: Record<string, DatabaseClient>) => {
       }
    });
 
-   ipcMain.handle('delete-table-rows', async (event, params) => {
+   ipc.handle('delete-table-rows', async (event, params) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       const { dialect } = connections[params.uid];
@@ -236,7 +180,7 @@ export default (connections: Record<string, DatabaseClient>) => {
       }
    });
 
-   ipcMain.handle('insert-table-fake-rows', async (event, params: InsertRowsParams) => {
+   ipc.handle('insert-table-fake-rows', async (event, params: InsertRowsParams) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       const client = connections[params.uid];
@@ -304,7 +248,7 @@ export default (connections: Record<string, DatabaseClient>) => {
       }
    });
 
-   ipcMain.handle('get-foreign-list', async (event, { uid, schema, table, column, description }) => {
+   ipc.handle('get-foreign-list', async (event, { uid, schema, table, column, description }) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
       const { dialect } = connections[uid];
 
@@ -340,63 +284,23 @@ export default (connections: Record<string, DatabaseClient>) => {
       }
    });
 
-   ipcMain.handle('create-table', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await connections[params.uid].createTable(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('create-table', async (params) => {
+      await connections[params.uid].createTable(params);
    });
 
-   ipcMain.handle('alter-table', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await connections[params.uid].alterTable(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('alter-table', async (params) => {
+      await connections[params.uid].alterTable(params);
    });
 
-   ipcMain.handle('duplicate-table', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await connections[params.uid].duplicateTable(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('duplicate-table', async (params) => {
+      await connections[params.uid].duplicateTable(params);
    });
 
-   ipcMain.handle('truncate-table', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await connections[params.uid].truncateTable(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('truncate-table', async (params) => {
+      await connections[params.uid].truncateTable(params);
    });
 
-   ipcMain.handle('drop-table', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await connections[params.uid].dropTable(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('drop-table', async (params) => {
+      await connections[params.uid].dropTable(params);
    });
 };

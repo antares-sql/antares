@@ -1,69 +1,31 @@
 import { ipcMain } from 'electron';
 
 import { DatabaseClient, requireCapability } from '../libs/db/core/contracts';
-import { validateSender } from '../libs/misc/validateSender';
+import { createHandle, IpcMainLike } from './handle';
 
-export default (connections: Record<string, DatabaseClient>) => {
-   ipcMain.handle('get-scheduler-informations', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = ipcMain) => {
+   const handle = createHandle(ipc);
 
-      try {
-         const result = await requireCapability(connections[params.uid], 'schedulers').getEventInformations(params);
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('get-scheduler-informations', async (params) => {
+      return await requireCapability(connections[params.uid], 'schedulers').getEventInformations(params);
    });
 
-   ipcMain.handle('drop-scheduler', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await requireCapability(connections[params.uid], 'schedulers').dropEvent(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('drop-scheduler', async (params) => {
+      await requireCapability(connections[params.uid], 'schedulers').dropEvent(params);
    });
 
-   ipcMain.handle('alter-scheduler', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await requireCapability(connections[params.uid], 'schedulers').alterEvent(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('alter-scheduler', async (params) => {
+      await requireCapability(connections[params.uid], 'schedulers').alterEvent(params);
    });
 
-   ipcMain.handle('create-scheduler', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await requireCapability(connections[params.uid], 'schedulers').createEvent(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('create-scheduler', async (params) => {
+      await requireCapability(connections[params.uid], 'schedulers').createEvent(params);
    });
 
-   ipcMain.handle('toggle-scheduler', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         if (!params.enabled)
-            await requireCapability(connections[params.uid], 'schedulers').enableEvent({ ...params });
-         else
-            await requireCapability(connections[params.uid], 'schedulers').disableEvent({ ...params });
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('toggle-scheduler', async (params) => {
+      if (!params.enabled)
+         await requireCapability(connections[params.uid], 'schedulers').enableEvent({ ...params });
+      else
+         await requireCapability(connections[params.uid], 'schedulers').disableEvent({ ...params });
    });
 };

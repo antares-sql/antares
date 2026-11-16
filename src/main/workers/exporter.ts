@@ -3,11 +3,7 @@ import * as log from 'electron-log/main';
 import * as fs from 'fs';
 import { parentPort } from 'worker_threads';
 
-import { MySQLClient } from '../libs/clients/MySQLClient';
-import { PostgreSQLClient } from '../libs/clients/PostgreSQLClient';
-import { ClientsFactory } from '../libs/ClientsFactory';
-import MysqlExporter from '../libs/exporters/sql/MysqlExporter';
-import PostgreSQLExporter from '../libs/exporters/sql/PostgreSQLExporter';
+import { createClient, getEngine } from '../libs/db/EngineRegistry';
 let exporter: antares.Exporter;
 
 log.transports.file.fileName = 'workers.log';
@@ -20,28 +16,23 @@ const exportHandler = async (data: any) => {
 
    if (type === 'init') {
       try {
-         const connection = await ClientsFactory.getClient({
+         const engine = getEngine(client.name);
+         if (!engine.createExporter) {
+            parentPort.postMessage({
+               type: 'error',
+               payload: `"${client.name}" exporter not aviable`
+            });
+            return;
+         }
+
+         const connection = createClient({
             client: client.name,
             params: client.config,
             poolSize: 5
-         }) as MySQLClient | PostgreSQLClient;
+         });
          await connection.connect();
 
-         switch (client.name) {
-            case 'mysql':
-            case 'maria':
-               exporter = new MysqlExporter(connection as MySQLClient, tables, options);
-               break;
-            case 'pg':
-               exporter = new PostgreSQLExporter(connection as PostgreSQLClient, tables, options);
-               break;
-            default:
-               parentPort.postMessage({
-                  type: 'error',
-                  payload: `"${client.name}" exporter not aviable`
-               });
-               return;
-         }
+         exporter = engine.createExporter(connection, tables, options);
 
          exporter.once('error', err => {
             log.error(err.toString());

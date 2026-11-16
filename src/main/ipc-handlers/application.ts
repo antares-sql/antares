@@ -4,9 +4,10 @@ import * as fs from 'fs';
 
 import { validateSender } from '../libs/misc/validateSender';
 import { ShortcutRegister } from '../libs/ShortcutRegister';
+import { IpcMainLike } from './handle';
 
-export default () => {
-   ipcMain.on('close-app', (event) => {
+export default (ipc: IpcMainLike = ipcMain) => {
+   ipc.on('close-app', (event) => {
       if (!validateSender(event.senderFrame)) {
          return {
             status: 'error',
@@ -16,7 +17,7 @@ export default () => {
       app.exit();
    });
 
-   ipcMain.on('set-key', (event, key) => {
+   ipc.on('set-key', (event, key) => {
       const sessionStore = new Store({
          name: 'session',
          fileExtension: ''
@@ -32,7 +33,7 @@ export default () => {
       event.returnValue = true;
    });
 
-   ipcMain.on('get-key', (event) => {
+   ipc.on('get-key', (event) => {
       const sessionStore = new Store({
          name: 'session',
          fileExtension: ''
@@ -55,46 +56,46 @@ export default () => {
       event.returnValue = typeof key === 'string' && key ? key : false;
    });
 
-   ipcMain.handle('show-open-dialog', (event, options) => {
+   ipc.handle('show-open-dialog', (event, options) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
       return dialog.showOpenDialog(options);
    });
 
-   ipcMain.handle('show-save-dialog', (event, options) => {
+   ipc.handle('show-save-dialog', (event, options) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
       return dialog.showSaveDialog(options);
    });
 
-   ipcMain.handle('get-download-dir-path', (event) => {
+   ipc.handle('get-download-dir-path', (event) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
       return app.getPath('downloads');
    });
 
-   ipcMain.handle('resotre-default-shortcuts', (event) => {
+   ipc.handle('resotre-default-shortcuts', (event) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
       const shortCutRegister = ShortcutRegister.getInstance();
       shortCutRegister.restoreDefaults();
    });
 
-   ipcMain.handle('reload-shortcuts', (event) => {
+   ipc.handle('reload-shortcuts', (event) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
       const shortCutRegister = ShortcutRegister.getInstance();
       shortCutRegister.reload();
    });
 
-   ipcMain.handle('update-shortcuts', (event, shortcuts) => {
+   ipc.handle('update-shortcuts', (event, shortcuts) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
       const shortCutRegister = ShortcutRegister.getInstance();
       shortCutRegister.updateShortcuts(shortcuts);
    });
 
-   ipcMain.handle('unregister-shortcuts', (event) => {
+   ipc.handle('unregister-shortcuts', (event) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
       const shortCutRegister = ShortcutRegister.getInstance();
       shortCutRegister.unregister();
    });
 
-   ipcMain.handle('read-file', (event, { filePath, encoding }) => {
+   ipc.handle('read-file', (event, { filePath, encoding }) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
       try {
          const content = fs.readFileSync(filePath, encoding);
@@ -105,7 +106,7 @@ export default () => {
       }
    });
 
-   ipcMain.handle('write-file', (event, filePath, content) => {
+   ipc.handle('write-file', (event, filePath, content) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
       try {
          fs.writeFileSync(filePath, content, 'utf-8');

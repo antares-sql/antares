@@ -1,15 +1,15 @@
 import * as antares from 'common/interfaces/antares';
 import { ipcMain } from 'electron';
-import * as fs from 'fs';
-import { SslOptions } from 'mysql2';
 
-import { ClientsFactory } from '../libs/ClientsFactory';
+import { buildClientParams } from '../libs/db/core/connectionParams';
 import { DatabaseClient } from '../libs/db/core/contracts';
+import { createClient } from '../libs/db/EngineRegistry';
 import { validateSender } from '../libs/misc/validateSender';
+import { IpcMainLike } from './handle';
 const isAborting: Record<string, boolean> = {};
 
-export default (connections: Record<string, DatabaseClient>) => {
-   ipcMain.handle('test-connection', async (event, conn: antares.ConnectionParams) => {
+export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = ipcMain) => {
+   ipc.handle('test-connection', async (event, conn: antares.ConnectionParams) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       let isLocalAborted = false;
@@ -21,58 +21,10 @@ export default (connections: Record<string, DatabaseClient>) => {
          }
       }, 50);
 
-      const params = {
-         host: conn.host,
-         port: +conn.port,
-         user: conn.user,
-         password: conn.password,
-         readonly: conn.readonly,
-         connectionString: conn.connString,
-         database: '',
-         schema: '',
-         databasePath: '',
-         ssl: undefined as SslOptions,
-         ssh: undefined as {
-            host: string;
-            username: string;
-            password: string;
-            port: number;
-            privateKey: string;
-            passphrase: string;
-            keepaliveInterval: number;
-         }
-      };
-
-      if (conn.database)
-         params.database = conn.database;
-
-      if (conn.databasePath)
-         params.databasePath = conn.databasePath;
-
-      if (conn.ssl) {
-         params.ssl = {
-            key: conn.key ? fs.readFileSync(conn.key).toString() : null,
-            cert: conn.cert ? fs.readFileSync(conn.cert).toString() : null,
-            ca: conn.ca ? fs.readFileSync(conn.ca).toString() : null,
-            ciphers: conn.ciphers,
-            rejectUnauthorized: !conn.untrustedConnection
-         };
-      }
-
-      if (conn.ssh) {
-         params.ssh = {
-            host: conn.sshHost,
-            username: conn.sshUser,
-            password: conn.sshPass,
-            port: conn.sshPort ? conn.sshPort : 22,
-            privateKey: conn.sshKey ? fs.readFileSync(conn.sshKey).toString() : undefined,
-            passphrase: conn.sshPassphrase,
-            keepaliveInterval: conn.sshKeepAliveInterval ? conn.sshKeepAliveInterval*1000 : undefined
-         };
-      }
-
       try {
-         const connection = await ClientsFactory.getClient({
+         const params = buildClientParams(conn);
+
+         const connection = await createClient({
             uid: conn.uid,
             client: conn.client,
             params
@@ -102,11 +54,11 @@ export default (connections: Record<string, DatabaseClient>) => {
       }
    });
 
-   ipcMain.handle('check-connection', async (event, uid) => {
+   ipc.handle('check-connection', async (event, uid) => {
       return uid in connections;
    });
 
-   ipcMain.handle('connect', async (event, conn: antares.ConnectionParams) => {
+   ipc.handle('connect', async (event, conn: antares.ConnectionParams) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       let isLocalAborted = false;
@@ -118,62 +70,10 @@ export default (connections: Record<string, DatabaseClient>) => {
          }
       }, 50);
 
-      const params = {
-         host: conn.host,
-         port: +conn.port,
-         user: conn.user,
-         password: conn.password,
-         application_name: 'Antares SQL',
-         readonly: conn.readonly,
-         connectionString: conn.connString,
-         database: '',
-         schema: '',
-         databasePath: '',
-         ssl: undefined as SslOptions,
-         ssh: undefined as {
-            host: string;
-            username: string;
-            password: string;
-            port: number;
-            privateKey: string;
-            passphrase: string;
-            keepaliveInterval: number;
-         }
-      };
-
-      if (conn.database)
-         params.database = conn.database;
-
-      if (conn.databasePath)
-         params.databasePath = conn.databasePath;
-
-      if (conn.schema)
-         params.schema = conn.schema;
-
-      if (conn.ssl) {
-         params.ssl = {
-            key: conn.key ? fs.readFileSync(conn.key).toString() : null,
-            cert: conn.cert ? fs.readFileSync(conn.cert).toString() : null,
-            ca: conn.ca ? fs.readFileSync(conn.ca).toString() : null,
-            ciphers: conn.ciphers,
-            rejectUnauthorized: !conn.untrustedConnection
-         };
-      }
-
-      if (conn.ssh) {
-         params.ssh = {
-            host: conn.sshHost,
-            username: conn.sshUser,
-            password: conn.sshPass,
-            port: conn.sshPort ? conn.sshPort : 22,
-            privateKey: conn.sshKey ? fs.readFileSync(conn.sshKey).toString() : null,
-            passphrase: conn.sshPassphrase,
-            keepaliveInterval: conn.sshKeepAliveInterval ? conn.sshKeepAliveInterval*1000 : null
-         };
-      }
-
       try {
-         const connection = ClientsFactory.getClient({
+         const params = buildClientParams(conn);
+
+         const connection = createClient({
             uid: conn.uid,
             client: conn.client,
             params,
@@ -207,11 +107,11 @@ export default (connections: Record<string, DatabaseClient>) => {
       }
    });
 
-   ipcMain.on('abort-connection', (event, uid) => {
+   ipc.on('abort-connection', (event, uid) => {
       isAborting[uid] = true;
    });
 
-   ipcMain.handle('disconnect', (event, uid) => {
+   ipc.handle('disconnect', (event, uid) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       connections[uid].destroy();

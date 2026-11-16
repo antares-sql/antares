@@ -3,6 +3,8 @@ import * as log from 'electron-log/main';
 import * as Store from 'electron-store';
 import { autoUpdater } from 'electron-updater';
 
+import { IpcMainLike } from './handle';
+
 const persistentStore = new Store({
    name: 'settings',
    clearInvalidConfig: true,
@@ -17,8 +19,8 @@ const isMacOS = process.platform === 'darwin';
 let mainWindow: Electron.IpcMainEvent;
 autoUpdater.allowPrerelease = persistentStore.get('allow_prerelease', false) as boolean;
 
-export default () => {
-   ipcMain.on('check-for-updates', event => {
+export default (ipc: IpcMainLike = ipcMain) => {
+   ipc.on('check-for-updates', event => {
       mainWindow = event;
       if (process.windowsStore || (process.platform === 'linux' && !process.env.APPIMAGE))
          mainWindow.reply('no-auto-update');
@@ -32,7 +34,7 @@ export default () => {
       }
    });
 
-   ipcMain.on('restart-to-update', () => {
+   ipc.on('restart-to-update', () => {
       autoUpdater.quitAndInstall();
    });
 

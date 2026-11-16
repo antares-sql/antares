@@ -1,5 +1,5 @@
 import * as exporter from 'common/interfaces/exporter';
-import * as EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import * as fs from 'fs';
 import * as path from 'path';
 import { createGzip, Gzip } from 'zlib';
@@ -45,7 +45,12 @@ export class BaseExporter extends EventEmitter {
          throw err;
       }
       finally {
-         this._processedStream.end();
+         // Emit 'end' only once the file is fully written (otherwise it may be read truncated)
+         await new Promise<void>(resolve => {
+            this._outputFileStream.once('finish', resolve);
+            this._outputFileStream.once('error', () => resolve());
+            this._processedStream.end();
+         });
          this.emit('end');
       }
    }

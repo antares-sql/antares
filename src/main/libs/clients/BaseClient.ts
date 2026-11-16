@@ -26,6 +26,11 @@ export abstract class BaseClient {
       this._querySplitter = args.querySplitter || querySplitter;
    }
 
+   /** Server host (undefined for file databases) */
+   get host (): string | undefined {
+      return 'host' in this._params ? this._params.host as string : undefined;
+   }
+
    get dialect () {
       return this._dialect;
    }

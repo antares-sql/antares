@@ -1,102 +1,40 @@
 import { ipcMain } from 'electron';
 
 import { DatabaseClient, requireCapability } from '../libs/db/core/contracts';
-import { validateSender } from '../libs/misc/validateSender';
+import { createHandle, IpcMainLike } from './handle';
 
-export default (connections: Record<string, DatabaseClient>) => {
-   ipcMain.handle('get-view-informations', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = ipcMain) => {
+   const handle = createHandle(ipc);
 
-      try {
-         const result = await connections[params.uid].getViewInformations(params);
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('get-view-informations', async (params) => {
+      return await connections[params.uid].getViewInformations(params);
    });
 
-   ipcMain.handle('drop-view', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await connections[params.uid].dropView(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('drop-view', async (params) => {
+      await connections[params.uid].dropView(params);
    });
 
-   ipcMain.handle('alter-view', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await connections[params.uid].alterView(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('alter-view', async (params) => {
+      await connections[params.uid].alterView(params);
    });
 
-   ipcMain.handle('create-view', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await connections[params.uid].createView(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('create-view', async (params) => {
+      await connections[params.uid].createView(params);
    });
 
-   ipcMain.handle('get-materialized-view-informations', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         const result = await requireCapability(connections[params.uid], 'materializedViews').getMaterializedViewInformations(params);
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('get-materialized-view-informations', async (params) => {
+      return await requireCapability(connections[params.uid], 'materializedViews').getMaterializedViewInformations(params);
    });
 
-   ipcMain.handle('drop-materialized-view', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await requireCapability(connections[params.uid], 'materializedViews').dropMaterializedView(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('drop-materialized-view', async (params) => {
+      await requireCapability(connections[params.uid], 'materializedViews').dropMaterializedView(params);
    });
 
-   ipcMain.handle('alter-materialized-view', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await requireCapability(connections[params.uid], 'materializedViews').alterMaterializedView(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('alter-materialized-view', async (params) => {
+      await requireCapability(connections[params.uid], 'materializedViews').alterMaterializedView(params);
    });
 
-   ipcMain.handle('create-materialized-view', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await requireCapability(connections[params.uid], 'materializedViews').createMaterializedView(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('create-materialized-view', async (params) => {
+      await requireCapability(connections[params.uid], 'materializedViews').createMaterializedView(params);
    });
 };

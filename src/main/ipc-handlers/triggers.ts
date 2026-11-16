@@ -1,69 +1,31 @@
 import { ipcMain } from 'electron';
 
 import { DatabaseClient, requireCapability } from '../libs/db/core/contracts';
-import { validateSender } from '../libs/misc/validateSender';
+import { createHandle, IpcMainLike } from './handle';
 
-export default (connections: Record<string, DatabaseClient>) => {
-   ipcMain.handle('get-trigger-informations', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = ipcMain) => {
+   const handle = createHandle(ipc);
 
-      try {
-         const result = await connections[params.uid].getTriggerInformations(params);
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('get-trigger-informations', async (params) => {
+      return await connections[params.uid].getTriggerInformations(params);
    });
 
-   ipcMain.handle('drop-trigger', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await connections[params.uid].dropTrigger(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('drop-trigger', async (params) => {
+      await connections[params.uid].dropTrigger(params);
    });
 
-   ipcMain.handle('alter-trigger', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await connections[params.uid].alterTrigger(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('alter-trigger', async (params) => {
+      await connections[params.uid].alterTrigger(params);
    });
 
-   ipcMain.handle('create-trigger', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await connections[params.uid].createTrigger(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('create-trigger', async (params) => {
+      await connections[params.uid].createTrigger(params);
    });
 
-   ipcMain.handle('toggle-trigger', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         if (!params.enabled)
-            await requireCapability(connections[params.uid], 'triggerToggle').enableTrigger(params);
-         else
-            await requireCapability(connections[params.uid], 'triggerToggle').disableTrigger(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('toggle-trigger', async (params) => {
+      if (!params.enabled)
+         await requireCapability(connections[params.uid], 'triggerToggle').enableTrigger(params);
+      else
+         await requireCapability(connections[params.uid], 'triggerToggle').disableTrigger(params);
    });
 };

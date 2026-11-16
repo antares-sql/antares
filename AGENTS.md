@@ -24,11 +24,13 @@ See also [CONTRIBUTING.md](CONTRIBUTING.md) for the original contributor guide.
 src/
   main/                 Electron main process
     main.ts             Window creation, single-instance lock, app lifecycle
-    ipc-handlers/       One file per domain (tables, schema, views, routines, ...). Registers ipcMain.handle(...)
+    ipc-handlers/       One file per domain (tables, schema, views, routines, ...). Each module gets `ipc` injected
+                        (default ipcMain); handle.ts: `handle(channel, fn)` = sender check + success/error envelope
     libs/
-      ClientsFactory.ts Picks client class from `client` ('mysql'|'maria'|'pg'|'sqlite'|'firebird')
+      ClientsFactory.ts Deprecated wrapper of db/EngineRegistry.createClient()
       clients/          BaseClient + one class per engine (all DB introspection/DDL; being split up into db/)
       db/               Target architecture of the clients refactor
+        EngineRegistry.ts  One entry per engine (engines/<engine>/index.ts): client factory + optional exporter/importer
         core/           QueryBuilder (one instance per query, no shared state), QueryDialect (pure SQL rendering),
                         DdlGenerator (base of DDL builders), contracts.ts (client interfaces), formatValue.ts,
                         SshTunnel (one tunnel per client, shared by pool/tabs/workers), ConnectionLease
@@ -77,12 +79,13 @@ Aliases are defined both in [tsconfig.json](tsconfig.json) `paths` and in each `
 
 1. **Component** calls a static method from `src/renderer/ipc-api/*.ts` (e.g. `Tables.getTableColumns(params)`).
 2. The ipc-api method calls `ipcRenderer.invoke('<kebab-case-event>', unproxify(params))` (`unproxify` strips Vue proxies).
-3. **Handler** in `src/main/ipc-handlers/*.ts` runs `validateSender(event.senderFrame)`, then calls `connections[uid].<method>()`.
+3. **Handler** in `src/main/ipc-handlers/*.ts`: `handle(channel, params => connections[params.uid].<method>(params))` (sender validation and the `{ status, response }` envelope are done by `handle`).
 4. **Client** (`src/main/libs/clients/<Engine>Client.ts`) implements the method; returns `{ status: 'success' | 'error', response }` via the handler.
 
 Rules:
 - Everything above the client class must be **client-agnostic**. Engine differences live in the client classes and in `common/customizations/<engine>.ts` (UI checks `workspace.customizations.<flag>` to enable/disable features).
 - Adding a new capability usually touches: `BaseClient`/engine clients → ipc handler → ipc-api → store/component → customizations flag → i18n strings.
+- Adding a new engine: client class (+ Dialect, Ddl, Connections, Parsers under `src/main/libs/db/engines/<engine>/`) → `engines/<engine>/index.ts` definition → register it in `EngineRegistry.ts` → `common/customizations/<engine>.ts` + data types → record introspection fixtures.
 - SQL values in main must go through the engine dialect (`client.dialect.quoteString()`, `blobLiteral()`, ... or `formatValue()` for UI values): never build literals with `sqlEscaper` or engine `switch`es in handlers.
 - Client contract: [contracts.ts](src/main/libs/db/core/contracts.ts). `DatabaseClient` = methods every engine has; optional features are **capability** interfaces (`RoutinesCapability`, `SchedulersCapability`, ...) declared with `implements` on the engine class. Handlers call them through `requireCapability(client, 'routines')`, which throws `UnsupportedCapabilityError` if the engine lacks it. Never add "not implemented" stubs to `BaseClient`. [capabilities.spec.ts](tests/unit/clients/capabilities.spec.ts) checks that every feature enabled in customizations is implemented.
 - Long-running export/import runs in `src/main/workers/*` (separate webpack build output `dist/exporter.js`, `dist/importer.js`).
@@ -119,7 +122,7 @@ VS Code debugging: start `npm run debug` (or `debug-runner`) in a terminal, then
 - **TypeScript in VS Code**: the editor's bundled TS (6.x) defaults to `strict: true` and deprecates `baseUrl`. The tsconfig therefore sets `"strict": false` explicitly and avoids `baseUrl`; do not re-add it. The codebase is **not** strict-null-safe — don't "fix" thousands of strictness errors unless that is the task.
 - `validateSender` currently returns `true` on Windows (`TEMP HOTFIX`).
 - **Tests run inside Electron** (`ELECTRON_RUN_AS_NODE`, see [scripts/vitest.js](scripts/vitest.js)) because native modules are built for Electron's ABI. Always use the npm scripts, not `npx vitest`.
-- **Module interop**: webpack compiles to CommonJS, Vitest loads ESM. `import * as x` namespaces are read-only and not callable under Vitest: for CommonJS modules that are called or mutated use `import x = require('...')`.
+- **Module interop**: webpack compiles to CommonJS, Vitest loads ESM. `import * as x` namespaces are read-only and not callable under Vitest: for CommonJS modules that are called, instantiated or mutated (moment, better-sqlite3, pg-query-stream, ...) use `import x = require('...')`; for classes use named imports (`import { EventEmitter } from 'events'`).
 - **SQL snapshots**: [`tests/unit/clients/__snapshots__`](tests/unit/clients/__snapshots__) pins the SQL generated by each client. A changed snapshot must be intentional: update with `npm run test:unit -- -u` and justify it in the PR.
 - **CI**: [.github/workflows/test.yml](.github/workflows/test.yml) runs on PRs and on `develop`, and gates the beta/stable release workflows.
 - `src/renderer/libs/ext-language_tools.js` is a patched copy of Ace's file (adds icons); don't replace it with the npm version.

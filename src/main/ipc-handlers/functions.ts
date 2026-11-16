@@ -1,78 +1,32 @@
 import { ipcMain } from 'electron';
 
 import { DatabaseClient, requireCapability } from '../libs/db/core/contracts';
-import { validateSender } from '../libs/misc/validateSender';
+import { createHandle, IpcMainLike } from './handle';
 
-export default (connections: Record<string, DatabaseClient>) => {
-   ipcMain.handle('get-function-informations', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = ipcMain) => {
+   const handle = createHandle(ipc);
 
-      try {
-         const result = await requireCapability(connections[params.uid], 'functions').getFunctionInformations(params);
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('get-function-informations', async (params) => {
+      return await requireCapability(connections[params.uid], 'functions').getFunctionInformations(params);
    });
 
-   ipcMain.handle('drop-function', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await requireCapability(connections[params.uid], 'functions').dropFunction(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('drop-function', async (params) => {
+      await requireCapability(connections[params.uid], 'functions').dropFunction(params);
    });
 
-   ipcMain.handle('alter-function', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await requireCapability(connections[params.uid], 'functions').alterFunction(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('alter-function', async (params) => {
+      await requireCapability(connections[params.uid], 'functions').alterFunction(params);
    });
 
-   ipcMain.handle('alter-trigger-function', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await requireCapability(connections[params.uid], 'triggerFunctions').alterTriggerFunction(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('alter-trigger-function', async (params) => {
+      await requireCapability(connections[params.uid], 'triggerFunctions').alterTriggerFunction(params);
    });
 
-   ipcMain.handle('create-function', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await requireCapability(connections[params.uid], 'functions').createFunction(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('create-function', async (params) => {
+      await requireCapability(connections[params.uid], 'functions').createFunction(params);
    });
 
-   ipcMain.handle('create-trigger-function', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await requireCapability(connections[params.uid], 'triggerFunctions').createTriggerFunction(params);
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('create-trigger-function', async (params) => {
+      await requireCapability(connections[params.uid], 'triggerFunctions').createTriggerFunction(params);
    });
 };

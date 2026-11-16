@@ -197,6 +197,12 @@ export const objectToGeoJSON = (val: any) => {
  */
 export const escapeAndQuote = (val: string, client: ClientCode) => {
    const { stringsWrapper: sw } = customizations[client];
+
+   // Standard SQL (PostgreSQL with standard_conforming_strings, SQLite, Firebird):
+   // backslash is a literal character, quotes are escaped by doubling them
+   if (sw === '\'')
+      return `'${val.replaceAll('\'', '\'\'')}'`;
+
    // eslint-disable-next-line no-control-regex
    const CHARS_TO_ESCAPE = sw === '"' ? /[\0\b\t\n\r\x1a"'\\]/g : /[\0\b\t\n\r\x1a'\\]/g;
    const CHARS_ESCAPE_MAP: Record<string, string> = {

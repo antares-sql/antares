@@ -5,51 +5,27 @@ import { Worker } from 'worker_threads';
 
 import { DatabaseClient, requireCapability } from '../libs/db/core/contracts';
 import { validateSender } from '../libs/misc/validateSender';
+import { createHandle, IpcMainLike } from './handle';
 
-export default (connections: Record<string, DatabaseClient>) => {
+export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = ipcMain) => {
+   const handle = createHandle(ipc);
+
    let exporter: Worker = null;
    let importer: Worker = null;
 
-   ipcMain.handle('create-schema', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await requireCapability(connections[params.uid], 'schemas').createSchema(params);
-
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('create-schema', async (params) => {
+      await requireCapability(connections[params.uid], 'schemas').createSchema(params);
    });
 
-   ipcMain.handle('update-schema', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await requireCapability(connections[params.uid], 'schemas').alterSchema(params);
-
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('update-schema', async (params) => {
+      await requireCapability(connections[params.uid], 'schemas').alterSchema(params);
    });
 
-   ipcMain.handle('delete-schema', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
-
-      try {
-         await requireCapability(connections[params.uid], 'schemas').dropSchema(params);
-
-         return { status: 'success' };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+   handle('delete-schema', async (params) => {
+      await requireCapability(connections[params.uid], 'schemas').dropSchema(params);
    });
 
-   ipcMain.handle('get-schema-collation', async (event, params) => {
+   ipc.handle('get-schema-collation', async (event, params) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       try {
@@ -67,100 +43,51 @@ export default (connections: Record<string, DatabaseClient>) => {
       }
    });
 
-   ipcMain.handle('get-structure', async (event, params) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+   handle('get-structure', async (params) => {
+      const structure: unknown = await connections[params.uid].getStructure(
+         params.schemas
+      );
 
-      try {
-         const structure: unknown = await connections[params.uid].getStructure(
-            params.schemas
-         );
-
-         return { status: 'success', response: structure };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+      return structure;
    });
 
-   ipcMain.handle('get-collations', async (event, uid) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+   handle('get-collations', async (uid) => {
+      const result = await connections[uid].getCollations();
 
-      try {
-         const result = await connections[uid].getCollations();
-
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+      return result;
    });
 
-   ipcMain.handle('get-variables', async (event, uid) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+   handle('get-variables', async (uid) => {
+      const result = await connections[uid].getVariables();
 
-      try {
-         const result = await connections[uid].getVariables();
-
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+      return result;
    });
 
-   ipcMain.handle('get-engines', async (event, uid) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+   handle('get-engines', async (uid) => {
+      const result: unknown = await connections[uid].getEngines();
 
-      try {
-         const result: unknown = await connections[uid].getEngines();
-
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+      return result;
    });
 
-   ipcMain.handle('get-version', async (event, uid) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+   handle('get-version', async (uid) => {
+      const result = await connections[uid].getVersion();
 
-      try {
-         const result = await connections[uid].getVersion();
-
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+      return result;
    });
 
-   ipcMain.handle('get-processes', async (event, uid) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+   handle('get-processes', async (uid) => {
+      const result = await connections[uid].getProcesses();
 
-      try {
-         const result = await connections[uid].getProcesses();
-
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+      return result;
    });
 
-   ipcMain.handle('kill-process', async (event, { uid, pid }) => {
-      if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
+   handle('kill-process', async ({ uid, pid }) => {
+      const result = await connections[uid].killProcess(pid);
 
-      try {
-         const result = await connections[uid].killProcess(pid);
-
-         return { status: 'success', response: result };
-      }
-      catch (err) {
-         return { status: 'error', response: err.toString() };
-      }
+      return result;
    });
 
-   ipcMain.handle('use-schema', async (event, { uid, schema }) => {
+   ipc.handle('use-schema', async (event, { uid, schema }) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       if (!schema) return;
@@ -174,7 +101,7 @@ export default (connections: Record<string, DatabaseClient>) => {
       }
    });
 
-   ipcMain.handle('raw-query', async (event, { uid, query, schema, tabUid, autocommit }) => {
+   ipc.handle('raw-query', async (event, { uid, query, schema, tabUid, autocommit }) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       if (!query) return;
@@ -196,7 +123,7 @@ export default (connections: Record<string, DatabaseClient>) => {
       }
    });
 
-   ipcMain.handle('export', (event, { uid, type, tables, ...rest }) => {
+   ipc.handle('export', (event, { uid, type, tables, ...rest }) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       if (exporter !== null) {
@@ -276,7 +203,7 @@ export default (connections: Record<string, DatabaseClient>) => {
       });
    });
 
-   ipcMain.handle('abort-export', async (event) => {
+   ipc.handle('abort-export', async (event) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       let willAbort = false;
@@ -299,7 +226,7 @@ export default (connections: Record<string, DatabaseClient>) => {
       return { status: 'success', response: { willAbort } };
    });
 
-   ipcMain.handle('import-sql', async (event, options) => {
+   ipc.handle('import-sql', async (event, options) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       if (importer !== null) {
@@ -361,7 +288,7 @@ export default (connections: Record<string, DatabaseClient>) => {
       });
    });
 
-   ipcMain.handle('abort-import-sql', async (event) => {
+   ipc.handle('abort-import-sql', async (event) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       let willAbort = false;
@@ -384,7 +311,7 @@ export default (connections: Record<string, DatabaseClient>) => {
       return { status: 'success', response: { willAbort } };
    });
 
-   ipcMain.handle('kill-tab-query', async (event, { uid, tabUid }) => {
+   ipc.handle('kill-tab-query', async (event, { uid, tabUid }) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       if (!tabUid) return;
@@ -398,7 +325,7 @@ export default (connections: Record<string, DatabaseClient>) => {
       }
    });
 
-   ipcMain.handle('commit-tab', async (event, { uid, tabUid }) => {
+   ipc.handle('commit-tab', async (event, { uid, tabUid }) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       if (!tabUid) return;
@@ -412,7 +339,7 @@ export default (connections: Record<string, DatabaseClient>) => {
       }
    });
 
-   ipcMain.handle('rollback-tab', async (event, { uid, tabUid }) => {
+   ipc.handle('rollback-tab', async (event, { uid, tabUid }) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       if (!tabUid) return;
@@ -426,7 +353,7 @@ export default (connections: Record<string, DatabaseClient>) => {
       }
    });
 
-   ipcMain.handle('destroy-connection-to-commit', async (event, { uid, tabUid }) => {
+   ipc.handle('destroy-connection-to-commit', async (event, { uid, tabUid }) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
       if (!tabUid) return;

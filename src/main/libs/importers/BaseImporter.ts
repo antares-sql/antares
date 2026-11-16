@@ -1,5 +1,5 @@
 import * as importer from 'common/interfaces/importer';
-import * as EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import * as fs from 'fs';
 
 export class BaseImporter extends EventEmitter {
