@@ -1,0 +1,104 @@
+# AGENTS.md
+
+Guide for AI agents (and humans) working on **Antares SQL**, a cross-platform SQL client built with Electron + Vue 3 + TypeScript.
+Supported engines: MySQL/MariaDB, PostgreSQL, SQLite, Firebird SQL.
+
+See also [CONTRIBUTING.md](CONTRIBUTING.md) for the original contributor guide.
+
+## Stack
+
+| Area | Tech |
+|---|---|
+| Shell | Electron 30 (`@electron/remote` enabled, `nodeIntegration: true`, `contextIsolation: false`) |
+| UI | Vue 3 (mostly `<script setup lang="ts">`), Pinia, vue-i18n, Spectre.css + SCSS, Ace editor |
+| Bundling | webpack 5 (three configs: main, renderer, workers), `ts-loader`, `babel-loader`, `vue-loader` |
+| Language | TypeScript **4.6** (project-local, non-strict) |
+| Persistence | `electron-store` (settings, connections; credentials encrypted via `safeStorage`) |
+| DB drivers | `mysql2`, `pg` + `pg-query-stream`, `better-sqlite3` (native), `node-firebird`, SSH tunnels via `@fabio286/ssh2-promise` |
+| Packaging | electron-builder (config in `package.json` → `build`) |
+| Tests | Playwright e2e only ([tests/app.spec.ts](tests/app.spec.ts)), very minimal |
+
+## Layout
+
+```
+src/
+  main/                 Electron main process
+    main.ts             Window creation, single-instance lock, app lifecycle
+    ipc-handlers/       One file per domain (tables, schema, views, routines, ...). Registers ipcMain.handle(...)
+    libs/
+      ClientsFactory.ts Picks client class from `client` ('mysql'|'maria'|'pg'|'sqlite'|'firebird')
+      clients/          BaseClient + one class per engine (query builder + all DB introspection/DDL)
+      exporters/ importers/  SQL dump/import logic, run inside worker threads
+      parsers/          Engine-specific SQL parsers
+      misc/             validateSender (IPC origin check), ipcLogger
+    workers/            exporter.ts / importer.ts (worker_threads entry points, own webpack config)
+  renderer/             Vue app
+    index.ts, App.vue
+    components/         ~90 SFCs (naming: Base*, The*, Modal*, Workspace*, WorkspaceTab*, SettingBar*)
+    stores/             Pinia stores (workspaces.ts is the core one: open connections, tabs, structure)
+    ipc-api/            Thin static classes wrapping ipcRenderer.invoke(...) — one per ipc-handlers file
+    composables/, libs/, scss/, i18n/ (one file per locale, en-US is the reference)
+  common/               Shared by main and renderer
+    interfaces/         Shared types (antares.ts holds most of them)
+    customizations/     Per-engine feature flags merged over defaults.ts
+    data-types/         Per-engine column type catalogs
+    fieldTypes.ts, shortcuts.ts, libs/
+scripts/                devRunner.js (dev server + electron), devtoolsInstaller.js, translationCheck.ts
+```
+
+### Path aliases
+
+- `common/*` → `src/common/*` (main, renderer, workers)
+- `@/*` → `src/renderer/*` (renderer)
+- `src/*` → `src/*` (used in a few places, e.g. `common/interfaces/antares.ts`)
+
+Aliases are defined both in [tsconfig.json](tsconfig.json) `paths` and in each `webpack.*.config.js` `resolve.alias` — keep them in sync.
+
+## How a feature flows
+
+1. **Component** calls a static method from `src/renderer/ipc-api/*.ts` (e.g. `Tables.getTableColumns(params)`).
+2. The ipc-api method calls `ipcRenderer.invoke('<kebab-case-event>', unproxify(params))` (`unproxify` strips Vue proxies).
+3. **Handler** in `src/main/ipc-handlers/*.ts` runs `validateSender(event.senderFrame)`, then calls `connections[uid].<method>()`.
+4. **Client** (`src/main/libs/clients/<Engine>Client.ts`) implements the method; returns `{ status: 'success' | 'error', response }` via the handler.
+
+Rules:
+- Everything above the client class must be **client-agnostic**. Engine differences live in the client classes and in `common/customizations/<engine>.ts` (UI checks `workspace.customizations.<flag>` to enable/disable features).
+- Adding a new capability usually touches: `BaseClient`/engine clients → ipc handler → ipc-api → store/component → customizations flag → i18n strings.
+- Long-running export/import runs in `src/main/workers/*` (separate webpack build output `dist/exporter.js`, `dist/importer.js`).
+
+## Commands
+
+```bash
+npm install                 # runs postinstall → electron-builder install-app-deps (native rebuild)
+npm run debug               # rebuild native deps + install Vue devtools + debug-runner
+npm run debug-runner        # dev server on :9080 + main/workers watch + electron with --inspect=9222 / --remote-debugging-port=9223
+npm run compile             # production webpack builds into dist/
+npm run build               # compile + electron-builder (output in build/)
+npm run lint / lint:fix     # eslint + stylelint (also run by husky pre-commit)
+npm run translation:check -- it-IT   # list missing keys vs en-US
+npm run test:e2e            # compile + playwright
+npx tsc --noEmit -p .       # type check (.ts only; .vue files are checked only by the Vue VS Code extension)
+```
+
+VS Code debugging: start `npm run debug` (or `debug-runner`) in a terminal, then use the **Electron: All** compound in [.vscode/launch.json](.vscode/launch.json) (attaches to 9222 main + 9223 renderer).
+
+## Environment gotchas
+
+- **Node**: `.nvmrc` says 18.16, CI uses Node 20. Both work.
+- **Native modules** (`better-sqlite3`, `cpu-features`) must be built for Electron's ABI. `package.json` sets `build.buildDependenciesFromSource: true`, so `install-app-deps` compiles from source → on Windows it needs **Visual Studio 2019/2022 Build Tools with "Desktop development with C++"** (Electron 30 needs C++20; VS 2017 is not enough).
+  - Workaround without a compiler: fetch the prebuilt binary
+    `cd node_modules/better-sqlite3 && node ../prebuild-install/bin.js --runtime electron --target <electron version> --arch x64`
+    then use `npm run debug-runner` (skips the rebuild). `cpu-features` is an optional ssh2 speed-up; ssh2 works without it.
+  - `node-abi` must be recent enough to know the installed Electron version, otherwise `prebuild-install` fails with "Could not detect abi".
+- **`ELECTRON_RUN_AS_NODE`**: terminals spawned by VS Code / Electron tools may have it set; Electron then starts as plain Node (`app` is undefined). `scripts/devRunner.js` deletes it before spawning Electron.
+- **TypeScript in VS Code**: the editor's bundled TS (6.x) defaults to `strict: true` and deprecates `baseUrl`. The tsconfig therefore sets `"strict": false` explicitly and avoids `baseUrl`; do not re-add it. The codebase is **not** strict-null-safe — don't "fix" thousands of strictness errors unless that is the task.
+- `validateSender` currently returns `true` on Windows (`TEMP HOTFIX`).
+- `src/renderer/libs/ext-language_tools.js` is a patched copy of Ace's file (adds icons); don't replace it with the npm version.
+
+## Conventions
+
+- Indentation: **3 spaces**; single quotes; semicolons; `simple-import-sort` for imports. Run `npm run lint:fix`.
+- IPC event names: kebab-case. Vue component files: PascalCase with prefixes `Base`/`The`/tightly coupled names.
+- Commits: Conventional Commits enforced by commitlint (`feat|fix|docs|chore|style|refactor|build|ci|test|revert|perf`, subject not upper/Pascal/Start case). Common scopes (from `.vscode/settings.json`): `UI, core, MySQL, PostgreSQL, SQLite, Firebird SQL, Windows, Linux, MacOS, translation, deps, Flatpak`.
+- Branches: work on `develop`; `master` is the release branch (stable build workflow only runs there). Releases via `standard-version` (`npm run release` / `release:beta`).
+- New UI strings: add to `src/renderer/i18n/en-US.ts` first; other locales fall back to English.
