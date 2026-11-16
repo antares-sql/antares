@@ -34,7 +34,9 @@ export default defineConfig({
                environment: 'node',
                testTimeout: 30_000,
                hookTimeout: 120_000,
-               fileParallelism: false
+               // One file at a time: DDL on the same server from parallel files deadlocks (e.g. Firebird)
+               fileParallelism: false,
+               poolOptions: { forks: { singleFork: true } }
             }
          }
       ]

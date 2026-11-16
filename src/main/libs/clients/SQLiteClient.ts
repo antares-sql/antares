@@ -4,6 +4,7 @@ import * as antares from 'common/interfaces/antares';
 import { removeComments } from 'common/libs/sqlUtils';
 
 import { DatabaseClient } from '../db/core/contracts';
+import { SQLiteConnections, SQLiteParams } from '../db/engines/sqlite/SQLiteConnections';
 import { SQLiteDdl } from '../db/engines/sqlite/SQLiteDdl';
 import { SQLiteDialect } from '../db/engines/sqlite/SQLiteDialect';
 import { BaseClient } from './BaseClient';
@@ -12,15 +13,14 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
    protected readonly _ddl = new SQLiteDdl();
    protected readonly _dialect = new SQLiteDialect();
    private _schema?: string;
-   private _connectionsToCommit: Map<string, sqlite.Database>;
-   protected _connection?: sqlite.Database;
-   _params: { databasePath: string; readonly: boolean};
+   private readonly _connections: SQLiteConnections;
+   _params: SQLiteParams;
 
    constructor (args: antares.ClientParams) {
       super(args);
 
       this._schema = null;
-      this._connectionsToCommit = new Map();
+      this._connections = new SQLiteConnections(this._params);
    }
 
    getTypeInfo (type: string): antares.TypeInformations {
@@ -28,14 +28,11 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
    }
 
    async connect () {
-      this._connection = this.getConnection();
+      this._connections.connect();
    }
 
    getConnection () {
-      return sqlite(this._params.databasePath, {
-         fileMustExist: true,
-         readonly: this._params.readonly
-      });
+      return this._connections.open();
    }
 
    ping () {
@@ -43,7 +40,7 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
    }
 
    destroy () {
-      this._connection.close();
+      this._connections.destroy();
    }
 
    use (): void {
@@ -476,27 +473,15 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
    }
 
    async commitTab (tabUid: string) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         connection.prepare('COMMIT').run();
-         return this.destroyConnectionToCommit(tabUid);
-      }
+      this._connections.commitTab(tabUid);
    }
 
    async rollbackTab (tabUid: string) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         connection.prepare('ROLLBACK').run();
-         return this.destroyConnectionToCommit(tabUid);
-      }
+      this._connections.rollbackTab(tabUid);
    }
 
    destroyConnectionToCommit (tabUid: string) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         connection.close();
-         this._connectionsToCommit.delete(tabUid);
-      }
+      this._connections.closeTab(tabUid);
    }
 
    async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {
@@ -520,19 +505,7 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
          ? this._querySplitter(sql, 'sqlite')
          : [sql];
 
-      let connection: sqlite.Database;
-
-      if (!args.autocommit && args.tabUid) { // autocommit OFF
-         if (this._connectionsToCommit.has(args.tabUid))
-            connection = this._connectionsToCommit.get(args.tabUid);
-         else {
-            connection = this.getConnection();
-            connection.prepare('BEGIN TRANSACTION').run();
-            this._connectionsToCommit.set(args.tabUid, connection);
-         }
-      }
-      else// autocommit ON
-         connection = this._connection;
+      const { connection } = this._connections.acquire(args);
 
       for (const query of queries) {
          if (!query) continue;

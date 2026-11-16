@@ -19,6 +19,9 @@ const host = env('ANTARES_TEST_HOST', '127.0.0.1');
 export type EngineName = 'mysql' | 'maria' | 'pg' | 'sqlite' | 'firebird';
 
 export interface ConnectOptions {
+   /** Overrides connection params (e.g. host/port/ssh for tunnels) */
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   overrides?: Record<string, any>;
    /** Defaults to 5 like the app; 0 = single connection mode */
    poolSize?: number;
 }
@@ -99,7 +102,7 @@ async function connectClient (client: EngineName, params: Record<string, any>, o
    const connection = ClientsFactory.getClient({
       client,
       uid: `it-${client}`,
-      params: params as never,
+      params: { ...params, ...opts.overrides } as never,
       poolSize: opts.poolSize ?? 5 // same default as the app (ipc-handlers/connection.ts)
    });
 

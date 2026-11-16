@@ -30,11 +30,14 @@ src/
       clients/          BaseClient + one class per engine (all DB introspection/DDL; being split up into db/)
       db/               Target architecture of the clients refactor
         core/           QueryBuilder (one instance per query, no shared state), QueryDialect (pure SQL rendering),
-                        DdlGenerator (base of DDL builders), contracts.ts (client interfaces), formatValue.ts
+                        DdlGenerator (base of DDL builders), contracts.ts (client interfaces), formatValue.ts,
+                        SshTunnel (one tunnel per client, shared by pool/tabs/workers), ConnectionLease
         engines/<engine>/  Per-engine pieces:
                         <Engine>Dialect: identifier quoting, literals, JSON comparison
                         <Engine>Ddl: pure CREATE/ALTER/DROP builders returning SQL (clients only execute it;
                         multi-step operations like alterTrigger stay in the client)
+                        <Engine>Connections: pool/single connection, query tab transactions, running query ids,
+                        keepalive; raw() borrows a connection with acquire() and frees it with lease.release()
       exporters/ importers/  SQL dump/import logic, run inside worker threads
       parsers/          Engine-specific SQL parsers
       misc/             validateSender (IPC origin check), ipcLogger
@@ -53,8 +56,9 @@ src/
 scripts/                devRunner.js (dev server + electron), devtoolsInstaller.js, translationCheck.ts, vitest.js (runs Vitest inside Electron)
 tests/
   unit/                 Vitest, no I/O. clients/sqlGeneration.spec.ts = SQL snapshots of every client (characterization)
-  integration/          Vitest against real DBs from docker/; knownIssues.spec.ts pins known bugs with it.fails
-docker/                 docker-compose.yml with test DBs (MySQL, MariaDB, PostgreSQL, Firebird) on non-standard ports
+  integration/          Vitest against real DBs from docker/ (pin known, unfixed bugs with `it.fails`)
+docker/                 docker-compose.yml with test DBs (MySQL, MariaDB, PostgreSQL, Firebird) and an SSH server
+                        (tunnel tests) on non-standard ports
 ```
 
 ### Path aliases

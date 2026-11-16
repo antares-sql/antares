@@ -2,7 +2,6 @@ import * as antares from 'common/interfaces/antares';
 import { querySplitter } from 'common/libs/sqlUtils';
 import mysql from 'mysql2/promise';
 import * as pg from 'pg';
-import SSH2Promise = require('@fabio286/ssh2-promise');
 
 import { QueryBuilder } from '../db/core/QueryBuilder';
 import { Clause, QueryDialect } from '../db/core/QueryDialect';
@@ -13,7 +12,6 @@ export abstract class BaseClient {
    protected _cUid: string
    protected _params: mysql.ConnectionOptions | pg.ClientConfig | { databasePath: string; readonly: boolean};
    protected _poolSize: number;
-   protected _ssh?: SSH2Promise;
    protected _logger: (args: {content: string; cUid: string; level: LoggerLevel}) => void;
    protected _querySplitter: (sql: string, client: antares.ClientCode) => string[];
    /** Renders query builder objects to this engine's SQL */

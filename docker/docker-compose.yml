@@ -70,3 +70,20 @@ services:
       interval: 3s
       timeout: 5s
       retries: 40
+
+  # SSH server for tunnel tests: clients connect to it and reach the databases by service name
+  ssh:
+    image: lscr.io/linuxserver/openssh-server:latest
+    environment:
+      USER_NAME: antares
+      USER_PASSWORD: antares
+      PASSWORD_ACCESS: "true"
+      # Enables TCP forwarding (disabled by default in this image)
+      DOCKER_MODS: linuxserver/mods:openssh-server-ssh-tunnel
+    ports:
+      - "32222:2222"
+    healthcheck:
+      test: ["CMD-SHELL", "grep -q '^AllowTcpForwarding yes' /config/sshd/sshd_config && nc -z 127.0.0.1 2222"]
+      interval: 3s
+      timeout: 5s
+      retries: 60

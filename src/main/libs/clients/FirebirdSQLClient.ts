@@ -5,6 +5,7 @@ import * as firebird from 'node-firebird';
 import * as path from 'path';
 
 import { DatabaseClient, DatabasesCapability, RoutinesCapability } from '../db/core/contracts';
+import { FirebirdConnections } from '../db/engines/firebird/FirebirdConnections';
 import { FirebirdDdl } from '../db/engines/firebird/FirebirdDdl';
 import { FirebirdDialect } from '../db/engines/firebird/FirebirdDialect';
 import { BaseClient } from './BaseClient';
@@ -13,9 +14,7 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
    protected readonly _ddl = new FirebirdDdl();
    protected readonly _dialect = new FirebirdDialect();
    private _schema?: string;
-   private _runningConnections: Map<string, number>;
-   private _connectionsToCommit: Map<string, firebird.Transaction>;
-   protected _connection?: firebird.Database | firebird.ConnectionPool;
+   private readonly _connections: FirebirdConnections;
    _params: firebird.Options;
 
    private _types: Record<number, string> ={
@@ -41,7 +40,7 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
       super(args);
 
       this._schema = null;
-      this._connectionsToCommit = new Map();
+      this._connections = new FirebirdConnections(this._params, this._poolSize);
    }
 
    private _getType (type: string, subType?: number) {
@@ -71,24 +70,16 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
       return this._ddl.getTypeInfo(type);
    }
 
-   async connect () {
-      if (!this._poolSize)
-         this._connection = await this.getConnection();
-      else
-         this._connection = this.getConnectionPool();
+   connect () {
+      return this._connections.connect();
    }
 
-   async getConnection () {
-      return new Promise<firebird.Database>((resolve, reject) => {
-         firebird.attach({ ...this._params, blobAsText: true }, (err, db) => {
-            if (err) reject(err);
-            else resolve(db);
-         });
-      });
+   getConnection () {
+      return this._connections.attach();
    }
 
    getConnectionPool () {
-      return firebird.pool(this._poolSize, { ...this._params, blobAsText: true });
+      return this._connections.createPool();
    }
 
    ping () {
@@ -96,8 +87,7 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
    }
 
    destroy () {
-      if (this._poolSize)
-         return (this._connection as firebird.ConnectionPool).destroy();
+      this._connections.destroy();
    }
 
    use (): void {
@@ -729,23 +719,15 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
    }
 
    async commitTab (tabUid: string) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         connection.commit();
-         return this.destroyConnectionToCommit(tabUid);
-      }
+      await this._connections.commitTab(tabUid);
    }
 
    async rollbackTab (tabUid: string) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         connection.rollback();
-         return this.destroyConnectionToCommit(tabUid);
-      }
+      await this._connections.rollbackTab(tabUid);
    }
 
    destroyConnectionToCommit (tabUid: string) {
-      this._connectionsToCommit.delete(tabUid);
+      this._connections.closeTab(tabUid);
    }
 
    async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {
@@ -780,38 +762,8 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
          ? this._querySplitter(sql, 'firebird')
          : [sql];
 
-      let connection: firebird.Database | firebird.Transaction;
-      const isPool = this._poolSize;
-
-      if (!args.autocommit && args.tabUid) { // autocommit OFF
-         if (this._connectionsToCommit.has(args.tabUid))
-            connection = this._connectionsToCommit.get(args.tabUid);
-         else {
-            connection = await this.getConnection();
-
-            const transaction = await new Promise<firebird.Transaction>((resolve, reject) => {
-               (connection as firebird.Database).transaction(firebird.ISOLATION_READ_COMMITTED, (err, transaction) => {
-                  if (err) reject(err);
-                  else resolve(transaction);
-               });
-            });
-            connection = transaction;
-            this._connectionsToCommit.set(args.tabUid, transaction);
-         }
-      }
-      else { // autocommit ON
-         if (isPool) {
-            const pool = this._connection as firebird.ConnectionPool;
-            connection = await new Promise<firebird.Database>((resolve, reject) => {
-               pool.get((err, db) => {
-                  if (err) reject(err);
-                  else resolve(db);
-               });
-            });
-         }
-         else
-            connection = this._connection as firebird.Database;
-      }
+      const lease = await this._connections.acquire(args);
+      const connection = lease.connection;
 
       for (const query of queries) {
          if (!query) continue;
@@ -924,12 +876,7 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
                               });
                            }
                            catch (err) {
-                              if (args.autocommit) {
-                                 this._runningConnections.delete(args.tabUid);
-                                 (connection as firebird.Database).detach();
-                              }
-
-                              this.destroy();
+                              lease.release();
                               reject(err);
                            }
 
@@ -938,12 +885,7 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
                               keysArr = keysArr ? [...keysArr, ...response] : response;
                            }
                            catch (err) {
-                              if (args.autocommit) {
-                                 this._runningConnections.delete(args.tabUid);
-                                 (connection as firebird.Database).detach();
-                              }
-
-                              this.destroy();
+                              lease.release();
                               reject(err);
                            }
                         }
@@ -951,10 +893,8 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
                   }
                }
                catch (err) {
+                  lease.release();
                   reject(err);
-                  this.destroy();
-                  if (args.autocommit)
-                     (connection as firebird.Database).detach();
                }
 
                timeStop = new Date();
@@ -972,8 +912,7 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
          resultsArr.push({ rows, report, fields, keys, duration });
       }
 
-      if (args.autocommit)
-         (connection as firebird.Database).detach();
+      lease.release();
 
       const result = resultsArr.length === 1 ? resultsArr[0] : resultsArr;
 

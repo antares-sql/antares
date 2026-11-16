@@ -1,12 +1,10 @@
-import SSH2Promise = require('@fabio286/ssh2-promise');
-import SSHConfig from '@fabio286/ssh2-promise/lib/sshConfig';
 import * as antares from 'common/interfaces/antares';
 import { removeComments } from 'common/libs/sqlUtils';
 import * as pg from 'pg';
 import * as pgAst from 'pgsql-ast-parser';
-import { ConnectionOptions } from 'tls';
 
 import { CancelQueriesCapability, DatabaseClient, DatabasesCapability, DbConfigCapability, FunctionsCapability, MaterializedViewsCapability, RoutinesCapability, SchemasCapability, TableDdlCapability, TriggerFunctionsCapability, TriggerToggleCapability } from '../db/core/contracts';
+import { PostgreSQLConnections, PostgreSQLParams } from '../db/engines/postgresql/PostgreSQLConnections';
 import { PostgreSQLDdl } from '../db/engines/postgresql/PostgreSQLDdl';
 import { PostgreSQLDialect } from '../db/engines/postgresql/PostgreSQLDialect';
 import { BaseClient } from './BaseClient';
@@ -88,11 +86,7 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
    protected readonly _ddl = new PostgreSQLDdl();
    protected readonly _dialect = new PostgreSQLDialect();
    private _schema?: string;
-   private _runningConnections: Map<string, number>;
-   private _connectionsToCommit: Map<string, pg.Client | pg.PoolClient>;
-   private _keepaliveTimer: NodeJS.Timeout;
-   private _keepaliveMs: number;
-   protected _connection?: pg.Client | pg.Pool;
+   private readonly _connections: PostgreSQLConnections;
    private types: Record<string, string> = {};
    private _arrayTypes: Record<string, string> = {
       _int2: 'SMALLINT',
@@ -104,15 +98,13 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
       _varchar: 'CHARACTER VARYING'
    }
 
-   _params: pg.ClientConfig & {schema: string; ssl?: ConnectionOptions; ssh?: SSHConfig; readonly: boolean};
+   _params: PostgreSQLParams;
 
    constructor (args: antares.ClientParams) {
       super(args);
 
       this._schema = null;
-      this._runningConnections = new Map();
-      this._connectionsToCommit = new Map();
-      this._keepaliveMs = 10*60*1000;
+      this._connections = new PostgreSQLConnections(this._params, this._poolSize);
 
       for (const key in pg.types.builtins) {
          const builtinKey = key as builtinsTypes;
@@ -130,102 +122,21 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
       return type.replace('_', '');
    }
 
-   async getDbConfig () {
-      this._params.application_name = 'Antares SQL';
-
-      const dbConfig = {
-         host: this._params.host,
-         port: this._params.port,
-         user: this._params.user,
-         connectionString: this._params.connectionString,
-         database: 'postgres' as string,
-         password: this._params.password,
-         ssl: null as ConnectionOptions
-      };
-
-      if (this._params.database?.length) dbConfig.database = this._params.database;
-
-      if (this._params.ssl) dbConfig.ssl = this._params.ssl;
-
-      if (this._params.ssh) {
-         try {
-            this._ssh = new SSH2Promise({
-               ...this._params.ssh,
-               reconnect: true,
-               reconnectTries: 3,
-               debug: process.env.NODE_ENV !== 'production' ? (s) => console.log(s) : null
-            });
-
-            const tunnel = await this._ssh.addTunnel({
-               remoteAddr: this._params.host,
-               remotePort: this._params.port
-            });
-
-            dbConfig.host = undefined;
-            dbConfig.port = tunnel.localPort;
-         }
-         catch (err) {
-            if (this._ssh) {
-               this._ssh.close();
-               this._ssh.closeTunnel();
-            }
-            throw err;
-         }
-      }
-
-      return dbConfig;
+   getDbConfig () {
+      return this._connections.getDbConfig();
    }
 
-   /**
-    * @memberof PostgreSQLClient
-    */
-   async connect () {
-      if (!this._poolSize)
-         this._connection = await this.getConnection();
-      else
-         this._connection = await this.getConnectionPool();
+   connect () {
+      return this._connections.connect();
    }
 
-   async getConnection () {
-      const dbConfig = await this.getDbConfig();
-      const client = new pg.Client(dbConfig);
-      await client.connect();
-      const connection = client;
-
-      if (this._params.readonly)
-         await connection.query('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY');
-
-      connection.on('error', err => { // Intercepts errors and converts to rejections
-         Promise.reject(err);
-      });
-
-      return connection;
+   /** A new standalone client (used by the exporter to stream rows: end it when done) */
+   getConnection () {
+      return this._connections.createConnection();
    }
 
-   async getConnectionPool () {
-      const dbConfig = await this.getDbConfig();
-      const pool = new pg.Pool({
-         ...dbConfig,
-         max: this._poolSize,
-         idleTimeoutMillis: 0
-      });
-      const connection = pool;
-
-      if (this._params.readonly) {
-         connection.on('connect', conn => {
-            conn.query('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY');
-         });
-      }
-
-      this._keepaliveTimer = setInterval(async () => {
-         await this.keepAlive();
-      }, this._keepaliveMs);
-
-      connection.on('error', err => { // Intercepts errors and converts to rejections
-         Promise.reject(err);
-      });
-
-      return connection;
+   getConnectionPool () {
+      return this._connections.createPool();
    }
 
    ping () {
@@ -233,22 +144,7 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
    }
 
    destroy () {
-      this._connection.end();
-      clearInterval(this._keepaliveTimer);
-      this._keepaliveTimer = undefined;
-      if (this._ssh) {
-         this._ssh.close();
-         this._ssh.closeTunnel();
-      }
-   }
-
-   private async keepAlive () {
-      try {
-         const connection = await this._connection.connect() as pg.PoolClient;
-         await connection.query('SELECT 1+1');
-         connection.release();
-      }
-      catch (_) {}
+      this._connections.destroy();
    }
 
    use (schema: string, connection?: pg.Client | pg.PoolClient) {
@@ -1284,33 +1180,21 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
    }
 
    async killTabQuery (tabUid: string) {
-      const id = this._runningConnections.get(tabUid);
+      const id = this._connections.runningId(tabUid);
       if (id)
          return await this.raw(`SELECT pg_cancel_backend(${id})`);
    }
 
    async commitTab (tabUid: string) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         await connection.query('COMMIT');
-         return this.destroyConnectionToCommit(tabUid);
-      }
+      await this._connections.commitTab(tabUid);
    }
 
    async rollbackTab (tabUid: string) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         await connection.query('ROLLBACK');
-         return this.destroyConnectionToCommit(tabUid);
-      }
+      await this._connections.rollbackTab(tabUid);
    }
 
    destroyConnectionToCommit (tabUid: string) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         (connection as pg.Client).end();
-         this._connectionsToCommit.delete(tabUid);
-      }
+      this._connections.closeTab(tabUid);
    }
 
    async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {
@@ -1334,24 +1218,8 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
          ? this._querySplitter(sql, 'pg')
          : [sql];
 
-      let connection: pg.Client | pg.PoolClient;
-      const isPool = this._connection instanceof pg.Pool;
-
-      if (!args.autocommit && args.tabUid) { // autocommit OFF
-         if (this._connectionsToCommit.has(args.tabUid))
-            connection = this._connectionsToCommit.get(args.tabUid);
-         else {
-            connection = await this.getConnection();
-            await connection.query('START TRANSACTION');
-            this._connectionsToCommit.set(args.tabUid, connection);
-         }
-      }
-      else { // autocommit ON
-         connection = isPool ? await this._connection.connect() as pg.PoolClient : this._connection as pg.Client;
-      }
-
-      if (args.tabUid && isPool)
-         this._runningConnections.set(args.tabUid, (connection as pg.PoolClient & { processID: number }).processID);
+      const lease = await this._connections.acquire(args);
+      const connection = lease.connection;
 
       if (args.schema)
          await this.use(args.schema, connection);
@@ -1462,10 +1330,7 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
                               });
                            }
                            catch (err) {
-                              if (isPool && args.autocommit) {
-                                 (connection as pg.PoolClient).release();
-                                 this._runningConnections.delete(args.tabUid);
-                              }
+                              lease.release();
                               reject(err);
                            }
 
@@ -1474,10 +1339,7 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
                               keysArr = keysArr ? [...keysArr, ...response] : response;
                            }
                            catch (err) {
-                              if (isPool && args.autocommit) {
-                                 (connection as pg.PoolClient).release();
-                                 this._runningConnections.delete(args.tabUid);
-                              }
+                              lease.release();
                               reject(err);
                            }
                         }
@@ -1493,10 +1355,7 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
                   });
                }
                catch (err) {
-                  if (isPool && args.autocommit) {
-                     (connection as pg.PoolClient).release();
-                     this._runningConnections.delete(args.tabUid);
-                  }
+                  lease.release();
                   reject(err);
                }
             })();
@@ -1505,10 +1364,7 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
          resultsArr.push({ rows, report, fields, keys, duration });
       }
 
-      if (isPool && args.autocommit) {
-         (connection as pg.PoolClient).release();
-         this._runningConnections.delete(args.tabUid);
-      }
+      lease.release();
 
       const result = resultsArr.length === 1 ? resultsArr[0] : resultsArr;
 

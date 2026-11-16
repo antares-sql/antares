@@ -1,11 +1,10 @@
-import SSH2Promise = require('@fabio286/ssh2-promise');
-import SSHConfig from '@fabio286/ssh2-promise/lib/sshConfig';
 import * as antares from 'common/interfaces/antares';
 import { removeComments } from 'common/libs/sqlUtils';
 import * as mysql from 'mysql2/promise';
 
 import EncodingToCharset = require('../../../../node_modules/mysql2/lib/constants/encoding_charset.js');
 import { CancelQueriesCapability, DatabaseClient, DatabaseCollationCapability, DbConfigCapability, FunctionsCapability, RoutinesCapability, SchedulersCapability, SchemasCapability, TableCheckCapability, TableDdlCapability } from '../db/core/contracts';
+import { MySQLConnections, MySQLParams } from '../db/engines/mysql/MySQLConnections';
 import { MySQLDdl } from '../db/engines/mysql/MySQLDdl';
 import { MariaDBDialect, MySQLDialect } from '../db/engines/mysql/MySQLDialect';
 import { BaseClient } from './BaseClient';
@@ -15,13 +14,8 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    protected readonly _ddl = new MySQLDdl();
    protected readonly _dialect = this._client === 'maria' ? new MariaDBDialect() : new MySQLDialect();
    private _schema?: string;
-   private _runningConnections: Map<string, number>;
-   private _connectionsToCommit: Map<string, mysql.Connection | mysql.PoolConnection>;
-   private _keepaliveTimer: NodeJS.Timeout;
-   private _keepaliveMs: number;
-   private sqlMode?: string[];
-   _connection?: mysql.Connection | mysql.Pool;
-   _params: mysql.ConnectionOptions & {schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean};
+   private readonly _connections: MySQLConnections;
+   _params: MySQLParams;
 
    private types: Record<number, string> = {
       0: 'DECIMAL',
@@ -61,13 +55,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
       super(args);
 
       this._schema = null;
-      this._runningConnections = new Map();
-      this._connectionsToCommit = new Map();
-      this._keepaliveMs = 10*60*1000;
-   }
-
-   private get isPool () {
-      return 'getConnection' in this._connection;
+      this._connections = new MySQLConnections(this._params, this._poolSize);
    }
 
    private _getType (field: mysql.FieldPacket & { columnType?: number; columnLength?: number }) {
@@ -122,82 +110,12 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
       return this._ddl.getTypeInfo(type);
    }
 
-   async getDbConfig (): Promise<mysql.ConnectionOptions> {
-      const dbConfig = {
-         host: this._params.host,
-         port: this._params.port,
-         user: this._params.user,
-         password: this._params.password,
-         database: undefined as string | undefined,
-         ssl: null as mysql.SslOptions,
-         supportBigNumbers: true,
-         bigNumberStrings: true
-      };
-
-      if (this._params.schema?.length) dbConfig.database = this._params.schema;
-
-      if (this._params.ssl) dbConfig.ssl = this._params.ssl;
-
-      if (this._params.ssh) {
-         try {
-            if (this._params.ssh.password === '') delete this._params.ssh.password;
-            if (this._params.ssh.passphrase === '') delete this._params.ssh.passphrase;
-
-            this._ssh = new SSH2Promise({
-               ...this._params.ssh,
-               reconnect: true,
-               reconnectTries: 3,
-               debug: process.env.NODE_ENV !== 'production' ? (s) => console.log(s) : null
-            });
-
-            const tunnel = await this._ssh.addTunnel({
-               remoteAddr: this._params.host,
-               remotePort: this._params.port
-            });
-
-            dbConfig.host = undefined;
-            dbConfig.port = tunnel.localPort;
-         }
-         catch (err) {
-            if (this._ssh) {
-               this._ssh.closeTunnel();
-               this._ssh.close();
-            }
-            throw err;
-         }
-      }
-
-      return dbConfig;
+   getDbConfig () {
+      return this._connections.getDbConfig();
    }
 
-   async connect () {
-      if (!this._poolSize)
-         this._connection = await this.getSingleConnection();
-      else
-         this._connection = await this.getConnectionPool();
-
-      // ANSI_QUOTES check
-      const [response] = await this._connection.query<mysql.RowDataPacket[]>('SHOW GLOBAL VARIABLES LIKE \'%sql_mode%\'');
-      this.sqlMode = response[0]?.Value?.split(',');
-      const hasAnsiQuotes = this.sqlMode.includes('ANSI') || this.sqlMode.includes('ANSI_QUOTES');
-
-      if (hasAnsiQuotes)
-         await this._connection.query(`SET SESSION sql_mode = '${this.sqlMode.filter((m: string) => !['ANSI', 'ANSI_QUOTES'].includes(m)).join(',')}'`);
-
-      if (this._params.readonly)
-         await this._connection.query('SET SESSION TRANSACTION READ ONLY');
-
-      if (this._poolSize) {
-         const hasAnsiQuotes = this.sqlMode.includes('ANSI') || this.sqlMode.includes('ANSI_QUOTES');
-
-         this._connection.on('connection', conn => {
-            if (this._params.readonly)
-               conn.query('SET SESSION TRANSACTION READ ONLY');
-
-            if (hasAnsiQuotes)
-               conn.query(`SET SESSION sql_mode = '${this.sqlMode.filter((m: string) => !['ANSI', 'ANSI_QUOTES'].includes(m)).join(',')}'`);
-         });
-      }
+   connect () {
+      return this._connections.connect();
    }
 
    ping () {
@@ -205,99 +123,20 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    }
 
    destroy () {
-      this._connection.end();
-      clearInterval(this._keepaliveTimer);
-      this._keepaliveTimer = undefined;
-      if (this._ssh) {
-         this._ssh.closeTunnel();
-         this._ssh.close();
-      }
+      this._connections.destroy();
    }
 
-   async getSingleConnection () {
-      const dbConfig = await this.getDbConfig();
-      const connection = await mysql.createConnection({
-         ...dbConfig,
-         dateStrings: true
-         // typeCast: (field, next) => {
-         //    if (field.type === 'DATETIME')
-         //       return field.string();
-         //    else
-         //       return next();
-         // }
-      });
-
-      return connection;
+   getSingleConnection () {
+      return this._connections.createConnection();
    }
 
-   async getConnectionPool () {
-      const dbConfig = await this.getDbConfig();
-      const connection = mysql.createPool({
-         ...dbConfig,
-         connectionLimit: this._poolSize,
-         enableKeepAlive: true,
-         dateStrings: true
-         // typeCast: (field, next) => {
-         //    if (field.type === 'DATETIME')
-         //       return field.string();
-         //    else
-         //       return next();
-         // }
-      });
-
-      this._keepaliveTimer = setInterval(async () => {
-         await this.keepAlive();
-      }, this._keepaliveMs);
-
-      return connection;
+   getConnectionPool () {
+      return this._connections.createPool();
    }
 
-   async getConnection (args?: antares.QueryParams, retry?: boolean): Promise<mysql.Pool | mysql.PoolConnection | mysql.Connection> {
-      let connection;
-
-      try {
-         if (args && !args.autocommit && args.tabUid) { // autocommit OFF
-            if (this._connectionsToCommit.has(args.tabUid))
-               connection = this._connectionsToCommit.get(args.tabUid);
-            else {
-               connection = await this.getSingleConnection();
-               await connection.query('SET SESSION autocommit=0');
-               this._connectionsToCommit.set(args.tabUid, connection);
-            }
-         }
-         else// autocommit ON
-            connection = this.isPool ? await (this._connection as mysql.Pool).getConnection() : this._connection;
-
-         if (args && args.tabUid && this.isPool) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            this._runningConnections.set(args.tabUid, (connection as any).connection.connectionId);
-         }
-
-         if (args && args.schema)
-            await connection.query(`USE \`${args.schema}\``);
-
-         return connection;
-      }
-      catch (error) {
-         if (error.code === 'ECONNRESET' && !retry) {
-            this.destroy();
-            await this.connect();
-            return this.getConnection(args, true);
-         }
-         else if (error instanceof AggregateError)
-            throw new Error(error.errors.reduce((acc, curr) => acc +' | '+ curr.message, ''));
-         else
-            throw new Error(error.message);
-      }
-   }
-
-   private async keepAlive () {
-      try {
-         const connection = await (this._connection as mysql.Pool).getConnection();
-         await connection.ping();
-         connection.release();
-      }
-      catch (_) {}
+   /** Connection for a query (used by the exporter to stream rows: release it when done) */
+   async getConnection (args?: antares.QueryParams) {
+      return (await this._connections.acquire(args)).connection;
    }
 
    use (schema: string) {
@@ -1360,29 +1199,21 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    }
 
    async killTabQuery (tabUid: string) {
-      const id = this._runningConnections.get(tabUid);
+      const id = this._connections.runningId(tabUid);
       if (id)
          return await this.killProcess(id);
    }
 
    async commitTab (tabUid: string) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection)
-         await connection.query('COMMIT');
+      await this._connections.commitTab(tabUid);
    }
 
    async rollbackTab (tabUid: string) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection)
-         await connection.query('ROLLBACK');
+      await this._connections.rollbackTab(tabUid);
    }
 
    destroyConnectionToCommit (tabUid: string) {
-      const connection = this._connectionsToCommit.get(tabUid);
-      if (connection) {
-         (connection as mysql.Connection).destroy();
-         this._connectionsToCommit.delete(tabUid);
-      }
+      this._connections.closeTab(tabUid);
    }
 
    async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {
@@ -1407,7 +1238,8 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
          ? this._querySplitter(sql, 'mysql')
          : [sql];
 
-      const connection = await this.getConnection(args);
+      const lease = await this._connections.acquire(args);
+      const connection = lease.connection;
 
       for (const query of queries) {
          if (!query) continue;
@@ -1468,10 +1300,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
                            });
                         }
                         catch (err) {
-                           if (this.isPool && args.autocommit) {
-                              (connection as mysql.PoolConnection).release();
-                              this._runningConnections.delete(args.tabUid);
-                           }
+                           lease.release();
                            reject(err);
                         }
 
@@ -1480,10 +1309,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
                            keysArr = keysArr ? [...keysArr, ...response] : response;
                         }
                         catch (err) {
-                           if (this.isPool && args.autocommit) {
-                              (connection as mysql.PoolConnection).release();
-                              this._runningConnections.delete(args.tabUid);
-                           }
+                           lease.release();
                            reject(err);
                         }
                      }
@@ -1498,10 +1324,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
                   keys: keysArr
                });
             }).catch((err) => {
-               if (this.isPool && args.autocommit) {
-                  (connection as mysql.PoolConnection).release();
-                  this._runningConnections.delete(args.tabUid);
-               }
+               lease.release();
                reject(err);
             });
          });
@@ -1515,10 +1338,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
          });
       }
 
-      if (this.isPool && args.autocommit) {
-         (connection as mysql.PoolConnection).release();
-         this._runningConnections.delete(args.tabUid);
-      }
+      lease.release();
 
       const result = resultsArr.length === 1 ? resultsArr[0] : resultsArr;
 
