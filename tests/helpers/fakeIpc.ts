@@ -20,16 +20,19 @@ export function fakeIpc () {
       on: (channel, listener) => listeners.set(channel, listener)
    };
 
+   // Like ipcRenderer.invoke: always a Promise, even when the handler is synchronous
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   const invokeFrom = async (event: unknown, channel: string, ...args: any[]): Promise<unknown> => {
+      const handler = handlers.get(channel);
+      if (!handler) throw new Error(`No IPC handler: ${channel}`);
+      return handler(event, ...args);
+   };
+
    return {
       ipc,
       channels: () => [...handlers.keys()].sort(),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      invoke: (channel: string, ...args: any[]) => {
-         const handler = handlers.get(channel);
-         if (!handler) throw new Error(`No IPC handler: ${channel}`);
-         return handler(appEvent, ...args);
-      },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      invokeFrom: (event: unknown, channel: string, ...args: any[]) => handlers.get(channel)(event, ...args)
+      invoke: (channel: string, ...args: any[]) => invokeFrom(appEvent, channel, ...args),
+      invokeFrom
    };
 }
