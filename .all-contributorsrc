@@ -367,6 +367,15 @@
       ]
     },
     {
+      "login": "alvesbeto",
+      "name": "Beto Souza",
+      "avatar_url": "https://avatars.githubusercontent.com/u/84138249?v=4",
+      "profile": "https://github.com/alvesbeto",
+      "contributions": [
+        "code"
+      ]
+    },      
+    {
       "login": "dajiaohuang",
       "name": "Wu Shuwen",
       "avatar_url": "https://avatars.githubusercontent.com/u/108231307?v=4",
@@ -382,6 +391,24 @@
       "profile": "https://github.com/krisbag86",
       "contributions": [
         "translation"
+      ]
+    },
+    {
+      "login": "ohansyah",
+      "name": "Ohansyah",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43288867?v=4",
+      "profile": "https://ohansyah.github.io/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Kovania",
+      "name": "Kova53",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18170201?v=4",
+      "profile": "https://hit53.fr",
+      "contributions": [
+        "code"
       ]
     },
     {
