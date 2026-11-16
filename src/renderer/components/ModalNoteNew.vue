@@ -42,6 +42,14 @@
                   />
                </div>
             </div>
+            <div v-if="newNote.type === 'query'" class="form-group">
+               <label class="form-label">{{ t('general.name') }}</label>
+               <input
+                  v-model="newNote.title"
+                  class="form-input"
+                  type="text"
+               >
+            </div>
             <div class="form-group">
                <label class="form-label">{{ t('general.content') }} <small
                   v-if="newNote.type !== 'query'"
@@ -98,7 +106,7 @@ const newNote: Ref<ConnectionNote> = ref({
 
 const createNote = () => {
    if (newNote.value.note) {
-      if (!newNote.value.title)// Set a default title
+      if (!newNote.value.title && newNote.value.type !== 'query')
          newNote.value.title = `${newNote.value.type.toLocaleUpperCase()}: ${newNote.value.uid}`;
 
       newNote.value.date = new Date();

@@ -216,7 +216,8 @@ const filteredNotes = computed(() => connectionNotes.value.filter(n => (
    (n.type === selectedTag.value || selectedTag.value === 'all') &&
    (n.cUid === localConnection.value || localConnection.value === null) &&
    (!n.isArchived || showArchived.value) &&
-   (n.note.toLowerCase().search(localSearchTerm.value.toLowerCase()) >= 0)
+   (n.note.toLowerCase().includes(localSearchTerm.value.toLowerCase()) ||
+      (n.title || '').toLowerCase().includes(localSearchTerm.value.toLowerCase()))
 )));
 const connectionOptions = computed(() => {
    return [
