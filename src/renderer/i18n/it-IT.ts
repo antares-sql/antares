@@ -61,7 +61,8 @@ export const itIT = {
       actionSuccessful: '{action} riuscito',
       outputFormat: 'Formato output',
       singleFile: 'Singolo file {ext}',
-      zipCompressedFile: 'File {ext} zippato'
+      zipCompressedFile: 'File {ext} zippato',
+      click: 'Click'
    },
    connection: {
       connectionName: 'Nome connessione',
@@ -210,6 +211,7 @@ export const itIT = {
       fakeDataLanguage: 'Lingua dati falsi',
       queryDuration: 'Durata query',
       setNull: 'Imposta NULL',
+      goToForeignKey: 'Vai alla riga della chiave esterna',
       processesList: 'Lista processi',
       processInfo: 'Info processo',
       manageUsers: 'Gestisci utenti',

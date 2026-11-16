@@ -14,6 +14,7 @@
          :context-event="contextEvent"
          :selected-rows="selectedRows"
          :selected-cell="selectedCell"
+         :key-usage="keyUsage"
          :mode="mode"
          @show-delete-modal="showDeleteConfirmModal"
          @set-null="setNull"
@@ -21,6 +22,7 @@
          @fill-cell="fillCell"
          @copy-row="copyRow"
          @duplicate-row="duplicateRow"
+         @go-to-foreign-key="goToForeignKey"
          @close-context="closeContext"
       />
       <ul v-if="resultsWithRows.length > 1" class="tab tab-block result-tabs">
@@ -98,6 +100,7 @@
                   @select-row="selectRow"
                   @update-field="updateField($event, row)"
                   @contextmenu="contextMenu"
+                  @ctrl-click-cell="handleForeignKeyClick"
                />
             </template>
          </BaseVirtualScroll>
@@ -253,7 +256,7 @@
 <script setup lang="ts">
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BLOB, DATE, DATETIME, LONG_TEXT, TEXT, TIME } from 'common/fieldTypes';
-import { QueryResult, TableField } from 'common/interfaces/antares';
+import { QueryForeign, QueryResult, TableField } from 'common/interfaces/antares';
 import { TableUpdateParams } from 'common/interfaces/tableApis';
 import { fakerCustom } from 'common/libs/fakerCustom';
 import { jsonToSqlInsert } from 'common/libs/sqlUtils';
@@ -282,7 +285,8 @@ const { t } = useI18n();
 
 const settingsStore = useSettingsStore();
 const consoleStore = useConsoleStore();
-const { getWorkspace } = useWorkspacesStore();
+const workspacesStore = useWorkspacesStore();
+const { getWorkspace, newTab } = workspacesStore;
 
 const { /* dataTabLimit: pageSize, */ defaultCopyType } = storeToRefs(settingsStore);
 
@@ -535,6 +539,100 @@ const updateField = (payload: { field: string; type: string; content: any }, row
 
 const closeContext = () => {
    isContext.value = false;
+};
+
+/**
+ * Escapes an identifier (schema, table, or field name) for safe use in SQL queries.
+ * Handles embedded quote characters by doubling them according to database conventions.
+ * @param client - The database client type ('pg', 'mysql', 'maria', 'sqlite', 'firebird', etc.)
+ * @param identifier - The identifier to escape
+ * @returns The escaped and quoted identifier
+ */
+const escapeIdentifier = (client: string, identifier: unknown): string => {
+   // Validate identifier is a string
+   if (typeof identifier !== 'string')
+      throw new Error(`Invalid identifier: expected string, got ${typeof identifier}`);
+
+   switch (client) {
+      case 'mysql':
+      case 'maria':
+         // MySQL/MariaDB: escape backticks by doubling them, wrap in backticks
+         return '`' + identifier.replace(/`/g, '``') + '`';
+      case 'pg':
+      case 'sqlite':
+      case 'firebird':
+      default:
+         // PostgreSQL, SQLite, Firebird, and others: escape double quotes by doubling them, wrap in double quotes
+         return '"' + identifier.replace(/"/g, '""') + '"';
+   }
+};
+
+const buildForeignKeyQuery = (fk: QueryForeign, value: any): string => {
+   const schema = fk.refSchema;
+   const table = fk.refTable;
+   const field = fk.refField;
+   const client = workspaceClient.value;
+
+   // Quote and escape identifiers based on client
+   let quotedTable: string;
+
+   // Build the quoted table reference (with optional schema)
+   if (schema && typeof schema === 'string')
+      quotedTable = `${escapeIdentifier(client, schema)}.${escapeIdentifier(client, table)}`;
+
+   else
+      quotedTable = escapeIdentifier(client, table);
+
+   const quotedField = escapeIdentifier(client, field);
+
+   // Format the value for the WHERE clause
+   let formattedValue: string;
+   if (value === null)
+      return `SELECT * FROM ${quotedTable} WHERE ${quotedField} IS NULL`;
+
+   else if (typeof value === 'string')
+      formattedValue = `'${value.replace(/'/g, '\'\'')}'`;
+
+   else if (typeof value === 'number' || typeof value === 'bigint')
+      formattedValue = String(value);
+
+   else if (typeof value === 'boolean')
+      formattedValue = value ? 'TRUE' : 'FALSE';
+
+   else
+      formattedValue = `'${String(value).replace(/'/g, '\'\'')}'`;
+
+   return `SELECT * FROM ${quotedTable} WHERE ${quotedField} = ${formattedValue}`;
+};
+
+const goToForeignKey = (fk: QueryForeign) => {
+   if (!selectedCell.value) return;
+
+   // Get the current cell value
+   const selectedRow = localResults.value.find((row: any) => row._antares_id === selectedRows.value[0]);
+   if (!selectedRow) return;
+
+   // Find the actual field value - handle both "field" and "table.field" formats
+   let cellValue: any;
+   const orgField = selectedCell.value.orgField;
+   if (orgField in selectedRow)
+      cellValue = selectedRow[orgField];
+
+   else {
+      // Try with just the field name
+      const fieldName = orgField.includes('.') ? orgField.split('.').pop() : orgField;
+      const matchingKey = Object.keys(selectedRow).find(k => k === fieldName || k.endsWith(`.${fieldName}`));
+      if (matchingKey)
+         cellValue = selectedRow[matchingKey];
+   }
+
+   const sql = buildForeignKeyQuery(fk, cellValue);
+   newTab({ uid: props.connUid, content: sql, type: 'query', schema: fk.refSchema || workspaceSchema.value, autorun: true });
+};
+
+const handleForeignKeyClick = (payload: { keyUsage: QueryForeign; value: any }) => {
+   const sql = buildForeignKeyQuery(payload.keyUsage, payload.value);
+   newTab({ uid: props.connUid, content: sql, type: 'query', schema: payload.keyUsage.refSchema || workspaceSchema.value, autorun: true });
 };
 
 const showDeleteConfirmModal = (e: any) => {

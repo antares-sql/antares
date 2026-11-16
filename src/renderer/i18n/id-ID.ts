@@ -61,7 +61,8 @@ export const idID = {
       actionSuccessful: '{aksi} berhasil',
       outputFormat: 'Format keluaran',
       singleFile: 'File {ext} tunggal',
-      zipCompressedFile: 'File {ext} terkompresi ZIP'
+      zipCompressedFile: 'File {ext} terkompresi ZIP',
+      click: 'Klik'
    },
    connection: {
       connectionName: 'Nama Koneksi',
@@ -209,6 +210,7 @@ export const idID = {
       fakeDataLanguage: 'Bahasa data palsu',
       queryDuration: 'Durasi kueri',
       setNull: 'Tetapkan NULL',
+      goToForeignKey: 'Pergi ke baris kunci asing',
       processesList: 'Daftar proses',
       processInfo: 'Info proses',
       manageUsers: 'Kelola pengguna',

@@ -65,7 +65,8 @@ export const ukUA = {
       actionSuccessful: '{action} успішно виконано',
       outputFormat: 'Формат виводу',
       singleFile: 'Один файл {ext}',
-      zipCompressedFile: 'ZIP-стиснутий файл {ext}'
+      zipCompressedFile: 'ZIP-стиснутий файл {ext}',
+      click: 'Клік'
    },
 
    connection: { // Підключення до бази даних
@@ -221,6 +222,7 @@ export const ukUA = {
       fakeDataLanguage: 'Мова вигаданих даних',
       queryDuration: 'Тривалість запиту',
       setNull: 'Встановити NULL',
+      goToForeignKey: 'Перейти до рядка зовнішнього ключа',
       processesList: 'Список процесів',
       processInfo: 'Інформація про процес',
       manageUsers: 'Управління користувачами',

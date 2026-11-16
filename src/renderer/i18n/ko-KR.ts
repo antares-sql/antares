@@ -61,7 +61,8 @@ export const koKR = {
       actionSuccessful: '{action} 성공',
       outputFormat: '출력 형식',
       singleFile: '단일 {ext} 파일',
-      zipCompressedFile: 'ZIP 압축 {ext} 파일'
+      zipCompressedFile: 'ZIP 압축 {ext} 파일',
+      click: '클릭'
    },
    connection: {
       connectionName: '연결 이름',
@@ -210,6 +211,7 @@ export const koKR = {
       fakeDataLanguage: '가짜 데이터 언어',
       queryDuration: '쿼리 시간',
       setNull: 'NULL 설정',
+      goToForeignKey: '외래 키 행으로 이동',
       processesList: '프로세스 목록',
       processInfo: '프로세스 정보',
       manageUsers: '사용자 관리',

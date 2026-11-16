@@ -80,7 +80,8 @@ export const enUS = {
       title: 'Title',
       archive: 'Archive', // verb
       undo: 'Undo',
-      moveTo: 'Move to'
+      moveTo: 'Move to',
+      click: 'Click'
    },
    connection: { // Database connection
       connection: 'Connection',
@@ -243,6 +244,7 @@ export const enUS = {
       fakeDataLanguage: 'Fake data language',
       queryDuration: 'Query duration',
       setNull: 'Set NULL',
+      goToForeignKey: 'Go to foreign key row',
       processesList: 'Processes list',
       processInfo: 'Process info',
       manageUsers: 'Manage users',

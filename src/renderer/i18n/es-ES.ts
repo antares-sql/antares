@@ -80,7 +80,8 @@ export const esES = {
       title: 'Título',
       archive: 'Archivo', // verb
       undo: 'Deshacer',
-      moveTo: 'Mover a'
+      moveTo: 'Mover a',
+      click: 'Clic'
    },
    connection: { // Database connection
       connection: 'Conexión',
@@ -243,6 +244,7 @@ export const esES = {
       fakeDataLanguage: 'Lenguaje de datos dummy',
       queryDuration: 'Duración de la consulta',
       setNull: 'Establecer a NULL',
+      goToForeignKey: 'Ir a la fila de la clave foránea',
       processesList: 'Lista de procesos',
       processInfo: 'Información de proceso',
       manageUsers: 'Administrar usuarios',

@@ -71,7 +71,8 @@ export const zhCN = {
       title: '标题',
       archive: '归档',
       undo: '重做',
-      moveTo: '移动到'
+      moveTo: '移动到',
+      click: '点击'
    },
    connection: { // 数据库连接
       connection: '连接',
@@ -234,6 +235,7 @@ export const zhCN = {
       fakeDataLanguage: '伪造的数据语言',
       queryDuration: '查询持续时间',
       setNull: '设置 NULL',
+      goToForeignKey: '转到外键行',
       processesList: '进程列表',
       processInfo: '进程信息',
       manageUsers: '管理用户',

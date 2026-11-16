@@ -81,7 +81,8 @@ export const csCZ = {
       title: 'Titulek',
       archive: 'Archivovat', // verb
       undo: 'Zpět',
-      moveTo: 'Přesunout do'
+      moveTo: 'Přesunout do',
+      click: 'Kliknutí'
    },
    connection: { // Database connection
       connection: 'Připojení',
@@ -239,6 +240,7 @@ export const csCZ = {
       fakeDataLanguage: 'Jazyk pro fake data',
       queryDuration: 'Doba trvání dotazu',
       setNull: 'Nastavit NULL',
+      goToForeignKey: 'Přejít na řádek cizího klíče',
       processesList: 'Seznam procesů',
       processInfo: 'Informace o procesu',
       manageUsers: 'Správa uživatelů',

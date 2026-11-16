@@ -38,7 +38,8 @@ export const deDE = {
       deleteConfirm: 'Bestätige den Abbruch von',
       uploadFile: 'Datei hochladen',
       manualValue: 'Manueller Wert',
-      selectAll: 'Alle auswählen'
+      selectAll: 'Alle auswählen',
+      click: 'Klick'
    },
    connection: {
       connectionName: 'Verbindungsname',
@@ -172,6 +173,7 @@ export const deDE = {
       fakeDataLanguage: 'Fingierte Datensprache',
       queryDuration: 'Dauer der Abfrage',
       setNull: 'Setze NULL',
+      goToForeignKey: 'Zur Fremdschlüsselzeile gehen',
       processesList: 'Prozessliste',
       processInfo: 'Prozessinformationen',
       manageUsers: 'Benutzer verwalten',
