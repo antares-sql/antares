@@ -1,28 +1,31 @@
 {
   "include": [
-    "./tests/**/*", 
-    "./src/main/**/*", 
-    "./src/renderer/**/*", 
-    "./src/common/**/*", 
+    "./tests/**/*",
+    "./src/main/**/*",
+    "./src/renderer/**/*",
+    "./src/common/**/*"
   ],
   "exclude": ["./src/renderer/libs/ext-language_tools.js"],
   "compilerOptions": {
-    "baseUrl": "./",
     "target": "es2021",
     "allowJs": true,
     "module": "CommonJS",
+    "strict": false,
     "noImplicitAny": true,
     "jsx": "preserve",
     "types": [
       "node"
     ],
     "sourceMap": true,
+    "outDir": "./dist/tsc",
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "removeComments": true,
+    "skipLibCheck": true,
     "paths": {
+      "src/*": ["./src/*"],
       "common/*": ["./src/common/*"],
-      "@/*": ["./src/renderer/*"],
+      "@/*": ["./src/renderer/*"]
     }
   }
 }

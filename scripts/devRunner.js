@@ -1,6 +1,9 @@
 process.env.NODE_ENV = 'development';
 // process.env.ELECTRON_ENABLE_LOGGING = true
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = false;
+// Terminals spawned by VS Code (and other Electron-based tools) may inherit this,
+// which makes Electron start as plain Node.js (no `app`, `BrowserWindow`, ...)
+delete process.env.ELECTRON_RUN_AS_NODE;
 
 const chalk = require('chalk');
 const electron = require('electron');
