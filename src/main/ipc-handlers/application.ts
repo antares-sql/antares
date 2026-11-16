@@ -50,8 +50,9 @@ export default () => {
          }
       }
 
-      const key = sessionStore.get('key') as string | undefined;
-      event.returnValue = key || false;
+      // Plain-text key saved when safeStorage is unavailable
+      const key = sessionStore.get('key');
+      event.returnValue = typeof key === 'string' && key ? key : false;
    });
 
    ipcMain.handle('show-open-dialog', (event, options) => {

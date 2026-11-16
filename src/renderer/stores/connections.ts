@@ -45,32 +45,28 @@ function getEncryptionKey (): string {
 
 function createPersistentStore (key: string) {
    try {
+      // Throws if the file can't be decrypted/parsed instead of silently clearing it
+      return new Store({
+         name: 'connections',
+         encryptionKey: key,
+         clearInvalidConfig: false
+      });
+   }
+   catch {
+      // Store construction doesn't write to disk, so the unreadable file is still intact here
       const store = new Store({
          name: 'connections',
          encryptionKey: key,
          clearInvalidConfig: true
       });
-      store.get('connections');
-      return store;
-   }
-   catch {
+
       try {
-         const corruptStore = new Store({
-            name: 'connections',
-            encryptionKey: key,
-            clearInvalidConfig: false
-         });
-         const configPath = (corruptStore as any).path;
-         if (typeof configPath === 'string' && fs.existsSync(configPath))
-            fs.copyFileSync(configPath, configPath + '.corrupt');
+         if (fs.existsSync(store.path))
+            fs.copyFileSync(store.path, `${store.path}.corrupt`);
       }
       catch {}
 
-      return new Store({
-         name: 'connections',
-         encryptionKey: key,
-         clearInvalidConfig: true
-      });
+      return store;
    }
 }
 
