@@ -26,22 +26,4 @@ describe.skipIf(!firebird)('firebird known issues', () => {
          client.destroy();
       }
    });
-
-   // The query builder renders multi-row inserts as `INSERT ... VALUES (...), (...)`,
-   // which Firebird doesn't support. Hit by "insert fake rows" with quantity > 1 (ipc-handlers/tables.ts).
-   it.fails('inserts multiple rows with the query builder', async () => {
-      const client = await firebird.connect();
-      const table = '"it_multi_insert"';
-
-      try {
-         await client.raw(`CREATE TABLE ${table} ("id" INTEGER NOT NULL)`);
-         await client.schema(firebird.schema).into('it_multi_insert').insert([{ id: 1 }, { id: 2 }]).run();
-         const { rows } = await client.raw(`SELECT * FROM ${table}`);
-         expect(rows).toHaveLength(2);
-      }
-      finally {
-         await client.raw(`DROP TABLE ${table}`).catch((): null => null);
-         client.destroy();
-      }
-   });
 });

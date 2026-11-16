@@ -5,9 +5,11 @@ import { removeComments } from 'common/libs/sqlUtils';
 import * as firebird from 'node-firebird';
 import * as path from 'path';
 
+import { FirebirdDialect } from '../db/engines/firebird/FirebirdDialect';
 import { BaseClient } from './BaseClient';
 
 export class FirebirdSQLClient extends BaseClient {
+   protected readonly _dialect = new FirebirdDialect();
    private _schema?: string;
    private _runningConnections: Map<string, number>;
    private _connectionsToCommit: Map<string, firebird.Transaction>;
@@ -67,27 +69,6 @@ export class FirebirdSQLClient extends BaseClient {
       return dataTypes
          .reduce((acc, group) => [...acc, ...group.types], [])
          .filter(_type => _type.name === type.toUpperCase())[0];
-   }
-
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   protected _reducer (acc: string[], curr: any) {
-      const type = typeof curr;
-
-      switch (type) {
-         case 'number':
-         case 'string':
-            return [...acc, curr];
-         case 'object':
-            if (Array.isArray(curr))
-               return [...acc, ...curr];
-            else {
-               const clausoles = [];
-               for (const key in curr)
-                  clausoles.push(`"${key}" ${curr[key]}`);
-
-               return clausoles;
-            }
-      }
    }
 
    async connect () {
@@ -956,61 +937,6 @@ export class FirebirdSQLClient extends BaseClient {
 
    destroyConnectionToCommit (tabUid: string) {
       this._connectionsToCommit.delete(tabUid);
-   }
-
-   getSQL () {
-      // LIMIT
-      const limitRaw = this._query.limit ? ` FIRST ${this._query.limit}` : '';
-
-      // OFFSET
-      const offsetRaw = this._query.offset ? ` SKIP ${this._query.offset}` : '';
-
-      // SELECT
-      const selectArray = this._query.select.reduce(this._reducer, []);
-      let selectRaw = '';
-
-      if (selectArray.length)
-         selectRaw = selectArray.length ? `SELECT${limitRaw||''}${offsetRaw||''} ${selectArray.join(', ')} ` : `SELECT${limitRaw||''}${offsetRaw||''} * `;
-
-      // FROM
-      let fromRaw = '';
-
-      if (!this._query.update.length && !Object.keys(this._query.insert).length && !!this._query.from)
-         fromRaw = 'FROM';
-      else if (Object.keys(this._query.insert).length)
-         fromRaw = 'INTO';
-
-      fromRaw += this._query.from ? ` "${this._query.from}" ` : '';
-
-      // WHERE
-      const whereArray = this._query.where
-         .reduce(this._reducer, [])
-         ?.map(clausole => clausole.replace('= null', 'IS NULL'));
-      const whereRaw = whereArray.length ? `WHERE ${whereArray.join(' AND ')} ` : '';
-
-      // UPDATE
-      const updateArray = this._query.update.reduce(this._reducer, []);
-      const updateRaw = updateArray.length ? `SET ${updateArray.join(', ')} ` : '';
-
-      // INSERT
-      let insertRaw = '';
-
-      if (this._query.insert.length) {
-         const fieldsList = Object.keys(this._query.insert[0]).map(col => '"' + col + '"');
-         const rowsList = this._query.insert.map(el => `(${Object.values(el).join(', ')})`);
-
-         insertRaw = `(${fieldsList.join(', ')}) VALUES ${rowsList.join(', ')} `;
-      }
-
-      // GROUP BY
-      const groupByArray = this._query.groupBy.reduce(this._reducer, []);
-      const groupByRaw = groupByArray.length ? `GROUP BY ${groupByArray.join(', ')} ` : '';
-
-      // ORDER BY
-      const orderByArray = this._query.orderBy.reduce(this._reducer, []);
-      const orderByRaw = orderByArray.length ? `ORDER BY ${orderByArray.join(', ')} ` : '';
-
-      return `${selectRaw}${updateRaw ? `UPDATE${' '+limitRaw||''}` : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${' '+(this._query.delete ? ` ROWS ${this._query.limit}` : '')||''}${insertRaw}`;
    }
 
    async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {

@@ -1,0 +1,497 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`firebird query builder > delete by primary 1`] = `
+[
+  {
+    "sql": "DELETE FROM "t" WHERE "id" IN (1,2,3) ROWS 3",
+  },
+]
+`;
+
+exports[`firebird query builder > delete by row 1`] = `
+[
+  {
+    "sql": "DELETE FROM "t" WHERE "a" = 1 AND "b" IS NULL AND "c" IS NULL ROWS 1",
+  },
+]
+`;
+
+exports[`firebird query builder > foreign list 1`] = `
+[
+  {
+    "sql": "SELECT "id" AS foreign_column, LEFT("name", 20) AS foreign_description FROM "t" ORDER BY foreign_column ASC",
+  },
+]
+`;
+
+exports[`firebird query builder > group by 1`] = `
+[
+  {
+    "sql": "SELECT a, COUNT(*) FROM "t" GROUP BY a ORDER BY a",
+  },
+]
+`;
+
+exports[`firebird query builder > insert rows 1`] = `
+[
+  {
+    "sql": "INSERT INTO "t" ("a", "b") VALUES (1, 'x'); INSERT INTO "t" ("a", "b") VALUES (2, NULL)",
+  },
+]
+`;
+
+exports[`firebird query builder > mixed where 1`] = `
+[
+  {
+    "sql": "SELECT * FROM "t" WHERE x > 0 AND "a" = 1",
+  },
+]
+`;
+
+exports[`firebird query builder > multiple update objects 1`] = `
+[
+  {
+    "sql": "UPDATE "t" SET "a" = 1, "b" = 2",
+  },
+]
+`;
+
+exports[`firebird query builder > multiple where objects 1`] = `
+[
+  {
+    "sql": "SELECT * FROM "t" WHERE "a" = 1 AND "b" = 2",
+  },
+]
+`;
+
+exports[`firebird query builder > offset only 1`] = `
+[
+  {
+    "sql": "SELECT SKIP 10 * FROM "t"",
+  },
+]
+`;
+
+exports[`firebird query builder > ping 1`] = `
+[
+  {
+    "sql": "SELECT 1+1",
+  },
+]
+`;
+
+exports[`firebird query builder > select array args 1`] = `
+[
+  {
+    "sql": "SELECT a, b FROM "t" WHERE x = 1 AND y = 2",
+  },
+]
+`;
+
+exports[`firebird query builder > select without schema 1`] = `
+[
+  {
+    "sql": "SELECT a, b FROM "t"",
+  },
+]
+`;
+
+exports[`firebird query builder > table data page 1`] = `
+[
+  {
+    "args": {
+      "details": true,
+      "schema": "s",
+    },
+    "sql": "SELECT FIRST 1000 SKIP 2000 * FROM "t" WHERE \`id\` > 5 ORDER BY "name" DESC",
+  },
+]
+`;
+
+exports[`firebird query builder > update cell 1`] = `
+[
+  {
+    "sql": "UPDATE "t" SET "name" = 'foo' WHERE "id" = 3 ROWS 1",
+  },
+]
+`;
+
+exports[`firebird query builder > update without limit 1`] = `
+[
+  {
+    "sql": "UPDATE "t" SET "a" = 1 WHERE "id" = 1",
+  },
+]
+`;
+
+exports[`mysql query builder > delete by primary 1`] = `
+[
+  {
+    "sql": "DELETE FROM \`s\`.\`t\` WHERE \`id\` IN (1,2,3) LIMIT 3",
+  },
+]
+`;
+
+exports[`mysql query builder > delete by row 1`] = `
+[
+  {
+    "sql": "DELETE FROM \`s\`.\`t\` WHERE \`a\` = 1 AND \`b\` IS NULL AND \`c\` = null LIMIT 1",
+  },
+]
+`;
+
+exports[`mysql query builder > foreign list 1`] = `
+[
+  {
+    "sql": "SELECT "id" AS foreign_column, LEFT("name", 20) AS foreign_description FROM \`s\`.\`t\` ORDER BY foreign_column ASC",
+  },
+]
+`;
+
+exports[`mysql query builder > group by 1`] = `
+[
+  {
+    "sql": "SELECT a, COUNT(*) FROM \`s\`.\`t\` GROUP BY a ORDER BY a",
+  },
+]
+`;
+
+exports[`mysql query builder > insert rows 1`] = `
+[
+  {
+    "sql": "INSERT INTO \`s\`.\`t\` (\`a\`, \`b\`) VALUES (1, 'x'), (2, NULL)",
+  },
+]
+`;
+
+exports[`mysql query builder > mixed where 1`] = `
+[
+  {
+    "sql": "SELECT * FROM \`s\`.\`t\` WHERE x > 0 AND \`a\` = 1",
+  },
+]
+`;
+
+exports[`mysql query builder > multiple update objects 1`] = `
+[
+  {
+    "sql": "UPDATE \`s\`.\`t\` SET \`a\` = 1, \`b\` = 2",
+  },
+]
+`;
+
+exports[`mysql query builder > multiple where objects 1`] = `
+[
+  {
+    "sql": "SELECT * FROM \`s\`.\`t\` WHERE \`a\` = 1 AND \`b\` = 2",
+  },
+]
+`;
+
+exports[`mysql query builder > offset only 1`] = `
+[
+  {
+    "sql": "SELECT * FROM \`s\`.\`t\` OFFSET 10",
+  },
+]
+`;
+
+exports[`mysql query builder > ping 1`] = `
+[
+  {
+    "sql": "SELECT 1+1",
+  },
+]
+`;
+
+exports[`mysql query builder > select array args 1`] = `
+[
+  {
+    "sql": "SELECT a, b FROM \`t\` WHERE x = 1 AND y = 2",
+  },
+]
+`;
+
+exports[`mysql query builder > select without schema 1`] = `
+[
+  {
+    "sql": "SELECT a, b FROM \`t\`",
+  },
+]
+`;
+
+exports[`mysql query builder > table data page 1`] = `
+[
+  {
+    "args": {
+      "details": true,
+      "schema": "s",
+    },
+    "sql": "SELECT * FROM \`s\`.\`t\` WHERE \`id\` > 5 ORDER BY \`name\` DESC LIMIT 1000 OFFSET 2000",
+  },
+]
+`;
+
+exports[`mysql query builder > update cell 1`] = `
+[
+  {
+    "sql": "UPDATE \`s\`.\`t\` SET \`name\` = 'foo' WHERE \`id\` = 3 LIMIT 1",
+  },
+]
+`;
+
+exports[`mysql query builder > update without limit 1`] = `
+[
+  {
+    "sql": "UPDATE \`s\`.\`t\` SET \`a\` = 1 WHERE \`id\` = 1",
+  },
+]
+`;
+
+exports[`pg query builder > delete by primary 1`] = `
+[
+  {
+    "sql": "DELETE FROM "s"."t" WHERE "id" IN (1,2,3)",
+  },
+]
+`;
+
+exports[`pg query builder > delete by row 1`] = `
+[
+  {
+    "sql": "DELETE FROM "s"."t" WHERE "a" = 1 AND "b" IS NULL AND "c" = null",
+  },
+]
+`;
+
+exports[`pg query builder > foreign list 1`] = `
+[
+  {
+    "sql": "SELECT "id" AS foreign_column, LEFT("name", 20) AS foreign_description FROM "s"."t" ORDER BY foreign_column ASC",
+  },
+]
+`;
+
+exports[`pg query builder > group by 1`] = `
+[
+  {
+    "sql": "SELECT a, COUNT(*) FROM "s"."t" GROUP BY a ORDER BY a",
+  },
+]
+`;
+
+exports[`pg query builder > insert rows 1`] = `
+[
+  {
+    "sql": "INSERT INTO "s"."t" ("a", "b") VALUES (1, 'x'), (2, NULL)",
+  },
+]
+`;
+
+exports[`pg query builder > mixed where 1`] = `
+[
+  {
+    "sql": "SELECT * FROM "s"."t" WHERE x > 0 AND "a" = 1",
+  },
+]
+`;
+
+exports[`pg query builder > multiple update objects 1`] = `
+[
+  {
+    "sql": "UPDATE "s"."t" SET "a" = 1, "b" = 2",
+  },
+]
+`;
+
+exports[`pg query builder > multiple where objects 1`] = `
+[
+  {
+    "sql": "SELECT * FROM "s"."t" WHERE "a" = 1 AND "b" = 2",
+  },
+]
+`;
+
+exports[`pg query builder > offset only 1`] = `
+[
+  {
+    "sql": "SELECT * FROM "s"."t" OFFSET 10",
+  },
+]
+`;
+
+exports[`pg query builder > ping 1`] = `
+[
+  {
+    "sql": "SELECT 1+1",
+  },
+]
+`;
+
+exports[`pg query builder > select array args 1`] = `
+[
+  {
+    "sql": "SELECT a, b FROM "t" WHERE x = 1 AND y = 2",
+  },
+]
+`;
+
+exports[`pg query builder > select without schema 1`] = `
+[
+  {
+    "sql": "SELECT a, b FROM "t"",
+  },
+]
+`;
+
+exports[`pg query builder > table data page 1`] = `
+[
+  {
+    "args": {
+      "details": true,
+      "schema": "s",
+    },
+    "sql": "SELECT * FROM "s"."t" WHERE \`id\` > 5 ORDER BY "name" DESC LIMIT 1000 OFFSET 2000",
+  },
+]
+`;
+
+exports[`pg query builder > update cell 1`] = `
+[
+  {
+    "sql": "UPDATE "s"."t" SET "name" = 'foo' WHERE "id" = 3",
+  },
+]
+`;
+
+exports[`pg query builder > update without limit 1`] = `
+[
+  {
+    "sql": "UPDATE "s"."t" SET "a" = 1 WHERE "id" = 1",
+  },
+]
+`;
+
+exports[`sqlite query builder > delete by primary 1`] = `
+[
+  {
+    "sql": "DELETE FROM "s"."t" WHERE id IN (1,2,3) LIMIT 3",
+  },
+]
+`;
+
+exports[`sqlite query builder > delete by row 1`] = `
+[
+  {
+    "sql": "DELETE FROM "s"."t" WHERE a = 1 AND b IS NULL AND c IS NULL LIMIT 1",
+  },
+]
+`;
+
+exports[`sqlite query builder > foreign list 1`] = `
+[
+  {
+    "sql": "SELECT "id" AS foreign_column, LEFT("name", 20) AS foreign_description FROM "s"."t" ORDER BY foreign_column ASC",
+  },
+]
+`;
+
+exports[`sqlite query builder > group by 1`] = `
+[
+  {
+    "sql": "SELECT a, COUNT(*) FROM "s"."t" GROUP BY a ORDER BY a",
+  },
+]
+`;
+
+exports[`sqlite query builder > insert rows 1`] = `
+[
+  {
+    "sql": "INSERT INTO "s"."t" (a, b) VALUES (1, 'x'), (2, NULL)",
+  },
+]
+`;
+
+exports[`sqlite query builder > mixed where 1`] = `
+[
+  {
+    "sql": "SELECT * FROM "s"."t" WHERE x > 0 AND a = 1",
+  },
+]
+`;
+
+exports[`sqlite query builder > multiple update objects 1`] = `
+[
+  {
+    "sql": "UPDATE "s"."t" SET a = 1, b = 2",
+  },
+]
+`;
+
+exports[`sqlite query builder > multiple where objects 1`] = `
+[
+  {
+    "sql": "SELECT * FROM "s"."t" WHERE a = 1 AND b = 2",
+  },
+]
+`;
+
+exports[`sqlite query builder > offset only 1`] = `
+[
+  {
+    "sql": "SELECT * FROM "s"."t" OFFSET 10",
+  },
+]
+`;
+
+exports[`sqlite query builder > ping 1`] = `
+[
+  {
+    "sql": "SELECT 1+1",
+  },
+]
+`;
+
+exports[`sqlite query builder > select array args 1`] = `
+[
+  {
+    "sql": "SELECT a, b FROM "t" WHERE x = 1 AND y = 2",
+  },
+]
+`;
+
+exports[`sqlite query builder > select without schema 1`] = `
+[
+  {
+    "sql": "SELECT a, b FROM "t"",
+  },
+]
+`;
+
+exports[`sqlite query builder > table data page 1`] = `
+[
+  {
+    "args": {
+      "details": true,
+      "schema": "s",
+    },
+    "sql": "SELECT * FROM "s"."t" WHERE \`id\` > 5 ORDER BY name DESC LIMIT 1000 OFFSET 2000",
+  },
+]
+`;
+
+exports[`sqlite query builder > update cell 1`] = `
+[
+  {
+    "sql": "UPDATE "s"."t" SET name = 'foo' WHERE id = 3 LIMIT 1",
+  },
+]
+`;
+
+exports[`sqlite query builder > update without limit 1`] = `
+[
+  {
+    "sql": "UPDATE "s"."t" SET a = 1 WHERE id = 1",
+  },
+]
+`;

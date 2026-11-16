@@ -7,6 +7,7 @@ import * as pg from 'pg';
 import * as pgAst from 'pgsql-ast-parser';
 import { ConnectionOptions } from 'tls';
 
+import { PostgreSQLDialect } from '../db/engines/postgresql/PostgreSQLDialect';
 import { BaseClient } from './BaseClient';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -83,6 +84,7 @@ type builtinsTypes =
    'REGNAMESPACE' |
    'REGROLE';
 export class PostgreSQLClient extends BaseClient {
+   protected readonly _dialect = new PostgreSQLDialect();
    private _schema?: string;
    private _runningConnections: Map<string, number>;
    private _connectionsToCommit: Map<string, pg.Client | pg.PoolClient>;
@@ -113,27 +115,6 @@ export class PostgreSQLClient extends BaseClient {
       for (const key in pg.types.builtins) {
          const builtinKey = key as builtinsTypes;
          this.types[pg.types.builtins[builtinKey]] = key;
-      }
-   }
-
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   _reducer (acc: string[], curr: any) {
-      const type = typeof curr;
-
-      switch (type) {
-         case 'number':
-         case 'string':
-            return [...acc, curr];
-         case 'object':
-            if (Array.isArray(curr))
-               return [...acc, ...curr];
-            else {
-               const clausoles = [];
-               for (const key in curr)
-                  clausoles.push(`"${key}" ${curr[key]}`);
-
-               return clausoles;
-            }
       }
    }
 
@@ -1593,59 +1574,6 @@ export class PostgreSQLClient extends BaseClient {
          (connection as pg.Client).end();
          this._connectionsToCommit.delete(tabUid);
       }
-   }
-
-   getSQL () {
-      // SELECT
-      const selectArray = this._query.select.reduce(this._reducer, []);
-      let selectRaw = '';
-
-      if (selectArray.length)
-         selectRaw = selectArray.length ? `SELECT ${selectArray.join(', ')} ` : 'SELECT * ';
-
-      // FROM
-      let fromRaw = '';
-
-      if (!this._query.update.length && !Object.keys(this._query.insert).length && !!this._query.from)
-         fromRaw = 'FROM';
-      else if (Object.keys(this._query.insert).length)
-         fromRaw = 'INTO';
-
-      fromRaw += this._query.from ? ` ${this._query.schema ? `"${this._query.schema}".` : ''}"${this._query.from}" ` : '';
-
-      // WHERE
-      const whereArray = this._query.where.reduce(this._reducer, []);
-      const whereRaw = whereArray.length ? `WHERE ${whereArray.join(' AND ')} ` : '';
-
-      // UPDATE
-      const updateArray = this._query.update.reduce(this._reducer, []);
-      const updateRaw = updateArray.length ? `SET ${updateArray.join(', ')} ` : '';
-
-      // INSERT
-      let insertRaw = '';
-
-      if (this._query.insert.length) {
-         const fieldsList = Object.keys(this._query.insert[0]).map(f => `"${f}"`);
-         const rowsList = this._query.insert.map(el => `(${Object.values(el).join(', ')})`);
-
-         insertRaw = `(${fieldsList.join(', ')}) VALUES ${rowsList.join(', ')} `;
-      }
-
-      // GROUP BY
-      const groupByArray = this._query.groupBy.reduce(this._reducer, []);
-      const groupByRaw = groupByArray.length ? `GROUP BY ${groupByArray.join(', ')} ` : '';
-
-      // ORDER BY
-      const orderByArray = this._query.orderBy.reduce(this._reducer, []);
-      const orderByRaw = orderByArray.length ? `ORDER BY ${orderByArray.join(', ')} ` : '';
-
-      // LIMIT
-      const limitRaw = selectArray.length && this._query.limit ? `LIMIT ${this._query.limit} ` : '';
-
-      // OFFSET
-      const offsetRaw = selectArray.length && this._query.offset ? `OFFSET ${this._query.offset} ` : '';
-
-      return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}${offsetRaw}${insertRaw}`;
    }
 
    async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {

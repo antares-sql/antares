@@ -4,11 +4,10 @@ import mysql from 'mysql2/promise';
 import * as pg from 'pg';
 import SSH2Promise = require('@fabio286/ssh2-promise');
 
+import { QueryBuilder } from '../db/core/QueryBuilder';
+import { Clause, QueryDialect } from '../db/core/QueryDialect';
 import { ipcLogger, LoggerLevel } from '../misc/ipcLogger';
 
-/**
- * As Simple As Possible Query Builder Core
- */
 export abstract class BaseClient {
    _client: antares.ClientCode;
    protected _cUid: string
@@ -17,8 +16,8 @@ export abstract class BaseClient {
    protected _ssh?: SSH2Promise;
    protected _logger: (args: {content: string; cUid: string; level: LoggerLevel}) => void;
    protected _querySplitter: (sql: string, client: antares.ClientCode) => string[];
-   protected _queryDefaults: antares.QueryBuilderObject;
-   protected _query: antares.QueryBuilderObject;
+   /** Renders query builder objects to this engine's SQL */
+   protected abstract readonly _dialect: QueryDialect;
 
    constructor (args: antares.ClientParams) {
       this._client = args.client;
@@ -27,128 +26,55 @@ export abstract class BaseClient {
       this._poolSize = args.poolSize || undefined;
       this._logger = args.logger || ipcLogger;
       this._querySplitter = args.querySplitter || querySplitter;
-
-      this._queryDefaults = {
-         schema: '',
-         select: [],
-         from: '',
-         where: [],
-         groupBy: [],
-         orderBy: [],
-         limit: null,
-         offset: null,
-         join: [],
-         update: [],
-         insert: [],
-         delete: false
-      };
-      this._query = Object.assign({}, this._queryDefaults);
    }
 
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   protected _reducer (acc: string[], curr: any) {
-      const type = typeof curr;
-
-      switch (type) {
-         case 'number':
-         case 'string':
-            return [...acc, curr];
-         case 'object':
-            if (Array.isArray(curr))
-               return [...acc, ...curr];
-            else {
-               const clausoles = [];
-               for (const key in curr)
-                  clausoles.push(`${key} ${curr[key]}`);
-
-               return clausoles;
-            }
-      }
+   get dialect () {
+      return this._dialect;
    }
 
-   private _resetQuery () {
-      this._query = Object.assign({}, this._queryDefaults);
+   /** A new, independent query builder bound to this connection */
+   query () {
+      return new QueryBuilder(this._dialect, this);
    }
+
+   // Fluent shortcuts: every chain starts a new QueryBuilder, so no state is shared between queries
 
    schema (schema: string) {
-      this._query.schema = schema;
-      return this;
+      return this.query().schema(schema);
    }
 
-   select (...args: string[]) {
-      this._query.select = [...this._query.select, ...args];
-      return this;
+   select (...args: Clause[]) {
+      return this.query().select(...args);
    }
 
    from (table: string) {
-      this._query.from = table;
-      return this;
+      return this.query().from(table);
    }
 
    into (table: string) {
-      this._query.from = table;
-      return this;
+      return this.query().into(table);
    }
 
    delete (table: string) {
-      this._query.delete = true;
-      this.from(table);
-      return this;
+      return this.query().delete(table);
+   }
+
+   where (...args: Clause[]) {
+      return this.query().where(...args);
+   }
+
+   update (...args: Clause[]) {
+      return this.query().update(...args);
    }
 
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   where (...args: any) {
-      this._query.where = [...this._query.where, ...args];
-      return this;
-   }
-
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   groupBy (...args: any) {
-      this._query.groupBy = [...this._query.groupBy, ...args];
-      return this;
-   }
-
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   orderBy (...args: any) {
-      this._query.orderBy = [...this._query.orderBy, ...args];
-      return this;
-   }
-
-   limit (limit: number) {
-      this._query.limit = limit;
-      return this;
-   }
-
-   offset (offset: number) {
-      this._query.offset = offset;
-      return this;
-   }
-
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   update (...args: any) {
-      this._query.update = [...this._query.update, ...args];
-      return this;
-   }
-
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   insert (arr: Record<string, any>[]) {
-      this._query.insert = [...this._query.insert, ...arr];
-      return this;
-   }
-
-   getSQL (): string {
-      throw new Error('Client must implement the "getSQL" method');
+   insert (rows: Record<string, any>[]) {
+      return this.query().insert(rows);
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
    raw<T = antares.QueryResult> (_sql: string, _args?: antares.QueryParams): Promise<T> {
       throw new Error('Client must implement the "raw" method');
-   }
-
-   run<RowType> (args?: antares.QueryParams) {
-      const rawQuery = this.getSQL();
-      this._resetQuery();
-      return this.raw<antares.QueryResult<RowType>>(rawQuery, args);
    }
 
    /* eslint-disable @typescript-eslint/no-unused-vars */

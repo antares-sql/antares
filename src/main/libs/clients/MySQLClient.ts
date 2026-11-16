@@ -6,10 +6,12 @@ import { removeComments } from 'common/libs/sqlUtils';
 import * as mysql from 'mysql2/promise';
 
 import EncodingToCharset = require('../../../../node_modules/mysql2/lib/constants/encoding_charset.js');
+import { MySQLDialect } from '../db/engines/mysql/MySQLDialect';
 import { BaseClient } from './BaseClient';
 EncodingToCharset.utf8mb3 = 192; // To fix https://github.com/sidorares/node-mysql2/issues/1398 until not included in mysql2
 
 export class MySQLClient extends BaseClient {
+   protected readonly _dialect = new MySQLDialect();
    private _schema?: string;
    private _runningConnections: Map<string, number>;
    private _connectionsToCommit: Map<string, mysql.Connection | mysql.PoolConnection>;
@@ -118,27 +120,6 @@ export class MySQLClient extends BaseClient {
       return dataTypes
          .reduce((acc, group) => [...acc, ...group.types], [])
          .filter((_type) => _type.name === type.toUpperCase())[0];
-   }
-
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   protected _reducer (acc: string[], curr: any) {
-      const type = typeof curr;
-
-      switch (type) {
-         case 'number':
-         case 'string':
-            return [...acc, curr];
-         case 'object':
-            if (Array.isArray(curr))
-               return [...acc, ...curr];
-            else {
-               const clausoles = [];
-               for (const key in curr)
-                  clausoles.push(`\`${key}\` ${curr[key]}`);
-
-               return clausoles;
-            }
-      }
    }
 
    async getDbConfig (): Promise<mysql.ConnectionOptions> {
@@ -1696,59 +1677,6 @@ export class MySQLClient extends BaseClient {
          (connection as mysql.Connection).destroy();
          this._connectionsToCommit.delete(tabUid);
       }
-   }
-
-   getSQL () {
-      // SELECT
-      const selectArray = this._query.select.reduce(this._reducer, []);
-      let selectRaw = '';
-
-      if (selectArray.length)
-         selectRaw = selectArray.length ? `SELECT ${selectArray.join(', ')} ` : 'SELECT * ';
-
-      // FROM
-      let fromRaw = '';
-
-      if (!this._query.update.length && !Object.keys(this._query.insert).length && !!this._query.from)
-         fromRaw = 'FROM';
-      else if (Object.keys(this._query.insert).length)
-         fromRaw = 'INTO';
-
-      fromRaw += this._query.from ? ` ${this._query.schema ? `\`${this._query.schema}\`.` : ''}\`${this._query.from}\` ` : '';
-
-      // WHERE
-      const whereArray = this._query.where.reduce(this._reducer, []);
-      const whereRaw = whereArray.length ? `WHERE ${whereArray.join(' AND ')} ` : '';
-
-      // UPDATE
-      const updateArray = this._query.update.reduce(this._reducer, []);
-      const updateRaw = updateArray.length ? `SET ${updateArray.join(', ')} ` : '';
-
-      // INSERT
-      let insertRaw = '';
-
-      if (this._query.insert.length) {
-         const fieldsList = Object.keys(this._query.insert[0]).map(col => '`' + col + '`');
-         const rowsList = this._query.insert.map(el => `(${Object.values(el).join(', ')})`);
-
-         insertRaw = `(${fieldsList.join(', ')}) VALUES ${rowsList.join(', ')} `;
-      }
-
-      // GROUP BY
-      const groupByArray = this._query.groupBy.reduce(this._reducer, []);
-      const groupByRaw = groupByArray.length ? `GROUP BY ${groupByArray.join(', ')} ` : '';
-
-      // ORDER BY
-      const orderByArray = this._query.orderBy.reduce(this._reducer, []);
-      const orderByRaw = orderByArray.length ? `ORDER BY ${orderByArray.join(', ')} ` : '';
-
-      // LIMIT
-      const limitRaw = this._query.limit ? `LIMIT ${this._query.limit} ` : '';
-
-      // OFFSET
-      const offsetRaw = this._query.offset ? `OFFSET ${this._query.offset} ` : '';
-
-      return `${selectRaw}${updateRaw ? 'UPDATE' : ''}${insertRaw ? 'INSERT ' : ''}${this._query.delete ? 'DELETE ' : ''}${fromRaw}${updateRaw}${whereRaw}${groupByRaw}${orderByRaw}${limitRaw}${offsetRaw}${insertRaw}`;
    }
 
    async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {

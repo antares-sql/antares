@@ -27,7 +27,10 @@ src/
     ipc-handlers/       One file per domain (tables, schema, views, routines, ...). Registers ipcMain.handle(...)
     libs/
       ClientsFactory.ts Picks client class from `client` ('mysql'|'maria'|'pg'|'sqlite'|'firebird')
-      clients/          BaseClient + one class per engine (query builder + all DB introspection/DDL)
+      clients/          BaseClient + one class per engine (all DB introspection/DDL; being split up into db/)
+      db/               Target architecture of the clients refactor
+        core/           QueryBuilder (one instance per query, no shared state), QueryDialect (pure SQL rendering)
+        engines/<engine>/  Per-engine pieces, e.g. MySQLDialect
       exporters/ importers/  SQL dump/import logic, run inside worker threads
       parsers/          Engine-specific SQL parsers
       misc/             validateSender (IPC origin check), ipcLogger

@@ -123,7 +123,7 @@ exports[`firebird client SQL generation > delete builder 1`] = `
 {
   "queries": [
     {
-      "sql": "DELETE FROM "products" WHERE "id" = 1 ROWS null",
+      "sql": "DELETE FROM "products" WHERE "id" = 1",
     },
   ],
 }
@@ -179,7 +179,7 @@ exports[`firebird client SQL generation > insert builder 1`] = `
 {
   "queries": [
     {
-      "sql": "INSERT INTO "products" ("id", "name") VALUES (1, 'a'), (2, 'b')",
+      "sql": "INSERT INTO "products" ("id", "name") VALUES (1, 'a'); INSERT INTO "products" ("id", "name") VALUES (2, 'b')",
     },
   ],
 }
@@ -228,7 +228,7 @@ exports[`firebird client SQL generation > update builder 1`] = `
 {
   "queries": [
     {
-      "sql": "UPDATE FIRST 1 "products" SET "price" 12.5 WHERE "id" = 1",
+      "sql": "UPDATE "products" SET "name" 'foo', "price" 12.5 WHERE "id" = 1 ROWS 1",
     },
   ],
 }
@@ -607,7 +607,7 @@ exports[`maria client SQL generation > update builder 1`] = `
 {
   "queries": [
     {
-      "sql": "UPDATE \`test_schema\`.\`products\` SET \`price\` 12.5 WHERE \`id\` = 1 LIMIT 1",
+      "sql": "UPDATE \`test_schema\`.\`products\` SET \`name\` 'foo', \`price\` 12.5 WHERE \`id\` = 1 LIMIT 1",
     },
   ],
 }
@@ -986,7 +986,7 @@ exports[`mysql client SQL generation > update builder 1`] = `
 {
   "queries": [
     {
-      "sql": "UPDATE \`test_schema\`.\`products\` SET \`price\` 12.5 WHERE \`id\` = 1 LIMIT 1",
+      "sql": "UPDATE \`test_schema\`.\`products\` SET \`name\` 'foo', \`price\` 12.5 WHERE \`id\` = 1 LIMIT 1",
     },
   ],
 }
@@ -1408,7 +1408,7 @@ exports[`pg client SQL generation > update builder 1`] = `
 {
   "queries": [
     {
-      "sql": "UPDATE "test_schema"."products" SET "price" 12.5 WHERE "id" = 1",
+      "sql": "UPDATE "test_schema"."products" SET "name" 'foo', "price" 12.5 WHERE "id" = 1",
     },
   ],
 }
@@ -1631,7 +1631,7 @@ exports[`sqlite client SQL generation > update builder 1`] = `
 {
   "queries": [
     {
-      "sql": "UPDATE "test_schema"."products" SET price 12.5 WHERE id = 1 LIMIT 1",
+      "sql": "UPDATE "test_schema"."products" SET name 'foo', price 12.5 WHERE id = 1 LIMIT 1",
     },
   ],
 }

@@ -6,7 +6,6 @@
  */
 import { describe, expect, it } from 'vitest';
 
-import { BaseClient } from '../../../src/main/libs/clients/BaseClient';
 import { FirebirdSQLClient } from '../../../src/main/libs/clients/FirebirdSQLClient';
 import { MySQLClient } from '../../../src/main/libs/clients/MySQLClient';
 import { PostgreSQLClient } from '../../../src/main/libs/clients/PostgreSQLClient';
@@ -36,20 +35,20 @@ interface Operation {
 const operations: Record<string, Operation> = {
    // Query builder
    'select builder': {
-      method: 'getSQL',
+      method: 'select',
       run: (c, f) => c.select('id', 'name').schema(f.schema).from(f.table)
          .where('price > 10', 'stock > 0').orderBy({ name: 'ASC' }).limit(50).offset(100).run({ schema: f.schema })
    },
    'update builder': {
-      method: 'getSQL',
+      method: 'select',
       run: (c, f) => c.update({ name: '\'foo\'' }, { price: '12.5' }).schema(f.schema).from(f.table).where({ id: '= 1' }).limit(1).run()
    },
    'insert builder': {
-      method: 'getSQL',
+      method: 'select',
       run: (c, f) => c.schema(f.schema).into(f.table).insert([{ id: 1, name: '\'a\'' }, { id: 2, name: '\'b\'' }]).run()
    },
    'delete builder': {
-      method: 'getSQL',
+      method: 'select',
       run: (c, f) => c.schema(f.schema).delete(f.table).where({ id: '= 1' }).run()
    },
 
@@ -123,7 +122,7 @@ for (const { name, create, types } of engines) {
       for (const [label, op] of Object.entries(operations)) {
       // Skip methods the engine doesn't implement (missing, or inherited "not implemented" stubs)
          const implemented = typeof probe[op.method] === 'function' &&
-         probe[op.method] !== (BaseClient.prototype as AnyClient)[op.method];
+         !String(probe[op.method]).includes('not implemented');
 
          it.skipIf(!implemented)(label, async () => {
             const client = create() as AnyClient;

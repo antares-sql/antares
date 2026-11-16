@@ -87,9 +87,11 @@ for (const engine of getTestEngines()) {
       });
 
       it('inserts and selects rows with the query builder', async () => {
-         // One row per statement: multi-row insert is broken on Firebird (see knownIssues.spec.ts)
-         await client.schema(schema).into(TABLE).insert([{ id: 1, name: '\'apple\'', price: 1.5 }]).run();
-         await client.schema(schema).into(TABLE).insert([{ id: 2, name: '\'banana\'', price: 20 }]).run();
+         // Multi-row insert, like "insert fake rows" (ipc-handlers/tables.ts)
+         await client.schema(schema).into(TABLE).insert([
+            { id: 1, name: '\'apple\'', price: 1.5 },
+            { id: 2, name: '\'banana\'', price: 20 }
+         ]).run();
 
          const { rows } = await client.select('*').schema(schema).from(TABLE).orderBy({ id: 'ASC' }).run({ schema });
 
@@ -99,8 +101,9 @@ for (const engine of getTestEngines()) {
 
       it('updates and deletes rows with the query builder', async () => {
          // The builder quotes object keys itself and expects the operator in the value (same as ipc-handlers/tables.ts)
-         await client.update({ name: '= \'pear\'' }).schema(schema).from(TABLE).where({ id: '= 2' }).run();
-         // Always with limit, like the app does: on Firebird a delete without limit renders `ROWS null` and deletes nothing
+         // With limit, like "update table cell" (ipc-handlers/tables.ts)
+         await client.update({ name: '= \'pear\'' }).schema(schema).from(TABLE).where({ id: '= 2' }).limit(1).run();
+         // With limit, like "delete table rows" (ipc-handlers/tables.ts)
          await client.schema(schema).delete(TABLE).where({ id: '= 1' }).limit(1).run();
 
          const { rows } = await client.select('*').schema(schema).from(TABLE).run({ schema });
