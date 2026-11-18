@@ -32,7 +32,7 @@ createApp(App)
    .mount('#app');
 
 const { locale } = useSettingsStore();
-i18n.global.locale = locale;
+i18n.global.locale.value = locale;
 
 // IPC exceptions
 ipcRenderer.on('unhandled-exception', (event, error) => {

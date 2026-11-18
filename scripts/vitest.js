@@ -1,7 +1,7 @@
 /**
  * Runs Vitest inside Electron in Node mode (ELECTRON_RUN_AS_NODE).
- * Native modules (better-sqlite3) are rebuilt for Electron's ABI by `postinstall`,
- * so tests must run on the same runtime the main process uses.
+ * Tests run on the Node runtime bundled with Electron (the one the main process uses),
+ * so native modules (better-sqlite3) and Node APIs behave as in the app.
  *
  * Usage: node scripts/vitest.js [vitest args...]
  */

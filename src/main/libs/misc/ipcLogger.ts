@@ -5,7 +5,7 @@ export const ipcLogger = ({ content, cUid, level }: {content: string; cUid: stri
       if (process.type !== undefined) {
          const contents = require('electron').webContents.getAllWebContents();
          let mainWindow = require('electron').webContents.fromId(1);
-         contents.forEach(content => {
+         contents.forEach((content: Electron.WebContents) => {
             if (content.send && mainWindow === undefined) {
                mainWindow = content;
             }
@@ -20,7 +20,7 @@ export const ipcLogger = ({ content, cUid, level }: {content: string; cUid: stri
       if (process.type !== undefined) {
          const contents = require('electron').webContents.getAllWebContents();
          let mainWindow = require('electron').webContents.fromId(1);
-         contents.forEach(content => {
+         contents.forEach((content: Electron.WebContents) => {
             if (content.send && mainWindow === undefined) {
                mainWindow = content;
             }

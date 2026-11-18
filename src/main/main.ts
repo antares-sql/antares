@@ -1,7 +1,7 @@
 import * as remoteMain from '@electron/remote/main';
 import { app, BrowserWindow, ipcMain, nativeImage, safeStorage } from 'electron';
 import * as log from 'electron-log/main';
-import * as Store from 'electron-store';
+import Store from 'electron-store';
 import * as windowStateKeeper from 'electron-window-state';
 import * as path from 'path';
 
@@ -176,11 +176,11 @@ function createAppMenu () {
                { type: 'separator' },
                {
                   label: 'Check for Updates...',
-                  click: (_menuItem, win) => win.webContents.send('open-updates-preferences')
+                  click: (_menuItem, win) => (win as BrowserWindow).webContents.send('open-updates-preferences')
                },
                {
                   label: 'Preferences',
-                  click: (_menuItem, win) => win.webContents.send('toggle-preferences'),
+                  click: (_menuItem, win) => (win as BrowserWindow).webContents.send('toggle-preferences'),
                   accelerator: 'CmdOrCtrl+,'
                },
                { type: 'separator' },

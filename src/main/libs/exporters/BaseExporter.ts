@@ -29,7 +29,7 @@ export class BaseExporter extends EventEmitter {
       else
          this._processedStream = this._outputFileStream;
 
-      this._processedStream.once('error', err => {
+      this._processedStream.once('error', (err: Error) => {
          this._isCancelled = true;
          this.emit('error', err);
       });

@@ -4,7 +4,7 @@ import { DEBUG_CONNECTION_PREFIX, DEBUG_FOLDER_UID, getDebugConnections } from '
 import { uidGen } from 'common/libs/uidGen';
 import * as crypto from 'crypto';
 import { ipcRenderer } from 'electron';
-import * as Store from 'electron-store';
+import Store from 'electron-store';
 import * as fs from 'fs';
 import { defineStore } from 'pinia';
 

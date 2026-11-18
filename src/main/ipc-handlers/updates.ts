@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import * as log from 'electron-log/main';
-import * as Store from 'electron-store';
+import Store from 'electron-store';
 import { autoUpdater } from 'electron-updater';
 
 import { IpcMainLike } from './handle';

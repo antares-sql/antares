@@ -1,4 +1,4 @@
-import * as Store from 'electron-store';
+import Store from 'electron-store';
 import { defineStore } from 'pinia';
 
 export type TagCode = 'all' | 'note' | 'todo' | 'query'

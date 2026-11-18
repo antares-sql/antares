@@ -13,7 +13,7 @@ import {
 } from 'common/interfaces/antares';
 import { Customizations } from 'common/interfaces/customizations';
 import { uidGen } from 'common/libs/uidGen';
-import * as Store from 'electron-store';
+import Store from 'electron-store';
 import { defineStore } from 'pinia';
 
 import Connection from '@/ipc-api/Connection';
@@ -104,7 +104,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
          if (state.selectedWorkspace) return state.selectedWorkspace;
          const connectionsStore = useConnectionsStore();
          if (connectionsStore.lastConnections.length) {
-            return connectionsStore.lastConnections.sort((a, b) => {
+            return [...connectionsStore.lastConnections].sort((a, b) => {
                if (a.time < b.time) return 1;
                else if (a.time > b.time) return -1;
                return 0;

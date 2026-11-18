@@ -1,5 +1,5 @@
 import { app, dialog, ipcMain, safeStorage } from 'electron';
-import * as Store from 'electron-store';
+import Store from 'electron-store';
 import * as fs from 'fs';
 
 import { validateSender } from '../libs/misc/validateSender';

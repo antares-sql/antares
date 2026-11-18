@@ -1,5 +1,5 @@
 import { Ace } from 'ace-builds';
-import * as Store from 'electron-store';
+import Store from 'electron-store';
 import { defineStore, storeToRefs } from 'pinia';
 
 import { useScratchpadStore } from './scratchpad';

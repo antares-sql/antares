@@ -1,6 +1,6 @@
 import { ShortcutRecord } from 'common/shortcuts';
 import { ipcRenderer } from 'electron';
-import * as Store from 'electron-store';
+import Store from 'electron-store';
 import { defineStore } from 'pinia';
 
 import { AvailableLocale, i18n } from '@/i18n';
@@ -35,7 +35,7 @@ export const useSettingsStore = defineStore('settings', {
    actions: {
       changeLocale (locale: AvailableLocale) {
          this.locale = locale;
-         i18n.global.locale = locale;
+         i18n.global.locale.value = locale;
          settingsStore.set('locale', this.locale);
       },
       changePageSize (limit: number) {

@@ -7,7 +7,7 @@ const unzip = require('unzip-crx-3');
 const { antares } = require('../package.json');
 
 const extensionID = antares.devtoolsId;
-const chromiumVersion = '124';
+const chromiumVersion = '156';
 const destFolder = path.resolve(__dirname, `../misc/${extensionID}`);
 const filePath = path.resolve(__dirname, `${destFolder}/${extensionID}.crx`);
 const fileUrl = `https://clients2.google.com/service/update2/crx?response=redirect&acceptformat=crx2,crx3&x=id%3D${extensionID}%26uc&prodversion=${chromiumVersion}`;

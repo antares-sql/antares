@@ -10,6 +10,7 @@
     "target": "es2021",
     "allowJs": true,
     "module": "CommonJS",
+    "lib": ["es2022", "dom", "dom.iterable"],
     "strict": false,
     "noImplicitAny": true,
     "jsx": "preserve",
@@ -25,7 +26,9 @@
     "paths": {
       "src/*": ["./src/*"],
       "common/*": ["./src/common/*"],
-      "@/*": ["./src/renderer/*"]
+      "@/*": ["./src/renderer/*"],
+      // conf (ESM-only, used by electron-store) exposes its types only through "exports"
+      "conf": ["./node_modules/conf/dist/source/index.d.ts"]
     }
   }
 }

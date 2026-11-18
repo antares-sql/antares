@@ -32,10 +32,10 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
-      # postinstall rebuilds native modules (better-sqlite3) for Electron's ABI:
+      # better-sqlite3 ships N-API prebuilds, no Electron rebuild needed;
       # tests run inside Electron in Node mode (scripts/vitest.js)
       - name: Install dependencies
         run: npm ci
@@ -61,7 +61,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies

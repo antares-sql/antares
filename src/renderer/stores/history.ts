@@ -1,5 +1,5 @@
 import { uidGen } from 'common/libs/uidGen';
-import * as Store from 'electron-store';
+import Store from 'electron-store';
 import { defineStore } from 'pinia';
 const persistentStore = new Store({ name: 'history' });
 const historySize = 1000;

@@ -9,14 +9,14 @@ See also [CONTRIBUTING.md](CONTRIBUTING.md) for the original contributor guide.
 
 | Area | Tech |
 |---|---|
-| Shell | Electron 30 (`@electron/remote` enabled, `nodeIntegration: true`, `contextIsolation: false`) |
-| UI | Vue 3 (mostly `<script setup lang="ts">`), Pinia, vue-i18n, Spectre.css + SCSS, Ace editor |
+| Shell | Electron 45 (`@electron/remote` enabled, `nodeIntegration: true`, `contextIsolation: false`) |
+| UI | Vue 3.5 (mostly `<script setup lang="ts">`), Pinia, vue-i18n, Spectre.css + SCSS, Ace editor |
 | Bundling | webpack 5 (three configs: main, renderer, workers), `ts-loader`, `babel-loader`, `vue-loader` |
 | Language | TypeScript **5.8** (project-local, non-strict) |
 | Persistence | `electron-store` (settings, connections; credentials encrypted via `safeStorage`) |
-| DB drivers | `mysql2`, `pg` + `pg-query-stream`, `better-sqlite3` (native), `node-firebird`, SSH tunnels via `@fabio286/ssh2-promise` |
+| DB drivers | `mysql2`, `pg` + `pg-query-stream`, `better-sqlite3` (N-API, prebuilds bundled), `node-firebird`, SSH tunnels via `@fabio286/ssh2-promise` |
 | Packaging | electron-builder (config in `package.json` → `build`) |
-| Tests | Vitest unit + integration ([tests/unit/](tests/unit/), [tests/integration/](tests/integration/)), Playwright e2e ([tests/app.spec.ts](tests/app.spec.ts), minimal; Playwright 1.28 can't launch Electron 30: needs an upgrade) |
+| Tests | Vitest unit + integration ([tests/unit/](tests/unit/), [tests/integration/](tests/integration/)), Playwright e2e ([tests/app.spec.ts](tests/app.spec.ts), minimal) |
 
 ## Layout
 
@@ -94,8 +94,8 @@ Rules:
 ## Commands
 
 ```bash
-npm install                 # runs postinstall → electron-builder install-app-deps (native rebuild)
-npm run debug               # rebuild native deps + install Vue devtools + debug-runner
+npm install                 # no native rebuild needed (see Environment gotchas)
+npm run debug               # clean dist + install Vue devtools + debug-runner
 npm run debug-runner        # dev server on :9080 + main/workers watch + electron with --inspect=9222 / --remote-debugging-port=9223
 npm run compile             # production webpack builds into dist/
 npm run build               # compile + electron-builder (output in build/)
@@ -117,15 +117,15 @@ VS Code debugging: start `npm run debug` (or `debug-runner`) in a terminal, then
 
 ## Environment gotchas
 
-- **Node**: `.nvmrc` says 18.16, CI uses Node 20. Both work.
-- **Native modules** must match Electron's ABI. `postinstall` / `rebuild:electron` / `build` run electron-builder's native rebuild with `build.buildDependenciesFromSource: false`, so `better-sqlite3` uses its **prebuilt Electron binary** (no C++ toolchain needed). Compilation from source only happens for modules without prebuilds; a C++ toolchain (on Windows: VS 2019/2022 Build Tools, "Desktop development with C++") is then required.
+- **Node**: 22.12+ is required (Electron 45, better-sqlite3 13 and VueUse 15 declare it); `.nvmrc` and CI use Node 22.
+- **Native modules**: `better-sqlite3` (13+) is an N-API addon that ships prebuilds for win/mac/linux x64+arm64 inside the npm package, so it works on any Electron version without rebuilding. There is therefore no `postinstall` native rebuild and `build.npmRebuild` is `false`: `electron-builder install-app-deps` would try to compile it with node-gyp (C++ toolchain required) because the package no longer uses prebuild-install. There is no prebuild for linux `armv7l`: that target needs a build from source.
   - `cpu-features` is an optional ssh2 dependency (not a direct one) and is aliased to `false` in the main/workers webpack configs, so it is never loaded. If it is present in `node_modules` but can't be compiled, delete `node_modules/cpu-features`.
-  - Upgrading Electron: check that the `better-sqlite3` version publishes prebuilds for it, and that `node-abi` knows the new Electron version (otherwise "Could not detect abi").
+  - ESM-only dependencies (electron-store 12, conf, pinia 4, VueUse 15) stay `externals` in main and are loaded with `require()` (Electron 45 runs Node 24, where `require(esm)` works). TypeScript resolves types with `moduleResolution: node10`, which ignores `exports`: if a package exposes its types only there, map it in `tsconfig.json` `paths` (as done for `conf`).
 - **`ELECTRON_RUN_AS_NODE`**: terminals spawned by VS Code / Electron tools may have it set; Electron then starts as plain Node (`app` is undefined). `scripts/devRunner.js` deletes it before spawning Electron.
 - **TypeScript in VS Code**: the editor's bundled TS (6.x) defaults to `strict: true` and deprecates `baseUrl`. The tsconfig therefore sets `"strict": false` explicitly and avoids `baseUrl`; do not re-add it. The codebase is **not** strict-null-safe — don't "fix" thousands of strictness errors unless that is the task.
 - `validateSender` currently returns `true` on Windows (`TEMP HOTFIX`).
 - **Stored connections** are encrypted with a key cached in the renderer's `localStorage`; if the key is lost (e.g. running more than one app instance in dev) the connections are reset. In development, *Settings → Data → Apply debug connections* re-creates the connections to the docker test DBs (params in [testConnections.ts](src/common/libs/testConnections.ts), shared with the integration tests).
-- **Tests run inside Electron** (`ELECTRON_RUN_AS_NODE`, see [scripts/vitest.js](scripts/vitest.js)) because native modules are built for Electron's ABI. Always use the npm scripts, not `npx vitest`.
+- **Tests run inside Electron** (`ELECTRON_RUN_AS_NODE`, see [scripts/vitest.js](scripts/vitest.js)) so they use the same Node runtime as the app. Always use the npm scripts, not `npx vitest`.
 - **Module interop**: webpack compiles to CommonJS, Vitest loads ESM. `import * as x` namespaces are read-only and not callable under Vitest: for CommonJS modules that are called, instantiated or mutated (moment, better-sqlite3, pg-query-stream, ...) use `import x = require('...')`; for classes use named imports (`import { EventEmitter } from 'events'`).
 - **SQL snapshots**: [`tests/unit/clients/__snapshots__`](tests/unit/clients/__snapshots__) pins the SQL generated by each client. A changed snapshot must be intentional: update with `npm run test:unit -- -u` and justify it in the PR.
 - **CI**: [.github/workflows/test.yml](.github/workflows/test.yml) runs on PRs and on `develop`, and gates the beta/stable release workflows.
