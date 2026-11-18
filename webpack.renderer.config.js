@@ -117,7 +117,9 @@ const config = {
                      additionalData: `
                         $platform: ${process.platform};
                         @import "@/scss/_variables.scss";`,
-                     sassOptions: { quietDeps: true }
+                     // charset: false → no BOM/@charset in compressed (production) output: once the
+                     // stylesheets are concatenated, a BOM in the middle breaks the next selector
+                     sassOptions: { quietDeps: true, charset: false }
                   }
                }
             ]
