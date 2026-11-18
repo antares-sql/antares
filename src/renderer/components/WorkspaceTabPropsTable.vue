@@ -245,6 +245,7 @@
 
 <script setup lang="ts">
 import { AlterTableParams, TableCheck, TableField, TableForeign, TableIndex, TableInfos, TableOptions } from 'common/interfaces/antares';
+import { diffTableFields } from 'common/libs/tableDiff';
 import { uidGen } from 'common/libs/uidGen';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
@@ -489,30 +490,8 @@ const saveChanges = async () => {
    if (isSaving.value) return;
    isSaving.value = true;
 
-   // FIELDS
-   const originalIDs = originalFields.value.reduce((acc, curr) => [...acc, curr._antares_id], []);
-   const localIDs = localFields.value.reduce((acc, curr) => [...acc, curr._antares_id], []);
-
-   // Fields Additions
-   const additions = localFields.value.filter(field => !originalIDs.includes(field._antares_id)).map(field => {
-      const lI = localFields.value.findIndex(localField => localField._antares_id === field._antares_id);
-      const after = lI > 0 ? localFields.value[lI - 1].name : false;
-      return { ...field, after };
-   });
-
-   // Fields Deletions
-   const deletions = originalFields.value.filter(field => !localIDs.includes(field._antares_id));
-
-   // Fields Changes
-   const changes: TableField[] & {after: string | boolean; orgName: string}[] = [];
-   localFields.value.forEach((field, i) => {
-      const originalField = originalFields.value.find(oField => oField._antares_id === field._antares_id);
-      if (!originalField) return;
-      const after = i > 0 ? localFields.value[i - 1].name : false;
-      const orgName = originalField.name;
-
-      changes.push({ ...field, after, orgName });
-   });
+   // FIELDS (only added, removed, modified or moved columns)
+   const { additions, changes, deletions } = diffTableFields(originalFields.value, localFields.value);
 
    // OPTIONS
    const options = Object.keys(localOptions.value).reduce((acc: {[key:string]: TableInfos}, option: keyof TableInfos) => {
