@@ -97,38 +97,47 @@ export class MySQLDdl extends DdlGenerator {
          indexChanges,
          foreignChanges,
          checkChanges,
+         tableStructure,
          options
       } = params;
 
       const sql = `ALTER TABLE \`${schema}\`.\`${table}\` `;
-      const alterColumnsAdd: string[] = [];
-      const alterColumnsChange: string[] = [];
-      const alterColumnsDrop: string[] = [];
+      const alterOptions: string[] = [];
+      const alterColumns: { name: string; clause: string }[] = [];
+      const alterKeys: string[] = [];
+      const alterDrops: string[] = [];
       const alterQueryes: string[] = [];
 
       // OPTIONS
-      if ('comment' in options) alterColumnsChange.push(`COMMENT='${options.comment}'`);
-      if ('engine' in options) alterColumnsChange.push(`ENGINE=${options.engine}`);
-      if ('autoIncrement' in options) alterColumnsChange.push(`AUTO_INCREMENT=${+options.autoIncrement}`);
-      if ('collation' in options) alterColumnsChange.push(`COLLATE='${options.collation}'`);
+      if ('comment' in options) alterOptions.push(`COMMENT='${options.comment}'`);
+      if ('engine' in options) alterOptions.push(`ENGINE=${options.engine}`);
+      if ('autoIncrement' in options) alterOptions.push(`AUTO_INCREMENT=${+options.autoIncrement}`);
+      if ('collation' in options) alterOptions.push(`COLLATE='${options.collation}'`);
 
       // ADD FIELDS
       additions.forEach(addition => {
-         const typeInfo = this.getTypeInfo(addition.type);
-         const length = typeInfo.length ? addition.enumValues || addition.numLength || addition.charLength || addition.datePrecision : false;
-
-         alterColumnsAdd.push(`ADD COLUMN \`${addition.name}\` 
-            ${addition.type.toUpperCase()}${length ? `(${length}${addition.numScale ? `,${addition.numScale}` : ''})` : ''} 
-            ${addition.unsigned ? 'UNSIGNED' : ''} 
-            ${addition.zerofill ? 'ZEROFILL' : ''}
-            ${addition.nullable ? 'NULL' : 'NOT NULL'}
-            ${addition.autoIncrement ? 'AUTO_INCREMENT' : ''}
-            ${addition.default !== null ? `DEFAULT ${addition.default || '\'\''}` : ''}
-            ${addition.comment ? `COMMENT '${addition.comment}'` : ''}
-            ${addition.collation ? `COLLATE ${addition.collation}` : ''}
-            ${addition.onUpdate ? `ON UPDATE ${addition.onUpdate}` : ''}
-            ${addition.after ? `AFTER \`${addition.after}\`` : 'FIRST'}`);
+         alterColumns.push({
+            name: addition.name,
+            clause: `ADD COLUMN ${this.columnDefinition(addition, 'add')}${this.columnPosition(addition.after)}`
+         });
       });
+
+      // CHANGE FIELDS (only modified or moved columns, see common/libs/tableDiff)
+      changes.forEach(change => {
+         alterColumns.push({
+            name: change.name,
+            clause: `CHANGE COLUMN \`${change.orgName}\` ${this.columnDefinition(change, 'change')}${this.columnPosition(change.after)}`
+         });
+      });
+
+      // Column clauses are applied in the order they are written and AFTER refers to the new names:
+      // emitting them in the final column order places every column after an already positioned one
+      const finalOrder = (tableStructure?.fields || []).map(field => field.name);
+      const position = (name: string) => {
+         const i = finalOrder.indexOf(name);
+         return i === -1 ? Infinity : i;
+      };
+      alterColumns.sort((a, b) => position(a.name) - position(b.name));
 
       // ADD INDEX
       indexChanges.additions.forEach(addition => {
@@ -136,68 +145,50 @@ export class MySQLDdl extends DdlGenerator {
          let type = addition.type;
 
          if (type === 'PRIMARY')
-            alterColumnsAdd.push(`ADD PRIMARY KEY (${fields})`);
+            alterKeys.push(`ADD PRIMARY KEY (${fields})`);
          else {
             if (type === 'UNIQUE')
                type = 'UNIQUE INDEX';
 
-            alterColumnsAdd.push(`ADD ${type} \`${addition.name}\` (${fields})`);
+            alterKeys.push(`ADD ${type} \`${addition.name}\` (${fields})`);
          }
       });
 
       // ADD FOREIGN KEYS
       foreignChanges.additions.forEach(addition => {
-         alterColumnsAdd.push(`ADD CONSTRAINT \`${addition.constraintName}\` FOREIGN KEY (\`${addition.field}\`) REFERENCES \`${addition.refTable}\` (\`${addition.refField}\`) ON UPDATE ${addition.onUpdate} ON DELETE ${addition.onDelete}`);
+         alterKeys.push(`ADD CONSTRAINT \`${addition.constraintName}\` FOREIGN KEY (\`${addition.field}\`) REFERENCES \`${addition.refTable}\` (\`${addition.refField}\`) ON UPDATE ${addition.onUpdate} ON DELETE ${addition.onDelete}`);
       });
 
       // ADD TABLE CHECKS
       checkChanges.additions.forEach(addition => {
          if (!addition.clause.trim().length) return;
-         alterColumnsAdd.push(`ADD ${addition.name ? `CONSTRAINT \`${addition.name}\` ` : ''}CHECK (${addition.clause})`);
-      });
-
-      // CHANGE FIELDS
-      changes.forEach(change => {
-         const typeInfo = this.getTypeInfo(change.type);
-         const length = typeInfo.length ? change.enumValues || change.numLength || change.charLength || change.datePrecision : false;
-
-         alterColumnsChange.push(`CHANGE COLUMN \`${change.orgName}\` \`${change.name}\` 
-            ${change.type.toUpperCase()}${length ? `(${length}${change.numScale ? `,${change.numScale}` : ''})` : ''} 
-            ${change.unsigned ? 'UNSIGNED' : ''} 
-            ${change.zerofill ? 'ZEROFILL' : ''}
-            ${change.nullable ? 'NULL' : 'NOT NULL'}
-            ${change.autoIncrement ? 'AUTO_INCREMENT' : ''}
-            ${change.collation ? `COLLATE ${change.collation}` : ''}
-            ${change.default !== null ? `DEFAULT ${change.default || '\'\''}` : ''}
-            ${change.comment ? `COMMENT '${change.comment}'` : ''}
-            ${change.onUpdate ? `ON UPDATE ${change.onUpdate}` : ''}
-            ${change.after ? `AFTER \`${change.after}\`` : 'FIRST'}`);
+         alterKeys.push(`ADD ${addition.name ? `CONSTRAINT \`${addition.name}\` ` : ''}CHECK (${addition.clause})`);
       });
 
       // CHANGE INDEX
       indexChanges.changes.forEach(change => {
          if (change.oldType === 'PRIMARY')
-            alterColumnsChange.push('DROP PRIMARY KEY');
+            alterKeys.push('DROP PRIMARY KEY');
          else
-            alterColumnsChange.push(`DROP INDEX \`${change.oldName}\``);
+            alterKeys.push(`DROP INDEX \`${change.oldName}\``);
 
          const fields = change.fields.map(field => `\`${field}\``).join(',');
          let type = change.type;
 
          if (type === 'PRIMARY')
-            alterColumnsChange.push(`ADD PRIMARY KEY (${fields})`);
+            alterKeys.push(`ADD PRIMARY KEY (${fields})`);
          else {
             if (type === 'UNIQUE')
                type = 'UNIQUE INDEX';
 
-            alterColumnsChange.push(`ADD ${type} \`${change.name}\` (${fields})`);
+            alterKeys.push(`ADD ${type} \`${change.name}\` (${fields})`);
          }
       });
 
       // CHANGE FOREIGN KEYS
       foreignChanges.changes.forEach(change => {
-         alterColumnsChange.push(`DROP FOREIGN KEY \`${change.oldName}\``);
-         alterColumnsChange.push(`ADD CONSTRAINT \`${change.constraintName}\` FOREIGN KEY (\`${change.field}\`) REFERENCES \`${change.refTable}\` (\`${change.refField}\`) ON UPDATE ${change.onUpdate} ON DELETE ${change.onDelete}`);
+         alterKeys.push(`DROP FOREIGN KEY \`${change.oldName}\``);
+         alterKeys.push(`ADD CONSTRAINT \`${change.constraintName}\` FOREIGN KEY (\`${change.field}\`) REFERENCES \`${change.refTable}\` (\`${change.refField}\`) ON UPDATE ${change.onUpdate} ON DELETE ${change.onDelete}`);
       });
 
       // CHANGE CHECK TABLE
@@ -209,20 +200,20 @@ export class MySQLDdl extends DdlGenerator {
 
       // DROP FIELDS
       deletions.forEach(deletion => {
-         alterColumnsDrop.push(`DROP COLUMN \`${deletion.name}\``);
+         alterDrops.push(`DROP COLUMN \`${deletion.name}\``);
       });
 
       // DROP INDEX
       indexChanges.deletions.forEach(deletion => {
          if (deletion.type === 'PRIMARY')
-            alterColumnsDrop.push('DROP PRIMARY KEY');
+            alterDrops.push('DROP PRIMARY KEY');
          else
-            alterColumnsDrop.push(`DROP INDEX \`${deletion.name}\``);
+            alterDrops.push(`DROP INDEX \`${deletion.name}\``);
       });
 
       // DROP FOREIGN KEYS
       foreignChanges.deletions.forEach(deletion => {
-         alterColumnsDrop.push(`DROP FOREIGN KEY \`${deletion.constraintName}\``);
+         alterDrops.push(`DROP FOREIGN KEY \`${deletion.constraintName}\``);
       });
 
       // DROP CHECK TABLE
@@ -230,14 +221,38 @@ export class MySQLDdl extends DdlGenerator {
          alterQueryes.push(`${sql} DROP CONSTRAINT \`${deletion.name}\``);
       });
 
-      if (alterColumnsAdd.length) alterQueryes.push(sql+alterColumnsAdd.join(', '));
-      if (alterColumnsChange.length) alterQueryes.push(sql+alterColumnsChange.join(', '));
-      if (alterColumnsDrop.length) alterQueryes.push(sql+alterColumnsDrop.join(', '));
+      // A single statement for options, columns and keys: at most one table rebuild
+      const alterMain = [...alterOptions, ...alterColumns.map(column => column.clause), ...alterKeys];
+      if (alterMain.length) alterQueryes.push(sql+alterMain.join(', '));
+      if (alterDrops.length) alterQueryes.push(sql+alterDrops.join(', '));
 
       // RENAME
       if (options.name) alterQueryes.push(`RENAME TABLE \`${schema}\`.\`${table}\` TO \`${schema}\`.\`${options.name}\``);
 
       return alterQueryes.join(';');
+   }
+
+   private columnDefinition (field: antares.TableField, mode: 'add' | 'change'): string {
+      const typeInfo = this.getTypeInfo(field.type);
+      const length = typeInfo.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
+      const collation = field.collation ? `COLLATE ${field.collation}` : '';
+      const defaultValue = field.default !== null ? `DEFAULT ${field.default || '\'\''}` : '';
+      const comment = field.comment ? `COMMENT '${field.comment}'` : '';
+
+      return `\`${field.name}\` 
+            ${field.type.toUpperCase()}${length ? `(${length}${field.numScale ? `,${field.numScale}` : ''})` : ''} 
+            ${field.unsigned ? 'UNSIGNED' : ''} 
+            ${field.zerofill ? 'ZEROFILL' : ''}
+            ${field.nullable ? 'NULL' : 'NOT NULL'}
+            ${field.autoIncrement ? 'AUTO_INCREMENT' : ''}
+            ${mode === 'add' ? `${defaultValue}\n            ${comment}\n            ${collation}` : `${collation}\n            ${defaultValue}\n            ${comment}`}
+            ${field.onUpdate ? `ON UPDATE ${field.onUpdate}` : ''}`.trimEnd();
+   }
+
+   /** `undefined` keeps the current position, `false` means FIRST */
+   private columnPosition (after: string | false | undefined): string {
+      if (after === undefined) return '';
+      return after ? `\n            AFTER \`${after}\`` : '\n            FIRST';
    }
 
    duplicateTable (params: { schema: string; table: string }): string {
