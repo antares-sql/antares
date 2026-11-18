@@ -120,7 +120,8 @@ export interface TableField {
    isArray?: boolean;
    onUpdate?: string;
    comment?: string;
-   after?: string;
+   /** Column to place this column after, `false` for FIRST, `undefined` to keep the current position */
+   after?: string | false;
    orgName?: string;
    length?: number | false;
    alias: string;
