@@ -99,6 +99,7 @@ npm run debug               # clean dist + install Vue devtools + debug-runner
 npm run debug-runner        # dev server on :9080 + main/workers watch + electron with --inspect=9222 / --remote-debugging-port=9223
 npm run compile             # production webpack builds into dist/
 npm run build               # compile + electron-builder (output in build/)
+npm run build:linux:docker  # Linux build (deb + AppImage) in a container from any OS; extra args go to electron-builder
 npm run lint / lint:fix     # eslint + stylelint (also run by husky pre-commit)
 npm run translation:check -- it-IT   # list missing keys vs en-US
 npm test                    # unit tests (alias of test:unit)

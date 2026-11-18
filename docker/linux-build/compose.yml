@@ -1,0 +1,20 @@
+# Builds the Linux packages in a container; output goes to ./build on the host.
+#   npm run build:linux:docker                         -> deb + AppImage x64
+#   npm run build:linux:docker -- --linux deb          -> only deb
+#   npm run build:linux:docker -- --linux --arm64      -> arm64 (packaging only, no native compile)
+
+name: antares-linux-build
+
+services:
+  builder:
+    build: .
+    platform: linux/amd64
+    volumes:
+      - ../..:/project
+      # Linux node_modules, kept apart from the host's (Windows/macOS) one.
+      - node_modules:/project/node_modules
+      - cache:/cache
+
+volumes:
+  node_modules:
+  cache:
