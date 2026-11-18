@@ -74,6 +74,13 @@ for (const engine of getTestEngines()) {
          await expect(client.ping()).resolves.toBeDefined();
       });
 
+      it('reads the server collations', async ({ skip }) => {
+         if (!features.collations) skip();
+         // MariaDB 10.10+ returns rows with NULL Charset/Id/Default (uca1400_*)
+         const collations: { collation: string }[] = await client.getCollations();
+         expect(collations.length).toBeGreaterThan(0);
+      });
+
       it('creates a table', async () => {
          await client.createTable({
             schema,

@@ -910,11 +910,12 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
 
    async getCollations () {
       interface ShowCollationResult {
-         Charset: string;
+         // MariaDB 10.10+ lists charset-independent collations (uca1400_*) with NULL Charset, Id and Default
+         Charset: string | null;
          Collation: string;
-         Compiled: string;
-         Default: string;
-         Id: number;
+         Compiled: string | null;
+         Default: string | null;
+         Id: number | null;
          Sortlen: number;
       }
 
@@ -924,8 +925,8 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
          return {
             charset: row.Charset,
             collation: row.Collation,
-            compiled: row.Compiled.includes('Yes'),
-            default: row.Default.includes('Yes'),
+            compiled: !!row.Compiled?.includes('Yes'),
+            default: !!row.Default?.includes('Yes'),
             id: row.Id,
             sortLen: row.Sortlen
          };
