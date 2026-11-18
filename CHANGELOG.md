@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.36-beta.0](https://github.com/antares-sql/antares/compare/v0.7.35...v0.7.36-beta.0) (2026-11-18)
+
+
+### Features
+
+* add 'run query at cursor' shortcut and functionality ([d46319d](https://github.com/antares-sql/antares/commit/d46319d6dfd96ca0fc6aff6984fea3b6e2675e87))
+* add per-connection option to show table size in MySQL/MariaDB ([f1ad164](https://github.com/antares-sql/antares/commit/f1ad1646cb8d12dfd86923d7c161c59f77f769e6))
+* **appDriver:** add script to drive the Antares app for testing and manual checks ([ecfc1be](https://github.com/antares-sql/antares/commit/ecfc1be77419bdcc08394aebda776f200b1cabb6))
+* **debug:** implement debug connections for test databases and add UI support ([82bc3a1](https://github.com/antares-sql/antares/commit/82bc3a1312fd4d560e4eb9b41d3a35da8a7ebf9f))
+* **i18n:** add Polish (pl-PL) translation ([4a8cd5c](https://github.com/antares-sql/antares/commit/4a8cd5c3c93b017cbe2b41796641e9ab0325ee13))
+* implement DDL generators for MySQL, PostgreSQL, and SQLite ([001277b](https://github.com/antares-sql/antares/commit/001277b86f13f8cf3bf5bfcb76f589b7c88245be))
+* implement formatValue utility for SQL literals and enhance dialect handling ([6051374](https://github.com/antares-sql/antares/commit/60513748b53cbfae05cec195b6d3edc4697eb66b))
+* navigate to foreign key reference ([323d696](https://github.com/antares-sql/antares/commit/323d6962bf7583d9394992163294d4815566d5ba))
+* Refactor database connection management and introduce SSH tunneling support ([1e3e761](https://github.com/antares-sql/antares/commit/1e3e761c6a9b9fe6045bd99853097c0bb61597c9))
+* **scratchpad:** name saved queries ([2756bff](https://github.com/antares-sql/antares/commit/2756bff561f1e7549a519ee939afbe5f0bba4642))
+* **tests:** add fixtures and tests for query builder and SQL generation ([ec2a078](https://github.com/antares-sql/antares/commit/ec2a07881fad07237ee9728035a2be3663c238eb))
+* **tests:** add offline client and raw query recorder for introspection fixtures ([2517067](https://github.com/antares-sql/antares/commit/251706727467185aa26db27e878f61fa8c3d5337))
+
+
+### Bug Fixes
+
+* **core:** back up unreadable connections store before clearing it ([53f347c](https://github.com/antares-sql/antares/commit/53f347cea5ea23fcf530aa0b3de14f68a4ef7e34))
+* CR fixes ([8a450a6](https://github.com/antares-sql/antares/commit/8a450a6eee75618b4cd8023b857e1fd59efbe1b2))
+* missing saved connection ([715c7e9](https://github.com/antares-sql/antares/commit/715c7e97b1155e10ba5ad2293ccf83d3761d165c))
+* **MySQL:** alter table with a single statement and minimal reordering ([0276548](https://github.com/antares-sql/antares/commit/02765486367d7372713b0f9fe65acb87e3c8e66c)), closes [#991](https://github.com/antares-sql/antares/issues/991)
+* **MySQL:** update getCollations to handle null values for charset and compiled/default fields ([19a8720](https://github.com/antares-sql/antares/commit/19a8720c13e64e7fd6e40a43b35316331af11f42))
+* PostgreSQL dollar-tag detection inside quoted strings ([7e28b6c](https://github.com/antares-sql/antares/commit/7e28b6c111ab730ce2d567c45699fe704c19bebf))
+* update dependencies and improve tsconfig formatting ([aaee00f](https://github.com/antares-sql/antares/commit/aaee00fe1c5969c14bd61298ba215b1cb1982ee5))
+* update native module handling and remove cpu-features dependency ([fa20be9](https://github.com/antares-sql/antares/commit/fa20be93be93fdd495032c51859aec6e402d95a9))
+
 ### [0.7.35](https://github.com/antares-sql/antares/compare/v0.7.35-beta.1...v0.7.35) (2025-06-17)
 
 ### [0.7.35-beta.1](https://github.com/antares-sql/antares/compare/v0.7.35-beta.0...v0.7.35-beta.1) (2025-04-28)
