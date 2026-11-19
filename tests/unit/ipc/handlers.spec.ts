@@ -106,6 +106,26 @@ describe('IPC handlers', () => {
       expect(capture.lite.sql).toEqual(['UPDATE "main"."t" SET name = \'O\'\'Reilly\' WHERE id = \'it\'\'s\' LIMIT 1']);
    });
 
+   // #1004: with a composite primary key the renderer sends no primary and a null id
+   it('updates cells of tables with a composite primary key by every original value', async () => {
+      const { ipc, capture } = setup();
+      const result = await ipc.invoke('update-table-cell', {
+         uid: 'lite',
+         schema: 'main',
+         table: 't',
+         primary: undefined,
+         id: null,
+         field: 'v',
+         type: 'TEXT',
+         content: 'edited',
+         row: { a: 1, b: 2, v: 'edited' },
+         orgRow: { a: 1, b: 2, v: 'one-two' }
+      });
+
+      expect(result).toEqual({ status: 'success', response: { reload: true } });
+      expect(capture.lite.sql).toEqual(['UPDATE "main"."t" SET v = \'edited\' WHERE a = 1 AND b = 2 AND v = \'one-two\' LIMIT 1']);
+   });
+
    // validateSender accepts every sender on Windows (TEMP HOTFIX in libs/misc/validateSender.ts)
    it.skipIf(process.platform === 'win32')('rejects unauthorized senders on handlers with custom logic too', async () => {
       const { ipc } = setup();
