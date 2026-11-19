@@ -3,6 +3,12 @@ import * as firebird from 'node-firebird';
 
 import { ConnectionLease, createLease } from '../../core/ConnectionLease';
 
+/**
+ * blobAsText: text BLOBs as strings.
+ * numericMode 'safe': INT64/INT128 beyond 2^53 as exact strings instead of rounded numbers (they may be primary keys)
+ */
+const ATTACH_OPTIONS = { blobAsText: true, numericMode: 'safe' } as const;
+
 export type FirebirdConnection = firebird.Database | firebird.Transaction;
 
 interface TabTransaction {
@@ -43,7 +49,7 @@ export class FirebirdConnections {
    /** A new attachment */
    attach () {
       return new Promise<firebird.Database>((resolve, reject) => {
-         firebird.attach({ ...this._params, blobAsText: true }, (err, db) => {
+         firebird.attach({ ...this._params, ...ATTACH_OPTIONS }, (err, db) => {
             if (err) reject(err);
             else resolve(db);
          });
@@ -51,7 +57,7 @@ export class FirebirdConnections {
    }
 
    createPool () {
-      return firebird.pool(this._poolSize, { ...this._params, blobAsText: true });
+      return firebird.pool(this._poolSize, { ...this._params, ...ATTACH_OPTIONS });
    }
 
    /**

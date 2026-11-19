@@ -309,7 +309,8 @@ const inputProps = computed(() => {
       return { type: 'text', mask: false };
 
    if ([...NUMBER, ...FLOAT].includes(editingType.value)) {
-      if (IS_BIGINT.includes(editingType.value))
+      // Integers beyond 2^53 arrive as strings: a number input would round them
+      if (IS_BIGINT.includes(editingType.value) || typeof originalContent.value === 'string')
          return { type: 'text', mask: false };
       else
          return { type: 'number', mask: false };

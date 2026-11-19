@@ -7,7 +7,7 @@ import { DatabaseClient } from '../db/core/contracts';
 import { SQLiteConnections, SQLiteParams } from '../db/engines/sqlite/SQLiteConnections';
 import { SQLiteDdl } from '../db/engines/sqlite/SQLiteDdl';
 import { SQLiteDialect } from '../db/engines/sqlite/SQLiteDialect';
-import { parseTrigger, parseViewSelect } from '../db/engines/sqlite/SQLiteParsers';
+import { normalizeIntegers, parseTrigger, parseViewSelect } from '../db/engines/sqlite/SQLiteParsers';
 import { BaseClient } from './BaseClient';
 
 export class SQLiteClient extends BaseClient implements DatabaseClient {
@@ -506,7 +506,8 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
                   const stmt = connection.prepare(query);
 
                   if (stmt.reader) {
-                     queryAllResult = stmt.all();
+                     // Read integers as BigInt so values beyond 2^53 are not rounded (they may be primary keys)
+                     queryAllResult = stmt.safeIntegers(true).all().map(normalizeIntegers);
                      fields = stmt.columns();
 
                      if (queryAllResult.length) {

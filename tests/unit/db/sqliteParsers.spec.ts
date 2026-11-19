@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseTrigger, parseViewSelect } from '../../../src/main/libs/db/engines/sqlite/SQLiteParsers';
+import { normalizeIntegers, parseTrigger, parseViewSelect } from '../../../src/main/libs/db/engines/sqlite/SQLiteParsers';
 
 describe('SQLite parseTrigger', () => {
    it.each([
@@ -34,5 +34,31 @@ describe('SQLite parseViewSelect', () => {
       expect(parseViewSelect('CREATE VIEW cheap_products AS SELECT id, name FROM products')).toBe('SELECT id, name FROM products');
       expect(parseViewSelect('CREATE VIEW "has as in name" AS\nSELECT 1')).toBe('SELECT 1');
       expect(parseViewSelect('CREATE VIEW v (a, b) AS SELECT 1, 2')).toBe('SELECT 1, 2');
+   });
+});
+
+describe('SQLite normalizeIntegers', () => {
+   it('keeps safe integers as numbers and turns larger ones into exact strings', () => {
+      const row = normalizeIntegers({
+         small: 42n,
+         negative: -7n,
+         maxSafe: BigInt(Number.MAX_SAFE_INTEGER),
+         steamId: 76561198012345679n,
+         minInt64: -9223372036854775808n,
+         real: 1.5,
+         text: 'x',
+         empty: null as null
+      });
+
+      expect(row).toEqual({
+         small: 42,
+         negative: -7,
+         maxSafe: Number.MAX_SAFE_INTEGER,
+         steamId: '76561198012345679',
+         minInt64: '-9223372036854775808',
+         real: 1.5,
+         text: 'x',
+         empty: null
+      });
    });
 });

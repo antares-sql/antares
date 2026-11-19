@@ -108,5 +108,55 @@ for (const engine of getTestEngines()) {
          await client.update({ txt: '= \'json-hit\'' }).schema(schema).from(TABLE).where({ doc: client.dialect.jsonEquals(doc).trim() }).limit(1).run();
          expect(await read('txt')).toBe('json-hit');
       });
+
+      // #997: BIGINT primary keys beyond 2^53 must not be rounded, or edits hit the wrong row
+      describe.sequential('BIGINT primary key beyond 2^53', () => {
+         const BIG_TABLE = 'it_values_big';
+         const bigTable = () => engine.name === 'firebird' ? q(BIG_TABLE) : `${q(schema)}.${q(BIG_TABLE)}`;
+         // Adjacent ids that collapse into the same double
+         const ids = ['76561198012345678', '76561198012345679'];
+         // Same id formatting as the "update table cell" / "delete table rows" handlers
+         const idLiteral = (id: unknown) => typeof id === 'number' ? id : client.dialect.quoteString(String(id));
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         const field = (row: any, name: string) => name in row ? row[name] : row[name.toUpperCase()];
+         const readAll = async () => {
+            const { rows } = await client.raw(`SELECT ${q('id')}, ${q('label')} FROM ${bigTable()} ORDER BY ${q('id')}`);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return rows.map((row: any) => [String(field(row, 'id')), field(row, 'label')]);
+         };
+         const lastId = async () => {
+            const { rows } = await client.raw(`SELECT ${q('id')} FROM ${bigTable()} ORDER BY ${q('id')} DESC`);
+            return field(rows[0], 'id');
+         };
+
+         beforeAll(async () => {
+            await client.raw(`DROP TABLE ${bigTable()}`).catch((): null => null);
+            await client.raw(`CREATE TABLE ${bigTable()} (${q('id')} BIGINT NOT NULL PRIMARY KEY, ${q('label')} VARCHAR(20))`);
+            for (const id of ids)
+               await client.raw(`INSERT INTO ${bigTable()} (${q('id')}, ${q('label')}) VALUES (${id}, 'original')`);
+         });
+
+         afterAll(async () => {
+            await client.raw(`DROP TABLE ${bigTable()}`).catch((): null => null);
+         });
+
+         it('reads the exact ids', async () => {
+            expect((await readAll()).map(([id]: string[]) => id)).toEqual(ids);
+         });
+
+         it('updates the row with the id that was read', async () => {
+            const id = idLiteral(await lastId());
+            await client.update({ label: '= \'edited\'' })
+               .schema(schema).from(BIG_TABLE).where({ id: `= ${id}` }).limit(1).run();
+            expect(await readAll()).toEqual([[ids[0], 'original'], [ids[1], 'edited']]);
+         });
+
+         it('deletes the row with the id that was read', async () => {
+            const id = idLiteral(await lastId());
+            await client.schema(schema).delete(BIG_TABLE)
+               .where({ id: `IN (${id})` }).limit(1).run();
+            expect(await readAll()).toEqual([[ids[0], 'original']]);
+         });
+      });
    });
 }
