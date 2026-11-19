@@ -126,10 +126,8 @@ export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = 
    ipc.handle('export', (event, { uid, type, tables, ...rest }) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
-      if (exporter !== null) {
-         exporter.terminate();
-         return;
-      }
+      if (exporter !== null)
+         return { status: 'error', response: 'An export is already running' };
 
       return new Promise((resolve/*, reject */) => {
          (async () => {
@@ -155,9 +153,14 @@ export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = 
             // Init exporter thread
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            exporter = new Worker(new URL('../workers/exporter', import.meta.url));
+            const worker: Worker = new Worker(new URL('../workers/exporter', import.meta.url));
+            exporter = worker;
+            // Events of this worker must not touch a newer one started in the meantime
+            const release = () => {
+               if (exporter === worker) exporter = null;
+            };
 
-            exporter.postMessage({
+            worker.postMessage({
                type: 'init',
                client: {
                   name: type,
@@ -168,7 +171,7 @@ export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = 
             });
 
             // Exporter message listener
-            exporter.on('message', (message: workers.WorkerIpcMessage) => {
+            worker.on('message', (message: workers.WorkerIpcMessage) => {
                const { type, payload } = message;
 
                switch (type) {
@@ -176,27 +179,32 @@ export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = 
                      event.sender.send('export-progress', payload);
                      break;
                   case 'end':
-                     setTimeout(() => { // Ensures that writing thread has finished
-                        exporter?.terminate();
-                        exporter = null;
-                     }, 500);
+                     // The worker closes its connection and exits: terminate it only if it hangs
+                     release();
+                     setTimeout(() => worker.terminate(), 10000).unref();
                      resolve({ status: 'success', response: payload });
                      break;
                   case 'cancel':
-                     exporter?.terminate();
-                     exporter = null;
+                     release();
+                     worker.terminate();
                      resolve({ status: 'error', response: 'Operation cancelled' });
                      break;
                   case 'error':
-                     exporter?.terminate();
-                     exporter = null;
+                     release();
+                     worker.terminate();
                      resolve({ status: 'error', response: payload });
                      break;
                }
             });
 
-            exporter.on('close', code => {
-               exporter = null;
+            // An uncaught error or a crash (e.g. out of memory) of the thread: without these the UI waits forever
+            worker.on('error', err => {
+               release();
+               resolve({ status: 'error', response: err.toString() });
+            });
+
+            worker.on('exit', code => {
+               release();
                resolve({ status: 'error', response: `Operation ended with code: ${code}` });
             });
          })();
@@ -229,10 +237,8 @@ export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = 
    ipc.handle('import-sql', async (event, options) => {
       if (!validateSender(event.senderFrame)) return { status: 'error', response: 'Unauthorized process' };
 
-      if (importer !== null) {
-         importer.terminate();
-         return;
-      }
+      if (importer !== null)
+         return { status: 'error', response: 'An import is already running' };
 
       return new Promise((resolve/*, reject */) => {
          (async () => {
@@ -241,16 +247,21 @@ export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = 
             // Init importer thread
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            importer = new Worker(new URL('../workers/importer', import.meta.url));
+            const worker: Worker = new Worker(new URL('../workers/importer', import.meta.url));
+            importer = worker;
+            // Events of this worker must not touch a newer one started in the meantime
+            const release = () => {
+               if (importer === worker) importer = null;
+            };
 
-            importer.postMessage({
+            worker.postMessage({
                type: 'init',
                dbConfig,
                options
             });
 
             // Importer message listener
-            importer.on('message', (message: workers.WorkerIpcMessage) => {
+            worker.on('message', (message: workers.WorkerIpcMessage) => {
                const { type, payload } = message;
 
                switch (type) {
@@ -261,27 +272,32 @@ export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = 
                      event.sender.send('query-error', payload);
                      break;
                   case 'end':
-                     setTimeout(() => { // Ensures that writing process has finished
-                        importer?.terminate();
-                        importer = null;
-                     }, 2000);
+                     // The worker closes its connection and exits: terminate it only if it hangs
+                     release();
+                     setTimeout(() => worker.terminate(), 10000).unref();
                      resolve({ status: 'success', response: payload });
                      break;
                   case 'cancel':
-                     importer.terminate();
-                     importer = null;
+                     release();
+                     worker.terminate();
                      resolve({ status: 'error', response: 'Operation cancelled' });
                      break;
                   case 'error':
-                     importer.terminate();
-                     importer = null;
+                     release();
+                     worker.terminate();
                      resolve({ status: 'error', response: payload });
                      break;
                }
             });
 
-            importer.on('close', code => {
-               importer = null;
+            // An uncaught error or a crash (e.g. out of memory) of the thread: without these the UI waits forever
+            worker.on('error', err => {
+               release();
+               resolve({ status: 'error', response: err.toString() });
+            });
+
+            worker.on('exit', code => {
+               release();
                resolve({ status: 'error', response: `Operation ended with code: ${code}` });
             });
          })();

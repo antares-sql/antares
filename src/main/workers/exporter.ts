@@ -10,6 +10,20 @@ log.transports.file.fileName = 'workers.log';
 log.transports.console = null;
 log.errorHandler.startCatching();
 
+/**
+ * Closes the database connection and lets the thread exit by itself: terminating a thread with open
+ * sockets and native modules can crash the app (#841)
+ */
+const close = async (connection: { destroy: () => unknown }) => {
+   try {
+      await connection.destroy();
+   }
+   catch (err) {
+      log.error(err.toString());
+   }
+   parentPort.unref();
+};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const exportHandler = async (data: any) => {
    const { type, client, tables, options } = data;
@@ -47,6 +61,7 @@ const exportHandler = async (data: any) => {
                type: 'end',
                payload: { cancelled: exporter.isCancelled }
             });
+            close(connection);
          });
 
          exporter.once('cancel', () => {
@@ -61,7 +76,7 @@ const exportHandler = async (data: any) => {
             });
          });
 
-         exporter.run();
+         exporter.run().catch((): null => null); // Errors are already reported by the 'error' event
       }
       catch (err) {
          log.error(err.toString());

@@ -13,6 +13,20 @@ log.transports.file.fileName = 'workers.log';
 log.transports.console = null;
 log.errorHandler.startCatching();
 
+/**
+ * Closes the database connection and lets the thread exit by itself: terminating a thread with open
+ * sockets and native modules can crash the app (#841)
+ */
+const close = async (connection: { destroy: () => unknown }) => {
+   try {
+      await connection.destroy();
+   }
+   catch (err) {
+      log.error(err.toString());
+   }
+   parentPort.unref();
+};
+
 const importHandler = async (data: {
    type: string;
    dbConfig: mysql.ConnectionOptions & { schema: string; ssl?: mysql.SslOptions; ssh?: SSHConfig; readonly: boolean }
@@ -56,6 +70,7 @@ const importHandler = async (data: {
                type: 'end',
                payload: { cancelled: importer.isCancelled }
             });
+            close(connection);
          });
 
          importer.once('cancel', () => {
@@ -76,7 +91,7 @@ const importHandler = async (data: {
             });
          });
 
-         importer.run();
+         importer.run().catch((): null => null); // Errors are already reported by the 'error' event
       }
       catch (err) {
          log.error(err.toString());

@@ -38,8 +38,8 @@ export class SqlExporter extends BaseExporter {
       };
 
       const header = await this.getSqlHeader();
-      this.writeString(header);
-      this.writeString('\n\n\n');
+      await this.writeString(header);
+      await this.writeString('\n\n\n');
 
       for (const item of this._tables) {
          // user abort operation
@@ -62,19 +62,19 @@ export class SqlExporter extends BaseExporter {
          const tableHeader = this.buildComment(
             `Dump of table ${item.table}\n------------------------------------------------------------`
          );
-         this.writeString(tableHeader);
-         this.writeString('\n\n');
+         await this.writeString(tableHeader);
+         await this.writeString('\n\n');
 
          if (item.includeDropStatement) {
             const dropTableSyntax = this.getDropTable(item.table);
-            this.writeString(dropTableSyntax);
-            this.writeString('\n\n');
+            await this.writeString(dropTableSyntax);
+            await this.writeString('\n\n');
          }
 
          if (item.includeStructure) {
             const createTableSyntax = await this.getCreateTable(item.table);
-            this.writeString(createTableSyntax);
-            this.writeString('\n\n');
+            await this.writeString(createTableSyntax);
+            await this.writeString('\n\n');
          }
 
          if (item.includeContent) {
@@ -82,19 +82,19 @@ export class SqlExporter extends BaseExporter {
             this.emitUpdate(exportState);
             for await (const sqlStr of this.getTableInsert(item.table)) {
                if (this.isCancelled) return;
-               this.writeString(sqlStr);
+               await this.writeString(sqlStr);
             }
 
-            this.writeString('\n\n');
+            await this.writeString('\n\n');
          }
 
-         this.writeString('\n\n');
+         await this.writeString('\n\n');
       }
 
       // SQL to execute after tables creation
       if (this._postTablesSql) {
-         this.writeString(this._postTablesSql);
-         this.writeString('\n\n');
+         await this.writeString(this._postTablesSql);
+         await this.writeString('\n\n');
       }
 
       for (const item of extraItems) {
@@ -113,15 +113,15 @@ export class SqlExporter extends BaseExporter {
                      `Dump of ${item}\n------------------------------------------------------------`
                   ) + '\n\n';
 
-               this.writeString(header);
-               this.writeString(data);
-               this.writeString('\n\n');
+               await this.writeString(header);
+               await this.writeString(data);
+               await this.writeString('\n\n');
             }
          }
       }
 
       const footer = await this.getFooter();
-      this.writeString(footer);
+      await this.writeString(footer);
    }
 
    buildComment (text: string) {

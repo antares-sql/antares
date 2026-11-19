@@ -11,6 +11,7 @@ export class BaseExporter extends EventEmitter {
    protected _outputFileStream: fs.WriteStream;
    protected _processedStream: fs.WriteStream | Gzip;
    protected _state;
+   private _lastAccessCheck = 0;
 
    constructor (tables: exporter.TableParams[], options: exporter.ExportOptions) {
       super();
@@ -77,19 +78,44 @@ export class BaseExporter extends EventEmitter {
       this.emit('progress', { ...this._state, ...state });
    }
 
-   writeString (data: string) {
+   /**
+    * Writes to the output and waits when its buffer is full: rows are read from the database faster
+    * than they are written (gzip, slow disks), and an unbounded buffer exhausts the worker memory
+    * on big tables, freezing the export (#970).
+    */
+   async writeString (data: string) {
       if (this._isCancelled) return;
 
-      try {
-         fs.accessSync(this._options.outputFile);
-      }
-      catch (err) {
-         this._isCancelled = true;
+      // The output file was deleted or moved: checked at most once per second (it is a syscall per write),
+      // and only once the stream has created it (it is opened asynchronously)
+      const now = Date.now();
+      if (!this._outputFileStream.pending && now - this._lastAccessCheck > 1000) {
+         this._lastAccessCheck = now;
+         try {
+            fs.accessSync(this._options.outputFile);
+         }
+         catch (err) {
+            this._isCancelled = true;
 
-         const fileName = path.basename(this._options.outputFile);
-         this.emit('error', `The file ${fileName} is not accessible`);
+            const fileName = path.basename(this._options.outputFile);
+            this.emit('error', `The file ${fileName} is not accessible`);
+            return;
+         }
       }
-      this._processedStream.write(data);
+
+      if (!this._processedStream.write(data)) {
+         await new Promise<void>(resolve => {
+            const done = () => {
+               this._processedStream.off('drain', done);
+               this._processedStream.off('error', done);
+               this._processedStream.off('close', done);
+               resolve();
+            };
+            this._processedStream.once('drain', done);
+            this._processedStream.once('error', done);
+            this._processedStream.once('close', done);
+         });
+      }
    }
 
    dump () {
