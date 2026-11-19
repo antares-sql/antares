@@ -9,62 +9,77 @@
 
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/antares-sql/antares) ![GitHub](https://img.shields.io/github/license/antares-sql/antares) ![Test e2e](https://github.com/antares-sql/antares/actions/workflows/test-e2e-win.yml/badge.svg?branch=develop) ![Mastodon Follow](https://img.shields.io/mastodon/follow/%20110860460902482117?domain=https%3A%2F%2Ffosstodon.org&style=social) [![Plant a Tree](https://raw.githubusercontent.com/Fabio286/treedom-badge/master/svg/plant-a-tree.svg)](https://www.treedom.net/en/user/fabio-di-stasio/event/antares-for-the-planet)
 
-Antares is an SQL client based on [Electron.js](https://github.com/electron/electron) and [Vue.js](https://github.com/vuejs/vue) that aims to become a useful tool, especially for developers.  
-Our target is to support as many databases as possible, and all major operating systems, including the ARM versions.  
+Antares is a free and open source SQL client built with [Electron.js](https://github.com/electron/electron) and [Vue.js](https://github.com/vuejs/vue), designed above all with developers in mind.  
+It currently supports **MySQL/MariaDB, PostgreSQL, SQLite and Firebird SQL**, and runs on Windows, Linux and macOS. Our goal is to support as many databases and platforms as possible, including ARM.
 
-**At the moment this application is in development state, many features will come in future updates**, and supports only MySQL/MariaDB, PostgreSQL, SQLite and Firebird SQL.  
-However, there are all the features necessary to have a pleasant database management experience, so give it a chance and send us your feedback, we would really appreciate it.  
-We are actively working on it, hoping to provide new cool features, improvements and fixes as soon as possible.  
+Antares is still under active development and new features arrive with every release, but it already covers everything you need for day-to-day database work. Give it a try and let us know what you think: your feedback really helps.
 
-🔗 If you are curious to try Antares you can download and install the [latest release](https://github.com/antares-sql/antares/releases/latest).  
-👁 To stay tuned for new releases follow Antares SQL on [Mastodon](https://fosstodon.org/@AntaresSQL).  
-🌟 Don't forget to **leave a star** if you appreciate this project.  
+🔗 Download the [latest release](https://github.com/antares-sql/antares/releases/latest) to try it out.  
+👁 Follow Antares SQL on [Mastodon](https://fosstodon.org/@AntaresSQL) to stay up to date on new releases.  
+🌟 If you like the project, please **leave a star**!  
 
 🗳️ Polls:
 
 - **[Which is the main OS you use Antares on?](https://github.com/antares-sql/antares/discussions/379)**
 - **[Which database do you use the most?](https://github.com/antares-sql/antares/discussions/594)**
 
-## Current key features
+## Key features
 
-- Multiple database connections at same time.
-- Database management (add/edit/delete).
-- Full tables management, including indexes and foreign keys.
-- Views, triggers, stored routines, functions and schedulers management (add/edit/delete).
-- A modern and friendly tab system; keep open every kind of tab you need in your workspace.
-- Fake table data filler to generate tons of data for test purpose.
-- Query suggestions and auto complete.
-- Query history: search through the last 1000 queries.
-- Save queries, notes or todo.
-- SSH tunnel support.
-- Manual commit mode.
-- Import and export database dumps.
+### Connections
+
+- Keep several connections open at the same time, each one in its own workspace.
+- Connect through SSL or an SSH tunnel (MySQL/MariaDB and PostgreSQL), or with a PostgreSQL connection string.
+- Read-only mode, to browse a database without the risk of changing it.
+- Organize connections in folders, with custom colors and icons.
+- Export and import your saved connections as a password-encrypted file.
+
+### Database structure
+
+- Create, edit and delete databases, schemas and tables, including indexes, foreign keys, check constraints and comments.
+- Manage views (and PostgreSQL materialized views), triggers, stored procedures, functions and scheduled events.
+- Import and export SQL dumps (MySQL/MariaDB and PostgreSQL).
+- Generate large amounts of fake data to fill tables for testing.
+
+### Data and queries
+
+- Browse and edit table data, and jump to the row a foreign key points to.
+- Query editor with suggestions and autocompletion: run the whole script, the selected text or just the query under the cursor.
+- Open and save `.sql` files directly from query tabs.
+- Export results as JSON, CSV, PHP array or SQL INSERT statements.
+- Manual commit mode to control transactions yourself.
+- Query history with search through the last 1000 queries of each connection.
+- A scratchpad to save named queries, notes and to-dos.
+- View the running processes and kill them (MySQL/MariaDB and PostgreSQL).
+
+### Workspace
+
+- A clean tab system: keep open every kind of tab you need and restore your previous session at startup.
 - Customizable keyboard shortcuts.
-- Dark and light theme.
-- Editor themes.
+- Dark and light themes, plus several editor themes.
+- Available in 21 languages.
 
 ## Philosophy
 
-Why are we developing an SQL client when there are a lot of them on the market?  
-The main goal is to develop a **forever 100% free (without paid premium feature)**, full featured, as possible community driven, cross platform and open source alternative, empowered by JavaScript ecosystem.  
-A modern application created with minimalism and simplicity in mind, with features in the right places, not hundreds of tiny buttons, nested tabs or submenues; productivity comes first.  
+Why build another SQL client when there are already so many?  
+Our goal is a **forever 100% free** (no paid premium features), full-featured, cross-platform and open source alternative, driven as much as possible by its community and powered by the JavaScript ecosystem.  
+Antares is designed around minimalism and simplicity: features where you expect them, not hundreds of tiny buttons, nested tabs or submenus. Productivity comes first.
 
 ## Installation
 
-Based on your operating system you can have one or more distribution formats to choose based on your preferences.  
-Since Antares SQL is a free software we don't have a budget to spend on annual licenses or certificates. This can result that on some platforms you might need to put in some additional work to install this app.
+Each operating system offers one or more distribution formats, so you can pick the one you prefer.  
+Since Antares SQL is free software, we have no budget for code-signing certificates or yearly developer licenses. On some platforms this means a few extra steps are needed to install the app.
 
 ### Linux
 
-On Linux you can simply download and run the `.AppImage` distribution, install from FlatHub, Snap Store, AUR or from our [PPA repository](https://github.com/antares-sql/antares-ppa).
+Download and run the `.AppImage`, or install Antares from Flathub, the Snap Store, the AUR or our [PPA repository](https://github.com/antares-sql/antares-ppa).
 
 ### Windows
 
-On Windows you can choose between downloading the app from Microsoft Store or downloading the `.exe` from our [website](https://antares-sql.app/downloads) or [this github repo](https://github.com/antares-sql/antares/releases/latest). Distributions that are not from Microsoft Store are not signed with a certificate, so to install you need to click on "More info" and then "Run anyway" on SmartScreen prompt.
+Install Antares from the Microsoft Store, or download the `.exe` from our [website](https://antares-sql.app/downloads) or from the [GitHub releases](https://github.com/antares-sql/antares/releases/latest). Builds outside the Microsoft Store are not signed with a certificate, so when SmartScreen shows its warning click "More info" and then "Run anyway".
 
-### MacOS
+### macOS
 
-On macOS you can run `.dmg` distribution following [this guide](https://support.apple.com/guide/mac-help/mh40616/mac) to install apps from unknown developers.
+Download the `.dmg` and follow [this guide](https://support.apple.com/guide/mac-help/mh40616/mac) to open apps from unidentified developers.
 
 ## Download
 
