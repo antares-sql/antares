@@ -11,10 +11,16 @@ export abstract class DdlGenerator {
       this._dataTypes = dataTypes;
    }
 
-   /** Type definition from the engine catalog (common/data-types) */
+   /**
+    * Type definition from the engine catalog (common/data-types). Types missing from it
+    * (enums, domains, extension types...) get no length/scale/collation/unsigned/zerofill options.
+    */
    getTypeInfo (type: string): antares.TypeInformations {
-      return this._dataTypes
-         .reduce((acc, group) => [...acc, ...group.types], [])
-         .filter(_type => _type.name === type.toUpperCase())[0];
+      const name = type.toUpperCase();
+      const info = this._dataTypes
+         .reduce((acc, group) => [...acc, ...group.types], [] as antares.TypeInformations[])
+         .find(_type => _type.name === name);
+
+      return info || { name, length: false, scale: false, collation: false, unsigned: false, zerofill: false };
    }
 }

@@ -37,7 +37,8 @@ describe.each(engines)('%s DDL generator', (_name, ddl: Any, createClient, types
 
    it('resolves types from the engine catalog', () => {
       expect(ddl.getTypeInfo(engineTypes[types].varchar.toLowerCase())).toMatchObject({ name: engineTypes[types].varchar });
-      expect(ddl.getTypeInfo('NOT_A_TYPE')).toBeUndefined();
+      // #979: types missing from the catalog (enums, domains...) must not break ALTER TABLE
+      expect(ddl.getTypeInfo('not_a_type')).toEqual({ name: 'NOT_A_TYPE', length: false, scale: false, collation: false, unsigned: false, zerofill: false });
    });
 
    it.each(['createTable', 'dropTable', 'createView', 'createTrigger', 'dropTrigger'])('client executes what %s builds', async method => {

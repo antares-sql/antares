@@ -415,6 +415,8 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
 
          if (isArray && arrayRemap)
             type = this._getArrayType(field.udt_name);
+         else if (type === 'USER-DEFINED') // Enums, domains, extension types: the real name, usable in ALTER COLUMN ... TYPE
+            type = field.udt_name;
 
          return {
             name: field.column_name,
