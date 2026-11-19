@@ -7,7 +7,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { formatValue } from '../../src/main/libs/db/core/formatValue';
+import { formatValue, rowValueLiteral } from '../../src/main/libs/db/core/formatValue';
 import { EngineName, getTestEngines } from './helpers/engines';
 
 const TABLE = 'it_values';
@@ -116,7 +116,7 @@ for (const engine of getTestEngines()) {
          // Adjacent ids that collapse into the same double
          const ids = ['76561198012345678', '76561198012345679'];
          // Same id formatting as the "update table cell" / "delete table rows" handlers
-         const idLiteral = (id: unknown) => typeof id === 'number' ? id : client.dialect.quoteString(String(id));
+         const idLiteral = (id: unknown) => rowValueLiteral(client.dialect, id);
          // eslint-disable-next-line @typescript-eslint/no-explicit-any
          const field = (row: any, name: string) => name in row ? row[name] : row[name.toUpperCase()];
          const readAll = async () => {

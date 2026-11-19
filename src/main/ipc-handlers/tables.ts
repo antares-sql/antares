@@ -6,7 +6,7 @@ import * as fs from 'fs';
 import moment = require('moment');
 
 import { DatabaseClient, requireCapability } from '../libs/db/core/contracts';
-import { formatValue } from '../libs/db/core/formatValue';
+import { formatValue, rowValueCondition, rowValueLiteral } from '../libs/db/core/formatValue';
 import { validateSender } from '../libs/misc/validateSender';
 import { createHandle, IpcMainLike } from './handle';
 
@@ -78,9 +78,9 @@ export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = 
       try {
          const { sql: escapedParam, reload: valueReload } = formatValue(client.dialect, params.type, params.content, { readFile: fs.readFileSync });
          let reload = valueReload;
-         const id = typeof params.id === 'number' ? params.id : client.dialect.quoteString(String(params.id));
+         const id = rowValueLiteral(client.dialect, params.id);
 
-         if (params.primary) { // TODO: handle multiple primary
+         if (params.primary) { // Single-column key; composite keys use the no-primary path below
             await connections[params.uid]
                .update({ [params.field]: `= ${escapedParam}` })
                .schema(params.schema)
@@ -95,16 +95,8 @@ export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = 
 
             reload = true;
 
-            for (const key in orgRow) {
-               if (typeof orgRow[key] === 'string')
-                  orgRow[key] = ` = ${client.dialect.quoteString(orgRow[key])}`;
-               else if (typeof orgRow[key] === 'object' && orgRow[key] !== null)
-                  orgRow[key] = client.dialect.jsonEquals(orgRow[key]);
-               else if (orgRow[key] === null)
-                  orgRow[key] = `IS ${orgRow[key]}`;
-               else
-                  orgRow[key] = `= ${orgRow[key]}`;
-            }
+            for (const key in orgRow)
+               orgRow[key] = rowValueCondition(client.dialect, orgRow[key]);
 
             await connections[params.uid]
                .schema(params.schema)
@@ -132,9 +124,7 @@ export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = 
          const idString = params.rows.map((row: Record<string, any>) => {
             const fieldName = Object.keys(row)[0].includes('.') ? `${params.table}.${params.primary}` : params.primary;
 
-            return typeof row[fieldName] === 'string'
-               ? dialect.quoteString(row[fieldName])
-               : row[fieldName];
+            return rowValueLiteral(dialect, row[fieldName]);
          }).join(',');
 
          try {
@@ -154,15 +144,8 @@ export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = 
       else {
          try {
             for (const row of params.rows) {
-               for (const key in row) {
-                  if (typeof row[key] === 'string')
-                     row[key] = dialect.quoteString(row[key]);
-
-                  if (row[key] === null)
-                     row[key] = 'IS NULL';
-                  else
-                     row[key] = `= ${row[key]}`;
-               }
+               for (const key in row)
+                  row[key] = rowValueCondition(dialect, row[key]);
 
                await connections[params.uid]
                   .schema(params.schema)

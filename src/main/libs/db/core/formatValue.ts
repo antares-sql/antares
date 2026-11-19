@@ -53,3 +53,46 @@ export function formatValue (
 
    return { sql: dialect.quoteString(String(value)), reload: false };
 }
+
+/**
+ * Bytes of a binary value sent back by the UI. Rows reach the renderer with Uint8Array values and
+ * come back JSON-cloned ({ "0": 18, "1": 52, ... }) or as a serialized Buffer ({ type: 'Buffer', data }).
+ */
+export function binaryValue (value: unknown): Buffer | null {
+   if (Buffer.isBuffer(value)) return value;
+   if (value instanceof Uint8Array) return Buffer.from(value);
+
+   if (value && typeof value === 'object' && !Array.isArray(value)) {
+      const obj = value as Record<string, unknown>;
+      if (obj.type === 'Buffer' && Array.isArray(obj.data))
+         return Buffer.from(obj.data as number[]);
+
+      const keys = Object.keys(obj);
+      const isByteArray = keys.length > 0 && keys.every((key, i) => {
+         const byte = obj[key];
+         return key === String(i) && Number.isInteger(byte) && (byte as number) >= 0 && (byte as number) <= 255;
+      });
+      if (isByteArray)
+         return Buffer.from(keys.map(key => obj[key] as number));
+   }
+
+   return null;
+}
+
+/** Literal of a value read from a result row, to find the row again (WHERE of updates and deletes) */
+export function rowValueLiteral (dialect: QueryDialect, value: unknown): string {
+   if (value === null || value === undefined) return 'NULL';
+   if (typeof value === 'number' || typeof value === 'bigint' || typeof value === 'boolean') return String(value);
+
+   const bytes = binaryValue(value);
+   if (bytes) return dialect.blobLiteral(bytes);
+
+   return dialect.quoteString(String(value));
+}
+
+/** Condition matching a value read from a result row, appended to the column name */
+export function rowValueCondition (dialect: QueryDialect, value: unknown): string {
+   if (value === null || value === undefined) return 'IS NULL';
+   if (typeof value === 'object' && !binaryValue(value)) return dialect.jsonEquals(value);
+   return `= ${rowValueLiteral(dialect, value)}`;
+}
