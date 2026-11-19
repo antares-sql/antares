@@ -477,7 +477,7 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
       };
 
       if (!args.comments)
-         sql = removeComments(sql);
+         sql = removeComments(sql, 'sqlite');
 
       const resultsArr = [];
       let paramsArr = [];

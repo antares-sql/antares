@@ -1079,7 +1079,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
       };
 
       if (!args.comments)
-         sql = removeComments(sql);
+         sql = removeComments(sql, 'mysql');
 
       const resultsArr: antares.QueryResult[] = [];
       let paramsArr = [];

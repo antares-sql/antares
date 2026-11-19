@@ -1216,7 +1216,7 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
       };
 
       if (!args.comments)
-         sql = removeComments(sql);
+         sql = removeComments(sql, 'pg');
 
       const resultsArr: antares.QueryResult[] = [];
       let paramsArr = [];

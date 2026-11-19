@@ -33,5 +33,22 @@ for (const engine of getTestEngines()) {
          }
       });
 
+      // The query tab removes comments and splits the script: string literals must reach the server unchanged
+      it('sends string literals unchanged', async () => {
+         const client = await engine.connect();
+         try {
+            const literal = 'a;\n   b /* c */ --d #e';
+            const from = engine.name === 'firebird' ? ' FROM RDB$DATABASE' : '';
+            const sql = `-- first;\nSELECT 1 AS n${from}; /* second; */ SELECT ${client.dialect.quoteString(literal)} AS v${from};`;
+            const results = await client.raw(sql, { nest: true, details: false, comments: false, schema: engine.schema, autocommit: true });
+
+            expect(results).toHaveLength(2);
+            const row: Record<string, unknown> = results[1].rows[0];
+            expect(Object.values(row)[0]).toBe(literal);
+         }
+         finally {
+            await client.destroy();
+         }
+      });
    });
 }

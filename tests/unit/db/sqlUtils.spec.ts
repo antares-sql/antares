@@ -55,13 +55,12 @@ SELECT get_userid('x');`;
          .toEqual(['UPDATE users SET pwd = \'$2b$12$abc;def\' WHERE id = 1;', 'SELECT 1;']);
    });
 
-   // Known bugs: the query tab parser changes string literals (whitespace after ";" is trimmed,
-   // comment markers are not recognized as part of a string)
-   it.fails('keeps whitespace after a semicolon inside a string', () => {
+   // String literals must reach the server unchanged (whitespace after ";", comment markers)
+   it('keeps whitespace after a semicolon inside a string', () => {
       expect(split('INSERT INTO t VALUES (\'a;\n   b\');')).toEqual(['INSERT INTO t VALUES (\'a;\n   b\');']);
    });
 
-   it.fails('keeps comment markers inside strings', () => {
+   it('keeps comment markers inside strings', () => {
       expect(split('SELECT \'a /* b */ c\' AS x, \'--d\' AS y;')).toEqual(['SELECT \'a /* b */ c\' AS x, \'--d\' AS y;']);
    });
 });

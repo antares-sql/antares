@@ -755,7 +755,7 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
       };
 
       if (!args.comments)
-         sql = removeComments(sql);
+         sql = removeComments(sql, 'firebird');
 
       const resultsArr = [];
       let paramsArr = [];
