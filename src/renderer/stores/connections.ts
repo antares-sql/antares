@@ -6,6 +6,7 @@ import * as crypto from 'crypto';
 import { ipcRenderer } from 'electron';
 import Store from 'electron-store';
 import * as fs from 'fs';
+import * as path from 'path';
 import { defineStore } from 'pinia';
 
 import { i18n } from '@/i18n';
@@ -26,53 +27,97 @@ export interface SidebarElement {
 
 export interface CustomIcon {base64: string; uid: string}
 
-function getEncryptionKey (): string {
-   const cachedKey = localStorage.getItem('key');
-   if (cachedKey) {
-      ipcRenderer.send('set-key', cachedKey);
-      return cachedKey;
-   }
-
-   const storedKey = ipcRenderer.sendSync('get-key');
-   if (storedKey) {
-      localStorage.setItem('key', storedKey);
-      return storedKey;
-   }
-
-   const newKey = crypto.randomBytes(16).toString('hex');
-   localStorage.setItem('key', newKey);
-   ipcRenderer.send('set-key', newKey);
-   return newKey;
+interface KeyValueStore {
+   get (key: string, defaultValue?: unknown): unknown;
+   set (key: string, value: unknown): void;
 }
 
-function createPersistentStore (key: string) {
-   try {
-      // Throws if the file can't be decrypted/parsed instead of silently clearing it
-      return new Store({
-         name: 'connections',
-         encryptionKey: key,
-         clearInvalidConfig: false
-      });
-   }
-   catch {
-      // Store construction doesn't write to disk, so the unreadable file is still intact here
-      const store = new Store({
-         name: 'connections',
-         encryptionKey: key,
-         clearInvalidConfig: true
-      });
+/**
+ * Why the saved connections could not be opened normally:
+ * - `readOnly`: no encryption key is available (e.g. another instance hasn't saved it yet, or the
+ *   secrets store is not reachable from a sandbox): the file is left untouched and changes are kept in memory only
+ * - `reset`: no available key decrypts the file: it was copied to `<file>.corrupt` and a new empty store is used
+ */
+export type ConnectionsStorageError = null | { reason: 'readOnly' | 'reset'; backupPath?: string };
 
+/**
+ * The encryption key of the saved connections has two copies: the renderer localStorage and the
+ * session store of the main process (encrypted with safeStorage). Each one can be missing or stale
+ * in a second instance or a sandbox, so every available key is tried against the file.
+ */
+function getStoredKeys (): string[] {
+   const keys = [localStorage.getItem('key'), ipcRenderer.sendSync('get-key')];
+   return [...new Set(keys.filter((key): key is string => typeof key === 'string' && !!key))];
+}
+
+function saveKey (key: string) {
+   if (localStorage.getItem('key') !== key)
+      localStorage.setItem('key', key);
+   ipcRenderer.send('set-key', key);
+}
+
+/**
+ * With clearInvalidConfig disabled it throws if the file can't be decrypted/parsed and leaves it intact.
+ * With it enabled, opening the store already empties an unreadable file on disk.
+ */
+function openStore (key: string, clearInvalidConfig: boolean) {
+   return new Store({ name: 'connections', encryptionKey: key, clearInvalidConfig });
+}
+
+/** Path of the connections file, found without opening it (the plain settings store is in the same folder) */
+function getStorePath () {
+   return path.join(path.dirname(new Store({ name: 'settings' }).path), 'connections.json');
+}
+
+function createMemoryStore (): KeyValueStore {
+   const data = new Map<string, unknown>();
+   return {
+      get: (key, defaultValue) => data.has(key) ? data.get(key) : defaultValue,
+      set: (key, value) => {
+         data.set(key, value);
+      }
+   };
+}
+
+function createPersistentStore (): { store: KeyValueStore; error: ConnectionsStorageError } {
+   const keys = getStoredKeys();
+
+   // A missing file is opened by any key
+   for (const key of keys) {
       try {
-         if (fs.existsSync(store.path))
-            fs.copyFileSync(store.path, `${store.path}.corrupt`);
+         const store = openStore(key, false);
+         saveKey(key);
+         return { store, error: null };
       }
       catch {}
-
-      return store;
    }
+
+   const storePath = getStorePath();
+   const hasData = fs.existsSync(storePath) && fs.statSync(storePath).size > 0;
+
+   if (!hasData) {
+      const newKey = keys[0] || crypto.randomBytes(16).toString('hex');
+      saveKey(newKey);
+      return { store: openStore(newKey, true), error: null };
+   }
+
+   if (!keys.length) {
+      // Never replace the key of existing data: writing with a new key would make it unreadable for good
+      return { store: createMemoryStore(), error: { reason: 'readOnly' } };
+   }
+
+   // Back up before opening the store with clearInvalidConfig, which empties the file
+   const backupPath = `${storePath}.corrupt`;
+   try {
+      fs.copyFileSync(storePath, backupPath);
+   }
+   catch {}
+
+   saveKey(keys[0]);
+   return { store: openStore(keys[0], true), error: { reason: 'reset', backupPath } };
 }
 
-const persistentStore = createPersistentStore(getEncryptionKey());
+const { store: persistentStore, error: storageError } = createPersistentStore();
 
 /**
  * "Show table size" used to be a global setting: moves it to the connections whose engine
@@ -100,14 +145,16 @@ function migrateShowTableSizeSetting () {
    }
 }
 
-migrateShowTableSizeSetting();
+if (storageError?.reason !== 'readOnly') // It removes the old setting: run it only when the result is saved
+   migrateShowTableSizeSetting();
 
 export const useConnectionsStore = defineStore('connections', {
    state: () => ({
       connections: persistentStore.get('connections', []) as ConnectionParams[],
       lastConnections: persistentStore.get('lastConnections', []) as {uid: string; time: number}[],
       connectionsOrder: persistentStore.get('connectionsOrder', []) as SidebarElement[],
-      customIcons: persistentStore.get('custom_icons', []) as CustomIcon[]
+      customIcons: persistentStore.get('custom_icons', []) as CustomIcon[],
+      storageError: storageError as ConnectionsStorageError
    }),
    getters: {
       getConnectionByUid: state => (uid:string) => state.connections.find(connection => connection.uid === uid),

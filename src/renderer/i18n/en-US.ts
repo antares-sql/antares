@@ -121,7 +121,9 @@ export const enUS = {
       keepAliveInterval: 'Keep alive interval',
       singleConnection: 'Single connection',
       showTableSize: 'Show table size in sidebar',
-      showTableSizeDescription: 'Enabling this option may affect performance on schemas with many tables.'
+      showTableSizeDescription: 'Enabling this option may affect performance on schemas with many tables.',
+      savedConnectionsReadOnly: 'Saved connections can\'t be unlocked in this window because the encryption key is not available (is another Antares window open?). Changes to connections made here won\'t be saved: restart Antares to use them.',
+      savedConnectionsReset: 'Saved connections could not be decrypted and have been reset. The original file was kept in {path}.'
    },
    database: { // Database related terms
       schema: 'Schema',

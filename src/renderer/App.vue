@@ -42,6 +42,7 @@ import ModalExportSchema from '@/components/ModalExportSchema.vue';
 import TheSettingBar from '@/components/TheSettingBar.vue';
 import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
+import { useNotificationsStore } from '@/stores/notifications';
 import { useSchemaExportStore } from '@/stores/schemaExport';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
@@ -91,6 +92,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 onMounted(() => {
+   const { storageError } = connectionsStore;
+   if (storageError) {
+      useNotificationsStore().addNotification({
+         status: 'error',
+         message: storageError.reason === 'readOnly'
+            ? t('connection.savedConnectionsReadOnly')
+            : t('connection.savedConnectionsReset', { path: storageError.backupPath })
+      });
+   }
+
    ipcRenderer.on('open-all-connections', () => {
       isAllConnectionsModal.value = true;
    });
