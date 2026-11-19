@@ -4,6 +4,7 @@ import * as pg from 'pg';
 import * as pgAst from 'pgsql-ast-parser';
 
 import { CancelQueriesCapability, DatabaseClient, DatabasesCapability, DbConfigCapability, FunctionsCapability, MaterializedViewsCapability, RoutinesCapability, SchemasCapability, TableDdlCapability, TriggerFunctionsCapability, TriggerToggleCapability } from '../db/core/contracts';
+import { arrayRowsToObjects, uniqueColumnNames } from '../db/core/resultRows';
 import { PostgreSQLConnections, PostgreSQLParams } from '../db/engines/postgresql/PostgreSQLConnections';
 import { PostgreSQLDdl } from '../db/engines/postgresql/PostgreSQLDdl';
 import { PostgreSQLDialect } from '../db/engines/postgresql/PostgreSQLDialect';
@@ -1255,24 +1256,21 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
                   const { rows, fields } = res;
                   let queryResult;
                   let tablesInfo: { table: string; schema: string }[];
+                  let aliases: string[] = [];
 
                   if (args.nest) {
                      const tablesID = [...new Set(fields.map(field => field.tableID))].toString();
                      tablesInfo = await this.getTableByIDs(tablesID);
 
-                     queryResult = rows.map(row => {
-                        return row.reduce((acc, curr, i) => {
-                           const table = tablesInfo[fields[i].tableID] ? tablesInfo[fields[i].tableID].table : '';
-                           acc[`${table ? `${table}.` : ''}${fields[i].name}`] = curr;
-                           return acc;
-                        }, {});
-                     });
+                     const prefixes = fields.map(field => tablesInfo[field.tableID] ? `${tablesInfo[field.tableID].table}.` : '');
+                     aliases = uniqueColumnNames(fields.map(field => field.name), prefixes);
+                     queryResult = arrayRowsToObjects(rows, aliases.map((alias, i) => `${prefixes[i]}${alias}`));
                   }
                   else
                      queryResult = rows;
 
                   let remappedFields = fields
-                     ? fields.map(field => {
+                     ? fields.map((field, i) => {
                         if (!field || Array.isArray(field))
                            return undefined;
 
@@ -1287,7 +1285,7 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
                         return {
                            ...field,
                            name: field.name,
-                           alias: field.name,
+                           alias: aliases[i] ?? field.name,
                            schema,
                            table,
                            // TODO: pick ast.from index if multiple

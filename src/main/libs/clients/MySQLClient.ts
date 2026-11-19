@@ -4,6 +4,7 @@ import * as mysql from 'mysql2/promise';
 
 import EncodingToCharset = require('../../../../node_modules/mysql2/lib/constants/encoding_charset.js');
 import { CancelQueriesCapability, DatabaseClient, DatabaseCollationCapability, DbConfigCapability, FunctionsCapability, RoutinesCapability, SchedulersCapability, SchemasCapability, TableCheckCapability, TableDdlCapability } from '../db/core/contracts';
+import { arrayRowsToObjects, uniqueColumnNames } from '../db/core/resultRows';
 import { MySQLConnections, MySQLParams } from '../db/engines/mysql/MySQLConnections';
 import { MySQLDdl } from '../db/engines/mysql/MySQLDdl';
 import { MariaDBDialect, MySQLDialect } from '../db/engines/mysql/MySQLDialect';
@@ -1080,7 +1081,6 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
       if (!args.comments)
          sql = removeComments(sql);
 
-      const nestTables = args.nest ? '.' : false;
       const resultsArr: antares.QueryResult[] = [];
       let paramsArr = [];
       const queries = args.split
@@ -1098,13 +1098,23 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
 
          // eslint-disable-next-line @typescript-eslint/no-explicit-any
          const { rows, report, fields, keys, duration }: any = await new Promise((resolve, reject) => {
-            connection.query({ sql: query, nestTables }).then(async ([response, fields]) => {
+            // Nested results are read as arrays: object rows would lose columns with the same name
+            connection.query({ sql: query, rowsAsArray: args.nest }).then(async ([response, fields]) => {
                timeStop = new Date();
-               const queryResult = response;
-               const fieldsArr = fields ? Array.isArray(fields[0]) ? fields[0] : fields : false;// Some times fields are nested in an array
+               const isMultiResult = Array.isArray(fields?.[0]);// Procedures return an array of result sets
+               const fieldsArr = fields ? isMultiResult ? fields[0] as unknown as mysql.FieldPacket[] : fields : false;
+               let queryResult = response;
+               let aliases: string[] = [];
+
+               if (args.nest && Array.isArray(response) && fieldsArr) {
+                  const prefixes = fieldsArr.map(field => `${field.table}.`);
+                  aliases = uniqueColumnNames(fieldsArr.map(field => field.name), prefixes);
+                  const arrayRows = (isMultiResult ? response[0] : response) as unknown as unknown[][];
+                  queryResult = arrayRowsToObjects(arrayRows, aliases.map((alias, i) => `${prefixes[i]}${alias}`)) as typeof response;
+               }
 
                let remappedFields = fieldsArr
-                  ? fieldsArr.map(field => {
+                  ? fieldsArr.map((field, i) => {
                      if (!field || Array.isArray(field))
                         return undefined;
 
@@ -1112,7 +1122,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
 
                      return {
                         name: field.orgName,
-                        alias: field.name,
+                        alias: aliases[i] ?? field.name,
                         orgName: field.orgName,
                         schema: args.schema || (field as mysql.FieldPacket & {schema: string}).schema,
                         table: field.table,

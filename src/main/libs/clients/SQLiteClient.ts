@@ -4,6 +4,7 @@ import * as antares from 'common/interfaces/antares';
 import { removeComments } from 'common/libs/sqlUtils';
 
 import { DatabaseClient } from '../db/core/contracts';
+import { arrayRowsToObjects, uniqueColumnNames } from '../db/core/resultRows';
 import { SQLiteConnections, SQLiteParams } from '../db/engines/sqlite/SQLiteConnections';
 import { SQLiteDdl } from '../db/engines/sqlite/SQLiteDdl';
 import { SQLiteDialect } from '../db/engines/sqlite/SQLiteDialect';
@@ -501,18 +502,22 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
                let affectedRows;
                let fields;
                const detectedTypes: Record<string, string> = {};
+               let aliases: string[] = [];
 
                try {
                   const stmt = connection.prepare(query);
 
                   if (stmt.reader) {
-                     // Read integers as BigInt so values beyond 2^53 are not rounded (they may be primary keys)
-                     queryAllResult = stmt.safeIntegers(true).all().map(normalizeIntegers);
                      fields = stmt.columns();
+                     // Array rows: object rows would lose columns with the same name
+                     aliases = uniqueColumnNames(fields.map(field => field.name));
+                     // Read integers as BigInt so values beyond 2^53 are not rounded (they may be primary keys)
+                     const arrayRows = stmt.safeIntegers(true).raw(true).all() as unknown[][];
+                     queryAllResult = arrayRowsToObjects(arrayRows, aliases).map(normalizeIntegers);
 
                      if (queryAllResult.length) {
-                        fields.forEach(field => {
-                           detectedTypes[field.name] = typeof queryAllResult[0][field.name];
+                        aliases.forEach(alias => {
+                           detectedTypes[alias] = typeof queryAllResult[0][alias];
                         });
                      }
                   }
@@ -528,7 +533,8 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
                timeStop = new Date();
 
                let remappedFields = fields
-                  ? fields.map(field => {
+                  ? fields.map((field, i) => {
+                     const alias = aliases[i] ?? field.name;
                      let [parsedType, length]: [string, number?] = field.type?.includes('(')
                         ? field.type.replace(')', '').split('(').map((el: string | number) => {
                            if (!isNaN(Number(el)))
@@ -540,20 +546,20 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
                         : [field.type, null];
 
                      if ([...TIME, ...DATETIME].includes(parsedType)) {
-                        const firstNotNull = queryAllResult.find(res => res[field.name] !== null);
-                        if (firstNotNull && String(firstNotNull[field.name]).includes('.'))
-                           length = String(firstNotNull[field.name]).split('.').pop().length;
+                        const firstNotNull = queryAllResult.find(res => res[alias] !== null);
+                        if (firstNotNull && String(firstNotNull[alias]).includes('.'))
+                           length = String(firstNotNull[alias]).split('.').pop().length;
                      }
 
                      return {
                         name: field.name,
-                        alias: field.name,
+                        alias,
                         orgName: field.column,
                         schema: field.database,
                         table: field.table,
                         tableAlias: field.table,
                         orgTable: field.table,
-                        type: field.type !== null ? parsedType : detectedTypes[field.name],
+                        type: field.type !== null ? parsedType : detectedTypes[alias],
                         length,
                         key: undefined as string
                      };

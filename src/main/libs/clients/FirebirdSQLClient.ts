@@ -5,6 +5,7 @@ import * as firebird from 'node-firebird';
 import * as path from 'path';
 
 import { DatabaseClient, DatabasesCapability, RoutinesCapability } from '../db/core/contracts';
+import { arrayRowsToObjects, uniqueColumnNames } from '../db/core/resultRows';
 import { FirebirdConnections } from '../db/engines/firebird/FirebirdConnections';
 import { FirebirdDdl } from '../db/engines/firebird/FirebirdDdl';
 import { FirebirdDialect } from '../db/engines/firebird/FirebirdDialect';
@@ -795,6 +796,8 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
                         if (err) reject(err);
                         else {
                            const remappedResponse = [];
+                           // Array rows: object rows would lose columns with the same name
+                           const aliases = fields ? uniqueColumnNames(fields.map(field => field.alias)) : [];
 
                            if (res) {
                               for (const row of res) {
@@ -828,12 +831,12 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
                            }
 
                            if (fields) {
-                              remappedFields = fields.map(field => {
+                              remappedFields = fields.map((field, i) => {
                                  const fieldType = this._getType(this._types[field.type], field.subType);
 
                                  return {
                                     name: field.alias,
-                                    alias: field.alias,
+                                    alias: aliases[i],
                                     orgName: field.field,
                                     schema: args.schema,
                                     table: field.relation,
@@ -846,9 +849,9 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
                               });
                            }
 
-                           resolve(remappedResponse);
+                           resolve(fields ? arrayRowsToObjects(remappedResponse, aliases) : remappedResponse);
                         }
-                     });
+                     }, { asObject: false });
                   });
 
                   if (args.details) {
