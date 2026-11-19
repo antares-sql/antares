@@ -2,6 +2,7 @@ import SSHConfig from '@fabio286/ssh2-promise/lib/sshConfig';
 import * as antares from 'common/interfaces/antares';
 import * as mysql from 'mysql2/promise';
 
+import { LostConnectionError, TCP_KEEPALIVE_DELAY_MS } from '../../core/connectionHealth';
 import { ConnectionLease, createLease } from '../../core/ConnectionLease';
 import { SshTunnel } from '../../core/SshTunnel';
 
@@ -33,6 +34,8 @@ export class MySQLConnections {
    private readonly _tabConnections = new Map<string, mysql.Connection>();
    /** Connection id of the query running in each tab, to cancel it */
    private readonly _runningIds = new Map<string, number>();
+   /** Standalone connections closed by the server or the network: replaced on the next acquire */
+   private readonly _broken = new WeakSet<mysql.Connection>();
 
    constructor (params: MySQLParams, poolSize?: number, keepaliveMs = 10 * 60 * 1000) {
       this._params = params;
@@ -53,7 +56,9 @@ export class MySQLConnections {
          database: undefined as string | undefined,
          ssl: null as mysql.SslOptions,
          supportBigNumbers: true,
-         bigNumberStrings: true
+         bigNumberStrings: true,
+         enableKeepAlive: true,
+         keepAliveInitialDelay: TCP_KEEPALIVE_DELAY_MS
       };
 
       if (this._params.schema?.length) dbConfig.database = this._params.schema;
@@ -97,7 +102,18 @@ export class MySQLConnections {
    /** A new standalone connection */
    async createConnection () {
       const dbConfig = await this.getDbConfig();
-      return mysql.createConnection({ ...dbConfig, dateStrings: true });
+      const connection = await mysql.createConnection({ ...dbConfig, dateStrings: true });
+      // Fatal errors of an idle connection (server restart, network drop) would be unhandled errors
+      // of the main process: mark the connection, it is replaced on the next acquire
+      connection.on('error', () => this._broken.add(connection));
+      connection.on('end', () => this._broken.add(connection));
+      return connection;
+   }
+
+   private isBroken (connection: mysql.Connection) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const inner = (connection as any).connection;
+      return this._broken.has(connection) || !!inner?._closing || !!inner?._fatalError;
    }
 
    /** A new pool (the import worker uses its own) */
@@ -127,6 +143,10 @@ export class MySQLConnections {
 
          if (!args.autocommit && args.tabUid) {
             connection = this._tabConnections.get(args.tabUid);
+            if (connection && this.isBroken(connection as mysql.Connection)) {
+               this.closeTab(args.tabUid);
+               throw new LostConnectionError();
+            }
             if (!connection) {
                const tabConnection = await this.createConnection();
                for (const sql of this._sessionSetup)
@@ -140,8 +160,11 @@ export class MySQLConnections {
             connection = await (this._main as mysql.Pool).getConnection();
             fromPool = true;
          }
-         else
+         else {
+            if (!this._main || this.isBroken(this._main as mysql.Connection))
+               await this.reconnect();
             connection = this._main;
+         }
 
          if (args.tabUid && this.isPool) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -157,7 +180,9 @@ export class MySQLConnections {
          });
       }
       catch (error) {
-         if (error.code === 'ECONNRESET' && !retry) {
+         if (error instanceof LostConnectionError)
+            throw error;
+         else if (error.code === 'ECONNRESET' && !retry) {
             await this.reconnect();
             return this.acquire(args, true);
          }
@@ -205,7 +230,10 @@ export class MySQLConnections {
    }
 
    private closeMain () {
-      this._main?.end();
+      if (this.isPool)
+         (this._main as mysql.Pool)?.end().catch((): null => null);
+      else // end() of a connection already closed by the server would reject
+         (this._main as mysql.Connection)?.destroy();
       this._main = undefined;
       clearInterval(this._keepaliveTimer);
       this._keepaliveTimer = undefined;

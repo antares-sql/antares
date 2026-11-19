@@ -107,6 +107,77 @@ for (const engine of getTestEngines()) {
             await single.destroy();
          }
       });
+
+      // #820, #990, #790: connections closed by the server, a firewall or a NAT while idle
+      describe.skipIf(!['mysql', 'maria', 'pg'].includes(engine.name))('connections closed by the server', () => {
+         const isPg = engine.name === 'pg';
+         const pidQuery = isPg ? 'SELECT pg_backend_pid() AS pid' : 'SELECT CONNECTION_ID() AS pid';
+         const pidOf = async (c: { raw: (sql: string, args?: unknown) => Promise<{ rows: { pid: number }[] }> }, args?: unknown) =>
+            Number((await c.raw(pidQuery, args)).rows[0].pid);
+         const kill = (pid: number) => client.raw(isPg ? `SELECT pg_terminate_backend(${pid})` : `KILL ${pid}`);
+         /** Every backend of the test user except the ones of the killing client */
+         const killOthers = async () => {
+            const own = await pidOf(client);
+            const { rows } = await client.raw(isPg
+               ? `SELECT pid FROM pg_stat_activity WHERE usename = current_user AND pid <> ${own}`
+               : `SELECT ID AS pid FROM information_schema.PROCESSLIST WHERE USER = SUBSTRING_INDEX(CURRENT_USER(), '@', 1) AND ID <> ${own}`);
+            for (const row of rows) await kill(Number(row.pid ?? row.PID)).catch((): null => null);
+         };
+
+         const unhandled: unknown[] = [];
+         const onUnhandled = (err: unknown) => unhandled.push(err);
+
+         beforeAll(() => {
+            process.on('uncaughtException', onUnhandled);
+            process.on('unhandledRejection', onUnhandled);
+         });
+
+         afterAll(() => {
+            process.off('uncaughtException', onUnhandled);
+            process.off('unhandledRejection', onUnhandled);
+         });
+
+         it('reconnects the single connection without unhandled errors', async () => {
+            const single = await engine.connect({ poolSize: 0 });
+            try {
+               const pid = await pidOf(single);
+               await kill(pid);
+               await delay(300);
+
+               expect(await pidOf(single)).not.toBe(pid);
+               expect(unhandled).toEqual([]);
+            }
+            finally {
+               await single.destroy();
+            }
+         });
+
+         it('reports the lost transaction of a tab, then opens a new one', async () => {
+            const pid = await pidOf(client, tab('lost'));
+            await kill(pid);
+            await delay(300);
+
+            await expect(client.raw('SELECT 1 AS x', tab('lost'))).rejects.toThrow(/connection.*lost/i);
+            expect(await pidOf(client, tab('lost'))).not.toBe(pid);
+            client.destroyConnectionToCommit('lost');
+            expect(unhandled).toEqual([]);
+         });
+
+         it('keeps the pool working when its idle connections are closed', async () => {
+            const pooled = await engine.connect();
+            try {
+               await Promise.all([1, 2, 3].map(() => pooled.raw('SELECT 1 AS x')));
+               await killOthers();
+               await delay(300);
+
+               await expect(pooled.raw('SELECT 1 AS x')).resolves.toBeDefined();
+               expect(unhandled).toEqual([]);
+            }
+            finally {
+               await pooled.destroy();
+            }
+         });
+      });
    });
 }
 

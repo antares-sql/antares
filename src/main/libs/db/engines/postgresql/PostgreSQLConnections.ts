@@ -3,6 +3,7 @@ import * as antares from 'common/interfaces/antares';
 import * as pg from 'pg';
 import { ConnectionOptions } from 'tls';
 
+import { LostConnectionError, TCP_KEEPALIVE_DELAY_MS } from '../../core/connectionHealth';
 import { ConnectionLease, createLease } from '../../core/ConnectionLease';
 import { SshTunnel } from '../../core/SshTunnel';
 
@@ -30,6 +31,8 @@ export class PostgreSQLConnections {
    private readonly _tabConnections = new Map<string, pg.Client>();
    /** Backend PID of the query running in each tab, to cancel it */
    private readonly _runningIds = new Map<string, number>();
+   /** Standalone clients closed by the server or the network: replaced on the next acquire */
+   private readonly _broken = new WeakSet<pg.Client>();
 
    constructor (params: PostgreSQLParams, poolSize?: number, keepaliveMs = 10 * 60 * 1000) {
       this._params = params;
@@ -51,7 +54,9 @@ export class PostgreSQLConnections {
          connectionString: this._params.connectionString,
          database: 'postgres' as string,
          password: this._params.password,
-         ssl: null as ConnectionOptions
+         ssl: null as ConnectionOptions,
+         keepAlive: true,
+         keepAliveInitialDelayMillis: TCP_KEEPALIVE_DELAY_MS
       };
 
       if (this._params.database?.length) dbConfig.database = this._params.database;
@@ -75,14 +80,14 @@ export class PostgreSQLConnections {
    async createConnection () {
       const dbConfig = await this.getDbConfig();
       const client = new pg.Client(dbConfig);
+      // Errors of an idle client (server restart, network drop) would be unhandled errors of the
+      // main process: mark the client, it is replaced on the next acquire
+      client.on('error', () => this._broken.add(client));
+      client.on('end', () => this._broken.add(client));
       await client.connect();
 
       if (this._params.readonly)
          await client.query('SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY');
-
-      client.on('error', err => { // Intercepts errors and converts to rejections
-         Promise.reject(err);
-      });
 
       return client;
    }
@@ -105,9 +110,8 @@ export class PostgreSQLConnections {
       clearInterval(this._keepaliveTimer);
       this._keepaliveTimer = setInterval(() => this.keepAlive(), this._keepaliveMs);
 
-      pool.on('error', err => { // Intercepts errors and converts to rejections
-         Promise.reject(err);
-      });
+      // An idle pooled client failed: the pool already discards it and opens a new one when needed
+      pool.on('error', (): null => null);
 
       return pool;
    }
@@ -122,6 +126,10 @@ export class PostgreSQLConnections {
 
       if (!args.autocommit && args.tabUid) {
          connection = this._tabConnections.get(args.tabUid);
+         if (connection && this._broken.has(connection as pg.Client)) {
+            this.closeTab(args.tabUid);
+            throw new LostConnectionError();
+         }
          if (!connection) {
             const tabConnection = await this.createConnection();
             await tabConnection.query('START TRANSACTION');
@@ -133,8 +141,13 @@ export class PostgreSQLConnections {
          connection = await (this._main as pg.Pool).connect();
          fromPool = true;
       }
-      else
+      else {
+         if (!this._main || this._broken.has(this._main as pg.Client)) {
+            (this._main as pg.Client)?.end().catch((): null => null);
+            this._main = await this.createConnection();
+         }
          connection = this._main as pg.Client;
+      }
 
       if (args.tabUid && this.isPool)
          this._runningIds.set(args.tabUid, (connection as pg.PoolClient & { processID: number }).processID);
@@ -169,7 +182,7 @@ export class PostgreSQLConnections {
    closeTab (tabUid: string) {
       const connection = this._tabConnections.get(tabUid);
       if (connection) {
-         connection.end();
+         connection.end().catch((): null => null);
          this._tabConnections.delete(tabUid);
       }
    }
@@ -187,7 +200,7 @@ export class PostgreSQLConnections {
       for (const tabUid of [...this._tabConnections.keys()])
          this.closeTab(tabUid);
 
-      this._main?.end();
+      this._main?.end().catch((): null => null);
       this._main = undefined;
       clearInterval(this._keepaliveTimer);
       this._keepaliveTimer = undefined;
