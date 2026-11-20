@@ -126,7 +126,6 @@
 </template>
 
 <script setup lang="ts">
-import { Ace } from 'ace-builds';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
 import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
@@ -137,6 +136,7 @@ import BaseLoader from '@/components/BaseLoader.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import QueryEditor from '@/components/QueryEditor.vue';
 import Triggers from '@/ipc-api/Triggers';
+import { EditorApi } from '@/libs/editorApi';
 import { useConsoleStore } from '@/stores/console';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
@@ -165,7 +165,7 @@ const {
    setUnsavedChanges
 } = workspacesStore;
 
-const queryEditor: Ref<Component & {editor: Ace.Editor; $el: HTMLElement}> = ref(null);
+const queryEditor: Ref<Component & EditorApi & { $el: HTMLElement }> = ref(null);
 const lastTrigger = ref(null);
 const isLoading = ref(false);
 const isSaving = ref(false);
@@ -306,7 +306,7 @@ const saveChanges = async () => {
 
 const clearChanges = () => {
    localTrigger.value = JSON.parse(JSON.stringify(originalTrigger.value));
-   queryEditor.value.editor.session.setValue(localTrigger.value.sql);
+   queryEditor.value.setValue(localTrigger.value.sql);
 
    Object.keys(localEvents.value).forEach((event: TriggerEventName) => {
       localEvents.value[event] = false;
@@ -328,7 +328,7 @@ const resizeQueryEditor = () => {
 
       const size = window.innerHeight - queryEditor.value.$el.getBoundingClientRect().top - sizeToSubtract;
       editorHeight.value = size;
-      queryEditor.value.editor.resize();
+      queryEditor.value.resize();
    }
 };
 
@@ -341,7 +341,7 @@ const saveContentListener = () => {
 watch(() => props.schema, async () => {
    if (props.isSelected) {
       await getTriggerData();
-      queryEditor.value.editor.session.setValue(localTrigger.value.sql);
+      queryEditor.value.setValue(localTrigger.value.sql);
       lastTrigger.value = props.trigger;
    }
 });
@@ -349,7 +349,7 @@ watch(() => props.schema, async () => {
 watch(() => props.trigger, async () => {
    if (props.isSelected) {
       await getTriggerData();
-      queryEditor.value.editor.session.setValue(localTrigger.value.sql);
+      queryEditor.value.setValue(localTrigger.value.sql);
       lastTrigger.value = props.trigger;
    }
 });
@@ -368,7 +368,7 @@ watch(consoleHeight, () => {
 
 (async () => {
    await getTriggerData();
-   queryEditor.value.editor.session.setValue(localTrigger.value.sql);
+   queryEditor.value.setValue(localTrigger.value.sql);
 })();
 
 onMounted(() => {

@@ -140,7 +140,6 @@
 </template>
 
 <script setup lang="ts">
-import { Ace } from 'ace-builds';
 import { ConnectionParams, EventInfos } from 'common/interfaces/antares';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
@@ -153,6 +152,7 @@ import BaseSelect from '@/components/BaseSelect.vue';
 import QueryEditor from '@/components/QueryEditor.vue';
 import WorkspaceTabPropsSchedulerTimingModal from '@/components/WorkspaceTabPropsSchedulerTimingModal.vue';
 import Schedulers from '@/ipc-api/Schedulers';
+import { EditorApi } from '@/libs/editorApi';
 import { useConsoleStore } from '@/stores/console';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
@@ -180,7 +180,7 @@ const {
    removeTab
 } = workspacesStore;
 
-const queryEditor: Ref<Component & {editor: Ace.Editor; $el: HTMLElement}> = ref(null);
+const queryEditor: Ref<Component & EditorApi & { $el: HTMLElement }> = ref(null);
 const firstInput: Ref<HTMLInputElement> = ref(null);
 const isLoading = ref(false);
 const isSaving = ref(false);
@@ -249,7 +249,7 @@ const saveChanges = async () => {
 
 const clearChanges = () => {
    localScheduler.value = JSON.parse(JSON.stringify(originalScheduler.value));
-   queryEditor.value.editor.session.setValue(localScheduler.value.sql);
+   queryEditor.value.setValue(localScheduler.value.sql);
 };
 
 const resizeQueryEditor = () => {
@@ -261,7 +261,7 @@ const resizeQueryEditor = () => {
 
       const size = window.innerHeight - queryEditor.value.$el.getBoundingClientRect().top - sizeToSubtract;
       editorHeight.value = size;
-      queryEditor.value.editor.resize();
+      queryEditor.value.resize();
    }
 };
 

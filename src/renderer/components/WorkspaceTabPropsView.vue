@@ -114,7 +114,6 @@
 </template>
 
 <script setup lang="ts">
-import { Ace } from 'ace-builds';
 import { ipcRenderer } from 'electron';
 import { Component, computed, onBeforeUnmount, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -124,6 +123,7 @@ import BaseLoader from '@/components/BaseLoader.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import QueryEditor from '@/components/QueryEditor.vue';
 import Views from '@/ipc-api/Views';
+import { EditorApi } from '@/libs/editorApi';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
@@ -148,7 +148,7 @@ const {
    setUnsavedChanges
 } = workspacesStore;
 
-const queryEditor: Ref<Component & {editor: Ace.Editor; $el: HTMLElement}> = ref(null);
+const queryEditor: Ref<Component & EditorApi & { $el: HTMLElement }> = ref(null);
 const isLoading = ref(false);
 const isSaving = ref(false);
 const originalView = ref(null);
@@ -247,7 +247,7 @@ const saveChanges = async () => {
 
 const clearChanges = () => {
    localView.value = JSON.parse(JSON.stringify(originalView.value));
-   queryEditor.value.editor.session.setValue(localView.value.sql);
+   queryEditor.value.setValue(localView.value.sql);
 };
 
 const resizeQueryEditor = () => {
@@ -255,7 +255,7 @@ const resizeQueryEditor = () => {
       const footer = document.getElementById('footer');
       const size = window.innerHeight - queryEditor.value.$el.getBoundingClientRect().top - footer.offsetHeight;
       editorHeight.value = size;
-      queryEditor.value.editor.resize();
+      queryEditor.value.resize();
    }
 };
 
@@ -268,7 +268,7 @@ const saveContentListener = () => {
 watch(() => props.schema, async () => {
    if (props.isSelected) {
       await getViewData();
-      queryEditor.value.editor.session.setValue(localView.value.sql);
+      queryEditor.value.setValue(localView.value.sql);
       lastView.value = props.view;
    }
 });
@@ -276,7 +276,7 @@ watch(() => props.schema, async () => {
 watch(() => props.view, async () => {
    if (props.isSelected) {
       await getViewData();
-      queryEditor.value.editor.session.setValue(localView.value.sql);
+      queryEditor.value.setValue(localView.value.sql);
       lastView.value = props.view;
    }
 });
@@ -297,7 +297,7 @@ watch(isChanged, (val) => {
 
 (async () => {
    await getViewData();
-   queryEditor.value.editor.session.setValue(localView.value.sql);
+   queryEditor.value.setValue(localView.value.sql);
 })();
 
 onMounted(() => {

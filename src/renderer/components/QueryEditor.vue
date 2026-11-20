@@ -21,6 +21,7 @@ import { storeToRefs } from 'pinia';
 import { computed, onMounted, Prop, Ref, ref, toRef, watch } from 'vue';
 
 import Tables from '@/ipc-api/Tables';
+import { EditorApi } from '@/libs/editorApi';
 import { useApplicationStore } from '@/stores/application';
 import { useSettingsStore } from '@/stores/settings';
 import { Workspace } from '@/stores/workspaces';
@@ -210,8 +211,7 @@ const setCustomCompleter = () => {
 };
 
 watch(() => props.modelValue, () => {
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   cursorPosition.value = (editor.value.session as any).doc.positionToIndex(editor.value.getCursorPosition());
+   cursorPosition.value = getCursorIndex();
 });
 
 watch(() => tablesInQuery.value.length, () => {
@@ -381,7 +381,29 @@ onMounted(() => {
    }, 20);
 });
 
-defineExpose({ editor });
+const getValue = () => editor.value.getValue();
+
+const setValue = (value: string) => {
+   editor.value.session.setValue(value);
+};
+
+const getSelectedText = () => editor.value.getSelectedText();
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getCursorIndex = () => (editor.value.session as any).doc.positionToIndex(editor.value.getCursorPosition()) as number;
+
+const focus = () => editor.value.focus();
+
+const resize = () => editor.value.resize();
+
+defineExpose<EditorApi>({
+   getValue,
+   setValue,
+   getSelectedText,
+   getCursorIndex,
+   focus,
+   resize
+});
 </script>
 
 <style lang="scss">

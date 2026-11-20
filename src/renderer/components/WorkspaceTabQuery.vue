@@ -275,7 +275,6 @@
 
 <script setup lang="ts">
 import { getCurrentWindow, Menu } from '@electron/remote';
-import { Ace } from 'ace-builds';
 import { ClientCode, ConnectionParams } from 'common/interfaces/antares';
 import { querySplitter } from 'common/libs/sqlUtils';
 import { uidGen } from 'common/libs/uidGen';
@@ -295,6 +294,7 @@ import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable.vue';
 import { useResultTables } from '@/composables/useResultTables';
 import Application from '@/ipc-api/Application';
 import Schema from '@/ipc-api/Schema';
+import { EditorApi } from '@/libs/editorApi';
 import { useApplicationStore } from '@/stores/application';
 import { useConsoleStore } from '@/stores/console';
 import { useHistoryStore } from '@/stores/history';
@@ -338,7 +338,7 @@ const {
    newTab
 } = workspacesStore;
 
-const queryEditor: Ref<Component & { editor: Ace.Editor; $el: HTMLElement }> = ref(null);
+const queryEditor: Ref<Component & EditorApi & { $el: HTMLElement }> = ref(null);
 const queryAreaFooter: Ref<HTMLDivElement> = ref(null);
 const resizer: Ref<HTMLDivElement> = ref(null);
 const queryName = ref('');
@@ -374,16 +374,9 @@ const isChanged = computed(() => {
 });
 
 const getCurrentQueryAtCursor = () => {
-   if (!queryEditor.value?.editor) return '';
+   if (!queryEditor.value) return '';
 
-   const editorInstance = queryEditor.value.editor;
-   const session = editorInstance.session as Ace.EditSession & {
-      doc: {
-         positionToIndex: (position: Ace.Point) => number;
-      };
-   };
-   const cursorPosition = editorInstance.getCursorPosition();
-   const cursorIndex = session.doc.positionToIndex(cursorPosition);
+   const cursorIndex = queryEditor.value.getCursorIndex();
    const allQueries = querySplitter(query.value, workspace.value.client as ClientCode);
 
    if (!allQueries.length) return '';
@@ -446,7 +439,7 @@ watch(() => props.isSelected, (val) => {
       changeBreadcrumbs({ schema: selectedSchema.value, query: `Query #${props.tab.index}` });
       setTimeout(() => {
          if (queryEditor.value)
-            queryEditor.value.editor.focus();
+            queryEditor.value.focus();
       }, 0);
    }
 });
@@ -462,10 +455,10 @@ watch(databaseSchemas, () => {
 
 watch(() => props.tab.content, () => {
    query.value = props.tab.content;
-   const editorValue = queryEditor.value.editor.session.getValue();
+   const editorValue = queryEditor.value.getValue();
 
    if (editorValue !== query.value)// If change not rendered in editor
-      queryEditor.value.editor.session.setValue(query.value);
+      queryEditor.value.setValue(query.value);
 });
 
 watch(isChanged, (val) => {
@@ -477,7 +470,7 @@ const runQuery = async (query: string) => {
    isQuering.value = true;
 
    if (executeSelected.value) {
-      const selectedQuery = queryEditor.value.editor.getSelectedText();
+      const selectedQuery = queryEditor.value.getSelectedText();
       if (selectedQuery) query = selectedQuery;
    }
 
@@ -510,7 +503,7 @@ const runQuery = async (query: string) => {
          if (!autocommit.value)
             setUnsavedChanges({ uid: props.connection.uid, tUid: props.tabUid, isChanged: true });
 
-         queryEditor.value.editor.focus();
+         queryEditor.value.focus();
       }
       else
          addNotification({ status: 'error', message: response });
@@ -586,7 +579,7 @@ const stopResize = () => {
       resizeResults();
 
    if (queryEditor.value)
-      queryEditor.value.editor.resize();
+      queryEditor.value.resize();
 };
 
 const beautify = () => {
@@ -598,7 +591,7 @@ const beautify = () => {
          uppercase: true
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
-      queryEditor.value.editor.session.setValue(formattedQuery);
+      queryEditor.value.setValue(formattedQuery);
    }
 };
 
@@ -625,14 +618,14 @@ const openSavedModal = () => {
 
 const selectQuery = (sql: string) => {
    if (queryEditor.value)
-      queryEditor.value.editor.session.setValue(sql);
+      queryEditor.value.setValue(sql);
 
    isHistoryOpen.value = false;
 };
 
 const clear = () => {
    if (queryEditor.value)
-      queryEditor.value.editor.session.setValue('');
+      queryEditor.value.setValue('');
    clearTabData();
 };
 
@@ -835,7 +828,7 @@ onMounted(() => {
    if (props.tab.filePath)
       loadFileContent(props.tab.filePath);
 
-   queryEditor.value.editor.container.addEventListener('contextmenu', (e) => {
+   queryEditor.value.$el.addEventListener('contextmenu', (e) => {
       const InputMenu = Menu.buildFromTemplate([
          {
             label: t('general.run'),
