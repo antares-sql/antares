@@ -145,6 +145,7 @@
     "@fabio286/ssh2-promise": "~1.0.4-b",
     "@faker-js/faker": "~6.1.2",
     "@jamescoyle/vue-icon": "~0.1.2",
+    "@lezer/common": "~1.5.6",
     "@lezer/highlight": "~1.2.5",
     "@mdi/js": "~7.2.96",
     "@turf/helpers": "~6.5.0",

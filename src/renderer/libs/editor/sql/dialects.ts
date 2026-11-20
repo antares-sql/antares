@@ -1,4 +1,5 @@
 import { MariaSQL, MySQL, PostgreSQL, SQLDialect, SQLDialectSpec, SQLite } from '@codemirror/lang-sql';
+import { parseMixed } from '@lezer/common';
 
 import { aceSqlWords, SqlWordLists } from './aceSqlWords';
 
@@ -87,10 +88,36 @@ const firebirdSpec: SQLDialectSpec = {
    specialVar: ':?'
 };
 
+/** Opening delimiter of a dollar-quoted string: `$$` or `$tag$` */
+const dollarQuote = /^\$([A-Za-z_\u0080-￿][\w\u0080-￿]*)?\$/;
+
+/**
+ * PostgreSQL with the content of dollar-quoted strings (`$function$ ... $function$`,
+ * `$$ ... $$`) parsed as SQL, like Ace did: they are mostly routine bodies.
+ */
+const postgresqlDialect = (() => {
+   const base = SQLDialect.define(withWords(PostgreSQL.spec, aceSqlWords.pgsql));
+   let dialect: SQLDialect = null;
+   dialect = base.configureLanguage({
+      wrap: parseMixed((node, input) => {
+         if (node.type.name !== 'String') return null;
+         const quote = dollarQuote.exec(input.read(node.from, Math.min(node.to, node.from + 64)));
+         if (!quote) return null;
+         const length = quote[0].length;
+         if (node.to - node.from < length * 2) return null; // Unterminated
+         return {
+            parser: dialect.language.parser, // Nested bodies are parsed the same way
+            overlay: [{ from: node.from + length, to: node.to - length }]
+         };
+      })
+   });
+   return dialect;
+})();
+
 const dialects: Record<string, SqlDialectDefinition> = {
    mysql: { dialect: SQLDialect.define(withWords(MySQL.spec, aceSqlWords.mysql)) },
    mariadb: { dialect: SQLDialect.define(withWords(MariaSQL.spec, aceSqlWords.mysql)) },
-   postgresql: { dialect: SQLDialect.define(withWords(PostgreSQL.spec, aceSqlWords.pgsql)) },
+   postgresql: { dialect: postgresqlDialect },
    sqlite: { dialect: SQLDialect.define(withWords(SQLite.spec, aceSqlWords.sql)), snippets: sqlSnippets },
    firebird: { dialect: SQLDialect.define(withWords(firebirdSpec, aceSqlWords.sql)), snippets: sqlSnippets },
    // Generic SQL: the standard keywords (SQLite's are the standard ones plus a few) and the words of Ace's "sql" mode
