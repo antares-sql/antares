@@ -1669,7 +1669,7 @@
           "unsigned": false,
           "zerofill": false,
           "order": 6,
-          "default": "CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
+          "default": "CURRENT_TIMESTAMP(3)",
           "charset": null,
           "collation": null,
           "autoIncrement": false,

@@ -120,6 +120,8 @@ export interface TableField {
    isArray?: boolean;
    onUpdate?: string;
    comment?: string;
+   /** Column-level CHECK clause kept when the column is changed (MariaDB JSON columns: `json_valid(`col`)`) */
+   check?: string;
    /** Column to place this column after, `false` for FIRST, `undefined` to keep the current position */
    after?: string | false;
    orgName?: string;

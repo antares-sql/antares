@@ -57,3 +57,30 @@ describe.each(engines)('%s DDL generator', (_name, ddl: Any, createClient, types
       expect(capture.sql.at(-1)).toBe(normalizeSql(ddl[method](params[method])));
    });
 });
+
+describe('MySQL DDL column CHECK', () => {
+   const ddl = new MySQLDdl();
+   const field = { name: 'payload', orgName: 'data', type: 'LONGTEXT', nullable: true, default: 'NULL', check: 'json_valid(`data`)' };
+   const params = (changes: Any[], additions: Any[] = []): Any => ({
+      schema: 's',
+      table: 't',
+      additions,
+      changes,
+      deletions: [],
+      tableStructure: { name: 't', fields: [...changes, ...additions], foreigns: [], indexes: [] },
+      indexChanges: { additions: [], changes: [], deletions: [] },
+      foreignChanges: { additions: [], changes: [], deletions: [] },
+      checkChanges: { additions: [], changes: [], deletions: [] },
+      options: {}
+   });
+
+   it('keeps the CHECK of a changed column, following its rename (#757)', () => {
+      const sql = normalizeSql(ddl.alterTable(params([field])));
+      expect(sql).toContain('CHANGE COLUMN `data` `payload` LONGTEXT NULL DEFAULT NULL CHECK (json_valid(`payload`))');
+   });
+
+   it('does not copy a CHECK into added columns', () => {
+      const sql = normalizeSql(ddl.alterTable(params([], [{ ...field, orgName: undefined }])));
+      expect(sql).not.toContain('CHECK');
+   });
+});

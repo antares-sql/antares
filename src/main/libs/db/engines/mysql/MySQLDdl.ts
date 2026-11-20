@@ -238,6 +238,12 @@ export class MySQLDdl extends DdlGenerator {
       const collation = field.collation ? `COLLATE ${field.collation}` : '';
       const defaultValue = field.default !== null ? `DEFAULT ${field.default || '\'\''}` : '';
       const comment = field.comment ? `COMMENT '${field.comment}'` : '';
+      // CHANGE COLUMN redefines the column: repeat its CHECK (or it is dropped), following a rename
+      const check = mode === 'change' && field.check
+         ? `\n            CHECK (${field.orgName && field.orgName !== field.name
+            ? field.check.replaceAll(`\`${field.orgName}\``, `\`${field.name}\``)
+            : field.check})`
+         : '';
 
       return `\`${field.name}\` 
             ${field.type.toUpperCase()}${length ? `(${length}${field.numScale ? `,${field.numScale}` : ''})` : ''} 
@@ -246,7 +252,7 @@ export class MySQLDdl extends DdlGenerator {
             ${field.nullable ? 'NULL' : 'NOT NULL'}
             ${field.autoIncrement ? 'AUTO_INCREMENT' : ''}
             ${mode === 'add' ? `${defaultValue}\n            ${comment}\n            ${collation}` : `${collation}\n            ${defaultValue}\n            ${comment}`}
-            ${field.onUpdate ? `ON UPDATE ${field.onUpdate}` : ''}`.trimEnd();
+            ${field.onUpdate ? `ON UPDATE ${field.onUpdate}` : ''}${check}`.trimEnd();
    }
 
    /** `undefined` keeps the current position, `false` means FIRST */

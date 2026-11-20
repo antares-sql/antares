@@ -160,6 +160,81 @@ export interface CreateTableColumn {
    type: string;
    length: string;
    default: string;
+   /** Column-level CHECK clause (MariaDB, e.g. `json_valid(`col`)` of JSON columns) */
+   check?: string;
+}
+
+/** End index (exclusive) of the parenthesized group opening at `start`, skipping quoted text */
+function groupEnd (sql: string, start: number): number {
+   let depth = 0;
+   for (let i = start; i < sql.length; i++) {
+      const ch = sql[i];
+      if (ch === '\'' || ch === '"' || ch === '`') {
+         i = quotedEnd(sql, i) - 1;
+         continue;
+      }
+      if (ch === '(') depth++;
+      else if (ch === ')' && --depth === 0) return i + 1;
+   }
+   return sql.length;
+}
+
+/** End index (exclusive) of the quoted text opening at `start` (doubled or backslash-escaped quotes) */
+function quotedEnd (sql: string, start: number): number {
+   const quote = sql[start];
+   for (let i = start + 1; i < sql.length; i++) {
+      if (sql[i] === '\\' && quote !== '`') i++;
+      else if (sql[i] === quote) {
+         if (sql[i + 1] === quote) i++;
+         else return i + 1;
+      }
+   }
+   return sql.length;
+}
+
+/**
+ * Single term at `start`: a quoted literal (optionally prefixed, as b'01' or _utf8mb4'x'),
+ * a parenthesized expression or a word optionally followed by its arguments (current_timestamp(3))
+ */
+function termEnd (sql: string, start: number): number {
+   let i = start;
+   while (i < sql.length && /[\w.+-]/.test(sql[i])) i++;
+   if (sql[i] === '\'' || sql[i] === '"') return quotedEnd(sql, i);
+   if (sql[i] === '(') return groupEnd(sql, i);
+   return i;
+}
+
+/** Value of DEFAULT and clause of CHECK in the attributes of a SHOW CREATE TABLE column */
+function parseColumnAttributes (details: string) {
+   let defaultValue: string = null;
+   let check: string;
+
+   for (let i = 0; i < details.length;) {
+      const ch = details[i];
+      if (ch === '\'' || ch === '"' || ch === '`') {
+         i = quotedEnd(details, i);
+         continue;
+      }
+      if (ch === '(') {
+         i = groupEnd(details, i);
+         continue;
+      }
+
+      const keyword = /^(DEFAULT|CHECK)\s*/i.exec(details.slice(i));
+      if (keyword && (i === 0 || /\s/.test(details[i - 1]))) {
+         const start = i + keyword[0].length;
+         const end = termEnd(details, start);
+         if (keyword[1].toUpperCase() === 'DEFAULT')
+            defaultValue = details.slice(start, end);
+         else
+            check = details.slice(start + 1, end - 1).trim();
+         i = end;
+         continue;
+      }
+      i++;
+   }
+
+   return { defaultValue, check };
 }
 
 /**
@@ -187,16 +262,15 @@ export function parseCreateTableColumns (createTable?: string): Record<string, C
             if (nameAndType[0].charAt(0) !== '`') return null;
 
             const details = fieldArr.slice(2).join(' ');
-            let defaultValue = null;
-            if (details.includes('DEFAULT'))
-               defaultValue = details.match(/(?<=DEFAULT ).*?$/gs)[0].split(' COMMENT')[0];
+            const { defaultValue, check } = parseColumnAttributes(details);
             const typeAndLength = nameAndType[1].replace(')', '').split('(');
 
             return {
                name: nameAndType[0].replaceAll('`', ''),
                type: typeAndLength[0].toUpperCase(),
                length: typeAndLength[1] ? typeAndLength[1] : null,
-               default: defaultValue
+               default: defaultValue,
+               ...(check ? { check } : {})
             };
          }
          catch (err) {
@@ -263,6 +337,7 @@ export function mapColumn (field: ColumnRow, createColumns: Record<string, Creat
       onUpdate: field.EXTRA.toLowerCase().includes('on update')
          ? field.EXTRA.substr(field.EXTRA.indexOf('on update') + 9, field.EXTRA.length).trim()
          : '',
-      comment: field.COLUMN_COMMENT
+      comment: field.COLUMN_COMMENT,
+      ...(createColumn?.check ? { check: createColumn.check } : {})
    };
 }

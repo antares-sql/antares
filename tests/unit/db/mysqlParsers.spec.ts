@@ -1,6 +1,30 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseEvent, parseReturnType, parseRoutine, parseTrigger } from '../../../src/main/libs/db/engines/mysql/MySQLParsers';
+import { CreateTableColumn, parseCreateTableColumns, parseEvent, parseReturnType, parseRoutine, parseTrigger } from '../../../src/main/libs/db/engines/mysql/MySQLParsers';
+
+describe('MySQL parseCreateTableColumns', () => {
+   const columns = (definitions: string) =>
+      parseCreateTableColumns(`CREATE TABLE \`t\` (\n${definitions}\n) ENGINE=InnoDB`) as Record<string, CreateTableColumn>;
+
+   it('separates DEFAULT from a column CHECK (#757)', () => {
+      const { data } = columns('  `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`data`))');
+      expect(data.default).toBe('NULL');
+      expect(data.check).toBe('json_valid(`data`)');
+   });
+
+   it('reads DEFAULT values containing keywords, spaces and parentheses', () => {
+      const result = columns([
+         '  `a` varchar(20) NOT NULL DEFAULT \'CHECK (x) COMMENT\' COMMENT \'note\',',
+         '  `b` datetime(3) DEFAULT current_timestamp(3) ON UPDATE current_timestamp(3),',
+         '  `c` int(11) DEFAULT (1 + 2) CHECK (`c` > 0)'
+      ].join('\n'));
+      expect(result.a.default).toBe('\'CHECK (x) COMMENT\'');
+      expect(result.a.check).toBeUndefined();
+      expect(result.b.default).toBe('current_timestamp(3)');
+      expect(result.c.default).toBe('(1 + 2)');
+      expect(result.c.check).toBe('`c` > 0');
+   });
+});
 
 describe('MySQL parseTrigger', () => {
    it('parses a single statement trigger (no BEGIN ... END)', () => {
