@@ -36,7 +36,7 @@ export default class {
       return ipcRenderer.invoke('read-file', params);
    }
 
-   static writeFile (path: string, content: unknown) {
+   static writeFile (path: string, content: unknown): Promise<{ status: 'success' | 'error'; response?: string }> {
       return ipcRenderer.invoke('write-file', path, content);
    }
 }

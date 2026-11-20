@@ -769,6 +769,20 @@ const openFile = async () => {
    }
 };
 
+/** Writes the query to a file and notifies the outcome; true only if the file was actually written */
+const writeQueryFile = async (path: string) => {
+   const { status, response } = await Application.writeFile(path, query.value);
+
+   if (status !== 'success') {
+      addNotification({ status: 'error', message: response });
+      return false;
+   }
+
+   addNotification({ status: 'success', message: t('general.actionSuccessful', { action: t('application.saveFile') }) });
+   lastSavedQuery.value = toRaw(query.value);
+   return true;
+};
+
 const saveFileAs = async () => {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    const result: any = await Application.showSaveDialog({
@@ -776,21 +790,15 @@ const saveFileAs = async () => {
       defaultPath: (queryName.value !== undefined && !queryName.value.includes('.sql') ? `${queryName.value}.sql` : queryName.value) || 'query.sql'
    });
 
-   if (result && !result.canceled) {
-      await Application.writeFile(result.filePath, query.value);
-      addNotification({ status: 'success', message: t('general.actionSuccessful', { action: t('application.saveFile') }) });
+   if (result && !result.canceled && await writeQueryFile(result.filePath)) {
       queryName.value = result.filePath.split('/').pop().split('\\').pop();
       filePath.value = result.filePath;
-      lastSavedQuery.value = toRaw(query.value);
    }
 };
 
 const saveFile = async () => {
-   if (filePath.value) {
-      await Application.writeFile(filePath.value, query.value);
-      addNotification({ status: 'success', message: t('general.actionSuccessful', { action: t('application.saveFile') }) });
-      lastSavedQuery.value = toRaw(query.value);
-   }
+   if (filePath.value)
+      await writeQueryFile(filePath.value);
    else
       saveFileAs();
 };
