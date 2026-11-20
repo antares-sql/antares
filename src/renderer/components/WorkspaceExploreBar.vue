@@ -294,7 +294,7 @@ onMounted(async () => {
          const { status, response } = await Databases.getDatabases(props.connection.uid);
          if (status === 'success') {
             databases.value = response;
-            if (selectedDatabase.value === '') {
+            if (!selectedDatabase.value) { // '' or missing in connections saved without a database (#781)
                selectedDatabase.value = response[0];
                setDatabase(selectedDatabase.value);
             }
