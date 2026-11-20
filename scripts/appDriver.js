@@ -205,7 +205,7 @@ const commands = {
       console.log('filled');
    },
 
-   /** Types into the focused element (works with the Ace editor too) */
+   /** Types into the focused element (works with the code editors too) */
    async type (...text) {
       const page = await getPage();
       await page.keyboard.type(text.join(' '), { delay: 10 });

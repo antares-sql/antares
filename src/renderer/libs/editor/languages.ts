@@ -36,10 +36,12 @@ export const loadLanguage = async (mode: string): Promise<Extension> => {
       }
       case 'sql':
       case 'mysql':
-      case 'pgsql': {
-         const { sql, MySQL, PostgreSQL, StandardSQL } = await import(/* webpackChunkName: "cm-lang-sql" */'@codemirror/lang-sql');
-         const dialect = mode === 'mysql' ? MySQL : mode === 'pgsql' ? PostgreSQL : StandardSQL;
-         return sql({ dialect });
+      case 'mariadb':
+      case 'postgresql':
+      case 'sqlite':
+      case 'firebird': {
+         const { getSqlDialect } = await import('./sql/dialects');
+         return getSqlDialect(mode).dialect;
       }
       default:
          return [];

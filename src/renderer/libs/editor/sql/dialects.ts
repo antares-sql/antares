@@ -1,4 +1,4 @@
-import { MariaSQL, MySQL, PostgreSQL, SQLDialect, SQLDialectSpec, SQLite, StandardSQL } from '@codemirror/lang-sql';
+import { MariaSQL, MySQL, PostgreSQL, SQLDialect, SQLDialectSpec, SQLite } from '@codemirror/lang-sql';
 
 import { aceSqlWords, SqlWordLists } from './aceSqlWords';
 
@@ -93,7 +93,8 @@ const dialects: Record<string, SqlDialectDefinition> = {
    postgresql: { dialect: SQLDialect.define(withWords(PostgreSQL.spec, aceSqlWords.pgsql)) },
    sqlite: { dialect: SQLDialect.define(withWords(SQLite.spec, aceSqlWords.sql)), snippets: sqlSnippets },
    firebird: { dialect: SQLDialect.define(withWords(firebirdSpec, aceSqlWords.sql)), snippets: sqlSnippets },
-   sql: { dialect: StandardSQL, snippets: sqlSnippets }
+   // Generic SQL: the standard keywords (SQLite's are the standard ones plus a few) and the words of Ace's "sql" mode
+   sql: { dialect: SQLDialect.define(withWords({ keywords: SQLite.spec.keywords, types: SQLite.spec.types }, aceSqlWords.sql)), snippets: sqlSnippets }
 };
 
 /** Registers a new SQL dialect (or replaces one), e.g. for a new engine */

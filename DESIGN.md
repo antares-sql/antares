@@ -59,7 +59,7 @@ Key icons (PK/FK/unique/index) come from [_table-keys.scss](src/renderer/scss/_t
 
 - Use Spectre's default font stack and sizes. **Dense areas use `0.7rem`**: result grid cells and headers, menus, small selects.
 - Headings inside panels and modals: `h6` / `h5` classes, not big headings. Modal headers are uppercase (global rule in `main.scss`).
-- Monospace only for SQL/code (Ace editor, `code.sql`).
+- Monospace only for SQL/code (code editors, `code.sql`).
 - Long names (tables, schemas, connections) must never wrap or overflow. Use `.cut-text` and put the full text in `title`.
 
 ### Spacing and sizing
@@ -95,7 +95,7 @@ Key icons (PK/FK/unique/index) come from [_table-keys.scss](src/renderer/scss/_t
 
 ### Themes
 
-- The root `#wrapper` gets `theme-dark` or `theme-light` ([App.vue](src/renderer/App.vue)). The Ace editor has its own independent theme setting.
+- The root `#wrapper` gets `theme-dark` or `theme-light` ([App.vue](src/renderer/App.vue)). The code editors (CodeMirror) have their own independent theme setting.
 - **Every UI change must be checked in both themes.** Most visual regressions are "looks fine in dark, unreadable in light".
 - Hard-coded dark values in base components (for example `#1d1d1d` in `BaseContextMenu`) are legacy. Light-theme overrides exist for them. Do not copy the pattern: put the colors in the theme files.
 

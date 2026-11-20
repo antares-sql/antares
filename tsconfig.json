@@ -5,7 +5,6 @@
     "./src/renderer/**/*",
     "./src/common/**/*"
   ],
-  "exclude": ["./src/renderer/libs/ext-language_tools.js"],
   "compilerOptions": {
     "target": "es2021",
     "allowJs": true,

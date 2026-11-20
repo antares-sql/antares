@@ -345,8 +345,7 @@
                            <div class="column col-12">
                               <BaseTextEditor
                                  :model-value="exampleQuery"
-                                 mode="sql"
-                                 :workspace="workspace"
+                                 :mode="workspace?.customizations?.sqlDialect ?? 'sql'"
                                  :read-only="true"
                                  :height="270"
                               />
