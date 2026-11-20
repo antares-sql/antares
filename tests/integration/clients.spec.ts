@@ -185,6 +185,33 @@ for (const engine of getTestEngines()) {
          }
       });
 
+      // #955: DECIMAL(12,2) parameters and return types were read back as DECIMAL(12) / DECIMAL and saved so
+      it('keeps the scale of decimal routine parameters and return types when saving them back', async ({ skip }) => {
+         if (engine.name !== 'mysql' && engine.name !== 'maria') skip();
+         const common = { schema, definer: '', deterministic: true, dataAccess: 'CONTAINS SQL', security: 'DEFINER', comment: '' };
+         const amount = { _antares_id: '1', name: 'amount', type: 'DECIMAL', length: '12,2', context: 'IN' };
+
+         try {
+            await client.createRoutine({ ...common, name: 'it_proc_dec', parameters: [amount], sql: 'BEGIN\n  SELECT amount;\nEND' });
+            const proc = await client.getRoutineInformations({ schema, routine: 'it_proc_dec' });
+            expect(proc.parameters).toMatchObject([{ name: 'amount', type: 'DECIMAL', length: '12,2' }]);
+
+            await client.alterRoutine({ routine: { ...common, ...proc, oldName: 'it_proc_dec' } });
+            expect((await client.getRoutineInformations({ schema, routine: 'it_proc_dec' })).parameters[0].length).toBe('12,2');
+
+            await client.createFunction({ ...common, name: 'it_func_dec', parameters: [amount], returns: 'DECIMAL', returnsLength: '12,2', sql: 'BEGIN\n  RETURN amount;\nEND' });
+            const func = await client.getFunctionInformations({ schema, func: 'it_func_dec' });
+            expect(func).toMatchObject({ returns: 'DECIMAL', returnsLength: '12,2', parameters: [{ length: '12,2' }] });
+
+            await client.alterFunction({ func: { ...common, ...func, oldName: 'it_func_dec' } });
+            expect(await client.getFunctionInformations({ schema, func: 'it_func_dec' })).toMatchObject({ returnsLength: '12,2', parameters: [{ length: '12,2' }] });
+         }
+         finally {
+            await dropIfExists(`DROP PROCEDURE IF EXISTS ${qualified('it_proc_dec')}`);
+            await dropIfExists(`DROP FUNCTION IF EXISTS ${qualified('it_func_dec')}`);
+         }
+      });
+
       // #927: triggers written by hand (lowercase, unquoted table) could not be opened on SQLite
       it('reads a trigger created by a query', async ({ skip }) => {
          if (engine.name !== 'sqlite') skip();

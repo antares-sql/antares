@@ -129,8 +129,7 @@
                         <input
                            v-model="selectedParamObj.length"
                            class="form-input"
-                           type="number"
-                           min="0"
+                           type="text"
                         >
                      </div>
                   </div>

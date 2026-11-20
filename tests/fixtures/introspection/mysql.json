@@ -4204,7 +4204,7 @@
         "deterministic": true,
         "dataAccess": "READS SQL DATA",
         "returns": "DECIMAL",
-        "returnsLength": null
+        "returnsLength": "10,2"
       }
     },
     {

@@ -77,10 +77,28 @@ export function parseRoutine (statement: string): RoutineDefinition {
    };
 }
 
-/** Splits a function RETURNS type into [TYPE, length] (e.g. "varchar(100)" → ['VARCHAR', 100]) */
-export function parseReturnType (returns: string): { returns: string; returnsLength: number } {
+/**
+ * Splits a function RETURNS type into [TYPE, length] (e.g. "varchar(100)" → ['VARCHAR', 100]).
+ * Precision and scale stay together as a string: "decimal(12,2)" → ['DECIMAL', '12,2']
+ */
+export function parseReturnType (returns: string): { returns: string; returnsLength: number | string } {
    const [type, length] = (returns ?? '').split(/\s/)[0].replace(')', '').split('(');
-   return { returns: type.toUpperCase(), returnsLength: +length };
+   return { returns: type.toUpperCase(), returnsLength: length?.includes(',') ? length.replace(/\s/g, '') : +length };
+}
+
+export interface ParameterTypeRow {
+   NUMERIC_PRECISION: number | string;
+   NUMERIC_SCALE: number | string;
+   DATETIME_PRECISION: number | string;
+   CHARACTER_MAXIMUM_LENGTH: number | string;
+}
+
+/** Length of a routine parameter read from information_schema.parameters: "12,2" for DECIMAL(12,2) */
+export function parameterLength (row: ParameterTypeRow): number | string {
+   if (row.NUMERIC_PRECISION)
+      return Number(row.NUMERIC_SCALE) > 0 ? `${row.NUMERIC_PRECISION},${row.NUMERIC_SCALE}` : row.NUMERIC_PRECISION;
+
+   return row.DATETIME_PRECISION || row.CHARACTER_MAXIMUM_LENGTH || '';
 }
 
 export interface TriggerDefinition {

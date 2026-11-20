@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { CreateTableColumn, parseCreateTableColumns, parseEvent, parseReturnType, parseRoutine, parseTrigger } from '../../../src/main/libs/db/engines/mysql/MySQLParsers';
+import { CreateTableColumn, parameterLength, ParameterTypeRow, parseCreateTableColumns, parseEvent, parseReturnType, parseRoutine, parseTrigger } from '../../../src/main/libs/db/engines/mysql/MySQLParsers';
 
 describe('MySQL parseCreateTableColumns', () => {
    const columns = (definitions: string) =>
@@ -92,6 +92,30 @@ describe('MySQL parseReturnType', () => {
    it('splits type and length', () => {
       expect(parseReturnType('varchar(100) CHARSET utf8mb4')).toEqual({ returns: 'VARCHAR', returnsLength: 100 });
       expect(parseReturnType('int')).toEqual({ returns: 'INT', returnsLength: NaN });
+   });
+
+   // #955: the scale was lost (+'12,2' = NaN) and the function was saved back as DECIMAL
+   it('keeps precision and scale together', () => {
+      expect(parseReturnType('decimal(12,2)')).toEqual({ returns: 'DECIMAL', returnsLength: '12,2' });
+   });
+});
+
+describe('MySQL parameterLength', () => {
+   const row = (props: Partial<ParameterTypeRow>): ParameterTypeRow =>
+      ({ NUMERIC_PRECISION: null, NUMERIC_SCALE: null, DATETIME_PRECISION: null, CHARACTER_MAXIMUM_LENGTH: null, ...props });
+
+   it('keeps the scale of decimal parameters (#955)', () => {
+      expect(parameterLength(row({ NUMERIC_PRECISION: 12, NUMERIC_SCALE: 2 }))).toBe('12,2');
+   });
+
+   it('omits a zero scale', () => {
+      expect(parameterLength(row({ NUMERIC_PRECISION: 10, NUMERIC_SCALE: 0 }))).toBe(10);
+   });
+
+   it('falls back to datetime precision and character length', () => {
+      expect(parameterLength(row({ DATETIME_PRECISION: 6 }))).toBe(6);
+      expect(parameterLength(row({ CHARACTER_MAXIMUM_LENGTH: 100 }))).toBe(100);
+      expect(parameterLength(row({}))).toBe('');
    });
 });
 

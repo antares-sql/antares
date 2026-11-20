@@ -262,7 +262,7 @@ export interface FunctionParam {
    context: string;
    name: string;
    type: string;
-   length: number;
+   length: number | string;
 }
 
 export interface RoutineInfos {
@@ -281,7 +281,7 @@ export interface RoutineInfos {
    parameters?: FunctionParam[];
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    returns?: any;
-   returnsLength?: number;
+   returnsLength?: number | string;
 }
 
 export type FunctionInfos = RoutineInfos
@@ -315,7 +315,7 @@ export interface CreateFunctionParams {
    comment?: string;
    sql: string;
    returns: string;
-   returnsLength: number;
+   returnsLength: number | string;
    language?: string;
 }
 

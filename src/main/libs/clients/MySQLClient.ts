@@ -8,7 +8,7 @@ import { arrayRowsToObjects, uniqueColumnNames } from '../db/core/resultRows';
 import { MySQLConnections, MySQLParams } from '../db/engines/mysql/MySQLConnections';
 import { MySQLDdl } from '../db/engines/mysql/MySQLDdl';
 import { MariaDBDialect, MySQLDialect } from '../db/engines/mysql/MySQLDialect';
-import { ColumnRow, mapColumn, parseCreateTableColumns, parseEvent, parseReturnType, parseRoutine, parseTrigger, parseViewAlgorithm } from '../db/engines/mysql/MySQLParsers';
+import { ColumnRow, mapColumn, parameterLength, parseCreateTableColumns, parseEvent, parseReturnType, parseRoutine, parseTrigger, parseViewAlgorithm } from '../db/engines/mysql/MySQLParsers';
 import { BaseClient } from './BaseClient';
 EncodingToCharset.utf8mb3 = 192; // To fix https://github.com/sidorares/node-mysql2/issues/1398 until not included in mysql2
 
@@ -711,6 +711,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
          PARAMETER_NAME: string;
          DATA_TYPE: string;
          NUMERIC_PRECISION: string;
+         NUMERIC_SCALE: string;
          DATETIME_PRECISION: string;
          CHARACTER_MAXIMUM_LENGTH: string;
          PARAMETER_MODE: string;
@@ -745,7 +746,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
             return {
                name: row.PARAMETER_NAME,
                type: row.DATA_TYPE.toUpperCase(),
-               length: row.NUMERIC_PRECISION || row.DATETIME_PRECISION || row.CHARACTER_MAXIMUM_LENGTH || '',
+               length: parameterLength(row),
                context: row.PARAMETER_MODE
             };
          });
@@ -798,6 +799,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
          PARAMETER_NAME: string;
          DATA_TYPE: string;
          NUMERIC_PRECISION: string;
+         NUMERIC_SCALE: string;
          DATETIME_PRECISION: string;
          CHARACTER_MAXIMUM_LENGTH: string;
          PARAMETER_MODE: string;
@@ -834,7 +836,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
             return {
                name: row.PARAMETER_NAME,
                type: row.DATA_TYPE.toUpperCase(),
-               length: row.NUMERIC_PRECISION || row.DATETIME_PRECISION || row.CHARACTER_MAXIMUM_LENGTH || '',
+               length: parameterLength(row),
                context: row.PARAMETER_MODE
             };
          });

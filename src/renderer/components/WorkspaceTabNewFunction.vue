@@ -114,8 +114,7 @@
                         v-model="localFunction.returnsLength"
                         style="max-width: 150px;"
                         class="form-input"
-                        type="number"
-                        min="0"
+                        type="text"
                         :placeholder="t('database.length')"
                      >
                   </div>
