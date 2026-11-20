@@ -376,6 +376,45 @@ export interface AlterEventParams extends CreateEventParams {
    oldName?: string;
 }
 
+// User-defined types (PostgreSQL)
+export type UserTypeKind = 'enum' | 'composite' | 'domain' | 'range';
+
+/** Item of the explorer structure */
+export interface UserTypeInfos {
+   name: string;
+   kind: UserTypeKind;
+}
+
+/** `oldName` is set on the items that exist on the server (absent on new ones) */
+export interface UserTypeEnumValue { name: string; oldName?: string }
+export interface UserTypeAttribute { name: string; type: string; oldName?: string }
+export interface UserTypeCheck { name: string; clause: string; oldName?: string }
+
+export interface UserTypeDetails {
+   schema: string;
+   name: string;
+   kind: UserTypeKind;
+   comment: string;
+   /** enum labels, in order */
+   values: UserTypeEnumValue[];
+   /** composite */
+   attributes: UserTypeAttribute[];
+   /** domain: base type; range: subtype */
+   baseType: string;
+   /** domain */
+   notNull: boolean;
+   /** domain: default expression */
+   default: string;
+   /** domain: CHECK constraints */
+   checks: UserTypeCheck[];
+}
+
+export interface AlterUserTypeParams {
+   type: UserTypeDetails;
+   /** Details read from the server before the changes */
+   original: UserTypeDetails;
+}
+
 // Schema
 export interface SchemaInfos {
    name: string;
@@ -385,6 +424,7 @@ export interface SchemaInfos {
    procedures: RoutineInfos[];
    triggers: TriggerInfos[];
    schedulers: EventInfos[];
+   userTypes?: UserTypeInfos[];
 }
 
 export interface CollationInfos {

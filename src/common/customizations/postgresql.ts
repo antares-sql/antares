@@ -37,6 +37,7 @@ export const customizations: Customizations = {
    triggerFunctions: true,
    routines: true,
    functions: true,
+   userTypes: true,
    // Misc
    elementsWrapper: '"',
    stringsWrapper: '\'',
@@ -49,6 +50,7 @@ export const customizations: Customizations = {
    triggerFunctionAdd: true,
    routineAdd: true,
    functionAdd: true,
+   userTypeAdd: true,
    schemaDrop: true,
    schemaExport: true,
    schemaImport: true,

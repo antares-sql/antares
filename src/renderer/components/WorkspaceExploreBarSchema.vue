@@ -366,6 +366,54 @@
             </details>
          </div>
 
+         <div v-if="filteredUserTypes.length && customizations.userTypes" class="database-misc">
+            <details class="accordion">
+               <summary
+                  class="accordion-header misc-name"
+                  :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.userType}"
+                  @contextmenu.prevent="showMiscFolderContext($event, 'userType')"
+               >
+                  <BaseIcon
+                     class="misc-icon mr-1"
+                     icon-name="mdiFolderText"
+                     :size="18"
+                  />
+                  <BaseIcon
+                     class="misc-icon open-folder mr-1"
+                     icon-name="mdiFolderOpen"
+                     :size="18"
+                  />
+                  {{ t('database.userType', 2) }}
+               </summary>
+               <div class="accordion-body">
+                  <div>
+                     <ul class="menu menu-nav pt-0">
+                        <li
+                           v-for="userType of filteredUserTypes"
+                           :key="userType.name"
+                           class="menu-item"
+                           :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.userType === userType.name}"
+                           :title="userType.kind.toUpperCase()"
+                           @mousedown.left="selectMisc({schema: database.name, misc: userType, type: 'userType'})"
+                           @dblclick="openMiscPermanentTab({schema: database.name, misc: userType, type: 'userType'})"
+                           @contextmenu.prevent="showMiscContext($event, {...userType, type: 'userType'})"
+                        >
+                           <a class="table-name">
+                              <BaseIcon
+                                 class="misc-icon mr-1"
+                                 :icon-name="userTypeIcons[userType.kind]"
+                                 :size="18"
+                                 :style="`min-width: 18px`"
+                              />
+                              <span v-html="highlightWord(userType.name)" />
+                           </a>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+            </details>
+         </div>
+
          <div v-if="filteredSchedulers.length && customizations.schedulers" class="database-misc">
             <details class="accordion">
                <summary
@@ -429,7 +477,7 @@
 </template>
 
 <script setup lang="ts">
-import { EventInfos, FunctionInfos, RoutineInfos, TableInfos, TriggerFunctionInfos, TriggerInfos } from 'common/interfaces/antares';
+import { EventInfos, FunctionInfos, RoutineInfos, TableInfos, TriggerFunctionInfos, TriggerInfos, UserTypeInfos, UserTypeKind } from 'common/interfaces/antares';
 import { formatBytes } from 'common/libs/formatBytes';
 import { storeToRefs } from 'pinia';
 import { computed, Prop, Ref, ref, watch } from 'vue';
@@ -542,6 +590,21 @@ const filteredSchedulers = computed(() => {
       return props.database.schedulers;
 });
 
+const filteredUserTypes = computed(() => {
+   const userTypes = props.database.userTypes || [];
+   if (props.searchMethod === 'elements')
+      return userTypes.filter(userType => userType.name.toLowerCase().includes(searchTerm.value.toLowerCase()));
+   else
+      return userTypes;
+});
+
+const userTypeIcons: Record<UserTypeKind, string> = {
+   enum: 'mdiFormatListBulleted',
+   composite: 'mdiCodeBraces',
+   domain: 'mdiShieldCheckOutline',
+   range: 'mdiArrowExpandHorizontal'
+};
+
 const workspace = computed(() => {
    return getWorkspace(props.connection.uid);
 });
@@ -608,8 +671,11 @@ const selectTable = ({ schema, table }: { schema: string; table: TableInfos }) =
    setBreadcrumbs({ schema, [table.type]: table.name });
 };
 
-const selectMisc = ({ schema, misc, type }: { schema: string; misc: { name: string }; type: 'trigger' | 'triggerFunction' | 'function' | 'routine' | 'scheduler' }) => {
+type MiscType = 'trigger' | 'triggerFunction' | 'function' | 'routine' | 'scheduler' | 'userType';
+
+const selectMisc = ({ schema, misc, type }: { schema: string; misc: { name: string }; type: MiscType }) => {
    const miscTempTabs = {
+      userType: 'temp-user-type-props',
       trigger: 'temp-trigger-props',
       triggerFunction: 'temp-trigger-function-props',
       function: 'temp-function-props',
@@ -639,8 +705,9 @@ const openDataTab = ({ schema, table }: { schema: string; table: TableInfos }) =
    setBreadcrumbs({ schema, [table.type]: table.name });
 };
 
-const openMiscPermanentTab = ({ schema, misc, type }: { schema: string; misc: { name: string }; type: 'trigger' | 'triggerFunction' | 'function' | 'routine' | 'scheduler' }) => {
+const openMiscPermanentTab = ({ schema, misc, type }: { schema: string; misc: { name: string }; type: MiscType }) => {
    const miscTabs = {
+      userType: 'user-type-props',
       trigger: 'trigger-props',
       triggerFunction: 'trigger-function-props',
       function: 'function-props',
@@ -666,7 +733,7 @@ const showTableContext = (event: MouseEvent, table: TableInfos) => {
    emit('show-table-context', { event, schema: props.database.name, table });
 };
 
-const showMiscContext = (event: MouseEvent, misc: TriggerInfos | TriggerFunctionInfos | RoutineInfos | FunctionInfos | EventInfos) => {
+const showMiscContext = (event: MouseEvent, misc: TriggerInfos | TriggerFunctionInfos | RoutineInfos | FunctionInfos | EventInfos | UserTypeInfos) => {
    emit('show-misc-context', { event, schema: props.database.name, misc });
 };
 

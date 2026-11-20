@@ -121,6 +121,7 @@ import Functions from '@/ipc-api/Functions';
 import Routines from '@/ipc-api/Routines';
 import Schedulers from '@/ipc-api/Schedulers';
 import Triggers from '@/ipc-api/Triggers';
+import UserTypes from '@/ipc-api/UserTypes';
 import { copyText } from '@/libs/copyText';
 import { useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
@@ -175,6 +176,8 @@ const deleteMessage = computed(() => {
          return t('database.deleteFunction');
       case 'scheduler':
          return t('database.deleteScheduler');
+      case 'userType':
+         return t('database.deleteUserType');
       default:
          return '';
    }
@@ -239,6 +242,13 @@ const deleteMisc = async () => {
                uid: selectedWorkspace.value,
                schema: props.selectedSchema,
                scheduler: props.selectedMisc.name
+            });
+            break;
+         case 'userType':
+            res = await UserTypes.dropUserType({
+               uid: selectedWorkspace.value,
+               schema: props.selectedSchema,
+               userType: props.selectedMisc.name
             });
             break;
       }

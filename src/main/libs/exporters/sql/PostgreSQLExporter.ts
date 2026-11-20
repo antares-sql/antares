@@ -6,9 +6,12 @@ import { valueToSqlString } from 'common/libs/sqlUtils';
 import QueryStream = require('pg-query-stream');
 
 import { PostgreSQLClient } from '../../clients/PostgreSQLClient';
+import { PostgreSQLTypes } from '../../db/engines/postgresql/PostgreSQLTypes';
 import { SqlExporter } from './SqlExporter';
 
 export default class PostgreSQLExporter extends SqlExporter {
+   private readonly _types = new PostgreSQLTypes();
+
    constructor (client: PostgreSQLClient, tables: exporter.TableParams[], options: exporter.ExportOptions) {
       super(tables, options);
 
@@ -131,33 +134,27 @@ SET row_security = off;\n\n\n`;
 
    async getCreateTypes () {
       let sqlString = '';
-      const { rows: types } = await this._client.raw<antares.QueryResult<{typname: string; enumlabel: string}>>(`
-         SELECT pg_type.typname, pg_enum.enumlabel 
-         FROM pg_type 
-         JOIN pg_enum ON pg_enum.enumtypid = pg_type.oid;
+      // Enums, domains, ranges and composite types of the schema (not of extensions), in creation order to respect dependencies
+      const { rows: types } = await this._client.raw<antares.QueryResult<{ typname: string }>>(`
+         SELECT t.typname
+         FROM pg_type t
+         JOIN pg_namespace n ON n.oid = t.typnamespace
+         WHERE n.nspname = ${this._client.dialect.quoteString(this.schemaName)}
+         AND (t.typtype IN ('e', 'd', 'r') OR (t.typtype = 'c' AND EXISTS (SELECT 1 FROM pg_class c WHERE c.oid = t.typrelid AND c.relkind = 'c')))
+         AND NOT EXISTS (SELECT 1 FROM pg_depend d WHERE d.classid = 'pg_type'::regclass AND d.objid = t.oid AND d.deptype = 'e')
+         ORDER BY t.oid
       `);
 
-      if (types.length) { // TODO: refactor
+      if (types.length) {
          sqlString += this.buildComment('Dump of types\n------------------------------------------------------------') + '\n\n';
 
-         const typesArr = types.reduce((arr, type) => {
-            if (arr.every(el => el.name !== type.typname))
-               arr.push({ name: type.typname, enums: [this.escapeAndQuote(type.enumlabel)] });
-            else {
-               const i = arr.findIndex(el => el.name === type.typname);
-               arr[i].enums.push(this.escapeAndQuote(type.enumlabel));
-            }
-
-            return arr;
-         }, []);
-
-         for (const type of typesArr) {
-            sqlString += `CREATE TYPE "${this.schemaName}"."${type.name}" AS ENUM (
-   ${type.enums.join(',\n\t')}
-);`;
+         for (const { typname } of types) {
+            const details = await (this._client as PostgreSQLClient).getUserTypeInformations({ schema: this.schemaName, userType: typname, qualifyTypes: true });
+            for (const statement of this._types.createType(details))
+               sqlString += `${statement};\n`;
          }
 
-         // sqlString += `\nALTER TYPE "${tableName}" OWNER TO ${this._client._params.user};\n`
+         sqlString += '\n';
       }
 
       return sqlString;

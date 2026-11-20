@@ -58,6 +58,11 @@ const schemaSql: Record<EngineName, { schema: string; setup: string[]; teardown:
       schema: S,
       setup: [
          `CREATE SCHEMA ${S}`,
+         `CREATE TYPE ${S}.product_status AS ENUM ('draft', 'active', 'it''s over')`,
+         `COMMENT ON TYPE ${S}.product_status IS 'Product lifecycle'`,
+         `CREATE DOMAIN ${S}."Weight" AS NUMERIC(8,3) DEFAULT 0 NOT NULL CONSTRAINT weight_positive CHECK (VALUE >= 0)`,
+         `CREATE TYPE ${S}.dimensions AS (width INTEGER, height INTEGER, unit VARCHAR(5))`,
+         `CREATE TYPE ${S}.price_range AS RANGE (SUBTYPE = NUMERIC)`,
          `CREATE TABLE ${S}.categories (id SERIAL PRIMARY KEY, name VARCHAR(50) NOT NULL)`,
          `COMMENT ON TABLE ${S}.categories IS 'Categories'`,
          `CREATE TABLE ${S}.products (
@@ -69,6 +74,9 @@ const schemaSql: Record<EngineName, { schema: string; setup: string[]; teardown:
             category_id INTEGER NULL,
             data JSONB NULL,
             flag BOOLEAN DEFAULT false,
+            status ${S}.product_status DEFAULT 'draft',
+            weight ${S}."Weight",
+            size ${S}.dimensions NULL,
             CONSTRAINT products_name_uq UNIQUE (name),
             CONSTRAINT products_category_fk FOREIGN KEY (category_id) REFERENCES ${S}.categories (id) ON UPDATE CASCADE ON DELETE SET NULL,
             CONSTRAINT products_price_chk CHECK (price >= 0)
@@ -157,7 +165,11 @@ const callsFor = (engine: EngineName, schema: string): [string, unknown[], strin
    ['getMaterializedViewInformations', [{ schema, view: 'products_count' }], 'materializedViews'],
    ['getRoutineInformations', [{ schema, routine: engine === 'pg' ? 'touch_product' : 'get_product' }], 'routines'],
    ['getFunctionInformations', [{ schema, func: 'product_price' }], 'functions'],
-   ['getEventInformations', [{ schema, scheduler: 'cleanup' }], 'schedulers']
+   ['getEventInformations', [{ schema, scheduler: 'cleanup' }], 'schedulers'],
+   ['getUserTypeInformations', [{ schema, userType: 'product_status' }], 'userTypes'],
+   ['getUserTypeInformations', [{ schema, userType: 'Weight' }], 'userTypes'],
+   ['getUserTypeInformations', [{ schema, userType: 'dimensions' }], 'userTypes'],
+   ['getUserTypeInformations', [{ schema, userType: 'price_range' }], 'userTypes']
 ];
 
 /** Sets are not JSON: params are stored as arrays and rebuilt by the replay */

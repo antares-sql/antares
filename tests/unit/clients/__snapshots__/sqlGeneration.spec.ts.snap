@@ -1083,9 +1083,9 @@ exports[`pg client SQL generation > alterTable 1`] = `
 {
   "queries": [
     {
-      "sql": "SET search_path TO "test_schema"",
-    },
-    {
+      "args": {
+        "schema": "test_schema",
+      },
       "sql": "ALTER TABLE "test_schema"."products" RENAME COLUMN "name" TO "title"; CREATE INDEX "products_stock_idx" ON "test_schema"."products" ("stock");DROP INDEX products_price_idx;CREATE INDEX "products_price_idx" ON "test_schema"."products" ("price"); ALTER TABLE "test_schema"."products" ADD COLUMN "stock" INTEGER NOT NULL DEFAULT 0 , ADD CONSTRAINT "products_supplier_fk" FOREIGN KEY ("supplier_id") REFERENCES "test_schema"."suppliers" (id) ON UPDATE CASCADE ON DELETE RESTRICT, ALTER COLUMN "title" TYPE character varying(150) USING "title"::character varying, ALTER COLUMN "title" DROP NOT NULL, ALTER COLUMN "title" SET DEFAULT 'unnamed', DROP CONSTRAINT "products_category_fk", ADD CONSTRAINT "products_category_fk" FOREIGN KEY (category_id) REFERENCES "test_schema"."categories" ("id") ON UPDATE CASCADE ON DELETE CASCADE, DROP COLUMN "created_at", DROP CONSTRAINT "products_name_uq", DROP CONSTRAINT "products_old_fk"; COMMENT ON TABLE "test_schema"."products" IS 'Updated comment'; COMMENT ON COLUMN "test_schema"."products"."title" IS 'Product name'; ALTER TABLE "test_schema"."products" RENAME TO "items";",
     },
   ],
@@ -1199,6 +1199,9 @@ exports[`pg client SQL generation > createTable 1`] = `
 {
   "queries": [
     {
+      "args": {
+        "schema": "test_schema",
+      },
       "sql": "CREATE TABLE "test_schema"."products" ("id" INTEGER NOT NULL , "name" CHARACTER VARYING(100) NULL DEFAULT 'unnamed' , "price" NUMERIC(10,2) NOT NULL DEFAULT 0 , "created_at" TIMESTAMP WITHOUT TIME ZONE NULL , PRIMARY KEY (id), CONSTRAINT "products_name_uq" UNIQUE (name), CONSTRAINT "products_category_fk" FOREIGN KEY ("category_id") REFERENCES "test_schema"."categories" ("id") ON UPDATE CASCADE ON DELETE RESTRICT); CREATE INDEX "products_price_idx" ON "test_schema"."products" (price,created_at); COMMENT ON TABLE "test_schema"."products" IS 'Products table'; COMMENT ON COLUMN "test_schema"."products"."name" IS 'Product name';",
     },
   ],

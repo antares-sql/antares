@@ -36,6 +36,7 @@ export interface Customizations {
    routines?: boolean;
    functions?: boolean;
    schedulers?: boolean;
+   userTypes?: boolean;
    // Misc
    elementsWrapper: string;
    stringsWrapper: string;
@@ -56,6 +57,7 @@ export interface Customizations {
    routineAdd?: boolean;
    functionAdd?: boolean;
    schedulerAdd?: boolean;
+   userTypeAdd?: boolean;
    databaseEdit?: boolean;
    schemaEdit?: boolean;
    schemaDrop?: boolean;

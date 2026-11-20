@@ -14,6 +14,7 @@ import schema from '../../../src/main/ipc-handlers/schema';
 import tables from '../../../src/main/ipc-handlers/tables';
 import triggers from '../../../src/main/ipc-handlers/triggers';
 import users from '../../../src/main/ipc-handlers/users';
+import userTypes from '../../../src/main/ipc-handlers/userTypes';
 import views from '../../../src/main/ipc-handlers/views';
 import { DatabaseClient } from '../../../src/main/libs/db/core/contracts';
 import { appEvent, fakeIpc, foreignEvent } from '../../helpers/fakeIpc';
@@ -31,7 +32,7 @@ function setup () {
    };
    const ipc = fakeIpc();
 
-   for (const register of [connection, tables, views, triggers, routines, functions, schedulers, database, schema, users])
+   for (const register of [connection, tables, views, triggers, routines, functions, schedulers, database, schema, users, userTypes])
       register(connections, ipc.ipc);
 
    return { connections, capture, ipc };

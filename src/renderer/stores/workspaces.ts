@@ -9,9 +9,11 @@ import {
    TableInfos,
    TriggerFunctionInfos,
    TriggerInfos,
-   TypesGroup
+   TypesGroup,
+   UserTypeInfos
 } from 'common/interfaces/antares';
 import { Customizations } from 'common/interfaces/customizations';
+import { pgTypeIdentifier } from 'common/libs/pgIdentifiers';
 import { uidGen } from 'common/libs/uidGen';
 import Store from 'electron-store';
 import { defineStore } from 'pinia';
@@ -48,6 +50,7 @@ export interface WorkspaceStructure {
    tables: TableInfos[];
    triggers: TriggerInfos[];
    triggerFunctions: TriggerFunctionInfos[];
+   userTypes?: UserTypeInfos[];
    size: number;
 }
 
@@ -60,6 +63,7 @@ export interface Breadcrumb {
    table?: string;
    trigger?: string;
    triggerFunction?: string;
+   userType?: string;
    view?: string;
 }
 
@@ -138,6 +142,24 @@ export const useWorkspacesStore = defineStore('workspaces', {
       },
       getSearchTerm: state => (uid: string) => {
          return state.workspaces.find(workspace => workspace.uid === uid).searchTerm;
+      },
+      /** Data types of the engine plus the user-defined types of the loaded schemas, as written in the tables of `schema` */
+      getDataTypes: state => (uid: string, schema: string): TypesGroup[] => {
+         const workspace = state.workspaces.find(workspace => workspace.uid === uid);
+         const dataTypes = (workspace.dataTypes || []) as unknown as TypesGroup[];
+         const userTypes = workspace.structure
+            .flatMap(_schema => (_schema.userTypes || []).map(type => pgTypeIdentifier(_schema.name, type.name, schema)))
+            .sort((a, b) => Number(a.includes('.')) - Number(b.includes('.')) || a.localeCompare(b));
+
+         if (!userTypes.length) return dataTypes;
+
+         return [
+            ...dataTypes,
+            {
+               group: 'user-defined',
+               types: userTypes.map(name => ({ name, length: false, scale: false, collation: false, unsigned: false, zerofill: false }))
+            }
+         ];
       }
    },
    actions: {
@@ -443,6 +465,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
             table: null,
             trigger: null,
             triggerFunction: null,
+            userType: null,
             routine: null,
             function: null,
             scheduler: null,
@@ -573,6 +596,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
             case 'new-function':
             case 'new-routine':
             case 'new-scheduler':
+            case 'new-user-type':
                tabUid = uidGen('T');
                this._addTab({
                   uid,
@@ -592,7 +616,8 @@ export const useWorkspacesStore = defineStore('workspaces', {
             case 'temp-trigger-function-props':
             case 'temp-function-props':
             case 'temp-routine-props':
-            case 'temp-scheduler-props': {
+            case 'temp-scheduler-props':
+            case 'temp-user-type-props': {
                const existentTab = workspaceTabs
                   ? workspaceTabs.tabs.find(tab =>
                      tab.schema === schema &&
@@ -676,6 +701,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
             case 'function-props':
             case 'routine-props':
             case 'scheduler-props':
+            case 'user-type-props':
             case 'schema-diagram': {
                const existentTab = workspaceTabs
                   ? workspaceTabs.tabs.find(tab =>

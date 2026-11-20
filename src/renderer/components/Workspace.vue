@@ -326,6 +326,27 @@
                         </span>
                      </a>
 
+                     <a
+                        v-else-if="element.type === 'new-user-type'"
+                        class="tab-link"
+                        :class="{'badge': element.isChanged}"
+                     >
+                        <BaseIcon
+                           class="mr-1"
+                           icon-name="mdiShapeSquarePlus"
+                           :size="18"
+                        />
+                        <span :title="`${t('general.new').toUpperCase()}: ${t('database.userType', 1)}`">
+                           {{ t('database.newUserType') }}
+                           <span
+                              class="btn btn-clear"
+                              :title="t('general.close')"
+                              @mousedown.left.stop
+                              @click.stop="closeTab(element)"
+                           />
+                        </span>
+                     </a>
+
                      <a v-else-if="element.type === 'schema-diagram'" class="tab-link">
                         <BaseIcon
                            class="mr-1"
@@ -611,6 +632,15 @@
                   :scheduler="tab.elementName"
                   :schema="tab.schema"
                />
+               <WorkspaceTabPropsUserType
+                  v-else-if="['new-user-type', 'temp-user-type-props', 'user-type-props'].includes(tab.type)"
+                  :tab-uid="tab.uid"
+                  :tab="tab"
+                  :connection="connection"
+                  :is-selected="selectedTab === tab.uid && isSelected"
+                  :user-type="tab.type === 'new-user-type' ? null : tab.elementName"
+                  :schema="tab.schema"
+               />
                <WorkspaceTabSchemaDiagram
                   v-else-if="tab.type === 'schema-diagram'"
                   :tab-uid="tab.uid"
@@ -673,6 +703,7 @@ import WorkspaceTabPropsScheduler from '@/components/WorkspaceTabPropsScheduler.
 import WorkspaceTabPropsTable from '@/components/WorkspaceTabPropsTable.vue';
 import WorkspaceTabPropsTrigger from '@/components/WorkspaceTabPropsTrigger.vue';
 import WorkspaceTabPropsTriggerFunction from '@/components/WorkspaceTabPropsTriggerFunction.vue';
+import WorkspaceTabPropsUserType from '@/components/WorkspaceTabPropsUserType.vue';
 import WorkspaceTabPropsView from '@/components/WorkspaceTabPropsView.vue';
 import WorkspaceTabQuery from '@/components/WorkspaceTabQuery.vue';
 import WorkspaceTabSchemaDiagram from '@/components/WorkspaceTabSchemaDiagram.vue';
@@ -784,7 +815,8 @@ const openAsPermanentTab = (tab: WorkspaceTab) => {
       function: 'function-props',
       routine: 'routine-props',
       procedure: 'routine-props',
-      scheduler: 'scheduler-props'
+      scheduler: 'scheduler-props',
+      userType: 'user-type-props'
    } as Record<string, string>;
 
    newTab({

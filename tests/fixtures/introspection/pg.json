@@ -20,7 +20,16 @@
                 "database": "antares_fixtures"
               },
               {
+                "database": "chinook"
+              },
+              {
                 "database": "information_schema"
+              },
+              {
+                "database": "netflix"
+              },
+              {
+                "database": "pagila"
               },
               {
                 "database": "pg_catalog"
@@ -50,7 +59,7 @@
               }
             ],
             "keys": [],
-            "duration": 1
+            "duration": 4
           }
         },
         {
@@ -60,7 +69,427 @@
               {
                 "specific_catalog": "antares_test",
                 "specific_schema": "antares_fixtures",
-                "specific_name": "product_price_16512",
+                "specific_name": "price_range_17991",
+                "routine_catalog": "antares_test",
+                "routine_schema": "antares_fixtures",
+                "routine_name": "price_range",
+                "routine_type": "FUNCTION",
+                "module_catalog": null,
+                "module_schema": null,
+                "module_name": null,
+                "udt_catalog": null,
+                "udt_schema": null,
+                "udt_name": null,
+                "data_type": "USER-DEFINED",
+                "character_maximum_length": null,
+                "character_octet_length": null,
+                "character_set_catalog": null,
+                "character_set_schema": null,
+                "character_set_name": null,
+                "collation_catalog": null,
+                "collation_schema": null,
+                "collation_name": null,
+                "numeric_precision": null,
+                "numeric_precision_radix": null,
+                "numeric_scale": null,
+                "datetime_precision": null,
+                "interval_type": null,
+                "interval_precision": null,
+                "type_udt_catalog": "antares_test",
+                "type_udt_schema": "antares_fixtures",
+                "type_udt_name": "price_range",
+                "scope_catalog": null,
+                "scope_schema": null,
+                "scope_name": null,
+                "maximum_cardinality": null,
+                "dtd_identifier": "0",
+                "routine_body": "EXTERNAL",
+                "routine_definition": "range_constructor2",
+                "external_name": null,
+                "external_language": "INTERNAL",
+                "parameter_style": "GENERAL",
+                "is_deterministic": "YES",
+                "sql_data_access": "MODIFIES",
+                "is_null_call": "NO",
+                "sql_path": null,
+                "schema_level_routine": "YES",
+                "max_dynamic_result_sets": 0,
+                "is_user_defined_cast": null,
+                "is_implicitly_invocable": null,
+                "security_type": "INVOKER",
+                "to_sql_specific_catalog": null,
+                "to_sql_specific_schema": null,
+                "to_sql_specific_name": null,
+                "as_locator": "NO",
+                "created": null,
+                "last_altered": null,
+                "new_savepoint_level": null,
+                "is_udt_dependent": "NO",
+                "result_cast_from_data_type": null,
+                "result_cast_as_locator": null,
+                "result_cast_char_max_length": null,
+                "result_cast_char_octet_length": null,
+                "result_cast_char_set_catalog": null,
+                "result_cast_char_set_schema": null,
+                "result_cast_char_set_name": null,
+                "result_cast_collation_catalog": null,
+                "result_cast_collation_schema": null,
+                "result_cast_collation_name": null,
+                "result_cast_numeric_precision": null,
+                "result_cast_numeric_precision_radix": null,
+                "result_cast_numeric_scale": null,
+                "result_cast_datetime_precision": null,
+                "result_cast_interval_type": null,
+                "result_cast_interval_precision": null,
+                "result_cast_type_udt_catalog": null,
+                "result_cast_type_udt_schema": null,
+                "result_cast_type_udt_name": null,
+                "result_cast_scope_catalog": null,
+                "result_cast_scope_schema": null,
+                "result_cast_scope_name": null,
+                "result_cast_maximum_cardinality": null,
+                "result_cast_dtd_identifier": null
+              },
+              {
+                "specific_catalog": "antares_test",
+                "specific_schema": "antares_fixtures",
+                "specific_name": "price_range_17992",
+                "routine_catalog": "antares_test",
+                "routine_schema": "antares_fixtures",
+                "routine_name": "price_range",
+                "routine_type": "FUNCTION",
+                "module_catalog": null,
+                "module_schema": null,
+                "module_name": null,
+                "udt_catalog": null,
+                "udt_schema": null,
+                "udt_name": null,
+                "data_type": "USER-DEFINED",
+                "character_maximum_length": null,
+                "character_octet_length": null,
+                "character_set_catalog": null,
+                "character_set_schema": null,
+                "character_set_name": null,
+                "collation_catalog": null,
+                "collation_schema": null,
+                "collation_name": null,
+                "numeric_precision": null,
+                "numeric_precision_radix": null,
+                "numeric_scale": null,
+                "datetime_precision": null,
+                "interval_type": null,
+                "interval_precision": null,
+                "type_udt_catalog": "antares_test",
+                "type_udt_schema": "antares_fixtures",
+                "type_udt_name": "price_range",
+                "scope_catalog": null,
+                "scope_schema": null,
+                "scope_name": null,
+                "maximum_cardinality": null,
+                "dtd_identifier": "0",
+                "routine_body": "EXTERNAL",
+                "routine_definition": "range_constructor3",
+                "external_name": null,
+                "external_language": "INTERNAL",
+                "parameter_style": "GENERAL",
+                "is_deterministic": "YES",
+                "sql_data_access": "MODIFIES",
+                "is_null_call": "NO",
+                "sql_path": null,
+                "schema_level_routine": "YES",
+                "max_dynamic_result_sets": 0,
+                "is_user_defined_cast": null,
+                "is_implicitly_invocable": null,
+                "security_type": "INVOKER",
+                "to_sql_specific_catalog": null,
+                "to_sql_specific_schema": null,
+                "to_sql_specific_name": null,
+                "as_locator": "NO",
+                "created": null,
+                "last_altered": null,
+                "new_savepoint_level": null,
+                "is_udt_dependent": "NO",
+                "result_cast_from_data_type": null,
+                "result_cast_as_locator": null,
+                "result_cast_char_max_length": null,
+                "result_cast_char_octet_length": null,
+                "result_cast_char_set_catalog": null,
+                "result_cast_char_set_schema": null,
+                "result_cast_char_set_name": null,
+                "result_cast_collation_catalog": null,
+                "result_cast_collation_schema": null,
+                "result_cast_collation_name": null,
+                "result_cast_numeric_precision": null,
+                "result_cast_numeric_precision_radix": null,
+                "result_cast_numeric_scale": null,
+                "result_cast_datetime_precision": null,
+                "result_cast_interval_type": null,
+                "result_cast_interval_precision": null,
+                "result_cast_type_udt_catalog": null,
+                "result_cast_type_udt_schema": null,
+                "result_cast_type_udt_name": null,
+                "result_cast_scope_catalog": null,
+                "result_cast_scope_schema": null,
+                "result_cast_scope_name": null,
+                "result_cast_maximum_cardinality": null,
+                "result_cast_dtd_identifier": null
+              },
+              {
+                "specific_catalog": "antares_test",
+                "specific_schema": "antares_fixtures",
+                "specific_name": "price_multirange_17993",
+                "routine_catalog": "antares_test",
+                "routine_schema": "antares_fixtures",
+                "routine_name": "price_multirange",
+                "routine_type": "FUNCTION",
+                "module_catalog": null,
+                "module_schema": null,
+                "module_name": null,
+                "udt_catalog": null,
+                "udt_schema": null,
+                "udt_name": null,
+                "data_type": "USER-DEFINED",
+                "character_maximum_length": null,
+                "character_octet_length": null,
+                "character_set_catalog": null,
+                "character_set_schema": null,
+                "character_set_name": null,
+                "collation_catalog": null,
+                "collation_schema": null,
+                "collation_name": null,
+                "numeric_precision": null,
+                "numeric_precision_radix": null,
+                "numeric_scale": null,
+                "datetime_precision": null,
+                "interval_type": null,
+                "interval_precision": null,
+                "type_udt_catalog": "antares_test",
+                "type_udt_schema": "antares_fixtures",
+                "type_udt_name": "price_multirange",
+                "scope_catalog": null,
+                "scope_schema": null,
+                "scope_name": null,
+                "maximum_cardinality": null,
+                "dtd_identifier": "0",
+                "routine_body": "EXTERNAL",
+                "routine_definition": "multirange_constructor0",
+                "external_name": null,
+                "external_language": "INTERNAL",
+                "parameter_style": "GENERAL",
+                "is_deterministic": "YES",
+                "sql_data_access": "MODIFIES",
+                "is_null_call": "YES",
+                "sql_path": null,
+                "schema_level_routine": "YES",
+                "max_dynamic_result_sets": 0,
+                "is_user_defined_cast": null,
+                "is_implicitly_invocable": null,
+                "security_type": "INVOKER",
+                "to_sql_specific_catalog": null,
+                "to_sql_specific_schema": null,
+                "to_sql_specific_name": null,
+                "as_locator": "NO",
+                "created": null,
+                "last_altered": null,
+                "new_savepoint_level": null,
+                "is_udt_dependent": "NO",
+                "result_cast_from_data_type": null,
+                "result_cast_as_locator": null,
+                "result_cast_char_max_length": null,
+                "result_cast_char_octet_length": null,
+                "result_cast_char_set_catalog": null,
+                "result_cast_char_set_schema": null,
+                "result_cast_char_set_name": null,
+                "result_cast_collation_catalog": null,
+                "result_cast_collation_schema": null,
+                "result_cast_collation_name": null,
+                "result_cast_numeric_precision": null,
+                "result_cast_numeric_precision_radix": null,
+                "result_cast_numeric_scale": null,
+                "result_cast_datetime_precision": null,
+                "result_cast_interval_type": null,
+                "result_cast_interval_precision": null,
+                "result_cast_type_udt_catalog": null,
+                "result_cast_type_udt_schema": null,
+                "result_cast_type_udt_name": null,
+                "result_cast_scope_catalog": null,
+                "result_cast_scope_schema": null,
+                "result_cast_scope_name": null,
+                "result_cast_maximum_cardinality": null,
+                "result_cast_dtd_identifier": null
+              },
+              {
+                "specific_catalog": "antares_test",
+                "specific_schema": "antares_fixtures",
+                "specific_name": "price_multirange_17994",
+                "routine_catalog": "antares_test",
+                "routine_schema": "antares_fixtures",
+                "routine_name": "price_multirange",
+                "routine_type": "FUNCTION",
+                "module_catalog": null,
+                "module_schema": null,
+                "module_name": null,
+                "udt_catalog": null,
+                "udt_schema": null,
+                "udt_name": null,
+                "data_type": "USER-DEFINED",
+                "character_maximum_length": null,
+                "character_octet_length": null,
+                "character_set_catalog": null,
+                "character_set_schema": null,
+                "character_set_name": null,
+                "collation_catalog": null,
+                "collation_schema": null,
+                "collation_name": null,
+                "numeric_precision": null,
+                "numeric_precision_radix": null,
+                "numeric_scale": null,
+                "datetime_precision": null,
+                "interval_type": null,
+                "interval_precision": null,
+                "type_udt_catalog": "antares_test",
+                "type_udt_schema": "antares_fixtures",
+                "type_udt_name": "price_multirange",
+                "scope_catalog": null,
+                "scope_schema": null,
+                "scope_name": null,
+                "maximum_cardinality": null,
+                "dtd_identifier": "0",
+                "routine_body": "EXTERNAL",
+                "routine_definition": "multirange_constructor1",
+                "external_name": null,
+                "external_language": "INTERNAL",
+                "parameter_style": "GENERAL",
+                "is_deterministic": "YES",
+                "sql_data_access": "MODIFIES",
+                "is_null_call": "YES",
+                "sql_path": null,
+                "schema_level_routine": "YES",
+                "max_dynamic_result_sets": 0,
+                "is_user_defined_cast": null,
+                "is_implicitly_invocable": null,
+                "security_type": "INVOKER",
+                "to_sql_specific_catalog": null,
+                "to_sql_specific_schema": null,
+                "to_sql_specific_name": null,
+                "as_locator": "NO",
+                "created": null,
+                "last_altered": null,
+                "new_savepoint_level": null,
+                "is_udt_dependent": "NO",
+                "result_cast_from_data_type": null,
+                "result_cast_as_locator": null,
+                "result_cast_char_max_length": null,
+                "result_cast_char_octet_length": null,
+                "result_cast_char_set_catalog": null,
+                "result_cast_char_set_schema": null,
+                "result_cast_char_set_name": null,
+                "result_cast_collation_catalog": null,
+                "result_cast_collation_schema": null,
+                "result_cast_collation_name": null,
+                "result_cast_numeric_precision": null,
+                "result_cast_numeric_precision_radix": null,
+                "result_cast_numeric_scale": null,
+                "result_cast_datetime_precision": null,
+                "result_cast_interval_type": null,
+                "result_cast_interval_precision": null,
+                "result_cast_type_udt_catalog": null,
+                "result_cast_type_udt_schema": null,
+                "result_cast_type_udt_name": null,
+                "result_cast_scope_catalog": null,
+                "result_cast_scope_schema": null,
+                "result_cast_scope_name": null,
+                "result_cast_maximum_cardinality": null,
+                "result_cast_dtd_identifier": null
+              },
+              {
+                "specific_catalog": "antares_test",
+                "specific_schema": "antares_fixtures",
+                "specific_name": "price_multirange_17995",
+                "routine_catalog": "antares_test",
+                "routine_schema": "antares_fixtures",
+                "routine_name": "price_multirange",
+                "routine_type": "FUNCTION",
+                "module_catalog": null,
+                "module_schema": null,
+                "module_name": null,
+                "udt_catalog": null,
+                "udt_schema": null,
+                "udt_name": null,
+                "data_type": "USER-DEFINED",
+                "character_maximum_length": null,
+                "character_octet_length": null,
+                "character_set_catalog": null,
+                "character_set_schema": null,
+                "character_set_name": null,
+                "collation_catalog": null,
+                "collation_schema": null,
+                "collation_name": null,
+                "numeric_precision": null,
+                "numeric_precision_radix": null,
+                "numeric_scale": null,
+                "datetime_precision": null,
+                "interval_type": null,
+                "interval_precision": null,
+                "type_udt_catalog": "antares_test",
+                "type_udt_schema": "antares_fixtures",
+                "type_udt_name": "price_multirange",
+                "scope_catalog": null,
+                "scope_schema": null,
+                "scope_name": null,
+                "maximum_cardinality": null,
+                "dtd_identifier": "0",
+                "routine_body": "EXTERNAL",
+                "routine_definition": "multirange_constructor2",
+                "external_name": null,
+                "external_language": "INTERNAL",
+                "parameter_style": "GENERAL",
+                "is_deterministic": "YES",
+                "sql_data_access": "MODIFIES",
+                "is_null_call": "YES",
+                "sql_path": null,
+                "schema_level_routine": "YES",
+                "max_dynamic_result_sets": 0,
+                "is_user_defined_cast": null,
+                "is_implicitly_invocable": null,
+                "security_type": "INVOKER",
+                "to_sql_specific_catalog": null,
+                "to_sql_specific_schema": null,
+                "to_sql_specific_name": null,
+                "as_locator": "NO",
+                "created": null,
+                "last_altered": null,
+                "new_savepoint_level": null,
+                "is_udt_dependent": "NO",
+                "result_cast_from_data_type": null,
+                "result_cast_as_locator": null,
+                "result_cast_char_max_length": null,
+                "result_cast_char_octet_length": null,
+                "result_cast_char_set_catalog": null,
+                "result_cast_char_set_schema": null,
+                "result_cast_char_set_name": null,
+                "result_cast_collation_catalog": null,
+                "result_cast_collation_schema": null,
+                "result_cast_collation_name": null,
+                "result_cast_numeric_precision": null,
+                "result_cast_numeric_precision_radix": null,
+                "result_cast_numeric_scale": null,
+                "result_cast_datetime_precision": null,
+                "result_cast_interval_type": null,
+                "result_cast_interval_precision": null,
+                "result_cast_type_udt_catalog": null,
+                "result_cast_type_udt_schema": null,
+                "result_cast_type_udt_name": null,
+                "result_cast_scope_catalog": null,
+                "result_cast_scope_schema": null,
+                "result_cast_scope_name": null,
+                "result_cast_maximum_cardinality": null,
+                "result_cast_dtd_identifier": null
+              },
+              {
+                "specific_catalog": "antares_test",
+                "specific_schema": "antares_fixtures",
+                "specific_name": "product_price_18035",
                 "routine_catalog": "antares_test",
                 "routine_schema": "antares_fixtures",
                 "routine_name": "product_price",
@@ -144,7 +573,7 @@
               {
                 "specific_catalog": "antares_test",
                 "specific_schema": "antares_fixtures",
-                "specific_name": "touch_product_16513",
+                "specific_name": "touch_product_18036",
                 "routine_catalog": "antares_test",
                 "routine_schema": "antares_fixtures",
                 "routine_name": "touch_product",
@@ -228,7 +657,7 @@
               {
                 "specific_catalog": "antares_test",
                 "specific_schema": "antares_fixtures",
-                "specific_name": "products_trg_fn_16514",
+                "specific_name": "products_trg_fn_18037",
                 "routine_catalog": "antares_test",
                 "routine_schema": "antares_fixtures",
                 "routine_name": "products_trg_fn",
@@ -1462,7 +1891,81 @@
               }
             ],
             "keys": [],
-            "duration": 4
+            "duration": 10
+          }
+        },
+        {
+          "sql": "SELECT n.nspname, t.typname, t.typtype FROM pg_type t JOIN pg_namespace n ON n.oid = t.typnamespace WHERE n.nspname IN ('antares_fixtures') AND (t.typtype IN ('e', 'd', 'r') OR (t.typtype = 'c' AND EXISTS (SELECT 1 FROM pg_class c WHERE c.oid = t.typrelid AND c.relkind = 'c'))) AND NOT EXISTS (SELECT 1 FROM pg_depend d WHERE d.classid = 'pg_type'::regclass AND d.objid = t.oid AND d.deptype = 'e') ORDER BY t.typname",
+          "result": {
+            "rows": [
+              {
+                "nspname": "antares_fixtures",
+                "typname": "Weight",
+                "typtype": "d"
+              },
+              {
+                "nspname": "antares_fixtures",
+                "typname": "dimensions",
+                "typtype": "c"
+              },
+              {
+                "nspname": "antares_fixtures",
+                "typname": "price_range",
+                "typtype": "r"
+              },
+              {
+                "nspname": "antares_fixtures",
+                "typname": "product_status",
+                "typtype": "e"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "nspname",
+                "tableID": 2615,
+                "columnID": 2,
+                "dataTypeID": 19,
+                "dataTypeSize": 64,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "nspname",
+                "schema": null,
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "text"
+              },
+              {
+                "name": "typname",
+                "tableID": 1247,
+                "columnID": 2,
+                "dataTypeID": 19,
+                "dataTypeSize": 64,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typname",
+                "schema": null,
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "text"
+              },
+              {
+                "name": "typtype",
+                "tableID": 1247,
+                "columnID": 7,
+                "dataTypeID": 18,
+                "dataTypeSize": 1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typtype",
+                "schema": null,
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "CHAR"
+              }
+            ],
+            "keys": [],
+            "duration": 2
           }
         },
         {
@@ -1482,17 +1985,17 @@
                 "is_insertable_into": "YES",
                 "is_typed": "NO",
                 "commit_action": null,
-                "oid": 16476,
+                "oid": 17998,
                 "nspname": "antares_fixtures",
                 "nspowner": 10,
                 "nspacl": null,
                 "relname": "categories",
-                "relnamespace": 16474,
-                "reltype": 16478,
+                "relnamespace": 17973,
+                "reltype": 18000,
                 "reloftype": 0,
                 "relowner": 10,
                 "relam": 2,
-                "relfilenode": 16476,
+                "relfilenode": 17998,
                 "reltablespace": 0,
                 "relpages": 0,
                 "reltuples": -1,
@@ -1513,7 +2016,7 @@
                 "relreplident": "d",
                 "relispartition": false,
                 "relrewrite": 0,
-                "relfrozenxid": "771",
+                "relfrozenxid": "1626",
                 "relminmxid": "1",
                 "relacl": null,
                 "reloptions": null,
@@ -1535,13 +2038,13 @@
                 "is_insertable_into": "YES",
                 "is_typed": "NO",
                 "commit_action": null,
-                "oid": 16504,
+                "oid": 18027,
                 "nspname": "antares_fixtures",
                 "nspowner": 10,
                 "nspacl": null,
                 "relname": "cheap_products",
-                "relnamespace": 16474,
-                "reltype": 16506,
+                "relnamespace": 17973,
+                "reltype": 18029,
                 "reloftype": 0,
                 "relowner": 10,
                 "relam": 0,
@@ -1588,27 +2091,27 @@
                 "is_insertable_into": "YES",
                 "is_typed": "NO",
                 "commit_action": null,
-                "oid": 16483,
+                "oid": 18005,
                 "nspname": "antares_fixtures",
                 "nspowner": 10,
                 "nspacl": null,
                 "relname": "products",
-                "relnamespace": 16474,
-                "reltype": 16485,
+                "relnamespace": 17973,
+                "reltype": 18007,
                 "reloftype": 0,
                 "relowner": 10,
                 "relam": 2,
-                "relfilenode": 16483,
+                "relfilenode": 18005,
                 "reltablespace": 0,
                 "relpages": 0,
                 "reltuples": -1,
                 "relallvisible": 0,
-                "reltoastrelid": 16492,
+                "reltoastrelid": 18015,
                 "relhasindex": true,
                 "relisshared": false,
                 "relpersistence": "p",
                 "relkind": "r",
-                "relnatts": 8,
+                "relnatts": 11,
                 "relchecks": 1,
                 "relhasrules": false,
                 "relhastriggers": true,
@@ -1619,7 +2122,7 @@
                 "relreplident": "d",
                 "relispartition": false,
                 "relrewrite": 0,
-                "relfrozenxid": "773",
+                "relfrozenxid": "1628",
                 "relminmxid": "1",
                 "relacl": null,
                 "reloptions": null,
@@ -2553,7 +3056,7 @@
               }
             ],
             "keys": [],
-            "duration": 1
+            "duration": 3
           }
         }
       ],
@@ -2595,6 +3098,31 @@
           ],
           "functions": [
             {
+              "name": "price_range",
+              "type": "FUNCTION",
+              "security": "INVOKER"
+            },
+            {
+              "name": "price_range",
+              "type": "FUNCTION",
+              "security": "INVOKER"
+            },
+            {
+              "name": "price_multirange",
+              "type": "FUNCTION",
+              "security": "INVOKER"
+            },
+            {
+              "name": "price_multirange",
+              "type": "FUNCTION",
+              "security": "INVOKER"
+            },
+            {
+              "name": "price_multirange",
+              "type": "FUNCTION",
+              "security": "INVOKER"
+            },
+            {
               "name": "product_price",
               "type": "FUNCTION",
               "security": "INVOKER"
@@ -2624,7 +3152,36 @@
               "security": "INVOKER"
             }
           ],
-          "schedulers": []
+          "schedulers": [],
+          "userTypes": [
+            {
+              "name": "Weight",
+              "kind": "domain"
+            },
+            {
+              "name": "dimensions",
+              "kind": "composite"
+            },
+            {
+              "name": "price_range",
+              "kind": "range"
+            },
+            {
+              "name": "product_status",
+              "kind": "enum"
+            }
+          ]
+        },
+        {
+          "name": "chinook",
+          "size": 0,
+          "tables": [],
+          "functions": [],
+          "procedures": [],
+          "triggers": [],
+          "triggerFunctions": [],
+          "schedulers": [],
+          "userTypes": []
         },
         {
           "name": "information_schema",
@@ -2634,7 +3191,30 @@
           "procedures": [],
           "triggers": [],
           "triggerFunctions": [],
-          "schedulers": []
+          "schedulers": [],
+          "userTypes": []
+        },
+        {
+          "name": "netflix",
+          "size": 0,
+          "tables": [],
+          "functions": [],
+          "procedures": [],
+          "triggers": [],
+          "triggerFunctions": [],
+          "schedulers": [],
+          "userTypes": []
+        },
+        {
+          "name": "pagila",
+          "size": 0,
+          "tables": [],
+          "functions": [],
+          "procedures": [],
+          "triggers": [],
+          "triggerFunctions": [],
+          "schedulers": [],
+          "userTypes": []
         },
         {
           "name": "pg_catalog",
@@ -2644,7 +3224,8 @@
           "procedures": [],
           "triggers": [],
           "triggerFunctions": [],
-          "schedulers": []
+          "schedulers": [],
+          "userTypes": []
         },
         {
           "name": "pg_toast",
@@ -2654,7 +3235,8 @@
           "procedures": [],
           "triggers": [],
           "triggerFunctions": [],
-          "schedulers": []
+          "schedulers": [],
+          "userTypes": []
         },
         {
           "name": "public",
@@ -2664,7 +3246,8 @@
           "procedures": [],
           "triggers": [],
           "triggerFunctions": [],
-          "schedulers": []
+          "schedulers": [],
+          "userTypes": []
         }
       ]
     },
@@ -2678,7 +3261,7 @@
       ],
       "queries": [
         {
-          "sql": "WITH comments AS ( SELECT attr.attname AS column, des.description AS comment, pgc.relname FROM pg_attribute AS attr, pg_description AS des, pg_class AS pgc WHERE pgc.oid = attr.attrelid AND des.objoid = pgc.oid AND pg_table_is_visible(pgc.oid) AND attr.attnum = des.objsubid ) SELECT cols.*, comments.comment AS column_comment FROM \"information_schema\".\"columns\" AS cols LEFT JOIN comments ON comments.column = cols.column_name AND comments.relname = cols.table_name WHERE cols.table_schema = 'antares_fixtures' AND cols.table_name = 'products' ORDER BY \"ordinal_position\" ASC",
+          "sql": "WITH comments AS ( SELECT attr.attname AS column, des.description AS comment, pgc.relname FROM pg_attribute AS attr, pg_description AS des, pg_class AS pgc WHERE pgc.oid = attr.attrelid AND des.objoid = pgc.oid AND pg_table_is_visible(pgc.oid) AND attr.attnum = des.objsubid ) SELECT cols.*, comments.comment AS column_comment, (SELECT string_agg(quote_literal(e.enumlabel), ',' ORDER BY e.enumsortorder) FROM pg_enum e JOIN pg_type et ON et.oid = e.enumtypid JOIN pg_namespace en ON en.oid = et.typnamespace WHERE cols.data_type = 'USER-DEFINED' AND et.typname = cols.udt_name AND en.nspname = cols.udt_schema ) AS enum_values FROM \"information_schema\".\"columns\" AS cols LEFT JOIN comments ON comments.column = cols.column_name AND comments.relname = cols.table_name WHERE cols.table_schema = 'antares_fixtures' AND cols.table_name = 'products' ORDER BY \"ordinal_position\" ASC",
           "result": {
             "rows": [
               {
@@ -2726,7 +3309,8 @@
                 "is_generated": "NEVER",
                 "generation_expression": null,
                 "is_updatable": "YES",
-                "column_comment": null
+                "column_comment": null,
+                "enum_values": null
               },
               {
                 "table_catalog": "antares_test",
@@ -2773,7 +3357,8 @@
                 "is_generated": "NEVER",
                 "generation_expression": null,
                 "is_updatable": "YES",
-                "column_comment": null
+                "column_comment": null,
+                "enum_values": null
               },
               {
                 "table_catalog": "antares_test",
@@ -2820,7 +3405,8 @@
                 "is_generated": "NEVER",
                 "generation_expression": null,
                 "is_updatable": "YES",
-                "column_comment": null
+                "column_comment": null,
+                "enum_values": null
               },
               {
                 "table_catalog": "antares_test",
@@ -2867,7 +3453,8 @@
                 "is_generated": "NEVER",
                 "generation_expression": null,
                 "is_updatable": "YES",
-                "column_comment": null
+                "column_comment": null,
+                "enum_values": null
               },
               {
                 "table_catalog": "antares_test",
@@ -2914,7 +3501,8 @@
                 "is_generated": "NEVER",
                 "generation_expression": null,
                 "is_updatable": "YES",
-                "column_comment": null
+                "column_comment": null,
+                "enum_values": null
               },
               {
                 "table_catalog": "antares_test",
@@ -2961,7 +3549,8 @@
                 "is_generated": "NEVER",
                 "generation_expression": null,
                 "is_updatable": "YES",
-                "column_comment": null
+                "column_comment": null,
+                "enum_values": null
               },
               {
                 "table_catalog": "antares_test",
@@ -3008,7 +3597,8 @@
                 "is_generated": "NEVER",
                 "generation_expression": null,
                 "is_updatable": "YES",
-                "column_comment": null
+                "column_comment": null,
+                "enum_values": null
               },
               {
                 "table_catalog": "antares_test",
@@ -3055,7 +3645,152 @@
                 "is_generated": "NEVER",
                 "generation_expression": null,
                 "is_updatable": "YES",
-                "column_comment": null
+                "column_comment": null,
+                "enum_values": null
+              },
+              {
+                "table_catalog": "antares_test",
+                "table_schema": "antares_fixtures",
+                "table_name": "products",
+                "column_name": "status",
+                "ordinal_position": 9,
+                "column_default": "'draft'::antares_fixtures.product_status",
+                "is_nullable": "YES",
+                "data_type": "USER-DEFINED",
+                "character_maximum_length": null,
+                "character_octet_length": null,
+                "numeric_precision": null,
+                "numeric_precision_radix": null,
+                "numeric_scale": null,
+                "datetime_precision": null,
+                "interval_type": null,
+                "interval_precision": null,
+                "character_set_catalog": null,
+                "character_set_schema": null,
+                "character_set_name": null,
+                "collation_catalog": null,
+                "collation_schema": null,
+                "collation_name": null,
+                "domain_catalog": null,
+                "domain_schema": null,
+                "domain_name": null,
+                "udt_catalog": "antares_test",
+                "udt_schema": "antares_fixtures",
+                "udt_name": "product_status",
+                "scope_catalog": null,
+                "scope_schema": null,
+                "scope_name": null,
+                "maximum_cardinality": null,
+                "dtd_identifier": "9",
+                "is_self_referencing": "NO",
+                "is_identity": "NO",
+                "identity_generation": null,
+                "identity_start": null,
+                "identity_increment": null,
+                "identity_maximum": null,
+                "identity_minimum": null,
+                "identity_cycle": "NO",
+                "is_generated": "NEVER",
+                "generation_expression": null,
+                "is_updatable": "YES",
+                "column_comment": null,
+                "enum_values": "'draft','active','it''s over'"
+              },
+              {
+                "table_catalog": "antares_test",
+                "table_schema": "antares_fixtures",
+                "table_name": "products",
+                "column_name": "weight",
+                "ordinal_position": 10,
+                "column_default": null,
+                "is_nullable": "NO",
+                "data_type": "numeric",
+                "character_maximum_length": null,
+                "character_octet_length": null,
+                "numeric_precision": 8,
+                "numeric_precision_radix": 10,
+                "numeric_scale": 3,
+                "datetime_precision": null,
+                "interval_type": null,
+                "interval_precision": null,
+                "character_set_catalog": null,
+                "character_set_schema": null,
+                "character_set_name": null,
+                "collation_catalog": null,
+                "collation_schema": null,
+                "collation_name": null,
+                "domain_catalog": "antares_test",
+                "domain_schema": "antares_fixtures",
+                "domain_name": "Weight",
+                "udt_catalog": "antares_test",
+                "udt_schema": "pg_catalog",
+                "udt_name": "numeric",
+                "scope_catalog": null,
+                "scope_schema": null,
+                "scope_name": null,
+                "maximum_cardinality": null,
+                "dtd_identifier": "10",
+                "is_self_referencing": "NO",
+                "is_identity": "NO",
+                "identity_generation": null,
+                "identity_start": null,
+                "identity_increment": null,
+                "identity_maximum": null,
+                "identity_minimum": null,
+                "identity_cycle": "NO",
+                "is_generated": "NEVER",
+                "generation_expression": null,
+                "is_updatable": "YES",
+                "column_comment": null,
+                "enum_values": null
+              },
+              {
+                "table_catalog": "antares_test",
+                "table_schema": "antares_fixtures",
+                "table_name": "products",
+                "column_name": "size",
+                "ordinal_position": 11,
+                "column_default": null,
+                "is_nullable": "YES",
+                "data_type": "USER-DEFINED",
+                "character_maximum_length": null,
+                "character_octet_length": null,
+                "numeric_precision": null,
+                "numeric_precision_radix": null,
+                "numeric_scale": null,
+                "datetime_precision": null,
+                "interval_type": null,
+                "interval_precision": null,
+                "character_set_catalog": null,
+                "character_set_schema": null,
+                "character_set_name": null,
+                "collation_catalog": null,
+                "collation_schema": null,
+                "collation_name": null,
+                "domain_catalog": null,
+                "domain_schema": null,
+                "domain_name": null,
+                "udt_catalog": "antares_test",
+                "udt_schema": "antares_fixtures",
+                "udt_name": "dimensions",
+                "scope_catalog": null,
+                "scope_schema": null,
+                "scope_name": null,
+                "maximum_cardinality": null,
+                "dtd_identifier": "11",
+                "is_self_referencing": "NO",
+                "is_identity": "NO",
+                "identity_generation": null,
+                "identity_start": null,
+                "identity_increment": null,
+                "identity_maximum": null,
+                "identity_minimum": null,
+                "identity_cycle": "NO",
+                "is_generated": "NEVER",
+                "generation_expression": null,
+                "is_updatable": "YES",
+                "column_comment": null,
+                "enum_values": null
               }
             ],
             "report": false,
@@ -3734,10 +4469,25 @@
                 "tableAlias": null,
                 "orgTable": null,
                 "type": "TEXT"
+              },
+              {
+                "name": "enum_values",
+                "tableID": 0,
+                "columnID": 0,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "enum_values",
+                "schema": null,
+                "table": null,
+                "tableAlias": null,
+                "orgTable": null,
+                "type": "TEXT"
               }
             ],
             "keys": [],
-            "duration": 7
+            "duration": 10
           }
         }
       ],
@@ -3917,6 +4667,73 @@
           "autoIncrement": false,
           "onUpdate": null,
           "comment": null
+        },
+        {
+          "name": "status",
+          "key": null,
+          "type": "PRODUCT_STATUS",
+          "enumValues": "'draft','active','it''s over'",
+          "isArray": false,
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numScale": null,
+          "numPrecision": null,
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": true,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 9,
+          "default": "'draft'::antares_fixtures.product_status",
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null,
+          "comment": null
+        },
+        {
+          "name": "weight",
+          "key": null,
+          "type": "\"Weight\"",
+          "isArray": false,
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numScale": 3,
+          "numPrecision": 8,
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": false,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 10,
+          "default": null,
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null,
+          "comment": null
+        },
+        {
+          "name": "size",
+          "key": null,
+          "type": "DIMENSIONS",
+          "isArray": false,
+          "schema": "antares_fixtures",
+          "table": "products",
+          "numScale": null,
+          "numPrecision": null,
+          "datePrecision": null,
+          "charLength": null,
+          "nullable": true,
+          "unsigned": null,
+          "zerofill": null,
+          "order": 11,
+          "default": null,
+          "charset": null,
+          "collation": null,
+          "autoIncrement": false,
+          "onUpdate": null,
+          "comment": null
         }
       ]
     },
@@ -3930,7 +4747,7 @@
       ],
       "queries": [
         {
-          "sql": "WITH comments AS ( SELECT attr.attname AS column, des.description AS comment, pgc.relname FROM pg_attribute AS attr, pg_description AS des, pg_class AS pgc WHERE pgc.oid = attr.attrelid AND des.objoid = pgc.oid AND pg_table_is_visible(pgc.oid) AND attr.attnum = des.objsubid ) SELECT cols.*, comments.comment AS column_comment FROM \"information_schema\".\"columns\" AS cols LEFT JOIN comments ON comments.column = cols.column_name AND comments.relname = cols.table_name WHERE cols.table_schema = 'antares_fixtures' AND cols.table_name = 'categories' ORDER BY \"ordinal_position\" ASC",
+          "sql": "WITH comments AS ( SELECT attr.attname AS column, des.description AS comment, pgc.relname FROM pg_attribute AS attr, pg_description AS des, pg_class AS pgc WHERE pgc.oid = attr.attrelid AND des.objoid = pgc.oid AND pg_table_is_visible(pgc.oid) AND attr.attnum = des.objsubid ) SELECT cols.*, comments.comment AS column_comment, (SELECT string_agg(quote_literal(e.enumlabel), ',' ORDER BY e.enumsortorder) FROM pg_enum e JOIN pg_type et ON et.oid = e.enumtypid JOIN pg_namespace en ON en.oid = et.typnamespace WHERE cols.data_type = 'USER-DEFINED' AND et.typname = cols.udt_name AND en.nspname = cols.udt_schema ) AS enum_values FROM \"information_schema\".\"columns\" AS cols LEFT JOIN comments ON comments.column = cols.column_name AND comments.relname = cols.table_name WHERE cols.table_schema = 'antares_fixtures' AND cols.table_name = 'categories' ORDER BY \"ordinal_position\" ASC",
           "result": {
             "rows": [
               {
@@ -3978,7 +4795,8 @@
                 "is_generated": "NEVER",
                 "generation_expression": null,
                 "is_updatable": "YES",
-                "column_comment": null
+                "column_comment": null,
+                "enum_values": null
               },
               {
                 "table_catalog": "antares_test",
@@ -4025,7 +4843,8 @@
                 "is_generated": "NEVER",
                 "generation_expression": null,
                 "is_updatable": "YES",
-                "column_comment": null
+                "column_comment": null,
+                "enum_values": null
               }
             ],
             "report": false,
@@ -4704,10 +5523,25 @@
                 "tableAlias": null,
                 "orgTable": null,
                 "type": "TEXT"
+              },
+              {
+                "name": "enum_values",
+                "tableID": 0,
+                "columnID": 0,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "enum_values",
+                "schema": null,
+                "table": null,
+                "tableAlias": null,
+                "orgTable": null,
+                "type": "TEXT"
               }
             ],
             "keys": [],
-            "duration": 5
+            "duration": 4
           }
         }
       ],
@@ -4846,7 +5680,7 @@
               }
             ],
             "keys": [],
-            "duration": 1
+            "duration": 2
           }
         }
       ],
@@ -5099,27 +5933,27 @@
                 "is_insertable_into": "YES",
                 "is_typed": "NO",
                 "commit_action": null,
-                "oid": 16483,
+                "oid": 18005,
                 "nspname": "antares_fixtures",
                 "nspowner": 10,
                 "nspacl": null,
                 "relname": "products",
-                "relnamespace": 16474,
-                "reltype": 16485,
+                "relnamespace": 17973,
+                "reltype": 18007,
                 "reloftype": 0,
                 "relowner": 10,
                 "relam": 2,
-                "relfilenode": 16483,
+                "relfilenode": 18005,
                 "reltablespace": 0,
                 "relpages": 0,
                 "reltuples": -1,
                 "relallvisible": 0,
-                "reltoastrelid": 16492,
+                "reltoastrelid": 18015,
                 "relhasindex": true,
                 "relisshared": false,
                 "relpersistence": "p",
                 "relkind": "r",
-                "relnatts": 8,
+                "relnatts": 11,
                 "relchecks": 1,
                 "relhasrules": false,
                 "relhastriggers": true,
@@ -5130,7 +5964,7 @@
                 "relreplident": "d",
                 "relispartition": false,
                 "relrewrite": 0,
-                "relfrozenxid": "773",
+                "relfrozenxid": "1628",
                 "relminmxid": "1",
                 "relacl": null,
                 "reloptions": null,
@@ -5886,7 +6720,7 @@
               }
             ],
             "keys": [],
-            "duration": 1
+            "duration": 2
           }
         }
       ],
@@ -6102,7 +6936,7 @@
               }
             ],
             "keys": [],
-            "duration": 1
+            "duration": 2
           }
         }
       ],
@@ -6488,6 +7322,144 @@
                 "scope_name": null,
                 "maximum_cardinality": null,
                 "dtd_identifier": "8",
+                "is_self_referencing": "NO",
+                "is_identity": "NO",
+                "identity_generation": null,
+                "identity_start": null,
+                "identity_increment": null,
+                "identity_maximum": null,
+                "identity_minimum": null,
+                "identity_cycle": "NO",
+                "is_generated": "NEVER",
+                "generation_expression": null,
+                "is_updatable": "YES"
+              },
+              {
+                "table_catalog": "antares_test",
+                "table_schema": "antares_fixtures",
+                "table_name": "products",
+                "column_name": "status",
+                "ordinal_position": 9,
+                "column_default": "'draft'::antares_fixtures.product_status",
+                "is_nullable": "YES",
+                "data_type": "USER-DEFINED",
+                "character_maximum_length": null,
+                "character_octet_length": null,
+                "numeric_precision": null,
+                "numeric_precision_radix": null,
+                "numeric_scale": null,
+                "datetime_precision": null,
+                "interval_type": null,
+                "interval_precision": null,
+                "character_set_catalog": null,
+                "character_set_schema": null,
+                "character_set_name": null,
+                "collation_catalog": null,
+                "collation_schema": null,
+                "collation_name": null,
+                "domain_catalog": null,
+                "domain_schema": null,
+                "domain_name": null,
+                "udt_catalog": "antares_test",
+                "udt_schema": "antares_fixtures",
+                "udt_name": "product_status",
+                "scope_catalog": null,
+                "scope_schema": null,
+                "scope_name": null,
+                "maximum_cardinality": null,
+                "dtd_identifier": "9",
+                "is_self_referencing": "NO",
+                "is_identity": "NO",
+                "identity_generation": null,
+                "identity_start": null,
+                "identity_increment": null,
+                "identity_maximum": null,
+                "identity_minimum": null,
+                "identity_cycle": "NO",
+                "is_generated": "NEVER",
+                "generation_expression": null,
+                "is_updatable": "YES"
+              },
+              {
+                "table_catalog": "antares_test",
+                "table_schema": "antares_fixtures",
+                "table_name": "products",
+                "column_name": "weight",
+                "ordinal_position": 10,
+                "column_default": null,
+                "is_nullable": "NO",
+                "data_type": "numeric",
+                "character_maximum_length": null,
+                "character_octet_length": null,
+                "numeric_precision": 8,
+                "numeric_precision_radix": 10,
+                "numeric_scale": 3,
+                "datetime_precision": null,
+                "interval_type": null,
+                "interval_precision": null,
+                "character_set_catalog": null,
+                "character_set_schema": null,
+                "character_set_name": null,
+                "collation_catalog": null,
+                "collation_schema": null,
+                "collation_name": null,
+                "domain_catalog": "antares_test",
+                "domain_schema": "antares_fixtures",
+                "domain_name": "Weight",
+                "udt_catalog": "antares_test",
+                "udt_schema": "pg_catalog",
+                "udt_name": "numeric",
+                "scope_catalog": null,
+                "scope_schema": null,
+                "scope_name": null,
+                "maximum_cardinality": null,
+                "dtd_identifier": "10",
+                "is_self_referencing": "NO",
+                "is_identity": "NO",
+                "identity_generation": null,
+                "identity_start": null,
+                "identity_increment": null,
+                "identity_maximum": null,
+                "identity_minimum": null,
+                "identity_cycle": "NO",
+                "is_generated": "NEVER",
+                "generation_expression": null,
+                "is_updatable": "YES"
+              },
+              {
+                "table_catalog": "antares_test",
+                "table_schema": "antares_fixtures",
+                "table_name": "products",
+                "column_name": "size",
+                "ordinal_position": 11,
+                "column_default": null,
+                "is_nullable": "YES",
+                "data_type": "USER-DEFINED",
+                "character_maximum_length": null,
+                "character_octet_length": null,
+                "numeric_precision": null,
+                "numeric_precision_radix": null,
+                "numeric_scale": null,
+                "datetime_precision": null,
+                "interval_type": null,
+                "interval_precision": null,
+                "character_set_catalog": null,
+                "character_set_schema": null,
+                "character_set_name": null,
+                "collation_catalog": null,
+                "collation_schema": null,
+                "collation_name": null,
+                "domain_catalog": null,
+                "domain_schema": null,
+                "domain_name": null,
+                "udt_catalog": "antares_test",
+                "udt_schema": "antares_fixtures",
+                "udt_name": "dimensions",
+                "scope_catalog": null,
+                "scope_schema": null,
+                "scope_name": null,
+                "maximum_cardinality": null,
+                "dtd_identifier": "11",
                 "is_self_referencing": "NO",
                 "is_identity": "NO",
                 "identity_generation": null,
@@ -7131,7 +8103,7 @@
             "report": false,
             "fields": [],
             "keys": [],
-            "duration": 1
+            "duration": 0
           }
         },
         {
@@ -7401,7 +8373,7 @@
           }
         }
       ],
-      "output": "CREATE SEQUENCE \"antares_fixtures\".\"products_id_seq\"\n   START WITH 1\n   INCREMENT BY 1\n   MINVALUE 1\n   MAXVALUE 2147483647\n   CACHE 1;\n\nCREATE TABLE \"antares_fixtures\".\"products\"(\n   \"id\" integer DEFAULT nextval('antares_fixtures.products_id_seq'::regclass) NOT NULL,\n   \"name\" character varying(100) DEFAULT 'unnamed'::character varying NOT NULL,\n   \"price\" numeric DEFAULT 0 NOT NULL,\n   \"tags\" text[],\n   \"created_at\" timestamp without time zone DEFAULT now(),\n   \"category_id\" integer,\n   \"data\" jsonb,\n   \"flag\" boolean DEFAULT false,\n   CONSTRAINT \"products_pkey\" PRIMARY KEY (\"id\")\n);\n\nCREATE UNIQUE INDEX \"products_name_uq\" ON \"antares_fixtures\".\"products\" (\"name\");\nCREATE INDEX \"products_price_idx\" ON \"antares_fixtures\".\"products\" (\"price\");\n"
+      "output": "CREATE SEQUENCE \"antares_fixtures\".\"products_id_seq\"\n   START WITH 1\n   INCREMENT BY 1\n   MINVALUE 1\n   MAXVALUE 2147483647\n   CACHE 1;\n\nCREATE TABLE \"antares_fixtures\".\"products\"(\n   \"id\" integer DEFAULT nextval('antares_fixtures.products_id_seq'::regclass) NOT NULL,\n   \"name\" character varying(100) DEFAULT 'unnamed'::character varying NOT NULL,\n   \"price\" numeric DEFAULT 0 NOT NULL,\n   \"tags\" text[],\n   \"created_at\" timestamp without time zone DEFAULT now(),\n   \"category_id\" integer,\n   \"data\" jsonb,\n   \"flag\" boolean DEFAULT false,\n   \"status\" \"antares_fixtures\".\"product_status\" DEFAULT 'draft'::antares_fixtures.product_status,\n   \"weight\" \"antares_fixtures\".\"Weight\" NOT NULL,\n   \"size\" \"antares_fixtures\".\"dimensions\",\n   CONSTRAINT \"products_pkey\" PRIMARY KEY (\"id\")\n);\n\nCREATE UNIQUE INDEX \"products_name_uq\" ON \"antares_fixtures\".\"products\" (\"name\");\nCREATE INDEX \"products_price_idx\" ON \"antares_fixtures\".\"products\" (\"price\");\n"
     },
     {
       "method": "getMaterializedViewInformations",
@@ -7438,7 +8410,7 @@
               }
             ],
             "keys": [],
-            "duration": 1
+            "duration": 0
           }
         }
       ],
@@ -7487,7 +8459,7 @@
               }
             ],
             "keys": [],
-            "duration": 0
+            "duration": 1
           }
         },
         {
@@ -7496,7 +8468,7 @@
             "rows": [
               {
                 "procedure_schema": "antares_fixtures",
-                "specific_name": "touch_product_16507",
+                "specific_name": "touch_product_18036",
                 "procedure_name": "touch_product",
                 "external_language": "PLPGSQL",
                 "parameter_name": "p_id",
@@ -7505,7 +8477,7 @@
               },
               {
                 "procedure_schema": "antares_fixtures",
-                "specific_name": "touch_product_16507",
+                "specific_name": "touch_product_18036",
                 "procedure_name": "touch_product",
                 "external_language": "PLPGSQL",
                 "parameter_name": "p_name",
@@ -7615,7 +8587,7 @@
               }
             ],
             "keys": [],
-            "duration": 2
+            "duration": 3
           }
         }
       ],
@@ -7689,7 +8661,7 @@
             "rows": [
               {
                 "procedure_schema": "antares_fixtures",
-                "specific_name": "product_price_16506",
+                "specific_name": "product_price_18035",
                 "procedure_name": "product_price",
                 "external_language": "PLPGSQL",
                 "parameter_name": "p_id",
@@ -7821,6 +8793,815 @@
         "security": "INVOKER",
         "language": "plpgsql",
         "returns": "NUMERIC"
+      }
+    },
+    {
+      "method": "getUserTypeInformations",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "userType": "product_status"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT t.oid, t.typname, t.typtype, t.typnotnull, t.typdefault, format_type(t.typbasetype, t.typtypmod) AS base_type, (SELECT format_type(r.rngsubtype, NULL) FROM pg_range r WHERE r.rngtypid = t.oid) AS subtype, obj_description(t.oid, 'pg_type') AS comment FROM pg_type t JOIN pg_namespace n ON n.oid = t.typnamespace WHERE n.nspname = 'antares_fixtures' AND t.typname = 'product_status'",
+          "args": {
+            "schema": "antares_fixtures"
+          },
+          "result": {
+            "rows": [
+              {
+                "oid": 17975,
+                "typname": "product_status",
+                "typtype": "e",
+                "typnotnull": false,
+                "typdefault": null,
+                "base_type": "-",
+                "subtype": null,
+                "comment": "Product lifecycle"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "oid",
+                "tableID": 1247,
+                "columnID": 1,
+                "dataTypeID": 26,
+                "dataTypeSize": 4,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "oid",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "OID"
+              },
+              {
+                "name": "typname",
+                "tableID": 1247,
+                "columnID": 2,
+                "dataTypeID": 19,
+                "dataTypeSize": 64,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typname",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "text"
+              },
+              {
+                "name": "typtype",
+                "tableID": 1247,
+                "columnID": 7,
+                "dataTypeID": 18,
+                "dataTypeSize": 1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typtype",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "CHAR"
+              },
+              {
+                "name": "typnotnull",
+                "tableID": 1247,
+                "columnID": 25,
+                "dataTypeID": 16,
+                "dataTypeSize": 1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typnotnull",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "BOOL"
+              },
+              {
+                "name": "typdefault",
+                "tableID": 1247,
+                "columnID": 31,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typdefault",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "TEXT"
+              },
+              {
+                "name": "base_type",
+                "tableID": 0,
+                "columnID": 0,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "base_type",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "TEXT"
+              },
+              {
+                "name": "subtype",
+                "tableID": 0,
+                "columnID": 0,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "subtype",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "TEXT"
+              },
+              {
+                "name": "comment",
+                "tableID": 0,
+                "columnID": 0,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "comment",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "TEXT"
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        },
+        {
+          "sql": "SELECT enumlabel FROM pg_enum WHERE enumtypid = 17975 ORDER BY enumsortorder",
+          "result": {
+            "rows": [
+              {
+                "enumlabel": "draft"
+              },
+              {
+                "enumlabel": "active"
+              },
+              {
+                "enumlabel": "it's over"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "enumlabel",
+                "tableID": 3501,
+                "columnID": 4,
+                "dataTypeID": 19,
+                "dataTypeSize": 64,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "enumlabel",
+                "schema": "antares_fixtures",
+                "table": "pg_enum",
+                "orgTable": "pg_enum",
+                "type": "text"
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        }
+      ],
+      "output": {
+        "schema": "antares_fixtures",
+        "name": "product_status",
+        "kind": "enum",
+        "comment": "Product lifecycle",
+        "values": [
+          {
+            "name": "draft",
+            "oldName": "draft"
+          },
+          {
+            "name": "active",
+            "oldName": "active"
+          },
+          {
+            "name": "it's over",
+            "oldName": "it's over"
+          }
+        ],
+        "attributes": [],
+        "baseType": "",
+        "notNull": false,
+        "default": "",
+        "checks": []
+      }
+    },
+    {
+      "method": "getUserTypeInformations",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "userType": "Weight"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT t.oid, t.typname, t.typtype, t.typnotnull, t.typdefault, format_type(t.typbasetype, t.typtypmod) AS base_type, (SELECT format_type(r.rngsubtype, NULL) FROM pg_range r WHERE r.rngtypid = t.oid) AS subtype, obj_description(t.oid, 'pg_type') AS comment FROM pg_type t JOIN pg_namespace n ON n.oid = t.typnamespace WHERE n.nspname = 'antares_fixtures' AND t.typname = 'Weight'",
+          "args": {
+            "schema": "antares_fixtures"
+          },
+          "result": {
+            "rows": [
+              {
+                "oid": 17982,
+                "typname": "Weight",
+                "typtype": "d",
+                "typnotnull": true,
+                "typdefault": "0",
+                "base_type": "numeric(8,3)",
+                "subtype": null,
+                "comment": null
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "oid",
+                "tableID": 1247,
+                "columnID": 1,
+                "dataTypeID": 26,
+                "dataTypeSize": 4,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "oid",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "OID"
+              },
+              {
+                "name": "typname",
+                "tableID": 1247,
+                "columnID": 2,
+                "dataTypeID": 19,
+                "dataTypeSize": 64,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typname",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "text"
+              },
+              {
+                "name": "typtype",
+                "tableID": 1247,
+                "columnID": 7,
+                "dataTypeID": 18,
+                "dataTypeSize": 1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typtype",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "CHAR"
+              },
+              {
+                "name": "typnotnull",
+                "tableID": 1247,
+                "columnID": 25,
+                "dataTypeID": 16,
+                "dataTypeSize": 1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typnotnull",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "BOOL"
+              },
+              {
+                "name": "typdefault",
+                "tableID": 1247,
+                "columnID": 31,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typdefault",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "TEXT"
+              },
+              {
+                "name": "base_type",
+                "tableID": 0,
+                "columnID": 0,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "base_type",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "TEXT"
+              },
+              {
+                "name": "subtype",
+                "tableID": 0,
+                "columnID": 0,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "subtype",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "TEXT"
+              },
+              {
+                "name": "comment",
+                "tableID": 0,
+                "columnID": 0,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "comment",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "TEXT"
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        },
+        {
+          "sql": "SELECT conname, pg_get_constraintdef(oid) AS definition FROM pg_constraint WHERE contypid = 17982 AND contype = 'c' ORDER BY conname",
+          "result": {
+            "rows": [
+              {
+                "conname": "weight_positive",
+                "definition": "CHECK ((VALUE >= (0)::numeric))"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "conname",
+                "tableID": 2606,
+                "columnID": 2,
+                "dataTypeID": 19,
+                "dataTypeSize": 64,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "conname",
+                "schema": "antares_fixtures",
+                "table": "pg_constraint",
+                "orgTable": "pg_constraint",
+                "type": "text"
+              },
+              {
+                "name": "definition",
+                "tableID": 0,
+                "columnID": 0,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "definition",
+                "schema": "antares_fixtures",
+                "table": "pg_constraint",
+                "orgTable": "pg_constraint",
+                "type": "TEXT"
+              }
+            ],
+            "keys": [],
+            "duration": 0
+          }
+        }
+      ],
+      "output": {
+        "schema": "antares_fixtures",
+        "name": "Weight",
+        "kind": "domain",
+        "comment": "",
+        "values": [],
+        "attributes": [],
+        "baseType": "numeric(8,3)",
+        "notNull": true,
+        "default": "0",
+        "checks": [
+          {
+            "name": "weight_positive",
+            "clause": "(VALUE >= (0)::numeric)",
+            "oldName": "weight_positive"
+          }
+        ]
+      }
+    },
+    {
+      "method": "getUserTypeInformations",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "userType": "dimensions"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT t.oid, t.typname, t.typtype, t.typnotnull, t.typdefault, format_type(t.typbasetype, t.typtypmod) AS base_type, (SELECT format_type(r.rngsubtype, NULL) FROM pg_range r WHERE r.rngtypid = t.oid) AS subtype, obj_description(t.oid, 'pg_type') AS comment FROM pg_type t JOIN pg_namespace n ON n.oid = t.typnamespace WHERE n.nspname = 'antares_fixtures' AND t.typname = 'dimensions'",
+          "args": {
+            "schema": "antares_fixtures"
+          },
+          "result": {
+            "rows": [
+              {
+                "oid": 17986,
+                "typname": "dimensions",
+                "typtype": "c",
+                "typnotnull": false,
+                "typdefault": null,
+                "base_type": "-",
+                "subtype": null,
+                "comment": null
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "oid",
+                "tableID": 1247,
+                "columnID": 1,
+                "dataTypeID": 26,
+                "dataTypeSize": 4,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "oid",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "OID"
+              },
+              {
+                "name": "typname",
+                "tableID": 1247,
+                "columnID": 2,
+                "dataTypeID": 19,
+                "dataTypeSize": 64,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typname",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "text"
+              },
+              {
+                "name": "typtype",
+                "tableID": 1247,
+                "columnID": 7,
+                "dataTypeID": 18,
+                "dataTypeSize": 1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typtype",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "CHAR"
+              },
+              {
+                "name": "typnotnull",
+                "tableID": 1247,
+                "columnID": 25,
+                "dataTypeID": 16,
+                "dataTypeSize": 1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typnotnull",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "BOOL"
+              },
+              {
+                "name": "typdefault",
+                "tableID": 1247,
+                "columnID": 31,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typdefault",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "TEXT"
+              },
+              {
+                "name": "base_type",
+                "tableID": 0,
+                "columnID": 0,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "base_type",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "TEXT"
+              },
+              {
+                "name": "subtype",
+                "tableID": 0,
+                "columnID": 0,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "subtype",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "TEXT"
+              },
+              {
+                "name": "comment",
+                "tableID": 0,
+                "columnID": 0,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "comment",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "TEXT"
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        },
+        {
+          "sql": "SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS type FROM pg_attribute a JOIN pg_type t ON t.typrelid = a.attrelid WHERE t.oid = 17986 AND a.attnum > 0 AND NOT a.attisdropped ORDER BY a.attnum",
+          "args": {
+            "schema": "antares_fixtures"
+          },
+          "result": {
+            "rows": [
+              {
+                "attname": "width",
+                "type": "integer"
+              },
+              {
+                "attname": "height",
+                "type": "integer"
+              },
+              {
+                "attname": "unit",
+                "type": "character varying(5)"
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "attname",
+                "tableID": 1249,
+                "columnID": 2,
+                "dataTypeID": 19,
+                "dataTypeSize": 64,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "attname",
+                "schema": "antares_fixtures",
+                "table": "pg_attribute",
+                "orgTable": "pg_attribute",
+                "type": "text"
+              },
+              {
+                "name": "type",
+                "tableID": 0,
+                "columnID": 0,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "type",
+                "schema": "antares_fixtures",
+                "table": "pg_attribute",
+                "orgTable": "pg_attribute",
+                "type": "TEXT"
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
+        }
+      ],
+      "output": {
+        "schema": "antares_fixtures",
+        "name": "dimensions",
+        "kind": "composite",
+        "comment": "",
+        "values": [],
+        "attributes": [
+          {
+            "name": "width",
+            "type": "integer",
+            "oldName": "width"
+          },
+          {
+            "name": "height",
+            "type": "integer",
+            "oldName": "height"
+          },
+          {
+            "name": "unit",
+            "type": "character varying(5)",
+            "oldName": "unit"
+          }
+        ],
+        "baseType": "",
+        "notNull": false,
+        "default": "",
+        "checks": []
+      }
+    },
+    {
+      "method": "getUserTypeInformations",
+      "params": [
+        {
+          "schema": "antares_fixtures",
+          "userType": "price_range"
+        }
+      ],
+      "queries": [
+        {
+          "sql": "SELECT t.oid, t.typname, t.typtype, t.typnotnull, t.typdefault, format_type(t.typbasetype, t.typtypmod) AS base_type, (SELECT format_type(r.rngsubtype, NULL) FROM pg_range r WHERE r.rngtypid = t.oid) AS subtype, obj_description(t.oid, 'pg_type') AS comment FROM pg_type t JOIN pg_namespace n ON n.oid = t.typnamespace WHERE n.nspname = 'antares_fixtures' AND t.typname = 'price_range'",
+          "args": {
+            "schema": "antares_fixtures"
+          },
+          "result": {
+            "rows": [
+              {
+                "oid": 17990,
+                "typname": "price_range",
+                "typtype": "r",
+                "typnotnull": false,
+                "typdefault": null,
+                "base_type": "-",
+                "subtype": "numeric",
+                "comment": null
+              }
+            ],
+            "report": false,
+            "fields": [
+              {
+                "name": "oid",
+                "tableID": 1247,
+                "columnID": 1,
+                "dataTypeID": 26,
+                "dataTypeSize": 4,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "oid",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "OID"
+              },
+              {
+                "name": "typname",
+                "tableID": 1247,
+                "columnID": 2,
+                "dataTypeID": 19,
+                "dataTypeSize": 64,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typname",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "text"
+              },
+              {
+                "name": "typtype",
+                "tableID": 1247,
+                "columnID": 7,
+                "dataTypeID": 18,
+                "dataTypeSize": 1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typtype",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "CHAR"
+              },
+              {
+                "name": "typnotnull",
+                "tableID": 1247,
+                "columnID": 25,
+                "dataTypeID": 16,
+                "dataTypeSize": 1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typnotnull",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "BOOL"
+              },
+              {
+                "name": "typdefault",
+                "tableID": 1247,
+                "columnID": 31,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "typdefault",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "TEXT"
+              },
+              {
+                "name": "base_type",
+                "tableID": 0,
+                "columnID": 0,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "base_type",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "TEXT"
+              },
+              {
+                "name": "subtype",
+                "tableID": 0,
+                "columnID": 0,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "subtype",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "TEXT"
+              },
+              {
+                "name": "comment",
+                "tableID": 0,
+                "columnID": 0,
+                "dataTypeID": 25,
+                "dataTypeSize": -1,
+                "dataTypeModifier": -1,
+                "format": "text",
+                "alias": "comment",
+                "schema": "antares_fixtures",
+                "table": "pg_type",
+                "orgTable": "pg_type",
+                "type": "TEXT"
+              }
+            ],
+            "keys": [],
+            "duration": 0
+          }
+        }
+      ],
+      "output": {
+        "schema": "antares_fixtures",
+        "name": "price_range",
+        "kind": "range",
+        "comment": "",
+        "values": [],
+        "attributes": [],
+        "baseType": "numeric",
+        "notNull": false,
+        "default": "",
+        "checks": []
       }
     }
   ]

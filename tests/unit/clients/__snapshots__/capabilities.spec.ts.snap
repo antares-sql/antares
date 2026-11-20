@@ -51,6 +51,7 @@ exports[`client capabilities > pg capabilities 1`] = `
   "functions",
   "triggerFunctions",
   "users",
+  "userTypes",
 ]
 `;
 

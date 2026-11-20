@@ -87,6 +87,18 @@
                :size="18"
             /> {{ t('database.createNewScheduler') }}</span>
       </div>
+      <div
+         v-if="props.selectedMisc === 'userType'"
+         class="context-element"
+         @click="emit('open-create-user-type-tab')"
+      >
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiShapePlus"
+               :size="18"
+            /> {{ t('database.createNewUserType') }}</span>
+      </div>
    </BaseContextMenu>
 </template>
 
@@ -112,6 +124,7 @@ const emit = defineEmits([
    'open-create-function-tab',
    'open-create-trigger-function-tab',
    'open-create-scheduler-tab',
+   'open-create-user-type-tab',
    'close-context'
 ]);
 

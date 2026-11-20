@@ -34,6 +34,7 @@ export const defaults: Customizations = {
    routines: false,
    functions: false,
    schedulers: false,
+   userTypes: false,
    // Misc
    elementsWrapper: '',
    stringsWrapper: '"',
@@ -46,6 +47,7 @@ export const defaults: Customizations = {
    routineAdd: false,
    functionAdd: false,
    schedulerAdd: false,
+   userTypeAdd: false,
    databaseEdit: false,
    schemaEdit: false,
    schemaDrop: false,

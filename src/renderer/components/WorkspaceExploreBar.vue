@@ -117,6 +117,7 @@
          @open-create-function-tab="openCreateElementTab('function')"
          @open-create-trigger-function-tab="openCreateElementTab('trigger-function')"
          @open-create-scheduler-tab="openCreateElementTab('scheduler')"
+         @open-create-user-type-tab="openCreateElementTab('user-type')"
          @open-schema-diagram-tab="openSchemaDiagramTab"
          @reload="refresh"
       />
@@ -150,6 +151,7 @@
          @open-create-routine-tab="openCreateElementTab('routine')"
          @open-create-function-tab="openCreateElementTab('function')"
          @open-create-scheduler-tab="openCreateElementTab('scheduler')"
+         @open-create-user-type-tab="openCreateElementTab('user-type')"
          @close-context="closeMiscFolderContext"
          @reload="refresh"
       />

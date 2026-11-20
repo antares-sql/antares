@@ -1,15 +1,17 @@
 import * as antares from 'common/interfaces/antares';
+import { pgTypeIdentifier } from 'common/libs/pgIdentifiers';
 import { removeComments } from 'common/libs/sqlUtils';
 import * as pg from 'pg';
 import * as pgAst from 'pgsql-ast-parser';
 
-import { CancelQueriesCapability, DatabaseClient, DatabasesCapability, DbConfigCapability, FunctionsCapability, MaterializedViewsCapability, RoutinesCapability, SchemasCapability, TableDdlCapability, TriggerFunctionsCapability, TriggerToggleCapability, UsersCapability } from '../db/core/contracts';
+import { CancelQueriesCapability, DatabaseClient, DatabasesCapability, DbConfigCapability, FunctionsCapability, MaterializedViewsCapability, RoutinesCapability, SchemasCapability, TableDdlCapability, TriggerFunctionsCapability, TriggerToggleCapability, UsersCapability, UserTypesCapability } from '../db/core/contracts';
 import { arrayRowsToObjects, uniqueColumnNames } from '../db/core/resultRows';
 import { maskSecrets } from '../db/core/users';
 import { PostgreSQLConnections, PostgreSQLParams } from '../db/engines/postgresql/PostgreSQLConnections';
 import { PostgreSQLDdl } from '../db/engines/postgresql/PostgreSQLDdl';
 import { PostgreSQLDialect } from '../db/engines/postgresql/PostgreSQLDialect';
 import { parseFunctionDefinition } from '../db/engines/postgresql/PostgreSQLParsers';
+import { PostgreSQLTypes, typeKinds } from '../db/engines/postgresql/PostgreSQLTypes';
 import { databasePrivileges, PostgreSQLUsers, schemaPrivileges } from '../db/engines/postgresql/PostgreSQLUsers';
 import { BaseClient } from './BaseClient';
 
@@ -86,10 +88,11 @@ type builtinsTypes =
    'JSONB' |
    'REGNAMESPACE' |
    'REGROLE';
-export class PostgreSQLClient extends BaseClient implements DatabaseClient, SchemasCapability, DatabasesCapability, DbConfigCapability, CancelQueriesCapability, TableDdlCapability, MaterializedViewsCapability, TriggerToggleCapability, RoutinesCapability, FunctionsCapability, TriggerFunctionsCapability, UsersCapability {
+export class PostgreSQLClient extends BaseClient implements DatabaseClient, SchemasCapability, DatabasesCapability, DbConfigCapability, CancelQueriesCapability, TableDdlCapability, MaterializedViewsCapability, TriggerToggleCapability, RoutinesCapability, FunctionsCapability, TriggerFunctionsCapability, UsersCapability, UserTypesCapability {
    protected readonly _ddl = new PostgreSQLDdl();
    protected readonly _dialect = new PostgreSQLDialect();
    private readonly _users = new PostgreSQLUsers();
+   private readonly _types = new PostgreSQLTypes();
    private _schema?: string;
    private readonly _connections: PostgreSQLConnections;
    private types: Record<string, string> = {};
@@ -212,6 +215,18 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
          : { rows: [] as RoutineRow[] };
       const functions = routines.filter(routine => routine.routine_type === 'FUNCTION');
       const procedures = routines.filter(routine => routine.routine_type === 'PROCEDURE');
+      // User-defined types: enums, domains, ranges and composite types (not the row types of tables), without the ones of extensions
+      const { rows: userTypes } = schemaList
+         ? await this.raw<antares.QueryResult<{ nspname: string; typname: string; typtype: string }>>(`
+            SELECT n.nspname, t.typname, t.typtype
+            FROM pg_type t
+            JOIN pg_namespace n ON n.oid = t.typnamespace
+            WHERE n.nspname IN (${schemaList})
+            AND (t.typtype IN ('e', 'd', 'r') OR (t.typtype = 'c' AND EXISTS (SELECT 1 FROM pg_class c WHERE c.oid = t.typrelid AND c.relkind = 'c')))
+            AND NOT EXISTS (SELECT 1 FROM pg_depend d WHERE d.classid = 'pg_type'::regclass AND d.objid = t.oid AND d.deptype = 'e')
+            ORDER BY t.typname
+         `)
+         : { rows: [] as { nspname: string; typname: string; typtype: string }[] };
 
       const tablesArr: ShowTableResult[] = [];
       const triggersArr: ShowTriggersResult[] = [];
@@ -356,7 +371,10 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
                procedures: remappedProcedures,
                triggers: remappedTriggers,
                triggerFunctions: remappedTriggerFunctions,
-               schedulers: [] as null[]
+               schedulers: [] as null[],
+               userTypes: userTypes
+                  .filter(type => type.nspname === db.database)
+                  .map(type => ({ name: type.typname, kind: typeKinds[type.typtype] }))
             };
          }
          else {
@@ -368,7 +386,8 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
                procedures: [],
                triggers: [],
                triggerFunctions: [],
-               schedulers: []
+               schedulers: [],
+               userTypes: []
             };
          }
       });
@@ -379,6 +398,10 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
       interface TableColumnsResult {
          data_type: string;
          udt_name: string;
+         udt_schema: string;
+         domain_name: string;
+         domain_schema: string;
+         enum_values: string;
          column_name: string;
          table_schema: string;
          table_name: string;
@@ -405,7 +428,13 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
             AND pg_table_is_visible(pgc.oid)
             AND attr.attnum = des.objsubid
          )
-         SELECT cols.*, comments.comment AS column_comment
+         SELECT cols.*, comments.comment AS column_comment,
+            (SELECT string_agg(quote_literal(e.enumlabel), ',' ORDER BY e.enumsortorder)
+               FROM pg_enum e
+               JOIN pg_type et ON et.oid = e.enumtypid
+               JOIN pg_namespace en ON en.oid = et.typnamespace
+               WHERE cols.data_type = 'USER-DEFINED' AND et.typname = cols.udt_name AND en.nspname = cols.udt_schema
+            ) AS enum_values
          FROM "information_schema"."columns" AS cols
          LEFT JOIN comments ON comments.column = cols.column_name AND comments.relname = cols.table_name
          WHERE cols.table_schema = '${schema}'
@@ -414,18 +443,22 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
       `);
 
       return rows.map(field => {
-         let type = field.data_type;
+         let type = field.data_type.toUpperCase();
          const isArray = type === 'ARRAY';
 
-         if (isArray && arrayRemap)
-            type = this._getArrayType(field.udt_name);
+         if (field.domain_name) // information_schema reports the base type of domains
+            type = pgTypeIdentifier(field.domain_schema, field.domain_name, field.table_schema);
+         else if (isArray && arrayRemap)
+            type = this._getArrayType(field.udt_name).toUpperCase();
          else if (type === 'USER-DEFINED') // Enums, domains, extension types: the real name, usable in ALTER COLUMN ... TYPE
-            type = field.udt_name;
+            type = pgTypeIdentifier(field.udt_schema, field.udt_name, field.table_schema);
 
          return {
             name: field.column_name,
             key: null as null,
-            type: type.toUpperCase(),
+            type,
+            /** Labels of enum columns, quoted and comma separated like the MySQL ENUM ones */
+            enumValues: field.enum_values || undefined,
             isArray,
             schema: field.table_schema,
             table: field.table_name,
@@ -618,7 +651,8 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
 
       for (const column of rows) {
          let fieldType = column.data_type;
-         if (fieldType === 'USER-DEFINED') fieldType = `"${schema}".${column.udt_name}`;
+         if (column.domain_name) fieldType = this._types.qualified(column.domain_schema, column.domain_name);
+         else if (fieldType === 'USER-DEFINED') fieldType = this._types.qualified(column.udt_schema, column.udt_name);
          else if (fieldType === 'ARRAY') {
             if (Object.keys(arrayTypes).includes(fieldType))
                fieldType = arrayTypes[column.udt_name] + '[]';
@@ -628,7 +662,7 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
 
          const columnArr = [
             `"${column.column_name}"`,
-            `${fieldType}${column.character_maximum_length ? `(${column.character_maximum_length})` : ''}`
+            `${fieldType}${column.character_maximum_length && !column.domain_name ? `(${column.character_maximum_length})` : ''}`
          ];
 
          if (column.column_default) {
@@ -851,8 +885,8 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
       };
    }
 
-   /** Runs users management statements as one multi-statement query: PostgreSQL applies all of them or none */
-   private async _runUserStatements (statements: string[], password?: string) {
+   /** Runs statements as one multi-statement query: PostgreSQL applies all of them or none */
+   private async _runStatements (statements: string[], { password, schema }: { password?: string; schema?: string } = {}) {
       if (!statements.length) return;
 
       const sql = statements.join(';\n');
@@ -861,6 +895,7 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
 
       const lease = await this._connections.acquire();
       try {
+         if (schema) await this.use(schema, lease.connection);
          await lease.connection.query(sql);
       }
       finally {
@@ -869,15 +904,86 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
    }
 
    async createUser (params: antares.SaveUserParams) {
-      await this._runUserStatements(this._users.createUser(params), params.password);
+      await this._runStatements(this._users.createUser(params), { password: params.password });
    }
 
    async alterUser (params: antares.SaveUserParams) {
-      await this._runUserStatements(this._users.alterUser(params), params.password);
+      await this._runStatements(this._users.alterUser(params), { password: params.password });
    }
 
    async dropUser (user: antares.UserIdentity) {
-      await this._runUserStatements(this._users.dropUser(await this.getUserDetails(user)));
+      await this._runStatements(this._users.dropUser(await this.getUserDetails(user)));
+   }
+
+   private async _getUserTypeRow (schema: string, userType: string, searchPath = schema) {
+      const { rows: [row] } = await this.raw(`
+         SELECT t.oid, t.typname, t.typtype, t.typnotnull, t.typdefault,
+            format_type(t.typbasetype, t.typtypmod) AS base_type,
+            (SELECT format_type(r.rngsubtype, NULL) FROM pg_range r WHERE r.rngtypid = t.oid) AS subtype,
+            obj_description(t.oid, 'pg_type') AS comment
+         FROM pg_type t
+         JOIN pg_namespace n ON n.oid = t.typnamespace
+         WHERE n.nspname = ${this._dialect.quoteString(schema)} AND t.typname = ${this._dialect.quoteString(userType)}
+      `, { schema: searchPath });
+
+      if (!row || !typeKinds[row.typtype]) throw new Error(`Type ${schema}.${userType} not found`);
+      return row;
+   }
+
+   /**
+    * Types are read with the search path of their schema: format_type() does not qualify the types of that schema.
+    * `qualifyTypes` qualifies them all (SQL dumps run with an empty search path).
+    */
+   async getUserTypeInformations ({ schema, userType, qualifyTypes = false }: { schema: string; userType: string; qualifyTypes?: boolean }): Promise<antares.UserTypeDetails> {
+      const searchPath = qualifyTypes ? 'pg_catalog' : schema;
+      const row = await this._getUserTypeRow(schema, userType, searchPath);
+      const kind = typeKinds[row.typtype];
+      const details: antares.UserTypeDetails = {
+         schema,
+         name: row.typname,
+         kind,
+         comment: row.comment || '',
+         values: [],
+         attributes: [],
+         baseType: kind === 'domain' ? row.base_type : kind === 'range' ? row.subtype : '',
+         notNull: kind === 'domain' ? !!row.typnotnull : false,
+         default: kind === 'domain' ? row.typdefault || '' : '',
+         checks: []
+      };
+
+      if (kind === 'enum') {
+         const { rows } = await this.raw(`SELECT enumlabel FROM pg_enum WHERE enumtypid = ${row.oid} ORDER BY enumsortorder`);
+         details.values = rows.map(r => ({ name: r.enumlabel, oldName: r.enumlabel }));
+      }
+      else if (kind === 'composite') {
+         const { rows } = await this.raw(`
+            SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS type
+            FROM pg_attribute a
+            JOIN pg_type t ON t.typrelid = a.attrelid
+            WHERE t.oid = ${row.oid} AND a.attnum > 0 AND NOT a.attisdropped
+            ORDER BY a.attnum
+         `, { schema: searchPath });
+         details.attributes = rows.map(r => ({ name: r.attname, type: r.type, oldName: r.attname }));
+      }
+      else if (kind === 'domain') {
+         const { rows } = await this.raw(`SELECT conname, pg_get_constraintdef(oid) AS definition FROM pg_constraint WHERE contypid = ${row.oid} AND contype = 'c' ORDER BY conname`);
+         details.checks = rows.map(r => ({ name: r.conname, clause: this._types.checkClause(r.definition), oldName: r.conname }));
+      }
+
+      return details;
+   }
+
+   async createUserType (params: antares.UserTypeDetails) {
+      await this._runStatements(this._types.createType(params), { schema: params.schema });
+   }
+
+   async alterUserType (params: antares.AlterUserTypeParams) {
+      await this._runStatements(this._types.alterType(params), { schema: params.original.schema });
+   }
+
+   async dropUserType ({ schema, userType }: { schema: string; userType: string }) {
+      const row = await this._getUserTypeRow(schema, userType);
+      await this._runStatements([this._types.dropType({ schema, name: row.typname, kind: typeKinds[row.typtype] })]);
    }
 
    async createSchema (params: {name: string}) {
@@ -893,14 +999,13 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
       return await this.raw(this._ddl.dropSchema(params));
    }
 
+   // The search path of the connection running the DDL is the table schema: user-defined types of that schema are not qualified
    async createTable (params: antares.CreateTableParams) {
-      return await this.raw(this._ddl.createTable(params));
+      return await this.raw(this._ddl.createTable(params), { schema: params.schema });
    }
 
    async alterTable (params: antares.AlterTableParams) {
-      if (params.schema !== 'public')
-         await this.use(params.schema);
-      return await this.raw(this._ddl.alterTable(params));
+      return await this.raw(this._ddl.alterTable(params), { schema: params.schema });
    }
 
    async duplicateTable (params: { schema: string; table: string }) {

@@ -60,14 +60,15 @@
          >
       </div>
       <div
-         class="td p-0 text-uppercase"
+         class="td p-0"
+         :class="{'text-uppercase': !isUserType}"
          tabindex="0"
       >
          <span
             v-if="!isInlineEditor.type"
             class="cell-content text-left"
             :class="typeClass(localRow.type)"
-            @dblclick="editON($event, localRow.type.toUpperCase(), 'type')"
+            @dblclick="editON($event, typeOption(localRow.type), 'type')"
          >
             {{ localRow.type }}
          </span>
@@ -396,12 +397,15 @@ const localLength = computed(() => {
    return localLength === true ? null : localLength;
 });
 
+/** Built-in types are upper case, user-defined ones can be quoted or schema-qualified: they are matched as they are */
+const typeMatches = (name: string, type: string) => !!type && (name === type || name === type.toUpperCase());
+
 const fieldType = computed(() => {
    const fieldType = props.dataTypes.reduce((acc, group) => [...acc, ...group.types], []).filter(type =>
-      type.name === (localRow.value.type ? localRow.value.type.toUpperCase() : '')
+      typeMatches(type.name, localRow.value.type)
    );
    const group = props.dataTypes.filter(group => group.types.some(type =>
-      type.name === (localRow.value.type ? localRow.value.type.toUpperCase() : ''))
+      typeMatches(type.name, localRow.value.type))
    );
 
    return fieldType.length ? { ...fieldType[0], group: group[0].group } : {};
@@ -438,6 +442,14 @@ const types = computed(() => {
 
    return types;
 });
+
+/** Name of the select option of a type: user-defined types are not upper case */
+const typeOption = (type: string) => {
+   const isOption = types.value.some(group => (group as { name?: string }).name === type || (group.types || []).some(_type => _type.name === type));
+   return isOption ? type : type.toUpperCase();
+};
+
+const isUserType = computed(() => fieldType.value.group === 'user-defined' || localRow.value.type?.includes('"'));
 
 const typeClass = (type: string) => {
    if (type)

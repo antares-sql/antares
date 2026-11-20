@@ -161,7 +161,7 @@ const emit = defineEmits([
 const workspacesStore = useWorkspacesStore();
 const consoleStore = useConsoleStore();
 
-const { getWorkspace } = workspacesStore;
+const { getWorkspace, getDataTypes } = workspacesStore;
 
 const { consoleHeight } = storeToRefs(consoleStore);
 
@@ -176,7 +176,7 @@ const scrollElement = ref(null);
 
 const customizations = computed(() => getWorkspace(props.connUid).customizations);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const dataTypes = computed(() => getWorkspace(props.connUid).dataTypes) as any;
+const dataTypes = computed(() => getDataTypes(props.connUid, props.schema)) as any;
 const fieldsLength = computed(() => props.fields.length);
 
 const resizeResults = () => {

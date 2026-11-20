@@ -112,6 +112,18 @@
                      :size="18"
                   /> {{ t('database.scheduler', 1) }}</span>
             </div>
+            <div
+               v-if="workspace.customizations.userTypeAdd"
+               class="context-element"
+               @click="emit('open-create-user-type-tab')"
+            >
+               <span class="d-flex">
+                  <BaseIcon
+                     class="text-light mt-1 mr-1"
+                     icon-name="mdiShapePlus"
+                     :size="18"
+                  /> {{ t('database.userType', 1) }}</span>
+            </div>
          </div>
       </div>
       <div class="context-element" @click="openSchemaDiagramTab">
@@ -248,6 +260,7 @@ const emit = defineEmits([
    'open-create-function-tab',
    'open-create-trigger-function-tab',
    'open-create-scheduler-tab',
+   'open-create-user-type-tab',
    'open-schema-diagram-tab',
    'close-context',
    'reload'

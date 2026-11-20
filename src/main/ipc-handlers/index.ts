@@ -10,6 +10,7 @@ import tables from './tables';
 import triggers from './triggers';
 import updates from './updates';
 import users from './users';
+import userTypes from './userTypes';
 import views from './views';
 
 const connections: Record<string, DatabaseClient> = {};
@@ -25,6 +26,7 @@ export default () => {
    database(connections);
    schema(connections);
    users(connections);
+   userTypes(connections);
    updates();
    application();
 };

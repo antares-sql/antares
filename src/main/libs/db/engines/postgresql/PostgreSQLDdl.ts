@@ -11,6 +11,16 @@ export class PostgreSQLDdl extends DdlGenerator {
       super(dataTypes);
    }
 
+   /**
+    * Types of the catalog are keywords, written in upper case. The others (enums, domains, extension types...)
+    * are identifiers, possibly quoted or schema-qualified: they are kept as they are.
+    */
+   private _typeSql (type: string, lowerCase = false): string {
+      const isCatalogType = this._dataTypes.some(group => group.types.some(_type => _type.name === type.toUpperCase()));
+      if (!isCatalogType) return type;
+      return lowerCase ? type.toLowerCase() : type.toUpperCase();
+   }
+
    createSchema (params: {name: string}): string {
       return `CREATE SCHEMA "${params.name}"`;
    }
@@ -41,7 +51,7 @@ export class PostgreSQLDdl extends DdlGenerator {
          const length = typeInfo.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
 
          newColumns.push(`"${field.name}" 
-            ${field.type.toUpperCase()}${length ? `(${length}${field.numScale !== null ? `,${field.numScale}` : ''})` : ''} 
+            ${this._typeSql(field.type)}${length ? `(${length}${field.numScale !== null ? `,${field.numScale}` : ''})` : ''} 
             ${field.unsigned ? 'UNSIGNED' : ''} 
             ${field.zerofill ? 'ZEROFILL' : ''}
             ${field.nullable ? 'NULL' : 'NOT NULL'}
@@ -104,7 +114,7 @@ export class PostgreSQLDdl extends DdlGenerator {
          const length = typeInfo.length ? addition.numLength || addition.charLength || addition.datePrecision : false;
 
          alterColumns.push(`ADD COLUMN "${addition.name}" 
-            ${addition.type.toUpperCase()}${length ? `(${length}${addition.numScale !== null ? `,${addition.numScale}` : ''})` : ''}${addition.isArray ? '[]' : ''} 
+            ${this._typeSql(addition.type)}${length ? `(${length}${addition.numScale !== null ? `,${addition.numScale}` : ''})` : ''}${addition.isArray ? '[]' : ''} 
             ${addition.unsigned ? 'UNSIGNED' : ''} 
             ${addition.zerofill ? 'ZEROFILL' : ''}
             ${addition.nullable ? 'NULL' : 'NOT NULL'}
@@ -149,7 +159,7 @@ export class PostgreSQLDdl extends DdlGenerator {
                localType = 'bigint';
                break;
             default:
-               localType = change.type.toLowerCase();
+               localType = this._typeSql(change.type, true);
          }
 
          alterColumns.push(`ALTER COLUMN "${change.name}" TYPE ${localType}${length ? `(${length}${change.numScale ? `,${change.numScale}` : ''})` : ''}${change.isArray ? '[]' : ''} USING "${change.name}"::${localType}`);
