@@ -185,6 +185,21 @@ for (const engine of getTestEngines()) {
          }
       });
 
+      // #927: triggers written by hand (lowercase, unquoted table) could not be opened on SQLite
+      it('reads a trigger created by a query', async ({ skip }) => {
+         if (engine.name !== 'sqlite') skip();
+
+         await client.raw(`create TRIGGER it_trg_upd after\nupdate on ${TABLE} for each row begin\nupdate ${TABLE}\nset\n  name = 'x'\nwhere\n  id = old.id;\nend;`, { split: false });
+         try {
+            const info = await client.getTriggerInformations({ schema, trigger: 'it_trg_upd' });
+            expect(info).toMatchObject({ name: 'it_trg_upd', table: TABLE, activation: 'AFTER', event: 'UPDATE' });
+            expect(info.sql).toMatch(/^begin[\s\S]*end$/);
+         }
+         finally {
+            await dropIfExists(`DROP TRIGGER ${qualified('it_trg_upd')}`);
+         }
+      });
+
       it('drops the table', async () => {
          await client.dropTable({ schema, table: TABLE });
 
