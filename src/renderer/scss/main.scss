@@ -15,6 +15,7 @@
 @import "db-icons";
 @import "themes/dark-theme";
 @import "themes/light-theme";
+@import "themes/theme-rules";
 @import "~spectre.css/src/spectre";
 @import "~spectre.css/src/spectre-exp";
 
@@ -384,7 +385,7 @@ option:checked {
 }
 
 .select__option--selected {
-  background: rgba(var(--primary-color), 0.25);
+  background: color-mix(in srgb, var(--primary-color) 25%, transparent);
 }
 
 .select__option--highlight {
@@ -433,12 +434,12 @@ option:checked {
   }
 
   &:focus {
-    box-shadow: 0 0 3px 1px rgba(var(--primary-color), 90%);
+    box-shadow: 0 0 0 0.1rem var(--primary-color-shadow);
   }
 
   &.btn-success:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 3px 1px rgba(var(--primary-color), 90%);
+    box-shadow: 0 0 0 0.1rem var(--primary-color-shadow);
   }
 
   &.btn-primary {

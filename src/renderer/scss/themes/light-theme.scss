@@ -1,454 +1,88 @@
-/* stylelint-disable function-no-unknown */
+/*
+ * Light theme tokens. Every theme defines the same set of tokens (see dark-theme.scss),
+ * the rules that use them live in _theme-rules.scss.
+ * The accent (--primary-color*) is NOT a theme token: it comes from the connection folder color.
+ */
 .theme-light {
-  background: $body-bg;
-  
-  ::-webkit-scrollbar-track {
-    background: #fff;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: rgba($color: $bg-color-light-dark, $alpha: 50%);
-
-    &:hover {
-      background: rgba($color: $bg-color-light-dark, $alpha: 100%);
-    }
-  }
-
-  .form-select,
-  .form-input,
-  .form-select:not([multiple], [size]),
-  .form-checkbox .form-icon,
-  .form-radio .form-icon {
-    background-color: #f5f5f5;
-  }
-
-  .form-input:disabled,
-  .form-input.disabled,
-  .form-select:disabled,
-  .form-select.disabled {
-    background: #ababab;
-  }
-
-  .select {
-    &__list-wrapper {
-      border: #bcc3ce;
-      background-color: $body-bg;
-    }
-
-    &__group {
-      background: $bg-color-light-gray;
-      color: $unknown-color;
-    }
-
-    &__option--highlight {
-      color: $light-color;
-    }
-  }
-
-  .menu {
-    .menu-item a {
-      &:hover {
-        color: $body-font-color;
-        background: rgba($color: #000, $alpha: 10%);
-      }
-    }
-  }
-
-  .tab {
-    border-bottom: 0.05rem solid #c5c5c5;
-
-    .tab-item {
-      a {
-        color: $body-font-color;
-        opacity: .7;
-  
-        &:hover {
-          color: $body-font-color;
-          opacity: 1;
-        }
-      }
-
-      &.active {
-        a {
-          color: $body-font-color;
-          opacity: 1;
-        }
-  
-        .tab-link {
-          border-color: transparent;
-        }
-  
-        &::after {
-          width: 100%;
-        }
-      }
-    }
-  }
-
-  .btn {
-    &.btn-clear:focus, &.btn-clear:hover {
-      background: #e0e0e0;
-      opacity: 0.95;
-    }
-
-    &.btn-link {
-      color: rgba($body-font-color, 0.8);
-
-      &:hover {
-        color: $body-font-color;
-      }
-    }
-
-    &.btn-gray {
-      color: #fff;
-      background: $bg-color-gray;
-
-      &:hover {
-        background: $bg-color-dark;
-      }
-    }
-
-    &.btn-dark {
-      color: #fff;
-      background: lighten($bg-color-light-dark, 20%);
-      border-color: lighten($bg-color-light-dark, 20%);
-
-      &:hover {
-        background: $bg-color-gray;
-      }
-
-      &.active {
-        background-color: var(--primary-color);
-      }
-    }
-  }
-
-  .modal {
-    color: $body-font-color;
-
-    &:target .modal-overlay,
-    &.active .modal-overlay {
-      background: rgba($bg-color-dark, 0.75);
-    }
-
-    .modal-container .modal-header {
-      background: $bg-color-light-dark;
-      color: #fff;
-    }
-  }
-
-  .empty {
-    background: transparent;
-  }
-
-  .divider {
-    border-top: 0.05rem solid rgba($body-font-color-dark, 0.1);
-  }
-
-  .schema-diagram {
-    background-color: $body-bg;
-    background-image: radial-gradient(rgba(#000, 10%) 1px, transparent 1px);
-    background-size: 20px 20px;
-
-    .table-box {
-      fill: $light-color;
-      stroke: $border-color-dark;
-    }
-
-    .table-header {
-      fill: #e4e4e4;
-    }
-
-    .table-name,
-    .field-name {
-      fill: $body-font-color;
-    }
-
-    .table-field {
-      &.linked .field-row {
-        fill: rgba(#000, 3%);
-      }
-
-      &:hover .field-row {
-        fill: rgba(#000, 7%);
-      }
-    }
-
-    .relation,
-    .relation-marker {
-      stroke: #8a8a8a;
-    }
-  }
-
-  .tile {
-    transition: background 0.2s;
-
-    &:focus {
-      background: rgba($bg-color-light-gray, 70%);
-    }
-
-    &:hover {
-      background: $bg-color-light-gray;
-    }
-
-    &.selected-element {
-      background: $bg-color-light-gray;
-    }
-  }
-
-  .editor-col {
-    border-left: 0.05rem solid darken($bg-color-light-gray, 15%);
-  }
-
-  .users-modal .users-list-panel {
-    border-right: 0.05rem solid $border-color-dark;
-  }
-
-  .file-uploader {
-    border: 0.05rem solid $border-color-dark;
-    background-color: $bg-color-light;
-
-    .file-uploader-message {
-      border-right: 0.05rem solid $border-color-dark;
-      background-color: $bg-color-light;
-    }
-  }
-
-  .console {
-    border-top: 1px solid darken($bg-color-light-gray, 15%);
-    background-color: $bg-color-light;
-
-    .console-log {
-      &:hover,
-      &:focus {
-        background: $bg-color-light-gray;
-      }
-    }
-  }
-
-  #titlebar {
-    background: $bg-color-light;
-    box-shadow: 0 0 1px 0 #000;
-
-    .titlebar-elements {
-      .titlebar-element {
-        &:hover {
-          opacity: 1;
-          background: rgba($color: rgb(172 172 172), $alpha: 30%);
-        }
-
-        &.close-button:hover {
-          background: red;
-        }
-      }
-    }
-  }
-
-  #settingbar {
-    background: $bg-color-light-dark;
-    box-shadow: 0 0 1px 0 #000;
-
-    .settingbar-top-elements {
-      overflow: hidden overlay;
-      max-height: calc((100vh - 3.5rem) - #{$excluding-size});
-    }
-
-    .settingbar-bottom-elements {
-      background: $bg-color-light-dark;
-    }
-
-    .settingbar-elements {
-      list-style: none;
-      text-align: center;
-      padding: 0;
-      margin: 0;
-
-      .settingbar-element {
-        .settingbar-element-icon {
-          &.badge-update::after {
-            background: var(--primary-color);
-          }
-        }
-      }
-    }
-  }
-
-  .ex-tooltip {
-    .ex-tooltip-content {
-      background: rgb(48 55 66 / 95%);
-      color: #fff;
-    }
-  }
-
-  code {
-    background-color: #eee;
-    border: 1px solid #ddd;
-  }
-
-  .workspace {
-    .workspace-explorebar {
-      background: $bg-color-light-gray;
-      box-shadow: 0 0 1px 0 #000;
-
-      .workspace-explorebar-database {
-        .database-name {
-          background: $bg-color-light-gray;
-        }
-
-        .menu-item {
-          &:hover,
-          &.selected {
-            background: rgba($color: #000, $alpha: 5%);
-          }
-        }
-
-        .table-size {
-          opacity: 0.4;
-
-          &:hover {
-            opacity: 1;
-          }
-        }
-      }
-    }
-
-    .workspace-tabs {
-      .tab-block {
-        .tab-item {
-          > a {
-            color: $body-font-color;
-          }
-
-          &.tools-dropdown {
-            background-color: $body-bg;
-          }
-        }
-      }
-    }
-  }
-
-  .workspace-query-results {
-    .table {
-      .th {
-        background: #D8D8D8;
-        border-color: transparent;
-        border-radius: 0;
-      }
-
-      .th:first-child {
-        border-left: 2px solid transparent;
-      }
-
-      .tr {
-        background-color: lighten($bg-color-light-gray, 2%);
-
-        .td:first-child {
-          border-left: 2px solid #0000001f;
-        }
-
-        .td {
-          border-color: #0000001f;
-          border-radius: 1px;
-
-          &:focus,
-          &.selected {
-            box-shadow: inset 0 0 0 2px lighten($body-font-color, 10%);
-            background-color: $body-font-color-dark;
-          }
-
-          .editable-field {
-            box-shadow: inset 0 0 0 2px lighten($body-font-color, 10%);
-            background-color: $body-font-color-dark;
-          }
-        }
-      }
-    }
-  }
-
-  .connection-panel {
-    .panel {
-      background: #e0e0e0;
-    }
-  }
-
-  .connection-block {
-    &:hover {
-      background: $bg-color-light-gray;
-    }
-  }
-
-  .context {
-    color: $body-font-color-dark;
-
-    .context-container {
-      box-shadow: 0 0 2px 0 #000;
-      background: #1d1d1d;
-
-      .context-element {
-        .context-submenu {
-          background: #1d1d1d;
-          box-shadow: 0 0 2px 0 #000;
-        }
-
-        &:hover {
-          background: rgba($light-color, 15%);
-        }
-      }
-    }
-  }
-
-  .table {
-    .td,
-    .th {
-      border-bottom: $border-width solid $border-color;
-    }
-
-    &,
-    &.table-striped {
-      .tbody {
-        .tr {
-          &.selected {
-            background: rgba($bg-color-gray, 0.2) !important;
-          }
-
-          &.active {
-            background: $bg-color;
-          }
-        }
-      }
-    }
-
-    &.table-hover {
-      .tbody {
-        .tr {
-          &:hover {
-            background: $bg-color-light-gray;
-          }
-        }
-      }
-    }
-
-    &.table-striped {
-      .tbody {
-        .tr:nth-of-type(odd) {
-          background: $bg-color;
-        }
-      }
-    }
-  }
-
-  #footer {
-    background: var(--primary-color);
-    box-shadow: 0 0 1px 0 #000;
-
-    .footer-elements {
-      .footer-element {
-        &.footer-link {
-          &:hover {
-            background: rgba($color: #fff, $alpha: 10%);
-          }
-        }
-      }
-    }
-  }
+  /* Surfaces */
+  --bg-app: #f3f3f3;
+  --bg-panel: #f1f1f1;
+  --bg-panel-hover: #f1f1f1;
+  --bg-surface: #fdfdfd;
+  --bg-raised: #fdfdfd;
+  --bg-titlebar: #fdfdfd;
+  --bg-settingbar: #3f3f3f;
+  --bg-tabbar: #f3f3f3;
+  --bg-card: #e0e0e0;
+  --bg-hover: rgb(0 0 0 / 5%);
+  --bg-hover-strong: rgb(172 172 172 / 30%);
+  --bg-overlay: rgb(29 29 29 / 75%);
+
+  /* Text */
+  --text: #3b4351;
+  --text-muted: #66758c;
+
+  /* Borders */
+  --border: #bcc3ce;
+  --border-subtle: #c5c5c5;
+  --separator: #cbcbcb;
+  --divider: rgb(0 0 0 / 10%);
+  --shadow-color: #000;
+
+  /* Form controls */
+  --input-bg: #f5f5f5;
+  --input-bg-readonly: #f7f8f9;
+  --input-bg-disabled: #ababab;
+
+  /* Menus, modals, popups */
+  --menu-hover-bg: rgb(0 0 0 / 10%);
+  --menu-hover-text: #3b4351;
+  --modal-header-bg: #3f3f3f;
+  --modal-header-text: #fff;
+  --context-bg: #1d1d1d;
+  --context-text: #fff;
+  --context-hover: rgb(253 253 253 / 15%);
+  --tooltip-bg: rgb(48 55 66 / 95%);
+  --tooltip-text: #fff;
+
+  /* Buttons */
+  --btn-dark-bg: #727272;
+  --btn-dark-bg-hover: #272727;
+  --btn-gray-bg: #272727;
+  --btn-gray-bg-hover: #1d1d1d;
+  --btn-text: #fff;
+
+  /* Code */
+  --code-bg: #eee;
+  --code-border: #ddd;
+  --code-text: #d73e48;
+
+  /* Scrollbars */
+  --scrollbar-track: #fff;
+  --scrollbar-thumb: rgb(63 63 63 / 50%);
+  --scrollbar-thumb-hover: #3f3f3f;
+
+  /* Query results grid */
+  --grid-header-bg: #d8d8d8;
+  --grid-header-border: transparent;
+  --grid-row-bg: #f6f6f6;
+  --grid-border: #0000001f;
+  --grid-cell-focus: #505c6e;
+  --grid-cell-focus-bg: #fff;
+
+  /* Generic tables */
+  --table-border: #dadee4;
+  --table-row-alt: #f7f8f9;
+  --table-row-hover: #f1f1f1;
+  --table-row-active: #f7f8f9;
+  --table-row-selected: rgb(39 39 39 / 20%);
+
+  /* Schema diagram */
+  --diagram-dot: rgb(0 0 0 / 10%);
+  --diagram-table-bg: #fdfdfd;
+  --diagram-table-border: #bcc3ce;
+  --diagram-header-bg: #e4e4e4;
+  --diagram-row-linked: rgb(0 0 0 / 3%);
+  --diagram-row-hover: rgb(0 0 0 / 7%);
+  --diagram-relation: #8a8a8a;
 }

@@ -1,0 +1,543 @@
+/*
+ * Theme-dependent rules, shared by every theme. They read the theme tokens
+ * (dark-theme.scss / light-theme.scss): never put a color literal here, add a token instead.
+ * The `:is(...)` wrapper keeps the specificity of a single class, like the old `.theme-*` blocks.
+ */
+/* stylelint-disable selector-class-pattern */
+:is(.theme-dark, .theme-light) {
+  color: var(--text);
+  background: var(--bg-app);
+
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+
+    &:hover {
+      background: var(--scrollbar-thumb-hover);
+    }
+  }
+
+  option,
+  optgroup {
+    background-color: var(--input-bg);
+  }
+
+  /* Override Spectre.css */
+  .menu {
+    background: var(--bg-raised);
+
+    .menu-item a {
+      &:hover {
+        color: var(--menu-hover-text);
+        background: var(--menu-hover-bg);
+      }
+    }
+  }
+
+  .tab {
+    border-bottom-color: var(--border-subtle);
+
+    .tab-item {
+      a {
+        color: var(--text);
+        opacity: 0.7;
+
+        &:hover {
+          color: var(--text);
+          opacity: 1;
+        }
+      }
+
+      &.active {
+        a {
+          color: var(--text);
+          opacity: 1;
+        }
+
+        .tab-link {
+          border-color: transparent;
+        }
+
+        &::after {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  .btn {
+    &.btn-link {
+      color: color-mix(in srgb, var(--text) 80%, transparent);
+
+      &:hover {
+        color: var(--text);
+      }
+    }
+
+    &.btn-gray {
+      color: var(--btn-text);
+      background: var(--btn-gray-bg);
+
+      &:hover {
+        background: var(--btn-gray-bg-hover);
+      }
+    }
+
+    &.btn-dark {
+      color: var(--btn-text);
+      background: var(--btn-dark-bg);
+      border-color: var(--btn-dark-bg);
+
+      &:hover {
+        background: var(--btn-dark-bg-hover);
+      }
+
+      &.active {
+        background-color: var(--primary-color);
+      }
+    }
+
+    &.btn-clear {
+      &:hover,
+      &:focus {
+        background: var(--bg-hover-strong);
+        opacity: 0.95;
+      }
+    }
+  }
+
+  .modal {
+    color: var(--text);
+
+    .modal-overlay,
+    &.active .modal-overlay,
+    &:target .modal-overlay {
+      background: var(--bg-overlay);
+    }
+
+    .modal-container,
+    .modal-sm .modal-container {
+      box-shadow: 0 0 1px 0 var(--shadow-color);
+      background: var(--bg-surface);
+
+      .modal-header {
+        background: var(--modal-header-bg);
+        color: var(--modal-header-text);
+      }
+    }
+  }
+
+  .form-select,
+  .form-input,
+  .form-select:not([multiple], [size]),
+  .form-checkbox .form-icon,
+  .form-radio .form-icon {
+    border-color: var(--border);
+    background-color: var(--input-bg);
+    color: var(--text);
+  }
+
+  .form-select:not([multiple], [size]) {
+    background-color: var(--input-bg) !important;
+  }
+
+  .form-input.is-error,
+  .form-select.is-error,
+  .has-error .form-input,
+  .form-input:not(:placeholder-shown):invalid:focus {
+    background: var(--input-bg);
+  }
+
+  .form-select:not([multiple], [size]):focus {
+    border-color: var(--primary-color);
+  }
+
+  .form-input:disabled,
+  .form-input.disabled,
+  .form-select:disabled,
+  .form-select.disabled {
+    background: var(--input-bg-disabled);
+  }
+
+  .form-input[readonly] {
+    background-color: var(--input-bg-readonly);
+    cursor: default;
+  }
+
+  .select {
+    &__list-wrapper {
+      border-color: var(--border-subtle);
+      background-color: var(--bg-raised);
+    }
+
+    &__group {
+      background: color-mix(in srgb, var(--bg-panel) 65%, transparent);
+      color: var(--text-muted);
+    }
+
+    &__option--highlight {
+      color: $light-color;
+    }
+  }
+
+  .input-group {
+    .input-group-addon {
+      border-color: var(--border);
+      background: var(--input-bg-readonly);
+    }
+  }
+
+  .empty {
+    color: var(--text-muted);
+    background: transparent;
+  }
+
+  .divider {
+    border-top: 0.05rem solid var(--divider);
+  }
+
+  .form-switch .form-icon::before {
+    background: var(--bg-raised);
+  }
+
+  code {
+    background-color: var(--code-bg);
+    border: 1px solid var(--code-border);
+    color: var(--code-text);
+  }
+
+  /* Antares */
+  .workspace {
+    .workspace-explorebar {
+      background: var(--bg-panel);
+      box-shadow: 0 0 1px 0 var(--shadow-color);
+
+      .workspace-explorebar-database {
+        .database-name {
+          background: var(--bg-panel);
+        }
+
+        .database-name,
+        .misc-name {
+          &:hover {
+            color: var(--text);
+            background: var(--bg-panel-hover);
+          }
+        }
+
+        a.table-name {
+          &:hover {
+            color: inherit;
+            background: inherit;
+          }
+        }
+
+        .menu-item {
+          &:hover,
+          &.selected {
+            color: var(--text);
+            background: var(--bg-hover);
+          }
+        }
+      }
+    }
+
+    .workspace-tabs {
+      .tab-block {
+        background: var(--bg-tabbar);
+
+        .tab-item {
+          background: var(--bg-tabbar);
+
+          > a {
+            color: var(--text);
+          }
+        }
+
+        &.result-tabs .tab-item {
+          background: transparent;
+        }
+      }
+    }
+  }
+
+  .workspace-query-results {
+    .table {
+      .th {
+        border-color: var(--grid-header-border);
+        border-radius: 0;
+        background-color: var(--grid-header-bg);
+      }
+
+      .th:first-child {
+        border-left: 2px solid var(--grid-header-border);
+      }
+
+      .tr {
+        background-color: var(--grid-row-bg);
+
+        .td:first-child {
+          border-left: 2px solid var(--grid-border);
+        }
+
+        .td {
+          border-color: var(--grid-border);
+          border-radius: 1px;
+
+          &:focus,
+          &.selected {
+            box-shadow: inset 0 0 0 2px var(--grid-cell-focus);
+            background-color: var(--grid-cell-focus-bg);
+          }
+
+          .editable-field {
+            box-shadow: inset 0 0 0 2px var(--grid-cell-focus);
+            background-color: var(--grid-cell-focus-bg);
+          }
+        }
+      }
+    }
+  }
+
+  .connection-panel {
+    .panel {
+      background: var(--bg-card);
+    }
+  }
+
+  .connection-block {
+    &:hover {
+      background: var(--bg-panel-hover);
+    }
+  }
+
+  .bg-checkered {
+    background-image:
+      linear-gradient(to right, rgb(192 192 192 / 75%), rgb(192 192 192 / 75%)),
+      linear-gradient(to right, black 50%, white 50%),
+      linear-gradient(to bottom, black 50%, white 50%);
+    background-blend-mode: normal, difference, normal;
+    background-size: 2em 2em;
+  }
+
+  .context {
+    color: var(--context-text);
+
+    .context-container {
+      box-shadow: 0 0 2px 0 var(--shadow-color);
+      background: var(--context-bg);
+
+      .context-element {
+        .context-submenu {
+          background: var(--context-bg);
+          box-shadow: 0 0 2px 0 var(--shadow-color);
+        }
+
+        &:hover {
+          background: var(--context-hover);
+        }
+      }
+    }
+  }
+
+  .editor-wrapper {
+    border-bottom: 1px solid var(--separator);
+  }
+
+  .users-modal .users-list-panel {
+    border-right: 0.05rem solid var(--border);
+  }
+
+  .file-uploader {
+    border: 0.05rem solid var(--border);
+    background-color: var(--input-bg);
+
+    .file-uploader-message {
+      border-right: 0.05rem solid var(--border);
+      background-color: var(--input-bg-readonly);
+    }
+  }
+
+  :disabled {
+    .file-uploader {
+      background-color: var(--input-bg-disabled);
+    }
+  }
+
+  .console {
+    border-top: 1px solid var(--separator);
+    background-color: var(--bg-surface);
+
+    .console-log {
+      &:hover,
+      &:focus {
+        background: var(--bg-panel);
+      }
+    }
+  }
+
+  .schema-diagram {
+    background-color: var(--bg-app);
+    background-image: radial-gradient(var(--diagram-dot) 1px, transparent 1px);
+    background-size: 20px 20px;
+
+    .table-box {
+      fill: var(--diagram-table-bg);
+      stroke: var(--diagram-table-border);
+    }
+
+    .table-header {
+      fill: var(--diagram-header-bg);
+    }
+
+    .table-name,
+    .field-name {
+      fill: var(--text);
+    }
+
+    .table-field {
+      &.linked .field-row {
+        fill: var(--diagram-row-linked);
+      }
+
+      &:hover .field-row {
+        fill: var(--diagram-row-hover);
+      }
+    }
+
+    .relation,
+    .relation-marker {
+      stroke: var(--diagram-relation);
+    }
+  }
+
+  .tile {
+    transition: background 0.2s;
+
+    &:focus {
+      background: color-mix(in srgb, var(--bg-panel-hover) 60%, transparent);
+    }
+
+    &:hover,
+    &.selected-element {
+      background: var(--bg-panel-hover);
+    }
+  }
+
+  .editor-col {
+    border-left: 0.05rem solid var(--border-subtle);
+  }
+
+  .table {
+    .td,
+    .th {
+      border-bottom: $border-width solid var(--table-border);
+    }
+
+    &,
+    &.table-striped {
+      .tbody {
+        .tr {
+          &.selected {
+            background: var(--table-row-selected) !important;
+          }
+
+          &.active {
+            background: var(--table-row-active);
+          }
+        }
+      }
+    }
+
+    &.table-hover {
+      .tbody {
+        .tr {
+          &:hover {
+            background: var(--table-row-hover);
+          }
+        }
+      }
+    }
+
+    &.table-striped {
+      .tbody {
+        .tr:nth-of-type(odd) {
+          background: var(--table-row-alt);
+        }
+      }
+    }
+  }
+
+  #titlebar {
+    background: var(--bg-titlebar);
+    box-shadow: 0 0 1px 0 var(--shadow-color);
+
+    .titlebar-elements {
+      .titlebar-element {
+        &:hover {
+          opacity: 1;
+          background: var(--bg-hover-strong);
+        }
+
+        &.close-button:hover {
+          background: red;
+        }
+      }
+    }
+  }
+
+  #settingbar {
+    background: var(--bg-settingbar);
+    box-shadow: 0 0 1px 0 var(--shadow-color);
+
+    .settingbar-top-elements {
+      overflow: hidden overlay;
+      max-height: calc((100vh - 3.5rem) - #{$excluding-size});
+    }
+
+    .settingbar-bottom-elements {
+      background: var(--bg-settingbar);
+    }
+
+    .settingbar-elements {
+      list-style: none;
+      text-align: center;
+      padding: 0;
+      margin: 0;
+
+      .settingbar-element {
+        .settingbar-element-icon {
+          &.badge-update::after {
+            background: var(--primary-color);
+          }
+        }
+      }
+    }
+  }
+
+  .ex-tooltip {
+    .ex-tooltip-content {
+      background: var(--tooltip-bg);
+      color: var(--tooltip-text);
+    }
+  }
+
+  /* The footer always shows the accent (connection folder color), whatever the theme */
+  #footer {
+    background: var(--primary-color);
+    box-shadow: 0 0 1px 0 var(--shadow-color);
+
+    .footer-elements {
+      .footer-element {
+        &.footer-link {
+          &:hover {
+            background: rgb(255 255 255 / 10%);
+          }
+        }
+      }
+    }
+  }
+}

@@ -12,8 +12,9 @@ Antares is a dense desktop tool, not a web page. Keep it compact, keyboard-frien
 
 - **Spectre.css** is the base framework (grid, forms, buttons, menus, modals, tabs, tooltips, empty states).
   Use its classes first: `columns`/`column col-*`, `form-group`, `form-label`, `form-input`, `btn`, `menu`, `tile`, `empty`, `tooltip`, `d-flex`, `text-*`, `m*-*`/`p*-*`.
-- Global overrides and helpers live in [src/renderer/scss/main.scss](src/renderer/scss/main.scss). Theme-specific colors live **only** in
-  [themes/dark-theme.scss](src/renderer/scss/themes/dark-theme.scss) and [themes/light-theme.scss](src/renderer/scss/themes/light-theme.scss).
+- Global overrides and helpers live in [src/renderer/scss/main.scss](src/renderer/scss/main.scss). Theme colors are **tokens** (CSS custom properties):
+  their values live **only** in [themes/dark-theme.scss](src/renderer/scss/themes/dark-theme.scss) and [themes/light-theme.scss](src/renderer/scss/themes/light-theme.scss),
+  the rules that use them in [themes/_theme-rules.scss](src/renderer/scss/themes/_theme-rules.scss) (one set of rules for every theme).
 - Every SFC style block automatically gets `@/scss/_variables.scss` and a `$platform` variable (injected by `sass-loader` in `webpack.renderer.config.js`). Do not import them again.
 - Component styles: `<style lang="scss" scoped>` by default. Use an unscoped block only when you must style children that Spectre or a teleported element renders. In that case, prefix every selector with the component's root class.
 
@@ -27,14 +28,19 @@ Antares is a dense desktop tool, not a web page. Keep it compact, keyboard-frien
 | `$success-color` | `#32b643` | Connected state, success notifications |
 | `$warning-color` | `#e0a40c` | Connecting state, warnings |
 | `$error-color` | `#de3b28` | Failed state, errors, destructive emphasis |
-| `$body-bg-dark`, `$bg-color-gray`, `$bg-color-light-dark` | `#1d1d1d`, `#272727`, `#3f3f3f` | Dark theme surfaces (base → raised → borders/menus) |
-| `$body-bg`, `$bg-color-light-gray`, `$light-color` | `#f3f3f3`, `#f1f1f1`, `#fdfdfd` | Light theme surfaces |
+| `var(--bg-app)`, `var(--bg-panel)`, `var(--bg-surface)`, `var(--bg-raised)` | per theme | Surfaces: app background → side panels → modals/console → menus/popups |
+| `var(--text)`, `var(--text-muted)` | per theme | Text |
+| `var(--border)`, `var(--border-subtle)`, `var(--separator)`, `var(--divider)` | per theme | Control borders, tab/list borders, editor/console separators, dividers |
+| `var(--input-bg*)`, `var(--grid-*)`, `var(--table-*)`, `var(--diagram-*)`, ... | per theme | See the full list in the theme files |
 
 Rules:
 - **The accent is dynamic.** The connection folder color overrides `--primary-color` at runtime (see `changeAccentColor()` in [TheFooter.vue](src/renderer/components/TheFooter.vue)).
   For accent colors, always use `var(--primary-color*)`. Never use `$primary-color` or a hard-coded orange.
   Because of this, any accent color can appear, so do not rely on the accent for contrast-critical text. Primary buttons get a `text-shadow` for this reason.
-- Do not hard-code hex values in components. If a color depends on the theme, add the rule to **both** theme files, under `.theme-dark` / `.theme-light`.
+- **The accent is not a theme token** and themes must never redefine `--primary-color*`: the folder color always wins.
+- Do not hard-code hex values in components. If a color depends on the theme, use a token. If no token fits, add it to **every** theme file
+  (same name, same order) and use it in `_theme-rules.scss` or in the component. Tokens are a public contract for future custom themes: do not rename them.
+- Theme tokens are defined on `#wrapper`, so they are visible only inside it (teleported modals target `#window-content`, which is inside).
 - Status colors are for status only. Do not use them for decoration.
 
 ### Data-type colors
@@ -97,7 +103,7 @@ Key icons (PK/FK/unique/index) come from [_table-keys.scss](src/renderer/scss/_t
 
 - The root `#wrapper` gets `theme-dark` or `theme-light` ([App.vue](src/renderer/App.vue)). The code editors (CodeMirror) have their own independent theme setting.
 - **Every UI change must be checked in both themes.** Most visual regressions are "looks fine in dark, unreadable in light".
-- Hard-coded dark values in base components (for example `#1d1d1d` in `BaseContextMenu`) are legacy. Light-theme overrides exist for them. Do not copy the pattern: put the colors in the theme files.
+- Hard-coded dark values in base components (for example `#1d1d1d` in `BaseContextMenu`) are legacy and are being moved to tokens. Do not copy the pattern.
 
 ## App layout
 

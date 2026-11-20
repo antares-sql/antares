@@ -214,8 +214,6 @@ defineExpose<EditorApi>({
 
 <style lang="scss">
 .editor-wrapper {
-  border-bottom: 1px solid #444;
-
   .editor {
     width: 100%;
     overflow: hidden;
