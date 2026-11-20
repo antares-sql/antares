@@ -326,6 +326,23 @@
                         </span>
                      </a>
 
+                     <a v-else-if="element.type === 'schema-diagram'" class="tab-link">
+                        <BaseIcon
+                           class="mr-1"
+                           icon-name="mdiTableNetwork"
+                           :size="18"
+                        />
+                        <span :title="`${t('database.schemaDiagram').toUpperCase()}: ${element.schema}`">
+                           {{ cutText(element.schema, 20, true) }}
+                           <span
+                              class="btn btn-clear"
+                              :title="t('general.close')"
+                              @mousedown.left.stop
+                              @click.stop="closeTab(element)"
+                           />
+                        </span>
+                     </a>
+
                      <a
                         v-else-if="element.type.includes('temp-')"
                         class="tab-link"
@@ -594,6 +611,13 @@
                   :scheduler="tab.elementName"
                   :schema="tab.schema"
                />
+               <WorkspaceTabSchemaDiagram
+                  v-else-if="tab.type === 'schema-diagram'"
+                  :tab-uid="tab.uid"
+                  :connection="connection"
+                  :is-selected="selectedTab === tab.uid && isSelected"
+                  :schema="tab.schema"
+               />
             </template>
          </div>
          <div v-else class="connection-panel-wrapper p-relative">
@@ -651,6 +675,7 @@ import WorkspaceTabPropsTrigger from '@/components/WorkspaceTabPropsTrigger.vue'
 import WorkspaceTabPropsTriggerFunction from '@/components/WorkspaceTabPropsTriggerFunction.vue';
 import WorkspaceTabPropsView from '@/components/WorkspaceTabPropsView.vue';
 import WorkspaceTabQuery from '@/components/WorkspaceTabQuery.vue';
+import WorkspaceTabSchemaDiagram from '@/components/WorkspaceTabSchemaDiagram.vue';
 import WorkspaceTabsContext from '@/components/WorkspaceTabsContext.vue';
 import WorkspaceTabTable from '@/components/WorkspaceTabTable.vue';
 import { useFilters } from '@/composables/useFilters';

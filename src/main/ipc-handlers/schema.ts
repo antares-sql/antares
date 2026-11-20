@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import { Worker } from 'worker_threads';
 
 import { DatabaseClient, requireCapability } from '../libs/db/core/contracts';
+import { getSchemaDiagram } from '../libs/db/core/schemaDiagram';
 import { validateSender } from '../libs/misc/validateSender';
 import { createHandle, IpcMainLike } from './handle';
 
@@ -23,6 +24,10 @@ export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = 
 
    handle('delete-schema', async (params) => {
       await requireCapability(connections[params.uid], 'schemas').dropSchema(params);
+   });
+
+   handle('get-schema-diagram', async ({ uid, schema, tables }) => {
+      return await getSchemaDiagram(connections[uid], schema, tables);
    });
 
    ipc.handle('get-schema-collation', async (event, params) => {

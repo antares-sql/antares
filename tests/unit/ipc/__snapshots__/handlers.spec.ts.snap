@@ -51,6 +51,7 @@ exports[`IPC handlers > registers every channel once 1`] = `
   "get-routine-informations",
   "get-scheduler-informations",
   "get-schema-collation",
+  "get-schema-diagram",
   "get-structure",
   "get-table-checks",
   "get-table-columns",

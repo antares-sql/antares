@@ -114,6 +114,14 @@
             </div>
          </div>
       </div>
+      <div class="context-element" @click="openSchemaDiagramTab">
+         <span class="d-flex">
+            <BaseIcon
+               class="text-light mt-1 mr-1"
+               icon-name="mdiTableNetwork"
+               :size="18"
+            /> {{ t('database.schemaDiagram') }}</span>
+      </div>
       <div class="context-element" @click="copyName(selectedSchema)">
          <span class="d-flex">
             <BaseIcon
@@ -240,6 +248,7 @@ const emit = defineEmits([
    'open-create-function-tab',
    'open-create-trigger-function-tab',
    'open-create-scheduler-tab',
+   'open-schema-diagram-tab',
    'close-context',
    'reload'
 ]);
@@ -296,6 +305,10 @@ const openCreateTriggerFunctionTab = () => {
 
 const openCreateSchedulerTab = () => {
    emit('open-create-scheduler-tab');
+};
+
+const openSchemaDiagramTab = () => {
+   emit('open-schema-diagram-tab');
 };
 
 const copyName = (name: string) => {

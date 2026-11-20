@@ -145,6 +145,41 @@
     border-top: 0.05rem solid rgba($body-font-color-dark, 0.1);
   }
 
+  .schema-diagram {
+    background-color: $body-bg;
+    background-image: radial-gradient(rgba(#000, 10%) 1px, transparent 1px);
+    background-size: 20px 20px;
+
+    .table-box {
+      fill: $light-color;
+      stroke: $border-color-dark;
+    }
+
+    .table-header {
+      fill: #e4e4e4;
+    }
+
+    .table-name,
+    .field-name {
+      fill: $body-font-color;
+    }
+
+    .table-field {
+      &.linked .field-row {
+        fill: rgba(#000, 3%);
+      }
+
+      &:hover .field-row {
+        fill: rgba(#000, 7%);
+      }
+    }
+
+    .relation,
+    .relation-marker {
+      stroke: #8a8a8a;
+    }
+  }
+
   .tile {
     transition: background 0.2s;
 

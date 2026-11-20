@@ -675,7 +675,8 @@ export const useWorkspacesStore = defineStore('workspaces', {
             case 'trigger-function-props':
             case 'function-props':
             case 'routine-props':
-            case 'scheduler-props': {
+            case 'scheduler-props':
+            case 'schema-diagram': {
                const existentTab = workspaceTabs
                   ? workspaceTabs.tabs.find(tab =>
                      tab.schema === schema &&

@@ -1,4 +1,4 @@
-import { ClientCode, IpcResponse/*, EventInfos, QueryResult, RoutineInfos, TableInfos, TriggerInfos */ } from 'common/interfaces/antares';
+import { ClientCode, IpcResponse, SchemaDiagram/*, EventInfos, QueryResult, RoutineInfos, TableInfos, TriggerInfos */ } from 'common/interfaces/antares';
 import { ExportOptions } from 'common/interfaces/exporter';
 import { ImportOptions } from 'common/interfaces/importer';
 import { ipcRenderer } from 'electron';
@@ -20,6 +20,10 @@ export default class {
 
    static deleteSchema (params: { uid: string; database: string }): Promise<IpcResponse> {
       return ipcRenderer.invoke('delete-schema', unproxify(params));
+   }
+
+   static getSchemaDiagram (params: { uid: string; schema: string; tables?: string[] }): Promise<IpcResponse<SchemaDiagram>> {
+      return ipcRenderer.invoke('get-schema-diagram', unproxify(params));
    }
 
    static getStructure (params: { uid: string; schemas: Set<string> }): Promise<IpcResponse/* <{

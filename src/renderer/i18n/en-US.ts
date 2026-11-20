@@ -297,7 +297,13 @@ export const enUS = {
       switchDatabase: 'Switch the database',
       searchForElements: 'Search for elements',
       searchForSchemas: 'Search for schemas',
-      savedQueries: 'Saved queries'
+      savedQueries: 'Saved queries',
+      schemaDiagram: 'Schema diagram',
+      relation: 'Relation | Relations',
+      resetLayout: 'Reset layout',
+      fitToScreen: 'Fit to screen',
+      exportAsSvg: 'Export as SVG',
+      thereAreNoTables: 'There are no tables'
    },
    users: { // Users management
       newUser: 'New user',

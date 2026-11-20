@@ -370,6 +370,41 @@
     }
   }
 
+  .schema-diagram {
+    background-color: $bg-color-dark;
+    background-image: radial-gradient(rgba(#fff, 8%) 1px, transparent 1px);
+    background-size: 20px 20px;
+
+    .table-box {
+      fill: $bg-color-gray;
+      stroke: #555;
+    }
+
+    .table-header {
+      fill: $bg-color-light-dark;
+    }
+
+    .table-name,
+    .field-name {
+      fill: $body-font-color-dark;
+    }
+
+    .table-field {
+      &.linked .field-row {
+        fill: rgba(#fff, 4%);
+      }
+
+      &:hover .field-row {
+        fill: rgba(#fff, 8%);
+      }
+    }
+
+    .relation,
+    .relation-marker {
+      stroke: #888;
+    }
+  }
+
   .tile {
     transition: background 0.2s;
 

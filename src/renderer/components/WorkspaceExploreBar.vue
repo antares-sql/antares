@@ -117,6 +117,7 @@
          @open-create-function-tab="openCreateElementTab('function')"
          @open-create-trigger-function-tab="openCreateElementTab('trigger-function')"
          @open-create-scheduler-tab="openCreateElementTab('scheduler')"
+         @open-schema-diagram-tab="openSchemaDiagramTab"
          @reload="refresh"
       />
       <TableContext
@@ -353,6 +354,18 @@ const openCreateElementTab = (element: string) => {
       elementName: '',
       elementType: element,
       type: `new-${element}`
+   });
+};
+
+const openSchemaDiagramTab = () => {
+   closeDatabaseContext();
+
+   newTab({
+      uid: workspace.value.uid,
+      schema: selectedSchema.value,
+      elementName: selectedSchema.value,
+      elementType: 'schema',
+      type: 'schema-diagram'
    });
 };
 

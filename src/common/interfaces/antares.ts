@@ -160,6 +160,36 @@ export interface TableForeign {
    oldName?: string;
 }
 
+/** A column as shown in the schema diagram */
+export interface SchemaDiagramField {
+   name: string;
+   type: string;
+   key?: 'pri' | 'uni' | '';
+   nullable?: boolean;
+}
+
+export interface SchemaDiagramTable {
+   name: string;
+   fields: SchemaDiagramField[];
+}
+
+/** A foreign key column: `table.field` references `refTable.refField` */
+export interface SchemaDiagramRelation {
+   constraintName: string;
+   table: string;
+   field: string;
+   refSchema: string;
+   refTable: string;
+   refField: string;
+}
+
+/** Tables of a schema with their columns and foreign keys, used to draw the relations diagram */
+export interface SchemaDiagram {
+   schema: string;
+   tables: SchemaDiagramTable[];
+   relations: SchemaDiagramRelation[];
+}
+
 export interface TableCheck {
    // eslint-disable-next-line camelcase
    _antares_id?: string;
