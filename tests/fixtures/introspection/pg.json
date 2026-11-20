@@ -7461,7 +7461,7 @@
       ],
       "queries": [
         {
-          "sql": "SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = 'touch_product'));",
+          "sql": "SELECT pg_get_functiondef((SELECT p.oid FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace WHERE p.proname = 'touch_product' AND n.nspname = 'antares_fixtures' LIMIT 1));",
           "result": {
             "rows": [
               {
@@ -7487,13 +7487,32 @@
               }
             ],
             "keys": [],
-            "duration": 1
+            "duration": 0
           }
         },
         {
-          "sql": "SELECT proc.specific_schema AS procedure_schema, proc.specific_name, proc.routine_name AS procedure_name, proc.external_language, args.parameter_name, args.parameter_mode, args.data_type FROM information_schema.routines proc LEFT JOIN information_schema.parameters args ON proc.specific_schema = args.specific_schema AND proc.specific_name = args.specific_name WHERE proc.routine_schema not in ('pg_catalog', 'information_schema') AND proc.routine_type = 'PROCEDURE' AND proc.routine_name = 'touch_product' AND proc.specific_schema = 'antares_fixtures' AND args.data_type != NULL ORDER BY procedure_schema, specific_name, procedure_name, args.ordinal_position",
+          "sql": "SELECT proc.specific_schema AS procedure_schema, proc.specific_name, proc.routine_name AS procedure_name, proc.external_language, args.parameter_name, args.parameter_mode, args.data_type FROM information_schema.routines proc LEFT JOIN information_schema.parameters args ON proc.specific_schema = args.specific_schema AND proc.specific_name = args.specific_name WHERE proc.routine_schema not in ('pg_catalog', 'information_schema') AND proc.routine_type = 'PROCEDURE' AND proc.routine_name = 'touch_product' AND proc.specific_schema = 'antares_fixtures' AND args.data_type IS NOT NULL ORDER BY procedure_schema, specific_name, procedure_name, args.ordinal_position",
           "result": {
-            "rows": [],
+            "rows": [
+              {
+                "procedure_schema": "antares_fixtures",
+                "specific_name": "touch_product_16507",
+                "procedure_name": "touch_product",
+                "external_language": "PLPGSQL",
+                "parameter_name": "p_id",
+                "parameter_mode": "IN",
+                "data_type": "integer"
+              },
+              {
+                "procedure_schema": "antares_fixtures",
+                "specific_name": "touch_product_16507",
+                "procedure_name": "touch_product",
+                "external_language": "PLPGSQL",
+                "parameter_name": "p_name",
+                "parameter_mode": "INOUT",
+                "data_type": "text"
+              }
+            ],
             "report": false,
             "fields": [
               {
@@ -7602,7 +7621,20 @@
       ],
       "output": {
         "definer": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "p_id",
+            "type": "INTEGER",
+            "length": "",
+            "context": "IN"
+          },
+          {
+            "name": "p_name",
+            "type": "TEXT",
+            "length": "",
+            "context": "INOUT"
+          }
+        ],
         "name": "touch_product",
         "comment": "",
         "deterministic": null,
@@ -7622,7 +7654,7 @@
       ],
       "queries": [
         {
-          "sql": "SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = 'product_price'));",
+          "sql": "SELECT pg_get_functiondef((SELECT p.oid FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace WHERE p.proname = 'product_price' AND n.nspname = 'antares_fixtures' LIMIT 1));",
           "result": {
             "rows": [
               {
@@ -7657,7 +7689,7 @@
             "rows": [
               {
                 "procedure_schema": "antares_fixtures",
-                "specific_name": "product_price_16512",
+                "specific_name": "product_price_16506",
                 "procedure_name": "product_price",
                 "external_language": "PLPGSQL",
                 "parameter_name": "p_id",

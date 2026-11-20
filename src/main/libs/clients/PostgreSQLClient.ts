@@ -919,7 +919,7 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
    }
 
    async getRoutineInformations ({ schema, routine }: { schema: string; routine: string }) {
-      const sql = `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${routine}'));`;
+      const sql = `SELECT pg_get_functiondef((SELECT p.oid FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace WHERE p.proname = ${this.dialect.quoteString(routine)} AND n.nspname = ${this.dialect.quoteString(schema)} LIMIT 1));`;
       const results = await this.raw(sql);
 
       return results.rows.map(async row => {
@@ -951,7 +951,7 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
             AND proc.routine_type = 'PROCEDURE'
             AND proc.routine_name = '${routine}'
             AND proc.specific_schema = '${schema}'
-            AND args.data_type != NULL
+            AND args.data_type IS NOT NULL
          ORDER BY procedure_schema,
             specific_name,
             procedure_name,
@@ -1019,7 +1019,7 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
       }
       /* eslint-enable camelcase */
 
-      const sql = `SELECT pg_get_functiondef((SELECT oid FROM pg_proc WHERE proname = '${func}'));`;
+      const sql = `SELECT pg_get_functiondef((SELECT p.oid FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace WHERE p.proname = ${this.dialect.quoteString(func)} AND n.nspname = ${this.dialect.quoteString(schema)} LIMIT 1));`;
       const results = await this.raw<antares.QueryResult<CreateFunctionResult>>(sql);
 
       return results.rows.map(async row => {

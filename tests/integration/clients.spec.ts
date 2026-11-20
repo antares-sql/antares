@@ -212,6 +212,29 @@ for (const engine of getTestEngines()) {
          }
       });
 
+      // #984: parameters of PostgreSQL procedures were never read (`data_type != NULL`), and a routine
+      // with the same name in another schema made the definition lookup fail
+      it('reads the parameters of procedures with the same name in two schemas', async ({ skip }) => {
+         if (engine.name !== 'pg') skip();
+         const body = 'LANGUAGE plpgsql AS $$ BEGIN END $$';
+
+         try {
+            await client.raw('CREATE SCHEMA IF NOT EXISTS it_other');
+            await client.raw(`CREATE PROCEDURE it_other.it_proc_params(a integer) ${body}`);
+            await client.raw(`CREATE PROCEDURE ${qualified('it_proc_params')}(p_id integer, INOUT p_name text) ${body}`);
+
+            const info = await client.getRoutineInformations({ schema, routine: 'it_proc_params' });
+            expect(info.parameters).toMatchObject([
+               { name: 'p_id', type: 'INTEGER', context: 'IN' },
+               { name: 'p_name', type: 'TEXT', context: 'INOUT' }
+            ]);
+         }
+         finally {
+            await dropIfExists('DROP SCHEMA IF EXISTS it_other CASCADE');
+            await dropIfExists(`DROP PROCEDURE IF EXISTS ${qualified('it_proc_params')}(integer, text)`);
+         }
+      });
+
       // #927: triggers written by hand (lowercase, unquoted table) could not be opened on SQLite
       it('reads a trigger created by a query', async ({ skip }) => {
          if (engine.name !== 'sqlite') skip();
