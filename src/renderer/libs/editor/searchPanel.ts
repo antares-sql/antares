@@ -3,6 +3,7 @@ import {
    findNext,
    findPrevious,
    getSearchQuery,
+   openSearchPanel,
    replaceAll,
    replaceNext,
    search,
@@ -221,13 +222,25 @@ const createSearchPanel = (view: EditorView): Panel => {
    };
 };
 
+/** Opens the search widget with the replace row expanded (Ace's Ctrl+H) */
+export const openReplacePanel = (view: EditorView) => {
+   if (view.state.readOnly) return openSearchPanel(view);
+   openSearchPanel(view);
+   const widget = view.dom.querySelector('.cm-search-widget');
+   if (widget && !widget.classList.contains('cm-search-replace-open'))
+      widget.querySelector<HTMLButtonElement>('.cm-search-expander')?.click();
+   return true;
+};
+
 export const searchPanel = (): Extension => [
    search({ top: true, createPanel: createSearchPanel }),
    EditorView.baseTheme({
       // Floating widget instead of a full width bar
-      '.cm-panels.cm-panels-top': {
+      // Panels (search, "go to line" dialog) float in the top right corner instead of full width bars
+      '.cm-panels.cm-panels-top, .cm-panels.cm-panels-bottom': {
          position: 'absolute',
          top: '0',
+         bottom: 'auto',
          left: 'auto',
          right: '18px',
          maxWidth: 'calc(100% - 36px)',

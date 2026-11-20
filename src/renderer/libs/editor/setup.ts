@@ -16,6 +16,7 @@ import {
    rectangularSelection
 } from '@codemirror/view';
 
+import { aceKeymap, yieldingToAppShortcuts } from './keymap';
 import { searchPanel } from './searchPanel';
 
 export interface BaseSetupOptions {
@@ -40,14 +41,15 @@ export const baseSetup = ({ gutter = true }: BaseSetupOptions = {}): Extension =
    highlightActiveLine(),
    highlightSelectionMatches(),
    searchPanel(),
-   keymap.of([
+   keymap.of(yieldingToAppShortcuts([
+      ...aceKeymap,
       ...closeBracketsKeymap,
       ...defaultKeymap,
       ...searchKeymap,
       ...historyKeymap,
       ...foldKeymap,
       indentWithTab
-   ]),
+   ])),
    EditorView.theme({
       '&': { height: '100%' },
       '&.cm-focused': { outline: 'none' },

@@ -13,6 +13,7 @@ import { keywordCompletionSource } from '@codemirror/lang-sql';
 import { Extension, Prec } from '@codemirror/state';
 import { keymap } from '@codemirror/view';
 
+import { yieldingToAppShortcuts } from '../keymap';
 import { SqlDialectDefinition } from './dialects';
 
 /** Kind of a completion: also selects its icon (`cm-completionIcon-<type>`) */
@@ -130,5 +131,5 @@ export const sqlCompletion = ({ definition, provider, activateOnTyping }: SqlCom
       ]
    }),
    // Like Ace, Tab accepts the selected completion (before indentation)
-   Prec.highest(keymap.of([{ key: 'Tab', run: acceptCompletion }, ...completionKeymap]))
+   Prec.highest(keymap.of(yieldingToAppShortcuts([{ key: 'Tab', run: acceptCompletion }, ...completionKeymap])))
 ];

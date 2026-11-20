@@ -146,6 +146,56 @@ export const buildEditorTheme = (theme: EditorThemeDefinition): Extension => {
       '.cm-search-button:hover': {
          backgroundColor: `color-mix(in srgb, ${editor.foreground} 12%, transparent)`
       },
+      // "Go to line" dialog, floating like the search widget
+      '.cm-goto-line.cm-dialog': {
+         padding: '4px 28px 4px 8px',
+         backgroundColor: editor.gutterBackground,
+         color: editor.foreground,
+         border: `1px solid color-mix(in srgb, ${editor.foreground} 15%, transparent)`,
+         borderTop: 'none',
+         borderRadius: '0 0 4px 4px',
+         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.35)',
+         fontSize: '13px'
+      },
+      '.cm-goto-line label': {
+         fontSize: 'inherit'
+      },
+      '.cm-goto-line .cm-textfield': {
+         width: '90px',
+         height: '24px',
+         margin: '0 4px',
+         padding: '0 6px',
+         border: 'none',
+         borderRadius: '2px',
+         outline: 'none',
+         backgroundColor: editor.background,
+         color: editor.foreground,
+         font: 'inherit',
+         boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${editor.foreground} 25%, transparent)`
+      },
+      '.cm-goto-line .cm-textfield:focus': {
+         boxShadow: 'inset 0 0 0 1px var(--primary-color)'
+      },
+      '.cm-goto-line .cm-button': {
+         height: '24px',
+         padding: '0 10px',
+         border: 'none',
+         borderRadius: '2px',
+         backgroundImage: 'none',
+         backgroundColor: 'var(--primary-color)',
+         color: '#fff',
+         font: 'inherit',
+         cursor: 'pointer'
+      },
+      '.cm-goto-line .cm-dialog-close': {
+         top: '50%',
+         right: '8px',
+         transform: 'translateY(-50%)',
+         color: editor.foreground,
+         fontSize: '16px',
+         cursor: 'pointer',
+         opacity: '0.85'
+      },
       '.cm-search-counter.cm-search-no-results': {
          color: theme.dark ? '#f48771' : '#c72e0f',
          opacity: '1'
