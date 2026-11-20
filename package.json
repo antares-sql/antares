@@ -26,6 +26,7 @@
     "test:fixtures:record": "cross-env ANTARES_RECORD_FIXTURES=1 node scripts/vitest.js run --project integration tests/integration/introspection.record.spec.ts",
     "build:linux:docker": "docker compose -f docker/linux-build/compose.yml run --rm --build builder",
     "test:db:up": "docker compose -f docker/docker-compose.yml up -d --wait",
+    "test:db:samples": "node scripts/sampleDatabases.js",
     "test:db:down": "docker compose -f docker/docker-compose.yml down -v",
     "test:e2e": "npm run compile && npm run test:e2e-dry",
     "test:e2e-dry": "xvfb-maybe -- playwright test app.spec",

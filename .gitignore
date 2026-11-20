@@ -8,3 +8,5 @@ thumbs.db
 NOTES.md
 *.txt
 *.heapsnapshot
+docker/samples
+

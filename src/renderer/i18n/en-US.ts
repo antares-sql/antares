@@ -454,7 +454,7 @@ export const enUS = {
       importData: 'Import data',
       importDataExplanation: 'Imports an .antares file containing connections. You will need to enter the password defined during export.',
       debugConnections: 'Debug connections',
-      debugConnectionsExplanation: 'Adds the connections to the test databases of docker/docker-compose.yml (start them with "npm run test:db:up"). Existing debug connections are replaced, the others are kept. Available only in development.',
+      debugConnectionsExplanation: 'Adds the connections to the test databases of docker/docker-compose.yml (start them with "npm run test:db:up", load the sample databases with "npm run test:db:samples") and to the SQLite sample databases. Existing debug connections are replaced, the others are kept. Available only in development.',
       applyDebugConnections: 'Apply debug connections',
       debugConnectionsApplied: 'Debug connections applied',
       includeConnectionPasswords: 'Include connection passwords',

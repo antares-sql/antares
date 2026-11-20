@@ -1,5 +1,7 @@
 import customizations from 'common/customizations';
 import { ClientCode, ConnectionParams } from 'common/interfaces/antares';
+import * as fs from 'fs';
+import * as path from 'path';
 
 /**
  * Connections to the test databases of docker/docker-compose.yml.
@@ -86,6 +88,28 @@ export function getTestSsh (env: Env = process.env): TestSsh {
    };
 }
 
+/**
+ * Folder of the SQLite sample databases, filled by `npm run test:db:samples`.
+ * Relative to the working directory, that is the repository root both in development and in tests.
+ */
+export function getSampleSqliteDir (env: Env = process.env): string {
+   return env.ANTARES_TEST_SQLITE_DIR ?? path.resolve('docker', 'samples', 'sqlite');
+}
+
+/** SQLite sample database files (sorted), empty if the samples were not loaded */
+export function getSampleSqliteFiles (env: Env = process.env): string[] {
+   const dir = getSampleSqliteDir(env);
+   try {
+      return fs.readdirSync(dir)
+         .filter(file => file.endsWith('.db'))
+         .sort()
+         .map(file => path.join(dir, file));
+   }
+   catch {
+      return [];
+   }
+}
+
 /** Fixed prefix: debug connections are recognized (and replaced) by uid */
 export const DEBUG_CONNECTION_PREFIX = 'CDEBUG';
 export const DEBUG_FOLDER_UID = 'FDEBUG';
@@ -111,7 +135,10 @@ const baseConnection = (): Omit<ConnectionParams, 'uid' | 'client' | 'host' | 'p
    sshKeepAliveInterval: 1800
 });
 
-/** Connections to the docker test databases, direct and through the SSH server */
+/**
+ * Connections to the docker test databases, direct and through the SSH server,
+ * plus one per SQLite sample database (see scripts/sampleDatabases.js)
+ */
 export function getDebugConnections (env: Env = process.env): ConnectionParams[] {
    const databases = getTestDatabases(env);
    const ssh = getTestSsh(env);
@@ -147,6 +174,21 @@ export function getDebugConnections (env: Env = process.env): ConnectionParams[]
          sshPort: ssh.port,
          sshUser: ssh.username,
          sshPass: ssh.password
+      });
+   }
+
+   for (const databasePath of getSampleSqliteFiles(env)) {
+      const name = path.basename(databasePath, '.db');
+      connections.push({
+         ...baseConnection(),
+         uid: `${DEBUG_CONNECTION_PREFIX}SQLITE${name.toUpperCase().replace(/[^A-Z0-9]/g, '')}`,
+         name: `SQLite ${name}`,
+         client: 'sqlite',
+         host: '127.0.0.1',
+         port: null,
+         user: '',
+         password: '',
+         databasePath
       });
    }
 
