@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.36-beta.1](https://github.com/antares-sql/antares/compare/v0.7.36-beta.0...v0.7.36-beta.1) (2026-11-20)
+
+
+### Features
+
+* add Docker support for Linux builds with new scripts and configuration ([899ed49](https://github.com/antares-sql/antares/commit/899ed49addc9e48a606f87b7d3ce61eb425a2709))
+* add SKILL.md for generating user-facing release notes from CHANGELOG.md ([bdd3585](https://github.com/antares-sql/antares/commit/bdd358527e2758d889f1bed69978ff3a521d059e))
+* **core:** sample databases for the debug connections ([bb14bf7](https://github.com/antares-sql/antares/commit/bb14bf7b8b445536ffd197ae3704f7f42b404ad5))
+* **core:** schema diagram with tables and foreign key relations ([58d9528](https://github.com/antares-sql/antares/commit/58d95289590d144fcda493b3e22a10ed68981f41))
+* **core:** users management for MySQL, MariaDB, PostgreSQL and Firebird SQL ([9648cb1](https://github.com/antares-sql/antares/commit/9648cb1dd34028608c30bb7a9b1b98b352e9a129))
+* **PostgreSQL:** user-defined types management ([1229dff](https://github.com/antares-sql/antares/commit/1229dff67d79cdef8f22df688f7f4469c1014958))
+* **tests:** add querySplitter tests for PostgreSQL dollar quoting ([db12edc](https://github.com/antares-sql/antares/commit/db12edcc5e31d863bb79ad80aa92e41205a737a7))
+* **UI:** Ace-compatible editor shortcuts that don't override the app ones ([d312655](https://github.com/antares-sql/antares/commit/d312655b2f8770c710420aa9f05d25b9bca1cb1e))
+* **UI:** CodeMirror 6 for the text editor, with the Ace themes converted ([c59dd16](https://github.com/antares-sql/antares/commit/c59dd163809edb14b80ea816844ec6cf5683a376))
+* **UI:** CodeMirror 6 query editor with per-engine SQL dialects ([23e71bc](https://github.com/antares-sql/antares/commit/23e71bc265f2d29dc46eeeda1d42caa525e8ca68))
+
+
+### Bug Fixes
+
+* **core:** keep BIGINT values beyond 2^53 exact in SQLite and Firebird, fixes [#997](https://github.com/antares-sql/antares/issues/997) ([aec3418](https://github.com/antares-sql/antares/commit/aec3418db8cdc1d45d595db79eb03c0278097280))
+* **core:** keep every column of results with duplicate names, fixes [#634](https://github.com/antares-sql/antares/issues/634) [#975](https://github.com/antares-sql/antares/issues/975) ([8154168](https://github.com/antares-sql/antares/commit/8154168a538f0067c7e4a1424f4e300a431145c4))
+* **core:** never replace the key of saved connections, fixes [#913](https://github.com/antares-sql/antares/issues/913) ([500c71c](https://github.com/antares-sql/antares/commit/500c71ce864e23f178ac0af614169911b5c208cf))
+* **core:** recover connections closed while idle, fixes [#820](https://github.com/antares-sql/antares/issues/820) [#990](https://github.com/antares-sql/antares/issues/990) [#790](https://github.com/antares-sql/antares/issues/790) ([17a0921](https://github.com/antares-sql/antares/commit/17a0921cea2cdf9fe4532022e336eab9b4c21906))
+* **core:** reliable sequential exports and imports, fixes [#970](https://github.com/antares-sql/antares/issues/970) [#841](https://github.com/antares-sql/antares/issues/841) [#1024](https://github.com/antares-sql/antares/issues/1024) [#897](https://github.com/antares-sql/antares/issues/897) ([bb0a6d1](https://github.com/antares-sql/antares/commit/bb0a6d199c9d698d6391614810d8764bf6f8c2ff))
+* **core:** restore file path selection in file inputs after Electron 32 removed File.path ([718676c](https://github.com/antares-sql/antares/commit/718676c9505c3a5ac2e9c453f187c9723a91f9fa))
+* **core:** split and clean query scripts without altering literals, fixes [#580](https://github.com/antares-sql/antares/issues/580) [#1025](https://github.com/antares-sql/antares/issues/1025) ([13ef918](https://github.com/antares-sql/antares/commit/13ef918a31e5b5c2f1cccbb8f207d8ef77fdfbcc))
+* **core:** update and delete rows with binary primary keys, fixes [#1017](https://github.com/antares-sql/antares/issues/1017) ([61dde87](https://github.com/antares-sql/antares/commit/61dde870f863f6452e3f954e0928df2fa54e4cc2))
+* disable charset option in sassOptions to prevent BOM issues in production output ([785dfcd](https://github.com/antares-sql/antares/commit/785dfcdbebc27ad0c6a363327084efe95a6c1903))
+* **docs:** update README for clarity and completeness, enhancing feature descriptions ([36f74f9](https://github.com/antares-sql/antares/commit/36f74f9306b032cd403624df3c76e7910c2667cc))
+* **Firebird SQL:** tables missing from the explorer on old database formats, fixes [#856](https://github.com/antares-sql/antares/issues/856) ([d788908](https://github.com/antares-sql/antares/commit/d788908418e5fcba06989dfb714a5293c9481ffb))
+* **MySQL:** keep column CHECK constraints when altering columns, fixes [#757](https://github.com/antares-sql/antares/issues/757) ([3bc0461](https://github.com/antares-sql/antares/commit/3bc04619176a90670db59293ab548abf5497c7cd))
+* **MySQL:** keep the scale of decimal routine parameters and return types, fixes [#955](https://github.com/antares-sql/antares/issues/955) ([2d1a9ff](https://github.com/antares-sql/antares/commit/2d1a9ff3413eed4fc96425e65e5553915f62ecaa))
+* **MySQL:** show every result set returned by stored procedures, fixes [#1040](https://github.com/antares-sql/antares/issues/1040) ([89ecd9f](https://github.com/antares-sql/antares/commit/89ecd9f92d29a7a8bec195f8cd10f85e93ffb322))
+* **PostgreSQL:** alter tables with columns of custom types, fixes [#979](https://github.com/antares-sql/antares/issues/979) ([36da461](https://github.com/antares-sql/antares/commit/36da4619a3639dbfd36844dad4bd981212648fca))
+* **PostgreSQL:** highlight dollar-quoted routine bodies as SQL ([ea9a334](https://github.com/antares-sql/antares/commit/ea9a334586b580557a081b0c7cb6253230a989cf))
+* **PostgreSQL:** show the parameters of stored procedures, fixes [#984](https://github.com/antares-sql/antares/issues/984) ([c478846](https://github.com/antares-sql/antares/commit/c478846f6e60218e5116c72c94585c7cb0adc87e))
+* **PostgreSQL:** update pg driver to stop crashes on unexpected server messages, fixes [#861](https://github.com/antares-sql/antares/issues/861) ([7938745](https://github.com/antares-sql/antares/commit/7938745f1adc48e1a08150a7c3822307a6431fd8))
+* **SQLite:** keep AUTOINCREMENT columns and counter when altering tables, fixes [#821](https://github.com/antares-sql/antares/issues/821) ([7580baf](https://github.com/antares-sql/antares/commit/7580bafd31846b67021ff25730cf86273a6ed22c))
+* **SQLite:** numeric dates shown and copied as bogus 1970 dates, fixes [#667](https://github.com/antares-sql/antares/issues/667) ([f6a5361](https://github.com/antares-sql/antares/commit/f6a536191063e90c6ace41cf93dbe2b3a53688d5))
+* **SQLite:** quote column names in row inserts, updates, deletes and sorting, fixes [#892](https://github.com/antares-sql/antares/issues/892) ([a4d8937](https://github.com/antares-sql/antares/commit/a4d89378c309b502c65c1316a9a0b649f3ce7b0e))
+* **UI:** connection folders out of sync with the saved order, fixes [#823](https://github.com/antares-sql/antares/issues/823) ([c813e1b](https://github.com/antares-sql/antares/commit/c813e1bb76fb9455e10e3a1123016ca9f9443d84))
+* **UI:** create composite primary keys from the field context menu, fixes [#742](https://github.com/antares-sql/antares/issues/742) ([2212fb9](https://github.com/antares-sql/antares/commit/2212fb983bc5c19fd6e3a76ec406b9bedc5bf6bc))
+* **UI:** database switch ignored on connections saved without a database, fixes [#781](https://github.com/antares-sql/antares/issues/781) ([5036a87](https://github.com/antares-sql/antares/commit/5036a872162a96eaca41278893f5c049894f2946))
+* **UI:** edited cells not refreshed in results of queries with table aliases, fixes [#637](https://github.com/antares-sql/antares/issues/637) ([fc052d4](https://github.com/antares-sql/antares/commit/fc052d427af02d0d74d776378b9311343722633f))
+* **UI:** element search filter kept after reconnecting with an empty input, fixes [#1042](https://github.com/antares-sql/antares/issues/1042) ([47c76e9](https://github.com/antares-sql/antares/commit/47c76e92eaf867113e3eec333d678aa12582d4e0))
+* **UI:** query file saved message shown when the file was not written, fixes [#844](https://github.com/antares-sql/antares/issues/844) ([9b94bfb](https://github.com/antares-sql/antares/commit/9b94bfb0718c43c58647273e43d0cf6e7f6f956d))
+* **UI:** underscores clipped in the query editor on Linux, fixes [#888](https://github.com/antares-sql/antares/issues/888) ([c043fcf](https://github.com/antares-sql/antares/commit/c043fcfe7a803583b5b697c7b91bbde5075a3e7b))
+* update architecture targets to remove armv7l for deb and AppImage builds ([3c85f6b](https://github.com/antares-sql/antares/commit/3c85f6b28205df46bf5d49ec695c15bd2918b8a2))
+
 ### [0.7.36-beta.0](https://github.com/antares-sql/antares/compare/v0.7.35...v0.7.36-beta.0) (2026-11-18)
 
 
