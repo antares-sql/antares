@@ -513,6 +513,7 @@ const editOFF = () => {
 
    emit('update-field', {
       field: props.fields[editingField.value].name,
+      key: editingField.value,
       type: editingType.value,
       content
    });

@@ -511,7 +511,7 @@ const resizeResults = () => {
 
 const refreshScroller = () => resizeResults();
 
-const updateField = (payload: { field: string; type: string; content: any }, row: { [key: string]: any }) => {
+const updateField = (payload: { field: string; key?: string; type: string; content: any }, row: { [key: string]: any }) => {
    const orgRow: any = localResults.value.find((lr: any) => lr._antares_id === row._antares_id);
 
    Object.keys(orgRow).forEach(key => { // remap the row
@@ -665,6 +665,7 @@ const setNull = () => {
       row,
       orgRow: row,
       field: selectedCell.value.field,
+      key: selectedCell.value.orgField,
       content: null as string
    };
    emit('update-field', params);
@@ -804,6 +805,7 @@ const fillCell = (event: { name: string; group: string; type: string }) => {
       row,
       orgRow: row,
       field: selectedCell.value.field,
+      key: selectedCell.value.orgField,
       content: fakeValue
    };
 
@@ -818,10 +820,18 @@ const duplicateRow = () => {
 };
 
 const applyUpdate = (params: TableUpdateParams) => {
-   const { primary, id, field, table, content } = params;
+   const { primary, id, field, table, content, key, row: editedRow } = params;
 
    localResults.value = localResults.value.map((row: any) => {
-      if (row[primary] === id)// only fieldName
+      if (key && key in row) { // Key of the edited cell, also with table aliases (#637)
+         const isSameRecord = primaryField.value && id !== null && id !== undefined
+            ? getPrimaryValue(row) === id
+            : row._antares_id === editedRow?._antares_id;
+
+         if (isSameRecord)
+            row[key] = content;
+      }
+      else if (row[primary] === id)// only fieldName
          row[field] = content;
       else if (row[`${table}.${primary}`] === id)// table.fieldName
          row[`${table}.${field}`] = content;

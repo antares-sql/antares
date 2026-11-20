@@ -9,6 +9,10 @@ export interface TableUpdateParams {
    content: number | string | boolean | Date | Blob | null;
    type: string;
    field: string;
+   /** Key of the edited column in the result rows (e.g. `t.name` when the query uses a table alias) */
+   key?: string;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   row?: Record<string, any>;
 }
 
 export interface TableDeleteParams {
