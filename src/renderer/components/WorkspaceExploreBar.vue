@@ -226,7 +226,8 @@ const selectedDatabase = ref(props.connection.database);
 const selectedSchema = ref('');
 const selectedTable = ref(null);
 const selectedMisc = ref(null);
-const searchTerm = ref('');
+// Kept in sync with the workspace filter, which outlives this component (e.g. disconnect and reconnect)
+const searchTerm = ref(getWorkspace(props.connection.uid)?.searchTerm || '');
 const searchMethod: Ref<'elements' | 'schemas'> = ref('elements');
 
 const workspace = computed(() => {
@@ -264,7 +265,7 @@ watch(searchTerm, () => {
    clearTimeout(searchTermInterval.value);
 
    searchTermInterval.value = setTimeout(() => {
-      setSearchTerm(searchTerm.value);
+      setSearchTerm(searchTerm.value, props.connection.uid);
    }, 200);
 });
 
@@ -485,7 +486,7 @@ const duplicateTable = async (payload: { schema: string; table: { name: string }
 
 const toggleSearchMethod = () => {
    searchTerm.value = '';
-   setSearchTerm(searchTerm.value);
+   setSearchTerm(searchTerm.value, props.connection.uid);
 
    if (searchMethod.value === 'elements')
       searchMethod.value = 'schemas';

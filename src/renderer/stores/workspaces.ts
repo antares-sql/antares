@@ -404,6 +404,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
                structure: [] as WorkspaceStructure[],
                breadcrumbs: {},
                loadedSchemas: new Set(),
+               searchTerm: '',
                connectionStatus: 'disconnected'
             }
             : workspace);
@@ -484,8 +485,8 @@ export const useWorkspacesStore = defineStore('workspaces', {
             return workspace;
          });
       },
-      setSearchTerm (term: string) {
-         this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === this.getSelected
+      setSearchTerm (term: string, uid: string = this.getSelected) {
+         this.workspaces = (this.workspaces as Workspace[]).map(workspace => workspace.uid === uid
             ? {
                ...workspace,
                searchTerm: term
