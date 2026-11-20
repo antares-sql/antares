@@ -375,7 +375,7 @@ exports[`pg query builder > update without limit 1`] = `
 exports[`sqlite query builder > delete by primary 1`] = `
 [
   {
-    "sql": "DELETE FROM "s"."t" WHERE id IN (1,2,3) LIMIT 3",
+    "sql": "DELETE FROM "s"."t" WHERE "id" IN (1,2,3) LIMIT 3",
   },
 ]
 `;
@@ -383,7 +383,7 @@ exports[`sqlite query builder > delete by primary 1`] = `
 exports[`sqlite query builder > delete by row 1`] = `
 [
   {
-    "sql": "DELETE FROM "s"."t" WHERE a = 1 AND b IS NULL AND c IS NULL LIMIT 1",
+    "sql": "DELETE FROM "s"."t" WHERE "a" = 1 AND "b" IS NULL AND "c" IS NULL LIMIT 1",
   },
 ]
 `;
@@ -407,7 +407,7 @@ exports[`sqlite query builder > group by 1`] = `
 exports[`sqlite query builder > insert rows 1`] = `
 [
   {
-    "sql": "INSERT INTO "s"."t" (a, b) VALUES (1, 'x'), (2, NULL)",
+    "sql": "INSERT INTO "s"."t" ("a", "b") VALUES (1, 'x'), (2, NULL)",
   },
 ]
 `;
@@ -415,7 +415,7 @@ exports[`sqlite query builder > insert rows 1`] = `
 exports[`sqlite query builder > mixed where 1`] = `
 [
   {
-    "sql": "SELECT * FROM "s"."t" WHERE x > 0 AND a = 1",
+    "sql": "SELECT * FROM "s"."t" WHERE x > 0 AND "a" = 1",
   },
 ]
 `;
@@ -423,7 +423,7 @@ exports[`sqlite query builder > mixed where 1`] = `
 exports[`sqlite query builder > multiple update objects 1`] = `
 [
   {
-    "sql": "UPDATE "s"."t" SET a = 1, b = 2",
+    "sql": "UPDATE "s"."t" SET "a" = 1, "b" = 2",
   },
 ]
 `;
@@ -431,7 +431,7 @@ exports[`sqlite query builder > multiple update objects 1`] = `
 exports[`sqlite query builder > multiple where objects 1`] = `
 [
   {
-    "sql": "SELECT * FROM "s"."t" WHERE a = 1 AND b = 2",
+    "sql": "SELECT * FROM "s"."t" WHERE "a" = 1 AND "b" = 2",
   },
 ]
 `;
@@ -475,7 +475,7 @@ exports[`sqlite query builder > table data page 1`] = `
       "details": true,
       "schema": "s",
     },
-    "sql": "SELECT * FROM "s"."t" WHERE \`id\` > 5 ORDER BY name DESC LIMIT 1000 OFFSET 2000",
+    "sql": "SELECT * FROM "s"."t" WHERE \`id\` > 5 ORDER BY "name" DESC LIMIT 1000 OFFSET 2000",
   },
 ]
 `;
@@ -483,7 +483,7 @@ exports[`sqlite query builder > table data page 1`] = `
 exports[`sqlite query builder > update cell 1`] = `
 [
   {
-    "sql": "UPDATE "s"."t" SET name = 'foo' WHERE id = 3 LIMIT 1",
+    "sql": "UPDATE "s"."t" SET "name" = 'foo' WHERE "id" = 3 LIMIT 1",
   },
 ]
 `;
@@ -491,7 +491,7 @@ exports[`sqlite query builder > update cell 1`] = `
 exports[`sqlite query builder > update without limit 1`] = `
 [
   {
-    "sql": "UPDATE "s"."t" SET a = 1 WHERE id = 1",
+    "sql": "UPDATE "s"."t" SET "a" = 1 WHERE "id" = 1",
   },
 ]
 `;

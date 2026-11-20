@@ -103,7 +103,7 @@ describe('IPC handlers', () => {
       });
 
       expect(result).toEqual({ status: 'success', response: { reload: false } });
-      expect(capture.lite.sql).toEqual(['UPDATE "main"."t" SET name = \'O\'\'Reilly\' WHERE id = \'it\'\'s\' LIMIT 1']);
+      expect(capture.lite.sql).toEqual(['UPDATE "main"."t" SET "name" = \'O\'\'Reilly\' WHERE "id" = \'it\'\'s\' LIMIT 1']);
    });
 
    // #1004: with a composite primary key the renderer sends no primary and a null id
@@ -123,7 +123,7 @@ describe('IPC handlers', () => {
       });
 
       expect(result).toEqual({ status: 'success', response: { reload: true } });
-      expect(capture.lite.sql).toEqual(['UPDATE "main"."t" SET v = \'edited\' WHERE a = 1 AND b = 2 AND v = \'one-two\' LIMIT 1']);
+      expect(capture.lite.sql).toEqual(['UPDATE "main"."t" SET "v" = \'edited\' WHERE "a" = 1 AND "b" = 2 AND "v" = \'one-two\' LIMIT 1']);
    });
 
    // validateSender accepts every sender on Windows (TEMP HOTFIX in libs/misc/validateSender.ts)

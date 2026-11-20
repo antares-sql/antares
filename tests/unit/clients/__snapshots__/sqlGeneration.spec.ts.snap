@@ -1541,7 +1541,7 @@ exports[`sqlite client SQL generation > delete builder 1`] = `
 {
   "queries": [
     {
-      "sql": "DELETE FROM "test_schema"."products" WHERE id = 1",
+      "sql": "DELETE FROM "test_schema"."products" WHERE "id" = 1",
     },
   ],
 }
@@ -1591,7 +1591,7 @@ exports[`sqlite client SQL generation > insert builder 1`] = `
 {
   "queries": [
     {
-      "sql": "INSERT INTO "test_schema"."products" (id, name) VALUES (1, 'a'), (2, 'b')",
+      "sql": "INSERT INTO "test_schema"."products" ("id", "name") VALUES (1, 'a'), (2, 'b')",
     },
   ],
 }
@@ -1610,7 +1610,7 @@ exports[`sqlite client SQL generation > select builder 1`] = `
       "args": {
         "schema": "test_schema",
       },
-      "sql": "SELECT id, name FROM "test_schema"."products" WHERE price > 10 AND stock > 0 ORDER BY name ASC LIMIT 50 OFFSET 100",
+      "sql": "SELECT id, name FROM "test_schema"."products" WHERE price > 10 AND stock > 0 ORDER BY "name" ASC LIMIT 50 OFFSET 100",
     },
   ],
 }
@@ -1640,7 +1640,7 @@ exports[`sqlite client SQL generation > update builder 1`] = `
 {
   "queries": [
     {
-      "sql": "UPDATE "test_schema"."products" SET name 'foo', price 12.5 WHERE id = 1 LIMIT 1",
+      "sql": "UPDATE "test_schema"."products" SET "name" 'foo', "price" 12.5 WHERE "id" = 1 LIMIT 1",
     },
   ],
 }

@@ -75,3 +75,77 @@ for (const engine of getTestEngines().filter(e => binaryKey[e.name])) {
       });
    });
 }
+
+// #892: SQLite left column names unquoted in INSERT/UPDATE/WHERE/ORDER BY (near "-": syntax error)
+for (const engine of getTestEngines()) {
+   describe.sequential(`${engine.name} row edits on names with hyphens`, () => {
+      const { schema } = engine;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let client: any;
+      const uid = 'conn';
+      const ipc = fakeIpc();
+      const TABLE = 'it-row-edits-hyphen';
+      const q = (id: string) => client.dialect.quoteIdentifier(id);
+      const table = () => engine.name === 'firebird' ? q(TABLE) : `${q(schema)}.${q(TABLE)}`;
+
+      const labels = async () => {
+         const result = await ipc.invoke('get-table-data', { uid, schema, table: TABLE, limit: 100, page: 1, sortParams: { field: 'row-label', dir: 'desc' } }) as { response: { rows: Record<string, unknown>[] } };
+         expect(result).toMatchObject({ status: 'success' });
+         return result.response.rows.map((row: Record<string, unknown>) => row['row-label']);
+      };
+
+      beforeAll(async () => {
+         client = await engine.connect();
+         tables({ [uid]: client }, ipc.ipc);
+         await client.raw(`DROP TABLE ${table()}`).catch((): null => null);
+         await client.raw(`CREATE TABLE ${table()} (${q('row-id')} INTEGER NOT NULL PRIMARY KEY, ${q('row-label')} VARCHAR(20))`);
+      });
+
+      afterAll(async () => {
+         if (client) {
+            await client.raw(`DROP TABLE ${table()}`).catch((): null => null);
+            await client.destroy();
+         }
+      });
+
+      it('inserts rows', async () => {
+         for (const [id, label] of [[1, 'a'], [2, 'b']]) {
+            const result = await ipc.invoke('insert-table-fake-rows', {
+               uid,
+               schema,
+               table: TABLE,
+               repeat: 1,
+               fields: { 'row-id': 'INTEGER', 'row-label': 'VARCHAR' },
+               row: { 'row-id': { value: id }, 'row-label': { value: label } }
+            });
+            expect(result).toMatchObject({ status: 'success' });
+         }
+
+         expect(await labels()).toEqual(['b', 'a']);
+      });
+
+      it('updates a cell by primary key and by row values', async () => {
+         const byKey = await ipc.invoke('update-table-cell', {
+            uid, schema, table: TABLE, primary: 'row-id', id: 1, field: 'row-label', type: 'VARCHAR', content: 'c', row: {}, orgRow: {}
+         });
+         expect(byKey).toMatchObject({ status: 'success' });
+
+         const byRow = await ipc.invoke('update-table-cell', {
+            uid, schema, table: TABLE, field: 'row-label', type: 'VARCHAR', content: 'd', row: {}, orgRow: { 'row-id': 2, 'row-label': 'b' }
+         });
+         expect(byRow).toMatchObject({ status: 'success' });
+
+         expect(await labels()).toEqual(['d', 'c']);
+      });
+
+      it('deletes rows by primary key and by row values', async () => {
+         const byKey = await ipc.invoke('delete-table-rows', { uid, schema, table: TABLE, primary: 'row-id', field: 'row-id', rows: [{ 'row-id': 1 }] });
+         expect(byKey).toMatchObject({ status: 'success' });
+
+         const byRow = await ipc.invoke('delete-table-rows', { uid, schema, table: TABLE, rows: [{ 'row-id': 2, 'row-label': 'd' }] });
+         expect(byRow).toMatchObject({ status: 'success' });
+
+         expect(await labels()).toEqual([]);
+      });
+   });
+}
