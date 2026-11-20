@@ -10,6 +10,9 @@ const shortcutsStore = new Store({ name: 'shortcuts' });
 const isDarkTheme = window.matchMedia('(prefers-color-scheme: dark)');
 const defaultAppTheme = isDarkTheme.matches ? 'dark' : 'light';
 const defaultEditorTheme = isDarkTheme.matches ? 'twilight' : 'sqlserver';
+/** Editor theme codes renamed over time → current code */
+const legacyEditorThemes: Record<string, string> = { eclupse: 'eclipse' };
+const storedEditorTheme = settingsStore.get('editor_theme', defaultEditorTheme) as string;
 
 export type EditorFontSize = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge';
 export type ApplicationTheme = 'light' | 'dark';
@@ -25,7 +28,7 @@ export const useSettingsStore = defineStore('settings', {
       lineWrap: settingsStore.get('line_wrap', true) as boolean,
       executeSelected: settingsStore.get('execute_selected', true) as boolean,
       applicationTheme: settingsStore.get('application_theme', defaultAppTheme) as ApplicationTheme,
-      editorTheme: settingsStore.get('editor_theme', defaultEditorTheme) as string,
+      editorTheme: legacyEditorThemes[storedEditorTheme] ?? storedEditorTheme,
       editorFontSize: settingsStore.get('editor_font_size', 'medium') as EditorFontSize,
       restoreTabs: settingsStore.get('restore_tabs', true) as boolean,
       disableBlur: settingsStore.get('disable_blur', false) as boolean,

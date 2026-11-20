@@ -433,6 +433,7 @@ import ModalSettingsUpdate from '@/components/ModalSettingsUpdate.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import { AvailableLocale } from '@/i18n';
 import { localesNames } from '@/i18n/supported-locales';
+import { editorThemes as availableEditorThemes } from '@/libs/editor/themes';
 import { useApplicationStore } from '@/stores/application';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
@@ -519,50 +520,11 @@ const selectedTab: Ref<string> = ref('general');
 const editorThemes = computed(() => [
    {
       group: t('application.light'),
-      themes: [
-         { code: 'chrome', name: 'Chrome' },
-         { code: 'clouds', name: 'Clouds' },
-         { code: 'crimson_editor', name: 'Crimson Editor' },
-         { code: 'dawn', name: 'Dawn' },
-         { code: 'dreamweaver', name: 'Dreamweaver' },
-         { code: 'eclupse', name: 'Eclipse' },
-         { code: 'github', name: 'GitHub' },
-         { code: 'iplastic', name: 'IPlastic' },
-         { code: 'solarized_light', name: 'Solarized Light' },
-         { code: 'textmate', name: 'TextMate' },
-         { code: 'tomorrow', name: 'Tomorrow' },
-         { code: 'xcode', name: 'Xcode' },
-         { code: 'kuroir', name: 'Kuroir' },
-         { code: 'katzenmilch', name: 'KatzenMilch' },
-         { code: 'sqlserver', name: 'SQL Server' }
-      ]
+      themes: availableEditorThemes.filter(theme => !theme.dark).map(({ code, name }) => ({ code, name }))
    },
    {
       group: t('application.dark'),
-      themes: [
-         { code: 'ambiance', name: 'Ambiance' },
-         { code: 'chaos', name: 'Chaos' },
-         { code: 'clouds_midnight', name: 'Clouds Midnight' },
-         { code: 'dracula', name: 'Dracula' },
-         { code: 'cobalt', name: 'Cobalt' },
-         { code: 'gruvbox', name: 'Gruvbox' },
-         { code: 'gob', name: 'Green on Black' },
-         { code: 'idle_fingers', name: 'Idle Fingers' },
-         { code: 'kr_theme', name: 'krTheme' },
-         { code: 'merbivore', name: 'Merbivore' },
-         { code: 'mono_industrial', name: 'Mono Industrial' },
-         { code: 'monokai', name: 'Monokai' },
-         { code: 'nord_dark', name: 'Nord Dark' },
-         { code: 'pastel_on_dark', name: 'Pastel on Dark' },
-         { code: 'solarized_dark', name: 'Solarized Dark' },
-         { code: 'terminal', name: 'Terminal' },
-         { code: 'tomorrow_night', name: 'Tomorrow Night' },
-         { code: 'tomorrow_night_blue', name: 'Tomorrow Night Blue' },
-         { code: 'tomorrow_night_bright', name: 'Tomorrow Night Bright' },
-         { code: 'tomorrow_night_eighties', name: 'Tomorrow Night 80s' },
-         { code: 'twilight', name: 'Twilight' },
-         { code: 'vibrant_ink', name: 'Vibrant Ink' }
-      ]
+      themes: availableEditorThemes.filter(theme => theme.dark).map(({ code, name }) => ({ code, name }))
    }
 ]);
 
