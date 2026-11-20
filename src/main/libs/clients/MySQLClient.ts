@@ -1096,23 +1096,46 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
          if (!query) continue;
          const timeStart = new Date();
          let timeStop: Date;
-         let keysArr: antares.QueryForeign[] = [];
 
          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-         const { rows, report, fields, keys, duration }: any = await new Promise((resolve, reject) => {
+         const resultSets: any[] = await new Promise((resolve, reject) => {
             // Nested results are read as arrays: object rows would lose columns with the same name
             connection.query({ sql: query, rowsAsArray: args.nest }).then(async ([response, fields]) => {
                timeStop = new Date();
-               const isMultiResult = Array.isArray(fields?.[0]);// Procedures return an array of result sets
-               const fieldsArr = fields ? isMultiResult ? fields[0] as unknown as mysql.FieldPacket[] : fields : false;
+               // Procedures (CALL) return an array of result sets, each with its fields, plus a final OK packet
+               const isMultiResult = Array.isArray(fields?.[0]);
+               // eslint-disable-next-line @typescript-eslint/no-explicit-any
+               const sets: [any, mysql.FieldPacket[] | false][] = isMultiResult
+                  ? (fields as unknown as mysql.FieldPacket[][])
+                     .map((setFields, i): [unknown, mysql.FieldPacket[]] => [(response as unknown[])[i], setFields])
+                     .filter(([, setFields]) => Array.isArray(setFields))
+                  : [[response, fields || false]];
+
+               try {
+                  const results = [];
+                  for (const [setResponse, setFields] of sets)
+                     results.push(await toResult(setResponse, setFields));
+                  resolve(results);
+               }
+               catch (err) {
+                  lease.release();
+                  reject(err);
+               }
+            }).catch((err) => {
+               lease.release();
+               reject(err);
+            });
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const toResult = async (response: any, fieldsArr: mysql.FieldPacket[] | false) => {
                let queryResult = response;
                let aliases: string[] = [];
+               let keysArr: antares.QueryForeign[] = [];
 
                if (args.nest && Array.isArray(response) && fieldsArr) {
                   const prefixes = fieldsArr.map(field => `${field.table}.`);
                   aliases = uniqueColumnNames(fieldsArr.map(field => field.name), prefixes);
-                  const arrayRows = (isMultiResult ? response[0] : response) as unknown as unknown[][];
-                  queryResult = arrayRowsToObjects(arrayRows, aliases.map((alias, i) => `${prefixes[i]}${alias}`)) as typeof response;
+                  queryResult = arrayRowsToObjects(response as unknown[][], aliases.map((alias, i) => `${prefixes[i]}${alias}`));
                }
 
                let remappedFields = fieldsArr
@@ -1151,52 +1174,33 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
                      for (const paramObj of paramsArr) {
                         if (!paramObj.table || !paramObj.schema) continue;
 
-                        try { // Column details
-                           const response = await this.getTableColumns(paramObj);
-                           remappedFields = remappedFields.map(field => {
-                              const detailedField = response.find(f => f.name === field.name);
-                              if (detailedField && field.orgTable === paramObj.table && field.schema === paramObj.schema)
-                                 field = { ...field, ...detailedField };
-                              return field;
-                           });
-                        }
-                        catch (err) {
-                           lease.release();
-                           reject(err);
-                        }
+                        // Column details
+                        const columns = await this.getTableColumns(paramObj);
+                        remappedFields = remappedFields.map(field => {
+                           const detailedField = columns.find(f => f.name === field.name);
+                           if (detailedField && field.orgTable === paramObj.table && field.schema === paramObj.schema)
+                              field = { ...field, ...detailedField };
+                           return field;
+                        });
 
-                        try { // Key usage (foreign keys)
-                           const response = await this.getKeyUsage(paramObj);
-                           keysArr = keysArr ? [...keysArr, ...response] : response;
-                        }
-                        catch (err) {
-                           lease.release();
-                           reject(err);
-                        }
+                        // Key usage (foreign keys)
+                        const keyUsage = await this.getKeyUsage(paramObj);
+                        keysArr = keysArr ? [...keysArr, ...keyUsage] : keyUsage;
                      }
                   }
                }
 
-               resolve({
+               return {
                   duration: timeStop.getTime() - timeStart.getTime(),
                   rows: Array.isArray(queryResult) ? queryResult.some(el => Array.isArray(el)) ? queryResult[0] : queryResult : false,
                   report: !Array.isArray(queryResult) ? queryResult : false,
                   fields: remappedFields,
                   keys: keysArr
-               });
-            }).catch((err) => {
-               lease.release();
-               reject(err);
-            });
+               };
+            };
          });
 
-         resultsArr.push({
-            rows,
-            report,
-            fields,
-            keys,
-            duration
-         });
+         resultsArr.push(...resultSets);
       }
 
       lease.release();

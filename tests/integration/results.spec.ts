@@ -33,6 +33,30 @@ for (const engine of getTestEngines()) {
          }
       });
 
+      // #1040: only the first result set of a procedure was shown
+      it('returns every result set of a procedure', async ({ skip }) => {
+         if (engine.name !== 'mysql' && engine.name !== 'maria') skip();
+         const client = await engine.connect();
+         const proc = `\`${engine.schema}\`.\`it_multi_results\``;
+         try {
+            await client.raw(`DROP PROCEDURE IF EXISTS ${proc}`);
+            await client.raw(`CREATE PROCEDURE ${proc}() BEGIN SELECT 1 AS a; SELECT 2 AS b, 3 AS c; END`, { split: false });
+
+            const result = await client.raw(`CALL ${proc}()`, { nest: true, details: true, schema: engine.schema, autocommit: true });
+            expect(Array.isArray(result)).toBe(true);
+            expect(result.map((set: { fields: Field[] }) => set.fields.map(f => f.alias))).toEqual([['a'], ['b', 'c']]);
+            expect(result.map((set: { rows: Record<string, unknown>[] }) => set.rows.map(row => Object.values(row).map(Number)))).toEqual([[[1]], [[2, 3]]]);
+
+            const single = await client.raw(`CALL ${proc}()`, { nest: false });
+            expect(single.map((set: { rows: Record<string, unknown>[] }) => set.rows.map(row => Object.entries(row).map(([k, v]) => [k, Number(v)]))))
+               .toEqual([[[['a', 1]]], [[['b', 2], ['c', 3]]]]);
+         }
+         finally {
+            await client.raw(`DROP PROCEDURE IF EXISTS ${proc}`).catch((): null => null);
+            await client.destroy();
+         }
+      });
+
       // The query tab removes comments and splits the script: string literals must reach the server unchanged
       it('sends string literals unchanged', async () => {
          const client = await engine.connect();
