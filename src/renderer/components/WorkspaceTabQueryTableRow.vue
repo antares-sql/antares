@@ -619,6 +619,10 @@ const typeFormat = (val: string | number | Date | number[], type: string, precis
 
    type = type.toUpperCase();
 
+   // SQLite stores dates also as numbers (Julian day, Unix time): they are not milliseconds, show them as they are
+   if (typeof val === 'number' && [...DATE, ...DATETIME].includes(type))
+      return val;
+
    if (DATE.includes(type))
       return moment(val).isValid() ? moment(val).format('YYYY-MM-DD') : val;
 

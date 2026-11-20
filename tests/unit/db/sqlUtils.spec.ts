@@ -20,6 +20,13 @@ describe('valueToSqlString', () => {
       expect(valueToSqlString({ val: 'x', client: 'mysql', field: { type: 'VARCHAR' } })).toBe('"x"');
       expect(valueToSqlString({ val: null, client: 'pg', field: { type: 'TEXT' } })).toBe('NULL');
    });
+
+   // #667: a Julian day was formatted as milliseconds since 1970
+   it('keeps numeric SQLite dates as numbers', () => {
+      expect(valueToSqlString({ val: 2459067.57491964, client: 'sqlite', field: { type: 'DATETIME' } })).toBe('2459067.57491964');
+      expect(valueToSqlString({ val: 1596671273, client: 'sqlite', field: { type: 'DATE' } })).toBe('1596671273');
+      expect(valueToSqlString({ val: '2020-08-06 01:47:53', client: 'sqlite', field: { type: 'DATETIME' } })).toBe('\'2020-08-06 01:47:53\'');
+   });
 });
 
 describe('querySplitter (PostgreSQL dollar quoting)', () => {

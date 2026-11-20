@@ -3,7 +3,7 @@
 import { lineString, point, polygon } from '@turf/helpers';
 import { BIT, BLOB, DATE, DATETIME, FLOAT, IS_MULTI_SPATIAL, NUMBER, SPATIAL, TEXT_SEARCH } from 'common/fieldTypes';
 import { ClientCode } from 'common/interfaces/antares';
-import * as moment from 'moment';
+import moment = require('moment');
 
 import customizations from '../customizations';
 import { getArrayDepth } from './getArrayDepth';
@@ -111,6 +111,8 @@ export const valueToSqlString = (args: {
 
    if (val === null)
       parsedValue = 'NULL';
+   else if (typeof val === 'number' && [...DATE, ...DATETIME].includes(field.type))
+      parsedValue = String(val); // Numeric SQLite dates (Julian day, Unix time), not milliseconds
    else if (DATE.includes(field.type)) {
       parsedValue = moment(val).isValid()
          ? escapeAndQuote(moment(val).format('YYYY-MM-DD'), client)
