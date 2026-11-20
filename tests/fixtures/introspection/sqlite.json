@@ -1,6 +1,6 @@
 {
   "engine": "sqlite",
-  "server": "{\"number\":\"3.45.3\",\"name\":\"SQLite\",\"arch\":\"x64\",\"os\":\"Windows_NT 10.0.26320\"}",
+  "server": "{\"number\":\"3.54.1\",\"name\":\"SQLite\",\"arch\":\"x64\",\"os\":\"Windows_NT 10.0.26320\"}",
   "calls": [
     {
       "method": "getStructure",
@@ -19,7 +19,7 @@
               {
                 "seq": 0,
                 "name": "main",
-                "file": "C:\\Users\\fabio\\AppData\\Local\\Temp\\antares-it-12204.db"
+                "file": "C:\\Users\\fabio\\AppData\\Local\\Temp\\antares-it-33336.db"
               }
             ],
             "report": null,
@@ -147,7 +147,7 @@
               }
             ],
             "keys": [],
-            "duration": 0
+            "duration": 1
           }
         },
         {
@@ -395,6 +395,32 @@
             "keys": [],
             "duration": 0
           }
+        },
+        {
+          "sql": "SELECT sql FROM \"main\".sqlite_master WHERE type = 'table' AND name = 'products'",
+          "result": {
+            "rows": [
+              {
+                "sql": "CREATE TABLE products (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            name VARCHAR(100) NOT NULL DEFAULT 'unnamed',\n            price NUMERIC(10,2) NOT NULL DEFAULT 0,\n            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n            category_id INTEGER REFERENCES categories(id) ON UPDATE CASCADE ON DELETE SET NULL,\n            data TEXT,\n            CONSTRAINT products_price_chk CHECK (price >= 0)\n         )"
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "sql",
+                "alias": "sql",
+                "orgName": "sql",
+                "schema": "main",
+                "table": "sqlite_master",
+                "tableAlias": "sqlite_master",
+                "orgTable": "sqlite_master",
+                "type": "TEXT",
+                "length": null
+              }
+            ],
+            "keys": [],
+            "duration": 1
+          }
         }
       ],
       "output": [
@@ -414,7 +440,7 @@
           "default": null,
           "charset": null,
           "collation": null,
-          "autoIncrement": false,
+          "autoIncrement": true,
           "onUpdate": null,
           "comment": ""
         },
@@ -622,6 +648,32 @@
             "keys": [],
             "duration": 0
           }
+        },
+        {
+          "sql": "SELECT sql FROM \"main\".sqlite_master WHERE type = 'table' AND name = 'categories'",
+          "result": {
+            "rows": [
+              {
+                "sql": "CREATE TABLE categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(50) NOT NULL)"
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "sql",
+                "alias": "sql",
+                "orgName": "sql",
+                "schema": "main",
+                "table": "sqlite_master",
+                "tableAlias": "sqlite_master",
+                "orgTable": "sqlite_master",
+                "type": "TEXT",
+                "length": null
+              }
+            ],
+            "keys": [],
+            "duration": 0
+          }
         }
       ],
       "output": [
@@ -641,7 +693,7 @@
           "default": null,
           "charset": null,
           "collation": null,
-          "autoIncrement": false,
+          "autoIncrement": true,
           "onUpdate": null,
           "comment": ""
         },

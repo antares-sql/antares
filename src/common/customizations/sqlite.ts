@@ -38,6 +38,7 @@ export const customizations: Customizations = {
    indexes: true,
    foreigns: true,
    sortableFields: true,
+   autoIncrement: true,
    nullable: true,
    nullablePrimary: true,
    triggerSql: 'BEGIN\r\n\r\nEND',

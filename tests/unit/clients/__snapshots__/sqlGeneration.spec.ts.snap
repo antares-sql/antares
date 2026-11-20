@@ -1436,13 +1436,16 @@ exports[`sqlite client SQL generation > alterTable 1`] = `
       "sql": "CREATE TABLE "Antares_products_tmp" AS SELECT * FROM "products"",
     },
     {
+      "sql": "SELECT seq FROM "test_schema".sqlite_sequence WHERE name = 'products'",
+    },
+    {
       "sql": "SELECT * FROM "test_schema".sqlite_master WHERE type='trigger' AND tbl_name = 'products'",
     },
     {
       "sql": "DROP TABLE "test_schema"."products"",
     },
     {
-      "sql": "CREATE TABLE "test_schema"."products" ("id" INTEGER(11) NOT NULL AUTO_INCREMENT , "title" VARCHAR(150) NULL DEFAULT 'unnamed' , "price" NUMERIC(10) NOT NULL DEFAULT 0 , "stock" INTEGER(11) NOT NULL DEFAULT 0 , PRIMARY KEY ("id"), CONSTRAINT "products_category_fk" FOREIGN KEY ("category_id") REFERENCES "categories" ("id") ON UPDATE CASCADE ON DELETE RESTRICT); CREATE INDEX "products_price_idx" ON "products" ("price","created_at")",
+      "sql": "CREATE TABLE "test_schema"."products" ("id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT , "title" VARCHAR(150) NULL DEFAULT 'unnamed' , "price" NUMERIC(10) NOT NULL DEFAULT 0 , "stock" INTEGER(11) NOT NULL DEFAULT 0 , CONSTRAINT "products_category_fk" FOREIGN KEY ("category_id") REFERENCES "categories" ("id") ON UPDATE CASCADE ON DELETE RESTRICT); CREATE INDEX "products_price_idx" ON "products" ("price","created_at")",
     },
     {
       "sql": "INSERT INTO "products" ("id","title","price") SELECT "id","name","price" FROM "Antares_products_tmp"",
@@ -1508,7 +1511,7 @@ exports[`sqlite client SQL generation > createTable 1`] = `
 {
   "queries": [
     {
-      "sql": "CREATE TABLE "test_schema"."products" ("id" INTEGER(11) NOT NULL AUTO_INCREMENT , "name" VARCHAR(100) NULL DEFAULT 'unnamed' , "price" NUMERIC(10) NOT NULL DEFAULT 0 , "created_at" DATETIME NULL , PRIMARY KEY ("id"), CONSTRAINT "products_category_fk" FOREIGN KEY ("category_id") REFERENCES "categories" ("id") ON UPDATE CASCADE ON DELETE RESTRICT); CREATE UNIQUE INDEX "products_name_uq" ON "products" ("name");CREATE INDEX "products_price_idx" ON "products" ("price","created_at")",
+      "sql": "CREATE TABLE "test_schema"."products" ("id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT , "name" VARCHAR(100) NULL DEFAULT 'unnamed' , "price" NUMERIC(10) NOT NULL DEFAULT 0 , "created_at" DATETIME NULL , CONSTRAINT "products_category_fk" FOREIGN KEY ("category_id") REFERENCES "categories" ("id") ON UPDATE CASCADE ON DELETE RESTRICT); CREATE UNIQUE INDEX "products_name_uq" ON "products" ("name");CREATE INDEX "products_price_idx" ON "products" ("price","created_at")",
     },
   ],
 }

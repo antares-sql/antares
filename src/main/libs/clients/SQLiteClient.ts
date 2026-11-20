@@ -8,7 +8,7 @@ import { arrayRowsToObjects, uniqueColumnNames } from '../db/core/resultRows';
 import { SQLiteConnections, SQLiteParams } from '../db/engines/sqlite/SQLiteConnections';
 import { SQLiteDdl } from '../db/engines/sqlite/SQLiteDdl';
 import { SQLiteDialect } from '../db/engines/sqlite/SQLiteDialect';
-import { normalizeIntegers, parseTrigger, parseViewSelect } from '../db/engines/sqlite/SQLiteParsers';
+import { findAutoIncrementColumn, normalizeIntegers, parseTrigger, parseViewSelect } from '../db/engines/sqlite/SQLiteParsers';
 import { BaseClient } from './BaseClient';
 
 export class SQLiteClient extends BaseClient implements DatabaseClient {
@@ -157,6 +157,8 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
          pk: 0 | 1;
       }
       const { rows: fields } = await this.raw<antares.QueryResult<TableColumnsResult>>(`SELECT * FROM "${schema}".pragma_table_info('${table}')`);
+      const { rows: [definition] } = await this.raw<antares.QueryResult<{ sql: string }>>(`SELECT sql FROM "${schema}".sqlite_master WHERE type = 'table' AND name = ${this.dialect.quoteString(table)}`);
+      const autoIncrementColumn = findAutoIncrementColumn(definition?.sql, fields);
 
       return fields.map(field => {
          const [type, length]: [string, number?] = field.type.includes('(')
@@ -182,7 +184,7 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
             default: field.dflt_value,
             charset: null as null,
             collation: null as null,
-            autoIncrement: false,
+            autoIncrement: field.name === autoIncrementColumn,
             onUpdate: null as null,
             comment: ''
          };
@@ -305,6 +307,11 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
          const tmpName = `Antares_${table}_tmp`;
          await this.raw(`CREATE TABLE "${tmpName}" AS SELECT * FROM "${table}"`);
 
+         // AUTOINCREMENT counter, deleted with the table
+         const sequence = await this.raw(`SELECT seq FROM "${schema}".sqlite_sequence WHERE name = ${this.dialect.quoteString(table)}`)
+            .then(({ rows }) => rows[0]?.seq ?? null)
+            .catch((): null => null); // No sqlite_sequence table: no AUTOINCREMENT in the database
+
          // Get table triggers before drop
          const { rows: triggers } = await this.raw(`SELECT * FROM "${schema}".sqlite_master WHERE type='trigger' AND tbl_name = '${table}'`);
          const remappedTriggers = triggers.map(row => ({ schema, ...parseTrigger(row.sql, row.name) }));
@@ -341,6 +348,12 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
          await this.raw(`INSERT INTO "${createTableParams.options.name}" (${insertFields.join(',')}) SELECT ${selectFields.join(',')} FROM "${tmpName}"`);
 
          await this.dropTable({ schema: schema, table: tmpName });
+
+         if (sequence !== null && tableStructure.fields.some(field => field.autoIncrement)) {
+            const name = this.dialect.quoteString(createTableParams.options.name);
+            await this.raw(`DELETE FROM "${schema}".sqlite_sequence WHERE name = ${name}`);
+            await this.raw(`INSERT INTO "${schema}".sqlite_sequence (name, seq) VALUES (${name}, ${sequence})`);
+         }
 
          // Recreates triggers
          for (const trigger of remappedTriggers)

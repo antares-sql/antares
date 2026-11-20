@@ -137,7 +137,7 @@
                </div>
             </div>
 
-            <div v-if="workspace.customizations.autoIncrement" class="column col-auto">
+            <div v-if="workspace.customizations.autoIncrement && localOptions.autoIncrement !== undefined" class="column col-auto">
                <div class="form-group">
                   <label class="form-label">
                      {{ t('database.autoIncrement') }}

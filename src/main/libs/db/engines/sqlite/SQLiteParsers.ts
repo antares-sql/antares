@@ -47,6 +47,19 @@ export function parseTrigger (statement: string, name: string): TriggerDefinitio
    };
 }
 
+/**
+ * The AUTOINCREMENT column of a table, from its CREATE TABLE statement and pragma_table_info rows.
+ * SQLite allows AUTOINCREMENT only on a single INTEGER PRIMARY KEY, so it is that column if the keyword is present.
+ */
+export function findAutoIncrementColumn (statement: string, columns: { name: string; type: string; pk: number }[]): string | null {
+   // Ignore the keyword inside string literals and comments
+   const code = (statement ?? '').replace(/'(?:[^']|'')*'|--[^\n]*|\/\*[\s\S]*?\*\//g, '');
+   if (!/\bAUTOINCREMENT\b/i.test(code)) return null;
+
+   const primary = columns.filter(column => Number(column.pk) > 0);
+   return primary.length === 1 && primary[0].type.toUpperCase() === 'INTEGER' ? primary[0].name : null;
+}
+
 const VIEW_HEADER = new RegExp(
    `^\\s*CREATE\\s+(?:TEMP(?:ORARY)?\\s+)?VIEW\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?(?:${IDENT}\\.)?${IDENT}\\s*(?:\\([^)]*\\)\\s*)?AS\\s`,
    'i'

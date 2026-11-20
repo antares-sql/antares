@@ -26,10 +26,22 @@ export class SQLiteDdl extends DdlGenerator {
 
       let sql = `CREATE TABLE "${schema}"."${options.name}"`;
 
+      // AUTOINCREMENT exists only as a column constraint of a single INTEGER PRIMARY KEY
+      const primary = indexes.find(index => index.type === 'PRIMARY');
+      const autoIncrementField = fields.find(field => field.autoIncrement);
+      if (autoIncrementField) {
+         const isRowId = autoIncrementField.type.toUpperCase() === 'INTEGER' &&
+            primary?.fields.length === 1 &&
+            primary.fields[0] === autoIncrementField.name;
+
+         if (!isRowId)
+            throw new Error(`AUTOINCREMENT is only allowed on an INTEGER PRIMARY KEY (column "${autoIncrementField.name}")`);
+      }
+
       // ADD FIELDS
       fields.forEach(field => {
          const typeInfo = this.getTypeInfo(field.type);
-         const length = typeInfo?.length
+         const length = typeInfo?.length && !field.autoIncrement // AUTOINCREMENT needs exactly "INTEGER"
             ? field.enumValues ||
               field.numLength ||
               field.numPrecision ||
@@ -41,7 +53,7 @@ export class SQLiteDdl extends DdlGenerator {
             ${field.type.toUpperCase()}${length ? `(${length})` : ''} 
             ${field.unsigned ? 'UNSIGNED' : ''} 
             ${field.nullable ? 'NULL' : 'NOT NULL'}
-            ${field.autoIncrement ? 'AUTO_INCREMENT' : ''}
+            ${field.autoIncrement ? 'PRIMARY KEY AUTOINCREMENT' : ''}
             ${field.default !== null ? `DEFAULT ${field.default || '\'\''}` : ''}
             ${field.onUpdate ? `ON UPDATE ${field.onUpdate}` : ''}`);
       });
@@ -51,8 +63,10 @@ export class SQLiteDdl extends DdlGenerator {
          const fields = index.fields.map(field => `"${field}"`).join(',');
          const type = index.type;
 
-         if (type === 'PRIMARY')
-            newIndexes.push(`PRIMARY KEY (${fields})`);
+         if (type === 'PRIMARY') {
+            if (!autoIncrementField) // Otherwise declared on the column
+               newIndexes.push(`PRIMARY KEY (${fields})`);
+         }
          else
             manageIndexes.push(`CREATE ${type === 'UNIQUE' ? type : ''} INDEX "${index.name}" ON "${options.name}" (${fields})`);
       });

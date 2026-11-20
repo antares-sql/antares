@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { normalizeIntegers, parseTrigger, parseViewSelect } from '../../../src/main/libs/db/engines/sqlite/SQLiteParsers';
+import { findAutoIncrementColumn, normalizeIntegers, parseTrigger, parseViewSelect } from '../../../src/main/libs/db/engines/sqlite/SQLiteParsers';
 
 describe('SQLite parseTrigger', () => {
    it.each([
@@ -60,5 +60,21 @@ describe('SQLite normalizeIntegers', () => {
          text: 'x',
          empty: null
       });
+   });
+});
+
+describe('SQLite findAutoIncrementColumn', () => {
+   const columns = [{ name: 'id', type: 'INTEGER', pk: 1 }, { name: 'name', type: 'TEXT', pk: 0 }];
+
+   // #821: the AUTOINCREMENT of a table was lost after altering it
+   it('finds the INTEGER PRIMARY KEY declared with AUTOINCREMENT', () => {
+      expect(findAutoIncrementColumn('CREATE TABLE t (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)', columns)).toBe('id');
+      expect(findAutoIncrementColumn('create table t (id integer primary key autoincrement, name text)', columns)).toBe('id');
+   });
+
+   it('ignores tables without AUTOINCREMENT and the keyword in strings or comments', () => {
+      expect(findAutoIncrementColumn('CREATE TABLE t (id INTEGER PRIMARY KEY, name TEXT)', columns)).toBeNull();
+      expect(findAutoIncrementColumn('CREATE TABLE t (id INTEGER PRIMARY KEY, name TEXT DEFAULT \'AUTOINCREMENT\') -- AUTOINCREMENT', columns)).toBeNull();
+      expect(findAutoIncrementColumn(undefined, columns)).toBeNull();
    });
 });
