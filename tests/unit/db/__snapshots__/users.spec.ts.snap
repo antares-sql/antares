@@ -1,0 +1,45 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`MySQL users > alters only what changed 1`] = `
+[
+  "RENAME USER 'john'@'%' TO 'jane'@'%'",
+  "ALTER USER 'jane'@'%' IDENTIFIED BY 'secret'",
+  "ALTER USER 'jane'@'%' WITH MAX_USER_CONNECTIONS 3",
+  "ALTER USER 'jane'@'%' ACCOUNT LOCK",
+  "REVOKE PROCESS ON *.* FROM 'jane'@'%'",
+  "GRANT GRANT OPTION ON *.* TO 'jane'@'%'",
+  "REVOKE INSERT ON \`shop\`.* FROM 'jane'@'%'",
+  "GRANT UPDATE ON \`shop\`.* TO 'jane'@'%'",
+  "REVOKE SELECT ON \`old\`.* FROM 'jane'@'%'",
+  "GRANT ALL PRIVILEGES ON \`new\`.* TO 'jane'@'%'",
+]
+`;
+
+exports[`MySQL users > creates users 1`] = `
+[
+  "CREATE USER 'john'@'localhost' IDENTIFIED BY 'it\\'s' WITH MAX_QUERIES_PER_HOUR 10 MAX_USER_CONNECTIONS 2 ACCOUNT LOCK",
+  "GRANT PROCESS ON *.* TO 'john'@'localhost'",
+  "GRANT GRANT OPTION ON *.* TO 'john'@'localhost'",
+  "GRANT SELECT ON \`my\`\`db\`.* TO 'john'@'localhost'",
+]
+`;
+
+exports[`PostgreSQL users > alters only what changed 1`] = `
+[
+  "ALTER ROLE "john" RENAME TO "Jane ""J"""",
+  "ALTER ROLE "Jane ""J""" WITH NOLOGIN CONNECTION LIMIT 2 VALID UNTIL '2030-01-01' PASSWORD 'x'",
+  "GRANT TEMPORARY ON DATABASE "shop" TO "Jane ""J"""",
+  "REVOKE USAGE, CREATE ON SCHEMA "public" FROM "Jane ""J"""",
+  "REVOKE "pg_monitor" FROM "Jane ""J"""",
+  "GRANT "pg_read_all_data" TO "Jane ""J"""",
+]
+`;
+
+exports[`PostgreSQL users > creates roles 1`] = `
+[
+  "CREATE ROLE "john" WITH LOGIN NOSUPERUSER NOCREATEDB CONNECTION LIMIT -1 VALID UNTIL 'infinity' PASSWORD 'p''w'",
+  "GRANT CONNECT ON DATABASE "shop" TO "john"",
+  "GRANT USAGE, CREATE ON SCHEMA "public" TO "john"",
+  "GRANT "pg_monitor" TO "john"",
+]
+`;

@@ -366,6 +366,80 @@ export interface CollationInfos {
    sortLen: number;
 }
 
+// Users management
+/** Identifies an account: `host` exists only on MySQL/MariaDB, `plugin` only on Firebird */
+export interface UserIdentity {
+   name: string;
+   host?: string;
+   plugin?: string;
+}
+
+export type UserAttributeValue = string | number | boolean | null;
+
+/** An account property besides name, host and password, described by the engine so the UI stays engine-agnostic */
+export interface UserAttributeDefinition {
+   /** Key in UserDetails.attributes, also the i18n label key (users.<name>) */
+   name: string;
+   type: 'boolean' | 'number' | 'text' | 'datetime';
+   group: 'account' | 'limits';
+   /** The connected user can't change it (missing privileges) */
+   disabled?: boolean;
+   /** Shown but never editable (e.g. authentication plugin) */
+   readonly?: boolean;
+   /** Value of new accounts */
+   default?: UserAttributeValue;
+   /** Smallest accepted number */
+   min?: number;
+}
+
+/** Objects of one kind (databases, schemas) on which privileges can be granted */
+export interface UserPrivilegeScope {
+   /** i18n key of the object kind: database | schema */
+   name: 'database' | 'schema';
+   objects: string[];
+   privileges: string[];
+}
+
+export interface UsersManagementInfo {
+   currentUser: UserIdentity;
+   /** Create, alter and drop other accounts */
+   canManage: boolean;
+   /** Accounts have a host part (user@host) */
+   hasHost: boolean;
+   /** Name (and host) of existing accounts can change */
+   canRename: boolean;
+   /** New accounts need a password */
+   passwordRequired: boolean;
+   attributes: UserAttributeDefinition[];
+   globalPrivileges: string[];
+   scopes: UserPrivilegeScope[];
+   /** Roles that can be granted. null = the engine has no roles */
+   roles: string[] | null;
+}
+
+export interface UserAccount extends UserIdentity {
+   /** The connected user can alter it (only the password if it's the connected user without management privileges) */
+   editable: boolean;
+   /** Can't log in (locked, inactive, NOLOGIN) */
+   disabled?: boolean;
+}
+
+export interface UserDetails extends UserIdentity {
+   attributes: Record<string, UserAttributeValue>;
+   globalPrivileges: string[];
+   /** scope name → object → privileges */
+   privileges: Partial<Record<UserPrivilegeScope['name'], Record<string, string[]>>>;
+   roles: string[];
+}
+
+export interface SaveUserParams {
+   /** Current state, missing for new accounts */
+   original?: UserDetails;
+   user: UserDetails;
+   /** New password; empty/undefined = unchanged */
+   password?: string;
+}
+
 // Query
 export interface QueryBuilderObject {
    schema: string;
@@ -390,6 +464,8 @@ export interface QueryParams {
    autocommit?: boolean;
    schema?: string;
    tabUid?: string;
+   /** Logged instead of the SQL (e.g. with masked passwords) */
+   logContent?: string;
 }
 
 /**

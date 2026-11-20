@@ -4,16 +4,19 @@ import { removeComments } from 'common/libs/sqlUtils';
 import * as firebird from 'node-firebird';
 import * as path from 'path';
 
-import { DatabaseClient, DatabasesCapability, RoutinesCapability } from '../db/core/contracts';
+import { DatabaseClient, DatabasesCapability, RoutinesCapability, UsersCapability } from '../db/core/contracts';
 import { arrayRowsToObjects, uniqueColumnNames } from '../db/core/resultRows';
+import { maskSecrets, trimmed } from '../db/core/users';
 import { FirebirdConnections } from '../db/engines/firebird/FirebirdConnections';
 import { FirebirdDdl } from '../db/engines/firebird/FirebirdDdl';
 import { FirebirdDialect } from '../db/engines/firebird/FirebirdDialect';
+import { FirebirdUsers } from '../db/engines/firebird/FirebirdUsers';
 import { BaseClient } from './BaseClient';
 
-export class FirebirdSQLClient extends BaseClient implements DatabaseClient, DatabasesCapability, RoutinesCapability {
+export class FirebirdSQLClient extends BaseClient implements DatabaseClient, DatabasesCapability, RoutinesCapability, UsersCapability {
    protected readonly _ddl = new FirebirdDdl();
    protected readonly _dialect = new FirebirdDialect();
+   private readonly _users = new FirebirdUsers();
    private _schema?: string;
    private readonly _connections: FirebirdConnections;
    _params: firebird.Options;
@@ -446,6 +449,101 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
       return null;
    }
 
+   /** Connected user and whether it administers the security database (SYSDBA, RDB$ADMIN role or admin user) */
+   private async _usersContext () {
+      const { rows: [current] } = await this.raw('SELECT CURRENT_USER AS NAME, CURRENT_ROLE AS ROLE_NAME FROM RDB$DATABASE');
+      const name = trimmed(current.NAME) as string;
+      const role = trimmed(current.ROLE_NAME) as string;
+
+      // SEC$USERS exists since Firebird 3
+      const { rows: [own] } = await this.raw('SELECT SEC$ADMIN AS IS_ADMIN FROM SEC$USERS WHERE SEC$USER_NAME = CURRENT_USER')
+         .catch(() => {
+            throw new Error('Users management requires Firebird 3.0 or later');
+         });
+
+      return {
+         currentUser: { name },
+         canManage: name === 'SYSDBA' || role === 'RDB$ADMIN' || !!own?.IS_ADMIN
+      };
+   }
+
+   async getUsersManagementInfo (): Promise<antares.UsersManagementInfo> {
+      const { currentUser, canManage } = await this._usersContext();
+      const { rows: roles } = await this.raw('SELECT RDB$ROLE_NAME AS NAME FROM RDB$ROLES ORDER BY RDB$ROLE_NAME');
+
+      return {
+         currentUser,
+         canManage,
+         hasHost: false,
+         canRename: false,
+         passwordRequired: true,
+         attributes: [
+            { name: 'firstName', type: 'text', group: 'account', default: null },
+            { name: 'middleName', type: 'text', group: 'account', default: null },
+            { name: 'lastName', type: 'text', group: 'account', default: null },
+            { name: 'active', type: 'boolean', group: 'account', default: true },
+            { name: 'admin', type: 'boolean', group: 'account', default: false, disabled: !canManage }
+         ],
+         globalPrivileges: [],
+         scopes: [],
+         roles: roles.map(row => trimmed(row.NAME) as string)
+      };
+   }
+
+   async getUsersList (): Promise<antares.UserAccount[]> {
+      const { currentUser, canManage } = await this._usersContext();
+      // Users without admin rights see only their own account
+      const { rows } = await this.raw('SELECT SEC$USER_NAME AS NAME, SEC$PLUGIN AS PLUGIN, SEC$ACTIVE AS ACTIVE FROM SEC$USERS ORDER BY SEC$USER_NAME');
+
+      return rows.map(row => {
+         const name = trimmed(row.NAME) as string;
+         return {
+            name,
+            plugin: trimmed(row.PLUGIN) as string,
+            editable: canManage || name === currentUser.name,
+            disabled: !row.ACTIVE
+         };
+      });
+   }
+
+   async getUserDetails (user: antares.UserIdentity): Promise<antares.UserDetails> {
+      const name = this._dialect.quoteString(user.name);
+      const plugin = user.plugin ? ` AND SEC$PLUGIN = ${this._dialect.quoteString(user.plugin)}` : '';
+
+      const { rows: [row] } = await this.raw(`SELECT * FROM SEC$USERS WHERE SEC$USER_NAME = ${name}${plugin}`);
+      if (!row) throw new Error(`User ${user.name} not found`);
+
+      const { rows: roles } = await this.raw(`SELECT RDB$RELATION_NAME AS NAME FROM RDB$USER_PRIVILEGES WHERE RDB$PRIVILEGE = 'M' AND RDB$USER_TYPE = 8 AND RDB$USER = ${name} ORDER BY 1`);
+
+      return {
+         name: trimmed(row.SEC$USER_NAME) as string,
+         plugin: trimmed(row.SEC$PLUGIN) as string,
+         attributes: this._users.attributesOfRow(row),
+         globalPrivileges: [],
+         privileges: {},
+         roles: roles.map(r => trimmed(r.NAME) as string)
+      };
+   }
+
+   /** Runs users management statements one by one, with passwords masked in the logs */
+   private async _runUserStatements (statements: string[], password?: string) {
+      const secrets = password ? [this._dialect.quoteString(password)] : [];
+      for (const sql of statements)
+         await this.raw(sql, { split: false, logContent: maskSecrets(sql, secrets) });
+   }
+
+   async createUser (params: antares.SaveUserParams) {
+      await this._runUserStatements(this._users.createUser(params), params.password);
+   }
+
+   async alterUser (params: antares.SaveUserParams) {
+      await this._runUserStatements(this._users.alterUser(params), params.password);
+   }
+
+   async dropUser (user: antares.UserIdentity) {
+      await this._runUserStatements(this._users.dropUser(await this.getUserDetails(user)));
+   }
+
    async createTable (params: antares.CreateTableParams) {
       return await this.raw(this._ddl.createTable(params));
    }
@@ -744,7 +842,7 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
          alias: string;
        }
 
-      this._logger({ cUid: this._cUid, content: sql, level: 'query' });
+      this._logger({ cUid: this._cUid, content: args?.logContent ?? sql, level: 'query' });
 
       args = {
          nest: false,

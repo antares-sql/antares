@@ -33,7 +33,8 @@ const uiFlags: Partial<Record<Capability, keyof Customizations>> = {
    schedulers: 'schedulers',
    tableCheck: 'tableCheck',
    tableDdl: 'tableDdl',
-   cancelQueries: 'cancelQueries'
+   cancelQueries: 'cancelQueries',
+   users: 'usersManagement'
 };
 
 const capabilitiesOf = (client: DatabaseClient) =>

@@ -33,6 +33,7 @@ export const customizations: Customizations = {
    showTableSizeOption: true,
    // Tools
    processesList: true,
+   usersManagement: true,
    // Structure
    schemas: true,
    tables: true,

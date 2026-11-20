@@ -3,12 +3,14 @@ import { removeComments } from 'common/libs/sqlUtils';
 import * as pg from 'pg';
 import * as pgAst from 'pgsql-ast-parser';
 
-import { CancelQueriesCapability, DatabaseClient, DatabasesCapability, DbConfigCapability, FunctionsCapability, MaterializedViewsCapability, RoutinesCapability, SchemasCapability, TableDdlCapability, TriggerFunctionsCapability, TriggerToggleCapability } from '../db/core/contracts';
+import { CancelQueriesCapability, DatabaseClient, DatabasesCapability, DbConfigCapability, FunctionsCapability, MaterializedViewsCapability, RoutinesCapability, SchemasCapability, TableDdlCapability, TriggerFunctionsCapability, TriggerToggleCapability, UsersCapability } from '../db/core/contracts';
 import { arrayRowsToObjects, uniqueColumnNames } from '../db/core/resultRows';
+import { maskSecrets } from '../db/core/users';
 import { PostgreSQLConnections, PostgreSQLParams } from '../db/engines/postgresql/PostgreSQLConnections';
 import { PostgreSQLDdl } from '../db/engines/postgresql/PostgreSQLDdl';
 import { PostgreSQLDialect } from '../db/engines/postgresql/PostgreSQLDialect';
 import { parseFunctionDefinition } from '../db/engines/postgresql/PostgreSQLParsers';
+import { databasePrivileges, PostgreSQLUsers, schemaPrivileges } from '../db/engines/postgresql/PostgreSQLUsers';
 import { BaseClient } from './BaseClient';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -84,9 +86,10 @@ type builtinsTypes =
    'JSONB' |
    'REGNAMESPACE' |
    'REGROLE';
-export class PostgreSQLClient extends BaseClient implements DatabaseClient, SchemasCapability, DatabasesCapability, DbConfigCapability, CancelQueriesCapability, TableDdlCapability, MaterializedViewsCapability, TriggerToggleCapability, RoutinesCapability, FunctionsCapability, TriggerFunctionsCapability {
+export class PostgreSQLClient extends BaseClient implements DatabaseClient, SchemasCapability, DatabasesCapability, DbConfigCapability, CancelQueriesCapability, TableDdlCapability, MaterializedViewsCapability, TriggerToggleCapability, RoutinesCapability, FunctionsCapability, TriggerFunctionsCapability, UsersCapability {
    protected readonly _ddl = new PostgreSQLDdl();
    protected readonly _dialect = new PostgreSQLDialect();
+   private readonly _users = new PostgreSQLUsers();
    private _schema?: string;
    private readonly _connections: PostgreSQLConnections;
    private types: Record<string, string> = {};
@@ -751,6 +754,132 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
       });
    }
 
+   /** Connected role and server version: they decide which roles and attributes it can manage */
+   private async _usersContext () {
+      const { rows: [current] } = await this.raw('SELECT r.*, current_setting(\'server_version_num\')::int AS version FROM pg_roles r WHERE r.rolname = current_user');
+      const version = Number(current.version);
+      const isSuper = !!current.rolsuper;
+
+      return {
+         current,
+         version,
+         isSuper,
+         canManage: isSuper || !!current.rolcreaterole,
+         // PostgreSQL 16+: CREATEROLE roles grant only the attributes they have, and alter only roles they administer
+         canGrant: (column: string) => isSuper || (version >= 160000 && !!current[column])
+      };
+   }
+
+   async getUsersManagementInfo (): Promise<antares.UsersManagementInfo> {
+      const { current, version, canManage, canGrant } = await this._usersContext();
+      const canGrantCreateDb = canGrant('rolcreatedb') || (canManage && version < 160000);
+
+      const attributes: antares.UserAttributeDefinition[] = [
+         { name: 'canLogin', type: 'boolean', group: 'account', default: true },
+         { name: 'superuser', type: 'boolean', group: 'account', default: false, disabled: !canGrant('rolsuper') },
+         { name: 'createDb', type: 'boolean', group: 'account', default: false, disabled: !canGrantCreateDb },
+         { name: 'createRole', type: 'boolean', group: 'account', default: false, disabled: !canManage },
+         { name: 'inherit', type: 'boolean', group: 'account', default: true },
+         { name: 'replication', type: 'boolean', group: 'account', default: false, disabled: !canGrant('rolreplication') }
+      ];
+      if ('rolbypassrls' in current) // 9.5+
+         attributes.push({ name: 'bypassRls', type: 'boolean', group: 'account', default: false, disabled: !canGrant('rolbypassrls') });
+      attributes.push(
+         { name: 'connectionLimit', type: 'number', group: 'limits', default: -1, min: -1 },
+         { name: 'validUntil', type: 'datetime', group: 'limits', default: null }
+      );
+
+      const { rows: databases } = await this.raw('SELECT datname FROM pg_database WHERE NOT datistemplate ORDER BY datname');
+      const { rows: schemas } = await this.raw('SELECT nspname FROM pg_namespace WHERE nspname NOT LIKE \'pg\\_%\' AND nspname <> \'information_schema\' ORDER BY nspname');
+      const { rows: roles } = await this.raw('SELECT rolname FROM pg_roles ORDER BY rolname');
+
+      return {
+         currentUser: { name: current.rolname },
+         canManage,
+         hasHost: false,
+         canRename: true,
+         passwordRequired: false,
+         attributes,
+         globalPrivileges: [],
+         scopes: [
+            { name: 'database', objects: databases.map(row => row.datname), privileges: databasePrivileges },
+            { name: 'schema', objects: schemas.map(row => row.nspname), privileges: schemaPrivileges }
+         ],
+         roles: roles.map(row => row.rolname)
+      };
+   }
+
+   async getUsersList (): Promise<antares.UserAccount[]> {
+      const { current, version, isSuper, canManage } = await this._usersContext();
+      const isAdmin = version >= 160000 ? 'pg_has_role(current_user, r.oid, \'MEMBER WITH ADMIN OPTION\')' : 'false';
+      const { rows } = await this.raw(`SELECT r.rolname, r.rolcanlogin, r.rolsuper, ${isAdmin} AS is_admin FROM pg_roles r WHERE r.rolname NOT LIKE 'pg\\_%' ORDER BY r.rolname`);
+
+      return rows.map(row => {
+         let editable = row.rolname === current.rolname;
+         if (isSuper) editable = true;
+         else if (canManage) editable = editable || (version >= 160000 ? !!row.is_admin : !row.rolsuper);
+
+         return { name: row.rolname, editable, disabled: !row.rolcanlogin };
+      });
+   }
+
+   async getUserDetails (user: antares.UserIdentity): Promise<antares.UserDetails> {
+      const name = this._dialect.quoteString(user.name);
+      const role = `(SELECT oid FROM pg_roles WHERE rolname = ${name})`;
+
+      const { rows: [row] } = await this.raw(`
+         SELECT r.*, CASE WHEN r.rolvaliduntil IS NULL OR r.rolvaliduntil = 'infinity' THEN NULL
+            ELSE to_char(r.rolvaliduntil, 'YYYY-MM-DD HH24:MI:SS') END AS valid_until
+         FROM pg_roles r WHERE r.rolname = ${name}`);
+      if (!row) throw new Error(`Role ${user.name} not found`);
+
+      const { rows: databases } = await this.raw(`SELECT d.datname AS object, a.privilege_type AS privilege FROM pg_database d, aclexplode(d.datacl) a WHERE a.grantee = ${role} ORDER BY 1, 2`);
+      const { rows: schemas } = await this.raw(`SELECT n.nspname AS object, a.privilege_type AS privilege FROM pg_namespace n, aclexplode(n.nspacl) a WHERE a.grantee = ${role} ORDER BY 1, 2`);
+      const { rows: roles } = await this.raw(`SELECT b.rolname FROM pg_auth_members m JOIN pg_roles b ON b.oid = m.roleid WHERE m.member = ${role} ORDER BY 1`);
+
+      const byObject = (rows: { object: string; privilege: string }[]) => rows.reduce<Record<string, string[]>>((acc, { object, privilege }) => ({
+         ...acc,
+         [object]: [...(acc[object] ?? []), privilege]
+      }), {});
+
+      return {
+         name: row.rolname,
+         attributes: this._users.attributesOfRow(row),
+         globalPrivileges: [],
+         privileges: { database: byObject(databases), schema: byObject(schemas) },
+         roles: roles.map(r => r.rolname)
+      };
+   }
+
+   /** Runs users management statements as one multi-statement query: PostgreSQL applies all of them or none */
+   private async _runUserStatements (statements: string[], password?: string) {
+      if (!statements.length) return;
+
+      const sql = statements.join(';\n');
+      const secrets = password ? [this._dialect.quoteString(password)] : [];
+      this._logger({ cUid: this._cUid, content: maskSecrets(sql, secrets), level: 'query' });
+
+      const lease = await this._connections.acquire();
+      try {
+         await lease.connection.query(sql);
+      }
+      finally {
+         lease.release();
+      }
+   }
+
+   async createUser (params: antares.SaveUserParams) {
+      await this._runUserStatements(this._users.createUser(params), params.password);
+   }
+
+   async alterUser (params: antares.SaveUserParams) {
+      await this._runUserStatements(this._users.alterUser(params), params.password);
+   }
+
+   async dropUser (user: antares.UserIdentity) {
+      await this._runUserStatements(this._users.dropUser(await this.getUserDetails(user)));
+   }
+
    async createSchema (params: {name: string}) {
       return await this.raw(this._ddl.createSchema(params));
    }
@@ -1204,7 +1333,7 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
    }
 
    async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {
-      this._logger({ cUid: this._cUid, content: sql, level: 'query' });
+      this._logger({ cUid: this._cUid, content: args?.logContent ?? sql, level: 'query' });
 
       args = {
          nest: false,

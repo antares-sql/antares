@@ -344,6 +344,10 @@
     border-bottom: 1px solid #444;
   }
 
+  .users-modal .users-list-panel {
+    border-right: 0.05rem solid $bg-color-light-dark;
+  }
+
   .file-uploader {
     border: 0.05rem solid $bg-color-light-dark;
     background-color: $bg-color-gray;

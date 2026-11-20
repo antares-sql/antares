@@ -372,7 +372,7 @@
                </template>
                <template #header>
                   <li
-                     v-if="workspace.customizations.processesList"
+                     v-if="hasTools"
                      class="tab-item dropdown tools-dropdown"
                   >
                      <a
@@ -382,8 +382,18 @@
                      >
                         <BaseIcon icon-name="mdiTools" :size="24" />
                      </a>
-                     <ul v-if="hasTools" class="menu text-left text-uppercase">
-                        <li class="menu-item">
+                     <ul class="menu text-left text-uppercase">
+                        <li v-if="workspace.customizations.usersManagement" class="menu-item">
+                           <a class="c-hand p-vcentered" @click="showUsersModal">
+                              <BaseIcon
+                                 icon-name="mdiAccountGroup"
+                                 :size="18"
+                                 class="mr-1 tool-icon"
+                              />
+                              <span>{{ t('database.manageUsers') }}</span>
+                           </a>
+                        </li>
+                        <li v-if="workspace.customizations.processesList" class="menu-item">
                            <a class="c-hand p-vcentered" @click="showProcessesModal">
                               <BaseIcon
                                  icon-name="mdiMemory"
@@ -415,20 +425,6 @@
                                  class="mr-1 tool-icon"
                               />
                               <span>{{ t('database.variables') }}</span>
-                           </a>
-                        </li>
-                        <li
-                           v-if="workspace.customizations.usersManagement"
-                           class="menu-item"
-                           title="Coming..."
-                        >
-                           <a class="c-hand p-vcentered disabled">
-                              <BaseIcon
-                                 icon-name="mdiAccountGroup"
-                                 :size="18"
-                                 class="mr-1 tool-icon"
-                              />
-                              <span>{{ t('database.manageUsers') }}</span>
                            </a>
                         </li>
                      </ul>
@@ -610,6 +606,11 @@
          :connection="connection"
          @close="hideProcessesModal"
       />
+      <ModalUsersManagement
+         v-if="isUsersModal"
+         :connection="connection"
+         @close="hideUsersModal"
+      />
 
       <ModalDiscardChanges
          v-if="unsavedTab"
@@ -631,6 +632,7 @@ import BaseIcon from '@/components/BaseIcon.vue';
 import DebugConsole from '@/components/DebugConsole.vue';
 import ModalDiscardChanges from '@/components/ModalDiscardChanges.vue';
 import ModalProcessesList from '@/components/ModalProcessesList.vue';
+import ModalUsersManagement from '@/components/ModalUsersManagement.vue';
 import WorkspaceEditConnectionPanel from '@/components/WorkspaceEditConnectionPanel.vue';
 import WorkspaceEmptyState from '@/components/WorkspaceEmptyState.vue';
 import WorkspaceExploreBar from '@/components/WorkspaceExploreBar.vue';
@@ -689,6 +691,7 @@ const props = defineProps({
 
 const hasWheelEvent = ref(false);
 const isProcessesModal = ref(false);
+const isUsersModal = ref(false);
 const unsavedTab = ref(null);
 const tabWrap = ref(null);
 const contextEvent = ref(null);
@@ -725,8 +728,7 @@ const hasTools = computed(() => {
    if (!workspace.value.customizations) return false;
    else {
       return workspace.value.customizations.processesList ||
-      workspace.value.customizations.usersManagement ||
-      workspace.value.customizations.variables;
+      workspace.value.customizations.usersManagement;
    }
 });
 
@@ -814,6 +816,14 @@ const showProcessesModal = () => {
 
 const hideProcessesModal = () => {
    isProcessesModal.value = false;
+};
+
+const showUsersModal = () => {
+   isUsersModal.value = true;
+};
+
+const hideUsersModal = () => {
+   isUsersModal.value = false;
 };
 
 const addWheelEvent = () => {

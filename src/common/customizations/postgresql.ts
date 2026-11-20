@@ -27,6 +27,7 @@ export const customizations: Customizations = {
    cancelQueries: true,
    // Tools
    processesList: true,
+   usersManagement: true,
    // Structure
    schemas: true,
    tables: true,

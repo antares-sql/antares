@@ -156,6 +156,15 @@ export interface SchedulersCapability {
    disableEvent (params: { schema: string; scheduler: string }): Promise<unknown>;
 }
 
+export interface UsersCapability {
+   getUsersManagementInfo (): Promise<antares.UsersManagementInfo>;
+   getUsersList (): Promise<antares.UserAccount[]>;
+   getUserDetails (user: antares.UserIdentity): Promise<antares.UserDetails>;
+   createUser (params: antares.SaveUserParams): Promise<void>;
+   alterUser (params: antares.SaveUserParams): Promise<void>;
+   dropUser (user: antares.UserIdentity): Promise<void>;
+}
+
 export interface Capabilities {
    schemas: SchemasCapability;
    databases: DatabasesCapability;
@@ -170,6 +179,7 @@ export interface Capabilities {
    functions: FunctionsCapability;
    triggerFunctions: TriggerFunctionsCapability;
    schedulers: SchedulersCapability;
+   users: UsersCapability;
 }
 
 export type Capability = keyof Capabilities;
@@ -188,7 +198,8 @@ export const capabilityMethods: { [K in Capability]: (keyof Capabilities[K])[] }
    routines: ['getRoutineInformations', 'createRoutine', 'alterRoutine', 'dropRoutine'],
    functions: ['getFunctionInformations', 'createFunction', 'alterFunction', 'dropFunction'],
    triggerFunctions: ['createTriggerFunction', 'alterTriggerFunction'],
-   schedulers: ['getEventInformations', 'createEvent', 'alterEvent', 'dropEvent', 'enableEvent', 'disableEvent']
+   schedulers: ['getEventInformations', 'createEvent', 'alterEvent', 'dropEvent', 'enableEvent', 'disableEvent'],
+   users: ['getUsersManagementInfo', 'getUsersList', 'getUserDetails', 'createUser', 'alterUser', 'dropUser']
 };
 
 export function hasCapability<K extends Capability> (client: DatabaseClient, capability: K): client is DatabaseClient & Capabilities[K] {

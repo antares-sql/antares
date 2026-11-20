@@ -165,6 +165,10 @@
     border-left: 0.05rem solid darken($bg-color-light-gray, 15%);
   }
 
+  .users-modal .users-list-panel {
+    border-right: 0.05rem solid $border-color-dark;
+  }
+
   .file-uploader {
     border: 0.05rem solid $border-color-dark;
     background-color: $bg-color-light;

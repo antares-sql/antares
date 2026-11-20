@@ -32,7 +32,7 @@ export const customizations: Customizations = {
    cancelQueries: false,
    // Tools
    processesList: false,
-   usersManagement: false,
+   usersManagement: true,
    variables: false,
    // Structure
    schemas: false,

@@ -3,18 +3,21 @@ import { removeComments } from 'common/libs/sqlUtils';
 import * as mysql from 'mysql2/promise';
 
 import EncodingToCharset = require('../../../../node_modules/mysql2/lib/constants/encoding_charset.js');
-import { CancelQueriesCapability, DatabaseClient, DatabaseCollationCapability, DbConfigCapability, FunctionsCapability, RoutinesCapability, SchedulersCapability, SchemasCapability, TableCheckCapability, TableDdlCapability } from '../db/core/contracts';
+import { CancelQueriesCapability, DatabaseClient, DatabaseCollationCapability, DbConfigCapability, FunctionsCapability, RoutinesCapability, SchedulersCapability, SchemasCapability, TableCheckCapability, TableDdlCapability, UsersCapability } from '../db/core/contracts';
 import { arrayRowsToObjects, uniqueColumnNames } from '../db/core/resultRows';
+import { maskSecrets } from '../db/core/users';
 import { MySQLConnections, MySQLParams } from '../db/engines/mysql/MySQLConnections';
 import { MySQLDdl } from '../db/engines/mysql/MySQLDdl';
 import { MariaDBDialect, MySQLDialect } from '../db/engines/mysql/MySQLDialect';
 import { ColumnRow, mapColumn, parameterLength, parseCreateTableColumns, parseEvent, parseReturnType, parseRoutine, parseTrigger, parseViewAlgorithm } from '../db/engines/mysql/MySQLParsers';
+import { MySQLUsers } from '../db/engines/mysql/MySQLUsers';
 import { BaseClient } from './BaseClient';
 EncodingToCharset.utf8mb3 = 192; // To fix https://github.com/sidorares/node-mysql2/issues/1398 until not included in mysql2
 
-export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCapability, DatabaseCollationCapability, DbConfigCapability, CancelQueriesCapability, TableCheckCapability, TableDdlCapability, RoutinesCapability, FunctionsCapability, SchedulersCapability {
+export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCapability, DatabaseCollationCapability, DbConfigCapability, CancelQueriesCapability, TableCheckCapability, TableDdlCapability, RoutinesCapability, FunctionsCapability, SchedulersCapability, UsersCapability {
    protected readonly _ddl = new MySQLDdl();
    protected readonly _dialect = this._client === 'maria' ? new MariaDBDialect() : new MySQLDialect();
+   private readonly _users = new MySQLUsers(this._dialect, this._client === 'maria');
    private _schema?: string;
    private readonly _connections: MySQLConnections;
    _params: MySQLParams;
@@ -598,6 +601,146 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
       });
    }
 
+   /** Connected account, who it can manage and which grant tables it can read */
+   private async _usersContext () {
+      const { rows: [{ account }] } = await this.raw('SELECT CURRENT_USER() AS account');
+      const at = (account as string).lastIndexOf('@');
+      const currentUser: antares.UserIdentity = { name: account.slice(0, at), host: account.slice(at + 1) };
+
+      const grantee = `'${currentUser.name}'@'${currentUser.host}'`;
+      const { rows: privileges } = await this.raw(`SELECT PRIVILEGE_TYPE FROM information_schema.USER_PRIVILEGES WHERE GRANTEE = ${this._dialect.quoteString(grantee)}`);
+      const canManage = privileges.some(row => row.PRIVILEGE_TYPE === 'CREATE USER');
+
+      const canRead = await this.raw('SELECT 1 FROM `mysql`.`user` LIMIT 1').then(() => true, () => false);
+
+      // MariaDB 10.4+: account_locked is in the JSON of mysql.global_priv, not in the mysql.user view
+      const hasGlobalPriv = canRead && this._client === 'maria'
+         ? await this.raw('SELECT 1 FROM `mysql`.`global_priv` LIMIT 1').then(() => true, () => false)
+         : false;
+
+      return { currentUser, canManage, canRead, hasGlobalPriv };
+   }
+
+   private async _grantTableColumns (table: 'user' | 'db'): Promise<string[]> {
+      const { rows } = await this.raw(`SELECT COLUMN_NAME AS name FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'mysql' AND TABLE_NAME = '${table}' ORDER BY ORDINAL_POSITION`);
+      return rows.map(row => row.name);
+   }
+
+   private async _lockedAccounts (): Promise<Map<string, boolean>> {
+      const { rows } = await this.raw('SELECT `User` AS name, `Host` AS host, JSON_VALUE(`Priv`, \'$.account_locked\') AS locked FROM `mysql`.`global_priv`');
+      return new Map(rows.map(row => [`${row.name}@${row.host}`, String(row.locked) === '1' || String(row.locked) === 'true']));
+   }
+
+   async getUsersManagementInfo (): Promise<antares.UsersManagementInfo> {
+      const { currentUser, canManage, canRead, hasGlobalPriv } = await this._usersContext();
+      const attributes: antares.UserAttributeDefinition[] = [];
+      let globalPrivileges: string[] = [];
+      const scopes: antares.UserPrivilegeScope[] = [];
+
+      if (canRead) {
+         const userColumns = await this._grantTableColumns('user');
+         const dbColumns = await this._grantTableColumns('db');
+
+         if (userColumns.includes('account_locked') || hasGlobalPriv)
+            attributes.push({ name: 'accountLocked', type: 'boolean', group: 'account', default: false });
+         if (userColumns.includes('plugin'))
+            attributes.push({ name: 'plugin', type: 'text', group: 'account', readonly: true });
+
+         const limits: [string, string][] = [
+            ['maxQueriesPerHour', 'max_questions'],
+            ['maxUpdatesPerHour', 'max_updates'],
+            ['maxConnectionsPerHour', 'max_connections'],
+            ['maxUserConnections', 'max_user_connections']
+         ];
+         for (const [name, column] of limits) {
+            if (userColumns.includes(column))
+               attributes.push({ name, type: 'number', group: 'limits', default: 0, min: 0 });
+         }
+
+         globalPrivileges = this._users.privilegesFromColumns(userColumns);
+
+         const { rows: databases } = await this.raw('SHOW DATABASES');
+         scopes.push({
+            name: 'database',
+            objects: databases.map(row => row.Database),
+            privileges: this._users.privilegesFromColumns(dbColumns)
+         });
+      }
+
+      return {
+         currentUser,
+         canManage,
+         hasHost: true,
+         canRename: true,
+         passwordRequired: false,
+         attributes,
+         globalPrivileges,
+         scopes,
+         roles: null
+      };
+   }
+
+   async getUsersList (): Promise<antares.UserAccount[]> {
+      const { currentUser, canManage, canRead, hasGlobalPriv } = await this._usersContext();
+
+      if (!canRead) // Only the own account is visible
+         return [{ ...currentUser, editable: true }];
+
+      const { rows } = await this.raw('SELECT * FROM `mysql`.`user` ORDER BY `User`, `Host`');
+      const locked = hasGlobalPriv ? await this._lockedAccounts() : null;
+
+      return rows
+         .filter(row => row.is_role !== 'Y') // MariaDB roles
+         .map(row => ({
+            name: row.User,
+            host: row.Host,
+            editable: canManage || (row.User === currentUser.name && row.Host === currentUser.host),
+            disabled: locked ? !!locked.get(`${row.User}@${row.Host}`) : row.account_locked === 'Y'
+         }));
+   }
+
+   async getUserDetails (user: antares.UserIdentity): Promise<antares.UserDetails> {
+      const { canRead, hasGlobalPriv } = await this._usersContext();
+      const details: antares.UserDetails = { name: user.name, host: user.host, attributes: {}, globalPrivileges: [], privileges: {}, roles: [] };
+
+      if (!canRead) return details;
+
+      const where = `WHERE \`User\` = ${this._dialect.quoteString(user.name)} AND \`Host\` = ${this._dialect.quoteString(user.host)}`;
+      const { rows: [row] } = await this.raw(`SELECT * FROM \`mysql\`.\`user\` ${where}`);
+      if (!row) throw new Error(`User ${user.name}@${user.host} not found`);
+
+      const locked = hasGlobalPriv ? (await this._lockedAccounts()).get(`${user.name}@${user.host}`) ?? false : undefined;
+      const { rows: databases } = await this.raw(`SELECT * FROM \`mysql\`.\`db\` ${where}`);
+
+      return {
+         ...details,
+         attributes: this._users.attributesOfRow(row, locked),
+         globalPrivileges: this._users.privilegesOfRow(row),
+         privileges: {
+            database: databases.reduce((acc, db) => ({ ...acc, [db.Db]: this._users.privilegesOfRow(db) }), {})
+         }
+      };
+   }
+
+   /** Runs users management statements one by one (DDL autocommits), with passwords masked in the logs */
+   private async _runUserStatements (statements: string[], password?: string) {
+      const secrets = password ? [this._dialect.quoteString(password)] : [];
+      for (const sql of statements)
+         await this.raw(sql, { split: false, logContent: maskSecrets(sql, secrets) });
+   }
+
+   async createUser (params: antares.SaveUserParams) {
+      await this._runUserStatements(this._users.createUser(params), params.password);
+   }
+
+   async alterUser (params: antares.SaveUserParams) {
+      await this._runUserStatements(this._users.alterUser(params), params.password);
+   }
+
+   async dropUser (user: antares.UserIdentity) {
+      await this._runUserStatements(this._users.dropUser(user));
+   }
+
    async createSchema (params: { name: string; collation: string }) {
       return await this.raw(this._ddl.createSchema(params));
    }
@@ -1069,7 +1212,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    }
 
    async raw<T = antares.QueryResult> (sql: string, args?: antares.QueryParams) {
-      this._logger({ cUid: this._cUid, content: sql, level: 'query' });
+      this._logger({ cUid: this._cUid, content: args?.logContent ?? sql, level: 'query' });
 
       args = {
          nest: false,

@@ -4,6 +4,7 @@ exports[`client capabilities > firebird capabilities 1`] = `
 [
   "databases",
   "routines",
+  "users",
 ]
 `;
 
@@ -18,6 +19,7 @@ exports[`client capabilities > maria capabilities 1`] = `
   "routines",
   "functions",
   "schedulers",
+  "users",
 ]
 `;
 
@@ -32,6 +34,7 @@ exports[`client capabilities > mysql capabilities 1`] = `
   "routines",
   "functions",
   "schedulers",
+  "users",
 ]
 `;
 
@@ -47,6 +50,7 @@ exports[`client capabilities > pg capabilities 1`] = `
   "routines",
   "functions",
   "triggerFunctions",
+  "users",
 ]
 `;
 
