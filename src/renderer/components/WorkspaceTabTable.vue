@@ -104,7 +104,7 @@
                   <span>{{ t('database.insertRow', 2) }}</span>
                </button>
 
-               <div class="dropdown table-dropdown">
+               <div class="dropdown table-dropdown pr-2">
                   <button
                      :disabled="isQuering"
                      class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
@@ -130,6 +130,42 @@
                      </li>
                      <li class="menu-item">
                         <a class="c-hand" @click="downloadTable('sql')">SQL INSERT</a>
+                     </li>
+                     <li class="menu-item">
+                        <a class="c-hand" @click="downloadTable('md')">Markdown</a>
+                     </li>
+                  </ul>
+               </div>
+
+               <div class="dropdown table-dropdown">
+                  <button
+                     :disabled="isQuering"
+                     class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
+                     tabindex="0"
+                  >
+                     <BaseIcon
+                        icon-name="mdiContentCopy"
+                        class="mr-1"
+                        :size="24"
+                     />
+                     <span>{{ t('general.copy') }}</span>
+                     <BaseIcon icon-name="mdiMenuDown" :size="24" />
+                  </button>
+                  <ul class="menu text-left">
+                     <li class="menu-item">
+                        <a class="c-hand" @click="copyTable('json')">JSON</a>
+                     </li>
+                     <li class="menu-item">
+                        <a class="c-hand" @click="copyTable('csv')">CSV</a>
+                     </li>
+                     <li class="menu-item">
+                        <a class="c-hand" @click="copyTable('php')">{{ t('application.phpArray') }}</a>
+                     </li>
+                     <li class="menu-item">
+                        <a class="c-hand" @click="copyTable('sql')">SQL INSERT</a>
+                     </li>
+                     <li class="menu-item">
+                        <a class="c-hand" @click="copyTable('md')">Markdown</a>
                      </li>
                   </ul>
                </div>
@@ -245,6 +281,7 @@ import WorkspaceTabTableFilters from '@/components/WorkspaceTabTableFilters.vue'
 import { useFilters } from '@/composables/useFilters';
 import { useResultTables } from '@/composables/useResultTables';
 import Tables from '@/ipc-api/Tables';
+import { ExportFormat } from '@/libs/exportRows';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
@@ -425,8 +462,12 @@ const setRefreshInterval = () => {
    }
 };
 
-const downloadTable = (format: 'csv' | 'json' | 'sql' | 'php') => {
+const downloadTable = (format: ExportFormat) => {
    queryTable.value.downloadTable(format, props.table);
+};
+
+const copyTable = (format: ExportFormat) => {
+   queryTable.value.copyTable(format, props.table);
 };
 
 const onFilterChange = (clausoles: TableFilterClausole[]) => {
