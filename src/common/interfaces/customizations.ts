@@ -110,8 +110,8 @@ export interface Customizations {
    /** Connection string field in the connection panel */
    connectionString?: boolean;
    // Editor
-   /** Ace editor mode */
-   aceMode?: 'mysql' | 'pgsql' | 'sql';
+   /** SQL dialect of the query editor (highlighting and autocompletion), see renderer/libs/editor/sql/dialects.ts */
+   sqlDialect?: 'mysql' | 'mariadb' | 'postgresql' | 'sqlite' | 'firebird' | 'sql';
    /** sql-formatter language used by "format query" */
    formatterLanguage?: 'mysql' | 'mariadb' | 'postgresql' | 'sql';
    /** SQL to run a stored procedure: {name} and {params} placeholders */

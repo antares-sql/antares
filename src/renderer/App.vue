@@ -152,7 +152,7 @@ onMounted(() => {
 
       while (node) {
          if (node.nodeName.match(/^(input|textarea)$/i) || node.isContentEditable) {
-            if (!node.parentNode.className.split(' ').includes('editor-query')) {
+            if (!node.closest?.('.editor-query')) { // The query editor has its own menu
                InputMenu.popup({ window: getCurrentWindow() });
                console.log(node.parentNode.className);
                break;

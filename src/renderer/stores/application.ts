@@ -1,4 +1,3 @@
-import { Ace } from 'ace-builds';
 import Store from 'electron-store';
 import { defineStore, storeToRefs } from 'pinia';
 
@@ -18,11 +17,9 @@ export const useApplicationStore = defineStore('application', {
       isScratchpad: false,
       selectedSettingTab: 'general',
       updateStatus: 'noupdate' as UpdateStatus,
-      downloadProgress: 0,
-      baseCompleter: [] as Ace.Completer[] // Needed to reset ace editor, due global-only ace completer
+      downloadProgress: 0
    }),
    getters: {
-      getBaseCompleter: state => state.baseCompleter,
       getDownloadProgress: state => Number(state.downloadProgress.toFixed(1))
    },
    actions: {
@@ -35,9 +32,6 @@ export const useApplicationStore = defineStore('application', {
       },
       setLoadingStatus (payload: boolean) {
          this.isLoading = payload;
-      },
-      setBaseCompleters (payload: Ace.Completer[]) {
-         this.baseCompleter = payload;
       },
       // Modals
       showNewConnModal () {

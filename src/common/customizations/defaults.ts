@@ -105,7 +105,7 @@ export const defaults: Customizations = {
    readOnlyMode: false,
    connectionString: false,
    // Editor
-   aceMode: 'sql',
+   sqlDialect: 'sql',
    formatterLanguage: 'sql',
    procedureCall: 'CALL `{name}`({params})',
    functionCall: 'SELECT `{name}` ({params})'

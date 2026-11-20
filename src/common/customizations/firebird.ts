@@ -60,5 +60,6 @@ export const customizations: Customizations = {
    indexes: true,
    foreigns: true,
    nullable: true,
-   procedureCall: 'EXECUTE PROCEDURE "{name}"({params})'
+   procedureCall: 'EXECUTE PROCEDURE "{name}"({params})',
+   sqlDialect: 'firebird'
 };

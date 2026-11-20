@@ -91,7 +91,7 @@ export const customizations: Customizations = {
    functionSql: 'BEGIN\r\n\r\nEND',
    parametersLength: true,
    readOnlyMode: true,
-   aceMode: 'mysql',
+   sqlDialect: 'mysql',
    formatterLanguage: 'mysql',
    procedureCall: 'CALL {name}({params})',
    functionCall: 'SELECT `{name}` ({params})'
@@ -99,5 +99,6 @@ export const customizations: Customizations = {
 
 export const mariaCustomizations: Customizations = {
    ...customizations,
+   sqlDialect: 'mariadb',
    formatterLanguage: 'mariadb'
 };

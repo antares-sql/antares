@@ -89,6 +89,67 @@ export const buildEditorTheme = (theme: EditorThemeDefinition): Extension => {
       '.cm-specialChar, .cm-highlightSpace': {
          color: editor.invisible ?? editor.gutterForeground
       },
+      '.cm-tooltip': {
+         backgroundColor: editor.background,
+         color: editor.foreground,
+         border: `1px solid ${editor.gutterBackground}`,
+         borderRadius: '2px'
+      },
+      // Compact rows with centered icons, like VS Code suggestions
+      '.cm-tooltip.cm-tooltip-autocomplete > ul': {
+         maxHeight: '240px'
+      },
+      '.cm-tooltip.cm-tooltip-autocomplete > ul > li': {
+         display: 'flex',
+         alignItems: 'center',
+         height: '20px',
+         lineHeight: '20px',
+         padding: '0 6px 0 4px',
+         margin: '0', // Spectre.css gives a top margin to every li
+         borderRadius: '2px'
+      },
+      '.cm-tooltip-autocomplete ul li[aria-selected]': {
+         backgroundColor: theme.dark ? '#c9561a99' : editor.selection,
+         color: editor.foreground
+      },
+      '.cm-completionMatchedText': {
+         textDecoration: 'none',
+         fontWeight: 'bold',
+         color: theme.dark ? '#e0d00c' : '#2d69c7'
+      },
+      '.cm-completionDetail': {
+         marginLeft: 'auto',
+         paddingLeft: '2em',
+         fontStyle: 'normal',
+         opacity: '0.5'
+      },
+      '.cm-searchMatch': {
+         backgroundColor: 'color-mix(in srgb, var(--primary-color) 25%, transparent)',
+         outline: '1px solid color-mix(in srgb, var(--primary-color) 50%, transparent)'
+      },
+      '.cm-searchMatch.cm-searchMatch-selected': {
+         backgroundColor: 'color-mix(in srgb, var(--primary-color) 55%, transparent)'
+      },
+      '.cm-search-widget': {
+         backgroundColor: editor.gutterBackground,
+         color: editor.foreground,
+         border: `1px solid color-mix(in srgb, ${editor.foreground} 15%, transparent)`,
+         borderTop: 'none'
+      },
+      '.cm-search-field, .cm-search-replace-row .cm-search-input': {
+         backgroundColor: editor.background,
+         boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${editor.foreground} 25%, transparent)`
+      },
+      '.cm-search-field:focus-within, .cm-search-replace-row .cm-search-input:focus': {
+         boxShadow: 'inset 0 0 0 1px var(--primary-color)'
+      },
+      '.cm-search-button:hover': {
+         backgroundColor: `color-mix(in srgb, ${editor.foreground} 12%, transparent)`
+      },
+      '.cm-search-counter.cm-search-no-results': {
+         color: theme.dark ? '#f48771' : '#c72e0f',
+         opacity: '1'
+      },
       '.cm-foldPlaceholder': {
          backgroundColor: 'transparent',
          border: `1px solid ${editor.gutterForeground}`,

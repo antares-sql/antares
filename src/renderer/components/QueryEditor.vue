@@ -1,7 +1,7 @@
 <template>
    <div class="editor-wrapper">
       <div
-         :id="`editor-${id}`"
+         ref="editorEl"
          class="editor"
          :class="editorClasses"
          :style="{height: `${height}px`}"
@@ -10,44 +10,29 @@
 </template>
 
 <script setup lang="ts">
-/* eslint-disable simple-import-sort/imports */
-import * as ace from 'ace-builds';
-import '../libs/ext-language_tools';
-import 'ace-builds/webpack-resolver';
-/* eslint-enable simple-import-sort/imports */
-
-import { uidGen } from 'common/libs/uidGen';
+import { Compartment, EditorState } from '@codemirror/state';
+import { EditorView } from '@codemirror/view';
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, Prop, Ref, ref, toRef, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, Prop, Ref, ref, watch } from 'vue';
 
 import Tables from '@/ipc-api/Tables';
+import { breakpoints } from '@/libs/editor/breakpoints';
+import { baseSetup } from '@/libs/editor/setup';
+import { sqlCompletion, SqlCompletionProvider, SqlEntity } from '@/libs/editor/sql/completion';
+import { getSqlDialect } from '@/libs/editor/sql/dialects';
+import { buildEditorTheme, buildFontTheme, getEditorTheme } from '@/libs/editor/themes';
 import { EditorApi } from '@/libs/editorApi';
-import { useApplicationStore } from '@/stores/application';
 import { useSettingsStore } from '@/stores/settings';
 import { Workspace } from '@/stores/workspaces';
 
-const editor: Ref<ace.Ace.Editor> = ref(null);
-const applicationStore = useApplicationStore();
 const settingsStore = useSettingsStore();
 
-const { setBaseCompleters } = applicationStore;
-
-const { baseCompleter } = storeToRefs(applicationStore);
 const {
    editorTheme,
    editorFontSize,
    autoComplete,
    lineWrap
 } = storeToRefs(settingsStore);
-
-const sizes = {
-   xsmall: '10px',
-   small: '12px',
-   medium: '14px',
-   large: '16px',
-   xlarge: '18px',
-   xxlarge: '20px'
-};
 
 const props = defineProps({
    modelValue: String,
@@ -62,339 +47,160 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue']);
 
-const cursorPosition = ref(0);
-const lastTableFields = ref([]);
-const customCompleter = ref([]);
-const id = ref(uidGen());
-const lastSchema: Ref<string> = ref(null);
-const fields: Ref<{name: string; type: string}[]> = ref([]);
+const editorEl: Ref<HTMLDivElement> = ref(null);
+// Not reactive: a Vue proxy around the view breaks CodeMirror
+let view: EditorView = null;
 
-const tables = computed(() => {
-   return props.workspace
-      ? props.workspace.structure.filter(schema => schema.name === props.schema)
-         .reduce((acc, curr) => {
-            acc.push(...curr.tables);
-            return acc;
-         }, []).map(table => {
-            return {
-               name: table.name as string,
-               type: table.type as string
-            };
-         })
-      : [];
+const theme = new Compartment();
+const fontSize = new Compartment();
+const wrap = new Compartment();
+const readOnly = new Compartment();
+const completion = new Compartment();
+
+const dialectDefinition = computed(() => getSqlDialect(props.workspace?.customizations?.sqlDialect ?? 'sql'));
+
+const schemaStructure = computed(() => props.workspace
+   ? props.workspace.structure.filter(schema => schema.name === props.schema)
+   : []);
+
+const entities = computed<SqlEntity[]>(() => {
+   const list: SqlEntity[] = [];
+   for (const schema of schemaStructure.value) {
+      for (const table of schema.tables)
+         list.push({ name: table.name, type: (table.type || 'table') as SqlEntity['type'] });
+      for (const trigger of schema.triggers)
+         list.push({ name: trigger.name, type: 'trigger' });
+      for (const procedure of schema.procedures)
+         list.push({ name: `${procedure.name}()`, type: 'routine' });
+      for (const func of schema.functions)
+         list.push({ name: `${func.name}()`, type: 'function' });
+      for (const scheduler of schema.schedulers)
+         list.push({ name: scheduler.name, type: 'scheduler' });
+   }
+   return list;
 });
 
-const tablesInQuery = computed(() => {
-   if (!props.modelValue) return [];
-   const words = props.modelValue
-      .replaceAll(/[.'"`]/g, ' ')
-      .split(' ')
-      .filter(Boolean);
+const tableNames = computed(() => new Set(schemaStructure.value.flatMap(schema => schema.tables.map(table => table.name as string))));
 
-   const includedTables = tables.value.reduce((acc, curr) => {
-      acc.push(curr.name);
-      return acc;
-   }, [] as string[]).filter((t) => words.includes(t));
+/** Columns per table of the current schema, until the structure or the schema change */
+let columnsCache = new Map<string, Promise<string[]>>();
 
-   return includedTables;
+watch(() => [props.schema, props.workspace?.structure], () => {
+   columnsCache = new Map();
 });
 
-const triggers = computed(() => {
-   return props.workspace
-      ? props.workspace.structure.filter(schema => schema.name === props.schema)
-         .reduce((acc, curr) => {
-            acc.push(...curr.triggers);
-            return acc;
-         }, []).map(trigger => {
-            return {
-               name: trigger.name as string,
-               type: 'trigger'
-            };
-         })
-      : [];
-});
-
-const procedures = computed(() => {
-   return props.workspace
-      ? props.workspace.structure.filter(schema => schema.name === props.schema)
-         .reduce((acc, curr) => {
-            acc.push(...curr.procedures);
-            return acc;
-         }, []).map(procedure => {
-            return {
-               name: `${procedure.name}()`,
-               type: 'routine'
-            };
-         })
-      : [];
-});
-
-const functions = computed(() => {
-   return props.workspace
-      ? props.workspace.structure.filter(schema => schema.name === props.schema)
-         .reduce((acc, curr) => {
-            acc.push(...curr.functions);
-            return acc;
-         }, []).map(func => {
-            return {
-               name: `${func.name}()`,
-               type: 'function'
-            };
-         })
-      : [];
-});
-
-const schedulers = computed(() => {
-   return props.workspace
-      ? props.workspace.structure.filter(schema => schema.name === props.schema)
-         .reduce((acc, curr) => {
-            acc.push(...curr.schedulers);
-            return acc;
-         }, []).map(scheduler => {
-            return {
-               name: scheduler.name as string,
-               type: 'scheduler'
-            };
-         })
-      : [];
-});
-
-const mode = computed(() => props.workspace.customizations?.aceMode ?? 'sql');
-
-const lastWord = computed(() => {
-   const charsBefore = props.modelValue.slice(0, cursorPosition.value);
-   const words = charsBefore.replaceAll('\n', ' ').split(' ').filter(Boolean);
-   return words.pop();
-});
-
-const isLastWordATable = computed(() => /\w+\.\w*/gm.test(lastWord.value));
-
-const tableFieldsCompleter = computed(() => {
-   return {
-      getCompletions: (editor: never, session: never, pos: never, prefix: never, callback: (err: null, response: ace.Ace.Completion[]) => void) => {
-         const completions: ace.Ace.Completion[] = [];
-         lastTableFields.value.forEach(field => {
-            completions.push({
-               value: field,
-               meta: 'column',
-               score: 1000
-            });
-         });
-         callback(null, completions);
-      }
-   };
-});
-
-const setCustomCompleter = () => {
-   editor.value.completers.push({
-      getCompletions: (editor, session, pos, prefix, callback: (err: null, response: ace.Ace.Completion[]) => void) => {
-         const completions: ace.Ace.Completion[] = [];
-         [
-            ...tables.value,
-            ...triggers.value,
-            ...procedures.value,
-            ...functions.value,
-            ...schedulers.value,
-            ...fields.value
-         ].forEach(el => {
-            completions.push({
-               value: el.name,
-               meta: el.type,
-               score: 1000
-            });
-         });
-         callback(null, completions);
-      }
-   });
-
-   customCompleter.value = editor.value.completers;
+const fetchColumns = (table: string): Promise<string[]> => {
+   if (!columnsCache.has(table)) {
+      const request = Tables.getTableColumns({ uid: props.workspace.uid, schema: props.schema, table } as { schema: string; table: string })
+         .then(({ status, response }) => status === 'success' ? (response as { name: string }[]).map(field => field.name) : [])
+         .catch(() => [] as string[]);
+      columnsCache.set(table, request);
+      request.then(columns => {
+         if (!columns.length) columnsCache.delete(table);
+      });
+   }
+   return columnsCache.get(table);
 };
 
-watch(() => props.modelValue, () => {
-   cursorPosition.value = getCursorIndex();
+const completionProvider: SqlCompletionProvider = {
+   getEntities: () => entities.value,
+   getTableColumns: async (table: string) => {
+      if (!props.workspace || !tableNames.value.has(table)) return null;
+      return fetchColumns(table);
+   },
+   getQueryColumns: async (query: string) => {
+      if (!props.workspace) return [];
+      const words = new Set(query.replaceAll(/[.'"`]/g, ' ').split(/\s+/).filter(Boolean));
+      const tables = [...tableNames.value].filter(table => words.has(table));
+      const columns = await Promise.all(tables.map(fetchColumns));
+      return [...new Set(columns.flat())];
+   }
+};
+
+const buildCompletion = () => sqlCompletion({
+   definition: dialectDefinition.value,
+   provider: completionProvider,
+   activateOnTyping: autoComplete.value
 });
 
-watch(() => tablesInQuery.value.length, () => {
-   const localFields: {name: string; type: string}[] = [];
-   tablesInQuery.value.forEach(async table => {
-      const params = {
-         uid: props.workspace.uid,
-         schema: props.schema,
-         table: table
-      };
-
-      const { response } = await Tables.getTableColumns(params);
-
-      response.forEach((field: { name: string }) => {
-         localFields.push({
-            name: field.name,
-            type: 'column'
-         });
-      });
-   });
-
-   fields.value = localFields;
-   setTimeout(() => {
-      setCustomCompleter();
-   }, 100);
+watch(() => props.modelValue, value => {
+   value = value ?? '';
+   if (view && value !== view.state.doc.toString())
+      setValue(value);
 });
 
 watch(editorTheme, () => {
-   if (editor.value)
-      editor.value.setTheme(`ace/theme/${editorTheme.value}`);
+   view?.dispatch({ effects: theme.reconfigure(buildEditorTheme(getEditorTheme(editorTheme.value))) });
 });
 
 watch(editorFontSize, () => {
-   if (editor.value) {
-      editor.value.setOptions({
-         fontSize: sizes[editorFontSize.value]
-      });
-   }
+   view?.dispatch({ effects: fontSize.reconfigure(buildFontTheme(editorFontSize.value)) });
 });
 
 watch(autoComplete, () => {
-   if (editor.value) {
-      editor.value.setOptions({
-         enableLiveAutocompletion: autoComplete.value
-      });
-   }
+   view?.dispatch({ effects: completion.reconfigure(buildCompletion()) });
 });
 
 watch(lineWrap, () => {
-   if (editor.value) {
-      editor.value.setOptions({
-         wrap: lineWrap.value
-      });
-   }
+   view?.dispatch({ effects: wrap.reconfigure(lineWrap.value ? EditorView.lineWrapping : []) });
 });
 
-watch(() => props.isSelected, () => {
-   if (props.isSelected) {
-      lastSchema.value = props.schema;
-      editor.value.resize();
-   }
+watch(() => props.readOnly, () => {
+   view?.dispatch({ effects: readOnly.reconfigure(EditorState.readOnly.of(props.readOnly)) });
 });
-
-watch(() => props.height, () => {
-   setTimeout(() => {
-      editor.value.resize();
-   }, 20);
-});
-
-watch(lastSchema, () => {
-   if (editor.value) {
-      editor.value.completers = baseCompleter.value.map(el => Object.assign({}, el));
-      setCustomCompleter();
-   }
-});
-
-lastSchema.value = toRef(props, 'schema').value;
 
 onMounted(() => {
-   editor.value = ace.edit(`editor-${id.value}`, {
-      mode: `ace/mode/${mode.value}`,
-      theme: `ace/theme/${editorTheme.value}`,
-      value: props.modelValue,
-      fontSize: 14,
-      printMargin: false,
-      readOnly: props.readOnly
+   view = new EditorView({
+      parent: editorEl.value,
+      state: EditorState.create({
+         doc: props.modelValue ?? '',
+         extensions: [
+            breakpoints(),
+            baseSetup(),
+            dialectDefinition.value.dialect,
+            completion.of(buildCompletion()),
+            theme.of(buildEditorTheme(getEditorTheme(editorTheme.value))),
+            fontSize.of(buildFontTheme(editorFontSize.value)),
+            wrap.of(lineWrap.value ? EditorView.lineWrapping : []),
+            readOnly.of(EditorState.readOnly.of(props.readOnly)),
+            EditorView.updateListener.of(update => {
+               if (update.docChanged)
+                  emit('update:modelValue', update.state.doc.toString());
+            })
+         ]
+      })
    });
-
-   editor.value.setOptions({
-      enableBasicAutocompletion: true,
-      wrap: lineWrap.value,
-      enableSnippets: true,
-      enableLiveAutocompletion: autoComplete.value,
-      fontSize: sizes[editorFontSize.value]
-   });
-
-   if (!baseCompleter.value.length)
-      setBaseCompleters(editor.value.completers.map(el => Object.assign({}, el)));
-
-   setCustomCompleter();
-
-   editor.value.commands.on('afterExec', (e: { args: string; command: { name: string } }) => {
-      if (['insertstring', 'backspace', 'del'].includes(e.command.name)) {
-         if (isLastWordATable.value || e.args === '.') {
-            if (e.args !== ' ') {
-               const table = tables.value.find(t => t.name === lastWord.value.split('.').pop().trim());
-
-               if (table) {
-                  const params = {
-                     uid: props.workspace.uid,
-                     schema: props.schema,
-                     table: table.name
-                  };
-
-                  Tables.getTableColumns(params).then(res => {
-                     if (res.response.length)
-                        lastTableFields.value = res.response.map((field: { name: string }) => field.name);
-                     editor.value.completers = [tableFieldsCompleter.value];
-                     editor.value.execCommand('startAutocomplete');
-                  }).catch(console.error);
-               }
-               else
-                  editor.value.completers = customCompleter.value;
-            }
-            else
-               editor.value.completers = customCompleter.value;
-         }
-         else
-            editor.value.completers = customCompleter.value;
-      }
-   });
-
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   (editor.value.session as any).on('change', () => {
-      const content = editor.value.getValue();
-      emit('update:modelValue', content);
-   });
-
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   (editor.value as any).on('guttermousedown', (e: any) => {
-      const target = e.domEvent.target;
-      if (target.className.indexOf('ace_gutter-cell') === -1)
-         return;
-      if (e.clientX > 25 + target.getBoundingClientRect().left)
-         return;
-
-      const row = e.getDocumentPosition().row;
-      const breakpoints = e.editor.session.getBreakpoints(row, 0);
-      if (typeof breakpoints[row] === typeof undefined)
-         e.editor.session.setBreakpoint(row);
-      else
-         e.editor.session.clearBreakpoint(row);
-      e.stop();
-   });
-
-   editor.value.commands.removeCommand('showSettingsMenu');
 
    if (props.autoFocus) {
       setTimeout(() => {
-         editor.value.focus();
-         editor.value.resize();
+         view?.focus();
       }, 20);
    }
-
-   setTimeout(() => {
-      editor.value.resize();
-   }, 20);
 });
 
-const getValue = () => editor.value.getValue();
+onBeforeUnmount(() => {
+   view?.destroy();
+   view = null;
+});
+
+const getValue = () => view ? view.state.doc.toString() : props.modelValue ?? '';
 
 const setValue = (value: string) => {
-   editor.value.session.setValue(value);
+   if (!view) return;
+   view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: value ?? '' } });
 };
 
-const getSelectedText = () => editor.value.getSelectedText();
+const getSelectedText = () => {
+   if (!view) return '';
+   const { from, to } = view.state.selection.main;
+   return view.state.sliceDoc(from, to);
+};
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const getCursorIndex = () => (editor.value.session as any).doc.positionToIndex(editor.value.getCursorPosition()) as number;
+const getCursorIndex = () => view ? view.state.selection.main.head : 0;
 
-const focus = () => editor.value.focus();
+const focus = () => view?.focus();
 
-const resize = () => editor.value.resize();
+const resize = () => view?.requestMeasure();
 
 defineExpose<EditorApi>({
    getValue,
@@ -412,22 +218,7 @@ defineExpose<EditorApi>({
 
   .editor {
     width: 100%;
-  }
-}
-
-.ace_gutter-cell.ace_breakpoint {
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0px;
-    top: 8px;
-    display: inline-block;
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-top: 8px solid transparent;
-    border-right: 8px solid var(--primary-color);
-    transform: rotate(-45deg);
+    overflow: hidden;
   }
 }
 </style>

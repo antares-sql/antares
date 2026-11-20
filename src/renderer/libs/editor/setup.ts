@@ -16,6 +16,8 @@ import {
    rectangularSelection
 } from '@codemirror/view';
 
+import { searchPanel } from './searchPanel';
+
 export interface BaseSetupOptions {
    gutter?: boolean;
 }
@@ -37,6 +39,7 @@ export const baseSetup = ({ gutter = true }: BaseSetupOptions = {}): Extension =
    crosshairCursor(),
    highlightActiveLine(),
    highlightSelectionMatches(),
+   searchPanel(),
    keymap.of([
       ...closeBracketsKeymap,
       ...defaultKeymap,

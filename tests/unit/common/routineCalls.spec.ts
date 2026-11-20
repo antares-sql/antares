@@ -36,15 +36,15 @@ describe('formatRoutineArgument', () => {
 describe('editor customizations', () => {
    it.each([
       ['mysql', 'mysql', 'mysql', false],
-      ['maria', 'mysql', 'mariadb', false],
-      ['pg', 'pgsql', 'postgresql', true],
-      ['sqlite', 'sql', 'sql', false],
-      ['firebird', 'sql', 'sql', false]
-   ] as const)('%s', (client, aceMode, formatterLanguage, connectionString) => {
-      expect(customizations[client]).toMatchObject({ aceMode, formatterLanguage, connectionString });
+      ['maria', 'mariadb', 'mariadb', false],
+      ['pg', 'postgresql', 'postgresql', true],
+      ['sqlite', 'sqlite', 'sql', false],
+      ['firebird', 'firebird', 'sql', false]
+   ] as const)('%s', (client, sqlDialect, formatterLanguage, connectionString) => {
+      expect(customizations[client]).toMatchObject({ sqlDialect, formatterLanguage, connectionString });
    });
 
    it('MariaDB inherits everything else from MySQL', () => {
-      expect({ ...customizations.maria, formatterLanguage: null }).toEqual({ ...customizations.mysql, formatterLanguage: null });
+      expect({ ...customizations.maria, sqlDialect: null, formatterLanguage: null }).toEqual({ ...customizations.mysql, sqlDialect: null, formatterLanguage: null });
    });
 });
