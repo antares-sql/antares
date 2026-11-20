@@ -20,7 +20,7 @@
                v-for="index in indexTypes"
                :key="index"
                class="context-element"
-               :class="{'disabled': index === 'PRIMARY' && hasPrimary}"
+               :class="{'disabled': index === 'PRIMARY' && primaryIndex?.fields.includes(selectedField.name)}"
                @click="addNewIndex(index)"
             >
                <span class="d-flex">
@@ -109,7 +109,7 @@ const emit = defineEmits([
    'add-to-index'
 ]);
 
-const hasPrimary = computed(() => props.indexes.some(index => index.type === 'PRIMARY'));
+const primaryIndex = computed(() => props.indexes.find(index => index.type === 'PRIMARY'));
 
 const closeContext = () => {
    emit('close-context');
@@ -126,7 +126,11 @@ const deleteField = () => {
 };
 
 const addNewIndex = (index: string) => {
-   emit('add-new-index', { field: props.selectedField.name, index });
+   // A table has one primary key: add the field to it to make it composite (#742)
+   if (index === 'PRIMARY' && primaryIndex.value)
+      emit('add-to-index', { field: props.selectedField.name, index: primaryIndex.value._antares_id });
+   else
+      emit('add-new-index', { field: props.selectedField.name, index });
    closeContext();
 };
 
