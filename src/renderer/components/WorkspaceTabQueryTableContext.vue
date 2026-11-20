@@ -75,6 +75,15 @@
                   /> {{ t('database.row', selectedRows.length) }} (SQL INSERT)
                </span>
             </div>
+            <div class="context-element" @click="copyRow('md')">
+               <span class="d-flex">
+                  <BaseIcon
+                     icon-name="mdiTableRow"
+                     class="mr-1 mt-1 text-light"
+                     :size="18"
+                  /> {{ t('database.row', selectedRows.length) }} (Markdown)
+               </span>
+            </div>
          </div>
       </div>
       <div

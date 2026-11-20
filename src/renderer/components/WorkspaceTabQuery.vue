@@ -179,6 +179,45 @@
                      <li class="menu-item">
                         <a class="c-hand" @click="downloadTable('sql')">SQL INSERT</a>
                      </li>
+                     <li class="menu-item">
+                        <a class="c-hand" @click="downloadTable('md')">Markdown</a>
+                     </li>
+                  </ul>
+               </div>
+               <div class="dropdown table-dropdown pr-2">
+                  <button
+                     :disabled="!hasResults || isQuering"
+                     class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
+                     tabindex="0"
+                  >
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiContentCopy"
+                        :size="24"
+                     />
+                     <span>{{ t('general.copy') }}</span>
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="mdiMenuDown"
+                        :size="24"
+                     />
+                  </button>
+                  <ul class="menu text-left">
+                     <li class="menu-item">
+                        <a class="c-hand" @click="copyTable('json')">JSON</a>
+                     </li>
+                     <li class="menu-item">
+                        <a class="c-hand" @click="copyTable('csv')">CSV</a>
+                     </li>
+                     <li class="menu-item">
+                        <a class="c-hand" @click="copyTable('php')">{{ t('application.phpArray') }}</a>
+                     </li>
+                     <li class="menu-item">
+                        <a class="c-hand" @click="copyTable('sql')">SQL INSERT</a>
+                     </li>
+                     <li class="menu-item">
+                        <a class="c-hand" @click="copyTable('md')">Markdown</a>
+                     </li>
                   </ul>
                </div>
                <div class="input-group pr-2" :title="t('database.commitMode')">
@@ -295,6 +334,7 @@ import { useResultTables } from '@/composables/useResultTables';
 import Application from '@/ipc-api/Application';
 import Schema from '@/ipc-api/Schema';
 import { EditorApi } from '@/libs/editorApi';
+import { ExportFormat } from '@/libs/exportRows';
 import { useApplicationStore } from '@/stores/application';
 import { useConsoleStore } from '@/stores/console';
 import { useHistoryStore } from '@/stores/history';
@@ -629,8 +669,12 @@ const clear = () => {
    clearTabData();
 };
 
-const downloadTable = (format: 'csv' | 'json' | 'sql' | 'php') => {
+const downloadTable = (format: ExportFormat) => {
    queryTable.value.downloadTable(format, `${props.tab.type}-${props.tab.index}`);
+};
+
+const copyTable = (format: ExportFormat) => {
+   queryTable.value.copyTable(format, `${props.tab.type}-${props.tab.index}`);
 };
 
 const commitTab = async () => {
