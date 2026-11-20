@@ -488,6 +488,13 @@ option:checked {
 }
 
 /* Ace Editor */
+// Ace sets `contain: strict` on lines when HI_DPI (always on Linux/macOS): paint containment clips
+// glyphs to the line box, hiding underscores of fonts that draw them below it at small sizes (#888)
+.ace_hidpi .ace_text-layer > .ace_line,
+.ace_hidpi .ace_text-layer > .ace_line_group {
+  contain: style size layout;
+}
+
 .ace_editor {
   &.ace_autocomplete {
     border-radius: $border-radius;
