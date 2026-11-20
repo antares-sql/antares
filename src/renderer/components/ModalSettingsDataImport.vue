@@ -96,6 +96,7 @@
 <script setup lang="ts">
 import { ConnectionParams } from 'common/interfaces/antares';
 import { decrypt } from 'common/libs/encrypter';
+import { webUtils } from 'electron';
 import { storeToRefs } from 'pinia';
 import { onBeforeUnmount, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -136,7 +137,7 @@ const filesChange = ({ target } : {target: HTMLInputElement }) => {
    reader.readAsText(files[0]);
    reader.onload = () => {
       fileContent.value = reader.result;
-      filePath.value = files[0].path;
+      filePath.value = webUtils.getPathForFile(files[0]);
    };
 };
 

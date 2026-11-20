@@ -88,6 +88,7 @@
 <script setup lang="ts">
 import FakerMethods from 'common/FakerMethods';
 import { BIT, BLOB, DATE, DATETIME, FLOAT, IS_BIGINT, LONG_TEXT, NUMBER, TEXT, TIME, UUID } from 'common/fieldTypes';
+import { webUtils } from 'electron';
 import { computed, PropType, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -194,7 +195,7 @@ const filesChange = ({ target } : {target: HTMLInputElement }) => {
    const { files } = target;
    if (!files.length) return;
 
-   selectedValue.value = files[0].path;
+   selectedValue.value = webUtils.getPathForFile(files[0]);
 };
 
 const clearValue = () => {

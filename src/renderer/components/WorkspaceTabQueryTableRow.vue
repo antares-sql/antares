@@ -245,6 +245,7 @@ import { formatBytes } from 'common/libs/formatBytes';
 import hexToBinary, { HexChar } from 'common/libs/hexToBinary';
 import { langDetector } from 'common/libs/langDetector';
 import { mimeFromHex } from 'common/libs/mimeFromHex';
+import { webUtils } from 'electron';
 import * as moment from 'moment';
 import { computed, nextTick, onBeforeUnmount, Prop, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -507,7 +508,7 @@ const editOFF = () => {
       }
       else {
          if (!fileToUpload.value) return;
-         content = fileToUpload.value.file.path;
+         content = webUtils.getPathForFile(fileToUpload.value.file);
       }
    }
 

@@ -479,6 +479,7 @@
 <script setup lang="ts">
 import customizations from 'common/customizations';
 import { ConnectionParams } from 'common/interfaces/antares';
+import { webUtils } from 'electron';
 import { computed, Prop, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -630,11 +631,11 @@ const toggleSsh = () => {
    localConnection.value.ssh = !localConnection.value.ssh;
 };
 
-const pathSelection = (event: Event & {target: {files: {path: string}[]}}, name: keyof ConnectionParams) => {
+const pathSelection = (event: Event & { target: HTMLInputElement }, name: keyof ConnectionParams) => {
    const { files } = event.target;
    if (!files.length) return;
 
-   (localConnection.value as unknown as Record<string, string>)[name] = files[0].path;
+   (localConnection.value as unknown as Record<string, string>)[name] = webUtils.getPathForFile(files[0]);
 };
 
 const pathClear = (name: keyof ConnectionParams) => {
