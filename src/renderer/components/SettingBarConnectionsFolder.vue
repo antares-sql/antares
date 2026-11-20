@@ -24,6 +24,7 @@
          :group="{ name: 'connections', put: folderDrag ? undefined : 'clone' }"
          @start="dragStart"
          @end="dragStop"
+         @change="saveOrder"
       >
          <template #header>
             <div
@@ -112,7 +113,7 @@ const { getFolders: folders } = storeToRefs(connectionsStore);
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const { getWorkspace } = workspacesStore;
-const { getConnectionOrderByUid, getConnectionName, addToFolder } = connectionsStore;
+const { getConnectionOrderByUid, getConnectionName, addToFolder, updateFolderConnections } = connectionsStore;
 
 const foldersOpened = JSON.parse(localStorage.getItem('opened-folders')) || [];
 
@@ -138,8 +139,19 @@ const props = defineProps({
 const emit = defineEmits(['context', 'covered', 'uncovered', 'select-workspace', 'folder-sort', 'folder-drag']);
 
 const isOpen = ref(foldersOpened.includes(props.folder.uid));
-const localList = ref(props.folder.connections);
+// Copy of the folder connections for the drag and drop, without uids missing from the sidebar (they break the render).
+// It follows the store: actions like removeFromFolders replace the folder array without remounting this component
+const storeList = () => props.folder.connections.filter(uid => getConnectionOrderByUid(uid));
+const localList = ref<string[]>(storeList());
 const dummyNested = ref([]);
+
+watch(() => props.folder.connections, () => {
+   localList.value = storeList();
+}, { deep: true });
+
+const saveOrder = () => {
+   updateFolderConnections({ folder: props.folder.uid, connections: localList.value });
+};
 
 const hasSelectedInside = computed(() => localList.value.includes(selectedWorkspace.value));
 

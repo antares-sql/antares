@@ -238,6 +238,14 @@ export const useConnectionsStore = defineStore('connections', {
          persistentStore.set('connectionsOrder', this.connectionsOrder);
          this.clearEmptyFolders();
       },
+      /** Replaces the connections of a folder (e.g. reordered by drag and drop) */
+      updateFolderConnections (params: {folder: string; connections: string[]}) {
+         const folder = (this.connectionsOrder as SidebarElement[]).find(el => el.isFolder && el.uid === params.folder);
+         if (!folder) return;
+
+         folder.connections = [...params.connections];
+         this.clearEmptyFolders(); // also persists connectionsOrder
+      },
       deleteConnection (connection: SidebarElement | ConnectionParams) {
          this.removeFromFolders(connection.uid);
          this.connectionsOrder = (this.connectionsOrder as SidebarElement[]).filter(el => el.uid !== connection.uid);
