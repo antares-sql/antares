@@ -40,6 +40,7 @@ export const esES = {
       content: 'Contenido',
       cut: 'Cortar',
       copy: 'Copiar',
+      copiedToClipboard: 'Copiado al portapapeles',
       paste: 'Pegar',
       duplicate: 'Duplicar',
       tools: 'Herramientas',
