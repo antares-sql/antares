@@ -136,6 +136,7 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
       for (const _db of filteredDatabases) {
          // if (!schemas.has(db.name)) continue;
 
+         // RDB$RELATION_TYPE is NULL in databases created before ODS 11.1 (Firebird 2.5 and older)
          const { rows: tables } = await this.raw<antares.QueryResult<TableResult>>(`
             SELECT 
                rdb$relation_name AS NAME,
@@ -144,7 +145,7 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
                'table' AS TYPE
             FROM RDB$RELATIONS a
             WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0 
-            AND RDB$RELATION_TYPE = 0         
+            AND (RDB$RELATION_TYPE = 0 OR (RDB$RELATION_TYPE IS NULL AND RDB$VIEW_BLR IS NULL))
          `);
 
          const { rows: views } = await this.raw<antares.QueryResult<TableResult>>(`

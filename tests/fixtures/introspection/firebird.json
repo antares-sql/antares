@@ -38,7 +38,7 @@
           }
         },
         {
-          "sql": "SELECT rdb$relation_name AS NAME, rdb$format AS FORMAT, rdb$description AS DESCRIPTION, 'table' AS TYPE FROM RDB$RELATIONS a WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0 AND RDB$RELATION_TYPE = 0",
+          "sql": "SELECT rdb$relation_name AS NAME, rdb$format AS FORMAT, rdb$description AS DESCRIPTION, 'table' AS TYPE FROM RDB$RELATIONS a WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0 AND (RDB$RELATION_TYPE = 0 OR (RDB$RELATION_TYPE IS NULL AND RDB$VIEW_BLR IS NULL))",
           "result": {
             "rows": [
               {
