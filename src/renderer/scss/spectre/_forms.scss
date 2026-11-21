@@ -21,16 +21,16 @@ legend {
 .form-label {
   display: block;
   line-height: $line-height;
-  padding: $control-padding-y + $border-width 0;
+  padding: calc($control-padding-y + $border-width) 0;
 
   &.label-sm {
     font-size: $font-size-sm;
-    padding: $control-padding-y-sm + $border-width 0;
+    padding: calc($control-padding-y-sm + $border-width) 0;
   }
 
   &.label-lg {
     font-size: $font-size-lg;
-    padding: $control-padding-y-lg + $border-width 0;
+    padding: calc($control-padding-y-lg + $border-width) 0;
   }
 }
 
@@ -184,7 +184,7 @@ textarea.form-input {
   }
 
   .form-input {
-    padding-left: $control-icon-size + $control-padding-y * 2;
+    padding-left: calc($control-icon-size + $control-padding-y * 2);
   }
 }
 
@@ -194,7 +194,7 @@ textarea.form-input {
   }
 
   .form-input {
-    padding-right: $control-icon-size + $control-padding-y * 2;
+    padding-right: calc($control-icon-size + $control-padding-y * 2);
   }
 }
 
@@ -331,10 +331,10 @@ textarea.form-input {
   .form-icon {
     background: $gray-color;
     background-clip: padding-box;
-    border-radius: $unit-2 + $border-width;
-    height: $unit-4 + $border-width * 2;
+    border-radius: calc($unit-2 + $border-width);
+    height: calc($unit-4 + $border-width * 2);
     left: 0;
-    top: ($control-size-sm - $unit-4) * 0.5 - $border-width;
+    top: calc(($control-size-sm - $unit-4) * 0.5 - $border-width);
     width: $unit-8;
     &::before {
       background: $bg-color-light;
@@ -407,12 +407,12 @@ textarea.form-input {
     }
     &:not(:first-child):not(:last-child) {
       border-radius: 0;
-      margin-left: -$border-width;
+      margin-left: calc(-1 * $border-width);
     }
     &:last-child:not(:first-child) {
       border-bottom-left-radius: 0;
       border-top-left-radius: 0;
-      margin-left: -$border-width;
+      margin-left: calc(-1 * $border-width);
     }
     &:focus {
       z-index: $zindex-0 + 1;
@@ -433,7 +433,7 @@ textarea.form-input {
 .form-select {
   .has-success &,
   &.is-success {
-    background: color.adjust($success-color, $lightness: 53%);
+    background: adjust-lightness($success-color, 53%);
     border-color: $success-color;
     &:focus {
       @include control-shadow($success-color);
@@ -442,7 +442,7 @@ textarea.form-input {
 
   .has-error &,
   &.is-error {
-    background: color.adjust($error-color, $lightness: 53%);
+    background: adjust-lightness($error-color, 53%);
     border-color: $error-color;
     &:focus {
       @include control-shadow($error-color);
@@ -492,7 +492,7 @@ textarea.form-input {
       border-color: $error-color;
       &:focus {
         @include control-shadow($error-color);
-        background: color.adjust($error-color, $lightness: 53%);
+        background: adjust-lightness($error-color, 53%);
       }
 
       & + .form-input-hint {

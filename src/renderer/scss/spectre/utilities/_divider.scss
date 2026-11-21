@@ -11,7 +11,7 @@
     display: inline-block;
     font-size: $font-size-sm;
     padding: 0 $unit-2;
-    transform: translateY(-$font-size-sm + $border-width);
+    transform: translateY(calc(-1 * $font-size-sm + $border-width));
   }
 }
 

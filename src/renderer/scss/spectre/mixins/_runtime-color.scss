@@ -1,0 +1,24 @@
+@use "sass:color";
+@use "sass:math";
+@use "sass:meta";
+@use "sass:string";
+
+// Antares: color helpers that also accept a CSS custom property (theme token).
+// With a Sass color they compute at build time, as the legacy functions did.
+// With var(--token) they emit CSS evaluated by the browser (relative colors, color-mix).
+
+// Same as the legacy lighten() / darken() (HSL lightness, clamped by the browser)
+@function adjust-lightness($color, $amount) {
+  @if meta.type-of($color) == color {
+    @return color.adjust($color, $lightness: $amount);
+  }
+  @return string.unquote("hsl(from #{$color} h s calc(l + #{math.div($amount, 1%)}))");
+}
+
+// Same as rgba($color, $alpha)
+@function with-alpha($color, $alpha) {
+  @if meta.type-of($color) == color {
+    @return rgba($color, $alpha);
+  }
+  @return string.unquote("color-mix(in srgb, #{$color} #{$alpha * 100%}, transparent)");
+}

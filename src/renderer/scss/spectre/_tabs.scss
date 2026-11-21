@@ -5,7 +5,7 @@
   display: flex;
   flex-wrap: wrap;
   list-style: none;
-  margin: $unit-1 0 ($unit-1 - $border-width) 0;
+  margin: $unit-1 0 calc($unit-1 - $border-width) 0;
 
   .tab-item {
     margin-top: 0;
@@ -15,7 +15,7 @@
       color: inherit;
       display: block;
       margin: 0 $unit-2 0 0;
-      padding: $unit-2 $unit-1 $unit-2 - $border-width-lg $unit-1;
+      padding: $unit-2 $unit-1 calc($unit-2 - $border-width-lg) $unit-1;
       text-decoration: none;
       &:focus,
       &:hover {

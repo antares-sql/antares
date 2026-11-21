@@ -26,9 +26,9 @@ Antares is a dense desktop tool, not a web page. Keep it compact, keyboard-frien
 | `var(--primary-color)` | `#e36929` by default | Accent: primary buttons, active tab underline, focus rings, links, selection, SQL keywords |
 | `var(--primary-color-dark)` | primary darkened 30% | Hover/pressed state of the accent |
 | `var(--primary-color-shadow)` | primary at 20% alpha | Default of `--focus-ring-color`. Focus ring: `box-shadow: 0 0 0 var(--focus-ring-width) var(--focus-ring-color)` |
-| `$success-color` | `#32b643` | Connected state, success notifications |
-| `$warning-color` | `#e0a40c` | Connecting state, warnings |
-| `$error-color` | `#de3b28` | Failed state, errors, destructive emphasis |
+| `var(--success)` (`$success-color`) | `#32b643` | Connected state, success notifications |
+| `var(--warning)` (`$warning-color`) | `#e0a40c` | Connecting state, warnings |
+| `var(--error)` (`$error-color`) | `#de3b28` | Failed state, errors, destructive emphasis. Status colors are theme tokens: the SCSS variables point to them, so never pass them to Sass color functions (`darken`, `rgba($c, a)`): use `adjust-lightness()` / `with-alpha()` from the vendored Spectre or `color-mix()` |
 | `var(--bg-app)`, `var(--bg-panel)`, `var(--bg-surface)`, `var(--bg-raised)` | per theme | Surfaces: app background → side panels → modals/console → menus/popups |
 | `var(--text)`, `var(--text-muted)` | per theme | Text |
 | `var(--border)`, `var(--border-subtle)`, `var(--separator)`, `var(--divider)` | per theme | Control borders, tab/list borders, editor/console separators, dividers |
@@ -76,7 +76,7 @@ Key icons (PK/FK/unique/index) come from [_table-keys.scss](src/renderer/scss/_t
   - corners: `$border-radius` (= `var(--radius)`, 0.3rem); small elements use `calc(var(--radius) / 2)`; setting-bar tiles use `var(--radius-lg)`. `50%` only for real circles. Do not invent other radii;
   - lines: `var(--border-width)` for borders and separators, `var(--border-width-lg)` for indicators and selected outlines, `var(--grid-border-width)` in the results grid;
   - `var(--focus-ring-width)`, `var(--focus-ring-color)`, `var(--scrollbar-size)`.
-  Spectre compiles its own border widths: control borders get the token in `_theme-rules.scss`.
+  `$border-width` and `$border-width-lg` point to these tokens too: in SCSS do math on them only inside `calc()`.
 - Fixed layout sizes are variables: `$titlebar-height`, `$footer-height`, `$settingbar-width`, `$explorebar-width`, `$excluding-size`. Use them instead of repeating the numbers.
 - Layout is flexbox. There are no responsive breakpoints: the window is a desktop app and panels resize. Make content scroll, never squash it.
 

@@ -170,12 +170,12 @@
     }
     &:not(:first-child):not(:last-child) {
       border-radius: 0;
-      margin-left: -$border-width;
+      margin-left: calc(-1 * $border-width);
     }
     &:last-child:not(:first-child) {
       border-bottom-left-radius: 0;
       border-top-left-radius: 0;
-      margin-left: -$border-width;
+      margin-left: calc(-1 * $border-width);
     }
     &:focus,
     &:hover,

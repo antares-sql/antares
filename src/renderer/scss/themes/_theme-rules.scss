@@ -130,17 +130,6 @@
     }
   }
 
-  /* Spectre compiles its border widths (and does math on them): controls get the token here */
-  .btn,
-  .form-input,
-  .form-select,
-  .form-checkbox .form-icon,
-  .form-radio .form-icon,
-  .form-switch .form-icon,
-  .input-group .input-group-addon {
-    border-width: var(--border-width);
-  }
-
   .form-select,
   .form-input,
   .form-select:not([multiple], [size]),

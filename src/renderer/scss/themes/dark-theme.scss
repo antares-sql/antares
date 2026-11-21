@@ -22,6 +22,11 @@
   --text: #fff;
   --text-muted: rgb(255 255 255 / 70%);
 
+  /* Status (connection state, notifications, validation). Keep them dark enough for white text */
+  --success: #32b643;
+  --warning: #e0a40c;
+  --error: #de3b28;
+
   /* Borders */
   --border: #3f3f3f;
   --border-subtle: #272727;

@@ -15,7 +15,8 @@
   #{$name} {
     background: $color !important;
 
-    @if (hsl-lightness($color) < 60) {
+    // Antares: a theme token (var(--success), ...) can't be measured at build time: status colors are dark enough
+    @if (meta.type-of($color) != color or hsl-lightness($color) < 60) {
       color: $light-color;
     }
   }
@@ -30,10 +31,10 @@
   a#{$name} {
     &:focus,
     &:hover {
-      color: color.adjust($color, $lightness: -5%);
+      color: adjust-lightness($color, -5%);
     }
     &:visited {
-      color: color.adjust($color, $lightness: 5%);
+      color: adjust-lightness($color, 5%);
     }
   }
 }

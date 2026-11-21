@@ -3,21 +3,21 @@
 // Button variant mixin
 @mixin button-variant($color: $primary-color) {
   background: $color;
-  border-color: color.adjust($color, $lightness: -3%);
+  border-color: adjust-lightness($color, -3%);
   color: $light-color;
   &:focus {
     @include control-shadow($color);
   }
   &:focus,
   &:hover {
-    background: color.adjust($color, $lightness: -2%);
-    border-color: color.adjust($color, $lightness: -5%);
+    background: adjust-lightness($color, -2%);
+    border-color: adjust-lightness($color, -5%);
     color: $light-color;
   }
   &:active,
   &.active {
-    background: color.adjust($color, $lightness: -7%);
-    border-color: color.adjust($color, $lightness: -10%);
+    background: adjust-lightness($color, -7%);
+    border-color: adjust-lightness($color, -10%);
     color: $light-color;
   }
   &.loading {
@@ -37,14 +37,14 @@
   }
   &:focus,
   &:hover {
-    background: color.adjust($color, $lightness: 50%);
-    border-color: color.adjust($color, $lightness: -2%);
+    background: adjust-lightness($color, 50%);
+    border-color: adjust-lightness($color, -2%);
     color: $color;
   }
   &:active,
   &.active {
     background: $color;
-    border-color: color.adjust($color, $lightness: -5%);
+    border-color: adjust-lightness($color, -5%);
     color: $light-color;
   }
   &.loading {
