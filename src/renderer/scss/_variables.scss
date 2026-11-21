@@ -22,7 +22,7 @@ $enum-color: goldenrod;
 $unknown-color: gray;
 
 /* Sizes */
-$border-radius: 0.3rem;
+$border-radius: var(--radius); // token in themes/_shape-tokens.scss
 $titlebar-height: 1.5rem;
 $settingbar-width: 3.5rem;
 $explorebar-width: 14rem;

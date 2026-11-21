@@ -24,7 +24,7 @@ Antares is a dense desktop tool, not a web page. Keep it compact, keyboard-frien
 |---|---|---|
 | `var(--primary-color)` | `#e36929` by default | Accent: primary buttons, active tab underline, focus rings, links, selection, SQL keywords |
 | `var(--primary-color-dark)` | primary darkened 30% | Hover/pressed state of the accent |
-| `var(--primary-color-shadow)` | primary at 20% alpha | Focus ring (`box-shadow: 0 0 0 0.1rem var(--primary-color-shadow)`) |
+| `var(--primary-color-shadow)` | primary at 20% alpha | Default of `--focus-ring-color`. Focus ring: `box-shadow: 0 0 0 var(--focus-ring-width) var(--focus-ring-color)` |
 | `$success-color` | `#32b643` | Connected state, success notifications |
 | `$warning-color` | `#e0a40c` | Connecting state, warnings |
 | `$error-color` | `#de3b28` | Failed state, errors, destructive emphasis |
@@ -71,7 +71,11 @@ Key icons (PK/FK/unique/index) come from [_table-keys.scss](src/renderer/scss/_t
 ### Spacing and sizing
 
 - Spacing uses Spectre's utility scale (`m-1`/`p-1` = 0.2rem, `-2` = 0.4rem). `main.scss` adds `-3` (0.6rem) and `-4` (0.8rem). Prefer utilities over custom margins.
-- Rounded corners: `$border-radius` (0.3rem). Do not invent other radii.
+- Shape is tokenized in [themes/_shape-tokens.scss](src/renderer/scss/themes/_shape-tokens.scss), so themes can change it:
+  - corners: `$border-radius` (= `var(--radius)`, 0.3rem); small elements use `calc(var(--radius) / 2)`; setting-bar tiles use `var(--radius-lg)`. `50%` only for real circles. Do not invent other radii;
+  - lines: `var(--border-width)` for borders and separators, `var(--border-width-lg)` for indicators and selected outlines, `var(--grid-border-width)` in the results grid;
+  - `var(--focus-ring-width)`, `var(--focus-ring-color)`, `var(--scrollbar-size)`.
+  Spectre compiles its own border widths: control borders get the token in `_theme-rules.scss`.
 - Fixed layout sizes are variables: `$titlebar-height`, `$footer-height`, `$settingbar-width`, `$explorebar-width`, `$excluding-size`. Use them instead of repeating the numbers.
 - Layout is flexbox. There are no responsive breakpoints: the window is a desktop app and panels resize. Make content scroll, never squash it.
 
@@ -147,7 +151,7 @@ Key icons (PK/FK/unique/index) come from [_table-keys.scss](src/renderer/scss/_t
 - Use Spectre markup: `form-group` → `form-label` + `form-input`. Horizontal forms use `form-horizontal` with `col-*` label/input pairs (see the settings and connection panels).
 - Selects use [BaseSelect.vue](src/renderer/components/BaseSelect.vue) with `class="form-select"` (`small-select` in grids), not a native `<select>`.
   Foreign-key and faker pickers have their own components (`ForeignKeySelect`, `FakerSelect`).
-- Focus is always visible: the accent border plus `--primary-color-shadow`. Do not remove outlines without a replacement (`.no-outline` is for grid cells only).
+- Focus is always visible: the accent border plus the focus ring (`--focus-ring-width`, `--focus-ring-color`). Do not remove outlines without a replacement (`.no-outline` is for grid cells only).
 - Engine-specific fields appear only behind a `workspace.customizations.<flag>` check, never `client === '...'` (see AGENTS.md).
 
 ### Modals

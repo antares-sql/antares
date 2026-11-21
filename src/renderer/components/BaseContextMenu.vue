@@ -129,7 +129,7 @@ onBeforeUnmount(() => {
       padding: 0;
       background: #1d1d1d;
       border-radius: $border-radius;
-      border: 1px solid $bg-color-light-dark;
+      border: var(--border-width) solid $bg-color-light-dark;
       display: flex;
       flex-direction: column;
       position: absolute;
@@ -148,7 +148,7 @@ onBeforeUnmount(() => {
 
          .context-submenu {
             border-radius: $border-radius;
-            border: 1px solid $bg-color-light-dark;
+            border: var(--border-width) solid $bg-color-light-dark;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.2s;

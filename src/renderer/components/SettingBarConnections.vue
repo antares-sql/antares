@@ -189,8 +189,8 @@ watch(() => props.modelValue, (value) => {
   transition: all .2s;
 
   &.folder-preview {
-      border: 2px dotted;
-      border-radius: 15px;
+      border: var(--border-width-lg) dotted;
+      border-radius: var(--radius-lg);
       left: 5px;
       top: 5px;
       right: 5px;
@@ -212,7 +212,7 @@ watch(() => props.modelValue, (value) => {
    transition: opacity .2s;
 
    .settingbar-element {
-      border-radius: 15px!important;
+      border-radius: var(--radius-lg)!important;
       background: rgba($color: #fff, $alpha: 0.1);
 
       .settingbar-element-name {

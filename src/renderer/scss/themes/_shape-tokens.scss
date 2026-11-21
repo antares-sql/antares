@@ -1,0 +1,23 @@
+/*
+ * Shape tokens: corner radii, line widths, focus ring, scrollbars.
+ * Defaults for every theme, on :root so they also reach elements outside #wrapper.
+ * A theme may redefine any of them in its own block (e.g. high contrast: thicker borders and focus ring).
+ * Keep units as they are: rem values scale with the UI font size, px values don't.
+ */
+:root {
+  /* Corner radii. Small elements derive from --radius (e.g. calc(var(--radius) / 2)), so 0 squares everything */
+  --radius: 0.3rem;
+  --radius-lg: 15px; /* connection and folder tiles in the setting bar */
+
+  /* Line widths */
+  --border-width: 0.05rem; /* control, panel and separator borders */
+  --border-width-lg: 0.1rem; /* active tab indicator, selected outlines */
+  --grid-border-width: 2px; /* gaps between the cells of the query results grid */
+
+  /* Focus ring (box-shadow spread). The color follows the accent unless a theme redefines it */
+  --focus-ring-width: 0.1rem;
+  --focus-ring-color: var(--primary-color-shadow);
+
+  /* Scrollbars */
+  --scrollbar-size: 10px;
+}

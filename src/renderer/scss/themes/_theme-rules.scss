@@ -130,6 +130,17 @@
     }
   }
 
+  /* Spectre compiles its border widths (and does math on them): controls get the token here */
+  .btn,
+  .form-input,
+  .form-select,
+  .form-checkbox .form-icon,
+  .form-radio .form-icon,
+  .form-switch .form-icon,
+  .input-group .input-group-addon {
+    border-width: var(--border-width);
+  }
+
   .form-select,
   .form-input,
   .form-select:not([multiple], [size]),
@@ -196,7 +207,7 @@
   }
 
   .divider {
-    border-top: 0.05rem solid var(--divider);
+    border-top: var(--border-width) solid var(--divider);
   }
 
   .form-switch .form-icon::before {
@@ -205,7 +216,7 @@
 
   code {
     background-color: var(--code-bg);
-    border: 1px solid var(--code-border);
+    border: var(--border-width) solid var(--code-border);
     color: var(--code-text);
   }
 
@@ -273,14 +284,14 @@
       }
 
       .th:first-child {
-        border-left: 2px solid var(--grid-header-border);
+        border-left: var(--grid-border-width) solid var(--grid-header-border);
       }
 
       .tr {
         background-color: var(--grid-row-bg);
 
         .td:first-child {
-          border-left: 2px solid var(--grid-border);
+          border-left: var(--grid-border-width) solid var(--grid-border);
         }
 
         .td {
@@ -344,19 +355,19 @@
   }
 
   .editor-wrapper {
-    border-bottom: 1px solid var(--separator);
+    border-bottom: var(--border-width) solid var(--separator);
   }
 
   .users-modal .users-list-panel {
-    border-right: 0.05rem solid var(--border);
+    border-right: var(--border-width) solid var(--border);
   }
 
   .file-uploader {
-    border: 0.05rem solid var(--border);
+    border: var(--border-width) solid var(--border);
     background-color: var(--input-bg);
 
     .file-uploader-message {
-      border-right: 0.05rem solid var(--border);
+      border-right: var(--border-width) solid var(--border);
       background-color: var(--input-bg-readonly);
     }
   }
@@ -368,7 +379,7 @@
   }
 
   .console {
-    border-top: 1px solid var(--separator);
+    border-top: var(--border-width) solid var(--separator);
     background-color: var(--bg-surface);
 
     .console-log {
@@ -428,13 +439,13 @@
   }
 
   .editor-col {
-    border-left: 0.05rem solid var(--border-subtle);
+    border-left: var(--border-width) solid var(--border-subtle);
   }
 
   .table {
     .td,
     .th {
-      border-bottom: $border-width solid var(--table-border);
+      border-bottom: var(--border-width) solid var(--table-border);
     }
 
     &,

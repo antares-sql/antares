@@ -638,7 +638,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   max-height: 21px;
-  border-radius: 3px;
+  border-radius: calc(var(--radius) / 2);
   font-size: 0.7rem;
 }
 

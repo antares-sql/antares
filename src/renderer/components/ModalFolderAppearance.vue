@@ -152,7 +152,7 @@ onBeforeUnmount(() => {
      .color-box {
          height: 20px;
          width: 20px;
-         border-radius: 4px;
+         border-radius: calc(var(--radius) / 2);
          display: flex;
          align-items: center;
          justify-content: center;

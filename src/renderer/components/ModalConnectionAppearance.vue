@@ -313,15 +313,15 @@ onBeforeUnmount(() => {
      .icon-box {
          height: 40px;
          width: 40px;
-         border-radius: 4px;
+         border-radius: calc(var(--radius) / 2);
          display: flex;
          align-items: center;
          justify-content: center;
          cursor: pointer;
 
          &.selected {
-            outline: 2px solid var(--primary-color);
-            border-radius: 8px;
+            outline: var(--border-width-lg) solid var(--primary-color);
+            border-radius: var(--radius);
          }
      }
   }

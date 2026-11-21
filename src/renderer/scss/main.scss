@@ -2,7 +2,7 @@
 :root {
   --primary-color: #e36929;
   --primary-color-dark: color-mix(in srgb, var(--primary-color), #000 30%);
-  --primary-color-shadow: 0 0 0 0.1rem rgba(227, 105, 41, 0.2);
+  --primary-color-shadow: rgb(227 105 41 / 20%);
 }
 
 @import "~spectre.css/src/variables";
@@ -13,6 +13,7 @@
 @import "fake-tables";
 @import "editor-icons";
 @import "db-icons";
+@import "themes/shape-tokens";
 @import "themes/dark-theme";
 @import "themes/light-theme";
 @import "themes/theme-rules";
@@ -115,9 +116,9 @@ option:checked {
     .th {
       position: sticky;
       top: 0;
-      border: 2px solid;
+      border: var(--grid-border-width) solid;
       border-left: none;
-      border-bottom-width: 2px;
+      border-bottom-width: var(--grid-border-width);
       padding: 0;
       font-weight: 700;
       font-size: 0.7rem;
@@ -130,8 +131,8 @@ option:checked {
     }
 
     .td {
-      border-right: 2px solid;
-      border-bottom: 2px solid;
+      border-right: var(--grid-border-width) solid;
+      border-bottom: var(--grid-border-width) solid;
       padding: 0 0.2rem;
       text-overflow: ellipsis;
       max-width: 200px;
@@ -186,8 +187,8 @@ option:checked {
 
 /* Scrollbars */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
 }
 
 /* Animations */
@@ -273,7 +274,7 @@ option:checked {
 
     &::after {
       content: "";
-      height: 2px;
+      height: var(--border-width-lg);
       width: 0;
       transition: width 0.2s;
       background-color: var(--primary-color);
@@ -334,7 +335,7 @@ option:checked {
 }
 
 .form-checkbox input:focus + .form-icon, .form-radio input:focus + .form-icon, .form-switch input:focus + .form-icon {
-  box-shadow: 0 0 0 0.1rem var(--primary-color-shadow);
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--focus-ring-color);
   border-color: var(--primary-color);
 }
 
@@ -342,7 +343,7 @@ option:checked {
   cursor: pointer;
 
   &:focus {
-    box-shadow: 0 0 0 0.1rem var(--primary-color-shadow);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus-ring-color);
   }
 
   &.small-select {
@@ -354,7 +355,7 @@ option:checked {
   &.select {
     &.select--open {
       border-color: var(--primary-color) !important;
-      box-shadow: 0 0 0 0.1rem var(--primary-color-shadow) !important;
+      box-shadow: 0 0 0 var(--focus-ring-width) var(--focus-ring-color) !important;
 
       @include control-shadow();
     }
@@ -377,7 +378,7 @@ option:checked {
 
 .select__list-wrapper {
   z-index: 401 !important;
-  border: 1px solid transparent;
+  border: var(--border-width) solid transparent;
   border-radius: $border-radius;
   box-shadow:
     0 8px 17px 0 rgb(0 0 0 / 20%),
@@ -399,7 +400,7 @@ option:checked {
   }
   &:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.1rem var(--primary-color-shadow);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus-ring-color);
   }
 }
 
@@ -434,12 +435,12 @@ option:checked {
   }
 
   &:focus {
-    box-shadow: 0 0 0 0.1rem var(--primary-color-shadow);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus-ring-color);
   }
 
   &.btn-success:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.1rem var(--primary-color-shadow);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus-ring-color);
   }
 
   &.btn-primary {

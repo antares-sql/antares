@@ -258,7 +258,7 @@ emit('folder-sort');// To apply changes on component key change
    padding: 4px;
    height: 100%;
    width: 100%;
-   border-radius: 15px;
+   border-radius: var(--radius-lg);
    transition: background .3s;
    color: $body-font-color-dark;
 
@@ -398,7 +398,7 @@ emit('folder-sort');// To apply changes on component key change
       position: relative;
       transition: opacity .2s;
       background: $bg-color-light-dark;
-      border-radius: 8px;
+      border-radius: calc(var(--radius-lg) * 8 / 15); // nested in a --radius-lg folder
 
       &.ghost {
          margin:0 ;
@@ -443,12 +443,12 @@ emit('folder-sort');// To apply changes on component key change
 }
 
 .ghost {
-   border-radius: 15px!important;
+   border-radius: var(--radius-lg)!important;
    background: rgba($color: #fff, $alpha: 0.1);
 
    &.folder-element {
       height: $settingbar-width;
-      border-radius: 15px;
+      border-radius: var(--radius-lg);
       display: flex;
       align-items: center;
       justify-content: center;
