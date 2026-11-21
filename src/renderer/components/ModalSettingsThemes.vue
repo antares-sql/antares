@@ -1,12 +1,12 @@
 <template>
    <div class="container">
       <div class="columns">
-         <div class="column col-12 d-flex mb-2 themes-toolbar">
+         <div class="column col-12 p-vcentered mb-2 themes-toolbar">
             <div class="h6 text-uppercase mr-2">
                {{ t('application.applicationTheme') }}
             </div>
-            <div class="d-flex">
-               <button class="btn btn-dark btn-sm d-flex mr-2" @click="importTheme">
+            <div class="p-vcentered">
+               <button class="btn btn-dark btn-sm p-vcentered mr-2" @click="importTheme">
                   <BaseIcon
                      icon-name="mdiFileImport"
                      class="mr-1"
@@ -14,7 +14,7 @@
                   />
                   <span>{{ t('application.importTheme') }}</span>
                </button>
-               <button class="btn btn-link btn-sm d-flex" @click="openOutside(galleryUrl)">
+               <button class="btn btn-link btn-sm p-vcentered" @click="openOutside(galleryUrl)">
                   <BaseIcon
                      icon-name="mdiPaletteSwatch"
                      class="mr-1"
@@ -52,7 +52,7 @@
                   </div>
                   <div class="theme-card-actions" @click.stop>
                      <button
-                        class="btn btn-clear btn-sm"
+                        class="btn btn-clear btn-sm p-vcentered"
                         :title="t('application.exportTheme')"
                         @click="exportTheme(theme.id)"
                      >
@@ -60,7 +60,7 @@
                      </button>
                      <button
                         v-if="!isBuiltin(theme.id)"
-                        class="btn btn-clear btn-sm"
+                        class="btn btn-clear btn-sm p-vcentered"
                         :title="t('application.removeTheme')"
                         @click="themeToRemove = theme"
                      >
@@ -124,12 +124,13 @@
          @hide="themeToRemove = null"
       >
          <template #header>
-            <div class="d-flex">
+            <div class="p-vcentered">
                <BaseIcon
                   icon-name="mdiDelete"
                   class="mr-1"
                   :size="24"
-               /> {{ t('application.removeTheme') }}
+               />
+               <span>{{ t('application.removeTheme') }}</span>
             </div>
          </template>
          <template #body>
@@ -221,7 +222,6 @@ const exportTheme = async (id: string) => {
 
 <style lang="scss" scoped>
 .themes-toolbar {
-  align-items: center;
   justify-content: space-between;
 }
 

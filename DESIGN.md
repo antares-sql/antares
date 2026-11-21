@@ -94,7 +94,15 @@ Key icons (PK/FK/unique/index) come from [_table-keys.scss](src/renderer/scss/_t
   | `24` | Toolbar buttons (Save, Clear, Run, ...) |
   | `36`–`48` | Empty states, the large icons of the setting bar |
 
-- An icon next to text gets `class="mr-1"` (and usually `mt-1` when vertically aligned in a `d-flex` row).
+- **Vertical alignment of icons.** `BaseIcon` renders an inline SVG: left alone it sits on the text baseline and looks too high,
+  and in a plain `d-flex` row it is aligned to the top (`align-items` defaults to `stretch`, which an SVG with a fixed size ignores). Rules:
+  - the element that holds icon + text (button, menu item, label, toolbar info) gets `p-vcentered` (flex + `align-items: center`),
+    **not** a bare `d-flex`;
+  - put the text in a `<span>` (a sibling element, not a loose text node) and give the icon only `class="mr-1"` (`ml-1` when it follows the text);
+  - never nudge icons with `mt-1`, `pt-1`, `top` or line-height tweaks: they only fit one font size and break with the interface text size setting.
+    The existing `mt-1` icons are legacy: fix them to `p-vcentered` when you touch that markup;
+  - icon-only buttons: `p-vcentered` plus `justify-content: center` when the button is wider than the icon, and a `title`;
+  - check the result in a screenshot at 100% and at a larger interface text size.
 - Reuse the same icon for the same concept everywhere: `mdiContentSave` save, `mdiDeleteSweep` clear changes, `mdiWrenchCog` settings, `mdiContentCopy` copy, `mdiDatabase` schema, `mdiTableArrowRight` export, `mdiHistory` history.
   Search the components for the concept before picking a new icon.
 
