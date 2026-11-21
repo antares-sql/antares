@@ -2,9 +2,9 @@ import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { Extension } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 import { Tag, tags as t } from '@lezer/highlight';
+import { EditorThemeDefinition, ThemeTokenKey, ThemeTokenStyle } from 'common/themes/editorTheme';
 
 import { aceThemes } from './themes/aceThemes';
-import { EditorThemeDefinition, ThemeTokenKey, ThemeTokenStyle } from './themeTypes';
 
 export const editorThemes: EditorThemeDefinition[] = aceThemes;
 

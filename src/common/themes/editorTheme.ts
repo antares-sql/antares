@@ -38,8 +38,8 @@ export interface ThemeTokenStyle {
 }
 
 /**
- * Engine-agnostic editor theme: plain data, so themes can also be
- * loaded from user files in the future.
+ * Engine-agnostic editor theme: plain data. Each app theme carries one (see common/themes),
+ * so it can also be loaded from user theme files.
  */
 export interface EditorThemeDefinition {
    code: string;

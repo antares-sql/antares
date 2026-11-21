@@ -1,7 +1,7 @@
 /* eslint-disable */
 // Editor themes converted from the Ace editor themes (ace-builds 1.34) once, when Antares moved
 // to CodeMirror: the conversion script is in the git history (scripts/convertAceThemes.js).
-import { EditorThemeDefinition } from '../themeTypes';
+import { EditorThemeDefinition } from 'common/themes/editorTheme';
 
 export const aceThemes: EditorThemeDefinition[] = [
    {
