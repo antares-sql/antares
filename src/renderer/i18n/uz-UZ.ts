@@ -320,7 +320,6 @@ export const uzUZ = {
       unsavedChanges: 'Saqlanmagan oʻzgarishlar',
       discardUnsavedChanges: 'Saqlanmagan maʼlumotlaringiz mavjud. Ushbu oynani yopish ularni bekor qiladi.',
       applicationTheme: 'Ilova mavzusi',
-      editorTheme: 'Tahrirchi mavzusi',
       wrapLongLines: 'Uzun satrlarni oʻrash',
       includeBetaUpdates: 'Beta yangilanishlarni olish',
       markdownSupported: 'Markdown qoʻllab-quvvatlanadi',

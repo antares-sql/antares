@@ -299,7 +299,6 @@ export const frFR = {
       unsavedChanges: 'Modifications non sauvegardées',
       discardUnsavedChanges: 'Vous avez des modifications non sauvegardées. En fermant cet onglet, ces modifications seront supprimées.',
       applicationTheme: 'Thème de l\'application',
-      editorTheme: 'Thème de l\'éditeur',
       wrapLongLines: 'Retour à la ligne pour les lignes longues',
       includeBetaUpdates: 'Inclure les mises à jour beta',
       markdownSupported: 'Support du Markdown',

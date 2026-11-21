@@ -333,7 +333,6 @@ export const zhCN = {
       unsavedChanges: '未保存的变更',
       discardUnsavedChanges: '您有一些未保存的变更, 关闭此标签将放弃这些变更.',
       applicationTheme: '应用程序主题',
-      editorTheme: '编辑器主题',
       wrapLongLines: '将长行换行显示',
       markdownSupported: '支持 Markdown',
       plantATree: '种植一棵树',

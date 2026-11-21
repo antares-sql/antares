@@ -302,7 +302,6 @@ export const caES = {
       unsavedChanges: 'Canvis no desats',
       discardUnsavedChanges: 'Tens alguns canvis no desats. Tancant aquesta pestanya aquests canvis es descartaran.',
       applicationTheme: 'Tema de l\'aplicació',
-      editorTheme: 'Tema de l\'editor',
       wrapLongLines: 'Ajusta línies llargues',
       includeBetaUpdates: 'Inclou actualitzacions beta',
       markdownSupported: 'Suporta markdown',

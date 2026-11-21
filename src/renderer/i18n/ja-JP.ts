@@ -324,7 +324,6 @@ export const jaJP = {
       unsavedChanges: '保存されていない変更',
       discardUnsavedChanges: '保存されていない変更があります。このタブを閉じると、これらの変更は破棄されます。',
       applicationTheme: 'アプリケーションのテーマ',
-      editorTheme: 'エディターのテーマ',
       wrapLongLines: '長い行を折り返す',
       markdownSupported: 'Markdown をサポートしています。',
       plantATree: '木を植える',

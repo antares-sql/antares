@@ -340,7 +340,6 @@ export const plPL = {
       unsavedChanges: 'Niezapisane zmiany',
       discardUnsavedChanges: 'Masz niezapisane zmiany. Zamykając tę zakładkę, zmiany zostaną utracone.',
       applicationTheme: 'Motyw aplikacji',
-      editorTheme: 'Motyw edytora',
       wrapLongLines: 'Zawijaj długie linie',
       markdownSupported: 'Obsługuje Markdown',
       plantATree: 'Posadź drzewo',

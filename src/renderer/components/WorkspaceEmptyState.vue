@@ -1,7 +1,7 @@
 <template>
    <div class="column col-12 empty">
       <div class="empty-icon">
-         <img :src="logos[applicationTheme]" width="200">
+         <img :src="logos[appearance]" width="200">
       </div>
       <p class="h6 empty-subtitle">
          {{ t('application.noOpenTabs') }}
@@ -24,7 +24,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseIcon from '@/components/BaseIcon.vue';
-import { useSettingsStore } from '@/stores/settings';
+import { useThemesStore } from '@/stores/themes';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
@@ -36,10 +36,9 @@ const logos = {
    dark: require('../images/logo-dark.svg') as string
 };
 
-const settingsStore = useSettingsStore();
 const workspacesStore = useWorkspacesStore();
 
-const { applicationTheme } = storeToRefs(settingsStore);
+const { appearance } = storeToRefs(useThemesStore());
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const { getWorkspace, changeBreadcrumbs } = workspacesStore;

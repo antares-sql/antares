@@ -301,7 +301,6 @@ export const ptBR = {
       unsavedChanges: 'Alterações não salvas',
       discardUnsavedChanges: 'Você tem algumas alterações não salvas. Ao sair desta guia, essas alterações serão descartadas.',
       applicationTheme: 'Tema da aplicação',
-      editorTheme: 'Editor de tema',
       wrapLongLines: 'Quebrar linhas longas',
       includeBetaUpdates: 'Incluir atualizações beta',
       markdownSupported: 'Markdown suportado',

@@ -294,7 +294,6 @@ export const koKR = {
       unsavedChanges: '저장되지 않은 변경사항',
       discardUnsavedChanges: '저장되지 않은 변경사항이 있습니다. 탭을 닫으면 이러한 변경사항이 삭제됩니다.',
       applicationTheme: '애플리케이션 테마',
-      editorTheme: '편집기 테마',
       wrapLongLines: '긴 줄 바꿈',
       includeBetaUpdates: '베타 업데이트 포함',
       markdownSupported: '마크다운 지원',

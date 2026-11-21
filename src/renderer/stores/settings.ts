@@ -1,5 +1,4 @@
 import { ShortcutRecord } from 'common/shortcuts';
-import { ipcRenderer } from 'electron';
 import Store from 'electron-store';
 import { defineStore } from 'pinia';
 
@@ -9,13 +8,10 @@ const settingsStore = new Store({ name: 'settings' });
 const shortcutsStore = new Store({ name: 'shortcuts' });
 const isDarkTheme = window.matchMedia('(prefers-color-scheme: dark)');
 const defaultAppTheme = isDarkTheme.matches ? 'dark' : 'light';
-const defaultEditorTheme = isDarkTheme.matches ? 'twilight' : 'sqlserver';
-/** Editor theme codes renamed over time → current code */
-const legacyEditorThemes: Record<string, string> = { eclupse: 'eclipse' };
-const storedEditorTheme = settingsStore.get('editor_theme', defaultEditorTheme) as string;
 
 export type EditorFontSize = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge';
-export type ApplicationTheme = 'light' | 'dark';
+/** Id of the active theme: a built-in one ('dark', 'light') or an installed one (see stores/themes) */
+export type ApplicationTheme = string;
 
 export const useSettingsStore = defineStore('settings', {
    state: () => ({
@@ -28,7 +24,6 @@ export const useSettingsStore = defineStore('settings', {
       lineWrap: settingsStore.get('line_wrap', true) as boolean,
       executeSelected: settingsStore.get('execute_selected', true) as boolean,
       applicationTheme: settingsStore.get('application_theme', defaultAppTheme) as ApplicationTheme,
-      editorTheme: legacyEditorThemes[storedEditorTheme] ?? storedEditorTheme,
       editorFontSize: settingsStore.get('editor_font_size', 'medium') as EditorFontSize,
       restoreTabs: settingsStore.get('restore_tabs', true) as boolean,
       disableBlur: settingsStore.get('disable_blur', false) as boolean,
@@ -72,11 +67,6 @@ export const useSettingsStore = defineStore('settings', {
       changeApplicationTheme (theme: string) {
          this.applicationTheme = theme;
          settingsStore.set('application_theme', this.applicationTheme);
-         ipcRenderer.send('refresh-theme-settings');
-      },
-      changeEditorTheme (theme: string) {
-         this.editorTheme = theme;
-         settingsStore.set('editor_theme', this.editorTheme);
       },
       changeEditorFontSize (size: EditorFontSize) {
          this.editorFontSize = size;

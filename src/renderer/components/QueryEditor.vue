@@ -20,15 +20,17 @@ import { breakpoints } from '@/libs/editor/breakpoints';
 import { baseSetup } from '@/libs/editor/setup';
 import { sqlCompletion, SqlCompletionProvider, SqlEntity } from '@/libs/editor/sql/completion';
 import { getSqlDialect } from '@/libs/editor/sql/dialects';
-import { buildEditorTheme, buildFontTheme, getEditorTheme } from '@/libs/editor/themes';
+import { buildEditorTheme, buildFontTheme } from '@/libs/editor/themes';
 import { EditorApi } from '@/libs/editorApi';
 import { useSettingsStore } from '@/stores/settings';
+import { useThemesStore } from '@/stores/themes';
 import { Workspace } from '@/stores/workspaces';
 
 const settingsStore = useSettingsStore();
 
+const { editorTheme } = storeToRefs(useThemesStore());
+
 const {
-   editorTheme,
    editorFontSize,
    autoComplete,
    lineWrap
@@ -130,7 +132,7 @@ watch(() => props.modelValue, value => {
 });
 
 watch(editorTheme, () => {
-   view?.dispatch({ effects: theme.reconfigure(buildEditorTheme(getEditorTheme(editorTheme.value))) });
+   view?.dispatch({ effects: theme.reconfigure(buildEditorTheme(editorTheme.value)) });
 });
 
 watch(editorFontSize, () => {
@@ -159,7 +161,7 @@ onMounted(() => {
             baseSetup(),
             dialectDefinition.value.dialect,
             completion.of(buildCompletion()),
-            theme.of(buildEditorTheme(getEditorTheme(editorTheme.value))),
+            theme.of(buildEditorTheme(editorTheme.value)),
             fontSize.of(buildFontTheme(editorFontSize.value)),
             wrap.of(lineWrap.value ? EditorView.lineWrapping : []),
             readOnly.of(EditorState.readOnly.of(props.readOnly)),

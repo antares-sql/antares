@@ -15,6 +15,7 @@ import { useApplicationStore } from '@/stores/application';
 import { QueryLog, useConsoleStore } from '@/stores/console';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
+import { migrateLegacyEditorTheme } from '@/stores/themes';
 
 // https://github.com/probil/v-mask/issues/498#issuecomment-827027834
 const vMaskV2 = VueMaskDirective;
@@ -23,6 +24,9 @@ const vMaskV3 = {
    updated: vMaskV2.componentUpdated,
    unmounted: vMaskV2.unbind
 };
+
+// Must run before the stores are created: it can change the active theme
+migrateLegacyEditorTheme();
 
 createApp(App)
    .directive('mask', vMaskV3)

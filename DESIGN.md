@@ -107,9 +107,10 @@ Key icons (PK/FK/unique/index) come from [_table-keys.scss](src/renderer/scss/_t
 
 ### Themes
 
-- The root `#wrapper` gets `theme-dark` or `theme-light` ([App.vue](src/renderer/App.vue)). The code editors (CodeMirror) have their own independent theme setting.
+- The root `#wrapper` gets `theme-dark` or `theme-light` from the **appearance** of the active theme ([App.vue](src/renderer/App.vue)), plus the theme tokens as inline CSS variables. Use the appearance (`useThemesStore().appearance`) for dark/light assets such as logos, never the theme id.
+- Each theme carries its code editor colors: there is no separate editor theme. Its syntax colors are also exposed as `--syntax-<token>` (used by the `.sql-hl-*` classes), so SQL looks the same in the editor, the console and the history.
+- Installed themes can only use the tokens: when a component needs a new color, add a token (see Color) instead of styling `.theme-dark` / `.theme-light`.
 - **Every UI change must be checked in both themes.** Most visual regressions are "looks fine in dark, unreadable in light".
-- Hard-coded dark values in base components (for example `#1d1d1d` in `BaseContextMenu`) are legacy and are being moved to tokens. Do not copy the pattern.
 
 ## App layout
 

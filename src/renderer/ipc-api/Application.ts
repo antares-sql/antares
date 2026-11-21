@@ -1,5 +1,5 @@
 import { ShortcutRecord } from 'common/shortcuts';
-import { ipcRenderer, OpenDialogOptions, OpenDialogReturnValue } from 'electron';
+import { ipcRenderer, OpenDialogOptions, OpenDialogReturnValue, SaveDialogOptions, SaveDialogReturnValue } from 'electron';
 
 import { unproxify } from '../libs/unproxify';
 
@@ -8,7 +8,7 @@ export default class {
       return ipcRenderer.invoke('show-open-dialog', unproxify(options));
    }
 
-   static showSaveDialog (options: OpenDialogOptions): Promise<OpenDialogReturnValue> {
+   static showSaveDialog (options: SaveDialogOptions): Promise<SaveDialogReturnValue> {
       return ipcRenderer.invoke('show-save-dialog', unproxify(options));
    }
 

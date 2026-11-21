@@ -337,7 +337,6 @@ export const heIL = {
       unsavedChanges: 'שינויים שלא נשמרו',
       discardUnsavedChanges: 'יש לך שינויים שלא נשמרו. סגירת כרטיסייה זו תגרום לאובדן השינויים.',
       applicationTheme: 'ערכת נושא ליישום',
-      editorTheme: 'ערכת נושא לעורך',
       wrapLongLines: 'גלישת שורות ארוכות',
       markdownSupported: 'תמיכה ב-Markdown',
       plantATree: 'נטע עץ',

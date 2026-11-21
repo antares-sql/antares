@@ -291,7 +291,6 @@ export const idID = {
       unsavedChanges: 'Perubahan belum disimpan',
       discardUnsavedChanges: 'Anda memiliki beberapa perubahan yang belum disimpan. Dengan menutup tab ini akan membuang perubahan',
       applicationTheme: 'Tema Aplikasi',
-      editorTheme: 'Tema Editor',
       wrapLongLines: 'Bungkus garis panjang',
       includeBetaUpdates: 'Sertakan pembaruan beta',
       markdownSupported: 'Markdown didukung',

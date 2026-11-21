@@ -11,7 +11,17 @@ import { OsMenu, ShortcutRegister } from './libs/ShortcutRegister';
 Store.initRenderer();
 log.errorHandler.startCatching();
 const settingsStore = new Store({ name: 'settings' });
-const appTheme = settingsStore.get('application_theme');
+
+/** Colors of the Windows title bar overlay: sent by the renderer from the active theme, saved for the next start */
+type TitleBarOverlayColors = { color: string; symbolColor: string };
+const isHexColor = (value: unknown) => typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value);
+const getTitleBarOverlayColors = (): TitleBarOverlayColors => {
+   const saved = settingsStore.get('titlebar_overlay') as TitleBarOverlayColors;
+   if (isHexColor(saved?.color) && isHexColor(saved?.symbolColor)) return saved;
+   return settingsStore.get('application_theme') === 'light'
+      ? { color: '#fdfdfd', symbolColor: '#000000' }
+      : { color: '#3f3f3f', symbolColor: '#ffffff' };
+};
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const isMacOS = process.platform === 'darwin';
 const isLinux = process.platform === 'linux';
@@ -45,13 +55,7 @@ async function createMainWindow () {
       autoHideMenuBar: true,
       frame: !isLinux,
       titleBarStyle: 'hidden',
-      titleBarOverlay: isWindows
-         ? {
-            color: appTheme === 'dark' ? '#3f3f3f' : '#fff',
-            symbolColor: appTheme === 'dark' ? '#fff' : '#000',
-            height: 30
-         }
-         : false,
+      titleBarOverlay: isWindows ? { ...getTitleBarOverlayColors(), height: 30 } : false,
       trafficLightPosition: isMacOS ? { x: 10, y: 8 } : undefined,
       backgroundColor: '#1d1d1d'
    });
@@ -86,14 +90,11 @@ require('@electron/remote/main').initialize();
 // Initialize ipcHandlers
 ipcHandlers();
 
-ipcMain.on('refresh-theme-settings', () => {
-   const appTheme = settingsStore.get('application_theme');
-   if (isWindows && mainWindow) {
-      mainWindow.setTitleBarOverlay({
-         color: appTheme === 'dark' ? '#3f3f3f' : '#fff',
-         symbolColor: appTheme === 'dark' ? '#fff' : '#000'
-      });
-   }
+ipcMain.on('refresh-theme-settings', (_, colors: TitleBarOverlayColors) => {
+   if (!isHexColor(colors?.color) || !isHexColor(colors?.symbolColor)) return;
+   settingsStore.set('titlebar_overlay', { color: colors.color, symbolColor: colors.symbolColor });
+   if (isWindows && mainWindow)
+      mainWindow.setTitleBarOverlay({ color: colors.color, symbolColor: colors.symbolColor });
 });
 
 ipcMain.on('change-window-title', (_, title: string) => {

@@ -320,7 +320,6 @@ export const ukUA = {
       unsavedChanges: 'Незбережені зміни',
       discardUnsavedChanges: 'У вас є незбережені зміни. Закривши цю вкладку, ці зміни будуть скасовані.',
       applicationTheme: 'Тема додатка',
-      editorTheme: 'Тема редактора',
       wrapLongLines: 'Переносити довгі рядки',
       markdownSupported: 'Підтримка Markdown',
       plantATree: 'Посадити дерево',

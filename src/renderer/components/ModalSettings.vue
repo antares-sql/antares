@@ -239,119 +239,7 @@
                   </div>
 
                   <div v-show="selectedTab === 'themes'" class="panel-body py-4">
-                     <div class="container">
-                        <div class="columns">
-                           <div class="column col-12 h6 text-uppercase mb-2">
-                              {{ t('application.applicationTheme') }}
-                           </div>
-                           <div
-                              class="column col-6 c-hand theme-block"
-                              :class="{'selected': applicationTheme === 'dark'}"
-                              @click="changeApplicationTheme('dark')"
-                           >
-                              <img :src="darkPreview" class="img-responsive img-fit-cover s-rounded">
-                              <div class="theme-name text-light">
-                                 <BaseIcon
-                                    icon-name="mdiMoonWaningCrescent"
-                                    class="mr-1"
-                                    :size="48"
-                                 />
-                                 <div class="h6 mt-4">
-                                    {{ t('application.dark') }}
-                                 </div>
-                              </div>
-                           </div>
-                           <div
-                              class="column col-6 c-hand theme-block"
-                              :class="{'selected': applicationTheme === 'light'}"
-                              @click="changeApplicationTheme('light')"
-                           >
-                              <img :src="lightPreview" class="img-responsive img-fit-cover s-rounded">
-                              <div class="theme-name text-dark">
-                                 <BaseIcon
-                                    icon-name="mdiWhiteBalanceSunny"
-                                    class="mr-1"
-                                    :size="48"
-                                 />
-                                 <div class="h6 mt-4">
-                                    {{ t('application.light') }}
-                                 </div>
-                              </div>
-                           </div>
-                        </div>
-
-                        <div class="columns mt-4">
-                           <div class="column col-12 h6 text-uppercase mb-2 mt-4">
-                              {{ t('application.editorTheme') }}
-                           </div>
-                           <div class="column col-5 h5 mb-4">
-                              <BaseSelect
-                                 v-model="localEditorTheme"
-                                 class="form-select"
-                                 :options="editorThemes"
-                                 option-label="name"
-                                 option-track-by="code"
-                                 group-label="group"
-                                 group-values="themes"
-                                 @change="changeEditorTheme(localEditorTheme)"
-                              />
-                           </div>
-                           <div class="column col-7 mb-4">
-                              <div class="btn-group btn-group-block">
-                                 <button
-                                    class="btn btn-dark cut-text"
-                                    :class="{'active': editorFontSize === 'xsmall'}"
-                                    @click="changeEditorFontSize('xsmall')"
-                                 >
-                                    10px
-                                 </button>
-                                 <button
-                                    class="btn btn-dark cut-text"
-                                    :class="{'active': editorFontSize === 'small'}"
-                                    @click="changeEditorFontSize('small')"
-                                 >
-                                    12px
-                                 </button>
-                                 <button
-                                    class="btn btn-dark cut-text"
-                                    :class="{'active': editorFontSize === 'medium'}"
-                                    @click="changeEditorFontSize('medium')"
-                                 >
-                                    14px
-                                 </button>
-                                 <button
-                                    class="btn btn-dark cut-text"
-                                    :class="{'active': editorFontSize === 'large'}"
-                                    @click="changeEditorFontSize('large')"
-                                 >
-                                    16px
-                                 </button>
-                                 <button
-                                    class="btn btn-dark cut-text"
-                                    :class="{'active': editorFontSize === 'xlarge'}"
-                                    @click="changeEditorFontSize('xlarge')"
-                                 >
-                                    18px
-                                 </button>
-                                 <button
-                                    class="btn btn-dark cut-text"
-                                    :class="{'active': editorFontSize === 'xxlarge'}"
-                                    @click="changeEditorFontSize('xxlarge')"
-                                 >
-                                    20px
-                                 </button>
-                              </div>
-                           </div>
-                           <div class="column col-12">
-                              <BaseTextEditor
-                                 :model-value="exampleQuery"
-                                 :mode="workspace?.customizations?.sqlDialect ?? 'sql'"
-                                 :read-only="true"
-                                 :height="270"
-                              />
-                           </div>
-                        </div>
-                     </div>
+                     <ModalSettingsThemes />
                   </div>
 
                   <div v-show="selectedTab === 'shortcuts'" class="panel-body py-4">
@@ -424,24 +312,21 @@ import { useI18n } from 'vue-i18n';
 
 import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
-import BaseTextEditor from '@/components/BaseTextEditor.vue';
 import ModalSettingsChangelog from '@/components/ModalSettingsChangelog.vue';
 import ModalSettingsData from '@/components/ModalSettingsData.vue';
 import ModalSettingsShortcuts from '@/components/ModalSettingsShortcuts.vue';
+import ModalSettingsThemes from '@/components/ModalSettingsThemes.vue';
 import ModalSettingsUpdate from '@/components/ModalSettingsUpdate.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import { AvailableLocale } from '@/i18n';
 import { localesNames } from '@/i18n/supported-locales';
-import { editorThemes as availableEditorThemes } from '@/libs/editor/themes';
 import { useApplicationStore } from '@/stores/application';
 import { useSettingsStore } from '@/stores/settings';
-import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
 
 const applicationStore = useApplicationStore();
 const settingsStore = useSettingsStore();
-const workspacesStore = useWorkspacesStore();
 
 const { trapRef } = useFocusTrap({ disableAutofocus: true });
 
@@ -458,13 +343,8 @@ const {
    defaultCopyType: selectedCopyType,
    notificationsTimeout,
    restoreTabs,
-   disableBlur,
-   applicationTheme,
-   editorTheme,
-   editorFontSize
+   disableBlur
 } = storeToRefs(settingsStore);
-
-const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const {
    changeLocale,
@@ -474,9 +354,6 @@ const {
    changeAutoComplete,
    changeLineWrap,
    changeExecuteSelected,
-   changeApplicationTheme,
-   changeEditorTheme,
-   changeEditorFontSize,
    updateNotificationsTimeout,
    changeDefaultCopyType
 } = settingsStore;
@@ -485,47 +362,17 @@ const {
    appName,
    appVersion
 } = applicationStore;
-const { getWorkspace } = workspacesStore;
 
 const appAuthor = 'Fabio Di Stasio';
 const pageSizes = [30, 40, 100, 250, 500, 1000];
 const contributors = process.env.APP_CONTRIBUTORS;
 const appLogo = require('../images/logo.svg');
-const darkPreview = require('../images/dark.png');
-const lightPreview = require('../images/light.png');
-const exampleQuery = `-- This is an example
-SELECT
-    employee.id,
-    employee.first_name,
-    employee.last_name,
-    SUM(DATEDIFF("SECOND", call.start, call.end)) AS call_duration
-FROM call
-INNER JOIN employee ON call.employee_id = employee.id
-GROUP BY
-    employee.id,
-    employee.first_name,
-    employee.last_name
-ORDER BY
-    employee.id ASC;
-`;
 
 const localLocale: Ref<AvailableLocale> = ref(null);
 const defaultCopyType: Ref<string> = ref(null);
 const localPageSize: Ref<number> = ref(null);
 const localTimeout: Ref<number> = ref(null);
-const localEditorTheme: Ref<string> = ref(null);
 const selectedTab: Ref<string> = ref('general');
-
-const editorThemes = computed(() => [
-   {
-      group: t('application.light'),
-      themes: availableEditorThemes.filter(theme => !theme.dark).map(({ code, name }) => ({ code, name }))
-   },
-   {
-      group: t('application.dark'),
-      themes: availableEditorThemes.filter(theme => theme.dark).map(({ code, name }) => ({ code, name }))
-   }
-]);
 
 const locales = computed(() => {
    const locales = [];
@@ -544,10 +391,6 @@ const copyTypes = computed(() => [
 ]);
 
 const hasUpdates = computed(() => ['available', 'downloading', 'downloaded', 'link'].includes(updateStatus.value));
-
-const workspace = computed(() => {
-   return getWorkspace(selectedWorkspace.value);
-});
 
 const otherContributors = computed(() => {
    return contributors
@@ -601,7 +444,6 @@ localLocale.value = selectedLocale.value;
 defaultCopyType.value = selectedCopyType.value;
 localPageSize.value = pageSize.value as number;
 localTimeout.value = notificationsTimeout.value as number;
-localEditorTheme.value = editorTheme.value as string;
 selectedTab.value = selectedSettingTab.value;
 window.addEventListener('keydown', onKey);
 
@@ -633,33 +475,6 @@ onBeforeUnmount(() => {
         min-height: calc(25vh - 70px);
         max-height: 65vh;
         overflow: auto;
-
-        .theme-block {
-          position: relative;
-          text-align: center;
-
-          &.selected {
-            img {
-              box-shadow: 0 0 0 3px var(--primary-color);
-            }
-          }
-
-          &.disabled {
-            cursor: not-allowed;
-            opacity: 0.5;
-          }
-
-          .theme-name {
-            position: absolute;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            top: 0;
-            height: 100%;
-            width: 100%;
-          }
-        }
       }
 
       .badge::after {

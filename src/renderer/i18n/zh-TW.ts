@@ -328,7 +328,6 @@ export const zhTW = {
       unsavedChanges: '未保存的變更',
       discardUnsavedChanges: '您有一些未保存的變更, 關閉此標簽將放棄這些變更.',
       applicationTheme: '應用程式主題',
-      editorTheme: '編輯器主題',
       wrapLongLines: '將長行換行顯示',
       markdownSupported: '支援 Markdown',
       plantATree: '種植一棵樹',

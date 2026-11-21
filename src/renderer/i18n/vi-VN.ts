@@ -274,7 +274,6 @@ export const viVN = {
       unsavedChanges: 'Chưa lưu lại thay đổi',
       discardUnsavedChanges: 'Bạn có một số thay đổi chưa được lưu. Đóng tab này, những thay đổi này sẽ bị huỷ bỏ.',
       applicationTheme: 'Chủ đề ứng dụng',
-      editorTheme: 'Trình chỉnh sửa chủ đề',
       wrapLongLines: 'Wrap long lines',
       includeBetaUpdates: 'Bao gồm các bản cập nhật beta',
       markdownSupported: 'Hỗ trợ Markdown',

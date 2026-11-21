@@ -342,7 +342,6 @@ export const esES = {
       unsavedChanges: 'Cambios sin guardar',
       discardUnsavedChanges: 'Tiene algunos cambios sin guardar. Al cerrar esta pestaña, serán descartados.',
       applicationTheme: 'Tema de la Aplicación',
-      editorTheme: 'Editor de Tema',
       wrapLongLines: 'Mantener lineas largas',
       markdownSupported: 'Markdown soportado',
       plantATree: 'Planta un arbol',

@@ -321,7 +321,6 @@ export const ruRU = {
       unsavedChanges: 'Несохраненные изменения',
       discardUnsavedChanges: 'У вас имеются несохраненные данные. Закрытие этой вкладки приведёт к их отмене.',
       applicationTheme: 'Тема приложения',
-      editorTheme: 'Редактировать тему',
       wrapLongLines: 'Перенос длинных строк',
       includeBetaUpdates: 'Получать бета-версии обновлений',
       markdownSupported: 'Поддержка Markdown',

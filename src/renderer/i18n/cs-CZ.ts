@@ -338,7 +338,6 @@ export const csCZ = {
       unsavedChanges: 'Neuložené změny',
       discardUnsavedChanges: 'Máte nějaké neuložené změny. Zavřením této karty budou tyto změny zrušeny.',
       applicationTheme: 'Motiv aplikace',
-      editorTheme: 'Motiv editoru',
       wrapLongLines: 'Zalamovat dlouhé řádky',
       markdownSupported: 'Podporován Markdown',
       plantATree: 'Zasaďte strom',

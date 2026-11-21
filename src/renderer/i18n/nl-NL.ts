@@ -320,7 +320,6 @@ export const nlNL = {
       unsavedChanges: 'Niet opgeslagen wijzigingen',
       discardUnsavedChanges: 'Je hebt niet opgeslagen wijzigingen. Closing this tab these changes will be discarded.',
       applicationTheme: 'Applicatiethema',
-      editorTheme: 'Editor Thema',
       wrapLongLines: 'Lange regels afbreken',
       includeBetaUpdates: 'Include beta updates',
       markdownSupported: 'Markdown wordt ondersteund',

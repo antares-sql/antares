@@ -495,31 +495,35 @@ option:checked {
   }
 }
 
-/* sql-highlight */
+/* sql-highlight: same colors as the code editor of the active theme (--syntax-* set by App.vue) */
 code.sql {
   font-family: monospace;
 }
 
 .sql-hl-keyword {
-  color: var(--primary-color);
+  color: var(--syntax-keyword, var(--primary-color));
 }
 
 .sql-hl-function {
-  color: darkorchid;
+  color: var(--syntax-builtin, darkorchid);
 }
 
 .sql-hl-number {
-  color: $number-color;
+  color: var(--syntax-number, $number-color);
 }
 
 .sql-hl-string {
-  color: $string-color;
+  color: var(--syntax-string, $string-color);
 }
 
 .sql-hl-special {
-  color: goldenrod;
+  color: var(--syntax-operator, goldenrod);
 }
 
 .sql-hl-bracket {
-  color: darkorchid;
+  color: var(--syntax-punctuation, darkorchid);
+}
+
+.sql-hl-comment {
+  color: var(--syntax-comment, inherit);
 }

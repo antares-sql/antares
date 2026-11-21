@@ -1,5 +1,10 @@
 <template>
-   <div id="wrapper" :class="[`theme-${applicationTheme}`, !disableBlur || 'no-blur']">
+   <div
+      id="wrapper"
+      ref="wrapper"
+      :class="[`theme-${appearance}`, !disableBlur || 'no-blur']"
+      :style="themeVariables"
+   >
       <TheTitleBar />
       <div id="window-content">
          <TheSettingBar @show-connections-modal="isAllConnectionsModal = true" />
@@ -34,16 +39,18 @@
 import { getCurrentWindow, Menu } from '@electron/remote';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
-import { defineAsyncComponent, onMounted, Ref, ref } from 'vue';
+import { computed, defineAsyncComponent, nextTick, onMounted, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ModalExportSchema from '@/components/ModalExportSchema.vue';
 import TheSettingBar from '@/components/TheSettingBar.vue';
+import { titleBarOverlayColors } from '@/libs/themes/titleBarColors';
 import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSchemaExportStore } from '@/stores/schemaExport';
 import { useSettingsStore } from '@/stores/settings';
+import { useThemesStore } from '@/stores/themes';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
 import { useConsoleStore } from './stores/console';
@@ -69,11 +76,13 @@ const {
    isScratchpad
 } = storeToRefs(applicationStore);
 const { connections } = storeToRefs(connectionsStore);
-const { applicationTheme, disableBlur } = storeToRefs(settingsStore);
+const { disableBlur } = storeToRefs(settingsStore);
+const themesStore = useThemesStore();
+const { activeTheme, appearance, cssVariables, syntaxVariables } = storeToRefs(themesStore);
+const themeVariables = computed(() => ({ ...cssVariables.value, ...syntaxVariables.value }));
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const { checkVersionUpdate } = applicationStore;
-const { changeApplicationTheme } = settingsStore;
 
 const schemaExportStore = useSchemaExportStore();
 const { hideExportModal } = schemaExportStore;
@@ -83,11 +92,15 @@ const consoleStore = useConsoleStore();
 
 const isAllConnectionsModal: Ref<boolean> = ref(false);
 
-document.addEventListener('DOMContentLoaded', () => {
-   setTimeout(() => {
-      changeApplicationTheme(applicationTheme.value);// Forces persistentStore to save on file and mail process
-   }, 1000);
-});
+const wrapper: Ref<HTMLDivElement> = ref(null);
+
+/** The native window controls (Windows title bar overlay) follow the theme title bar */
+const syncTitleBar = async () => {
+   await nextTick();
+   if (wrapper.value) ipcRenderer.send('refresh-theme-settings', titleBarOverlayColors(wrapper.value));
+};
+watch(activeTheme, syncTitleBar);
+onMounted(syncTitleBar);
 
 onMounted(() => {
    const { storageError } = connectionsStore;

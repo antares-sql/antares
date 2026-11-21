@@ -209,7 +209,6 @@ export const deDE = {
       unsavedChanges: 'Ungespeicherte Änderungen',
       discardUnsavedChanges: 'Du hast ungespeicherte Änderungen. Wenn du den Tab verlässt, werden diese Änderungen verworfen.',
       applicationTheme: 'Anwendungsdesign',
-      editorTheme: 'Editordesign',
       wrapLongLines: 'Lange Zeilen umbrechen',
       includeBetaUpdates: 'Beta-Aktualisierungen berücksichtigen',
       markdownSupported: 'Unterstützt Markdown',

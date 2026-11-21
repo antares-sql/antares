@@ -21,8 +21,9 @@ import { onBeforeUnmount, onMounted, PropType, Ref, ref, watch } from 'vue';
 
 import { loadLanguage } from '@/libs/editor/languages';
 import { baseSetup } from '@/libs/editor/setup';
-import { buildEditorTheme, buildFontTheme, getEditorTheme } from '@/libs/editor/themes';
+import { buildEditorTheme, buildFontTheme } from '@/libs/editor/themes';
 import { useSettingsStore } from '@/stores/settings';
+import { useThemesStore } from '@/stores/themes';
 
 const props = defineProps({
    modelValue: String,
@@ -38,8 +39,9 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue']);
 const settingsStore = useSettingsStore();
 
+const { editorTheme } = storeToRefs(useThemesStore());
+
 const {
-   editorTheme,
    editorFontSize,
    lineWrap
 } = storeToRefs(settingsStore);
@@ -70,7 +72,7 @@ watch(() => props.modelValue, value => {
 });
 
 watch(editorTheme, () => {
-   view?.dispatch({ effects: theme.reconfigure(buildEditorTheme(getEditorTheme(editorTheme.value))) });
+   view?.dispatch({ effects: theme.reconfigure(buildEditorTheme(editorTheme.value)) });
 });
 
 watch(editorFontSize, () => {
@@ -93,7 +95,7 @@ onMounted(() => {
          extensions: [
             baseSetup({ gutter: props.showLineNumbers }),
             language.of([]),
-            theme.of(buildEditorTheme(getEditorTheme(editorTheme.value))),
+            theme.of(buildEditorTheme(editorTheme.value)),
             fontSize.of(buildFontTheme(editorFontSize.value)),
             wrap.of(lineWrap.value ? EditorView.lineWrapping : []),
             readOnly.of(EditorState.readOnly.of(props.readOnly)),
