@@ -74,6 +74,25 @@
 
       <div class="columns mt-2">
          <div class="column col-12 h6 text-uppercase mb-2">
+            {{ t('application.interfaceFontSize') }}
+         </div>
+         <div class="column col-12 mb-4">
+            <div class="btn-group btn-group-block">
+               <button
+                  v-for="(px, size) in uiFontSizes"
+                  :key="size"
+                  class="btn btn-dark cut-text"
+                  :class="{'active': uiFontSize === size}"
+                  @click="changeUiFontSize(size)"
+               >
+                  {{ Math.round(px / uiFontSizes.medium * 100) }}%
+               </button>
+            </div>
+         </div>
+      </div>
+
+      <div class="columns mt-2">
+         <div class="column col-12 h6 text-uppercase mb-2">
             {{ t('application.codeEditor') }}
          </div>
          <div class="column col-12 mb-4">
@@ -134,7 +153,7 @@ import BaseIcon from '@/components/BaseIcon.vue';
 import BaseTextEditor from '@/components/BaseTextEditor.vue';
 import ThemePreview from '@/components/ThemePreview.vue';
 import { useNotificationsStore } from '@/stores/notifications';
-import { EditorFontSize, useSettingsStore } from '@/stores/settings';
+import { EditorFontSize, uiFontSizes, useSettingsStore } from '@/stores/settings';
 import { useThemesStore } from '@/stores/themes';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
@@ -166,10 +185,10 @@ const themesStore = useThemesStore();
 const workspacesStore = useWorkspacesStore();
 const { addNotification } = useNotificationsStore();
 
-const { editorFontSize } = storeToRefs(settingsStore);
+const { editorFontSize, uiFontSize } = storeToRefs(settingsStore);
 const { allThemes, activeTheme } = storeToRefs(themesStore);
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
-const { changeApplicationTheme, changeEditorFontSize } = settingsStore;
+const { changeApplicationTheme, changeEditorFontSize, changeUiFontSize } = settingsStore;
 const { isBuiltin, removeTheme } = themesStore;
 
 const themeToRemove: Ref<AntaresTheme> = ref(null);

@@ -425,6 +425,7 @@ export const enUS = {
       themeImportError: 'Unable to import the theme: {error}',
       themeExported: 'Theme exported',
       codeEditor: 'Code editor',
+      interfaceFontSize: 'Interface text size',
       wrapLongLines: 'Wrap long lines',
       markdownSupported: 'Markdown supported',
       plantATree: 'Plant a Tree',

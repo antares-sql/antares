@@ -370,6 +370,7 @@ export const itIT = {
       themeImportError: 'Impossibile importare il tema: {error}',
       themeExported: 'Tema esportato',
       codeEditor: 'Editor di codice',
+      interfaceFontSize: 'Dimensione testo interfaccia',
       wrapLongLines: 'A capo righe lunghe',
       includeBetaUpdates: 'Includi aggiornamenti beta',
       markdownSupported: 'Markdown supportato',

@@ -49,7 +49,7 @@ import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSchemaExportStore } from '@/stores/schemaExport';
-import { useSettingsStore } from '@/stores/settings';
+import { uiFontSizes, useSettingsStore } from '@/stores/settings';
 import { useThemesStore } from '@/stores/themes';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
@@ -76,7 +76,7 @@ const {
    isScratchpad
 } = storeToRefs(applicationStore);
 const { connections } = storeToRefs(connectionsStore);
-const { disableBlur } = storeToRefs(settingsStore);
+const { disableBlur, uiFontSize } = storeToRefs(settingsStore);
 const themesStore = useThemesStore();
 const { activeTheme, appearance, cssVariables, syntaxVariables } = storeToRefs(themesStore);
 const themeVariables = computed(() => ({ ...cssVariables.value, ...syntaxVariables.value }));
@@ -94,12 +94,26 @@ const isAllConnectionsModal: Ref<boolean> = ref(false);
 
 const wrapper: Ref<HTMLDivElement> = ref(null);
 
-/** The native window controls (Windows title bar overlay) follow the theme title bar */
+/** Interface font size: the root font size, everything sized in rem follows it */
+const applyUiFontSize = () => {
+   document.documentElement.style.fontSize = `${uiFontSizes[uiFontSize.value] ?? uiFontSizes.medium}px`;
+};
+applyUiFontSize();
+
+/** The native window controls (Windows title bar overlay) follow the theme title bar, color and height */
 const syncTitleBar = async () => {
    await nextTick();
-   if (wrapper.value) ipcRenderer.send('refresh-theme-settings', titleBarOverlayColors(wrapper.value));
+   if (!wrapper.value) return;
+   ipcRenderer.send('refresh-theme-settings', {
+      ...titleBarOverlayColors(wrapper.value),
+      height: Math.round(1.5 * (uiFontSizes[uiFontSize.value] ?? uiFontSizes.medium)) // $titlebar-height: 1.5rem
+   });
 };
 watch(activeTheme, syncTitleBar);
+watch(uiFontSize, () => {
+   applyUiFontSize();
+   syncTitleBar();
+});
 onMounted(syncTitleBar);
 
 onMounted(() => {

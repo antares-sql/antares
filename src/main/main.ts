@@ -13,14 +13,16 @@ log.errorHandler.startCatching();
 const settingsStore = new Store({ name: 'settings' });
 
 /** Colors of the Windows title bar overlay: sent by the renderer from the active theme, saved for the next start */
-type TitleBarOverlayColors = { color: string; symbolColor: string };
+type TitleBarOverlayColors = { color: string; symbolColor: string; height?: number };
+const isOverlayHeight = (value: unknown) => typeof value === 'number' && value >= 20 && value <= 60;
 const isHexColor = (value: unknown) => typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value);
 const getTitleBarOverlayColors = (): TitleBarOverlayColors => {
    const saved = settingsStore.get('titlebar_overlay') as TitleBarOverlayColors;
-   if (isHexColor(saved?.color) && isHexColor(saved?.symbolColor)) return saved;
+   if (isHexColor(saved?.color) && isHexColor(saved?.symbolColor))
+      return { color: saved.color, symbolColor: saved.symbolColor, height: isOverlayHeight(saved.height) ? saved.height : 30 };
    return settingsStore.get('application_theme') === 'light'
-      ? { color: '#fdfdfd', symbolColor: '#000000' }
-      : { color: '#3f3f3f', symbolColor: '#ffffff' };
+      ? { color: '#fdfdfd', symbolColor: '#000000', height: 30 }
+      : { color: '#3f3f3f', symbolColor: '#ffffff', height: 30 };
 };
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const isMacOS = process.platform === 'darwin';
@@ -55,7 +57,7 @@ async function createMainWindow () {
       autoHideMenuBar: true,
       frame: !isLinux,
       titleBarStyle: 'hidden',
-      titleBarOverlay: isWindows ? { ...getTitleBarOverlayColors(), height: 30 } : false,
+      titleBarOverlay: isWindows ? getTitleBarOverlayColors() : false,
       trafficLightPosition: isMacOS ? { x: 10, y: 8 } : undefined,
       backgroundColor: '#1d1d1d'
    });
@@ -92,9 +94,9 @@ ipcHandlers();
 
 ipcMain.on('refresh-theme-settings', (_, colors: TitleBarOverlayColors) => {
    if (!isHexColor(colors?.color) || !isHexColor(colors?.symbolColor)) return;
-   settingsStore.set('titlebar_overlay', { color: colors.color, symbolColor: colors.symbolColor });
-   if (isWindows && mainWindow)
-      mainWindow.setTitleBarOverlay({ color: colors.color, symbolColor: colors.symbolColor });
+   const overlay = { color: colors.color, symbolColor: colors.symbolColor, height: isOverlayHeight(colors.height) ? colors.height : 30 };
+   settingsStore.set('titlebar_overlay', overlay);
+   if (isWindows && mainWindow) mainWindow.setTitleBarOverlay(overlay);
 });
 
 ipcMain.on('change-window-title', (_, title: string) => {

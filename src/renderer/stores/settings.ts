@@ -9,6 +9,10 @@ const shortcutsStore = new Store({ name: 'shortcuts' });
 const isDarkTheme = window.matchMedia('(prefers-color-scheme: dark)');
 const defaultAppTheme = isDarkTheme.matches ? 'dark' : 'light';
 
+/** Root font size of the interface: everything sized in rem scales with it (Spectre base is 20px) */
+export const uiFontSizes = { small: 18, medium: 20, large: 22, xlarge: 24, xxlarge: 26 } as const;
+export type UiFontSize = keyof typeof uiFontSizes;
+
 export type EditorFontSize = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge';
 /** Id of the active theme: a built-in one ('dark', 'light') or an installed one (see stores/themes) */
 export type ApplicationTheme = string;
@@ -25,6 +29,7 @@ export const useSettingsStore = defineStore('settings', {
       executeSelected: settingsStore.get('execute_selected', true) as boolean,
       applicationTheme: settingsStore.get('application_theme', defaultAppTheme) as ApplicationTheme,
       editorFontSize: settingsStore.get('editor_font_size', 'medium') as EditorFontSize,
+      uiFontSize: settingsStore.get('ui_font_size', 'medium') as UiFontSize,
       restoreTabs: settingsStore.get('restore_tabs', true) as boolean,
       disableBlur: settingsStore.get('disable_blur', false) as boolean,
       shortcuts: shortcutsStore.get('shortcuts', []) as ShortcutRecord[],
@@ -67,6 +72,10 @@ export const useSettingsStore = defineStore('settings', {
       changeApplicationTheme (theme: string) {
          this.applicationTheme = theme;
          settingsStore.set('application_theme', this.applicationTheme);
+      },
+      changeUiFontSize (size: UiFontSize) {
+         this.uiFontSize = size in uiFontSizes ? size : 'medium';
+         settingsStore.set('ui_font_size', this.uiFontSize);
       },
       changeEditorFontSize (size: EditorFontSize) {
          this.editorFontSize = size;
