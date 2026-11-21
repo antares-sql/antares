@@ -1,9 +1,21 @@
+@use "sass:color";
+@use "sass:meta";
+
+// HSL lightness that works on both old (< 1.79, no color.channel) and new Sass (color.lightness deprecated).
+// Antares: once the project is on Sass >= 1.79, replace it with color.channel($color, "lightness", $space: hsl)
+@function hsl-lightness($color) {
+  @if meta.function-exists("channel", "color") {
+    @return meta.call(meta.get-function("channel", $module: "color"), $color, "lightness", $space: hsl);
+  }
+  @return meta.call(meta.get-function("lightness", $module: "color"), $color);
+}
+
 // Background color utility mixin
 @mixin bg-color-variant($name: ".bg-primary", $color: $primary-color) {
   #{$name} {
     background: $color !important;
 
-    @if (lightness($color) < 60) {
+    @if (hsl-lightness($color) < 60) {
       color: $light-color;
     }
   }
@@ -18,10 +30,10 @@
   a#{$name} {
     &:focus,
     &:hover {
-      color: darken($color, 5%);
+      color: color.adjust($color, $lightness: -5%);
     }
     &:visited {
-      color: lighten($color, 5%);
+      color: color.adjust($color, $lightness: 5%);
     }
   }
 }
