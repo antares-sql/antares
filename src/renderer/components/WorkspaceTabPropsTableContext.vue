@@ -6,12 +6,12 @@
       <div class="context-element">
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiKeyPlus"
                :size="18"
             /> {{ t('database.createNewIndex') }}</span>
          <BaseIcon
-            class="text-light mt-1"
+            class="mt-1"
             icon-name="mdiChevronRight"
             :size="18"
          />
@@ -37,12 +37,12 @@
       <div v-if="indexes.length" class="context-element">
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiKeyArrowRight"
                :size="18"
             /> {{ t('database.addToIndex') }}</span>
          <BaseIcon
-            class="text-light mt-1"
+            class="mt-1"
             icon-name="mdiChevronRight"
             :size="18"
          />
@@ -68,7 +68,7 @@
       <div class="context-element" @click="duplicateField">
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiContentDuplicate"
                :size="18"
             /> {{ t('general.duplicate') }}</span>
@@ -76,7 +76,7 @@
       <div class="context-element" @click="deleteField">
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiDelete"
                :size="18"
             /> {{ t('database.deleteField') }}</span>

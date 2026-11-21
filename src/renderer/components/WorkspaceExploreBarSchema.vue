@@ -479,12 +479,10 @@
 <script setup lang="ts">
 import { EventInfos, FunctionInfos, RoutineInfos, TableInfos, TriggerFunctionInfos, TriggerInfos, UserTypeInfos, UserTypeKind } from 'common/interfaces/antares';
 import { formatBytes } from 'common/libs/formatBytes';
-import { storeToRefs } from 'pinia';
 import { computed, Prop, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseIcon from '@/components/BaseIcon.vue';
-import { useSettingsStore } from '@/stores/settings';
 import { Breadcrumb, useWorkspacesStore, WorkspaceStructure } from '@/stores/workspaces';
 
 const { t } = useI18n();
@@ -502,10 +500,7 @@ const emit = defineEmits([
    'show-misc-folder-context'
 ]);
 
-const settingsStore = useSettingsStore();
 const workspacesStore = useWorkspacesStore();
-
-const { applicationTheme } = storeToRefs(settingsStore);
 
 const {
    getLoadedSchemas,
@@ -743,10 +738,7 @@ const showMiscFolderContext = (event: MouseEvent, type: string) => {
 
 const piePercentage = (val: number) => {
    const perc = val / maxSize.value * 100;
-   if (applicationTheme.value === 'dark')
-      return { background: `conic-gradient(lime ${perc}%, white 0)` };
-   else
-      return { background: `conic-gradient(teal ${perc}%, silver 0)` };
+   return { background: `conic-gradient(var(--size-chart-fill) ${perc}%, var(--size-chart-track) 0)` };
 };
 
 const setBreadcrumbs = (payload: Breadcrumb) => {

@@ -12,14 +12,15 @@ $success-color: var(--success); // theme tokens: values in themes/*-theme.scss
 $error-color: var(--error);
 $warning-color: var(--warning);
 
-$string-color: seagreen;
-$number-color: cornflowerblue;
-$date-color: coral;
-$bit-color: lightskyblue;
-$blob-color: darkorchid;
-$array-color: yellowgreen;
-$enum-color: goldenrod;
-$unknown-color: gray;
+// Column data type colors: theme tokens, values in themes/*-theme.scss
+$string-color: var(--type-string);
+$number-color: var(--type-number);
+$date-color: var(--type-date);
+$bit-color: var(--type-bit);
+$blob-color: var(--type-blob);
+$array-color: var(--type-array);
+$enum-color: var(--type-enum);
+$unknown-color: var(--type-unknown);
 
 /* Sizes */
 $border-radius: var(--radius); // token in themes/_shape-tokens.scss

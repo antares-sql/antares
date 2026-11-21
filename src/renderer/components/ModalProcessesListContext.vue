@@ -6,12 +6,11 @@
       <div v-if="props.selectedRow" class="context-element">
          <span class="d-flex"><BaseIcon
             icon-name="mdiContentCopy"
-            class="text-light mt-1 mr-1"
+            class="mt-1 mr-1"
             :size="18"
          /> {{ t('general.copy') }}</span>
          <BaseIcon
             icon-name="mdiChevronRight"
-            class="text-light"
             :size="18"
          />
          <div class="context-submenu">
@@ -24,7 +23,7 @@
                   <BaseIcon
                      icon-name="mdiNumeric0"
                      :rotate="90"
-                     class="text-light mt-1 mr-1"
+                     class="mt-1 mr-1"
                      :size="18"
                   /> {{ t('database.cell', 1) }}
                </span>
@@ -37,7 +36,7 @@
                <span class="d-flex">
                   <BaseIcon
                      icon-name="mdiTableRow"
-                     class="text-light mt-1 mr-1"
+                     class="mt-1 mr-1"
                      :size="18"
                   /> {{ t('database.row', 1) }}
                </span>
@@ -52,7 +51,7 @@
          <span class="d-flex">
             <BaseIcon
                icon-name="mdiCloseCircleOutline"
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                :size="18"
             /> {{ t('database.killProcess') }}
          </span>

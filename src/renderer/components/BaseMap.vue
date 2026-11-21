@@ -101,6 +101,6 @@ onMounted(() => {
   align-items: center;
   background: var(--primary-color);
   border-radius: 50%;
-  box-shadow: 0 0 5px 1px darken($body-font-color-dark, 40%);
+  box-shadow: 0 0 5px 1px color-mix(in srgb, var(--text) 60%, transparent);
 }
 </style>

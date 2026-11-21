@@ -207,7 +207,7 @@ if (!connectionsArr.value.length)
 
       li {
          margin: 0;
-         background: $bg-color-light-dark;
+         background: var(--bg-settingbar);
 
          &.ghost {
             border-radius: $border-radius;
@@ -252,7 +252,7 @@ if (!connectionsArr.value.length)
             height: 0;
             width: 3px;
             transition: height 0.2s;
-            background-color: rgba($color: #fff, $alpha: 0.8);
+            background-color: color-mix(in srgb, var(--settingbar-text) 80%, transparent);
             border-radius: $border-radius;
          }
 
@@ -285,7 +285,7 @@ if (!connectionsArr.value.length)
                text-overflow: ellipsis;
                width: calc($settingbar-width - 15px);
                line-height: 1.1;
-               color: rgba($body-font-color-dark, 0.8);
+               color: color-mix(in srgb, var(--settingbar-text) 80%, transparent);
                text-align: center;
             }
 
@@ -295,7 +295,7 @@ if (!connectionsArr.value.length)
                &::before {
                   font: normal normal normal 14px/1 "Material Design Icons";
                   content: "\F0403";
-                  color: $body-font-color-dark;
+                  color: var(--settingbar-text);
                   transform: rotate(45deg);
                   opacity: 0.25;
                   top: -8px;

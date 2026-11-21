@@ -10,7 +10,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiTableCog"
                :size="18"
             /> {{ t('database.createNewView') }}</span>
@@ -22,7 +22,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiTableCog"
                :size="18"
             /> {{ t('database.createNewMaterializedView') }}</span>
@@ -34,7 +34,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiTableCog"
                :size="18"
             /> {{ t('database.createNewTrigger') }}</span>
@@ -46,7 +46,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiSyncCircle"
                :size="18"
             /> {{ t('database.createNewRoutine') }}</span>
@@ -58,7 +58,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiArrowRightBoldBox"
                :size="18"
             /> {{ t('database.createNewFunction') }}</span>
@@ -70,7 +70,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiCogClockwise"
                :size="18"
             /> {{ t('database.createNewFunction') }}</span>
@@ -82,7 +82,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiCalendarClock"
                :size="18"
             /> {{ t('database.createNewScheduler') }}</span>
@@ -94,7 +94,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiShapePlus"
                :size="18"
             /> {{ t('database.createNewUserType') }}</span>

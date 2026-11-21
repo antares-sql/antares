@@ -6,12 +6,12 @@
       <div v-if="!connection.readonly" class="context-element">
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiPlus"
                :size="18"
             /> {{ t('general.add') }}</span>
          <BaseIcon
-            class="text-light ml-1"
+            class="ml-1"
             icon-name="mdiChevronRight"
             :size="18"
          />
@@ -23,7 +23,7 @@
             >
                <span class="d-flex">
                   <BaseIcon
-                     class="text-light mt-1 mr-1"
+                     class="mt-1 mr-1"
                      icon-name="mdiTable"
                      :size="18"
                   /> {{ t('database.table') }}</span>
@@ -35,7 +35,7 @@
             >
                <span class="d-flex">
                   <BaseIcon
-                     class="text-light mt-1 mr-1"
+                     class="mt-1 mr-1"
                      icon-name="mdiTableEye"
                      :size="18"
                   /> {{ t('database.view') }}</span>
@@ -47,7 +47,7 @@
             >
                <span class="d-flex">
                   <BaseIcon
-                     class="text-light mt-1 mr-1"
+                     class="mt-1 mr-1"
                      icon-name="mdiTableEye"
                      :size="18"
                   /> {{ t('database.materializedView') }}</span>
@@ -59,7 +59,7 @@
             >
                <span class="d-flex">
                   <BaseIcon
-                     class="text-light mt-1 mr-1"
+                     class="mt-1 mr-1"
                      icon-name="mdiTableCog"
                      :size="18"
                   /> {{ t('database.trigger', 1) }}</span>
@@ -71,7 +71,7 @@
             >
                <span class="d-flex">
                   <BaseIcon
-                     class="text-light mt-1 mr-1"
+                     class="mt-1 mr-1"
                      icon-name="mdiSyncCircle"
                      :size="18"
                   /> {{ t('database.storedRoutine', 1) }}</span>
@@ -83,7 +83,7 @@
             >
                <span class="d-flex">
                   <BaseIcon
-                     class="text-light mt-1 mr-1"
+                     class="mt-1 mr-1"
                      icon-name="mdiArrowRightBoldBox"
                      :size="18"
                   /> {{ t('database.function', 1) }}</span>
@@ -95,7 +95,7 @@
             >
                <span class="d-flex">
                   <BaseIcon
-                     class="text-light mt-1 mr-1"
+                     class="mt-1 mr-1"
                      icon-name="mdiCogClockwise"
                      :size="18"
                   /> {{ t('database.triggerFunction', 1) }}</span>
@@ -107,7 +107,7 @@
             >
                <span class="d-flex">
                   <BaseIcon
-                     class="text-light mt-1 mr-1"
+                     class="mt-1 mr-1"
                      icon-name="mdiCalendarClock"
                      :size="18"
                   /> {{ t('database.scheduler', 1) }}</span>
@@ -119,7 +119,7 @@
             >
                <span class="d-flex">
                   <BaseIcon
-                     class="text-light mt-1 mr-1"
+                     class="mt-1 mr-1"
                      icon-name="mdiShapePlus"
                      :size="18"
                   /> {{ t('database.userType', 1) }}</span>
@@ -129,7 +129,7 @@
       <div class="context-element" @click="openSchemaDiagramTab">
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiTableNetwork"
                :size="18"
             /> {{ t('database.schemaDiagram') }}</span>
@@ -137,7 +137,7 @@
       <div class="context-element" @click="copyName(selectedSchema)">
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiContentCopy"
                :size="18"
             /> {{ t('general.copyName') }}</span>
@@ -149,7 +149,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiDatabaseExport"
                :size="18"
             /> {{ t('database.export') }}</span>
@@ -161,7 +161,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiDatabaseImport"
                :size="18"
             /> {{ t('database.import') }}</span>
@@ -173,7 +173,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiDatabaseEdit"
                :size="18"
             /> {{ t('database.editSchema') }}</span>
@@ -185,7 +185,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiDatabaseRemove"
                :size="18"
             /> {{ t('database.deleteSchema') }}</span>
@@ -199,7 +199,7 @@
          <template #header>
             <div class="d-flex">
                <BaseIcon
-                  class="text-light mr-1"
+                  class="mr-1"
                   icon-name="mdiDatabaseRemove"
                   :size="24"
                />

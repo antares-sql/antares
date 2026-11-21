@@ -179,7 +179,7 @@
     }
 
     &__option--highlight {
-      color: $light-color;
+      color: var(--primary-color-text);
     }
   }
 

@@ -1,8 +1,7 @@
 <template>
    <div
       id="footer"
-      :class="[lightColors.includes(accentColor) ? 'text-dark' : 'text-light']"
-      :style="`background-color: ${accentColor};`"
+      :style="`background-color: ${accentColor}; color: var(--primary-color-text);`"
    >
       <div class="footer-left-elements">
          <ul class="footer-elements">
@@ -79,6 +78,7 @@
 </template>
 
 <script setup lang="ts">
+import { readableTextOn } from 'common/libs/colorContrast';
 import { shell } from 'electron';
 import { storeToRefs } from 'pinia';
 import { computed, ComputedRef, watch } from 'vue';
@@ -103,8 +103,6 @@ interface DatabaseInfos {// TODO: temp
 const applicationStore = useApplicationStore();
 const workspacesStore = useWorkspacesStore();
 const connectionsStore = useConnectionsStore();
-
-const lightColors = ['#FFCE54', '#FDA50F', '#BEBDB8', '#48CFAD'];
 
 const { getSelected: workspaceUid } = storeToRefs(workspacesStore);
 const { toggleConsole } = useConsoleStore();
@@ -138,6 +136,8 @@ const openOutside = (link: string) => shell.openExternal(link);
 const changeAccentColor = () => {
    document.querySelector<HTMLBodyElement>(':root').style.setProperty('--primary-color', accentColor.value);
    document.querySelector<HTMLBodyElement>(':root').style.setProperty('--primary-color-shadow', hexToRGBA(accentColor.value, 0.2));
+   // Text on the accent: computed from the contrast, so every folder color stays readable
+   document.querySelector<HTMLBodyElement>(':root').style.setProperty('--primary-color-text', readableTextOn(accentColor.value));
 };
 
 changeAccentColor();

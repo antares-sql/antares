@@ -213,7 +213,7 @@ watch(() => props.modelValue, (value) => {
 
    .settingbar-element {
       border-radius: var(--radius-lg)!important;
-      background: rgba($color: #fff, $alpha: 0.1);
+      background: color-mix(in srgb, var(--settingbar-text) 10%, transparent);
 
       .settingbar-element-name {
          position: absolute;
@@ -233,6 +233,6 @@ watch(() => props.modelValue, (value) => {
 
 .settingbar-element-icon {
    display: flex;
-   color: $body-font-color-dark;
+   color: var(--settingbar-text);
 }
 </style>

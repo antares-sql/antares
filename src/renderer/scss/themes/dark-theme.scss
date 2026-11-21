@@ -12,6 +12,7 @@
   --bg-raised: #3f3f3f;
   --bg-titlebar: #3f3f3f;
   --bg-settingbar: #3f3f3f;
+  --settingbar-text: #fff;
   --bg-tabbar: #3f3f3f;
   --bg-card: rgb(63 63 63 / 50%);
   --bg-hover: rgb(255 255 255 / 5%);
@@ -47,6 +48,7 @@
   --context-bg: #1d1d1d;
   --context-text: #fff;
   --context-hover: rgb(253 253 253 / 15%);
+  --context-border: #3f3f3f;
   --tooltip-bg: rgb(48 55 66 / 95%);
   --tooltip-text: #fff;
 
@@ -90,4 +92,18 @@
   --diagram-row-linked: rgb(255 255 255 / 4%);
   --diagram-row-hover: rgb(255 255 255 / 8%);
   --diagram-relation: #888;
+
+  /* Column data types (grid, field lists, autocompletion) */
+  --type-string: seagreen;
+  --type-number: cornflowerblue;
+  --type-date: coral;
+  --type-bit: lightskyblue;
+  --type-blob: darkorchid;
+  --type-array: yellowgreen;
+  --type-enum: goldenrod;
+  --type-unknown: gray;
+
+  /* Table size chart in the explorer */
+  --size-chart-fill: lime;
+  --size-chart-track: white;
 }

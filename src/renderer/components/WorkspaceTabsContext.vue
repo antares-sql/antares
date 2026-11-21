@@ -6,7 +6,7 @@
       <div class="context-element" @click.stop="closeAllTabs">
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiAsterisk"
                :size="18"
             /> {{ t('application.closeAllTabs') }}</span>
@@ -15,7 +15,7 @@
       <div class="context-element" @click.stop="closeOtherTabs">
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiNotEqual"
                :size="18"
             /> {{ t('application.closeOtherTabs') }}</span>
@@ -24,7 +24,7 @@
       <div class="context-element" @click.stop="closeLeftTabs">
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiLessThan"
                :size="18"
             /> {{ t('application.closeTabsToLeft') }}</span>
@@ -33,7 +33,7 @@
       <div class="context-element" @click.stop="closeRightTabs">
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiGreaterThan"
                :size="18"
             /> {{ t('application.closeTabsToRight') }}</span>

@@ -10,7 +10,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiPlay"
                :size="18"
             /> {{ t('general.run') }}</span>
@@ -22,14 +22,14 @@
       >
          <span v-if="!selectedMisc.enabled" class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiPlay"
                :size="18"
             /> {{ t('general.enable') }}
          </span>
          <span v-else class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiPause"
                :size="18"
             /> {{ t('general.disable') }}
@@ -42,14 +42,14 @@
       >
          <span v-if="!selectedMisc.enabled" class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiPlay"
                :size="18"
             /> {{ t('general.enable') }}
          </span>
          <span v-else class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiPause"
                :size="18"
             /> {{ t('general.disable') }}
@@ -58,7 +58,7 @@
       <div class="context-element" @click="copyName(selectedMisc.name)">
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiContentCopy"
                :size="18"
             /> {{ t('general.copyName') }}</span>
@@ -70,7 +70,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               class="text-light mt-1 mr-1"
+               class="mt-1 mr-1"
                icon-name="mdiTableRemove"
                :size="18"
             /> {{ t('general.delete') }}</span>
@@ -83,7 +83,7 @@
          <template #header>
             <div class="d-flex">
                <BaseIcon
-                  class="text-light mr-1"
+                  class="mr-1"
                   icon-name="mdiDelete"
                   :size="24"
                />

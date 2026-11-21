@@ -663,7 +663,7 @@ onBeforeUnmount(() => {
       }
 
       .badge::after {
-        background: #32b643;
+        background: var(--success);
       }
 
       .badge-update::after {

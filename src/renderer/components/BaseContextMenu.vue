@@ -127,9 +127,9 @@ onBeforeUnmount(() => {
       min-width: 100px;
       z-index: 10;
       padding: 0;
-      background: #1d1d1d;
+      background: var(--context-bg);
       border-radius: $border-radius;
-      border: var(--border-width) solid $bg-color-light-dark;
+      border: var(--border-width) solid var(--context-border);
       display: flex;
       flex-direction: column;
       position: absolute;
@@ -148,13 +148,13 @@ onBeforeUnmount(() => {
 
          .context-submenu {
             border-radius: $border-radius;
-            border: var(--border-width) solid $bg-color-light-dark;
+            border: var(--border-width) solid var(--context-border);
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.2s;
             position: absolute;
             min-width: 100px;
-            background: #1d1d1d;
+            background: var(--context-bg);
          }
 
          &:hover {

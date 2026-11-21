@@ -243,7 +243,7 @@ emit('folder-sort');// To apply changes on component key change
       height: 0;
       width: 3px;
       transition: height 0.2s;
-      background-color: rgba($color: #fff, $alpha: 0.8);
+      background-color: color-mix(in srgb, var(--settingbar-text) 80%, transparent);
       border-radius: $border-radius;
       position: absolute;
       left: 0;
@@ -260,14 +260,14 @@ emit('folder-sort');// To apply changes on component key change
    width: 100%;
    border-radius: var(--radius-lg);
    transition: background .3s;
-   color: $body-font-color-dark;
+   color: var(--settingbar-text);
 
    &::before {
       content: "";
       height: 0;
       width: 3px;
       transition: height 0.2s;
-      background-color: rgba($color: #fff, $alpha: 0.8);
+      background-color: color-mix(in srgb, var(--settingbar-text) 80%, transparent);
       border-radius: $border-radius;
       position: absolute;
       left: -11px;
@@ -292,7 +292,7 @@ emit('folder-sort');// To apply changes on component key change
       gap: 4px 6px;
       grid-template-columns: auto;
       grid-template-rows: auto;
-      background: rgba($color: #fff, $alpha: 0.1)!important;
+      background: color-mix(in srgb, var(--settingbar-text) 10%, transparent)!important;
       transition: max-height .1s;
 
       .folder-element {
@@ -303,7 +303,7 @@ emit('folder-sort');// To apply changes on component key change
          background: transparent;
 
          &.ghost {
-            background: $bg-color-light-dark;
+            background: var(--bg-settingbar);
             &.selected::before {
                height: 0;
                position: absolute;
@@ -324,7 +324,7 @@ emit('folder-sort');// To apply changes on component key change
             height: 0;
             width: 3px;
             transition: height 0.2s;
-            background-color: rgba($color: #fff, $alpha: 0.8);
+            background-color: color-mix(in srgb, var(--settingbar-text) 80%, transparent);
             border-radius: $border-radius;
             position: absolute;
             left: -11px;
@@ -397,7 +397,7 @@ emit('folder-sort');// To apply changes on component key change
       margin-bottom: 3px;
       position: relative;
       transition: opacity .2s;
-      background: $bg-color-light-dark;
+      background: var(--bg-settingbar);
       border-radius: calc(var(--radius-lg) * 8 / 15); // nested in a --radius-lg folder
 
       &.ghost {
@@ -444,7 +444,7 @@ emit('folder-sort');// To apply changes on component key change
 
 .ghost {
    border-radius: var(--radius-lg)!important;
-   background: rgba($color: #fff, $alpha: 0.1);
+   background: color-mix(in srgb, var(--settingbar-text) 10%, transparent);
 
    &.folder-element {
       height: $settingbar-width;

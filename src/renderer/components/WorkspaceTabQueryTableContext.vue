@@ -12,7 +12,7 @@
             /> {{ t('general.copy') }}</span>
          <BaseIcon
             icon-name="mdiChevronRight"
-            class="mt-1 text-light"
+            class="mt-1"
             :size="18"
          />
          <div class="context-submenu">
@@ -24,7 +24,7 @@
                <span class="d-flex">
                   <BaseIcon
                      icon-name="mdiNumeric0"
-                     class="mr-1 mt-1 text-light"
+                     class="mr-1 mt-1"
                      :rotate="90"
                      :size="18"
                   /> {{ t('database.cell', 1) }}
@@ -34,7 +34,7 @@
                <span class="d-flex">
                   <BaseIcon
                      icon-name="mdiTableRow"
-                     class="mr-1 mt-1 text-light"
+                     class="mr-1 mt-1"
                      :size="18"
                   /> {{ t('database.row', selectedRows.length) }} ({{ t('database.table') }})
                </span>
@@ -43,7 +43,7 @@
                <span class="d-flex">
                   <BaseIcon
                      icon-name="mdiTableRow"
-                     class="mr-1 mt-1 text-light"
+                     class="mr-1 mt-1"
                      :size="18"
                   /> {{ t('database.row', selectedRows.length) }} (JSON)
                </span>
@@ -52,7 +52,7 @@
                <span class="d-flex">
                   <BaseIcon
                      icon-name="mdiTableRow"
-                     class="mr-1 mt-1 text-light"
+                     class="mr-1 mt-1"
                      :size="18"
                   /> {{ t('database.row', selectedRows.length) }} (CSV)
                </span>
@@ -61,7 +61,7 @@
                <span class="d-flex">
                   <BaseIcon
                      icon-name="mdiTableRow"
-                     class="mr-1 mt-1 text-light"
+                     class="mr-1 mt-1"
                      :size="18"
                   /> {{ t('database.row', selectedRows.length) }} (PHP)
                </span>
@@ -70,7 +70,7 @@
                <span class="d-flex">
                   <BaseIcon
                      icon-name="mdiTableRow"
-                     class="mr-1 mt-1 text-light"
+                     class="mr-1 mt-1"
                      :size="18"
                   /> {{ t('database.row', selectedRows.length) }} (SQL INSERT)
                </span>
@@ -85,7 +85,7 @@
          <span class="d-flex">
             <BaseIcon
                icon-name="mdiContentDuplicate"
-               class="mr-1 mt-1 text-light"
+               class="mr-1 mt-1"
                :size="18"
             /> {{ t('general.duplicate') }}
          </span>
@@ -97,13 +97,13 @@
          <span class="d-flex">
             <BaseIcon
                icon-name="mdiAutoFix"
-               class="mr-1 mt-1 text-light"
+               class="mr-1 mt-1"
                :size="18"
             /> {{ t('database.fillCell') }}
          </span>
          <BaseIcon
             icon-name="mdiChevronRight"
-            class="mt-1 text-light"
+            class="mt-1"
             :size="18"
          />
          <div class="context-submenu">
@@ -127,7 +127,7 @@
          <span class="d-flex">
             <BaseIcon
                icon-name="mdiNull"
-               class="mr-1 mt-1 text-light"
+               class="mr-1 mt-1"
                :size="18"
             /> {{ t('database.setNull') }}
          </span>
@@ -140,11 +140,11 @@
          <span class="d-flex">
             <BaseIcon
                icon-name="mdiKeyLink"
-               class="mr-1 mt-1 text-light"
+               class="mr-1 mt-1"
                :size="18"
             /> {{ t('database.goToForeignKey') }}
          </span>
-         <span class="text-light ml-2"> (Ctrl+{{ t('general.click') }})</span>
+         <span class="ml-2"> (Ctrl+{{ t('general.click') }})</span>
       </div>
       <div
          v-if="selectedCell.isEditable"
@@ -154,7 +154,7 @@
          <span class="d-flex">
             <BaseIcon
                icon-name="mdiDelete"
-               class="mr-1 mt-1 text-light"
+               class="mr-1 mt-1"
                :size="18"
             /> {{ t('database.deleteRows', selectedRows.length) }}
          </span>

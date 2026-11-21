@@ -293,53 +293,18 @@ const highlightWord = (string: string) => {
    }
  }
 
- .theme-dark {
-   .tile {
-      .tile-paragraph-overlay {
-         background-image: linear-gradient(
-            to bottom,
-            rgba(255,0,0,0) 70%,
-            $body-bg-dark);
-      }
-
-      &:focus {
-         .tile-paragraph-overlay {
-            background-image: linear-gradient(
-               to bottom,
-               rgba(255,0,0,0)70%,
-               #323232);
-         }
-      }
-
-      &:hover{
-         .tile-paragraph-overlay {
-            background-image: linear-gradient(
-               to bottom,
-               rgba(255,0,0,0) 70%,
-               $bg-color-light-dark);
-         }
-      }
+ /* The fade at the bottom of long notes ends with the tile background */
+ .tile {
+   .tile-paragraph-overlay {
+      background-image: linear-gradient(to bottom, transparent 70%, var(--bg-surface));
    }
- }
 
- .theme-light {
-   .tile {
-      .tile-paragraph-overlay {
-         background-image: linear-gradient(
-            to bottom,
-            rgba(255,0,0,0) 70%,
-            #FFFF);
-      }
+   &:focus .tile-paragraph-overlay {
+      background-image: linear-gradient(to bottom, transparent 70%, color-mix(in srgb, var(--bg-panel-hover) 60%, var(--bg-surface)));
+   }
 
-      &:hover,
-      &:focus {
-         .tile-paragraph-overlay {
-            background-image: linear-gradient(
-               to bottom,
-               rgba(255,0,0,0) 70%,
-               $bg-color-light-gray);
-         }
-      }
+   &:hover .tile-paragraph-overlay {
+      background-image: linear-gradient(to bottom, transparent 70%, var(--bg-panel-hover));
    }
  }
  </style>

@@ -295,10 +295,10 @@ onMounted(() => {
          // &-log,
          // &-info {}
          &-warn {
-            color: orange;
+            color: var(--warning);
          }
          &-error {
-            color: red;
+            color: var(--error);
          }
         }
 

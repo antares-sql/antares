@@ -37,27 +37,28 @@ Antares is a dense desktop tool, not a web page. Keep it compact, keyboard-frien
 Rules:
 - **The accent is dynamic.** The connection folder color overrides `--primary-color` at runtime (see `changeAccentColor()` in [TheFooter.vue](src/renderer/components/TheFooter.vue)).
   For accent colors, always use `var(--primary-color*)`. Never use `$primary-color` or a hard-coded orange.
-  Because of this, any accent color can appear, so do not rely on the accent for contrast-critical text. Primary buttons get a `text-shadow` for this reason.
+  Because of this, any accent color can appear: text on the accent must use `var(--primary-color-text)`, which `changeAccentColor()` computes from the WCAG contrast (light text unless it drops below 3:1).
 - **The accent is not a theme token** and themes must never redefine `--primary-color*`: the folder color always wins.
 - Do not hard-code hex values in components. If a color depends on the theme, use a token. If no token fits, add it to **every** theme file
   (same name, same order) and use it in `_theme-rules.scss` or in the component. Tokens are a public contract for future custom themes: do not rename them.
 - Theme tokens are defined on `#wrapper`, so they are visible only inside it (teleported modals target `#window-content`, which is inside).
 - Status colors are for status only. Do not use them for decoration.
+- The setting bar is dark in every built-in theme: its text uses `var(--settingbar-text)`, not `--text`. Context menus use `--context-*` and inherit their text color (no `text-light` on their icons).
 
 ### Data-type colors
 
 Column types are colored consistently everywhere: grid cells, field lists, autocompletion, SQL highlight.
 
-| Variable | Color | Types |
+| Variable (theme token) | Default | Types |
 |---|---|---|
-| `$string-color` | seagreen | char/varchar/text/json/uuid/... |
-| `$number-color` | cornflowerblue | int/decimal/float/... |
-| `$date-color` | coral | date/time/timestamp/... |
-| `$bit-color` | lightskyblue | bit/boolean |
-| `$blob-color` | darkorchid | blob/binary/bytea |
-| `$array-color` | yellowgreen | arrays |
-| `$enum-color` | goldenrod | enum/set |
-| `$unknown-color` | gray | anything else |
+| `$string-color` (`var(--type-string)`) | seagreen | char/varchar/text/json/uuid/... |
+| `$number-color` (`var(--type-number)`) | cornflowerblue | int/decimal/float/... |
+| `$date-color` (`var(--type-date)`) | coral | date/time/timestamp/... |
+| `$bit-color` (`var(--type-bit)`) | lightskyblue | bit/boolean |
+| `$blob-color` (`var(--type-blob)`) | darkorchid | blob/binary/bytea |
+| `$array-color` (`var(--type-array)`) | yellowgreen | arrays |
+| `$enum-color` (`var(--type-enum)`) | goldenrod | enum/set |
+| `$unknown-color` (`var(--type-unknown)`) | gray | anything else |
 
 Use the generated `.type-<typename>` classes from [_data-types.scss](src/renderer/scss/_data-types.scss). When a new engine adds a type, map it there and do not color it inline.
 Key icons (PK/FK/unique/index) come from [_table-keys.scss](src/renderer/scss/_table-keys.scss). Engine logos come from [_db-icons.scss](src/renderer/scss/_db-icons.scss).

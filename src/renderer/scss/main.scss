@@ -3,6 +3,7 @@
   --primary-color: #e36929;
   --primary-color-dark: color-mix(in srgb, var(--primary-color), #000 30%);
   --primary-color-shadow: rgb(227 105 41 / 20%);
+  --primary-color-text: #fdfdfd; /* text on the accent, set by TheFooter from the contrast */
 }
 
 @import "spectre/variables";
@@ -39,7 +40,7 @@ option:focus,
 option:active,
 option:checked {
   background-color: var(--primary-color);
-  color: $light-color;
+  color: var(--primary-color-text);
 }
 
 /* Additions */
@@ -445,11 +446,16 @@ option:checked {
 
   &.btn-primary {
     background: var(--primary-color);
+    color: var(--primary-color-text);
     border-color: var(--primary-color-dark);
 
-    &:hover {
+    &:hover,
+    &:focus,
+    &:active,
+    &.active {
       background: var(--primary-color-dark);
       border-color: var(--primary-color-dark);
+      color: var(--primary-color-text);
     }
   }
 }
