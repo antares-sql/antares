@@ -241,6 +241,7 @@ if (flags.includes('--ace')) {
          'bg-overlay': dark ? alpha(white, 0.12) : alpha(parse(mix(fg, black, 0.5)), 0.6),
          text: hex(fg),
          'text-muted': toward(0.7),
+         'text-placeholder': toward(0.45),
          success: base.success,
          warning: base.warning,
          error: base.error,

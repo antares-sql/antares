@@ -22,7 +22,7 @@ export const uiColorTokenGroups = {
       'bg-hover-strong',
       'bg-overlay'
    ],
-   text: ['text', 'text-muted'],
+   text: ['text', 'text-muted', 'text-placeholder'],
    status: ['success', 'warning', 'error'],
    borders: ['border', 'border-subtle', 'separator', 'divider', 'shadow-color'],
    inputs: ['input-bg', 'input-bg-readonly', 'input-bg-disabled'],

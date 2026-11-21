@@ -57,7 +57,7 @@ legend {
     border-color: $primary-color;
   }
   &::placeholder {
-    color: $gray-color;
+    color: var(--text-placeholder); // Antares: theme token
   }
 
   // Input sizes
