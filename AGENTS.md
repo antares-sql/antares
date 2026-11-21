@@ -10,7 +10,7 @@ See also [CONTRIBUTING.md](CONTRIBUTING.md) for the original contributor guide a
 | Area | Tech |
 |---|---|
 | Shell | Electron 45 (`@electron/remote` enabled, `nodeIntegration: true`, `contextIsolation: false`) |
-| UI | Vue 3.5 (mostly `<script setup lang="ts">`), Pinia, vue-i18n, Spectre.css + SCSS, CodeMirror 6 editor |
+| UI | Vue 3.5 (mostly `<script setup lang="ts">`), Pinia, vue-i18n, Spectre.css (vendored in `src/renderer/scss/spectre/`, no npm dependency) + SCSS, CodeMirror 6 editor |
 | Bundling | webpack 5 (three configs: main, renderer, workers), `ts-loader`, `babel-loader`, `vue-loader` |
 | Language | TypeScript **5.8** (project-local, non-strict) |
 | Persistence | `electron-store` (settings, connections; credentials encrypted via `safeStorage`) |

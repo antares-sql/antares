@@ -5,7 +5,7 @@
   --primary-color-shadow: rgb(227 105 41 / 20%);
 }
 
-@import "~spectre.css/src/variables";
+@import "spectre/variables";
 @import "variables";
 @import "transitions";
 @import "data-types";
@@ -17,8 +17,8 @@
 @import "themes/dark-theme";
 @import "themes/light-theme";
 @import "themes/theme-rules";
-@import "~spectre.css/src/spectre";
-@import "~spectre.css/src/spectre-exp";
+@import "spectre/spectre";
+@import "spectre/spectre-exp";
 
 body {
   user-select: none;

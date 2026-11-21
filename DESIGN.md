@@ -11,6 +11,7 @@ Antares is a dense desktop tool, not a web page. Keep it compact, keyboard-frien
 ### Styling stack
 
 - **Spectre.css** is the base framework (grid, forms, buttons, menus, modals, tabs, tooltips, empty states).
+  It is vendored in [src/renderer/scss/spectre/](src/renderer/scss/spectre/) (0.5.9, MIT, upstream is unmaintained): it is our code now, fix it there instead of overriding it.
   Use its classes first: `columns`/`column col-*`, `form-group`, `form-label`, `form-input`, `btn`, `menu`, `tile`, `empty`, `tooltip`, `d-flex`, `text-*`, `m*-*`/`p*-*`.
 - Global overrides and helpers live in [src/renderer/scss/main.scss](src/renderer/scss/main.scss). Theme colors are **tokens** (CSS custom properties):
   their values live **only** in [themes/dark-theme.scss](src/renderer/scss/themes/dark-theme.scss) and [themes/light-theme.scss](src/renderer/scss/themes/light-theme.scss),
