@@ -14,7 +14,7 @@
                   />
                   <span>{{ t('application.importTheme') }}</span>
                </button>
-               <button class="btn btn-link btn-sm p-vcentered" @click="openOutside(galleryUrl)">
+               <button class="btn btn-link btn-sm p-vcentered" @click="isGallery = true">
                   <BaseIcon
                      icon-name="mdiPaletteSwatch"
                      class="mr-1"
@@ -118,6 +118,8 @@
          </div>
       </div>
 
+      <ModalThemeGallery v-if="isGallery" @close="isGallery = false" />
+
       <ConfirmModal
          v-if="themeToRemove"
          @confirm="removeTheme(themeToRemove.id)"
@@ -144,7 +146,6 @@
 
 <script setup lang="ts">
 import { AntaresTheme } from 'common/themes/theme';
-import { shell } from 'electron';
 import { storeToRefs } from 'pinia';
 import { computed, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -152,6 +153,7 @@ import { useI18n } from 'vue-i18n';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
 import BaseTextEditor from '@/components/BaseTextEditor.vue';
+import ModalThemeGallery from '@/components/ModalThemeGallery.vue';
 import ThemePreview from '@/components/ThemePreview.vue';
 import { useNotificationsStore } from '@/stores/notifications';
 import { EditorFontSize, uiFontSizes, useSettingsStore } from '@/stores/settings';
@@ -160,7 +162,6 @@ import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
 
-const galleryUrl = 'https://github.com/antares-sql/themes';
 const editorFontSizes: Record<EditorFontSize, string> = {
    xsmall: '10px',
    small: '12px',
@@ -193,10 +194,9 @@ const { changeApplicationTheme, changeEditorFontSize, changeUiFontSize } = setti
 const { isBuiltin, removeTheme } = themesStore;
 
 const themeToRemove: Ref<AntaresTheme> = ref(null);
+const isGallery = ref(false);
 
 const workspace = computed(() => workspacesStore.getWorkspace(selectedWorkspace.value));
-
-const openOutside = (link: string) => shell.openExternal(link);
 
 const importTheme = async () => {
    const result = await themesStore.importThemeFromFile();

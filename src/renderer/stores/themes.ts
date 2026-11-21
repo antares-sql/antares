@@ -62,6 +62,35 @@ export const migrateLegacyEditorTheme = () => {
    settingsStore.set('application_theme', migrated.id);
 };
 
+/** Theme gallery (github.com/antares-sql/themes). ANTARES_THEMES_URL points it elsewhere, e.g. a local copy while developing */
+export const themeGalleryUrl = (process.env.ANTARES_THEMES_URL || 'https://raw.githubusercontent.com/antares-sql/themes/main/').replace(/\/?$/, '/');
+export const themeGalleryRepository = 'https://github.com/antares-sql/themes';
+
+export interface GalleryTheme {
+   id: string;
+   name: string;
+   appearance: ThemeAppearance;
+   author?: string;
+   description?: string;
+   tags: string[];
+   /** Absolute URLs */
+   theme: string;
+   preview: string;
+}
+
+const fetchWithTimeout = async (url: string, timeout = 15000) => {
+   const controller = new AbortController();
+   const timer = setTimeout(() => controller.abort(), timeout);
+   try {
+      const response = await fetch(url, { signal: controller.signal, cache: 'no-cache' });
+      if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+      return response;
+   }
+   finally {
+      clearTimeout(timer);
+   }
+};
+
 export type ThemeImportResult =
    | { status: 'success'; theme: AntaresTheme; warnings: string[] }
    | { status: 'canceled' }
@@ -147,6 +176,40 @@ export const useThemesStore = defineStore('themes', {
          if (typeof content !== 'string')
             return { status: 'error', errors: [String((content as { response?: string })?.response ?? 'Unable to read the file')] };
 
+         const parsed = this.parseThemeFile(content);
+         if (parsed.status === 'success') {
+            this.installTheme(parsed.theme);
+            useSettingsStore().changeApplicationTheme(parsed.theme.id);
+         }
+         return parsed;
+      },
+      /** Downloads the list of the gallery themes (only when the user opens the gallery) */
+      async fetchGallery (): Promise<GalleryTheme[]> {
+         const index = await (await fetchWithTimeout(new URL('index.json', themeGalleryUrl).href)).json();
+         if (!Array.isArray(index?.themes)) throw new Error('Invalid gallery index');
+         const url = (relative: string) => new URL(String(relative), themeGalleryUrl).href;
+         return index.themes
+            .filter((entry: GalleryTheme) => typeof entry?.id === 'string' && typeof entry?.name === 'string' && typeof entry?.theme === 'string')
+            .map((entry: GalleryTheme) => ({
+               id: entry.id,
+               name: entry.name,
+               appearance: entry.appearance === 'light' ? 'light' : 'dark',
+               author: typeof entry.author === 'string' ? entry.author : undefined,
+               description: typeof entry.description === 'string' ? entry.description : undefined,
+               tags: Array.isArray(entry.tags) ? entry.tags.filter(tag => typeof tag === 'string') : [],
+               theme: url(entry.theme),
+               preview: entry.preview ? url(entry.preview) : ''
+            }));
+      },
+      /** Downloads, validates, installs and activates a gallery theme */
+      async installFromGallery (entry: GalleryTheme): Promise<ThemeImportResult> {
+         let content: string;
+         try {
+            content = await (await fetchWithTimeout(entry.theme)).text();
+         }
+         catch (err) {
+            return { status: 'error', errors: [(err as Error).message] };
+         }
          const parsed = this.parseThemeFile(content);
          if (parsed.status === 'success') {
             this.installTheme(parsed.theme);
