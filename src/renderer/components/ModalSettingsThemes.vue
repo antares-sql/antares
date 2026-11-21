@@ -52,7 +52,7 @@
                   </div>
                   <div class="theme-card-actions" @click.stop>
                      <button
-                        class="btn btn-clear btn-sm p-vcentered"
+                        class="btn btn-link btn-sm p-vcentered card-action"
                         :title="t('application.exportTheme')"
                         @click="exportTheme(theme.id)"
                      >
@@ -60,7 +60,7 @@
                      </button>
                      <button
                         v-if="!isBuiltin(theme.id)"
-                        class="btn btn-clear btn-sm p-vcentered"
+                        class="btn btn-link btn-sm p-vcentered card-action"
                         :title="t('application.removeTheme')"
                         @click="themeToRemove = theme"
                      >
@@ -74,14 +74,15 @@
 
       <div class="columns mt-2">
          <div class="column col-12 h6 text-uppercase mb-2">
-            {{ t('application.interfaceFontSize') }}
+            {{ t('application.textSize') }}
          </div>
-         <div class="column col-12 mb-4">
-            <div class="btn-group btn-group-block">
+         <div class="column col-12 size-row p-vcentered mb-2">
+            <span class="size-label">{{ t('application.interfaceFontSize') }}</span>
+            <div class="btn-group size-group">
                <button
                   v-for="(px, size) in uiFontSizes"
                   :key="size"
-                  class="btn btn-dark cut-text"
+                  class="btn btn-dark btn-sm"
                   :class="{'active': uiFontSize === size}"
                   @click="changeUiFontSize(size)"
                >
@@ -89,18 +90,13 @@
                </button>
             </div>
          </div>
-      </div>
-
-      <div class="columns mt-2">
-         <div class="column col-12 h6 text-uppercase mb-2">
-            {{ t('application.codeEditor') }}
-         </div>
-         <div class="column col-12 mb-4">
-            <div class="btn-group btn-group-block">
+         <div class="column col-12 size-row p-vcentered mb-2">
+            <span class="size-label">{{ t('application.codeEditor') }}</span>
+            <div class="btn-group size-group">
                <button
                   v-for="(px, size) in editorFontSizes"
                   :key="size"
-                  class="btn btn-dark cut-text"
+                  class="btn btn-dark btn-sm"
                   :class="{'active': editorFontSize === size}"
                   @click="changeEditorFontSize(size)"
                >
@@ -225,6 +221,19 @@ const exportTheme = async (id: string) => {
   justify-content: space-between;
 }
 
+.size-row {
+  justify-content: space-between;
+  gap: 0.8rem;
+
+  .size-label {
+    font-size: 0.7rem;
+  }
+
+  .size-group .btn {
+    min-width: 2.6rem;
+  }
+}
+
 .theme-card {
   border-radius: var(--radius);
   padding: 4px;
@@ -261,9 +270,15 @@ const exportTheme = async (id: string) => {
     opacity: 0;
     transition: opacity 0.2s;
 
-    .btn {
+    .card-action {
       height: auto;
-      padding: 1px;
+      padding: 2px;
+      color: var(--text);
+      border: none;
+
+      &:hover {
+        background: var(--bg-hover-strong);
+      }
     }
   }
 
