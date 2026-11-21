@@ -6,26 +6,24 @@
                <div class="dropdown">
                   <div class="btn-group">
                      <button
-                        class="btn btn-dark btn-sm mr-0 pr-1"
+                        class="btn btn-dark btn-sm mr-0 pr-1 p-vcentered"
                         :class="{'loading':isQuering}"
                         :title="`${t('general.refresh')}`"
                         @click="reloadTable"
                      >
                         <BaseIcon
                            v-if="!+autorefreshTimer"
-                           class="mr-1"
                            icon-name="mdiRefresh"
                            :size="24"
                         />
                         <BaseIcon
                            v-else
-                           class="mr-1"
                            icon-name="mdiHistory"
                            flip="horizontal"
                            :size="24"
                         />
                      </button>
-                     <div class="btn btn-dark btn-sm dropdown-toggle pl-0 pr-0" tabindex="0">
+                     <div class="btn btn-dark btn-sm dropdown-toggle pl-0 pr-0 p-vcentered" tabindex="0">
                         <BaseIcon icon-name="mdiMenuDown" :size="24" />
                      </div>
                      <div class="menu px-3">
