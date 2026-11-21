@@ -3,7 +3,7 @@
       <div class="workspace-query-runner column col-12">
          <div class="workspace-query-runner-footer">
             <div class="workspace-query-buttons">
-               <div class="dropdown">
+               <div class="dropdown p-vcentered">
                   <div class="btn-group">
                      <button
                         class="btn btn-dark btn-sm mr-0 pr-1 p-vcentered"

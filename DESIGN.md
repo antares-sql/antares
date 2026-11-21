@@ -102,6 +102,8 @@ Key icons (PK/FK/unique/index) come from [_table-keys.scss](src/renderer/scss/_t
   - never nudge icons with `mt-1`, `pt-1`, `top` or line-height tweaks: they only fit one font size and break with the interface text size setting.
     The existing `mt-1` icons are legacy: fix them to `p-vcentered` when you touch that markup;
   - icon-only buttons: `p-vcentered` plus `justify-content: center` when the button is wider than the icon, and a `title`;
+  - wrappers of buttons or button groups (`.dropdown`, `.btn-group` inside a toolbar) must be `p-vcentered` too: a block wrapper around an
+    `inline-flex` group adds a text line box (taller by the descender), so the group sits higher than the other toolbar buttons;
   - check the result in a screenshot at 100% and at a larger interface text size.
 - Reuse the same icon for the same concept everywhere: `mdiContentSave` save, `mdiDeleteSweep` clear changes, `mdiWrenchCog` settings, `mdiContentCopy` copy, `mdiDatabase` schema, `mdiTableArrowRight` export, `mdiHistory` history.
   Search the components for the concept before picking a new icon.
