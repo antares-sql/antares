@@ -342,6 +342,7 @@ export const esES = {
       openNewTab: 'Abrir nueva pestaña',
       unsavedChanges: 'Cambios sin guardar',
       discardUnsavedChanges: 'Tiene algunos cambios sin guardar. Al cerrar esta pestaña, serán descartados.',
+      discardUnsavedWindowChanges: 'Tiene algunos cambios sin guardar. Al cerrar esta ventana, serán descartados.',
       applicationTheme: 'Tema de la Aplicación',
       wrapLongLines: 'Mantener lineas largas',
       markdownSupported: 'Markdown soportado',

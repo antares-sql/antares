@@ -16,7 +16,7 @@
       </template>
       <template #body>
          <div>
-            {{ t('application.discardUnsavedChanges') }}
+            {{ message || t('application.discardUnsavedChanges') }}
          </div>
       </template>
    </ConfirmModal>
@@ -30,6 +30,11 @@ import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
 
 const { t } = useI18n();
+
+defineProps({
+   /** Body text; defaults to the one about closing a tab */
+   message: String
+});
 
 const emit = defineEmits(['confirm', 'close']);
 

@@ -4,7 +4,7 @@
       size="medium"
       class="options-modal"
       @confirm="confirmChecksChange"
-      @hide="$emit('hide')"
+      @hide="requestHide"
    >
       <template #header>
          <div class="d-flex">
@@ -54,7 +54,10 @@
                         @click="selectCheck($event, check._antares_id)"
                      >
                         <div class="tile-icon">
-                           <div>
+                           <div
+                              :class="{ 'badge': isItemChanged(check) }"
+                              :title="isItemChanged(check) ? t('application.unsavedChanges') : null"
+                           >
                               <BaseIcon
                                  class="mt-2 column-key"
                                  icon-name="circle-check"
@@ -137,6 +140,12 @@
                </div>
             </div>
          </div>
+         <ModalDiscardChanges
+            v-if="isDiscardModal"
+            :message="t('application.discardUnsavedWindowChanges')"
+            @confirm="emit('hide')"
+            @close="isDiscardModal = false"
+         />
       </template>
    </ConfirmModal>
 </template>
@@ -149,6 +158,8 @@ import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
+import ModalDiscardChanges from '@/components/ModalDiscardChanges.vue';
+import { useUnconfirmedChanges } from '@/composables/useUnconfirmedChanges';
 
 const { t } = useI18n();
 
@@ -166,9 +177,11 @@ const selectedCheckID = ref('');
 const modalInnerHeight = ref(400);
 
 const selectedCheckObj = computed(() => checksProxy.value.find(index => index._antares_id === selectedCheckID.value));
-const isChanged = computed(() => JSON.stringify(props.localChecks) !== JSON.stringify(checksProxy.value));
+const { isChanged, isDiscardModal, isItemChanged, markConfirmed, requestHide } =
+   useUnconfirmedChanges(() => props.localChecks as TableCheck[], checksProxy, () => emit('hide'));
 
 const confirmChecksChange = () => {
+   markConfirmed();
    const filteredChecks = checksProxy.value.filter(check => check.clause.trim().length);
    emit('checks-update', filteredChecks);
 };

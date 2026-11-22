@@ -4,7 +4,7 @@
       size="medium"
       class="options-modal"
       @confirm="confirmIndexesChange"
-      @hide="$emit('hide')"
+      @hide="requestHide"
    >
       <template #header>
          <div class="d-flex">
@@ -54,7 +54,10 @@
                         @click="selectIndex($event, index._antares_id)"
                      >
                         <div class="tile-icon">
-                           <div>
+                           <div
+                              :class="{ 'badge': isItemChanged(index) }"
+                              :title="isItemChanged(index) ? t('application.unsavedChanges') : null"
+                           >
                               <BaseIcon
                                  class="mt-2 column-key"
                                  icon-name="key"
@@ -171,12 +174,18 @@
                </div>
             </div>
          </div>
+         <ModalDiscardChanges
+            v-if="isDiscardModal"
+            :message="t('application.discardUnsavedWindowChanges')"
+            @confirm="emit('hide')"
+            @close="isDiscardModal = false"
+         />
       </template>
    </ConfirmModal>
 </template>
 
 <script setup lang="ts">
-import { TableField } from 'common/interfaces/antares';
+import { TableField, TableIndex } from 'common/interfaces/antares';
 import { uidGen } from 'common/libs/uidGen';
 import { computed, onMounted, onUnmounted, Prop, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -184,6 +193,8 @@ import { useI18n } from 'vue-i18n';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import ModalDiscardChanges from '@/components/ModalDiscardChanges.vue';
+import { useUnconfirmedChanges } from '@/composables/useUnconfirmedChanges';
 
 const { t } = useI18n();
 
@@ -192,24 +203,26 @@ const props = defineProps({
    table: String,
    fields: Array as Prop<TableField[]>,
    workspace: Object,
-   indexTypes: Array
+   indexTypes: Array as Prop<string[]>
 });
 
 const emit = defineEmits(['hide', 'indexes-update']);
 
 const indexesPanel: Ref<HTMLDivElement> = ref(null);
-const indexesProxy = ref([]);
+const indexesProxy: Ref<TableIndex[]> = ref([]);
 const selectedIndexID = ref('');
 const modalInnerHeight = ref(400);
 
 const selectedIndexObj = computed(() => indexesProxy.value.find(index => index._antares_id === selectedIndexID.value));
-const isChanged = computed(() => JSON.stringify(props.localIndexes) !== JSON.stringify(indexesProxy.value));
+const { isChanged, isDiscardModal, isItemChanged, markConfirmed, requestHide } =
+   useUnconfirmedChanges(() => props.localIndexes as TableIndex[], indexesProxy, () => emit('hide'));
 const hasPrimary = computed(() => indexesProxy.value.some(index => ['PRIMARY', 'PRIMARY KEY'].includes(index.type)));
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const canBePartial = (index: any) => props.workspace.customizations.partialIndexes && !['PRIMARY', 'PRIMARY KEY'].includes(index.type);
 
 const confirmIndexesChange = () => {
+   markConfirmed();
    indexesProxy.value = indexesProxy.value
       .filter(index => index.fields.length)
       .map(index => {
