@@ -7,7 +7,7 @@
          <ul class="footer-elements">
             <li class="footer-element">
                <BaseIcon
-                  icon-name="mdiServer"
+                  icon-name="server"
                   class="mr-1"
                   :size="18"
                />
@@ -15,7 +15,7 @@
             </li>
             <li v-if="connectionInfos && connectionInfos.readonly" class="footer-element">
                <BaseIcon
-                  icon-name="mdiLock"
+                  icon-name="lock"
                   class="mr-1"
                   :size="18"
                />
@@ -23,7 +23,7 @@
             </li>
             <li v-if="connectionInfos && connectionInfos.ssl" class="footer-element">
                <BaseIcon
-                  icon-name="mdiShieldKey"
+                  icon-name="shield+lock"
                   class="mr-1"
                   :size="18"
                />
@@ -31,7 +31,7 @@
             </li>
             <li v-if="connectionInfos && connectionInfos.ssh" class="footer-element">
                <BaseIcon
-                  icon-name="mdiConsoleNetwork"
+                  icon-name="terminal+lock"
                   class="mr-1"
                   :size="18"
                />
@@ -44,7 +44,7 @@
          <ul class="footer-elements">
             <li class="footer-element footer-link" @click="toggleConsole()">
                <BaseIcon
-                  icon-name="mdiConsoleLine"
+                  icon-name="terminal"
                   class="mr-1"
                   :size="18"
                />
@@ -52,7 +52,7 @@
             </li>
             <li class="footer-element footer-link" @click="openOutside('https://www.paypal.com/paypalme/fabiodistasio')">
                <BaseIcon
-                  icon-name="mdiCoffee"
+                  icon-name="coffee"
                   class="mr-1"
                   :size="18"
                />
@@ -63,14 +63,14 @@
                :title="t('application.reportABug')"
                @click="openOutside('https://github.com/antares-sql/antares/issues')"
             >
-               <BaseIcon icon-name="mdiBug" :size="18" />
+               <BaseIcon icon-name="bug" :size="18" />
             </li>
             <li
                class="footer-element footer-link"
                :title="t('application.about')"
                @click="showSettingModal('about')"
             >
-               <BaseIcon icon-name="mdiInformationOutline" :size="18" />
+               <BaseIcon icon-name="info" :size="18" />
             </li>
          </ul>
       </div>

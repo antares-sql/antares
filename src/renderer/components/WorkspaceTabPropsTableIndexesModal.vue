@@ -10,8 +10,7 @@
          <div class="d-flex">
             <BaseIcon
                class="mr-1"
-               icon-name="mdiKey"
-               :rotate="45"
+               icon-name="key"
                :size="24"
             />
             <span class="cut-text">{{ t('database.indexes') }} "{{ table }}"</span>
@@ -26,7 +25,7 @@
                         <button class="btn btn-dark btn-sm d-flex" @click="addIndex">
                            <BaseIcon
                               class="mr-1"
-                              icon-name="mdiKeyPlus"
+                              icon-name="key+plus"
                               :size="24"
                            />
                            <span>{{ t('general.add') }}</span>
@@ -39,7 +38,7 @@
                         >
                            <BaseIcon
                               class="mr-1"
-                              icon-name="mdiDeleteSweep"
+                              icon-name="eraser"
                               :size="24"
                            />
                            <span>{{ t('general.clear') }}</span>
@@ -58,7 +57,7 @@
                            <div>
                               <BaseIcon
                                  class="mt-2 column-key"
-                                 icon-name="mdiKey"
+                                 icon-name="key"
                                  :class="`key-${index.type}`"
                                  :size="24"
                               />
@@ -77,7 +76,7 @@
                               @click.prevent="removeIndex(index._antares_id)"
                            >
                               <BaseIcon
-                                 icon-name="mdiClose"
+                                 icon-name="x"
                                  :size="18"
                                  class="mt-2"
                               />
@@ -140,7 +139,7 @@
                   <div class="empty-icon">
                      <BaseIcon
                         class="mr-1"
-                        icon-name="mdiKeyOutline"
+                        icon-name="key"
                         :size="48"
                      />
                   </div>

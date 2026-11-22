@@ -10,7 +10,7 @@
          <div class="d-flex">
             <BaseIcon
                class="mr-1"
-               icon-name="mdiTableCheck"
+               icon-name="table+check"
                :size="24"
             />
             <span class="cut-text">{{ t('database.tableChecks') }} "{{ table }}"</span>
@@ -25,7 +25,7 @@
                         <button class="btn btn-dark btn-sm d-flex" @click="addCheck">
                            <BaseIcon
                               class="mr-1"
-                              icon-name="mdiCheckboxMarkedCirclePlusOutline"
+                              icon-name="circle-check+plus"
                               :size="24"
                            />
                            <span>{{ t('general.add') }}</span>
@@ -38,7 +38,7 @@
                         >
                            <BaseIcon
                               class="mr-1"
-                              icon-name="mdiDeleteSweep"
+                              icon-name="eraser"
                               :size="24"
                            />
                            <span>{{ t('general.clear') }}</span>
@@ -57,7 +57,7 @@
                            <div>
                               <BaseIcon
                                  class="mt-2 column-key"
-                                 icon-name="mdiCheckboxMarkedCircleOutline"
+                                 icon-name="circle-check"
                                  :size="24"
                               />
                            </div>
@@ -75,7 +75,7 @@
                               @click.prevent="removeCheck(check._antares_id)"
                            >
                               <BaseIcon
-                                 icon-name="mdiClose"
+                                 icon-name="x"
                                  :size="18"
                                  class="mt-2"
                               />
@@ -122,7 +122,7 @@
                   <div class="empty-icon">
                      <BaseIcon
                         class="mr-1"
-                        icon-name="mdiCheckboxMarkedCircleOutline"
+                        icon-name="circle-check"
                         :size="48"
                      />
                   </div>

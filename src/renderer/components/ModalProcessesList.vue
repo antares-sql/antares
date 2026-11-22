@@ -17,7 +17,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <BaseIcon
-                        icon-name="mdiMemory"
+                        icon-name="chip"
                         class="mr-1"
                         :size="24"
                      />
@@ -38,19 +38,19 @@
                         >
                            <BaseIcon
                               v-if="!+autorefreshTimer"
-                              icon-name="mdiRefresh"
+                              icon-name="refresh"
                               :size="24"
                            />
                            <BaseIcon
                               v-else
-                              icon-name="mdiHistory"
+                              icon-name="history"
                               flip="horizontal"
                               class="mr-1"
                               :size="24"
                            />
                         </button>
                         <div class="btn btn-dark btn-sm dropdown-toggle pl-0 pr-0" tabindex="0">
-                           <BaseIcon icon-name="mdiMenuDown" :size="24" />
+                           <BaseIcon icon-name="caret-down" :size="24" />
                         </div>
                         <div class="menu px-3">
                            <span>{{ t('general.autoRefresh') }}: <b>{{ +autorefreshTimer ? `${autorefreshTimer}s` : 'OFF' }}</b></span>
@@ -72,9 +72,9 @@
                         class="btn btn-dark btn-sm dropdown-toggle d-flex mr-0 pr-0"
                         tabindex="0"
                      >
-                        <BaseIcon icon-name="mdiFileExport" :size="24" />
+                        <BaseIcon icon-name="file+up" :size="24" />
                         <span>{{ t('database.export') }}</span>
-                        <BaseIcon icon-name="mdiMenuDown" :size="24" />
+                        <BaseIcon icon-name="caret-down" :size="24" />
                      </button>
                      <ul class="menu text-left">
                         <li class="menu-item">
@@ -112,7 +112,7 @@
 
                                     <BaseIcon
                                        v-if="currentSort === field"
-                                       :icon-name="currentSortDir === 'asc' ? 'mdiSortAscending':'mdiSortDescending'"
+                                       :icon-name="currentSortDir === 'asc' ? 'sort-asc':'sort-desc'"
                                        :size="18"
                                        class="ml-1"
                                     />

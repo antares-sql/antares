@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <BaseIcon
-                        icon-name="mdiDatabaseImport"
+                        icon-name="database+down"
                         class="mr-1"
                         :size="24"
                      />

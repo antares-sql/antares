@@ -7,19 +7,19 @@
       <BaseIcon
          v-if="isBig"
          class="tile-compress c-hand"
-         :icon-name="isSelected ? 'mdiChevronUp' : 'mdiChevronDown'"
+         :icon-name="isSelected ? 'chevron-up' : 'chevron-down'"
          :size="36"
          @click.stop="$emit('toggle-note', note.uid)"
       />
       <div class="tile-icon">
          <BaseIcon
             :icon-name="note.type === 'query'
-               ? 'mdiHeartOutline'
+               ? 'heart'
                : note.type === 'todo'
                   ? note.isArchived
-                     ? 'mdiCheckboxMarkedOutline'
-                     : 'mdiCheckboxBlankOutline'
-                  : 'mdiNoteEditOutline'"
+                     ? 'checkbox-checked'
+                     : 'checkbox'
+                  : 'note+pencil'"
             :size="36"
          />
          <div class="tile-icon-type">
@@ -54,7 +54,7 @@
                   :data-tooltip="t('general.archive')"
                   @click.stop="$emit('archive-note', note.uid)"
                >
-                  <BaseIcon icon-name="mdiCheck" :size="22" />
+                  <BaseIcon icon-name="check" :size="22" />
                </button>
                <button
                   v-if="note.type === 'todo' && note.isArchived"
@@ -62,7 +62,7 @@
                   :data-tooltip="t('general.undo')"
                   @click.stop="$emit('restore-note', note.uid)"
                >
-                  <BaseIcon icon-name="mdiRestore" :size="22" />
+                  <BaseIcon icon-name="restore" :size="22" />
                </button>
                <button
                   v-if="note.type === 'query'"
@@ -70,7 +70,7 @@
                   :data-tooltip="t('general.select')"
                   @click.stop="$emit('select-query', note.note)"
                >
-                  <BaseIcon icon-name="mdiOpenInApp" :size="22" />
+                  <BaseIcon icon-name="open-external" :size="22" />
                </button>
                <button
                   v-if="note.type === 'query'"
@@ -78,7 +78,7 @@
                   :data-tooltip="t('general.copy')"
                   @click.stop="copyText(note.note)"
                >
-                  <BaseIcon icon-name="mdiContentCopy" :size="18" />
+                  <BaseIcon icon-name="copy" :size="18" />
                </button>
                <button
                   v-if=" !note.isArchived"
@@ -86,14 +86,14 @@
                   :data-tooltip="t('general.edit')"
                   @click.stop="$emit('edit-note')"
                >
-                  <BaseIcon icon-name="mdiPencil" :size="22" />
+                  <BaseIcon icon-name="pencil" :size="22" />
                </button>
                <button
                   class="btn btn-dark tooltip tooltip-left"
                   :data-tooltip="t('general.delete')"
                   @click.stop="$emit('delete-note', note.uid)"
                >
-                  <BaseIcon icon-name="mdiDeleteForever" :size="22" />
+                  <BaseIcon icon-name="trash+x" :size="22" />
                </button>
             </div>
          </div>

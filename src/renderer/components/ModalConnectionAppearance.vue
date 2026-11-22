@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <BaseIcon
-                        icon-name="mdiBrushVariant"
+                        icon-name="brush"
                         class="mr-1"
                         :size="24"
                      />
@@ -44,11 +44,11 @@
                            >
                               <BaseIcon
                                  v-if="icon.code"
-                                 :icon-name="camelize(icon.code)"
+                                 :icon-name="icon.code"
                                  :size="36"
                                  class="icon-box"
                                  :title="icon.name"
-                                 :class="[{'selected': localConnection.icon === icon.code}]"
+                                 :class="[{'selected': resolveIconName(localConnection.icon) === icon.code}]"
                                  @click="setIcon(icon.code)"
                               />
                               <div
@@ -82,7 +82,7 @@
                               />
                            </div>
                            <BaseIcon
-                              :icon-name="'mdiPlus'"
+                              :icon-name="'plus'"
                               :size="36"
                               class="icon-box"
                               @click="openFile"
@@ -111,7 +111,7 @@
             <span class="d-flex">
                <BaseIcon
                   class="text-light mt-1 mr-1"
-                  icon-name="mdiDelete"
+                  icon-name="trash"
                   :size="18"
                /> {{ t('general.delete') }}</span>
          </div>
@@ -128,7 +128,7 @@ import BaseContextMenu from '@/components/BaseContextMenu.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import Application from '@/ipc-api/Application';
-import { camelize } from '@/libs/camelize';
+import { resolveIconName } from '@/libs/icons';
 import { unproxify } from '@/libs/unproxify';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
@@ -158,49 +158,49 @@ const icons = [
    { name: 'default', code: null },
 
    // Symbols
-   { name: 'account-group', code: 'mdi-account-group-outline' },
-   { name: 'cloud', code: 'mdi-cloud-outline' },
-   { name: 'key-chain', code: 'mdi-key-chain-variant' },
-   { name: 'lightning-bolt', code: 'mdi-lightning-bolt' },
-   { name: 'map-marker', code: 'mdi-map-marker-radius-outline' },
-   { name: 'api', code: 'mdi-api' },
-   { name: 'chart-line', code: 'mdi-chart-line' },
-   { name: 'chat', code: 'mdi-chat-outline' },
-   { name: 'bug', code: 'mdi-bug-outline' },
-   { name: 'shield', code: 'mdi-shield-outline' },
-   { name: 'cart', code: 'mdi-cart-variant' },
-   { name: 'bank', code: 'mdi-bank-outline' },
-   { name: 'receipt', code: 'mdi-receipt-text-outline' },
-   { name: 'raspberry-pi', code: 'mdi-raspberry-pi' },
-   { name: 'book', code: 'mdi-book-outline' },
-   { name: 'web', code: 'mdi-web' },
-   { name: 'multimedia', code: 'mdi-multimedia' },
-   { name: 'qr-code', code: 'mdi-qrcode' },
-   { name: 'flask', code: 'mdi-flask-outline' },
-   { name: 'memory', code: 'mdi-memory' },
-   { name: 'cube', code: 'mdi-cube-outline' },
-   { name: 'weather', code: 'mdi-weather-partly-snowy-rainy' },
-   { name: 'controller', code: 'mdi-controller' },
-   { name: 'home-group', code: 'mdi-home-group' },
+   { name: 'account-group', code: 'users' },
+   { name: 'cloud', code: 'cloud' },
+   { name: 'key-chain', code: 'key' },
+   { name: 'lightning-bolt', code: 'bolt' },
+   { name: 'map-marker', code: 'map-pin' },
+   { name: 'api', code: 'api' },
+   { name: 'chart-line', code: 'chart' },
+   { name: 'chat', code: 'chat' },
+   { name: 'bug', code: 'bug' },
+   { name: 'shield', code: 'shield' },
+   { name: 'cart', code: 'cart' },
+   { name: 'bank', code: 'bank' },
+   { name: 'receipt', code: 'receipt' },
+   { name: 'raspberry-pi', code: 'brand:raspberry-pi' },
+   { name: 'book', code: 'book' },
+   { name: 'web', code: 'globe' },
+   { name: 'multimedia', code: 'media' },
+   { name: 'qr-code', code: 'qrcode' },
+   { name: 'flask', code: 'flask' },
+   { name: 'memory', code: 'chip' },
+   { name: 'cube', code: 'box' },
+   { name: 'weather', code: 'weather' },
+   { name: 'controller', code: 'gamepad' },
+   { name: 'home-group', code: 'home' },
 
    // Vehicles
-   { name: 'truck', code: 'mdi-truck-outline' },
-   { name: 'car', code: 'mdi-car' },
-   { name: 'motorbike', code: 'mdi-atv' },
-   { name: 'train', code: 'mdi-train' },
-   { name: 'airplane', code: 'mdi-airplane' },
-   { name: 'ferry', code: 'mdi-ferry' },
+   { name: 'truck', code: 'truck' },
+   { name: 'car', code: 'car' },
+   { name: 'motorbike', code: 'motorbike' },
+   { name: 'train', code: 'train' },
+   { name: 'airplane', code: 'airplane' },
+   { name: 'ferry', code: 'ship' },
 
    // Brand
-   { name: 'docker', code: 'mdi-docker' },
-   { name: 'open-source', code: 'mdi-open-source-initiative' },
-   { name: 'aws', code: 'mdi-aws' },
-   { name: 'google-cloud', code: 'mdi-google-cloud' },
-   { name: 'microsoft-azure', code: 'mdi-microsoft-azure' },
-   { name: 'linux', code: 'mdi-linux' },
-   { name: 'microsoft-windows', code: 'mdi-microsoft-windows' },
-   { name: 'apple', code: 'mdi-apple' },
-   { name: 'android', code: 'mdi-android' }
+   { name: 'docker', code: 'brand:docker' },
+   { name: 'open-source', code: 'brand:osi' },
+   { name: 'aws', code: 'brand:aws' },
+   { name: 'google-cloud', code: 'brand:google-cloud' },
+   { name: 'microsoft-azure', code: 'brand:azure' },
+   { name: 'linux', code: 'brand:linux' },
+   { name: 'microsoft-windows', code: 'brand:windows' },
+   { name: 'apple', code: 'brand:apple' },
+   { name: 'android', code: 'brand:android' }
 ];
 
 const { trapRef } = useFocusTrap();
@@ -213,7 +213,7 @@ const editFolderAppearance = () => {
    closeModal();
 };
 
-const setIcon = (code: string, type?: 'mdi' | 'custom') => {
+const setIcon = (code: string, type?: 'icon' | 'custom') => {
    localConnection.value.icon = code;
    localConnection.value.hasCustomIcon = type === 'custom';
 };

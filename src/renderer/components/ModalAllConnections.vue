@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <BaseIcon
-                        icon-name="mdiApps"
+                        icon-name="apps"
                         class="mr-1"
                         :size="24"
                      />
@@ -30,13 +30,13 @@
                            >
                            <BaseIcon
                               v-if="!searchTerm"
-                              icon-name="mdiMagnify"
+                              icon-name="search"
                               class="form-icon pr-4"
                               :size="18"
                            />
                            <BaseIcon
                               v-else
-                              icon-name="mdiBackspace"
+                              icon-name="backspace"
                               class="form-icon c-hand pr-4"
                               :size="18"
                               @click="searchTerm = ''"
@@ -63,8 +63,8 @@
                                     class="settingbar-connection-icon"
                                  >
                                     <BaseIcon
-                                       :icon-name="camelize(connection.icon)"
-                                       :type="connection.hasCustomIcon ? 'custom' : 'mdi'"
+                                       :icon-name="connection.icon"
+                                       :type="connection.hasCustomIcon ? 'custom' : 'icon'"
                                        :size="42"
                                     />
                                  </div>
@@ -82,7 +82,7 @@
                               </div>
                               <div class="all-connections-buttons p-absolute d-flex" :style="'top: 0; right: 0;'">
                                  <BaseIcon
-                                    icon-name="mdiDelete"
+                                    icon-name="trash"
                                     class="all-connections-delete ml-2"
                                     :title="t('general.delete')"
                                     :size="18"
@@ -94,7 +94,7 @@
                               <div v-if="connection.databasePath">
                                  <div class="text-ellipsis" :title="connection.databasePath">
                                     <BaseIcon
-                                       icon-name="mdiDatabase"
+                                       icon-name="database"
                                        class="p-relative"
                                        :style="'top:3px'"
                                        :size="18"
@@ -106,7 +106,7 @@
                               <div v-else>
                                  <div class="text-ellipsis" :title="`${connection.host}:${connection.port}`">
                                     <BaseIcon
-                                       icon-name="mdiServer"
+                                       icon-name="server"
                                        class="p-relative"
                                        :style="'top:3px'"
                                        :size="18"
@@ -117,7 +117,7 @@
                               <div v-if="connection.user">
                                  <div class="text-ellipsis">
                                     <BaseIcon
-                                       icon-name="mdiAccount"
+                                       icon-name="user"
                                        class="p-relative"
                                        :style="'top:3px'"
                                        :size="18"
@@ -128,7 +128,7 @@
                               <div v-if="connection.schema">
                                  <div class="text-ellipsis">
                                     <BaseIcon
-                                       icon-name="mdiDatabase"
+                                       icon-name="database"
                                        class="p-relative"
                                        :style="'top:3px'"
                                        :size="18"
@@ -139,7 +139,7 @@
                               <div v-if="connection.database">
                                  <div class="text-ellipsis">
                                     <BaseIcon
-                                       icon-name="mdiDatabase"
+                                       icon-name="database"
                                        class="p-relative"
                                        :style="'top:3px'"
                                        :size="18"
@@ -155,7 +155,7 @@
                                  class="chip mt-2 bg-dark"
                               >
                                  <BaseIcon
-                                    icon-name="mdiFolder"
+                                    icon-name="folder"
                                     class="mr-1"
                                     :style="[connection.color ? `color: ${connection.color};`: '']"
                                     :size="18"
@@ -164,7 +164,7 @@
                               </div>
                               <div v-if="connection.ssl" class="chip bg-dark mt-2">
                                  <BaseIcon
-                                    icon-name="mdiShieldKey"
+                                    icon-name="shield+lock"
                                     class="mr-1"
                                     :size="18"
                                  />
@@ -172,7 +172,7 @@
                               </div>
                               <div v-if="connection.ssh" class="chip bg-dark mt-2">
                                  <BaseIcon
-                                    icon-name="mdiConsoleNetwork"
+                                    icon-name="terminal+lock"
                                     class="mr-1"
                                     :size="18"
                                  />
@@ -180,7 +180,7 @@
                               </div>
                               <div v-if="connection.readonly" class="chip bg-dark mt-2">
                                  <BaseIcon
-                                    icon-name="mdiLock"
+                                    icon-name="lock"
                                     class="mr-1"
                                     :size="18"
                                  />
@@ -211,7 +211,7 @@
          <template #header>
             <div class="d-flex">
                <BaseIcon
-                  icon-name="mdiServerRemove"
+                  icon-name="server+minus"
                   class="mr-1"
                   :size="24"
                /> {{ t('connection.deleteConnection') }}
@@ -235,7 +235,6 @@ import { useI18n } from 'vue-i18n';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
-import { camelize } from '@/libs/camelize';
 import { useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
 

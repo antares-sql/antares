@@ -1,0 +1,38 @@
+/* Antares icons (src/renderer/libs/icons): stroke glyphs with a duotone tint, colored by `color` */
+.antares-icon {
+  flex: none;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  .f,
+  .t {
+    fill: currentColor;
+    fill-opacity: var(--icon-tint-opacity, 0.26);
+  }
+
+  .d {
+    fill: currentColor;
+    stroke: none;
+  }
+
+  /* badge: same color as the glyph unless --icon-badge-color is set */
+  .b {
+    color: var(--icon-badge-color, inherit);
+  }
+
+  &.flip-horizontal {
+    transform: scaleX(-1);
+  }
+
+  &.flip-vertical {
+    transform: scaleY(-1);
+  }
+
+  &.flip-both {
+    transform: scale(-1, -1);
+  }
+}

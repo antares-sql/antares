@@ -8,7 +8,7 @@
             <div class="p-vcentered">
                <button class="btn btn-dark btn-sm p-vcentered mr-2" @click="importTheme">
                   <BaseIcon
-                     icon-name="mdiFileImport"
+                     icon-name="file+down"
                      class="mr-1"
                      :size="18"
                   />
@@ -16,7 +16,7 @@
                </button>
                <button class="btn btn-link btn-sm p-vcentered" @click="isGallery = true">
                   <BaseIcon
-                     icon-name="mdiPaletteSwatch"
+                     icon-name="palette"
                      class="mr-1"
                      :size="18"
                   />
@@ -42,7 +42,7 @@
                <ThemePreview :theme="theme" />
                <div class="theme-card-footer">
                   <BaseIcon
-                     :icon-name="theme.appearance === 'dark' ? 'mdiMoonWaningCrescent' : 'mdiWhiteBalanceSunny'"
+                     :icon-name="theme.appearance === 'dark' ? 'moon' : 'sun'"
                      class="mr-1"
                      :size="16"
                   />
@@ -56,7 +56,7 @@
                         :title="t('application.exportTheme')"
                         @click="exportTheme(theme.id)"
                      >
-                        <BaseIcon icon-name="mdiExport" :size="16" />
+                        <BaseIcon icon-name="export" :size="16" />
                      </button>
                      <button
                         v-if="!isBuiltin(theme.id)"
@@ -64,7 +64,7 @@
                         :title="t('application.removeTheme')"
                         @click="themeToRemove = theme"
                      >
-                        <BaseIcon icon-name="mdiDelete" :size="16" />
+                        <BaseIcon icon-name="trash" :size="16" />
                      </button>
                   </div>
                </div>
@@ -124,7 +124,7 @@
          <template #header>
             <div class="p-vcentered">
                <BaseIcon
-                  icon-name="mdiDelete"
+                  icon-name="trash"
                   class="mr-1"
                   :size="24"
                />

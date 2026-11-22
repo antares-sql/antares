@@ -10,7 +10,7 @@
          <div class="d-flex">
             <BaseIcon
                class="mr-1"
-               icon-name="mdiDotsHorizontal"
+               icon-name="dots"
                :size="24"
             />
             <span class="cut-text">{{ t('database.parameters') }} "{{ routine }}"</span>
@@ -25,7 +25,7 @@
                         <button class="btn btn-dark btn-sm d-flex" @click="addParameter">
                            <BaseIcon
                               class="mr-1"
-                              icon-name="mdiPlus"
+                              icon-name="plus"
                               :size="24"
                            />
                            <span>{{ t('general.add') }}</span>
@@ -38,7 +38,7 @@
                         >
                            <BaseIcon
                               class="mr-1"
-                              icon-name="mdiDeleteSweep"
+                              icon-name="eraser"
                               :size="24"
                            />
                            <span>{{ t('general.clear') }}</span>
@@ -57,7 +57,7 @@
                            <div>
                               <BaseIcon
                                  class="mt-2"
-                                 icon-name="mdiHexagon"
+                                 icon-name="parameter"
                                  :class="typeClass(param.type)"
                                  :size="24"
                               />
@@ -76,7 +76,7 @@
                               @click.prevent="removeParameter(param._antares_id)"
                            >
                               <BaseIcon
-                                 icon-name="mdiClose"
+                                 icon-name="x"
                                  :size="18"
                                  class="mt-2"
                               />
@@ -157,7 +157,7 @@
                   <div class="empty-icon">
                      <BaseIcon
                         class="mr-1"
-                        icon-name="mdiDotsHorizontal"
+                        icon-name="dots"
                         :size="48"
                      />
                   </div>

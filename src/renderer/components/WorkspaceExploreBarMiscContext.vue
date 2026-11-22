@@ -11,7 +11,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiPlay"
+               icon-name="play"
                :size="18"
             /> {{ t('general.run') }}</span>
       </div>
@@ -23,14 +23,14 @@
          <span v-if="!selectedMisc.enabled" class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiPlay"
+               icon-name="play"
                :size="18"
             /> {{ t('general.enable') }}
          </span>
          <span v-else class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiPause"
+               icon-name="pause"
                :size="18"
             /> {{ t('general.disable') }}
          </span>
@@ -43,14 +43,14 @@
          <span v-if="!selectedMisc.enabled" class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiPlay"
+               icon-name="play"
                :size="18"
             /> {{ t('general.enable') }}
          </span>
          <span v-else class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiPause"
+               icon-name="pause"
                :size="18"
             /> {{ t('general.disable') }}
          </span>
@@ -59,7 +59,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiContentCopy"
+               icon-name="copy"
                :size="18"
             /> {{ t('general.copyName') }}</span>
       </div>
@@ -71,7 +71,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiTableRemove"
+               icon-name="table+minus"
                :size="18"
             /> {{ t('general.delete') }}</span>
       </div>
@@ -84,7 +84,7 @@
             <div class="d-flex">
                <BaseIcon
                   class="mr-1"
-                  icon-name="mdiDelete"
+                  icon-name="trash"
                   :size="24"
                />
                <span class="cut-text">{{ deleteMessage }}</span>

@@ -25,7 +25,7 @@
          <template #header>
             <div class="d-flex">
                <BaseIcon
-                  icon-name="mdiInformationOutline"
+                  icon-name="info"
                   :size="24"
                   class="mr-1"
                /> {{ t('database.processInfo') }}

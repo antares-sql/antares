@@ -7,7 +7,7 @@
       <template #header>
          <div class="p-vcentered">
             <BaseIcon
-               icon-name="mdiPaletteSwatch"
+               icon-name="palette"
                class="mr-1"
                :size="24"
             />
@@ -35,7 +35,7 @@
             >
             <button class="btn btn-link btn-sm p-vcentered" @click="openOutside(themeGalleryRepository)">
                <BaseIcon
-                  icon-name="mdiGithub"
+                  icon-name="brand:github"
                   class="mr-1"
                   :size="18"
                />
@@ -48,7 +48,7 @@
          </div>
          <div v-else-if="status === 'error'" class="empty">
             <BaseIcon
-               icon-name="mdiCloudOffOutline"
+               icon-name="cloud+off"
                class="empty-icon"
                :size="48"
             />
@@ -80,7 +80,7 @@
                   >
                   <div class="gallery-card-footer p-vcentered">
                      <BaseIcon
-                        :icon-name="entry.appearance === 'dark' ? 'mdiMoonWaningCrescent' : 'mdiWhiteBalanceSunny'"
+                        :icon-name="entry.appearance === 'dark' ? 'moon' : 'sun'"
                         class="mr-1"
                         :size="16"
                      />
@@ -95,7 +95,7 @@
                         @click="install(entry)"
                      >
                         <BaseIcon
-                           :icon-name="isInstalled(entry.id) ? 'mdiRefresh' : 'mdiDownload'"
+                           :icon-name="isInstalled(entry.id) ? 'refresh' : 'download'"
                            class="mr-1"
                            :size="16"
                         />

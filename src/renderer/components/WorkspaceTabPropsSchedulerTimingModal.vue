@@ -10,7 +10,7 @@
          <div class="d-flex">
             <BaseIcon
                class="mr-1"
-               icon-name="mdiTimer"
+               icon-name="timer"
                :size="24"
             />
             <span class="cut-text">{{ t('database.timing') }} "{{ localOptions.name }}"</span>
@@ -81,7 +81,7 @@
                         >
                         <span class="input-group-addon p-vcentered">
                            <BaseIcon
-                              icon-name="mdiCalendar"
+                              icon-name="calendar"
                               :size="18"
                               class="form-icon"
                            />
@@ -106,7 +106,7 @@
                         >
                         <span class="input-group-addon p-vcentered">
                            <BaseIcon
-                              icon-name="mdiCalendar"
+                              icon-name="calendar"
                               :size="18"
                               class="form-icon"
                            />
@@ -128,7 +128,7 @@
                         >
                         <span class="input-group-addon p-vcentered">
                            <BaseIcon
-                              icon-name="mdiCalendar"
+                              icon-name="calendar"
                               :size="18"
                               class="form-icon"
                            />

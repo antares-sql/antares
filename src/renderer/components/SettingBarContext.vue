@@ -11,7 +11,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiPower"
+               icon-name="power"
                :size="18"
             /> {{ t('connection.disconnect') }}</span>
       </div>
@@ -19,12 +19,12 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiFolderMove"
+               icon-name="folder+arrow"
                :size="18"
             /> {{ t('general.moveTo') }}</span>
          <BaseIcon
             class="ml-1"
-            icon-name="mdiChevronRight"
+            icon-name="chevron-right"
             :size="18"
          />
          <div class="context-submenu">
@@ -32,7 +32,7 @@
                <span class="d-flex">
                   <BaseIcon
                      class="mt-1 mr-1"
-                     icon-name="mdiFolderPlus"
+                     icon-name="folder+plus"
                      :size="18"
                   /> {{ t('application.newFolder') }}</span>
             </div>
@@ -45,7 +45,7 @@
                <span class="p-vcentered">
                   <BaseIcon
                      class="mr-1"
-                     icon-name="mdiFolder"
+                     icon-name="folder"
                      :size="18"
                      :style="`color: ${resolveFolderColor(folder.color)}!important`"
                   />
@@ -61,7 +61,7 @@
                <span class="d-flex">
                   <BaseIcon
                      class="mt-1 mr-1"
-                     icon-name="mdiFolderOff"
+                     icon-name="folder+off"
                      :size="18"
                   /> {{ t('application.outOfFolder') }}</span>
             </div>
@@ -71,7 +71,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiBrushVariant"
+               icon-name="brush"
                :size="18"
             /> {{ t('application.appearance') }}</span>
       </div>
@@ -83,7 +83,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiContentDuplicate"
+               icon-name="copy+plus"
                :size="18"
             /> {{ t('general.duplicate') }}</span>
       </div>
@@ -91,7 +91,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiDelete"
+               icon-name="trash"
                :size="18"
             /> {{ t('general.delete') }}</span>
       </div>
@@ -105,7 +105,7 @@
             <div class="d-flex">
                <BaseIcon
                   class="mr-1"
-                  :icon-name="contextConnection.isFolder ? 'mdiFolderRemove' : 'mdiServerRemove'"
+                  :icon-name="contextConnection.isFolder ? 'folder+minus' : 'server+minus'"
                   :size="24"
                /> {{ t(contextConnection.isFolder ? 'application.deleteFolder' : 'connection.deleteConnection') }}
             </div>

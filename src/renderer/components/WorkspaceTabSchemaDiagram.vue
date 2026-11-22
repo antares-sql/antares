@@ -12,7 +12,7 @@
                >
                   <BaseIcon
                      class="mr-1"
-                     icon-name="mdiRefresh"
+                     icon-name="refresh"
                      :size="24"
                   />
                   <span>{{ t('general.refresh') }}</span>
@@ -24,7 +24,7 @@
                   :title="t('application.zoomIn')"
                   @click="zoomBy(1.2)"
                >
-                  <BaseIcon icon-name="mdiMagnifyPlusOutline" :size="24" />
+                  <BaseIcon icon-name="zoom-in" :size="24" />
                </button>
                <button
                   class="btn btn-dark btn-sm"
@@ -32,7 +32,7 @@
                   :title="t('application.zoomOut')"
                   @click="zoomBy(1 / 1.2)"
                >
-                  <BaseIcon icon-name="mdiMagnifyMinusOutline" :size="24" />
+                  <BaseIcon icon-name="zoom-out" :size="24" />
                </button>
                <button
                   class="btn btn-dark btn-sm"
@@ -40,7 +40,7 @@
                   :title="t('database.fitToScreen')"
                   @click="fitToScreen"
                >
-                  <BaseIcon icon-name="mdiFitToScreen" :size="24" />
+                  <BaseIcon icon-name="fit" :size="24" />
                </button>
                <button
                   class="btn btn-dark btn-sm"
@@ -50,7 +50,7 @@
                >
                   <BaseIcon
                      class="mr-1"
-                     icon-name="mdiAutoFix"
+                     icon-name="wand"
                      :size="24"
                   />
                   <span>{{ t('database.resetLayout') }}</span>
@@ -64,7 +64,7 @@
                >
                   <BaseIcon
                      class="mr-1"
-                     icon-name="mdiFileImageOutline"
+                     icon-name="file-image"
                      :size="24"
                   />
                   <span>{{ t('database.export') }}</span>
@@ -74,7 +74,7 @@
                <div class="d-flex" :title="t('database.schema')">
                   <BaseIcon
                      class="mr-1 mt-1"
-                     icon-name="mdiDatabase"
+                     icon-name="database"
                      :size="18"
                   /><b class="cut-text">{{ schema }}</b>
                </div>
@@ -85,7 +85,7 @@
                >
                   <BaseIcon
                      class="mr-1 mt-1"
-                     icon-name="mdiTable"
+                     icon-name="table"
                      :size="18"
                   /><b>{{ diagram.tables.length }}</b>
                </div>
@@ -96,7 +96,7 @@
                >
                   <BaseIcon
                      class="mr-1 mt-1"
-                     icon-name="mdiRelationManyToOne"
+                     icon-name="relation"
                      :size="18"
                   /><b>{{ relations.length }}</b>
                </div>
@@ -115,7 +115,7 @@
          <BaseLoader v-if="isLoading && !diagram" />
          <div v-else-if="diagram && !hasTables" class="empty">
             <div class="empty-icon">
-               <BaseIcon icon-name="mdiTableNetwork" :size="48" />
+               <BaseIcon icon-name="diagram" :size="48" />
             </div>
             <p class="empty-title h5">
                {{ t('database.thereAreNoTables') }}
@@ -130,6 +130,7 @@
             @wheel.prevent="onWheel"
          >
             <defs>
+               <g v-html="iconMasks" />
                <marker
                   :id="`${tabUid}-one`"
                   viewBox="0 0 12 12"
@@ -216,12 +217,12 @@
                         :width="boxes[table.name]?.width - 2"
                         :height="ROW_HEIGHT"
                      />
-                     <path
+                     <g
                         v-if="fieldKey(table.name, field)"
-                        class="column-key"
+                        class="column-key antares-icon"
                         :class="`key-${fieldKey(table.name, field)}`"
-                        :d="fieldKey(table.name, field) === 'fk' ? mdiKeyLink : mdiKey"
                         :transform="`translate(${BOX_PADDING} ${(ROW_HEIGHT - 14) / 2}) scale(${14 / 24})`"
+                        v-html="fieldKey(table.name, field) === 'fk' ? fkIcon : keyIcon"
                      />
                      <text
                         class="field-name"
@@ -246,7 +247,6 @@
 </template>
 
 <script setup lang="ts">
-import { mdiKey, mdiKeyLink } from '@mdi/js';
 import { ConnectionParams, SchemaDiagram, SchemaDiagramField } from 'common/interfaces/antares';
 import { ipcRenderer } from 'electron';
 import { computed, nextTick, onBeforeUnmount, onMounted, Prop, ref, watch } from 'vue';
@@ -256,6 +256,7 @@ import BaseIcon from '@/components/BaseIcon.vue';
 import BaseLoader from '@/components/BaseLoader.vue';
 import Application from '@/ipc-api/Application';
 import Schema from '@/ipc-api/Schema';
+import { iconMarkup, iconMasksMarkup } from '@/libs/icons';
 import {
    BOX_PADDING,
    diagramBounds,
@@ -568,12 +569,20 @@ const openTableData = (table: string) => {
    });
 };
 
+/* Masks inside the diagram, so that the exported SVG keeps the badge cut-outs; own ids, see iconMasksMarkup() */
+const iconMaskPrefix = `${props.tabUid}-icon-cut-`;
+const keyIcon = iconMarkup('key', iconMaskPrefix);
+const fkIcon = iconMarkup('key+arrow', iconMaskPrefix);
+const iconMasks = iconMasksMarkup(iconMaskPrefix);
+
 const INLINED_STYLES = [
    'fill',
    'fill-opacity',
    'stroke',
    'stroke-width',
    'stroke-opacity',
+   'stroke-linecap',
+   'stroke-linejoin',
    'opacity',
    'font-family',
    'font-size',
@@ -738,8 +747,5 @@ getDiagram();
     font-size: 11px;
   }
 
-  .column-key {
-    fill: currentcolor;
-  }
 }
 </style>

@@ -2,7 +2,7 @@
    <label :for="`id_${id}`" class="file-uploader">
       <span class="file-uploader-message">
          <BaseIcon
-            icon-name="mdiFolderOpen"
+            icon-name="folder-open"
             class="mr-1 mt-1"
             :size="18"
          />{{ message }}
@@ -13,7 +13,7 @@
       <BaseIcon
          v-if="modelValue"
          class="file-upload-icon-clear"
-         icon-name="mdiClose"
+         icon-name="x"
          :size="18"
          @click.prevent="clear"
       />

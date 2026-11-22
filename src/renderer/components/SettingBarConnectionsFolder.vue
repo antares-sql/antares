@@ -41,12 +41,12 @@
             >
                <BaseIcon
                   class="folder-icon-open"
-                  icon-name="mdiFolderOpen"
+                  icon-name="folder-open"
                   :size="36"
                />
                <BaseIcon
                   class="folder-icon-close"
-                  icon-name="mdiFolder"
+                  icon-name="folder"
                   :size="36"
                />
             </div>
@@ -70,8 +70,8 @@
                   :class="[getStatusBadge(element)]"
                >
                   <BaseIcon
-                     :icon-name="camelize(getConnectionOrderByUid(element).icon)"
-                     :type="getConnectionOrderByUid(element).hasCustomIcon ? 'custom' : 'mdi'"
+                     :icon-name="getConnectionOrderByUid(element).icon"
+                     :type="getConnectionOrderByUid(element).hasCustomIcon ? 'custom' : 'icon'"
                      :size="36"
                   />
                </div>
@@ -210,16 +210,6 @@ const dragStart = () => {
 
 const dragStop = () => {
    emit('folder-drag', false);
-};
-
-const camelize = (text: string) => {
-   const textArr = text.split('-');
-   for (let i = 0; i < textArr.length; i++) {
-      if (i === 0) continue;
-      textArr[i] = textArr[i].charAt(0).toUpperCase() + textArr[i].slice(1);
-   }
-
-   return textArr.join('');
 };
 
 watch(() => dummyNested.value.length, () => {

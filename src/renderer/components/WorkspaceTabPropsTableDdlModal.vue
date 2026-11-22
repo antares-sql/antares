@@ -11,7 +11,7 @@
          <div class="d-flex">
             <BaseIcon
                class="mr-1"
-               icon-name="mdiCodeTags"
+               icon-name="code"
                :size="24"
             />
             <span class="cut-text">{{ t('database.ddl') }} "{{ table }}"</span>

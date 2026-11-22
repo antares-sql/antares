@@ -7,12 +7,12 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiKeyPlus"
+               icon-name="key+plus"
                :size="18"
             /> {{ t('database.createNewIndex') }}</span>
          <BaseIcon
             class="mt-1"
-            icon-name="mdiChevronRight"
+            icon-name="chevron-right"
             :size="18"
          />
          <div class="context-submenu">
@@ -27,8 +27,7 @@
                   <BaseIcon
                      class="column-key pr-1 mt-1 mr-1"
                      :class="`key-${index}`"
-                     icon-name="mdiKey"
-                     :rotate="45"
+                     icon-name="key"
                      :size="20"
                   /> {{ index }}</span>
             </div>
@@ -38,12 +37,12 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiKeyArrowRight"
+               icon-name="key+arrow"
                :size="18"
             /> {{ t('database.addToIndex') }}</span>
          <BaseIcon
             class="mt-1"
-            icon-name="mdiChevronRight"
+            icon-name="chevron-right"
             :size="18"
          />
          <div class="context-submenu">
@@ -58,8 +57,7 @@
                   <BaseIcon
                      class="column-key pr-1 mt-1 mr-1"
                      :class="`key-${index.type}`"
-                     icon-name="mdiKey"
-                     :rotate="45"
+                     icon-name="key"
                      :size="20"
                   /> {{ index.name }}</span>
             </div>
@@ -69,7 +67,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiContentDuplicate"
+               icon-name="copy+plus"
                :size="18"
             /> {{ t('general.duplicate') }}</span>
       </div>
@@ -77,7 +75,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiDelete"
+               icon-name="trash"
                :size="18"
             /> {{ t('database.deleteField') }}</span>
       </div>

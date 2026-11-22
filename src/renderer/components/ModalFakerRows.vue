@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <BaseIcon
-                        icon-name="mdiPlaylistPlus"
+                        icon-name="list+plus"
                         :size="24"
                         class="mr-1"
                      />
@@ -68,7 +68,7 @@
                         :disabled="isInserting"
                      >
                      <span class="input-group-addon">
-                        <BaseIcon icon-name="mdiRepeat" :size="24" />
+                        <BaseIcon icon-name="repeat" :size="24" />
                      </span>
                   </div>
                   <div

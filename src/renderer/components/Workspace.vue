@@ -43,7 +43,7 @@
                      >
                         <BaseIcon
                            class="mt-1 mr-1"
-                           :icon-name="element.filePath ? 'mdiFileCodeOutline' : 'mdiCodeTags'"
+                           :icon-name="element.filePath ? 'file+code' : 'code'"
                            :size="18"
                         />
                         <span>
@@ -64,7 +64,7 @@
                      >
                         <BaseIcon
                            class="mt-1 mr-1"
-                           :icon-name="['view', 'materializedView'].includes(element.elementType) ? 'mdiTableEye' : 'mdiTable'"
+                           :icon-name="['view', 'materializedView'].includes(element.elementType) ? 'view' : 'table'"
                            :size="18"
                         />
                         <span :title="`${t('general.data').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
@@ -81,7 +81,7 @@
                      <a v-else-if="element.type === 'data'" class="tab-link">
                         <BaseIcon
                            class="mt-1 mr-1"
-                           :icon-name="['view', 'materializedView'].includes(element.elementType) ? 'mdiTableEye' : 'mdiTable'"
+                           :icon-name="['view', 'materializedView'].includes(element.elementType) ? 'view' : 'table'"
                            :size="18"
                         />
                         <span :title="`${t('general.data').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
@@ -102,7 +102,7 @@
                      >
                         <BaseIcon
                            class="mr-1"
-                           icon-name="mdiShapeSquarePlus"
+                           :icon-name="elementIcon(element.elementType, 'plus')"
                            :size="18"
                         />
                         <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
@@ -123,7 +123,7 @@
                      >
                         <BaseIcon
                            class="mr-1"
-                           icon-name="mdiWrenchCog"
+                           :icon-name="elementIcon(element.elementType, 'cog')"
                            :size="18"
                         />
                         <span :title="`${t('application.settings').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
@@ -144,7 +144,7 @@
                      >
                         <BaseIcon
                            class="mr-1"
-                           icon-name="mdiWrenchCog"
+                           :icon-name="elementIcon(element.elementType, 'cog')"
                            :size="18"
                         />
                         <span :title="`${t('application.settings').toUpperCase()}: ${t(`database.view`)}`">
@@ -165,7 +165,7 @@
                      >
                         <BaseIcon
                            class="mr-1"
-                           icon-name="mdiWrenchCog"
+                           :icon-name="elementIcon(element.elementType, 'cog')"
                            :size="18"
                         />
                         <span :title="`${t('application.settings').toUpperCase()}: ${t(`database.view`)}`">
@@ -186,7 +186,7 @@
                      >
                         <BaseIcon
                            class="mr-1"
-                           icon-name="mdiShapeSquarePlus"
+                           :icon-name="elementIcon(element.elementType, 'plus')"
                            :size="18"
                         />
                         <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
@@ -207,7 +207,7 @@
                      >
                         <BaseIcon
                            class="mr-1"
-                           icon-name="mdiShapeSquarePlus"
+                           :icon-name="elementIcon(element.elementType, 'plus')"
                            :size="18"
                         />
                         <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
@@ -228,7 +228,7 @@
                      >
                         <BaseIcon
                            class="mr-1"
-                           icon-name="mdiShapeSquarePlus"
+                           :icon-name="elementIcon(element.elementType, 'plus')"
                            :size="18"
                         />
                         <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
@@ -249,7 +249,7 @@
                      >
                         <BaseIcon
                            class="mr-1"
-                           icon-name="mdiShapeSquarePlus"
+                           :icon-name="elementIcon(element.elementType, 'plus')"
                            :size="18"
                         />
                         <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
@@ -270,7 +270,7 @@
                      >
                         <BaseIcon
                            class="mr-1"
-                           icon-name="mdiShapeSquarePlus"
+                           :icon-name="elementIcon(element.elementType, 'plus')"
                            :size="18"
                         />
                         <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
@@ -291,7 +291,7 @@
                      >
                         <BaseIcon
                            class="mr-1"
-                           icon-name="mdiShapeSquarePlus"
+                           :icon-name="elementIcon(element.elementType, 'plus')"
                            :size="18"
                         />
                         <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
@@ -312,7 +312,7 @@
                      >
                         <BaseIcon
                            class="mr-1"
-                           icon-name="mdiShapeSquarePlus"
+                           :icon-name="elementIcon(element.elementType, 'plus')"
                            :size="18"
                         />
                         <span :title="`${t('general.new').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
@@ -333,7 +333,7 @@
                      >
                         <BaseIcon
                            class="mr-1"
-                           icon-name="mdiShapeSquarePlus"
+                           :icon-name="elementIcon(element.elementType, 'plus')"
                            :size="18"
                         />
                         <span :title="`${t('general.new').toUpperCase()}: ${t('database.userType', 1)}`">
@@ -350,7 +350,7 @@
                      <a v-else-if="element.type === 'schema-diagram'" class="tab-link">
                         <BaseIcon
                            class="mr-1"
-                           icon-name="mdiTableNetwork"
+                           icon-name="diagram"
                            :size="18"
                         />
                         <span :title="`${t('database.schemaDiagram').toUpperCase()}: ${element.schema}`">
@@ -372,7 +372,7 @@
                      >
                         <BaseIcon
                            class="mr-1"
-                           icon-name="mdiWrenchCog"
+                           :icon-name="elementIcon(element.elementType, 'cog')"
                            :size="18"
                         />
                         <span :title="`${t('application.settings').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
@@ -393,7 +393,7 @@
                      >
                         <BaseIcon
                            class="mr-1"
-                           icon-name="mdiWrenchCog"
+                           :icon-name="elementIcon(element.elementType, 'cog')"
                            :size="18"
                         />
                         <span :title="`${t('application.settings').toUpperCase()}: ${t(`database.${element.elementType}`)}`">
@@ -418,13 +418,13 @@
                         tabindex="0"
                         :title="t('general.tools')"
                      >
-                        <BaseIcon icon-name="mdiTools" :size="24" />
+                        <BaseIcon icon-name="tools" :size="24" />
                      </a>
                      <ul class="menu text-left text-uppercase">
                         <li v-if="workspace.customizations.usersManagement" class="menu-item">
                            <a class="c-hand p-vcentered" @click="showUsersModal">
                               <BaseIcon
-                                 icon-name="mdiAccountGroup"
+                                 icon-name="users"
                                  :size="18"
                                  class="mr-1 tool-icon"
                               />
@@ -434,7 +434,7 @@
                         <li v-if="workspace.customizations.processesList" class="menu-item">
                            <a class="c-hand p-vcentered" @click="showProcessesModal">
                               <BaseIcon
-                                 icon-name="mdiMemory"
+                                 icon-name="chip"
                                  :size="18"
                                  class="mr-1 tool-icon"
                               />
@@ -444,7 +444,7 @@
                         <li class="menu-item">
                            <a class="c-hand p-vcentered" @click="toggleConsole">
                               <BaseIcon
-                                 icon-name="mdiConsoleLine"
+                                 icon-name="terminal"
                                  :size="18"
                                  class="mr-1 tool-icon"
                               />
@@ -458,7 +458,7 @@
                         >
                            <a class="c-hand p-vcentered disabled">
                               <BaseIcon
-                                 icon-name="mdiShape"
+                                 icon-name="shapes"
                                  :size="18"
                                  class="mr-1 tool-icon"
                               />
@@ -475,7 +475,7 @@
                         :title="t('application.openNewTab')"
                         @click="addQueryTab"
                      >
-                        <BaseIcon icon-name="mdiPlus" :size="24" />
+                        <BaseIcon icon-name="plus" :size="24" />
                      </a>
                   </li>
                </template>
@@ -718,6 +718,22 @@ import WorkspaceTabNewMaterializedView from './WorkspaceTabNewMaterializedView.v
 import WorkspaceTabPropsMaterializedView from './WorkspaceTabPropsMaterializedView.vue';
 
 const { t } = useI18n();
+
+const elementIcons: Record<string, string> = {
+   table: 'table',
+   view: 'view',
+   materializedView: 'view',
+   trigger: 'bolt',
+   routine: 'routine',
+   procedure: 'routine',
+   function: 'function',
+   triggerFunction: 'trigger-function',
+   scheduler: 'scheduler',
+   userType: 'shapes'
+};
+
+/** Icon of a database element with a badge (e.g. `plus` for new, `cog` for settings) */
+const elementIcon = (elementType: string, badge: string) => `${elementIcons[elementType] ?? 'table'}+${badge}`;
 
 const { cutText } = useFilters();
 const workspacesStore = useWorkspacesStore();

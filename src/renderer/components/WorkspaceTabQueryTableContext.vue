@@ -6,12 +6,12 @@
       <div class="context-element">
          <span class="d-flex">
             <BaseIcon
-               icon-name="mdiContentCopy"
+               icon-name="copy"
                class="mr-1 mt-1"
                :size="18"
             /> {{ t('general.copy') }}</span>
          <BaseIcon
-            icon-name="mdiChevronRight"
+            icon-name="chevron-right"
             class="mt-1"
             :size="18"
          />
@@ -23,7 +23,7 @@
             >
                <span class="d-flex">
                   <BaseIcon
-                     icon-name="mdiNumeric0"
+                     icon-name="zero"
                      class="mr-1 mt-1"
                      :rotate="90"
                      :size="18"
@@ -33,7 +33,7 @@
             <div class="context-element" @click="copyRow('html')">
                <span class="d-flex">
                   <BaseIcon
-                     icon-name="mdiTableRow"
+                     icon-name="table-row"
                      class="mr-1 mt-1"
                      :size="18"
                   /> {{ t('database.row', selectedRows.length) }} ({{ t('database.table') }})
@@ -42,7 +42,7 @@
             <div class="context-element" @click="copyRow('json')">
                <span class="d-flex">
                   <BaseIcon
-                     icon-name="mdiTableRow"
+                     icon-name="table-row"
                      class="mr-1 mt-1"
                      :size="18"
                   /> {{ t('database.row', selectedRows.length) }} (JSON)
@@ -51,7 +51,7 @@
             <div class="context-element" @click="copyRow('csv')">
                <span class="d-flex">
                   <BaseIcon
-                     icon-name="mdiTableRow"
+                     icon-name="table-row"
                      class="mr-1 mt-1"
                      :size="18"
                   /> {{ t('database.row', selectedRows.length) }} (CSV)
@@ -60,7 +60,7 @@
             <div class="context-element" @click="copyRow('php')">
                <span class="d-flex">
                   <BaseIcon
-                     icon-name="mdiTableRow"
+                     icon-name="table-row"
                      class="mr-1 mt-1"
                      :size="18"
                   /> {{ t('database.row', selectedRows.length) }} (PHP)
@@ -69,7 +69,7 @@
             <div class="context-element" @click="copyRow('sql')">
                <span class="d-flex">
                   <BaseIcon
-                     icon-name="mdiTableRow"
+                     icon-name="table-row"
                      class="mr-1 mt-1"
                      :size="18"
                   /> {{ t('database.row', selectedRows.length) }} (SQL INSERT)
@@ -84,7 +84,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               icon-name="mdiContentDuplicate"
+               icon-name="copy+plus"
                class="mr-1 mt-1"
                :size="18"
             /> {{ t('general.duplicate') }}
@@ -96,13 +96,13 @@
       >
          <span class="d-flex">
             <BaseIcon
-               icon-name="mdiAutoFix"
+               icon-name="wand"
                class="mr-1 mt-1"
                :size="18"
             /> {{ t('database.fillCell') }}
          </span>
          <BaseIcon
-            icon-name="mdiChevronRight"
+            icon-name="chevron-right"
             class="mt-1"
             :size="18"
          />
@@ -126,7 +126,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               icon-name="mdiNull"
+               icon-name="null"
                class="mr-1 mt-1"
                :size="18"
             /> {{ t('database.setNull') }}
@@ -139,7 +139,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               icon-name="mdiKeyLink"
+               icon-name="key+arrow"
                class="mr-1 mt-1"
                :size="18"
             /> {{ t('database.goToForeignKey') }}
@@ -153,7 +153,7 @@
       >
          <span class="d-flex">
             <BaseIcon
-               icon-name="mdiDelete"
+               icon-name="trash"
                class="mr-1 mt-1"
                :size="18"
             /> {{ t('database.deleteRows', selectedRows.length) }}

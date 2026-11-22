@@ -10,12 +10,12 @@
          <BaseIcon
             v-else
             class="icon"
-            icon-name="mdiChevronRight"
+            icon-name="chevron-right"
             :size="18"
          />
          <BaseIcon
             class="database-icon mr-1"
-            icon-name="mdiDatabase"
+            icon-name="database"
             :size="18"
          />
          <div class="">
@@ -27,7 +27,7 @@
             >
                <BaseIcon
                   class="mr-2"
-                  icon-name="mdiInformationOutline"
+                  icon-name="info"
                   :size="18"
                />
             </div>
@@ -50,7 +50,7 @@
                      <BaseIcon
                         v-else
                         class="table-icon mr-1"
-                        :icon-name="table.type === 'view' ? 'mdiTableEye' : 'mdiTable'"
+                        :icon-name="table.type === 'view' ? 'view' : 'table'"
                         :size="18"
                         :style="`min-width: 18px`"
                      />
@@ -76,12 +76,12 @@
                >
                   <BaseIcon
                      class="misc-icon mr-1"
-                     icon-name="mdiFolderEye"
+                     icon-name="folder+eye"
                      :size="18"
                   />
                   <BaseIcon
                      class="misc-icon open-folder mr-1"
-                     icon-name="mdiFolderOpen"
+                     icon-name="folder-open"
                      :size="18"
                   />
                   {{ t('database.view', 2) }}
@@ -103,7 +103,7 @@
                               <BaseIcon
                                  v-else
                                  class="table-icon mr-1"
-                                 icon-name="mdiTableEye"
+                                 icon-name="view"
                                  :size="18"
                                  :style="`min-width: 18px`"
                               />
@@ -125,12 +125,12 @@
                >
                   <BaseIcon
                      class="misc-icon mr-1"
-                     icon-name="mdiFolderEye"
+                     icon-name="folder+eye"
                      :size="18"
                   />
                   <BaseIcon
                      class="misc-icon open-folder mr-1"
-                     icon-name="mdiFolderOpen"
+                     icon-name="folder-open"
                      :size="18"
                   />
                   {{ t('database.materializedView', 2) }}
@@ -152,7 +152,7 @@
                               <BaseIcon
                                  v-else
                                  class="table-icon mr-1"
-                                 icon-name="mdiTableEye"
+                                 icon-name="view"
                                  :size="18"
                                  :style="`min-width: 18px`"
                               />
@@ -174,12 +174,12 @@
                >
                   <BaseIcon
                      class="misc-icon mr-1"
-                     icon-name="mdiFolderCog"
+                     icon-name="folder+cog"
                      :size="18"
                   />
                   <BaseIcon
                      class="misc-icon open-folder mr-1"
-                     icon-name="mdiFolderOpen"
+                     icon-name="folder-open"
                      :size="18"
                   />
                   {{ t('database.trigger', 2) }}
@@ -201,7 +201,7 @@
                               <BaseIcon
                                  v-else
                                  class="table-icon mr-1"
-                                 icon-name="mdiTableCog"
+                                 icon-name="table+cog"
                                  :size="18"
                                  :style="`min-width: 18px`"
                               />
@@ -214,7 +214,7 @@
                            >
                               <BaseIcon
                                  class="table-icon mr-1"
-                                 icon-name="mdiPause"
+                                 icon-name="pause"
                                  :size="18"
                               />
                            </div>
@@ -234,12 +234,12 @@
                >
                   <BaseIcon
                      class="misc-icon mr-1"
-                     icon-name="mdiFolderSync"
+                     icon-name="folder+sync"
                      :size="18"
                   />
                   <BaseIcon
                      class="misc-icon open-folder mr-1"
-                     icon-name="mdiFolderOpen"
+                     icon-name="folder-open"
                      :size="18"
                   />
                   {{ t('database.storedRoutine', 2) }}
@@ -259,7 +259,7 @@
                            <a class="table-name">
                               <BaseIcon
                                  class="table-icon mr-1"
-                                 icon-name="mdiSyncCircle"
+                                 icon-name="routine"
                                  :size="18"
                                  :style="`min-width: 18px`"
                               />
@@ -281,13 +281,13 @@
                >
                   <BaseIcon
                      class="misc-icon mr-1"
-                     icon-name="mdiFolderRefresh"
+                     icon-name="folder+sync"
                      :size="18"
                      :style="`min-width: 18px`"
                   />
                   <BaseIcon
                      class="misc-icon open-folder mr-1"
-                     icon-name="mdiFolderOpen"
+                     icon-name="folder-open"
                      :size="18"
                   />
                   {{ t('database.triggerFunction', 2) }}
@@ -307,7 +307,7 @@
                            <a class="table-name">
                               <BaseIcon
                                  class="misc-icon mr-1"
-                                 icon-name="mdiCogClockwise"
+                                 icon-name="trigger-function"
                                  :size="18"
                               />
                               <span v-html="highlightWord(func.name)" />
@@ -328,12 +328,12 @@
                >
                   <BaseIcon
                      class="misc-icon mr-1"
-                     icon-name="mdiFolderMove"
+                     icon-name="folder+arrow"
                      :size="18"
                   />
                   <BaseIcon
                      class="misc-icon open-folder mr-1"
-                     icon-name="mdiFolderOpen"
+                     icon-name="folder-open"
                      :size="18"
                   />
                   {{ t('database.function', 2) }}
@@ -353,7 +353,7 @@
                            <a class="table-name">
                               <BaseIcon
                                  class="misc-icon mr-1"
-                                 icon-name="mdiArrowRightBoldBox"
+                                 icon-name="function"
                                  :size="18"
                                  :style="`min-width: 18px`"
                               />
@@ -375,12 +375,12 @@
                >
                   <BaseIcon
                      class="misc-icon mr-1"
-                     icon-name="mdiFolderText"
+                     icon-name="folder+code"
                      :size="18"
                   />
                   <BaseIcon
                      class="misc-icon open-folder mr-1"
-                     icon-name="mdiFolderOpen"
+                     icon-name="folder-open"
                      :size="18"
                   />
                   {{ t('database.userType', 2) }}
@@ -423,12 +423,12 @@
                >
                   <BaseIcon
                      class="misc-icon mr-1"
-                     icon-name="mdiFolderClock"
+                     icon-name="folder+clock"
                      :size="18"
                   />
                   <BaseIcon
                      class="misc-icon open-folder mr-1"
-                     icon-name="mdiFolderOpen"
+                     icon-name="folder-open"
                      :size="18"
                   />
                   {{ t('database.scheduler', 2) }}
@@ -449,7 +449,7 @@
                               <div v-if="checkLoadingStatus(scheduler.name, 'scheduler')" class="icon loading mr-1" />
                               <BaseIcon
                                  class="misc-icon mr-1"
-                                 icon-name="mdiCalendarClock"
+                                 icon-name="scheduler"
                                  :size="18"
                                  :style="`min-width: 18px`"
                               />
@@ -462,7 +462,7 @@
                            >
                               <BaseIcon
                                  class="misc-icon mr-1"
-                                 icon-name="mdiPause"
+                                 icon-name="pause"
                                  :size="18"
                               />
                            </div>
@@ -594,10 +594,10 @@ const filteredUserTypes = computed(() => {
 });
 
 const userTypeIcons: Record<UserTypeKind, string> = {
-   enum: 'mdiFormatListBulleted',
-   composite: 'mdiCodeBraces',
-   domain: 'mdiShieldCheckOutline',
-   range: 'mdiArrowExpandHorizontal'
+   enum: 'list-bullets',
+   composite: 'braces',
+   domain: 'shield+check',
+   range: 'arrows-horizontal'
 };
 
 const workspace = computed(() => {

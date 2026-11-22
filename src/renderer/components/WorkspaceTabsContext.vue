@@ -7,7 +7,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiAsterisk"
+               icon-name="asterisk"
                :size="18"
             /> {{ t('application.closeAllTabs') }}</span>
       </div>
@@ -16,7 +16,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiNotEqual"
+               icon-name="not-equal"
                :size="18"
             /> {{ t('application.closeOtherTabs') }}</span>
       </div>
@@ -25,7 +25,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiLessThan"
+               icon-name="less-than"
                :size="18"
             /> {{ t('application.closeTabsToLeft') }}</span>
       </div>
@@ -34,7 +34,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiGreaterThan"
+               icon-name="greater-than"
                :size="18"
             /> {{ t('application.closeTabsToRight') }}</span>
       </div>

@@ -13,7 +13,7 @@
                @click="isExportModal=true"
             >
                <BaseIcon
-                  icon-name="mdiTrayArrowUp"
+                  icon-name="upload"
                   class="mr-2"
                   :size="24"
                />
@@ -35,7 +35,7 @@
                @click="isImportModal=true"
             >
                <BaseIcon
-                  icon-name="mdiTrayArrowDown"
+                  icon-name="download"
                   class="mr-2"
                   :size="24"
                />
@@ -57,7 +57,7 @@
                @click="applyDebug"
             >
                <BaseIcon
-                  icon-name="mdiDocker"
+                  icon-name="brand:docker"
                   class="mr-2"
                   :size="24"
                />

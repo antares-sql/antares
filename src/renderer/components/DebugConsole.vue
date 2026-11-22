@@ -27,14 +27,14 @@
                   class="c-hand mr-2"
                   @click="openDevTools()"
                >
-                  <BaseIcon icon-name="mdiBugPlayOutline" :size="22" />
+                  <BaseIcon icon-name="bug+play" :size="22" />
                </div>
                <div
                   v-if="isDevelopment"
                   class="c-hand mr-2"
                   @click="reload()"
                >
-                  <BaseIcon icon-name="mdiRefresh" :size="22" />
+                  <BaseIcon icon-name="refresh" :size="22" />
                </div>
                <button class="btn btn-clear mr-1" @click="resizeConsole(0)" />
             </div>
@@ -80,7 +80,7 @@
          <span class="d-flex">
             <BaseIcon
                class="text-light mt-1 mr-1"
-               icon-name="mdiContentCopy"
+               icon-name="copy"
                :size="18"
             /> {{ t('general.copy') }}</span>
       </div>

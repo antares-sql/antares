@@ -29,7 +29,7 @@
             >
                <div class="settingbar-element-icon-wrapper">
                   <BaseIcon
-                     icon-name="mdiDotsHorizontal"
+                     icon-name="dots"
                      class="settingbar-element-icon text-light"
                      :size="24"
                   />
@@ -47,7 +47,7 @@
             >
                <div class="settingbar-element-icon-wrapper">
                   <BaseIcon
-                     icon-name="mdiPlus"
+                     icon-name="plus"
                      class="settingbar-element-icon text-light"
                      :size="24"
                   />
@@ -68,7 +68,7 @@
                @click="showScratchpad()"
             >
                <BaseIcon
-                  icon-name="mdiNotebookOutline"
+                  icon-name="notebook"
                   class="settingbar-element-icon text-light"
                   :size="24"
                />
@@ -88,7 +88,7 @@
                      :class="{ 'badge badge-update': hasUpdates }"
                   >
                      <BaseIcon
-                        icon-name="mdiCog"
+                        icon-name="cog"
                         :size="24"
                      />
                   </div>

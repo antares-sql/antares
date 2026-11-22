@@ -8,7 +8,7 @@
       />
       <div v-if="isError" class="empty">
          <div class="empty-icon">
-            <BaseIcon icon-name="mdiAlertOutline" :size="48" />
+            <BaseIcon icon-name="alert-triangle" :size="48" />
          </div>
       </div>
    </div>

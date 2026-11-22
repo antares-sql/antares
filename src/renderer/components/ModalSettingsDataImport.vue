@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <BaseIcon
-                        icon-name="mdiTrayArrowDown"
+                        icon-name="download"
                         class="mr-1"
                         :size="24"
                      /> {{ t('application.importData') }}
@@ -48,13 +48,13 @@
                         >
                            <BaseIcon
                               v-if="isPasswordVisible"
-                              icon-name="mdiEye"
+                              icon-name="eye"
                               class="mt-1 mx-1"
                               :size="16"
                            />
                            <BaseIcon
                               v-else
-                              icon-name="mdiEyeOff"
+                              icon-name="eye+off"
                               class="mt-1 mx-1"
                               :size="16"
                            />

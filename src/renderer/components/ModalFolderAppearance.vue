@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <BaseIcon
-                        icon-name="mdiFolderEdit"
+                        icon-name="folder+pencil"
                         class="mr-1"
                         :size="24"
                      />
@@ -49,7 +49,7 @@
                            >
                               <BaseIcon
                                  v-if="localFolder.color?.toLowerCase() === color.hex.toLowerCase()"
-                                 icon-name="mdiCheck"
+                                 icon-name="check"
                                  :size="16"
                               />
                            </div>

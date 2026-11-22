@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <BaseIcon
-                        icon-name="mdiDatabasePlus"
+                        icon-name="database+plus"
                         class="mr-1"
                         :size="24"
                      />

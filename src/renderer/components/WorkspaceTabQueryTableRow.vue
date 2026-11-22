@@ -87,7 +87,7 @@
          <template #header>
             <div class="d-flex">
                <BaseIcon
-                  icon-name="mdiPlaylistEdit"
+                  icon-name="list+pencil"
                   class="mr-1"
                   :size="24"
                /> <span class="cut-text">{{ t('general.edit') }} "{{ editingField }}"</span>
@@ -139,7 +139,7 @@
          <template #header>
             <div class="d-flex">
                <BaseIcon
-                  icon-name="mdiMap"
+                  icon-name="map"
                   class="mr-1"
                   :size="24"
                /> <span class="cut-text">"{{ editingField }}"</span>
@@ -158,7 +158,7 @@
          <template #header>
             <div class="d-flex">
                <BaseIcon
-                  icon-name="mdiPlaylistEdit"
+                  icon-name="list+pencil"
                   class="mr-1"
                   :size="24"
                />
@@ -175,13 +175,13 @@
                         class="img-responsive p-centered bg-checkered"
                      >
                      <div v-else class="text-center">
-                        <BaseIcon icon-name="mdiFile" :size="36" />
+                        <BaseIcon icon-name="file" :size="36" />
                      </div>
                      <div class="editor-buttons mt-2">
                         <button class="btn btn-link btn-sm" @click="downloadFile">
                            <span>{{ t('general.download') }}</span>
                            <BaseIcon
-                              icon-name="mdiDownload"
+                              icon-name="download"
                               class="ml-1"
                               :size="24"
                            />
@@ -189,7 +189,7 @@
                         <button class="btn btn-link btn-sm" @click="prepareToDelete">
                            <span>{{ t('general.delete') }}</span>
                            <BaseIcon
-                              icon-name="mdiDeleteForever"
+                              icon-name="trash+x"
                               class="ml-1"
                               :size="24"
                            />
