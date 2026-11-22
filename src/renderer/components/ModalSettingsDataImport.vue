@@ -150,84 +150,97 @@ const importData = () => {
    if (options.value.passkey.length < 8)
       isPasswordError.value = true;
    else {
+      let hash;
       try {
-         const hash = JSON.parse(Buffer.from(fileContent.value, 'hex').toString('utf-8'));
-
-         try {
-            const importObj: {
-               connections: ConnectionParams[];
-               connectionsOrder: SidebarElement[];
-               customIcons: CustomIcon[];
-            } = JSON.parse(decrypt(hash, options.value.passkey));
-
-            if (options.value.ignoreDuplicates) {
-               const actualConnections = unproxify(connections.value).map(c => {
-                  delete c.uid;
-
-                  delete c.name;
-                  delete c.password;
-                  delete c.ask;
-
-                  delete c.key;
-                  delete c.cert;
-                  delete c.ca;
-
-                  delete c.sshKey;
-
-                  return JSON.stringify(c);
-               });
-
-               const incomingConnections = unproxify<ConnectionParams[]>(importObj.connections).map(c => {
-                  const uid = c.uid;
-                  delete c.uid;
-
-                  delete c.name;
-                  delete c.password;
-                  delete c.ask;
-
-                  delete c.key;
-                  delete c.cert;
-                  delete c.ca;
-
-                  delete c.sshKey;
-
-                  return { uid, jsonString: JSON.stringify(c) };
-               });
-
-               const newConnectionsUid = incomingConnections
-                  .filter(c => !actualConnections.includes(c.jsonString))
-                  .reduce((acc, cur) => {
-                     acc.push(cur.uid);
-                     return acc;
-                  }, [] as string[]);
-
-               importObj.connections = importObj.connections.filter(c => newConnectionsUid.includes(c.uid));
-               importObj.connectionsOrder = importObj.connectionsOrder
-                  .filter(c => newConnectionsUid
-                     .includes(c.uid) ||
-                     (c.isFolder && c.connections.every(c => newConnectionsUid.includes(c))));
-            }
-            importConnections(importObj);
-
-            addNotification({
-               status: 'success',
-               message: t('application.dataImportSuccess')
-            });
-            closeModal();
-         }
-         catch (error) {
-            console.error(error);
-            addNotification({
-               status: 'error',
-               message: t('application.wrongImportPassword')
-            });
-         }
+         hash = JSON.parse(Buffer.from(fileContent.value, 'hex').toString('utf-8'));
       }
       catch (error) {
          console.error(error);
          addNotification({
             status: 'error',
             message: t('application.wrongFileFormat')
+         });
+         return;
+      }
+
+      let importObj: {
+         connections: ConnectionParams[];
+         connectionsOrder: SidebarElement[];
+         customIcons: CustomIcon[];
+      };
+      try {
+         importObj = JSON.parse(decrypt(hash, options.value.passkey));
+      }
+      catch (error) {
+         console.error(error);
+         addNotification({
+            status: 'error',
+            message: t('application.wrongImportPassword')
+         });
+         return;
+      }
+
+      try {
+         if (options.value.ignoreDuplicates) {
+            const actualConnections = unproxify(connections.value).map(c => {
+               delete c.uid;
+
+               delete c.name;
+               delete c.password;
+               delete c.ask;
+
+               delete c.key;
+               delete c.cert;
+               delete c.ca;
+
+               delete c.sshKey;
+
+               return JSON.stringify(c);
+            });
+
+            const incomingConnections = unproxify<ConnectionParams[]>(importObj.connections).map(c => {
+               const uid = c.uid;
+               delete c.uid;
+
+               delete c.name;
+               delete c.password;
+               delete c.ask;
+
+               delete c.key;
+               delete c.cert;
+               delete c.ca;
+
+               delete c.sshKey;
+
+               return { uid, jsonString: JSON.stringify(c) };
+            });
+
+            const newConnectionsUid = incomingConnections
+               .filter(c => !actualConnections.includes(c.jsonString))
+               .reduce((acc, cur) => {
+                  acc.push(cur.uid);
+                  return acc;
+               }, [] as string[]);
+
+            importObj.connections = importObj.connections.filter(c => newConnectionsUid.includes(c.uid));
+            importObj.connectionsOrder = importObj.connectionsOrder
+               .filter(c => newConnectionsUid
+                  .includes(c.uid) ||
+                     (c.isFolder && c.connections.every(c => newConnectionsUid.includes(c))));
+         }
+         importConnections(importObj);
+
+         addNotification({
+            status: 'success',
+            message: t('application.dataImportSuccess')
+         });
+         closeModal();
+      }
+      catch (error) {
+         console.error(error);
+         addNotification({
+            status: 'error',
+            message: error.message
          });
       }
    }
