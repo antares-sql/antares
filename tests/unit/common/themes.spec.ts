@@ -1,4 +1,5 @@
 import { themeTokenKeys } from 'common/themes/editorTheme';
+import { folderColorSlotOf } from 'common/themes/folderColors';
 import { isThemeColor, lengthToPx, resolveEditorTheme, themeCssVariables, validateTheme } from 'common/themes/theme';
 import { shapeTokens, uiColorTokens } from 'common/themes/tokens';
 import fs = require('fs');
@@ -86,6 +87,24 @@ describe('validateTheme', () => {
       expect(theme.editor.colors).toEqual({ background: '#272822', foreground: '#f8f8f2' });
       expect(theme.editor.syntax).toEqual({ keyword: { color: '#f92672', fontWeight: 'bold' }, comment: { color: '#75715e' } });
       expect(warnings).toHaveLength(3);
+   });
+});
+
+describe('accent palette', () => {
+   it('accepts #rrggbb colors for known palette slots only', () => {
+      const { theme, warnings } = validateTheme({
+         ...minimal,
+         accent: { default: '#0072B2', rose: '#D55E00', grass: 'green', unknown: '#000000' }
+      });
+      expect(theme.accent).toEqual({ default: '#0072B2', rose: '#D55E00' });
+      expect(warnings).toHaveLength(2);
+   });
+
+   it('maps stored folder colors to their slot', () => {
+      expect(folderColorSlotOf('#ed5565')).toBe('grape-fruit');
+      expect(folderColorSlotOf('#E36929')).toBe('default');
+      expect(folderColorSlotOf('#123456')).toBeNull();
+      expect(folderColorSlotOf(undefined)).toBeNull();
    });
 });
 

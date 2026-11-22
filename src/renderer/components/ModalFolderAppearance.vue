@@ -40,15 +40,15 @@
                         </div>
                         <div class="col-9 color-wrapper">
                            <div
-                              v-for="color in colorPalette"
+                              v-for="color in folderPalette"
                               :key="color.name"
                               class="color-box"
                               :title="color.name"
-                              :style="`background-color: ${color.hex}`"
+                              :style="`background-color: ${color.color}; color: ${readableTextOn(color.color)}`"
                               @click="localFolder.color = color.hex"
                            >
                               <BaseIcon
-                                 v-if="localFolder.color === color.hex"
+                                 v-if="localFolder.color?.toLowerCase() === color.hex.toLowerCase()"
                                  icon-name="mdiCheck"
                                  :size="16"
                               />
@@ -72,6 +72,8 @@
 </template>
 
 <script setup lang="ts">
+import { readableTextOn } from 'common/libs/colorContrast';
+import { storeToRefs } from 'pinia';
 import { onBeforeUnmount, PropType, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -79,6 +81,7 @@ import BaseIcon from '@/components/BaseIcon.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import { unproxify } from '@/libs/unproxify';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
+import { useThemesStore } from '@/stores/themes';
 
 const connectionsStore = useConnectionsStore();
 
@@ -95,25 +98,8 @@ const emit = defineEmits(['close']);
 
 const { updateConnectionOrder } = connectionsStore;
 
-const colorPalette = [
-   { name: 'default', hex: '#E36929' },
-   { name: 'grape-fruit', hex: '#ED5565' },
-   { name: 'rose', hex: '#E3242B' },
-   { name: 'fire', hex: '#FDA50F' },
-   { name: 'sunflower', hex: '#FFCE54' },
-   { name: 'moss', hex: '#8A985E' },
-   { name: 'grass', hex: '#6DCD05' },
-   { name: 'emerald', hex: '#038835' },
-   { name: 'mint', hex: '#48CFAD' },
-   { name: 'aqua', hex: '#4FC1E9' },
-   { name: 'royal-lblue', hex: '#4169E1' },
-   { name: 'blue-jeans', hex: '#5D9CEC' },
-   { name: 'stone', hex: '#59788E' },
-   { name: 'lavander', hex: '#AC92EC' },
-   { name: 'pink-rose', hex: '#EC87C0' },
-   { name: 'smoke', hex: '#BEBDB8' },
-   { name: 'slate', hex: '#757C88' }
-];
+// The folder stores the default hex of the slot; the theme decides the color shown
+const { folderPalette } = storeToRefs(useThemesStore());
 
 const { trapRef } = useFocusTrap();
 

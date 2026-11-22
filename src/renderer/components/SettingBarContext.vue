@@ -42,13 +42,15 @@
                class="context-element"
                @click.stop="moveToFolder(folder.uid)"
             >
-               <span class="d-flex">
+               <span class="p-vcentered">
                   <BaseIcon
-                     class="mt-1 mr-1"
+                     class="mr-1"
                      icon-name="mdiFolder"
                      :size="18"
-                     :style="`color: ${folder.color}!important`"
-                  /> {{ folder.name || t('general.folder') }}</span>
+                     :style="`color: ${resolveFolderColor(folder.color)}!important`"
+                  />
+                  <span>{{ folder.name || t('general.folder') }}</span>
+               </span>
             </div>
 
             <div
@@ -139,6 +141,7 @@ import BaseIcon from '@/components/BaseIcon.vue';
 import ModalConnectionAppearance from '@/components/ModalConnectionAppearance.vue';
 import ModalFolderAppearance from '@/components/ModalFolderAppearance.vue';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
+import { useThemesStore } from '@/stores/themes';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
@@ -156,6 +159,7 @@ const {
 } = connectionsStore;
 
 const { getFolders: folders } = storeToRefs(connectionsStore);
+const { resolveFolderColor } = storeToRefs(useThemesStore());
 
 const workspacesStore = useWorkspacesStore();
 

@@ -38,7 +38,7 @@ Rules:
 - **The accent is dynamic.** The connection folder color overrides `--primary-color` at runtime (see `changeAccentColor()` in [TheFooter.vue](src/renderer/components/TheFooter.vue)).
   For accent colors, always use `var(--primary-color*)`. Never use `$primary-color` or a hard-coded orange.
   Because of this, any accent color can appear: text on the accent must use `var(--primary-color-text)`, which `changeAccentColor()` computes from the WCAG contrast (light text unless it drops below 3:1).
-- **The accent is not a theme token** and themes must never redefine `--primary-color*`: the folder color always wins.
+- **The accent is not a theme token**: themes never set `--primary-color*` directly, the folder color always drives it. A theme can only change the **palette** the folders pick from and the default accent (`accent` section, slots in [folderColors.ts](src/common/themes/folderColors.ts)): folders store the default hex of a slot and `useThemesStore().resolveFolderColor()` returns the color of the active theme. Always show folder colors through it.
 - Do not hard-code hex values in components. If a color depends on the theme, use a token. If no token fits, add it to **every** theme file
   (same name, same order) and use it in `_theme-rules.scss` or in the component. Tokens are a public contract for future custom themes: do not rename them.
 - Theme tokens are defined on `#wrapper`, so they are visible only inside it (teleported modals target `#window-content`, which is inside).

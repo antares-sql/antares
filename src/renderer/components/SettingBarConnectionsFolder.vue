@@ -15,7 +15,7 @@
          :item-key="((item: string) => localList.indexOf(item))"
          :class="[{'opened': isOpen}]"
          :style="[
-            `background: ${folder.color};`,
+            `background: ${resolveFolderColor(folder.color)};`,
             isOpen ? `max-height: ${60*(folder.connections.length+1)}px` : 'max-height: 60px',
             !isOpen || folderDrag ? `overflow: hidden;` : ''
          ]"
@@ -36,7 +36,7 @@
             <div
                v-if="isOpen"
                class="folder-icon"
-               :style="`color: ${folder.color};`"
+               :style="`color: ${resolveFolderColor(folder.color)};`"
                @click="closeFolder"
             >
                <BaseIcon
@@ -104,12 +104,14 @@ import * as Draggable from 'vuedraggable';
 import BaseIcon from '@/components/BaseIcon.vue';
 import SettingBarConnections from '@/components/SettingBarConnections.vue';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
+import { useThemesStore } from '@/stores/themes';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
 const workspacesStore = useWorkspacesStore();
 const connectionsStore = useConnectionsStore();
 
 const { getFolders: folders } = storeToRefs(connectionsStore);
+const { resolveFolderColor } = storeToRefs(useThemesStore());
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const { getWorkspace } = workspacesStore;

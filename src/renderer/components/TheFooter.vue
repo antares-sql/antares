@@ -89,6 +89,7 @@ import { hexToRGBA } from '@/libs/hexToRgba';
 import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
 import { useConsoleStore } from '@/stores/console';
+import { useThemesStore } from '@/stores/themes';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
@@ -112,11 +113,9 @@ const { getWorkspace } = workspacesStore;
 const { getConnectionFolder, getConnectionByUid } = connectionsStore;
 
 const workspace = computed(() => getWorkspace(workspaceUid.value));
-const accentColor = computed(() => {
-   if (getConnectionFolder(workspaceUid.value)?.color)
-      return getConnectionFolder(workspaceUid.value).color;
-   return '#E36929';
-});
+// The folder color (or the default accent) as remapped by the active theme
+const themesStore = useThemesStore();
+const accentColor = computed(() => themesStore.resolveFolderColor(getConnectionFolder(workspaceUid.value)?.color));
 const connectionInfos = computed(() => getConnectionByUid(workspaceUid.value));
 const version: ComputedRef<DatabaseInfos> = computed(() => {
    return getWorkspace(workspaceUid.value) ? workspace.value.version : null;

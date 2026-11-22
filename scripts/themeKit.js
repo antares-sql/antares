@@ -20,6 +20,7 @@ const jiti = require('jiti')(__filename, { alias: { common: path.join(root, 'src
 const { uiColorTokens, uiColorTokenGroups, shapeTokenRanges, shapeColorTokens } = jiti('../src/common/themes/tokens.ts');
 const { themeTokenKeys } = jiti('../src/common/themes/editorTheme.ts');
 const { THEME_SCHEMA_VERSION, validateTheme } = jiti('../src/common/themes/theme.ts');
+const { folderColorSlots } = jiti('../src/common/themes/folderColors.ts');
 
 const SCHEMA_URL = 'https://raw.githubusercontent.com/antares-sql/themes/main/schema/theme.schema.json';
 const BASE_EDITOR = { dark: 'twilight', light: 'sqlserver' };
@@ -73,6 +74,12 @@ const schema = {
             ...Object.fromEntries(Object.entries(shapeTokenRanges).map(([token, { min, max }]) => [token, { ...lengthSchema, description: `From ${min}px to ${max}px (1rem = 20px)` }])),
             ...Object.fromEntries(shapeColorTokens.map(token => [token, colorSchema]))
          }
+      },
+      accent: {
+         type: 'object',
+         description: 'Colors of the connection folder palette: "default" is the accent of the app, the other slots the colors a folder can get (e.g. a palette for color vision deficiencies)',
+         additionalProperties: false,
+         properties: Object.fromEntries(folderColorSlots.map(slot => [slot.name, { type: 'string', pattern: '^#[0-9a-fA-F]{6}$', description: `Default ${slot.hex}` }]))
       },
       editor: {
          type: 'object',
