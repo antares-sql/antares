@@ -77,6 +77,14 @@ export const useSettingsStore = defineStore('settings', {
          this.uiFontSize = size in uiFontSizes ? size : 'medium';
          settingsStore.set('ui_font_size', this.uiFontSize);
       },
+      /** Moves the interface text size one step up (1) or down (-1), or back to the default (0) */
+      stepUiFontSize (direction: -1 | 0 | 1) {
+         if (direction === 0) return this.changeUiFontSize('medium');
+         const sizes = Object.keys(uiFontSizes) as UiFontSize[];
+         const index = Math.max(0, sizes.indexOf(this.uiFontSize));
+         const next = sizes[Math.min(sizes.length - 1, Math.max(0, index + direction))];
+         if (next !== this.uiFontSize) this.changeUiFontSize(next);
+      },
       changeEditorFontSize (size: EditorFontSize) {
          this.editorFontSize = size;
          settingsStore.set('editor_font_size', this.editorFontSize);

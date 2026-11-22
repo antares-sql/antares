@@ -1,8 +1,8 @@
 <template>
    <svg
       v-if="type === 'custom'"
-      :width="size"
-      :height="size"
+      :width="remSize"
+      :height="remSize"
       :viewBox="`0 0 ${size} ${size}`"
       v-html="customSvg"
    />
@@ -11,8 +11,8 @@
       class="antares-icon"
       :class="iconFlip"
       viewBox="0 0 24 24"
-      :width="size"
-      :height="size"
+      :width="remSize"
+      :height="remSize"
       :style="rotate ? { rotate: `${rotate}deg` } : null"
       aria-hidden="true"
       v-html="markup"
@@ -24,6 +24,7 @@ import { computed, PropType, useId } from 'vue';
 
 import { iconContent } from '@/libs/icons';
 import { useConnectionsStore } from '@/stores/connections';
+import { uiFontSizes } from '@/stores/settings';
 
 const { getIconByUid } = useConnectionsStore();
 
@@ -50,6 +51,9 @@ const props = defineProps({
       default: () => null
    }
 });
+
+/** `size` is in px at the default text size: in rem the icon follows the interface text size */
+const remSize = computed(() => `${props.size / uiFontSizes.medium}rem`);
 
 // The badge mask lives inside each icon, with ids unique to this instance
 const maskPrefix = `${useId()}-icon-`;

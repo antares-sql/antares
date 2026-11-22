@@ -16,7 +16,7 @@
          :class="[{'opened': isOpen}]"
          :style="[
             `background: ${resolveFolderColor(folder.color)};`,
-            isOpen ? `max-height: ${60*(folder.connections.length+1)}px` : 'max-height: 60px',
+            isOpen ? `max-height: ${3*(folder.connections.length+1)}rem` : 'max-height: 3rem',
             !isOpen || folderDrag ? `overflow: hidden;` : ''
          ]"
          :list="localList"
@@ -384,8 +384,8 @@ emit('folder-sort');// To apply changes on component key change
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      max-width: 23px;
-      max-height: 23px;
+      max-width: 1.15rem;
+      max-height: 1.15rem;
       margin-bottom: 3px;
       position: relative;
       transition: opacity .2s;
@@ -426,9 +426,9 @@ emit('folder-sort');// To apply changes on component key change
 
          .folder-element-icon,
          .folder-element-icon svg {
-            width: 21px;
-            height: 21px;
-            font-size: 16px;
+            width: 1.05rem;
+            height: 1.05rem;
+            font-size: 0.8rem;
          }
       }
    }

@@ -133,18 +133,17 @@ export class ShortcutRegister {
       this._mainWindow.setFullScreen(!this._mainWindow.isFullScreen());
    }
 
+   /** Zoom shortcuts change the interface text size setting (owned by the renderer) */
    setZoomIn () {
-      const currentZoom = this._mainWindow.webContents.getZoomLevel();
-      this._mainWindow.webContents.setZoomLevel(currentZoom + 1);
+      this._mainWindow.webContents.send('change-ui-font-size', 1);
    }
 
    setZoomOut () {
-      const currentZoom = this._mainWindow.webContents.getZoomLevel();
-      this._mainWindow.webContents.setZoomLevel(currentZoom - 1);
+      this._mainWindow.webContents.send('change-ui-font-size', -1);
    }
 
    setZoomReset () {
-      this._mainWindow.webContents.setZoomLevel(0);
+      this._mainWindow.webContents.send('change-ui-font-size', 0);
    }
 
    reload () {
