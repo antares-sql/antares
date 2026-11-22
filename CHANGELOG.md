@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.36-beta.2](https://github.com/antares-sql/antares/compare/v0.7.36-beta.1...v0.7.36-beta.2) (2026-11-22)
+
+
+### Features
+
+* **styles:** implement shape and border width tokens for consistent UI design ([9e3614b](https://github.com/antares-sql/antares/commit/9e3614b3b03fe89767430cf9d7fab1fc5d4fd19c))
+* **UI:** browse and install themes from the gallery ([9ac03b3](https://github.com/antares-sql/antares/commit/9ac03b3b44c34a7a5a957eb2e7a7b225f72c0ba5))
+* **UI:** installable themes with their own code editor colors ([9ce9d6c](https://github.com/antares-sql/antares/commit/9ce9d6c21ddee4eb9b8a72e0bbd83326b79a01d6))
+* **UI:** interface text size setting ([93440b5](https://github.com/antares-sql/antares/commit/93440b55a858036a498d071dcbaf9ba808633446))
+* **UI:** theme file format, token list and validation ([897cf8b](https://github.com/antares-sql/antares/commit/897cf8b4932e4121bfbd6673da5d6504a4d10543))
+* **UI:** theme token for the placeholder color of inputs ([5e836ef](https://github.com/antares-sql/antares/commit/5e836eff502b421476e3ca32081f0d7b62fe4ef8)), closes [#bcc3](https://github.com/antares-sql/antares/issues/bcc3)
+* **UI:** themes can remap the folder color palette and the default accent ([a3a868d](https://github.com/antares-sql/antares/commit/a3a868d09f7a2f9a254d274f22cd316a6440eaff))
+
+
+### Bug Fixes
+
+* **UI:** table refresh button sat higher than the other toolbar buttons ([29f750b](https://github.com/antares-sql/antares/commit/29f750bd9656a34f84f62334670c16107a4e2628))
+* **UI:** theme card actions and text size selectors in the Themes settings ([e262455](https://github.com/antares-sql/antares/commit/e2624556b40d0f13f6b57ac6dc7b4633d0129ed5))
+* **UI:** vertical alignment of the table refresh button ([5398a55](https://github.com/antares-sql/antares/commit/5398a556b154383b474da7c5c3e939f7232fe932))
+
 ### [0.7.36-beta.1](https://github.com/antares-sql/antares/compare/v0.7.36-beta.0...v0.7.36-beta.1) (2026-11-20)
 
 
