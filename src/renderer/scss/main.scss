@@ -84,7 +84,7 @@ option:checked {
   min-height: 0.8rem;
   position: relative;
 
-  > .mdi,
+  > .antares-icon,
   > .span {
     visibility: hidden;
   }
@@ -466,7 +466,7 @@ option:checked {
 }
 
 .btn.loading {
-  > .mdi,
+  > .antares-icon,
   > span {
     visibility: hidden;
   }

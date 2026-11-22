@@ -1,7 +1,7 @@
 /**
- * Connection icons saved by previous versions as Material Design Icons codes (`mdi-*`),
- * mapped to the Antares icon that replaces them. Saved connections are not rewritten:
- * the old code is resolved when the icon is drawn.
+ * Connection icon codes saved by Antares 0.7.x and older, mapped to the icon that replaces them.
+ * They are values stored in the user's connections, not icon names to use in code: saved connections
+ * are not rewritten, the old code is resolved when the icon is drawn.
  */
 export const legacyConnectionIcons: Record<string, string> = {
    'mdi-account-group-outline': 'users',

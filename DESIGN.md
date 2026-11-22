@@ -83,8 +83,24 @@ Key icons (PK/FK/unique/index) come from [_table-keys.scss](src/renderer/scss/_t
 
 ### Iconography
 
-- Use [BaseIcon.vue](src/renderer/components/BaseIcon.vue) with **Material Design Icons** (`@mdi/js`, names like `mdiContentSave`). Do not add other icon libraries, raw SVG files or icon fonts.
-  `type="custom"` is reserved for user-uploaded connection icons.
+- Use [BaseIcon.vue](src/renderer/components/BaseIcon.vue) with the **Antares icon set** ([src/renderer/libs/icons](src/renderer/libs/icons)).
+  Do not add icon libraries, raw SVG files or icon fonts. `type="custom"` is reserved for user-uploaded connection icons.
+  Outside Vue (e.g. CodeMirror panels) use `createIconElement()` from the same module.
+- **Names**: `icon-name="table"` is a glyph ([glyphs.ts](src/renderer/libs/icons/glyphs.ts)); `table+cog` adds a **badge** in
+  the bottom-right corner ([badges.ts](src/renderer/libs/icons/badges.ts)), and the glyph is cut out along the badge outline;
+  `table+off` crosses the glyph out; `brand:docker` is a brand logo ([brands.ts](src/renderer/libs/icons/brands.ts), the only
+  icons not drawn in the Antares style). One badge per icon.
+- **Badges have one meaning each**: `plus` new, `minus` remove, `x` delete permanently, `check` checked/constraint, `ban` blocked,
+  `cog` properties/settings, `eye` view, `pencil` edit, `arrow` reference/move/go to, `up` export, `down` import, `clock` scheduled,
+  `sync` refresh/replace, `play` run, `alert` warning, `search` search, `heart` favorite, `lock` protected, `code` code/SQL, `bolt` trigger.
+  Prefer a glyph + badge to a new glyph; draw a new glyph only for a new object or action.
+- **Style** of a new glyph: 24×24 grid, content inside 2–22, stroke 2.25 with round caps and joins
+  (rendered with `stroke: currentColor`). The duotone tint goes on the one area that identifies the object: class `f`
+  (or `t` for a tinted area already outlined by a stroke); class `d` is a small solid detail. Keep the bottom-right corner free
+  of essential details, a badge may cover it. `npm run test:unit` checks that every `icon-name` used in the renderer exists.
+- **Color** comes from `color` (e.g. the `key-*` classes of the column keys); `--icon-badge-color` gives the badge its own color.
+- The web theme editor (antares-website, `/theme-editor`) draws the same icons from a generated copy: after changing the set,
+  run `node scripts/iconKit.js ../antares-website/libs/themeEditor/icons.json` and commit it in that repo.
 - Standard sizes:
 
   | Size | Where |
@@ -105,7 +121,9 @@ Key icons (PK/FK/unique/index) come from [_table-keys.scss](src/renderer/scss/_t
   - wrappers of buttons or button groups (`.dropdown`, `.btn-group` inside a toolbar) must be `p-vcentered` too: a block wrapper around an
     `inline-flex` group adds a text line box (taller by the descender), so the group sits higher than the other toolbar buttons;
   - check the result in a screenshot at 100% and at a larger interface text size.
-- Reuse the same icon for the same concept everywhere: `mdiContentSave` save, `mdiDeleteSweep` clear changes, `mdiWrenchCog` settings, `mdiContentCopy` copy, `mdiDatabase` schema, `mdiTableArrowRight` export, `mdiHistory` history.
+- Reuse the same icon for the same concept everywhere: `save` save, `eraser` clear changes, `copy` copy, `database` schema,
+  `file+up` export results, `database+up` / `database+down` export/import a schema, `history` history. A database element
+  uses its own glyph with a badge: `table+plus` new table, `view+cog` view settings, `bolt+plus` new trigger, and so on.
   Search the components for the concept before picking a new icon.
 
 ### Motion
@@ -228,7 +246,7 @@ If you need a new layer, check these first.
 - [ ] Reuses an existing pattern/component (toolbar, BaseConfirmModal, BaseContextMenu, BaseSelect, BaseIcon, empty state).
 - [ ] Accent colors use `var(--primary-color*)`. There are no hard-coded colors in components. Theme colors are in **both** theme files.
 - [ ] Checked in dark **and** light theme, and with a non-default (light) folder accent color.
-- [ ] Icons are MDI, with a standard size and the same concept→icon mapping used elsewhere.
+- [ ] Icons come from the Antares icon set, with a standard size, badges with their fixed meaning and the same concept→icon mapping used elsewhere.
 - [ ] Strings are in `en-US.ts`. Icon-only controls have a title.
 - [ ] Engine-specific UI is gated by a `customizations` flag.
 - [ ] Long names truncate with a tooltip, and big lists are virtualized.

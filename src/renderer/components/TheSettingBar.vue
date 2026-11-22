@@ -288,21 +288,6 @@ if (!connectionsArr.value.length)
                color: color-mix(in srgb, var(--settingbar-text) 80%, transparent);
                text-align: center;
             }
-
-            .settingbar-element-pin {// <- Dead
-               margin: 0 auto;
-
-               &::before {
-                  font: normal normal normal 14px/1 "Material Design Icons";
-                  content: "\F0403";
-                  color: var(--settingbar-text);
-                  transform: rotate(45deg);
-                  opacity: 0.25;
-                  top: -8px;
-                  left: -10px;
-                  position: absolute;
-               }
-            }
          }
       }
    }

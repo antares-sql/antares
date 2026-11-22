@@ -9,12 +9,12 @@ import { glyphs } from './glyphs';
  * - `table+cog`: a glyph with a badge in the bottom-right corner (one badge per icon)
  * - `table+off`: a glyph crossed out
  * - `brand:docker`: a brand logo
- * - `mdi-*`: connection icon codes saved by older versions, see aliases.ts
+ * - connection icon codes saved by Antares 0.7.x and older, see aliases.ts
  */
-const OFF_SLASH = 'M3 3l18 18';
+export const OFF_SLASH = 'M3 3l18 18';
 // Badge stroke (2.25) plus 2 of clearance on each side: at 18px the gap is still 1.5px wide
-const CUT_STROKE = 6.25;
-const OFF_CUT_STROKE = 6.75;
+export const CUT_STROKE = 6.25;
+export const OFF_CUT_STROKE = 6.75;
 
 export const resolveIconName = (name: string): string => {
    if (!name) return name;
