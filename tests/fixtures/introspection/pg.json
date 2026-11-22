@@ -20,16 +20,7 @@
                 "database": "antares_fixtures"
               },
               {
-                "database": "chinook"
-              },
-              {
                 "database": "information_schema"
-              },
-              {
-                "database": "netflix"
-              },
-              {
-                "database": "pagila"
               },
               {
                 "database": "pg_catalog"
@@ -69,7 +60,7 @@
               {
                 "specific_catalog": "antares_test",
                 "specific_schema": "antares_fixtures",
-                "specific_name": "price_range_17037",
+                "specific_name": "price_range_16409",
                 "routine_catalog": "antares_test",
                 "routine_schema": "antares_fixtures",
                 "routine_name": "price_range",
@@ -153,7 +144,7 @@
               {
                 "specific_catalog": "antares_test",
                 "specific_schema": "antares_fixtures",
-                "specific_name": "price_range_17038",
+                "specific_name": "price_range_16410",
                 "routine_catalog": "antares_test",
                 "routine_schema": "antares_fixtures",
                 "routine_name": "price_range",
@@ -237,7 +228,7 @@
               {
                 "specific_catalog": "antares_test",
                 "specific_schema": "antares_fixtures",
-                "specific_name": "price_multirange_17039",
+                "specific_name": "price_multirange_16411",
                 "routine_catalog": "antares_test",
                 "routine_schema": "antares_fixtures",
                 "routine_name": "price_multirange",
@@ -321,7 +312,7 @@
               {
                 "specific_catalog": "antares_test",
                 "specific_schema": "antares_fixtures",
-                "specific_name": "price_multirange_17040",
+                "specific_name": "price_multirange_16412",
                 "routine_catalog": "antares_test",
                 "routine_schema": "antares_fixtures",
                 "routine_name": "price_multirange",
@@ -405,7 +396,7 @@
               {
                 "specific_catalog": "antares_test",
                 "specific_schema": "antares_fixtures",
-                "specific_name": "price_multirange_17041",
+                "specific_name": "price_multirange_16413",
                 "routine_catalog": "antares_test",
                 "routine_schema": "antares_fixtures",
                 "routine_name": "price_multirange",
@@ -489,7 +480,7 @@
               {
                 "specific_catalog": "antares_test",
                 "specific_schema": "antares_fixtures",
-                "specific_name": "product_price_17082",
+                "specific_name": "product_price_16454",
                 "routine_catalog": "antares_test",
                 "routine_schema": "antares_fixtures",
                 "routine_name": "product_price",
@@ -573,7 +564,7 @@
               {
                 "specific_catalog": "antares_test",
                 "specific_schema": "antares_fixtures",
-                "specific_name": "touch_product_17083",
+                "specific_name": "touch_product_16455",
                 "routine_catalog": "antares_test",
                 "routine_schema": "antares_fixtures",
                 "routine_name": "touch_product",
@@ -657,7 +648,7 @@
               {
                 "specific_catalog": "antares_test",
                 "specific_schema": "antares_fixtures",
-                "specific_name": "products_trg_fn_17084",
+                "specific_name": "products_trg_fn_16456",
                 "routine_catalog": "antares_test",
                 "routine_schema": "antares_fixtures",
                 "routine_name": "products_trg_fn",
@@ -1891,7 +1882,7 @@
               }
             ],
             "keys": [],
-            "duration": 4
+            "duration": 3
           }
         },
         {
@@ -1965,7 +1956,7 @@
               }
             ],
             "keys": [],
-            "duration": 2
+            "duration": 1
           }
         },
         {
@@ -1985,17 +1976,17 @@
                 "is_insertable_into": "YES",
                 "is_typed": "NO",
                 "commit_action": null,
-                "oid": 17044,
+                "oid": 16416,
                 "nspname": "antares_fixtures",
                 "nspowner": 10,
                 "nspacl": null,
                 "relname": "categories",
-                "relnamespace": 17019,
-                "reltype": 17046,
+                "relnamespace": 16390,
+                "reltype": 16418,
                 "reloftype": 0,
                 "relowner": 10,
                 "relam": 2,
-                "relfilenode": 17044,
+                "relfilenode": 16416,
                 "reltablespace": 0,
                 "relpages": 0,
                 "reltuples": -1,
@@ -2016,7 +2007,7 @@
                 "relreplident": "d",
                 "relispartition": false,
                 "relrewrite": 0,
-                "relfrozenxid": "1062",
+                "relfrozenxid": "749",
                 "relminmxid": "1",
                 "relacl": null,
                 "reloptions": null,
@@ -2038,13 +2029,13 @@
                 "is_insertable_into": "YES",
                 "is_typed": "NO",
                 "commit_action": null,
-                "oid": 17074,
+                "oid": 16446,
                 "nspname": "antares_fixtures",
                 "nspowner": 10,
                 "nspacl": null,
                 "relname": "cheap_products",
-                "relnamespace": 17019,
-                "reltype": 17076,
+                "relnamespace": 16390,
+                "reltype": 16448,
                 "reloftype": 0,
                 "relowner": 10,
                 "relam": 0,
@@ -2091,22 +2082,22 @@
                 "is_insertable_into": "YES",
                 "is_typed": "NO",
                 "commit_action": null,
-                "oid": 17051,
+                "oid": 16423,
                 "nspname": "antares_fixtures",
                 "nspowner": 10,
                 "nspacl": null,
                 "relname": "products",
-                "relnamespace": 17019,
-                "reltype": 17053,
+                "relnamespace": 16390,
+                "reltype": 16425,
                 "reloftype": 0,
                 "relowner": 10,
                 "relam": 2,
-                "relfilenode": 17051,
+                "relfilenode": 16423,
                 "reltablespace": 0,
                 "relpages": 0,
                 "reltuples": -1,
                 "relallvisible": 0,
-                "reltoastrelid": 17061,
+                "reltoastrelid": 16433,
                 "relhasindex": true,
                 "relisshared": false,
                 "relpersistence": "p",
@@ -2122,7 +2113,7 @@
                 "relreplident": "d",
                 "relispartition": false,
                 "relrewrite": 0,
-                "relfrozenxid": "1064",
+                "relfrozenxid": "751",
                 "relminmxid": "1",
                 "relacl": null,
                 "reloptions": null,
@@ -2878,7 +2869,7 @@
               }
             ],
             "keys": [],
-            "duration": 4
+            "duration": 2
           }
         },
         {
@@ -2982,7 +2973,7 @@
               }
             ],
             "keys": [],
-            "duration": 2
+            "duration": 1
           }
         },
         {
@@ -3056,7 +3047,7 @@
               }
             ],
             "keys": [],
-            "duration": 2
+            "duration": 1
           }
         }
       ],
@@ -3173,40 +3164,7 @@
           ]
         },
         {
-          "name": "chinook",
-          "size": 0,
-          "tables": [],
-          "functions": [],
-          "procedures": [],
-          "triggers": [],
-          "triggerFunctions": [],
-          "schedulers": [],
-          "userTypes": []
-        },
-        {
           "name": "information_schema",
-          "size": 0,
-          "tables": [],
-          "functions": [],
-          "procedures": [],
-          "triggers": [],
-          "triggerFunctions": [],
-          "schedulers": [],
-          "userTypes": []
-        },
-        {
-          "name": "netflix",
-          "size": 0,
-          "tables": [],
-          "functions": [],
-          "procedures": [],
-          "triggers": [],
-          "triggerFunctions": [],
-          "schedulers": [],
-          "userTypes": []
-        },
-        {
-          "name": "pagila",
           "size": 0,
           "tables": [],
           "functions": [],
@@ -4487,7 +4445,7 @@
               }
             ],
             "keys": [],
-            "duration": 9
+            "duration": 4
           }
         }
       ],
@@ -5541,7 +5499,7 @@
               }
             ],
             "keys": [],
-            "duration": 5
+            "duration": 3
           }
         }
       ],
@@ -5608,31 +5566,13 @@
             "report": false,
             "fields": [],
             "keys": [],
-            "duration": 1
+            "duration": 0
           }
         },
         {
-          "sql": "WITH ndx_list AS ( SELECT pg_index.indexrelid, pg_class.oid FROM pg_index, pg_class WHERE pg_class.relname = 'products' AND pg_class.oid = pg_index.indrelid), ndx_cols AS ( SELECT pg_class.relname, UNNEST(i.indkey) AS col_ndx, CASE i.indisprimary WHEN TRUE THEN 'PRIMARY' ELSE CASE i.indisunique WHEN TRUE THEN 'UNIQUE' ELSE 'INDEX' END END AS CONSTRAINT_TYPE, pg_get_expr(i.indpred, i.indrelid) AS INDEX_WHERE, pg_class.oid FROM pg_class JOIN pg_index i ON (pg_class.oid = i.indexrelid) JOIN ndx_list ON (pg_class.oid = ndx_list.indexrelid) WHERE pg_table_is_visible(pg_class.oid)) SELECT ndx_cols.relname AS CONSTRAINT_NAME, ndx_cols.CONSTRAINT_TYPE, a.attname AS COLUMN_NAME, ndx_cols.INDEX_WHERE FROM pg_attribute a JOIN ndx_cols ON (a.attnum = ndx_cols.col_ndx) JOIN ndx_list ON (ndx_list.oid = a.attrelid AND ndx_list.indexrelid = ndx_cols.oid)",
+          "sql": "WITH ndx_list AS ( SELECT pg_index.indexrelid, pg_class.oid FROM pg_index, pg_class WHERE pg_class.relname = 'products' AND pg_class.oid = pg_index.indrelid), ndx_cols AS ( SELECT pg_class.relname, k.col_ndx, k.col_pos, CASE i.indisprimary WHEN TRUE THEN 'PRIMARY' ELSE CASE i.indisunique WHEN TRUE THEN 'UNIQUE' ELSE 'INDEX' END END AS CONSTRAINT_TYPE, pg_get_expr(i.indpred, i.indrelid) AS INDEX_WHERE, pg_class.oid FROM pg_class JOIN pg_index i ON (pg_class.oid = i.indexrelid) JOIN ndx_list ON (pg_class.oid = ndx_list.indexrelid) CROSS JOIN LATERAL UNNEST(i.indkey) WITH ORDINALITY AS k(col_ndx, col_pos) WHERE pg_table_is_visible(pg_class.oid)) SELECT ndx_cols.relname AS CONSTRAINT_NAME, ndx_cols.CONSTRAINT_TYPE, a.attname AS COLUMN_NAME, ndx_cols.INDEX_WHERE FROM pg_attribute a JOIN ndx_cols ON (a.attnum = ndx_cols.col_ndx) JOIN ndx_list ON (ndx_list.oid = a.attrelid AND ndx_list.indexrelid = ndx_cols.oid) ORDER BY ndx_cols.relname, ndx_cols.col_pos",
           "result": {
             "rows": [
-              {
-                "constraint_name": "products_pkey",
-                "constraint_type": "PRIMARY",
-                "column_name": "id",
-                "index_where": null
-              },
-              {
-                "constraint_name": "products_name_uq",
-                "constraint_type": "UNIQUE",
-                "column_name": "name",
-                "index_where": null
-              },
-              {
-                "constraint_name": "products_price_idx",
-                "constraint_type": "INDEX",
-                "column_name": "price",
-                "index_where": null
-              },
               {
                 "constraint_name": "products_active_name_uq",
                 "constraint_type": "UNIQUE",
@@ -5644,6 +5584,24 @@
                 "constraint_type": "UNIQUE",
                 "column_name": "category_id",
                 "index_where": "(flag AND (price > (0)::numeric))"
+              },
+              {
+                "constraint_name": "products_name_uq",
+                "constraint_type": "UNIQUE",
+                "column_name": "name",
+                "index_where": null
+              },
+              {
+                "constraint_name": "products_pkey",
+                "constraint_type": "PRIMARY",
+                "column_name": "id",
+                "index_where": null
+              },
+              {
+                "constraint_name": "products_price_idx",
+                "constraint_type": "INDEX",
+                "column_name": "price",
+                "index_where": null
               }
             ],
             "report": false,
@@ -5716,21 +5674,6 @@
       ],
       "output": [
         {
-          "name": "products_pkey",
-          "column": "id",
-          "type": "PRIMARY"
-        },
-        {
-          "name": "products_name_uq",
-          "column": "name",
-          "type": "UNIQUE"
-        },
-        {
-          "name": "products_price_idx",
-          "column": "price",
-          "type": "INDEX"
-        },
-        {
           "name": "products_active_name_uq",
           "column": "name",
           "type": "UNIQUE",
@@ -5741,6 +5684,21 @@
           "column": "category_id",
           "type": "UNIQUE",
           "where": "(flag AND (price > (0)::numeric))"
+        },
+        {
+          "name": "products_name_uq",
+          "column": "name",
+          "type": "UNIQUE"
+        },
+        {
+          "name": "products_pkey",
+          "column": "id",
+          "type": "PRIMARY"
+        },
+        {
+          "name": "products_price_idx",
+          "column": "price",
+          "type": "INDEX"
         }
       ]
     },
@@ -5929,7 +5887,7 @@
               }
             ],
             "keys": [],
-            "duration": 6
+            "duration": 4
           }
         }
       ],
@@ -5975,22 +5933,22 @@
                 "is_insertable_into": "YES",
                 "is_typed": "NO",
                 "commit_action": null,
-                "oid": 17051,
+                "oid": 16423,
                 "nspname": "antares_fixtures",
                 "nspowner": 10,
                 "nspacl": null,
                 "relname": "products",
-                "relnamespace": 17019,
-                "reltype": 17053,
+                "relnamespace": 16390,
+                "reltype": 16425,
                 "reloftype": 0,
                 "relowner": 10,
                 "relam": 2,
-                "relfilenode": 17051,
+                "relfilenode": 16423,
                 "reltablespace": 0,
                 "relpages": 0,
                 "reltuples": -1,
                 "relallvisible": 0,
-                "reltoastrelid": 17061,
+                "reltoastrelid": 16433,
                 "relhasindex": true,
                 "relisshared": false,
                 "relpersistence": "p",
@@ -6006,7 +5964,7 @@
                 "relreplident": "d",
                 "relispartition": false,
                 "relrewrite": 0,
-                "relfrozenxid": "1064",
+                "relfrozenxid": "751",
                 "relminmxid": "1",
                 "relacl": null,
                 "reloptions": null,
@@ -6762,7 +6720,7 @@
               }
             ],
             "keys": [],
-            "duration": 2
+            "duration": 1
           }
         }
       ],
@@ -6810,7 +6768,7 @@
               }
             ],
             "keys": [],
-            "duration": 2
+            "duration": 1
           }
         }
       ],
@@ -8135,7 +8093,7 @@
               }
             ],
             "keys": [],
-            "duration": 3
+            "duration": 2
           }
         },
         {
@@ -8149,27 +8107,9 @@
           }
         },
         {
-          "sql": "WITH ndx_list AS ( SELECT pg_index.indexrelid, pg_class.oid FROM pg_index, pg_class WHERE pg_class.relname = 'products' AND pg_class.oid = pg_index.indrelid), ndx_cols AS ( SELECT pg_class.relname, UNNEST(i.indkey) AS col_ndx, CASE i.indisprimary WHEN TRUE THEN 'PRIMARY' ELSE CASE i.indisunique WHEN TRUE THEN 'UNIQUE' ELSE 'INDEX' END END AS CONSTRAINT_TYPE, pg_get_expr(i.indpred, i.indrelid) AS INDEX_WHERE, pg_class.oid FROM pg_class JOIN pg_index i ON (pg_class.oid = i.indexrelid) JOIN ndx_list ON (pg_class.oid = ndx_list.indexrelid) WHERE pg_table_is_visible(pg_class.oid)) SELECT ndx_cols.relname AS CONSTRAINT_NAME, ndx_cols.CONSTRAINT_TYPE, a.attname AS COLUMN_NAME, ndx_cols.INDEX_WHERE FROM pg_attribute a JOIN ndx_cols ON (a.attnum = ndx_cols.col_ndx) JOIN ndx_list ON (ndx_list.oid = a.attrelid AND ndx_list.indexrelid = ndx_cols.oid)",
+          "sql": "WITH ndx_list AS ( SELECT pg_index.indexrelid, pg_class.oid FROM pg_index, pg_class WHERE pg_class.relname = 'products' AND pg_class.oid = pg_index.indrelid), ndx_cols AS ( SELECT pg_class.relname, k.col_ndx, k.col_pos, CASE i.indisprimary WHEN TRUE THEN 'PRIMARY' ELSE CASE i.indisunique WHEN TRUE THEN 'UNIQUE' ELSE 'INDEX' END END AS CONSTRAINT_TYPE, pg_get_expr(i.indpred, i.indrelid) AS INDEX_WHERE, pg_class.oid FROM pg_class JOIN pg_index i ON (pg_class.oid = i.indexrelid) JOIN ndx_list ON (pg_class.oid = ndx_list.indexrelid) CROSS JOIN LATERAL UNNEST(i.indkey) WITH ORDINALITY AS k(col_ndx, col_pos) WHERE pg_table_is_visible(pg_class.oid)) SELECT ndx_cols.relname AS CONSTRAINT_NAME, ndx_cols.CONSTRAINT_TYPE, a.attname AS COLUMN_NAME, ndx_cols.INDEX_WHERE FROM pg_attribute a JOIN ndx_cols ON (a.attnum = ndx_cols.col_ndx) JOIN ndx_list ON (ndx_list.oid = a.attrelid AND ndx_list.indexrelid = ndx_cols.oid) ORDER BY ndx_cols.relname, ndx_cols.col_pos",
           "result": {
             "rows": [
-              {
-                "constraint_name": "products_pkey",
-                "constraint_type": "PRIMARY",
-                "column_name": "id",
-                "index_where": null
-              },
-              {
-                "constraint_name": "products_name_uq",
-                "constraint_type": "UNIQUE",
-                "column_name": "name",
-                "index_where": null
-              },
-              {
-                "constraint_name": "products_price_idx",
-                "constraint_type": "INDEX",
-                "column_name": "price",
-                "index_where": null
-              },
               {
                 "constraint_name": "products_active_name_uq",
                 "constraint_type": "UNIQUE",
@@ -8181,6 +8121,24 @@
                 "constraint_type": "UNIQUE",
                 "column_name": "category_id",
                 "index_where": "(flag AND (price > (0)::numeric))"
+              },
+              {
+                "constraint_name": "products_name_uq",
+                "constraint_type": "UNIQUE",
+                "column_name": "name",
+                "index_where": null
+              },
+              {
+                "constraint_name": "products_pkey",
+                "constraint_type": "PRIMARY",
+                "column_name": "id",
+                "index_where": null
+              },
+              {
+                "constraint_name": "products_price_idx",
+                "constraint_type": "INDEX",
+                "column_name": "price",
+                "index_where": null
               }
             ],
             "report": false,
@@ -8445,7 +8403,7 @@
           }
         }
       ],
-      "output": "CREATE SEQUENCE \"antares_fixtures\".\"products_id_seq\"\n   START WITH 1\n   INCREMENT BY 1\n   MINVALUE 1\n   MAXVALUE 2147483647\n   CACHE 1;\n\nCREATE TABLE \"antares_fixtures\".\"products\"(\n   \"id\" integer DEFAULT nextval('antares_fixtures.products_id_seq'::regclass) NOT NULL,\n   \"name\" character varying(100) DEFAULT 'unnamed'::character varying NOT NULL,\n   \"price\" numeric DEFAULT 0 NOT NULL,\n   \"tags\" text[],\n   \"created_at\" timestamp without time zone DEFAULT now(),\n   \"category_id\" integer,\n   \"data\" jsonb,\n   \"flag\" boolean DEFAULT false,\n   \"status\" \"antares_fixtures\".\"product_status\" DEFAULT 'draft'::antares_fixtures.product_status,\n   \"weight\" \"antares_fixtures\".\"Weight\" NOT NULL,\n   \"size\" \"antares_fixtures\".\"dimensions\",\n   CONSTRAINT \"products_pkey\" PRIMARY KEY (\"id\")\n);\n\nCREATE UNIQUE INDEX \"products_name_uq\" ON \"antares_fixtures\".\"products\" (\"name\");\nCREATE INDEX \"products_price_idx\" ON \"antares_fixtures\".\"products\" (\"price\");\nCREATE UNIQUE INDEX \"products_active_name_uq\" ON \"antares_fixtures\".\"products\" (\"name\", \"category_id\") WHERE (flag AND (price > (0)::numeric));\n"
+      "output": "CREATE SEQUENCE \"antares_fixtures\".\"products_id_seq\"\n   START WITH 1\n   INCREMENT BY 1\n   MINVALUE 1\n   MAXVALUE 2147483647\n   CACHE 1;\n\nCREATE TABLE \"antares_fixtures\".\"products\"(\n   \"id\" integer DEFAULT nextval('antares_fixtures.products_id_seq'::regclass) NOT NULL,\n   \"name\" character varying(100) DEFAULT 'unnamed'::character varying NOT NULL,\n   \"price\" numeric DEFAULT 0 NOT NULL,\n   \"tags\" text[],\n   \"created_at\" timestamp without time zone DEFAULT now(),\n   \"category_id\" integer,\n   \"data\" jsonb,\n   \"flag\" boolean DEFAULT false,\n   \"status\" \"antares_fixtures\".\"product_status\" DEFAULT 'draft'::antares_fixtures.product_status,\n   \"weight\" \"antares_fixtures\".\"Weight\" NOT NULL,\n   \"size\" \"antares_fixtures\".\"dimensions\",\n   CONSTRAINT \"products_pkey\" PRIMARY KEY (\"id\")\n);\n\nCREATE UNIQUE INDEX \"products_active_name_uq\" ON \"antares_fixtures\".\"products\" (\"name\", \"category_id\") WHERE (flag AND (price > (0)::numeric));\nCREATE UNIQUE INDEX \"products_name_uq\" ON \"antares_fixtures\".\"products\" (\"name\");\nCREATE INDEX \"products_price_idx\" ON \"antares_fixtures\".\"products\" (\"price\");\n"
     },
     {
       "method": "getMaterializedViewInformations",
@@ -8540,7 +8498,7 @@
             "rows": [
               {
                 "procedure_schema": "antares_fixtures",
-                "specific_name": "touch_product_17083",
+                "specific_name": "touch_product_16455",
                 "procedure_name": "touch_product",
                 "external_language": "PLPGSQL",
                 "parameter_name": "p_id",
@@ -8549,7 +8507,7 @@
               },
               {
                 "procedure_schema": "antares_fixtures",
-                "specific_name": "touch_product_17083",
+                "specific_name": "touch_product_16455",
                 "procedure_name": "touch_product",
                 "external_language": "PLPGSQL",
                 "parameter_name": "p_name",
@@ -8659,7 +8617,7 @@
               }
             ],
             "keys": [],
-            "duration": 3
+            "duration": 1
           }
         }
       ],
@@ -8733,7 +8691,7 @@
             "rows": [
               {
                 "procedure_schema": "antares_fixtures",
-                "specific_name": "product_price_17082",
+                "specific_name": "product_price_16454",
                 "procedure_name": "product_price",
                 "external_language": "PLPGSQL",
                 "parameter_name": "p_id",
@@ -8843,7 +8801,7 @@
               }
             ],
             "keys": [],
-            "duration": 2
+            "duration": 1
           }
         }
       ],
@@ -8884,7 +8842,7 @@
           "result": {
             "rows": [
               {
-                "oid": 17021,
+                "oid": 16392,
                 "typname": "product_status",
                 "typtype": "e",
                 "typnotnull": false,
@@ -9014,7 +8972,7 @@
           }
         },
         {
-          "sql": "SELECT enumlabel FROM pg_enum WHERE enumtypid = 17021 ORDER BY enumsortorder",
+          "sql": "SELECT enumlabel FROM pg_enum WHERE enumtypid = 16392 ORDER BY enumsortorder",
           "result": {
             "rows": [
               {
@@ -9092,7 +9050,7 @@
           "result": {
             "rows": [
               {
-                "oid": 17028,
+                "oid": 16400,
                 "typname": "Weight",
                 "typtype": "d",
                 "typnotnull": true,
@@ -9218,11 +9176,11 @@
               }
             ],
             "keys": [],
-            "duration": 1
+            "duration": 0
           }
         },
         {
-          "sql": "SELECT conname, pg_get_constraintdef(oid) AS definition FROM pg_constraint WHERE contypid = 17028 AND contype = 'c' ORDER BY conname",
+          "sql": "SELECT conname, pg_get_constraintdef(oid) AS definition FROM pg_constraint WHERE contypid = 16400 AND contype = 'c' ORDER BY conname",
           "result": {
             "rows": [
               {
@@ -9262,7 +9220,7 @@
               }
             ],
             "keys": [],
-            "duration": 1
+            "duration": 0
           }
         }
       ],
@@ -9302,7 +9260,7 @@
           "result": {
             "rows": [
               {
-                "oid": 17032,
+                "oid": 16404,
                 "typname": "dimensions",
                 "typtype": "c",
                 "typnotnull": false,
@@ -9428,11 +9386,11 @@
               }
             ],
             "keys": [],
-            "duration": 1
+            "duration": 0
           }
         },
         {
-          "sql": "SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS type FROM pg_attribute a JOIN pg_type t ON t.typrelid = a.attrelid WHERE t.oid = 17032 AND a.attnum > 0 AND NOT a.attisdropped ORDER BY a.attnum",
+          "sql": "SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS type FROM pg_attribute a JOIN pg_type t ON t.typrelid = a.attrelid WHERE t.oid = 16404 AND a.attnum > 0 AND NOT a.attisdropped ORDER BY a.attnum",
           "args": {
             "schema": "antares_fixtures"
           },
@@ -9483,7 +9441,7 @@
               }
             ],
             "keys": [],
-            "duration": 1
+            "duration": 0
           }
         }
       ],
@@ -9533,7 +9491,7 @@
           "result": {
             "rows": [
               {
-                "oid": 17036,
+                "oid": 16408,
                 "typname": "price_range",
                 "typtype": "r",
                 "typnotnull": false,

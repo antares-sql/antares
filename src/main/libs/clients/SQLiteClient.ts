@@ -225,7 +225,7 @@ export class SQLiteClient extends BaseClient implements DatabaseClient, DbConfig
       }
 
       const remappedIndexes = [];
-      const { rows: primaryKeys } = await this.raw<antares.QueryResult<TableColumnsResult>>(`SELECT * FROM "${schema}".pragma_table_info('${table}') WHERE pk != 0`);
+      const { rows: primaryKeys } = await this.raw<antares.QueryResult<TableColumnsResult>>(`SELECT * FROM "${schema}".pragma_table_info('${table}') WHERE pk != 0 ORDER BY pk`);
 
       for (const key of primaryKeys) {
          remappedIndexes.push({
@@ -238,7 +238,7 @@ export class SQLiteClient extends BaseClient implements DatabaseClient, DbConfig
       const { rows: indexes } = await this.raw<antares.QueryResult<ShowIndexesResult>>(`SELECT * FROM "${schema}".pragma_index_list('${table}');`);
 
       for (const index of indexes) {
-         const { rows: details } = await this.raw(`SELECT * FROM "${schema}".pragma_index_info('${index.name}');`);
+         const { rows: details } = await this.raw(`SELECT * FROM "${schema}".pragma_index_info('${index.name}') ORDER BY seqno;`);
 
          let where: string = null;
          if (index.partial === 1) {

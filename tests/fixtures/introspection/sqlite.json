@@ -1,6 +1,6 @@
 {
   "engine": "sqlite",
-  "server": "{\"number\":\"3.54.1\",\"name\":\"SQLite\",\"arch\":\"x64\",\"os\":\"Windows_NT 10.0.26320\"}",
+  "server": "{\"number\":\"3.54.1\",\"name\":\"SQLite\",\"arch\":\"x64\",\"os\":\"Linux 7.2.15-76070215-generic\"}",
   "calls": [
     {
       "method": "getStructure",
@@ -19,7 +19,7 @@
               {
                 "seq": 0,
                 "name": "main",
-                "file": "C:\\Users\\fabio\\AppData\\Local\\Temp\\antares-it-23024.db"
+                "file": "/tmp/antares-it-216502.db"
               }
             ],
             "report": null,
@@ -59,7 +59,7 @@
               }
             ],
             "keys": [],
-            "duration": 0
+            "duration": 1
           }
         },
         {
@@ -147,7 +147,7 @@
               }
             ],
             "keys": [],
-            "duration": 1
+            "duration": 0
           }
         },
         {
@@ -393,7 +393,7 @@
               }
             ],
             "keys": [],
-            "duration": 0
+            "duration": 1
           }
         },
         {
@@ -419,7 +419,7 @@
               }
             ],
             "keys": [],
-            "duration": 1
+            "duration": 0
           }
         }
       ],
@@ -729,7 +729,7 @@
       ],
       "queries": [
         {
-          "sql": "SELECT * FROM \"main\".pragma_table_info('products') WHERE pk != 0",
+          "sql": "SELECT * FROM \"main\".pragma_table_info('products') WHERE pk != 0 ORDER BY pk",
           "result": {
             "rows": [
               {
@@ -811,7 +811,7 @@
               }
             ],
             "keys": [],
-            "duration": 1
+            "duration": 0
           }
         },
         {
@@ -903,7 +903,7 @@
           }
         },
         {
-          "sql": "SELECT * FROM \"main\".pragma_index_info('products_category_name_uq');",
+          "sql": "SELECT * FROM \"main\".pragma_index_info('products_category_name_uq') ORDER BY seqno;",
           "result": {
             "rows": [
               {
@@ -984,7 +984,7 @@
           }
         },
         {
-          "sql": "SELECT * FROM \"main\".pragma_index_info('products_price_idx');",
+          "sql": "SELECT * FROM \"main\".pragma_index_info('products_price_idx') ORDER BY seqno;",
           "result": {
             "rows": [
               {
@@ -1034,7 +1034,7 @@
           }
         },
         {
-          "sql": "SELECT * FROM \"main\".pragma_index_info('products_name_uq');",
+          "sql": "SELECT * FROM \"main\".pragma_index_info('products_name_uq') ORDER BY seqno;",
           "result": {
             "rows": [
               {
@@ -1246,7 +1246,7 @@
               }
             ],
             "keys": [],
-            "duration": 0
+            "duration": 1
           }
         }
       ],

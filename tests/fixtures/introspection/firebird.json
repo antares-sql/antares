@@ -1,6 +1,6 @@
 {
   "engine": "firebird",
-  "server": "{\"number\":\"5.0.4\",\"name\":\"Firebird SQL\",\"arch\":\"TCPv4\",\"os\":\"172.22.0.1/52336\"}",
+  "server": "{\"number\":\"5.0.4\",\"name\":\"Firebird SQL\",\"arch\":\"TCPv4\",\"os\":\"172.22.0.1/41462\"}",
   "calls": [
     {
       "method": "getStructure",
@@ -34,7 +34,7 @@
               }
             ],
             "keys": [],
-            "duration": 5
+            "duration": 3
           }
         },
         {
@@ -98,7 +98,7 @@
               }
             ],
             "keys": [],
-            "duration": 5
+            "duration": 4
           }
         },
         {
@@ -134,7 +134,7 @@
               }
             ],
             "keys": [],
-            "duration": 5
+            "duration": 3
           }
         },
         {
@@ -181,7 +181,7 @@
               }
             ],
             "keys": [],
-            "duration": 7
+            "duration": 4
           }
         },
         {
@@ -239,7 +239,7 @@
               }
             ],
             "keys": [],
-            "duration": 6
+            "duration": 3
           }
         }
       ],
@@ -577,7 +577,7 @@
               }
             ],
             "keys": [],
-            "duration": 21
+            "duration": 13
           }
         }
       ],
@@ -902,7 +902,7 @@
               }
             ],
             "keys": [],
-            "duration": 5
+            "duration": 4
           }
         }
       ],
@@ -959,9 +959,16 @@
       ],
       "queries": [
         {
-          "sql": "SELECT ix.rdb$index_name AS INDEX_NAME, sg.rdb$field_name AS FIELD_NAME, rc.rdb$relation_name AS TABLE_NAME, rc.rdb$constraint_type AS INDEX_TYPE, ix.RDB$UNIQUE_FLAG AS INDEX_UNIQUE FROM rdb$indices ix LEFT JOIN rdb$index_segments sg ON ix.rdb$index_name = sg.rdb$index_name LEFT JOIN rdb$relation_constraints rc ON rc.rdb$index_name = ix.rdb$index_name WHERE rc.rdb$relation_name = 'products'",
+          "sql": "SELECT ix.rdb$index_name AS INDEX_NAME, sg.rdb$field_name AS FIELD_NAME, rc.rdb$relation_name AS TABLE_NAME, rc.rdb$constraint_type AS INDEX_TYPE, ix.RDB$UNIQUE_FLAG AS INDEX_UNIQUE FROM rdb$indices ix LEFT JOIN rdb$index_segments sg ON ix.rdb$index_name = sg.rdb$index_name LEFT JOIN rdb$relation_constraints rc ON rc.rdb$index_name = ix.rdb$index_name WHERE rc.rdb$relation_name = 'products' ORDER BY ix.rdb$index_name, sg.rdb$field_position",
           "result": {
             "rows": [
+              {
+                "INDEX_NAME": "RDB$PRIMARY2                                                   ",
+                "FIELD_NAME": "id                                                             ",
+                "TABLE_NAME": "products                                                       ",
+                "INDEX_TYPE": "PRIMARY KEY",
+                "INDEX_UNIQUE": 1
+              },
               {
                 "INDEX_NAME": "products_category_fk                                           ",
                 "FIELD_NAME": "category_id                                                    ",
@@ -974,13 +981,6 @@
                 "FIELD_NAME": "name                                                           ",
                 "TABLE_NAME": "products                                                       ",
                 "INDEX_TYPE": "UNIQUE     ",
-                "INDEX_UNIQUE": 1
-              },
-              {
-                "INDEX_NAME": "RDB$PRIMARY6                                                   ",
-                "FIELD_NAME": "id                                                             ",
-                "TABLE_NAME": "products                                                       ",
-                "INDEX_TYPE": "PRIMARY KEY",
                 "INDEX_UNIQUE": 1
               }
             ],
@@ -1038,11 +1038,20 @@
               }
             ],
             "keys": [],
-            "duration": 5
+            "duration": 3
           }
         }
       ],
       "output": [
+        {
+          "name": "RDB$PRIMARY2",
+          "column": "id",
+          "indexType": null,
+          "type": "PRIMARY",
+          "cardinality": null,
+          "comment": "",
+          "indexComment": ""
+        },
         {
           "name": "products_category_fk",
           "column": "category_id",
@@ -1057,15 +1066,6 @@
           "column": "name",
           "indexType": null,
           "type": "UNIQUE",
-          "cardinality": null,
-          "comment": "",
-          "indexComment": ""
-        },
-        {
-          "name": "RDB$PRIMARY6",
-          "column": "id",
-          "indexType": null,
-          "type": "PRIMARY",
           "cardinality": null,
           "comment": "",
           "indexComment": ""
@@ -1093,7 +1093,7 @@
                 "KEY_SEQ": 1,
                 "UPDATE_RULE": "CASCADE    ",
                 "DELETE_RULE": "SET NULL   ",
-                "PK_NAME": "INTEG_14                                                       ",
+                "PK_NAME": "INTEG_2                                                        ",
                 "FK_NAME": "products_category_fk                                           "
               }
             ],
@@ -1191,7 +1191,7 @@
               }
             ],
             "keys": [],
-            "duration": 6
+            "duration": 3
           }
         }
       ],
@@ -1255,7 +1255,7 @@
               }
             ],
             "keys": [],
-            "duration": 6
+            "duration": 3
           }
         }
       ],
@@ -1328,7 +1328,7 @@
               }
             ],
             "keys": [],
-            "duration": 7
+            "duration": 4
           }
         }
       ],
@@ -1417,7 +1417,7 @@
               }
             ],
             "keys": [],
-            "duration": 6
+            "duration": 3
           }
         },
         {
@@ -1505,7 +1505,7 @@
               }
             ],
             "keys": [],
-            "duration": 5
+            "duration": 3
           }
         }
       ],

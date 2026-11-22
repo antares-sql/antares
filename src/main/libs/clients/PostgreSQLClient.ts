@@ -542,15 +542,17 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
          SELECT pg_index.indexrelid, pg_class.oid
          FROM pg_index, pg_class
          WHERE pg_class.relname = '${table}' AND pg_class.oid = pg_index.indrelid), ndx_cols AS (
-         SELECT pg_class.relname, UNNEST(i.indkey) AS col_ndx, CASE i.indisprimary WHEN TRUE THEN 'PRIMARY' ELSE CASE i.indisunique WHEN TRUE THEN 'UNIQUE' ELSE 'INDEX' END END AS CONSTRAINT_TYPE, pg_get_expr(i.indpred, i.indrelid) AS INDEX_WHERE, pg_class.oid
+         SELECT pg_class.relname, k.col_ndx, k.col_pos, CASE i.indisprimary WHEN TRUE THEN 'PRIMARY' ELSE CASE i.indisunique WHEN TRUE THEN 'UNIQUE' ELSE 'INDEX' END END AS CONSTRAINT_TYPE, pg_get_expr(i.indpred, i.indrelid) AS INDEX_WHERE, pg_class.oid
          FROM pg_class
          JOIN pg_index i ON (pg_class.oid = i.indexrelid)
          JOIN ndx_list ON (pg_class.oid = ndx_list.indexrelid)
+         CROSS JOIN LATERAL UNNEST(i.indkey) WITH ORDINALITY AS k(col_ndx, col_pos)
          WHERE pg_table_is_visible(pg_class.oid))
          SELECT ndx_cols.relname AS CONSTRAINT_NAME, ndx_cols.CONSTRAINT_TYPE, a.attname AS COLUMN_NAME, ndx_cols.INDEX_WHERE
          FROM pg_attribute a
          JOIN ndx_cols ON (a.attnum = ndx_cols.col_ndx)
          JOIN ndx_list ON (ndx_list.oid = a.attrelid AND ndx_list.indexrelid = ndx_cols.oid)
+         ORDER BY ndx_cols.relname, ndx_cols.col_pos
       `);
 
       return rows.map(row => {
