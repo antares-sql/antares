@@ -6,6 +6,8 @@
  *
  * Writes, from the sources of this repository (the single source of truth):
  *   schema/theme.schema.json   JSON Schema of a theme file, built from src/common/themes
+ *   schema/tokens.json         token catalog (groups, shape ranges, folder palette, editor keys) read by the
+ *                              web theme editor (antares-website, /theme-editor)
  *   base/dark.json, light.json the built-in themes with every token value (from the SCSS themes):
  *                              a complete starting point to create a theme
  * With --ace it also converts the editor themes ported from Ace into full themes in themes/<id>/theme.json:
@@ -122,6 +124,17 @@ const schema = {
 };
 
 writeJson(path.join(outDir, 'schema/theme.schema.json'), schema);
+
+// Machine-readable token catalog for tools (the web theme editor): groups, ranges and palette in app order
+writeJson(path.join(outDir, 'schema/tokens.json'), {
+   schemaVersion: THEME_SCHEMA_VERSION,
+   colorGroups: uiColorTokenGroups,
+   shapeRanges: shapeTokenRanges,
+   shapeColorTokens,
+   folderColorSlots,
+   editorColorKeys,
+   syntaxKeys: themeTokenKeys
+});
 
 // ---------------------------------------------------------------- Built-in themes, fully expanded
 
