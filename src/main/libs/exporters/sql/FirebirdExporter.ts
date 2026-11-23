@@ -85,6 +85,8 @@ export default class FirebirdExporter extends SqlExporter {
    private _transaction?: firebird.Transaction;
    private _major = 0;
    private readonly _tableInfos = new Map<string, Promise<TableInfo>>();
+   /** Tables with GENERATED ALWAYS identity columns: their INSERT statements need OVERRIDING SYSTEM VALUE */
+   private readonly _overridingTables = new Set<string>();
 
    constructor (client: FirebirdSQLClient, tables: exporter.TableParams[], options: exporter.ExportOptions) {
       super(tables, options);
@@ -564,7 +566,17 @@ END`]) + 'COMMIT;\n';
       }
    }
 
+   getInsertHead (tableName: string, columns: DataColumn[]) {
+      const head = `INSERT INTO ${this.quoteName(tableName)} (${columns.map(c => this.quoteName(c.name)).join(', ')})`;
+      // Values of GENERATED ALWAYS identity columns (Firebird 4+)
+      return `${head}${this._overridingTables.has(tableName) ? ' OVERRIDING SYSTEM VALUE' : ''} VALUES`;
+   }
+
    async writeTableData (tableName: string) {
+      const { columns: tableColumns } = await this._tableInfo(tableName);
+      if (tableColumns.some(c => c.identity === 0))
+         this._overridingTables.add(tableName);
+
       await super.writeTableData(tableName);
       // isql: the DDL statements on the table (identity restart, indexes, foreign keys) need the rows committed
       await this.writeString('\nCOMMIT;\n');
