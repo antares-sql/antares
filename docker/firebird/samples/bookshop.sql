@@ -282,7 +282,7 @@ BEGIN
          SERIAL_NUMBER, AVAILABLE, COVER, DESCRIPTION, CHECKSUM, CREATED_AT)
       VALUES (
          9780000000000 + :i * 7919,
-         'Volume ' || :i || IIF(MOD(:i, 7) = 0, ' — edizione speciale', IIF(MOD(:i, 11) = 0, ' l''ultimo', '')),
+         'Volume ' || :i || TRIM(TRAILING FROM IIF(MOD(:i, 7) = 0, ' — edizione speciale', IIF(MOD(:i, 11) = 0, ' l''ultimo', ''))),
          MOD(:i, 8) + 1,
          IIF(MOD(:i, 9) = 0, NULL, MOD(:i, 5) + 1),
          DATEADD(:i * 23 DAY TO DATE '1990-01-01'),
@@ -307,7 +307,7 @@ BEGIN
    BEGIN
       INSERT INTO CUSTOMERS (NAME, EMAIL, COUNTRY, VIP, REGISTERED_AT, NOTES)
       VALUES (
-         'Customer ' || :i || IIF(MOD(:i, 10) = 0, ' Müller-Ñúñez', ''),
+         'Customer ' || :i || TRIM(TRAILING FROM IIF(MOD(:i, 10) = 0, ' Müller-Ñúñez', '')),
          IIF(MOD(:i, 8) = 0, NULL, 'customer' || :i || '@example.com'),
          DECODE(MOD(:i, 8), 0, 'IT', 1, 'FR', 2, 'DE', 3, 'ES', 4, 'GB', 5, 'US', 6, 'JP', 'BR'),
          MOD(:i, 15) = 0,
@@ -326,7 +326,7 @@ BEGIN
          MOD(:i * 7, 300) + 1,
          DATEADD(:i * 311 MINUTE TO TIMESTAMP '2024-01-01 00:00:00'),
          IIF(MOD(:i, 3) = 0, NULL, DATEADD(MOD(:i, 10) HOUR TO TIME '09:00:00')),
-         DECODE(MOD(:i, 10), 0, 'CANCELLED', 1, 'NEW', 2, 'NEW', 3, 'SHIPPED', 'PAID'),
+         TRIM(DECODE(MOD(:i, 10), 0, 'CANCELLED', 1, 'NEW', 2, 'NEW', 3, 'SHIPPED', 'PAID')),
          MOD(:i, 10) > 2,
          IIF(MOD(:i, 10) > 2, NEXT VALUE FOR SEQ_INVOICE, NULL),
          0
@@ -354,7 +354,7 @@ BEGIN
    BEGIN
       UPDATE OR INSERT INTO REVIEWS (BOOK_ID, CUSTOMER_ID, RATING, REVIEW_TEXT, REVIEWED_ON)
       VALUES (MOD(:i * 3, 400) + 1, MOD(:i * 11, 300) + 1, MOD(:i, 5) + 1,
-         IIF(MOD(:i, 4) = 0, NULL, 'Review #' || :i || ': ' || IIF(MOD(:i, 2) = 0, 'great book!', 'not for me, sorry.')),
+         IIF(MOD(:i, 4) = 0, NULL, 'Review #' || :i || ': ' || TRIM(IIF(MOD(:i, 2) = 0, 'great book!', 'not for me, sorry.'))),
          DATEADD(:i DAY TO DATE '2024-02-01'))
       MATCHING (BOOK_ID, CUSTOMER_ID);
       i = i + 1;

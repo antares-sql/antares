@@ -381,6 +381,8 @@ const fileScenarios: Partial<Record<EngineName, Scenario & { schema: string; aft
          'SELECT * FROM GEN_ALWAYS ORDER BY ID',
          // Results of Firebird 4 types (INT128, time zones) used to leave the query pending
          'SELECT SUM(N) AS S, MAX(TSZ) AS TSZ FROM CHILD',
+         // DECFLOAT results failed with error -804 (node-firebird): read as strings
+         'SELECT DF FROM CHILD ORDER BY ID',
          'SELECT Y FROM P_SUM(1)',
          `SELECT TRIM(RDB$INDEX_NAME) AS NAME, RDB$INDEX_TYPE AS DESCENDING, RDB$EXPRESSION_SOURCE AS EXPRESSION FROM RDB$INDICES
          WHERE RDB$RELATION_NAME = 'CHILD' AND RDB$INDEX_NAME NOT STARTING WITH 'RDB$' ORDER BY 1`,
