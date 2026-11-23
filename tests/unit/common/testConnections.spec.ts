@@ -14,9 +14,15 @@ describe('getDebugConnections', () => {
          'CDEBUGMYSQL', 'CDEBUGMYSQLSSH',
          'CDEBUGMARIA', 'CDEBUGMARIASSH',
          'CDEBUGPG', 'CDEBUGPGSSH',
-         'CDEBUGFIREBIRD'
+         'CDEBUGFIREBIRD',
+         'CDEBUGFIREBIRDSAMPLES'
       ]);
       expect(uids.every(uid => uid.startsWith(DEBUG_CONNECTION_PREFIX))).toBe(true);
+   });
+
+   it('adds the Firebird sample database (a database of its own)', () => {
+      const samples = getDebugConnections(noSamples).find(c => c.uid === 'CDEBUGFIREBIRDSAMPLES');
+      expect(samples).toMatchObject({ client: 'firebird', port: 33050, database: '/var/lib/firebird/data/samples.fdb', name: 'Docker Firebird samples' });
    });
 
    it('uses docker-compose ports and honors env overrides', () => {

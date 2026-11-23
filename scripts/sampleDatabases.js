@@ -6,10 +6,11 @@
  *   MySQL gets the classicmodels, sakila and world_x databases, MariaDB the first two
  *   (world_x holds an X DevAPI document collection, MySQL-only),
  *   PostgreSQL gets the chinook, netflix and pagila schemas in antares_test;
- * - copies the SQLite ones into docker/samples/sqlite, where "Apply debug connections" finds them.
+ * - copies the SQLite ones into docker/samples/sqlite, where "Apply debug connections" finds them;
+ * - creates the Firebird database samples.fdb from docker/firebird/samples (kept in this repository).
  *
  * Running it again resets the samples to their original content.
- * Usage: npm run test:db:samples [-- mysql maria pg sqlite]
+ * Usage: npm run test:db:samples [-- mysql maria pg firebird sqlite]
  */
 const fs = require('fs');
 const path = require('path');
@@ -62,6 +63,13 @@ const dockerEngines = {
 };
 
 const sqliteFiles = ['sqlite/chinook.db', 'sqlite/northwind.db'];
+
+/** Firebird has no schemas: the samples are a database of their own, created by isql */
+const firebirdSample = {
+   service: 'firebird',
+   database: '/var/lib/firebird/data/samples.fdb',
+   scripts: [path.join(ROOT, 'docker', 'firebird', 'samples', 'bookshop.sql')]
+};
 
 const cachePath = file => path.join(CACHE_DIR, ...file.split('/'));
 
@@ -117,6 +125,29 @@ function loadDocker (name, engine) {
    }
 }
 
+function loadFirebird () {
+   console.log('Loading samples into firebird...');
+   const { service, database } = firebirdSample;
+
+   // Reset: the database is created again
+   const rm = compose(['exec', '-T', service, 'rm', '-f', database], { stdio: ['ignore', 'ignore', 'pipe'] });
+   if (rm.status !== 0) throw new Error(rm.stderr || `exit code ${rm.status}`);
+
+   const create = `SET NAMES UTF8;\nCREATE DATABASE 'localhost:${database}' USER 'SYSDBA' PASSWORD 'antares' PAGE_SIZE 16384 DEFAULT CHARACTER SET UTF8;\n`;
+   const scripts = firebirdSample.scripts.map(script => {
+      console.log(`  ${path.basename(script)}`);
+      return fs.readFileSync(script, 'utf8');
+   });
+
+   // -bail: stops at the first error, with a non-zero exit code
+   const res = compose(['exec', '-T', service, '/opt/firebird/bin/isql', '-q', '-bail', '-ch', 'UTF8'], {
+      input: create + scripts.join('\n'),
+      stdio: ['pipe', 'pipe', 'pipe']
+   });
+   if (res.status !== 0) throw new Error(res.stderr || res.stdout || `exit code ${res.status}`);
+   console.log(`Firebird sample ready: ${database} (debug connection "Docker Firebird samples")`);
+}
+
 function copySqlite () {
    fs.mkdirSync(SQLITE_DIR, { recursive: true });
    for (const file of sqliteFiles) {
@@ -127,14 +158,15 @@ function copySqlite () {
 }
 
 async function main () {
-   const all = [...Object.keys(dockerEngines), 'sqlite'];
+   const all = [...Object.keys(dockerEngines), 'firebird', 'sqlite'];
    const requested = process.argv.slice(2);
    const unknown = requested.filter(e => !all.includes(e));
    if (unknown.length) throw new Error(`Unknown engines: ${unknown.join(', ')} (available: ${all.join(', ')})`);
    const selected = requested.length ? requested : all;
 
-   const docker = selected.filter(e => e !== 'sqlite');
-   const running = docker.length ? runningServices() : [];
+   const docker = selected.filter(e => dockerEngines[e]);
+   const withFirebird = selected.includes('firebird');
+   const running = docker.length || withFirebird ? runningServices() : [];
    const toLoad = docker.filter(name => {
       if (running.includes(dockerEngines[name].service)) return true;
       console.warn(`Skipping ${name}: service "${dockerEngines[name].service}" is not running (npm run test:db:up)`);
@@ -153,6 +185,20 @@ async function main () {
       catch (err) {
          failed.push(name);
          console.error(`Failed to load samples into ${name}:\n${err.message}`);
+      }
+   }
+
+   if (withFirebird) {
+      if (!running.includes(firebirdSample.service))
+         console.warn(`Skipping firebird: service "${firebirdSample.service}" is not running (npm run test:db:up)`);
+      else {
+         try {
+            loadFirebird();
+         }
+         catch (err) {
+            failed.push('firebird');
+            console.error(`Failed to load samples into firebird:\n${err.message}`);
+         }
       }
    }
 
