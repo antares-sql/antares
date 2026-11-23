@@ -30,6 +30,8 @@
     "test:db:down": "docker compose -f docker/docker-compose.yml down -v",
     "test:e2e": "npm run compile && npm run test:e2e-dry",
     "test:e2e-dry": "xvfb-maybe -- playwright test app.spec",
+    "test:packaged": "cross-env NODE_ENV=production npm run compile && electron-builder --dir --publish never && npm run test:packaged-dry",
+    "test:packaged-dry": "xvfb-maybe -- playwright test tests/packaged",
     "lint": "eslint . --ext .js,.ts,.vue && stylelint \"./src/**/*.{css,scss,sass,vue}\"",
     "lint:fix": "eslint . --ext .js,.ts,.vue --fix && stylelint \"./src/**/*.{css,scss,sass,vue}\" --fix",
     "contributors:add": "all-contributors add",

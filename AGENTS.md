@@ -16,7 +16,7 @@ See also [CONTRIBUTING.md](CONTRIBUTING.md) for the original contributor guide a
 | Persistence | `electron-store` (settings, connections; credentials encrypted via `safeStorage`) |
 | DB drivers | `mysql2`, `pg` + `pg-query-stream`, `better-sqlite3` (N-API, prebuilds bundled), `node-firebird`, SSH tunnels via `@fabio286/ssh2-promise` |
 | Packaging | electron-builder (config in `package.json` → `build`) |
-| Tests | Vitest unit + integration ([tests/unit/](tests/unit/), [tests/integration/](tests/integration/)), Playwright e2e ([tests/app.spec.ts](tests/app.spec.ts), minimal) |
+| Tests | Vitest unit + integration ([tests/unit/](tests/unit/), [tests/integration/](tests/integration/)), Playwright e2e ([tests/app.spec.ts](tests/app.spec.ts), minimal) and packaged-app smoke tests ([tests/packaged/](tests/packaged/)) |
 
 ## Layout
 
@@ -90,6 +90,7 @@ Rules:
 - SQL values in main must go through the engine dialect (`client.dialect.quoteString()`, `blobLiteral()`, ... or `formatValue()` for UI values): never build literals with `sqlEscaper` or engine `switch`es in handlers.
 - Client contract: [contracts.ts](src/main/libs/db/core/contracts.ts). `DatabaseClient` = methods every engine has; optional features are **capability** interfaces (`RoutinesCapability`, `SchedulersCapability`, ...) declared with `implements` on the engine class. Handlers call them through `requireCapability(client, 'routines')`, which throws `UnsupportedCapabilityError` if the engine lacks it. Never add "not implemented" stubs to `BaseClient`. [capabilities.spec.ts](tests/unit/clients/capabilities.spec.ts) checks that every feature enabled in customizations is implemented.
 - Long-running export/import runs in `src/main/workers/*` (separate webpack build output `dist/exporter.js`, `dist/importer.js`).
+  Worker threads can't load `electron` (it resolves only in development, via the npm package): log with `workers/workerLog.ts` (`electron-log/node`) and pass what they need from `app` through `workerData`.
 
 ## Commands
 
@@ -111,6 +112,8 @@ npm run test:db:samples     # load sample DBs (sakila, pagila, chinook, ...) int
 npm run test:db:down        # stop and remove test DBs
 npm run test:fixtures:record # re-record introspection fixtures (needs test DBs) after changing an introspection query
 npm run test:e2e            # compile + playwright
+npm run test:packaged       # compile + electron-builder --dir + playwright against the packaged app (tests/packaged):
+                            # bundle externals, export/import worker threads. test:packaged-dry reuses build/
 node scripts/appDriver.js start --build   # launch the compiled app (isolated profile) and drive it like a user:
                             # seed, open "Docker PostgreSQL", click, type, press F5, ss... (see .claude/skills/run-app)
 npx tsc --noEmit -p .       # type check (.ts only; .vue files are checked only by the Vue VS Code extension)
