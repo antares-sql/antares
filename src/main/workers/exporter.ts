@@ -1,6 +1,5 @@
 import * as antares from 'common/interfaces/antares';
 import * as log from 'electron-log/main';
-import * as fs from 'fs';
 import { parentPort } from 'worker_threads';
 
 import { createClient, getEngine } from '../libs/db/EngineRegistry';
@@ -56,17 +55,25 @@ const exportHandler = async (data: any) => {
             });
          });
 
-         exporter.once('end', () => {
+         let cancelRequested = false;
+         exporter.once('cancel', () => {
+            cancelRequested = true;
+         });
+
+         // 'end' comes once the exporter has released its connections and closed (or deleted, if cancelled) the file
+         exporter.once('end', async () => {
+            if (cancelRequested) {
+               // The main process terminates the thread on 'cancel': close the connection first
+               await close(connection);
+               parentPort.postMessage({ type: 'cancel' });
+               return;
+            }
+
             parentPort.postMessage({
                type: 'end',
                payload: { cancelled: exporter.isCancelled }
             });
             close(connection);
-         });
-
-         exporter.once('cancel', () => {
-            fs.unlinkSync(exporter.outputFile);
-            parentPort.postMessage({ type: 'cancel' });
          });
 
          exporter.on('progress', state => {

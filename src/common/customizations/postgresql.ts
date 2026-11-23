@@ -53,6 +53,7 @@ export const customizations: Customizations = {
    userTypeAdd: true,
    schemaDrop: true,
    schemaExport: true,
+   exportByChunks: true,
    schemaImport: true,
    databaseEdit: false,
    tableSettings: true,

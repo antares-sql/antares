@@ -351,7 +351,8 @@ export function mapColumn (field: ColumnRow, createColumns: Record<string, Creat
       charset: field.CHARACTER_SET_NAME,
       collation: field.COLLATION_NAME,
       autoIncrement: field.EXTRA.includes('auto_increment'),
-      generated: ['VIRTUAL GENERATED', 'VIRTUAL STORED'].includes(field.EXTRA),
+      // VIRTUAL GENERATED, STORED GENERATED (MariaDB < 10.2: PERSISTENT GENERATED), not DEFAULT_GENERATED (expression defaults)
+      generated: /\b(VIRTUAL|STORED|PERSISTENT) GENERATED\b/i.test(field.EXTRA),
       onUpdate: field.EXTRA.toLowerCase().includes('on update')
          ? field.EXTRA.substr(field.EXTRA.indexOf('on update') + 9, field.EXTRA.length).trim()
          : '',
