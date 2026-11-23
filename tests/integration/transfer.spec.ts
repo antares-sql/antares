@@ -355,6 +355,9 @@ const fileScenarios: Partial<Record<EngineName, Scenario & { schema: string; aft
          'CREATE DESCENDING INDEX IX_CHILD_NAME ON CHILD (NAME)',
          'CREATE INDEX IX_CHILD_EXPR ON CHILD COMPUTED BY (UPPER(NAME))',
          'INSERT INTO PARENT VALUES (1, 2)',
+         'CREATE TABLE GEN_ALWAYS (ID INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, V VARCHAR(10))',
+         'INSERT INTO GEN_ALWAYS (V) VALUES (\'a\')',
+         'INSERT INTO GEN_ALWAYS (V) VALUES (\'b\')',
          `INSERT INTO CHILD (PA, PB, P, NAME, N, BIG, I128, DF, F, TS, TSZ, D, T, FLAG, TXT, BIN, OCT) VALUES (
             1, 2, 5, 'Àccent ''q''', 12345678901234.5678, 9223372036854775807, 170141183460469231731687303715884105727,
             1.5E+300, 0.1, '2024-01-01 10:00:00.1234', '2024-01-01 10:00:00.1234 Europe/Rome', '2024-02-29', '23:59:59.9999', TRUE,
@@ -375,6 +378,9 @@ const fileScenarios: Partial<Record<EngineName, Scenario & { schema: string; aft
             OCTET_LENGTH(BIN) AS BIN_LENGTH, CAST(HASH(BIN) AS VARCHAR(30)) AS BIN_HASH, OCT, CALC
          FROM CHILD ORDER BY ID`,
          'SELECT * FROM V_TOP',
+         'SELECT * FROM GEN_ALWAYS ORDER BY ID',
+         // Results of Firebird 4 types (INT128, time zones) used to leave the query pending
+         'SELECT SUM(N) AS S, MAX(TSZ) AS TSZ FROM CHILD',
          'SELECT Y FROM P_SUM(1)',
          `SELECT TRIM(RDB$INDEX_NAME) AS NAME, RDB$INDEX_TYPE AS DESCENDING, RDB$EXPRESSION_SOURCE AS EXPRESSION FROM RDB$INDICES
          WHERE RDB$RELATION_NAME = 'CHILD' AND RDB$INDEX_NAME NOT STARTING WITH 'RDB$' ORDER BY 1`,
@@ -387,6 +393,8 @@ const fileScenarios: Partial<Record<EngineName, Scenario & { schema: string; aft
       afterChecks: [
          ['INSERT INTO CHILD (PA, PB) VALUES (1, 2)', undefined],
          ['SELECT MAX(ID) AS ID FROM CHILD', [{ ID: 3 }]],
+         ['INSERT INTO GEN_ALWAYS (V) VALUES (\'c\')', undefined],
+         ['SELECT MAX(ID) AS ID FROM GEN_ALWAYS', [{ ID: 3 }]],
          ['SELECT NEXT VALUE FOR SEQ_A AS SEQ FROM RDB$DATABASE', [{ SEQ: 3 }]]
       ],
       includes: { views: true, triggers: true, routines: true }
@@ -437,18 +445,77 @@ for (const engine of getTestEngines().filter(e => fileScenarios[e.name])) {
          exporter.run().catch((): null => null);
          await exported;
 
-         const target = await fileDatabases[engine.name](DST);
-         databases.push(target);
+         // Import worker
+         const imported = await fileDatabases[engine.name](DST);
+         databases.push(imported);
+         for (let run = 0; run < (scenario.rerun ? 2 : 1); run++) {
+            const errors = await importFile(imported.client, engine.name, file);
+            expect(errors).toEqual([]);
+         }
+
+         // Query editor
+         const edited = await fileDatabases[engine.name](`${DST}_editor`);
+         databases.push(edited);
          const dump = fs.readFileSync(file, 'utf8');
-         await target.client.raw(dump);
-         if (scenario.rerun) await target.client.raw(dump);
+         await edited.client.raw(dump);
+         if (scenario.rerun) await edited.client.raw(dump);
 
-         expect(await runChecks(target.client)).toEqual(expected);
+         for (const target of [imported, edited]) {
+            expect(await runChecks(target.client)).toEqual(expected);
 
-         for (const [sql, result] of scenario.afterChecks) {
-            const { rows } = await target.client.raw(sql);
-            if (result !== undefined) expect(JSON.parse(JSON.stringify(rows))).toEqual(result);
+            for (const [sql, result] of scenario.afterChecks) {
+               const { rows } = await target.client.raw(sql);
+               if (result !== undefined) expect(JSON.parse(JSON.stringify(rows))).toEqual(result);
+            }
          }
       }, 120000);
    });
 }
+
+/** Imports a file with the importer of the engine, like the import worker: returns the query errors */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function importFile (client: any, type: EngineName, file: string, onImporter?: (importer: any) => void) {
+   const importer = await getEngine(type).createImporter(client, { uid: 'it', schema: '', type, file });
+   const errors: string[] = [];
+   importer.on('query-error', (err: { message: string; sql: string }) => errors.push(`${err.message}\n${err.sql.slice(0, 300)}`));
+   onImporter?.(importer);
+   const done = waitFor(importer);
+   importer.run().catch((): null => null);
+   await done;
+   return errors;
+}
+
+describe.runIf(getTestEngines().some(e => e.name === 'sqlite'))('sqlite import', () => {
+   it('rolls back and closes the database when cancelled', async () => {
+      const file = path.join(os.tmpdir(), `antares-it-import-${process.pid}.sql`);
+      const rows = Array.from({ length: 20000 }, (_, i) => `INSERT INTO t VALUES (${i}, 'row ${i}');`).join('\n');
+      fs.writeFileSync(file, `CREATE TABLE t (id INTEGER, s TEXT);\n${rows}\n`);
+
+      const database = await fileDatabases.sqlite('it_import_cancel');
+      try {
+         let cancelled = false;
+         const errors = await importFile(database.client, 'sqlite', file, importer => {
+            // Cancelled after 1000 statements
+            const execute = importer.execute.bind(importer);
+            let count = 0;
+            importer.execute = async (sql: string) => {
+               await execute(sql);
+               if (++count === 1000) {
+                  cancelled = true;
+                  importer.cancel();
+               }
+            };
+         });
+
+         expect(errors).toEqual([]);
+         expect(cancelled).toBe(true);
+         // Nothing of the interrupted transaction is kept
+         const { rows: tables } = await database.client.raw('SELECT name FROM sqlite_master WHERE name = \'t\'');
+         expect(tables).toEqual([]);
+      }
+      finally {
+         await database.drop(); // Fails on Windows if the importer left the file open
+         fs.rmSync(file, { force: true });
+      }
+   });
+});

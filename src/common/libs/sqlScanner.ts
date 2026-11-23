@@ -128,6 +128,23 @@ function tokenizer (terminator: string) {
  * only at the new terminator, which is removed (the SET TERM commands are not returned).
  */
 export function querySplitter (sql: string, dbType: ClientCode): string[] {
+   return splitStatements(sql, dbType, { final: true }).statements;
+}
+
+export interface SplitResult {
+   /** Complete statements */
+   statements: string[];
+   /** Text after the last complete statement (an unfinished statement) */
+   rest: string;
+   /** Statement terminator at the end of the text (changed by SET TERM in Firebird scripts) */
+   terminator: string;
+}
+
+/**
+ * querySplitter for scripts read in chunks: the text after the last terminated statement is returned as rest,
+ * to prepend to the next chunk. With final, the rest is the last statement (end of the script).
+ */
+export function splitStatements (sql: string, dbType: ClientCode, options: { terminator?: string; final?: boolean } = {}): SplitResult {
    const statements: string[] = [];
    let statementStart = 0;
    let statementCode = ''; // Code of the current statement, without strings and comments
@@ -136,7 +153,7 @@ export function querySplitter (sql: string, dbType: ClientCode): string[] {
    let depth = 0;
    let previousWord = '';
    let bodyStarted = false;
-   let terminator = ';';
+   let terminator = options.terminator ?? ';';
 
    const endStatement = (end: number) => {
       let text = sql.slice(statementStart, end).trim();
@@ -232,6 +249,9 @@ export function querySplitter (sql: string, dbType: ClientCode): string[] {
       }
    }
 
+   if (!options.final)
+      return { statements, rest: sql.slice(statementStart), terminator };
+
    endStatement(sql.length);
-   return statements;
+   return { statements, rest: '', terminator };
 }

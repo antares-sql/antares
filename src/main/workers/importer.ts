@@ -65,16 +65,27 @@ const importHandler = async (data: {
             });
          });
 
-         importer.once('end', () => {
+         // Importers that stop by themselves end before the thread is terminated (connections closed)
+         let cancelRequested = false;
+         importer.once('cancel', () => {
+            if (importer.stopsOnCancel)
+               cancelRequested = true;
+            else
+               parentPort.postMessage({ type: 'cancel' });
+         });
+
+         importer.once('end', async () => {
+            if (cancelRequested) {
+               await close(connection);
+               parentPort.postMessage({ type: 'cancel' });
+               return;
+            }
+
             parentPort.postMessage({
                type: 'end',
                payload: { cancelled: importer.isCancelled }
             });
             close(connection);
-         });
-
-         importer.once('cancel', () => {
-            parentPort.postMessage({ type: 'cancel' });
          });
 
          importer.on('progress', state => {

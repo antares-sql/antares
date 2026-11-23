@@ -42,6 +42,7 @@ export const customizations: Customizations = {
    routines: true,
    functions: false,
    schemaExport: true,
+   schemaImport: true,
    // Settings
    elementsWrapper: '"',
    stringsWrapper: '\'',

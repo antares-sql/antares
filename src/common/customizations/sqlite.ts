@@ -33,6 +33,7 @@ export const customizations: Customizations = {
    schemaEdit: false,
    schemaExport: true,
    exportByChunks: true,
+   schemaImport: true,
    tableSettings: true,
    tableRealCount: true,
    viewSettings: true,

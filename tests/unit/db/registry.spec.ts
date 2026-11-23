@@ -26,8 +26,8 @@ describe('EngineRegistry', () => {
          ['mysql', true, true],
          ['maria', true, true],
          ['pg', true, true],
-         ['sqlite', true, false],
-         ['firebird', true, false]
+         ['sqlite', true, true],
+         ['firebird', true, true]
       ]);
    });
 
