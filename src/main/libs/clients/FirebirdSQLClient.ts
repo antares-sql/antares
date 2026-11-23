@@ -4,7 +4,7 @@ import { removeComments } from 'common/libs/sqlUtils';
 import * as firebird from 'node-firebird';
 import * as path from 'path';
 
-import { DatabaseClient, DatabasesCapability, RoutinesCapability, UsersCapability } from '../db/core/contracts';
+import { DatabaseClient, DatabasesCapability, DbConfigCapability, RoutinesCapability, UsersCapability } from '../db/core/contracts';
 import { arrayRowsToObjects, uniqueColumnNames } from '../db/core/resultRows';
 import { maskSecrets, trimmed } from '../db/core/users';
 import { FirebirdConnections } from '../db/engines/firebird/FirebirdConnections';
@@ -13,7 +13,7 @@ import { FirebirdDialect } from '../db/engines/firebird/FirebirdDialect';
 import { FirebirdUsers } from '../db/engines/firebird/FirebirdUsers';
 import { BaseClient } from './BaseClient';
 
-export class FirebirdSQLClient extends BaseClient implements DatabaseClient, DatabasesCapability, RoutinesCapability, UsersCapability {
+export class FirebirdSQLClient extends BaseClient implements DatabaseClient, DatabasesCapability, DbConfigCapability, RoutinesCapability, UsersCapability {
    protected readonly _ddl = new FirebirdDdl();
    protected readonly _dialect = new FirebirdDialect();
    private readonly _users = new FirebirdUsers();
@@ -78,8 +78,13 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
       return this._connections.connect();
    }
 
+   /** A new attachment (used by the exporter: detach it when done) */
    getConnection () {
       return this._connections.attach();
+   }
+
+   async getDbConfig () {
+      return { ...this._params };
    }
 
    getConnectionPool () {
@@ -867,6 +872,13 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
 
       for (const query of queries) {
          if (!query) continue;
+
+         // Every statement is already committed: the COMMIT of scripts (e.g. dumps for isql) would fail on the driver transaction
+         if (args.autocommit && /^\s*COMMIT(\s+WORK)?\s*;?\s*$/i.test(query)) {
+            resultsArr.push({ rows: false, report: null, fields: [], keys: [], duration: 0 });
+            continue;
+         }
+
          const timeStart = new Date();
          let timeStop;
          let keysArr: antares.QueryForeign[] = [];

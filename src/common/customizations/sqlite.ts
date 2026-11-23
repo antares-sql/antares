@@ -31,6 +31,8 @@ export const customizations: Customizations = {
    viewAdd: true,
    triggerAdd: true,
    schemaEdit: false,
+   schemaExport: true,
+   exportByChunks: true,
    tableSettings: true,
    tableRealCount: true,
    viewSettings: true,

@@ -26,6 +26,7 @@ const engines: [keyof typeof customizations, () => DatabaseClient][] = [
 /** Capabilities backing a UI feature flag: if the UI enables the feature, the client must implement it */
 const uiFlags: Partial<Record<Capability, keyof Customizations>> = {
    schemas: 'schemaEdit',
+   dbConfig: 'schemaExport', // Connection config of the export worker
    routines: 'routines',
    functions: 'functions',
    triggerFunctions: 'triggerFunctions',

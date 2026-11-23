@@ -41,6 +41,7 @@ export const customizations: Customizations = {
    triggers: true,
    routines: true,
    functions: false,
+   schemaExport: true,
    // Settings
    elementsWrapper: '"',
    stringsWrapper: '\'',

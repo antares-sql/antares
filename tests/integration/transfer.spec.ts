@@ -2,7 +2,10 @@
  * SQL export and import, created through the EngineRegistry like the worker threads do:
  * dump a schema with tricky objects and values to a file, import it back, compare the data.
  */
+import Database from 'better-sqlite3';
+import { getTestDatabases } from 'common/libs/testConnections';
 import * as fs from 'fs';
+import * as firebird from 'node-firebird';
 import * as os from 'os';
 import * as path from 'path';
 import { afterAll, describe, expect, it } from 'vitest';
@@ -229,5 +232,223 @@ for (const engine of getTestEngines().filter(e => getEngine(e.name).createExport
          // The connection of the dump was released
          expect((await client.raw(`SELECT COUNT(*) AS n FROM ${big}`)).rows[0].n).toBeTruthy();
       }, 60000);
+   });
+}
+
+/**
+ * Engines without schemas (a database is a file): the dump of a new database is run
+ * by the client (query splitter, like the query editor) on another new database.
+ */
+interface FileDatabase {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   client: any;
+   drop: () => Promise<void>;
+}
+
+const fbParams = (name: string) => {
+   const { host, port, user, password } = getTestDatabases().firebird;
+   return { host, port, user, password, database: `/var/lib/firebird/data/${name}.fdb` };
+};
+
+const fileDatabases: Partial<Record<EngineName, (name: string) => Promise<FileDatabase>>> = {
+   sqlite: async name => {
+      const databasePath = path.join(os.tmpdir(), `antares-${name}-${process.pid}.db`);
+      fs.rmSync(databasePath, { force: true });
+      new Database(databasePath).close();
+      const client = createClient({ client: 'sqlite', uid: name, params: { databasePath, readonly: false } as never });
+      await client.connect();
+      return {
+         client,
+         drop: async () => {
+            await client.destroy();
+            fs.rmSync(databasePath, { force: true });
+         }
+      };
+   },
+   firebird: async name => {
+      const params = fbParams(name);
+      const dropDatabase = () => new Promise<void>(resolve => {
+         firebird.attach(params, (err, db) => {
+            if (err) return resolve(); // Not existing
+            db.drop(() => resolve());
+         });
+      });
+      await dropDatabase();
+      await new Promise<void>((resolve, reject) => {
+         firebird.create(params, (err, db) => {
+            if (err) return reject(err);
+            db.detach(() => resolve());
+         });
+      });
+
+      const client = createClient({ client: 'firebird', uid: name, params: params as never, poolSize: 1 });
+      await client.connect();
+      return {
+         client,
+         drop: async () => {
+            await client.destroy();
+            await dropDatabase();
+         }
+      };
+   }
+};
+
+const quoted = (text: string) => `'${text.replaceAll('\'', '\'\'')}'`;
+const longText = 'àé\'"x'.repeat(4000); // 20000 characters: split in several literals
+const longBinary = Buffer.from(Array.from({ length: 20000 }, (_, i) => i % 256));
+
+const fileScenarios: Partial<Record<EngineName, Scenario & { schema: string; afterChecks: [string, unknown][]; /** The dump also runs on the database it created (DROP statements) */ rerun?: boolean }>> = {
+   sqlite: {
+      schema: 'main',
+      setup: [
+         'CREATE TABLE parent (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)',
+         `CREATE TABLE child (id INTEGER PRIMARY KEY, parent_id INTEGER REFERENCES parent (id), r REAL, big INTEGER, b BLOB,
+            t TEXT, anyv, g INTEGER GENERATED ALWAYS AS (id * 2) VIRTUAL)`,
+         'CREATE INDEX child_parent ON child (parent_id)',
+         'CREATE UNIQUE INDEX child_t ON child (t) WHERE t IS NOT NULL',
+         'INSERT INTO parent (name) VALUES (\'a\'), (\'it\'\'s\')',
+         'DELETE FROM parent WHERE id = 2',
+         `INSERT INTO child VALUES
+            (1, 1, 1.0, 9223372036854775807, x'00ff', ${quoted('line1\nline2 \'q\' "x" \\ ')}, 3.5),
+            (2, NULL, -0.5, -1, x'', '', 'text'),
+            (3, 1, 1e300, 0, NULL, NULL, x'01')`,
+         'CREATE VIEW v AS SELECT id, t FROM child',
+         'CREATE TRIGGER tr AFTER INSERT ON parent BEGIN UPDATE child SET t = t WHERE id = NEW.id; SELECT 1; END',
+         'CREATE VIRTUAL TABLE fts USING fts5(body)',
+         'INSERT INTO fts VALUES (\'hello world\')'
+      ],
+      checks: [
+         'SELECT id, parent_id, r, typeof(r) AS tr, CAST(big AS TEXT) AS big, hex(b) AS b, t, typeof(anyv) AS ta, CAST(anyv AS TEXT) AS anyv, g FROM child ORDER BY id',
+         'SELECT * FROM v ORDER BY id',
+         'SELECT name, seq FROM sqlite_sequence',
+         'SELECT type, name, tbl_name, sql FROM sqlite_master WHERE type IN (\'index\', \'trigger\', \'view\') ORDER BY name',
+         'SELECT body FROM fts WHERE fts MATCH \'hello\''
+      ],
+      afterChecks: [
+         ['INSERT INTO parent (name) VALUES (\'x\')', undefined],
+         ['SELECT MAX(id) AS id FROM parent', [{ id: 3 }]]
+      ],
+      includes: { views: true, triggers: true },
+      rerun: true
+   },
+   firebird: {
+      schema: 'it_export_src.fdb',
+      setup: [
+         'CREATE DOMAIN D_POSITIVE AS INTEGER CHECK (VALUE > 0)',
+         'CREATE SEQUENCE SEQ_A',
+         'SELECT NEXT VALUE FOR SEQ_A FROM RDB$DATABASE',
+         'SELECT NEXT VALUE FOR SEQ_A FROM RDB$DATABASE',
+         'CREATE EXCEPTION E_BAD \'it\'\'s bad\'',
+         'CREATE TABLE PARENT (A INTEGER NOT NULL, B INTEGER NOT NULL, CONSTRAINT PK_PARENT PRIMARY KEY (A, B))',
+         `CREATE TABLE CHILD (
+            ID INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+            PA INTEGER, PB INTEGER, P D_POSITIVE,
+            NAME VARCHAR(50) CHARACTER SET UTF8 COLLATE UNICODE_CI,
+            N NUMERIC(18, 4), BIG BIGINT, I128 INT128, DF DECFLOAT(34), F DOUBLE PRECISION,
+            TS TIMESTAMP, TSZ TIMESTAMP WITH TIME ZONE, D DATE, T TIME, FLAG BOOLEAN,
+            TXT BLOB SUB_TYPE TEXT, BIN BLOB SUB_TYPE BINARY, OCT CHAR(4) CHARACTER SET OCTETS,
+            CALC COMPUTED BY (PA * 2),
+            CONSTRAINT FK_CHILD FOREIGN KEY (PA, PB) REFERENCES PARENT (A, B) ON DELETE CASCADE,
+            CONSTRAINT CK_CHILD CHECK (PA > 0)
+         )`,
+         'COMMENT ON TABLE CHILD IS \'it\'\'s a child\'',
+         'CREATE DESCENDING INDEX IX_CHILD_NAME ON CHILD (NAME)',
+         'CREATE INDEX IX_CHILD_EXPR ON CHILD COMPUTED BY (UPPER(NAME))',
+         'INSERT INTO PARENT VALUES (1, 2)',
+         `INSERT INTO CHILD (PA, PB, P, NAME, N, BIG, I128, DF, F, TS, TSZ, D, T, FLAG, TXT, BIN, OCT) VALUES (
+            1, 2, 5, 'Àccent ''q''', 12345678901234.5678, 9223372036854775807, 170141183460469231731687303715884105727,
+            1.5E+300, 0.1, '2024-01-01 10:00:00.1234', '2024-01-01 10:00:00.1234 Europe/Rome', '2024-02-29', '23:59:59.9999', TRUE,
+            CAST(${quoted(longText.slice(0, 7000))} AS BLOB SUB_TYPE TEXT) || ${quoted(longText.slice(7000, 14000))} || ${quoted(longText.slice(14000))},
+            CAST(x'${longBinary.subarray(0, 10000).toString('hex')}' AS BLOB SUB_TYPE BINARY) || x'${longBinary.subarray(10000).toString('hex')}',
+            x'01020304'
+         )`,
+         'INSERT INTO CHILD (PA, PB) VALUES (1, 2)',
+         'CREATE VIEW V_BASE AS SELECT A, B FROM PARENT',
+         'CREATE VIEW V_TOP (A2) AS SELECT A FROM V_BASE',
+         'CREATE PROCEDURE P_SUM (X INTEGER) RETURNS (Y INTEGER) AS DECLARE C INTEGER; BEGIN SELECT COUNT(*) FROM V_TOP INTO :C; Y = X + C; SUSPEND; END',
+         'CREATE TRIGGER TR_CHILD FOR CHILD ACTIVE BEFORE INSERT OR UPDATE POSITION 5 AS BEGIN IF (NEW.NAME = \'bad\') THEN EXCEPTION E_BAD; END'
+      ],
+      checks: [
+         `SELECT ID, PA, PB, P, NAME, CAST(N AS VARCHAR(40)) AS N, CAST(BIG AS VARCHAR(40)) AS BIG, CAST(I128 AS VARCHAR(50)) AS I128,
+            CAST(DF AS VARCHAR(50)) AS DF, F, CAST(TS AS VARCHAR(40)) AS TS, CAST(TSZ AS VARCHAR(60)) AS TSZ, CAST(D AS VARCHAR(20)) AS D,
+            CAST(T AS VARCHAR(20)) AS T, FLAG, CHAR_LENGTH(TXT) AS TXT_LENGTH, CAST(HASH(TXT) AS VARCHAR(30)) AS TXT_HASH,
+            OCTET_LENGTH(BIN) AS BIN_LENGTH, CAST(HASH(BIN) AS VARCHAR(30)) AS BIN_HASH, OCT, CALC
+         FROM CHILD ORDER BY ID`,
+         'SELECT * FROM V_TOP',
+         'SELECT Y FROM P_SUM(1)',
+         `SELECT TRIM(RDB$INDEX_NAME) AS NAME, RDB$INDEX_TYPE AS DESCENDING, RDB$EXPRESSION_SOURCE AS EXPRESSION FROM RDB$INDICES
+         WHERE RDB$RELATION_NAME = 'CHILD' AND RDB$INDEX_NAME NOT STARTING WITH 'RDB$' ORDER BY 1`,
+         `SELECT TRIM(RDB$CONSTRAINT_NAME) AS NAME, TRIM(RDB$CONSTRAINT_TYPE) AS TYPE FROM RDB$RELATION_CONSTRAINTS
+         WHERE RDB$RELATION_NAME IN ('CHILD', 'PARENT') AND RDB$CONSTRAINT_NAME NOT STARTING WITH 'INTEG_' ORDER BY 1`,
+         'SELECT RDB$DESCRIPTION AS DESCRIPTION FROM RDB$RELATIONS WHERE RDB$RELATION_NAME = \'CHILD\'',
+         'SELECT TRIM(RDB$TRIGGER_NAME) AS NAME, RDB$TRIGGER_TYPE AS TYPE, RDB$TRIGGER_SEQUENCE AS POS FROM RDB$TRIGGERS WHERE RDB$TRIGGER_NAME = \'TR_CHILD\'',
+         'SELECT GEN_ID(SEQ_A, 0) AS SEQ FROM RDB$DATABASE'
+      ],
+      afterChecks: [
+         ['INSERT INTO CHILD (PA, PB) VALUES (1, 2)', undefined],
+         ['SELECT MAX(ID) AS ID FROM CHILD', [{ ID: 3 }]],
+         ['SELECT NEXT VALUE FOR SEQ_A AS SEQ FROM RDB$DATABASE', [{ SEQ: 3 }]]
+      ],
+      includes: { views: true, triggers: true, routines: true }
+   }
+};
+
+for (const engine of getTestEngines().filter(e => fileScenarios[e.name])) {
+   describe.sequential(`${engine.name} export → import`, () => {
+      const scenario = fileScenarios[engine.name];
+      const file = path.join(os.tmpdir(), `antares-it-dump-${engine.name}-${process.pid}.sql`);
+      const databases: FileDatabase[] = [];
+
+      afterAll(async () => {
+         for (const database of databases) await database.drop();
+         if (!process.env.ANTARES_KEEP_DUMPS) fs.rmSync(file, { force: true });
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const runChecks = async (client: any) => {
+         const results = [];
+         for (const sql of scenario.checks)
+            results.push(JSON.parse(JSON.stringify((await client.raw(sql)).rows)));
+         return results;
+      };
+
+      it('exports a database and runs the dump on a new one', async () => {
+         const source = await fileDatabases[engine.name](SRC);
+         databases.push(source);
+         for (const sql of scenario.setup)
+            await source.client.raw(sql, { split: false });
+
+         const expected = await runChecks(source.client);
+
+         const structure = await source.client.getStructure(new Set([scenario.schema]));
+         const tables = structure[0].tables
+            .filter((t: { type: string }) => t.type === 'table')
+            .map((t: { name: string }) => ({ table: t.name, includeStructure: true, includeContent: true, includeDropStatement: true }));
+         const exporter = getEngine(engine.name).createExporter(source.client, tables, {
+            schema: scenario.schema,
+            tables,
+            includes: scenario.includes,
+            outputFormat: 'sql',
+            outputFile: file,
+            sqlInsertAfter: 2,
+            sqlInsertDivider: 'rows'
+         });
+         const exported = waitFor(exporter);
+         exporter.run().catch((): null => null);
+         await exported;
+
+         const target = await fileDatabases[engine.name](DST);
+         databases.push(target);
+         const dump = fs.readFileSync(file, 'utf8');
+         await target.client.raw(dump);
+         if (scenario.rerun) await target.client.raw(dump);
+
+         expect(await runChecks(target.client)).toEqual(expected);
+
+         for (const [sql, result] of scenario.afterChecks) {
+            const { rows } = await target.client.raw(sql);
+            if (result !== undefined) expect(JSON.parse(JSON.stringify(rows))).toEqual(result);
+         }
+      }, 120000);
    });
 }

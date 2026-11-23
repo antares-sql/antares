@@ -108,11 +108,24 @@ export function removeComments (sql: string, dbType: ClientCode = 'pg'): string 
 const ROUTINE_START = /^\s*(?:CREATE|ALTER|RECREATE)\b[\s\S]*?\b(?:PROCEDURE|FUNCTION|TRIGGER|EVENT|PACKAGE)\b|^\s*EXECUTE\s+BLOCK\b/i;
 /** END of a MySQL flow control statement: its opening keyword is not counted */
 const END_OF_CONTROL_FLOW = /^\s+(?:IF|LOOP|WHILE|REPEAT|FOR)\b/i;
+/** isql command changing the statement terminator of Firebird scripts: SET TERM ^ ; ... SET TERM ; ^ */
+const SET_TERM = /^SET\s+TERM\s+(\S+)$/i;
+
+/** Tokens of a code segment: words, the statement terminator, semicolons and other characters */
+function tokenizer (terminator: string) {
+   if (terminator === ';')
+      return /[A-Za-z_][\w$]*|;|[^A-Za-z_;]+/g;
+
+   const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\-]/g, '\\$&');
+   return new RegExp(`${escape(terminator)}|[A-Za-z_][\\w$]*|;|[^A-Za-z_;${escape(terminator[0])}]+|[\\s\\S]`, 'g');
+}
 
 /**
  * Splits a script into statements on semicolons outside strings, identifiers, comments,
  * PostgreSQL dollar quotes and BEGIN ... END blocks of routines. Each statement is the original
  * text, trimmed, with its semicolon; statements made only of comments are left out.
+ * Firebird scripts can change the terminator with the isql SET TERM command: statements then end
+ * only at the new terminator, which is removed (the SET TERM commands are not returned).
  */
 export function querySplitter (sql: string, dbType: ClientCode): string[] {
    const statements: string[] = [];
@@ -123,10 +136,19 @@ export function querySplitter (sql: string, dbType: ClientCode): string[] {
    let depth = 0;
    let previousWord = '';
    let bodyStarted = false;
+   let terminator = ';';
 
    const endStatement = (end: number) => {
-      const text = sql.slice(statementStart, end).trim();
-      if (hasContent && text) statements.push(text);
+      let text = sql.slice(statementStart, end).trim();
+      let command = text.replace(/;$/, '').trim(); // Without the terminator
+      if (terminator !== ';' && text.endsWith(terminator))
+         command = text = text.slice(0, -terminator.length).trim();
+
+      const setTerm = dbType === 'firebird' ? SET_TERM.exec(removeComments(command, dbType).trim()) : null;
+      if (setTerm)
+         terminator = setTerm[1];
+      else if (hasContent && text)
+         statements.push(text);
       statementStart = end;
       statementCode = '';
       hasContent = false;
@@ -146,20 +168,42 @@ export function querySplitter (sql: string, dbType: ClientCode): string[] {
          continue;
       }
 
-      const tokens = /[A-Za-z_][\w$]*|;|[^A-Za-z_;]+/g;
       const text = sql.slice(segment.start, segment.end);
+      let tokens = tokenizer(terminator);
       let match: RegExpExecArray;
+
+      // After a SET TERM the tokens are read with the new terminator
+      const endAt = (end: number) => {
+         const previous = terminator;
+         endStatement(end);
+         if (terminator !== previous) {
+            const lastIndex = tokens.lastIndex;
+            tokens = tokenizer(terminator);
+            tokens.lastIndex = lastIndex;
+         }
+      };
 
       while ((match = tokens.exec(text))) {
          const token = match[0];
          const position = segment.start + match.index;
+
+         if (terminator !== ';') {
+            if (token === terminator) {
+               endAt(position + token.length);
+               continue;
+            }
+            if (token === ';') { // A plain character until the default terminator is restored
+               statementCode += token;
+               continue;
+            }
+         }
 
          if (token === ';') {
             if (depth > 0 || isInFirebirdDeclarations()) {
                statementCode += token;
                continue;
             }
-            endStatement(position + 1);
+            endAt(position + 1);
             continue;
          }
 

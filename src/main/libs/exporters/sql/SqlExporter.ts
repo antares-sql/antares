@@ -16,7 +16,7 @@ export interface DataColumn {
 /** Plain numbers can be written without quotes */
 export const NUMERIC_LITERAL = /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/;
 
-type ExtraItem = 'functions' | 'views' | 'triggers' | 'routines' | 'schedulers';
+export type ExtraItem = 'functions' | 'views' | 'triggers' | 'routines' | 'schedulers';
 
 /**
  * SQL dump: header, tables (drop, structure, data), SQL to run after the tables (foreign keys,
@@ -29,6 +29,10 @@ export abstract class SqlExporter extends BaseExporter {
    protected _postTablesSql = '';
    /** Rows of an INSERT ... VALUES statement can be grouped (sqlInsertAfter / sqlInsertDivider options) */
    protected _multiRowInsert = true;
+   /** Order of the extra items in the dump */
+   protected _extraItemsOrder: ExtraItem[] = ['functions', 'views', 'triggers', 'routines', 'schedulers'];
+   /** SQL to execute after the extra items */
+   protected _postExtrasSql = '';
 
    get schemaName () {
       return this._options.schema;
@@ -50,7 +54,7 @@ export abstract class SqlExporter extends BaseExporter {
       await this.prepare();
 
       const { includes } = this._options;
-      const extraItems = Object.keys(includes).filter(key => includes[key]) as ExtraItem[];
+      const extraItems = this._extraItemsOrder.filter(key => includes[key]);
       const totalTableToProcess = this._tables.filter(
          t => t.includeStructure || t.includeContent || t.includeDropStatement
       ).length;
@@ -139,6 +143,11 @@ export abstract class SqlExporter extends BaseExporter {
             await this.writeString(data);
             await this.writeString('\n\n');
          }
+      }
+
+      if (this._postExtrasSql) {
+         await this.writeString(this._postExtrasSql);
+         await this.writeString('\n\n');
       }
 
       const footer = await this.getFooter();

@@ -67,6 +67,34 @@ END;`;
       expect(querySplitter(`${anonymous} SELECT 1;`, 'maria')).toEqual([anonymous, 'SELECT 1;']);
    });
 
+   it('follows the isql SET TERM command of Firebird scripts', () => {
+      const script = `CREATE TABLE t (a INT);
+-- PSQL
+SET TERM ^ ;
+CREATE TRIGGER trg FOR t BEFORE INSERT AS
+DECLARE x INT;
+BEGIN
+   x = 1; -- ^ in a comment
+   NEW.a = '^';
+END^
+EXECUTE BLOCK AS BEGIN END^
+SET TERM ; ^
+INSERT INTO t VALUES (1);`;
+
+      expect(querySplitter(script, 'firebird')).toEqual([
+         'CREATE TABLE t (a INT);',
+         'CREATE TRIGGER trg FOR t BEFORE INSERT AS\nDECLARE x INT;\nBEGIN\n   x = 1; -- ^ in a comment\n   NEW.a = \'^\';\nEND',
+         'EXECUTE BLOCK AS BEGIN END',
+         'INSERT INTO t VALUES (1);'
+      ]);
+
+      expect(querySplitter('SET TERM !! ;\nSELECT 1 FROM RDB$DATABASE!!\nSET TERM ; !!\nSELECT 2 FROM RDB$DATABASE;', 'firebird'))
+         .toEqual(['SELECT 1 FROM RDB$DATABASE', 'SELECT 2 FROM RDB$DATABASE;']);
+
+      // Not an isql command for other engines
+      expect(querySplitter('SET TERM ^ ;', 'pg')).toEqual(['SET TERM ^ ;']);
+   });
+
    // #1025: nothing in a single statement must be changed
    it('keeps a nested subquery intact', () => {
       const sql = `SELECT CONCAT('Prefix ', GROUP_CONCAT(sub.id SEPARATOR ' '))
