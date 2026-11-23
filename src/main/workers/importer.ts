@@ -1,17 +1,13 @@
 import SSHConfig from '@fabio286/ssh2-promise/lib/sshConfig';
 import * as antares from 'common/interfaces/antares';
 import { ImportOptions } from 'common/interfaces/importer';
-import * as log from 'electron-log/main';
 import * as mysql from 'mysql2';
 import * as pg from 'pg';
 import { parentPort } from 'worker_threads';
 
 import { createClient, getEngine } from '../libs/db/EngineRegistry';
+import log from './workerLog';
 let importer: antares.Importer;
-
-log.transports.file.fileName = 'workers.log';
-log.transports.console = null;
-log.errorHandler.startCatching();
 
 /**
  * Closes the database connection and lets the thread exit by itself: terminating a thread with open

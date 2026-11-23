@@ -1,5 +1,5 @@
 import * as workers from 'common/interfaces/workers';
-import { dialog, ipcMain } from 'electron';
+import { app, dialog, ipcMain } from 'electron';
 import * as fs from 'fs';
 import { Worker } from 'worker_threads';
 
@@ -7,6 +7,9 @@ import { DatabaseClient, requireCapability } from '../libs/db/core/contracts';
 import { getSchemaDiagram } from '../libs/db/core/schemaDiagram';
 import { validateSender } from '../libs/misc/validateSender';
 import { createHandle, IpcMainLike } from './handle';
+
+/** Workers can't load `electron`: what they need from it comes from here */
+const getWorkerData = (): workers.WorkerData => ({ logsPath: app.getPath('logs') });
 
 export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = ipcMain) => {
    const handle = createHandle(ipc);
@@ -158,7 +161,7 @@ export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = 
             // Init exporter thread
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            const worker: Worker = new Worker(new URL('../workers/exporter', import.meta.url));
+            const worker: Worker = new Worker(new URL('../workers/exporter', import.meta.url), { workerData: getWorkerData() });
             exporter = worker;
             // Events of this worker must not touch a newer one started in the meantime
             const release = () => {
@@ -252,7 +255,7 @@ export default (connections: Record<string, DatabaseClient>, ipc: IpcMainLike = 
             // Init importer thread
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            const worker: Worker = new Worker(new URL('../workers/importer', import.meta.url));
+            const worker: Worker = new Worker(new URL('../workers/importer', import.meta.url), { workerData: getWorkerData() });
             importer = worker;
             // Events of this worker must not touch a newer one started in the meantime
             const release = () => {

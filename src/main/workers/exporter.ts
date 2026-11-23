@@ -1,13 +1,9 @@
 import * as antares from 'common/interfaces/antares';
-import * as log from 'electron-log/main';
 import { parentPort } from 'worker_threads';
 
 import { createClient, getEngine } from '../libs/db/EngineRegistry';
+import log from './workerLog';
 let exporter: antares.Exporter;
-
-log.transports.file.fileName = 'workers.log';
-log.transports.console = null;
-log.errorHandler.startCatching();
 
 /**
  * Closes the database connection and lets the thread exit by itself: terminating a thread with open
