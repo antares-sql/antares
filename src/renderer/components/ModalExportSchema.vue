@@ -259,10 +259,16 @@
                   </div>
                </div>
                <div class="column col-auto px-0">
-                  <button class="btn btn-link mr-2" @click.stop="closeModal">
+                  <button
+                     class="btn mr-2"
+                     :class="isExported ? 'btn-primary' : 'btn-link'"
+                     @click.stop="closeModal"
+                  >
                      {{ t('general.close') }}
                   </button>
+                  <!-- Hidden after a completed export: a second click would overwrite the file -->
                   <button
+                     v-if="!isExported"
                      class="btn btn-primary mr-2"
                      :class="{'loading': isExporting}"
                      :disabled="isExporting || isRefreshing"
@@ -317,6 +323,8 @@ const {
 const { selectedTable, selectedSchema } = storeToRefs(schemaExportStore);
 
 const isExporting = ref(false);
+/** The export completed: only the close button is left */
+const isExported = ref(false);
 const isRefreshing = ref(false);
 const progressPercentage = ref(0);
 const progressStatus = ref('');
@@ -381,8 +389,10 @@ const startExport = async () => {
    try {
       const { status, response } = await Schema.export(params);
 
-      if (status === 'success')
+      if (status === 'success') {
          progressStatus.value = response.cancelled ? t('general.aborted') : t('general.completed');
+         isExported.value = !response.cancelled;
+      }
       else {
          progressStatus.value = response;
          addNotification({ status: 'error', message: response });
