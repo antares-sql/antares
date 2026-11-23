@@ -36,6 +36,13 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
       560: 'TIME',
       570: 'DATE',
       580: 'BIGINT',
+      32748: 'TIMESTAMP WITH TIME ZONE', // >= 4.0 (extended format)
+      32750: 'TIME WITH TIME ZONE', // >= 4.0 (extended format)
+      32752: 'INT128', // >= 4.0
+      32754: 'TIMESTAMP WITH TIME ZONE', // >= 4.0
+      32756: 'TIME WITH TIME ZONE', // >= 4.0
+      32760: 'DECFLOAT', // >= 4.0 DECFLOAT(16)
+      32762: 'DECFLOAT', // >= 4.0 DECFLOAT(34)
       32764: 'BOOLEAN', // >= 3.0
       32766: 'NULL' // >= 2.5
    }
@@ -48,7 +55,7 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
    }
 
    private _getType (type: string, subType?: number) {
-      let fieldType = type.trim();
+      let fieldType = type?.trim() ?? 'UNKNOWN';
 
       if ([...NUMBER, ...FLOAT].includes(fieldType)) {
          if (subType === 1)
@@ -904,8 +911,12 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
                   queryResult = await new Promise<unknown[]>((resolve, reject) => {
                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
                      (connection as any).query(query, [], async (err: any, res: any, fields: FieldData[]) => { // <- fields is not natively typed or documented
-                        if (err) reject(err);
-                        else {
+                        if (err) {
+                           reject(err);
+                           return;
+                        }
+
+                        try { // An error here would leave the query pending forever
                            const remappedResponse = [];
                            // Array rows: object rows would lose columns with the same name
                            const aliases = fields ? uniqueColumnNames(fields.map(field => field.alias)) : [];
@@ -961,6 +972,9 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
                            }
 
                            resolve(fields ? arrayRowsToObjects(remappedResponse, aliases) : remappedResponse);
+                        }
+                        catch (error) {
+                           reject(error);
                         }
                      }, { asObject: false });
                   });
