@@ -549,6 +549,15 @@ code.sql {
   outline-offset: 1px;
 }
 
+/*
+ * With a pointer, hide the browser default focus ring too: Chromium draws it on clicked icons with
+ * v-button (on svg it matches :focus, not only :focus-visible) and on elements focused by script after
+ * a click (e.g. the first context menu item), also because it counts Shift/Ctrl+click as keyboard use
+ */
+:root[data-input-modality="pointer"] :focus:not(input, textarea, select, .form-input, .form-select, .cm-content, .cm-editor, .td, [role="dialog"]) {
+  outline: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
