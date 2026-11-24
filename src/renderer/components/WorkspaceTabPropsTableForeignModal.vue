@@ -4,7 +4,7 @@
       size="medium"
       class="options-modal"
       @confirm="confirmForeignsChange"
-      @hide="$emit('hide')"
+      @hide="requestHide"
    >
       <template #header>
          <div class="d-flex">
@@ -54,7 +54,10 @@
                         @click="selectForeign($event, foreign._antares_id)"
                      >
                         <div class="tile-icon">
-                           <div>
+                           <div
+                              :class="{ 'badge': isItemChanged(foreign) }"
+                              :title="isItemChanged(foreign) ? t('application.unsavedChanges') : null"
+                           >
                               <BaseIcon
                                  class="mr-1 mt-1"
                                  icon-name="key+arrow"
@@ -222,12 +225,18 @@
                </div>
             </div>
          </div>
+         <ModalDiscardChanges
+            v-if="isDiscardModal"
+            :message="t('application.discardUnsavedWindowChanges')"
+            @confirm="emit('hide')"
+            @close="isDiscardModal = false"
+         />
       </template>
    </ConfirmModal>
 </template>
 
 <script setup lang="ts">
-import { TableField } from 'common/interfaces/antares';
+import { TableField, TableForeign } from 'common/interfaces/antares';
 import { uidGen } from 'common/libs/uidGen';
 import { computed, onMounted, onUnmounted, Prop, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -235,6 +244,8 @@ import { useI18n } from 'vue-i18n';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import ModalDiscardChanges from '@/components/ModalDiscardChanges.vue';
+import { useUnconfirmedChanges } from '@/composables/useUnconfirmedChanges';
 import Tables from '@/ipc-api/Tables';
 import { useNotificationsStore } from '@/stores/notifications';
 
@@ -255,16 +266,18 @@ const emit = defineEmits(['foreigns-update', 'hide']);
 const { addNotification } = useNotificationsStore();
 
 const indexesPanel: Ref<HTMLDivElement> = ref(null);
-const foreignProxy = ref([]);
+const foreignProxy: Ref<TableForeign[]> = ref([]);
 const selectedForeignID = ref('');
 const modalInnerHeight = ref(400);
 const refFields = ref({} as Record<string, TableField[]>);
 
 const foreignActions = computed(() => props.workspace.customizations.foreignActions);
 const selectedForeignObj = computed(() => foreignProxy.value.find(foreign => foreign._antares_id === selectedForeignID.value));
-const isChanged = computed(() => JSON.stringify(props.localKeyUsage) !== JSON.stringify(foreignProxy.value));
+const { isChanged, isDiscardModal, isItemChanged, markConfirmed, requestHide } =
+   useUnconfirmedChanges(() => props.localKeyUsage as TableForeign[], foreignProxy, () => emit('hide'));
 
 const confirmForeignsChange = () => {
+   markConfirmed();
    foreignProxy.value = foreignProxy.value.filter(foreign =>
       foreign.field &&
       foreign.refField &&

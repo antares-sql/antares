@@ -426,6 +426,7 @@ export const enUS = {
       openNewTab: 'Open a new tab',
       unsavedChanges: 'Unsaved changes',
       discardUnsavedChanges: 'You have some unsaved changes. Closing this tab these changes will be discarded.',
+      discardUnsavedWindowChanges: 'You have some unsaved changes. Closing this window these changes will be discarded.',
       applicationTheme: 'Application Theme',
       themesHint: 'A theme sets the colors of the interface and of the code editor.',
       importTheme: 'Import from file',
