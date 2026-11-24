@@ -1,4 +1,4 @@
-import { ARRAY, BIT, BLOB, BOOLEAN, FLOAT, LONG_TEXT, NUMBER, TEXT, TEXT_SEARCH } from 'common/fieldTypes';
+import { ARRAY, BIT, BLOB, BOOLEAN, FLOAT, LONG_TEXT, NUMBER, STRUCTURED_TEXT, TEXT, TEXT_SEARCH } from 'common/fieldTypes';
 
 import { QueryDialect } from './QueryDialect';
 
@@ -31,7 +31,7 @@ export function formatValue (
    if ([...NUMBER, ...FLOAT].includes(type))
       return { sql: String(value), reload: false };
 
-   if ([...TEXT, ...LONG_TEXT].includes(type))
+   if ([...TEXT, ...LONG_TEXT, ...STRUCTURED_TEXT].includes(type))
       return { sql: dialect.quoteString(String(value)), reload: false };
 
    if (ARRAY.includes(type)) // PostgreSQL array literal, e.g. {1,2,3}

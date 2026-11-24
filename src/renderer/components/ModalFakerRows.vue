@@ -106,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { BIT, BLOB, DATE, DATETIME, FLOAT, LONG_TEXT, NUMBER, TEXT, TIME } from 'common/fieldTypes';
+import { BIT, BLOB, DATE, DATETIME, FLOAT, LONG_TEXT, NUMBER, STRUCTURED_TEXT, TEXT, TIME } from 'common/fieldTypes';
 import { TableField, TableForeign } from 'common/interfaces/antares';
 import * as moment from 'moment';
 import { storeToRefs } from 'pinia';
@@ -264,7 +264,7 @@ const closeModal = () => {
 };
 
 const fieldLength = (field: TableField) => {
-   if ([...BLOB, ...LONG_TEXT].includes(field.type)) return null;
+   if ([...BLOB, ...LONG_TEXT, ...STRUCTURED_TEXT].includes(field.type)) return null;
    else if (TEXT.includes(field.type)) return Number(field.charLength);
    return Number(field.length);
 };
@@ -311,7 +311,7 @@ onMounted(() => {
          else {
             if ([...NUMBER, ...FLOAT].includes(field.type))
                fieldDefault = !field.default || Number.isNaN(+field.default.replaceAll('\'', '')) ? null : +field.default.replaceAll('\'', '');
-            else if ([...TEXT, ...LONG_TEXT].includes(field.type)) {
+            else if ([...TEXT, ...LONG_TEXT, ...STRUCTURED_TEXT].includes(field.type)) {
                fieldDefault = field.default
                   ? field.default.includes('\'')
                      ? field.default.split('\'')[1]
@@ -349,7 +349,7 @@ onMounted(() => {
       for (const field of props.fields) {
          if (typeof props.rowToDuplicate[field.name] !== 'object')
             rowObj[field.name] = { value: props.rowToDuplicate[field.name] };
-         else if (field.type === 'JSON')
+         else if (STRUCTURED_TEXT.includes(field.type))
             rowObj[field.name] = { value: JSON.stringify(props.rowToDuplicate[field.name]) };
 
          if (field.autoIncrement || !!field.onUpdate)// Disable by default auto increment or "on update" fields

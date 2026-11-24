@@ -2,6 +2,7 @@
  * Editing and deleting result rows through the real IPC handlers, with rows that went to the renderer
  * and came back like the UI sends them (JSON-cloned by unproxify).
  */
+import { LONG_TEXT, STRUCTURED_TEXT } from 'common/fieldTypes';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import tables from '../../src/main/ipc-handlers/tables';
@@ -16,6 +17,15 @@ const binaryKey: Partial<Record<EngineName, string>> = {
    maria: 'BINARY(16)',
    pg: 'BYTEA',
    sqlite: 'BLOB'
+};
+
+/** Columns with a syntax of their own (name → type) per engine */
+const structuredColumns: Record<EngineName, Record<string, string>> = {
+   mysql: { j: 'JSON' },
+   maria: { j: 'JSON' },
+   pg: { j: 'JSON', jb: 'JSONB', x: 'XML' },
+   sqlite: { j: 'JSON' },
+   firebird: { j: 'BLOB SUB_TYPE TEXT' }
 };
 
 const asRendererSendsIt = <T>(value: T): T => JSON.parse(JSON.stringify(value));
@@ -146,6 +156,46 @@ for (const engine of getTestEngines()) {
          expect(byRow).toMatchObject({ status: 'success' });
 
          expect(await labels()).toEqual([]);
+      });
+
+      // JSONB and XML were edited inline as plain strings instead of in the editor modal
+      it('edits structured text columns in the editor modal', async () => {
+         const docTable = engine.name === 'firebird' ? q(`${TABLE}_docs`) : `${q(schema)}.${q(`${TABLE}_docs`)}`;
+         const columns = structuredColumns[engine.name];
+         try {
+            await client.raw(`DROP TABLE ${docTable}`).catch((): null => null);
+            const defs = Object.entries(columns).map(([name, type]) => `${q(name)} ${type}`).join(', ');
+            await client.raw(`CREATE TABLE ${docTable} (${q('id')} INTEGER NOT NULL PRIMARY KEY, ${defs})`);
+            await client.raw(`INSERT INTO ${docTable} (${q('id')}) VALUES (1)`);
+
+            const read = async () => {
+               const result = await client.raw(`SELECT * FROM ${docTable}`, { nest: true, details: true, schema, autocommit: true });
+               return result as { rows: Record<string, unknown>[]; fields: { name: string; type: string }[] };
+            };
+
+            const { fields } = await read();
+            for (const name of Object.keys(columns)) {
+               // The type the renderer receives must open the editor modal
+               const { type } = fields.find(field => field.name === name);
+               expect([...LONG_TEXT, ...STRUCTURED_TEXT], `${name}: ${type}`).toContain(type);
+
+               const content = name === 'x' ? '<a>it\'s</a>' : '{"a": "it\'s", "b": [1, 2]}';
+               const result = await ipc.invoke('update-table-cell', {
+                  uid, schema, table: `${TABLE}_docs`, primary: 'id', id: 1, field: name, type, content, row: {}, orgRow: {}
+               });
+               expect(result).toMatchObject({ status: 'success' });
+            }
+
+            const [row] = (await read()).rows;
+            for (const name of Object.keys(columns)) {
+               const value = Object.entries(row).find(([key]) => key.endsWith(name))[1];
+               if (name === 'x') expect(value).toBe('<a>it\'s</a>');
+               else expect(typeof value === 'string' ? JSON.parse(value) : value).toEqual({ a: 'it\'s', b: [1, 2] });
+            }
+         }
+         finally {
+            await client.raw(`DROP TABLE ${docTable}`).catch((): null => null);
+         }
       });
    });
 }

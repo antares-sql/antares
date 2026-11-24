@@ -278,7 +278,7 @@
 
 <script setup lang="ts">
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BLOB, DATE, DATETIME, LONG_TEXT, TEXT, TIME } from 'common/fieldTypes';
+import { BLOB, DATE, DATETIME, LONG_TEXT, STRUCTURED_TEXT, TEXT, TIME } from 'common/fieldTypes';
 import { QueryForeign, QueryResult, TableField } from 'common/interfaces/antares';
 import { TableUpdateParams } from 'common/interfaces/tableApis';
 import { fakerCustom } from 'common/libs/fakerCustom';
@@ -464,7 +464,7 @@ const fieldsObj = computed(() => {
 });
 
 const fieldLength = (field: TableField) => {
-   if ([...BLOB, ...LONG_TEXT].includes(field.type)) return null;
+   if ([...BLOB, ...LONG_TEXT, ...STRUCTURED_TEXT].includes(field.type)) return null;
    else if (TEXT.includes(field.type)) return field.charLength;
    else if (field.numScale) return `${field.numPrecision}, ${field.numScale}`;
    return field.length;

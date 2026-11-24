@@ -83,7 +83,7 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
       if (name === 'BLOB') {
          switch (length) {
             case 765:
-               name = 'TYNITEXT';
+               name = 'TINYTEXT';
                break;
             case 196605:
                name = 'TEXT';

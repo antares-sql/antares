@@ -59,6 +59,13 @@ describe('formatValue', () => {
    it('quotes text with the dialect', () => {
       expect(format('VARCHAR', 'it\'s').sql).toBe('\'it\'\'s\'');
       expect(format('TEXT', 'x').sql).toBe('\'x\'');
+      expect(format('TINYTEXT', 'x').sql).toBe('\'x\'');
+   });
+
+   it('quotes structured text (JSON, JSONB, XML)', () => {
+      expect(format('JSONB', '{"a":"it\'s"}').sql).toBe('\'{"a":"it\'\'s"}\'');
+      expect(format('JSON', '[1,2]').sql).toBe('\'[1,2]\'');
+      expect(format('XML', '<a/>').sql).toBe('\'<a/>\'');
    });
 
    it('reads BLOB files through the injected reader and asks for a reload', () => {

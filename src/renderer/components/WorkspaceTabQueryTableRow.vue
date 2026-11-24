@@ -240,6 +240,7 @@ import {
    LONG_TEXT,
    NUMBER,
    SPATIAL,
+   STRUCTURED_TEXT,
    TEXT,
    TEXT_SEARCH,
    TIME } from 'common/fieldTypes';
@@ -310,7 +311,7 @@ const availableLanguages = ref([
 ]);
 
 const inputProps = computed(() => {
-   if ([...TEXT, ...LONG_TEXT].includes(editingType.value))
+   if ([...TEXT, ...LONG_TEXT, ...STRUCTURED_TEXT].includes(editingType.value))
       return { type: 'text', mask: false };
 
    if ([...NUMBER, ...FLOAT].includes(editingType.value)) {
@@ -430,7 +431,7 @@ const editON = async (field: string) => {
    editingField.value = field;
    editingLength.value = props.fields[field].length;
 
-   if ([...LONG_TEXT, ...ARRAY, ...TEXT_SEARCH].includes(type)) {
+   if ([...LONG_TEXT, ...STRUCTURED_TEXT, ...ARRAY, ...TEXT_SEARCH].includes(type)) {
       isTextareaEditor.value = true;
       editingContent.value = typeFormat(content, type);
       emit('start-editing', field);
@@ -682,8 +683,11 @@ watch(() => props.fields, () => {
 });
 
 watch(isTextareaEditor, (val) => {
-   if (val)
-      editorMode.value = langDetector(editingContent.value);
+   if (!val) return;
+   // The language of structured types is known even when the cell is empty
+   if (editingType.value === 'XML') editorMode.value = 'xml';
+   else if (STRUCTURED_TEXT.includes(editingType.value)) editorMode.value = 'json';
+   else editorMode.value = langDetector(editingContent.value);
 });
 
 watch(() => props.selected, (isSelected) => {

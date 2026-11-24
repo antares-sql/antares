@@ -7,11 +7,22 @@ export const TEXT = [
 
 export const LONG_TEXT = [
    'TEXT',
+   'TINYTEXT',
    'MEDIUMTEXT',
    'LONGTEXT',
-   'JSON',
+   'CLOB',
    'VARBINARY',
    'BLOB-TEXT'
+];
+
+/**
+ * Text with its own syntax (MySQL/SQLite JSON, PostgreSQL JSON/JSONB/XML): edited in the editor modal
+ * like LONG_TEXT, but not filled with random text by faker nor used as a label of foreign keys
+ */
+export const STRUCTURED_TEXT = [
+   'JSON',
+   'JSONB',
+   'XML'
 ];
 
 export const ARRAY = [
