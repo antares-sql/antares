@@ -567,6 +567,14 @@ const updateField = (payload: { field: string; key?: string; type: string; conte
 
 const closeContext = () => {
    isContext.value = false;
+
+   // After a mouse click on a menu item the focus is lost: give it back to the grid, so that
+   // the shortcuts keep working and a click elsewhere clears the selection as before
+   nextTick(() => {
+      const active = document.activeElement;
+      if (!isDeleteConfirmModal.value && (!active || active === document.body))
+         tableWrapper.value?.focus({ preventScroll: true });
+   });
 };
 
 /**
@@ -914,6 +922,9 @@ const selectAllRows = (e: KeyboardEvent) => {
 };
 
 const deselectRows = (e: Event) => {
+   // The context menu takes the focus when it opens: its actions work on the current selection
+   if (e.type === 'blur' && isContext.value) return;
+
    if (!isEditingRow.value) {
       if (!isDeleteConfirmModal.value)
          selectedRows.value = [];
