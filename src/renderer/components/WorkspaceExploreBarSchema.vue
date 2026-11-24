@@ -1,6 +1,7 @@
 <template>
    <details ref="schemaAccordion" class="accordion workspace-explorebar-database">
       <summary
+         tabindex="-1"
          class="accordion-header database-name"
          :class="{'text-bold': breadcrumbs.schema === database.name}"
          @click="selectSchema(database.name)"
@@ -40,6 +41,8 @@
                   v-for="table of filteredTables"
                   :key="table.name"
                   class="menu-item"
+                  tabindex="-1"
+                  data-tree-item
                   :class="{'selected': breadcrumbs.schema === database.name && [breadcrumbs.table, breadcrumbs.view].includes(table.name)}"
                   @mousedown.left="selectTable({schema: database.name, table})"
                   @dblclick="openDataTab({schema: database.name, table})"
@@ -70,6 +73,7 @@
          <div v-if="filteredViews.length" class="database-misc">
             <details class="accordion">
                <summary
+                  tabindex="-1"
                   class="accordion-header misc-name"
                   :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.trigger}"
                   @contextmenu.prevent="showMiscFolderContext($event, 'view')"
@@ -93,6 +97,8 @@
                            v-for="view of filteredViews"
                            :key="view.name"
                            class="menu-item"
+                           tabindex="-1"
+                           data-tree-item
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.view === view.name}"
                            @mousedown.left="selectTable({schema: database.name, table: view})"
                            @dblclick="openDataTab({schema: database.name, table: view})"
@@ -119,6 +125,7 @@
          <div v-if="filteredMatViews.length && customizations.materializedViews" class="database-misc">
             <details class="accordion">
                <summary
+                  tabindex="-1"
                   class="accordion-header misc-name"
                   :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.trigger}"
                   @contextmenu.prevent="showMiscFolderContext($event, 'materializedView')"
@@ -142,6 +149,8 @@
                            v-for="view of filteredMatViews"
                            :key="view.name"
                            class="menu-item"
+                           tabindex="-1"
+                           data-tree-item
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.view === view.name}"
                            @mousedown.left="selectTable({schema: database.name, table: view})"
                            @dblclick="openDataTab({schema: database.name, table: view})"
@@ -168,6 +177,7 @@
          <div v-if="filteredTriggers.length && customizations.triggers" class="database-misc">
             <details class="accordion">
                <summary
+                  tabindex="-1"
                   class="accordion-header misc-name"
                   :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.trigger}"
                   @contextmenu.prevent="showMiscFolderContext($event, 'trigger')"
@@ -191,6 +201,8 @@
                            v-for="trigger of filteredTriggers"
                            :key="trigger.name"
                            class="menu-item"
+                           tabindex="-1"
+                           data-tree-item
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.trigger === trigger.name}"
                            @mousedown.left="selectMisc({schema: database.name, misc: trigger, type: 'trigger'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: trigger, type: 'trigger'})"
@@ -228,6 +240,7 @@
          <div v-if="filteredProcedures.length && customizations.routines" class="database-misc">
             <details class="accordion">
                <summary
+                  tabindex="-1"
                   class="accordion-header misc-name"
                   :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.routine}"
                   @contextmenu.prevent="showMiscFolderContext($event, 'routine')"
@@ -251,6 +264,8 @@
                            v-for="(routine, i) of filteredProcedures"
                            :key="`${routine.name}-${i}`"
                            class="menu-item"
+                           tabindex="-1"
+                           data-tree-item
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.routine === routine.name}"
                            @mousedown.left="selectMisc({schema: database.name, misc: routine, type: 'routine'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: routine, type: 'routine'})"
@@ -275,6 +290,7 @@
          <div v-if="filteredTriggerFunctions.length && customizations.triggerFunctions" class="database-misc">
             <details class="accordion">
                <summary
+                  tabindex="-1"
                   class="accordion-header misc-name"
                   :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.triggerFunction}"
                   @contextmenu.prevent="showMiscFolderContext($event, 'triggerFunction')"
@@ -299,6 +315,8 @@
                            v-for="(func, i) of filteredTriggerFunctions"
                            :key="`${func.name}-${i}`"
                            class="menu-item"
+                           tabindex="-1"
+                           data-tree-item
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.triggerFunction === func.name}"
                            @mousedown.left="selectMisc({schema: database.name, misc: func, type: 'triggerFunction'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: func, type: 'triggerFunction'})"
@@ -322,6 +340,7 @@
          <div v-if="filteredFunctions.length && customizations.functions" class="database-misc">
             <details class="accordion">
                <summary
+                  tabindex="-1"
                   class="accordion-header misc-name"
                   :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.function}"
                   @contextmenu.prevent="showMiscFolderContext($event, 'function')"
@@ -345,6 +364,8 @@
                            v-for="(func, i) of filteredFunctions"
                            :key="`${func.name}-${i}`"
                            class="menu-item"
+                           tabindex="-1"
+                           data-tree-item
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.function === func.name}"
                            @mousedown.left="selectMisc({schema: database.name, misc: func, type: 'function'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: func, type: 'function'})"
@@ -369,6 +390,7 @@
          <div v-if="filteredUserTypes.length && customizations.userTypes" class="database-misc">
             <details class="accordion">
                <summary
+                  tabindex="-1"
                   class="accordion-header misc-name"
                   :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.userType}"
                   @contextmenu.prevent="showMiscFolderContext($event, 'userType')"
@@ -392,6 +414,8 @@
                            v-for="userType of filteredUserTypes"
                            :key="userType.name"
                            class="menu-item"
+                           tabindex="-1"
+                           data-tree-item
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.userType === userType.name}"
                            :title="userType.kind.toUpperCase()"
                            @mousedown.left="selectMisc({schema: database.name, misc: userType, type: 'userType'})"
@@ -417,6 +441,7 @@
          <div v-if="filteredSchedulers.length && customizations.schedulers" class="database-misc">
             <details class="accordion">
                <summary
+                  tabindex="-1"
                   class="accordion-header misc-name"
                   :class="{'text-bold': breadcrumbs.schema === database.name && breadcrumbs.scheduler}"
                   @contextmenu.prevent="showMiscFolderContext($event, 'scheduler')"
@@ -440,6 +465,8 @@
                            v-for="scheduler of filteredSchedulers"
                            :key="scheduler.name"
                            class="menu-item"
+                           tabindex="-1"
+                           data-tree-item
                            :class="{'selected': breadcrumbs.schema === database.name && breadcrumbs.scheduler === scheduler.name}"
                            @mousedown.left="selectMisc({schema: database.name, misc: scheduler, type: 'scheduler'})"
                            @dblclick="openMiscPermanentTab({schema: database.name, misc: scheduler, type: 'scheduler'})"

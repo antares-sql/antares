@@ -329,6 +329,7 @@ export const itIT = {
       settings: 'Impostazioni',
       mainNavigation: 'Navigazione principale',
       openTabs: 'Schede aperte',
+      databaseExplorer: 'Esplora database',
       general: 'Generale',
       themes: 'Temi',
       update: 'Aggiorna',

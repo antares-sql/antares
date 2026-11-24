@@ -377,6 +377,7 @@ export const enUS = {
       settings: 'Settings',
       mainNavigation: 'Main navigation',
       openTabs: 'Open tabs',
+      databaseExplorer: 'Database explorer',
       console: 'Console',
       general: 'General',
       themes: 'Themes',

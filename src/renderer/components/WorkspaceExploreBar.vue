@@ -28,6 +28,7 @@
                <div :title="t('database.createNewSchema')">
                   <BaseIcon
                      v-if="customizations.schemas"
+                     v-button="t('database.createNewSchema')"
                      icon-name="database+plus"
                      :size="18"
                      class="c-hand mr-2"
@@ -36,6 +37,7 @@
                </div>
                <div :title="t('general.refresh')">
                   <BaseIcon
+                     v-button="t('general.refresh')"
                      icon-name="refresh"
                      :size="18"
                      class="c-hand mr-2"
@@ -45,6 +47,7 @@
                </div>
                <div :title="t('connection.disconnect')">
                   <BaseIcon
+                     v-button="t('connection.disconnect')"
                      icon-name="power"
                      :size="18"
                      class="c-hand"
@@ -56,6 +59,7 @@
          <div class="workspace-explorebar-search">
             <div v-if="workspace.connectionStatus === 'connected'" class="input-group has-icon-right">
                <div
+                  v-button="t('application.switchSearchMethod')"
                   class="input-group-addon px-1 py-0 p-vcentered c-hand"
                   :title="t('application.switchSearchMethod')"
                   @click="toggleSearchMethod"
@@ -67,6 +71,7 @@
                   v-model="searchTerm"
                   class="form-input input-sm"
                   type="text"
+                  :aria-label="searchMethod === 'elements' ? t('database.searchForElements') : t('database.searchForSchemas')"
                   :placeholder="searchMethod === 'elements' ? t('database.searchForElements') : t('database.searchForSchemas')"
                >
                <BaseIcon
@@ -77,6 +82,7 @@
                />
                <BaseIcon
                   v-else
+                  v-button="t('general.clear')"
                   class="form-icon c-hand pr-1"
                   icon-name="backspace"
                   :size="18"
@@ -84,7 +90,13 @@
                />
             </div>
          </div>
-         <div class="workspace-explorebar-body" @click="explorebar.focus()">
+         <div
+            ref="explorebarBody"
+            class="workspace-explorebar-body"
+            :aria-label="t('application.databaseExplorer')"
+            role="group"
+            @click="focusExplorebar"
+         >
             <WorkspaceExploreBarSchema
                v-for="db of filteredSchemas"
                :key="db.name"
@@ -172,6 +184,7 @@ import MiscFolderContext from '@/components/WorkspaceExploreBarMiscFolderContext
 import WorkspaceExploreBarSchema from '@/components/WorkspaceExploreBarSchema.vue';
 import DatabaseContext from '@/components/WorkspaceExploreBarSchemaContext.vue';
 import TableContext from '@/components/WorkspaceExploreBarTableContext.vue';
+import { useTreeNavigation } from '@/composables/useTreeNavigation';
 import Databases from '@/ipc-api/Databases';
 import Tables from '@/ipc-api/Tables';
 import Views from '@/ipc-api/Views';
@@ -210,6 +223,8 @@ const {
 
 const searchInput: Ref<HTMLInputElement> = ref(null);
 const explorebar: Ref<HTMLInputElement> = ref(null);
+const explorebarBody: Ref<HTMLDivElement> = ref(null);
+useTreeNavigation(explorebarBody, { selectedSelector: '[data-tree-item].selected' });
 const resizer: Ref<HTMLInputElement> = ref(null);
 const databases: Ref<string[]> = ref([]);
 const schema: Ref<Component & { selectSchema: (name: string) => void; $refs: {schemaAccordion: HTMLDetailsElement} }[]> = ref(null);
@@ -317,6 +332,12 @@ const refresh = async () => {
       await refreshStructure(props.connection.uid);
       isRefreshing.value = false;
    }
+};
+
+// Keeps the type-to-search active after a click, without stealing the focus from the clicked tree item
+const focusExplorebar = (event: MouseEvent) => {
+   if (!(event.target as HTMLElement).closest('summary, [data-tree-item]'))
+      explorebar.value.focus();
 };
 
 const explorebarSearch = (event: KeyboardEvent) => {

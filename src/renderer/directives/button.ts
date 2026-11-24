@@ -17,8 +17,10 @@ const onKeydown = (event: KeyboardEvent) => {
 };
 
 const setLabel = (el: HTMLElement, label: unknown) => {
-   if (typeof label === 'string' && label) el.setAttribute('aria-label', label);
-   else if (label === undefined || label === null) el.removeAttribute('aria-label');
+   if (typeof label === 'string' && label) {
+      el.setAttribute('aria-label', label);
+      el.removeAttribute('aria-hidden'); // e.g. a clickable BaseIcon: its svg is hidden by default
+   }
 };
 
 export const vButton: Directive<HTMLElement, string | undefined> = {
