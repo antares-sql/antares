@@ -168,7 +168,6 @@ export const caES = {
       serverDefault: 'Per defecte del servidor',
       deleteDatabase: 'Esborra la base de dades',
       editDatabase: 'Edita la base de dades',
-      clearChanges: 'Neteja els canvis',
       addNewField: 'Afegeix un nou camp',
       manageIndexes: 'Gestiona els índexs',
       manageForeignKeys: 'Gestiona les claus foranes',

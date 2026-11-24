@@ -189,7 +189,6 @@ export const plPL = {
       serverDefault: 'Domyślne serwera',
       deleteDatabase: 'Usuń bazę danych',
       editDatabase: 'Edytuj bazę danych',
-      clearChanges: 'Wyczyść zmiany',
       addNewField: 'Dodaj nowe pole',
       manageIndexes: 'Zarządzaj indeksami',
       manageForeignKeys: 'Zarządzaj kluczami obcymi',

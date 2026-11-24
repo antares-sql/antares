@@ -19,15 +19,15 @@
                <button
                   :disabled="!isChanged"
                   class="btn btn-link btn-sm mr-0"
-                  :title="t('database.clearChanges')"
+                  :title="t('database.discardChanges')"
                   @click="clearChanges"
                >
                   <BaseIcon
                      class="mr-1"
-                     icon-name="eraser"
+                     icon-name="restore"
                      :size="24"
                   />
-                  <span>{{ t('general.clear') }}</span>
+                  <span>{{ t('general.restore') }}</span>
                </button>
 
                <div class="divider-vert py-3" />
@@ -123,6 +123,7 @@
             v-show="isSelected"
             ref="queryEditor"
             v-model="localScheduler.sql"
+            formattable
             :workspace="workspace"
             :schema="schema"
             :height="editorHeight"

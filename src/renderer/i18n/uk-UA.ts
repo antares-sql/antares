@@ -173,7 +173,7 @@ export const ukUA = {
       serverDefault: 'За замовчуванням на сервері',
       deleteDatabase: 'Видалити базу даних',
       editDatabase: 'Редагувати базу даних',
-      clearChanges: 'Скасувати зміни',
+      discardChanges: 'Скасувати зміни',
       addNewField: 'Додати нове поле',
       manageIndexes: 'Управління індексами',
       manageForeignKeys: 'Управління зовнішніми ключами',

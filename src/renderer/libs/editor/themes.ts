@@ -146,6 +146,15 @@ export const buildEditorTheme = (theme: EditorThemeDefinition): Extension => {
       '.cm-search-button:hover': {
          backgroundColor: `color-mix(in srgb, ${editor.foreground} 12%, transparent)`
       },
+      // Editor actions (format, clear), floating under the search widget
+      '.cm-editor-actions': {
+         backgroundColor: editor.gutterBackground,
+         color: editor.foreground,
+         border: `1px solid color-mix(in srgb, ${editor.foreground} 15%, transparent)`
+      },
+      '.cm-editor-action:hover:not(:disabled)': {
+         backgroundColor: `color-mix(in srgb, ${editor.foreground} 12%, transparent)`
+      },
       // "Go to line" dialog, floating like the search widget
       '.cm-goto-line.cm-dialog': {
          padding: '4px 28px 4px 8px',

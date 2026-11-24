@@ -19,39 +19,40 @@
                <button
                   :disabled="!isChanged"
                   class="btn btn-link btn-sm mr-0"
-                  :title="t('database.clearChanges')"
+                  :title="t('database.discardChanges')"
                   @click="clearChanges"
                >
                   <BaseIcon
                      class="mr-1"
-                     icon-name="eraser"
+                     icon-name="restore"
                      :size="24"
                   />
-                  <span>{{ t('general.clear') }}</span>
+                  <span>{{ t('general.restore') }}</span>
                </button>
 
                <div class="divider-vert py-3" />
-
-               <button
-                  class="btn btn-dark btn-sm"
-                  :disabled="isChanged"
-                  @click="runRoutineCheck"
-               >
-                  <BaseIcon
-                     class="mr-1"
-                     icon-name="play"
-                     :size="24"
-                  />
-                  <span>{{ t('general.run') }}</span>
-               </button>
-               <button class="btn btn-dark btn-sm" @click="showParamsModal">
-                  <BaseIcon
-                     class="mr-1"
-                     icon-name="dots"
-                     :size="24"
-                  />
-                  <span>{{ t('database.parameters') }}</span>
-               </button>
+               <BaseToolbarOverflow>
+                  <button
+                     class="btn btn-dark btn-sm"
+                     :disabled="isChanged"
+                     @click="runRoutineCheck"
+                  >
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="play"
+                        :size="24"
+                     />
+                     <span>{{ t('general.run') }}</span>
+                  </button>
+                  <button class="btn btn-dark btn-sm" @click="showParamsModal">
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="dots"
+                        :size="24"
+                     />
+                     <span>{{ t('database.parameters') }}</span>
+                  </button>
+               </BaseToolbarOverflow>
             </div>
             <div class="workspace-query-info">
                <div class="d-flex" :title="t('database.schema')">
@@ -159,6 +160,7 @@
             v-show="isSelected"
             ref="queryEditor"
             v-model="localRoutine.sql"
+            formattable
             :workspace="workspace"
             :schema="schema"
             :height="editorHeight"
@@ -194,6 +196,7 @@ import { useI18n } from 'vue-i18n';
 import BaseIcon from '@/components/BaseIcon.vue';
 import BaseLoader from '@/components/BaseLoader.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import BaseToolbarOverflow from '@/components/BaseToolbarOverflow.vue';
 import ModalAskParameters from '@/components/ModalAskParameters.vue';
 import QueryEditor from '@/components/QueryEditor.vue';
 import WorkspaceTabPropsRoutineParamsModal from '@/components/WorkspaceTabPropsRoutineParamsModal.vue';

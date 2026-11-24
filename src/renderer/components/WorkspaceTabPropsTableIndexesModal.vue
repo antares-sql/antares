@@ -32,16 +32,16 @@
                         </button>
                         <button
                            class="btn btn-dark btn-sm d-flex ml-2 mr-0"
-                           :title="t('database.clearChanges')"
+                           :title="t('database.discardChanges')"
                            :disabled="!isChanged"
                            @click.prevent="clearChanges"
                         >
                            <BaseIcon
                               class="mr-1"
-                              icon-name="eraser"
+                              icon-name="restore"
                               :size="24"
                            />
-                           <span>{{ t('general.clear') }}</span>
+                           <span>{{ t('general.restore') }}</span>
                         </button>
                      </div>
                   </div>

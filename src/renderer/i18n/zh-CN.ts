@@ -181,7 +181,6 @@ export const zhCN = {
       serverDefault: '默认服务器',
       deleteDatabase: '删除数据库',
       editDatabase: '编辑数据库',
-      clearChanges: '清除变更',
       addNewField: '添加新字段',
       manageIndexes: '管理索引',
       manageForeignKeys: '管理外键',

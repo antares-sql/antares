@@ -190,7 +190,7 @@ export const csCZ = {
       serverDefault: 'Porovnání serveru',
       deleteDatabase: 'Smazat databázi',
       editDatabase: 'Upravit databázi',
-      clearChanges: 'Zrušit změny',
+      discardChanges: 'Zrušit změny',
       addNewField: 'Přidat nový sloupec',
       manageIndexes: 'Správa indexů',
       manageForeignKeys: 'Správa cizích klíčů',

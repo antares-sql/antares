@@ -6,6 +6,20 @@
          :class="editorClasses"
          :style="{height: `${height}px`}"
       />
+      <Teleport v-if="hasActions" :to="actionsEl">
+         <button
+            v-if="formattable"
+            type="button"
+            class="cm-editor-action"
+            :disabled="!props.modelValue || props.readOnly"
+            :title="t('general.format')"
+            :aria-label="t('general.format')"
+            @click="format()"
+         >
+            <BaseIcon icon-name="brush" :size="18" />
+         </button>
+         <slot name="actions" />
+      </Teleport>
    </div>
 </template>
 
@@ -13,15 +27,20 @@
 import { Compartment, EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 import { storeToRefs } from 'pinia';
-import { computed, onBeforeUnmount, onMounted, Prop, Ref, ref, watch } from 'vue';
+import { format as formatSql } from 'sql-formatter';
+import { computed, onBeforeUnmount, onMounted, Prop, Ref, ref, useSlots, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
+import BaseIcon from '@/components/BaseIcon.vue';
 import Tables from '@/ipc-api/Tables';
+import { actionsPanel } from '@/libs/editor/actionsPanel';
 import { breakpoints } from '@/libs/editor/breakpoints';
 import { baseSetup } from '@/libs/editor/setup';
 import { sqlCompletion, SqlCompletionProvider, SqlEntity } from '@/libs/editor/sql/completion';
 import { getSqlDialect } from '@/libs/editor/sql/dialects';
 import { buildEditorTheme, buildFontTheme } from '@/libs/editor/themes';
 import { EditorApi } from '@/libs/editorApi';
+import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
 import { useThemesStore } from '@/stores/themes';
 import { Workspace } from '@/stores/workspaces';
@@ -44,10 +63,22 @@ const props = defineProps({
    autoFocus: { type: Boolean, default: false },
    readOnly: { type: Boolean, default: false },
    height: { type: Number, default: 200 },
-   editorClasses: { type: String, default: '' }
+   editorClasses: { type: String, default: '' },
+   /** Shows the "format" action in the editor */
+   formattable: { type: Boolean, default: false }
 });
 
 const emit = defineEmits(['update:modelValue']);
+
+const { t } = useI18n();
+const { addNotification } = useNotificationsStore();
+
+const slots = useSlots();
+const hasActions = computed(() => props.formattable || !!slots.actions);
+
+/** Host of the actions (format + `actions` slot): CodeMirror places it as a top panel, stacked with the search widget */
+const actionsEl = document.createElement('div');
+actionsEl.className = 'cm-editor-actions';
 
 const editorEl: Ref<HTMLDivElement> = ref(null);
 // Not reactive: a Vue proxy around the view breaks CodeMirror
@@ -159,6 +190,7 @@ onMounted(() => {
          extensions: [
             breakpoints(),
             baseSetup(),
+            hasActions.value ? actionsPanel(actionsEl) : [],
             dialectDefinition.value.dialect,
             completion.of(buildCompletion()),
             theme.of(buildEditorTheme(editorTheme.value)),
@@ -204,13 +236,29 @@ const focus = () => view?.focus();
 
 const resize = () => view?.requestMeasure();
 
+const format = () => {
+   if (!view || props.readOnly) return;
+   const value = view.state.doc.toString();
+   if (!value) return;
+
+   try {
+      const language = props.workspace?.customizations?.formatterLanguage ?? 'sql';
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setValue(formatSql(value, { language, uppercase: true } as any));
+   }
+   catch (err) { // The formatter can't parse some statements (e.g. procedural bodies of some engines)
+      addNotification({ status: 'error', message: err.message });
+   }
+};
+
 defineExpose<EditorApi>({
    getValue,
    setValue,
    getSelectedText,
    getCursorIndex,
    focus,
-   resize
+   resize,
+   format
 });
 </script>
 

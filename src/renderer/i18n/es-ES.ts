@@ -191,7 +191,7 @@ export const esES = {
       serverDefault: 'Servidor por defecto',
       deleteDatabase: 'Eliminar Base de Datos',
       editDatabase: 'Modificar Base de Datos',
-      clearChanges: 'Deshacer cambios',
+      discardChanges: 'Deshacer cambios',
       addNewField: 'Añadir nuevo campo',
       manageIndexes: 'Administrar índices',
       manageForeignKeys: 'Administrar claves foráneas',

@@ -189,7 +189,6 @@ export const heIL = {
       serverDefault: 'ברירת מחדל של השרת',
       deleteDatabase: 'מחק מסד נתונים',
       editDatabase: 'ערוך מסד נתונים',
-      clearChanges: 'נקה שינויים',
       addNewField: 'הוסף שדה חדש',
       manageIndexes: 'נהל אינדקסים',
       manageForeignKeys: 'נהל מפתחות זרים',

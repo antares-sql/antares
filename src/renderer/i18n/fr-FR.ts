@@ -165,7 +165,6 @@ export const frFR = {
       serverDefault: 'Serveur par défaut',
       deleteDatabase: 'Supprimer la base de données',
       editDatabase: 'Editer la base de données',
-      clearChanges: 'Effacer les modifications',
       addNewField: 'Ajouter un nouveau champ',
       manageIndexes: 'Gérer les index',
       manageForeignKeys: 'Gérer les clés étrangères',

@@ -179,7 +179,6 @@ export const jaJP = {
       serverDefault: 'サーバーのデフォルト',
       deleteDatabase: 'データベースを削除',
       editDatabase: 'データベースを編集',
-      clearChanges: '変更をクリア',
       addNewField: '新規フィールドを追加',
       manageIndexes: 'インデックスの管理',
       manageForeignKeys: '外部キーの管理',

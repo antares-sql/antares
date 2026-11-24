@@ -164,7 +164,7 @@ export const koKR = {
       serverDefault: '서버 기본값',
       deleteDatabase: '데이터베이스 삭제',
       editDatabase: '데이터베이스 편집',
-      clearChanges: '변경사항 초기화',
+      discardChanges: '변경사항 초기화',
       addNewField: '새 필드 추가',
       manageIndexes: '인덱스 관리',
       manageForeignKeys: '외래 키 관리',

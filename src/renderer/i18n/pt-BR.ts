@@ -167,7 +167,6 @@ export const ptBR = {
       serverDefault: 'Servidor padrão',
       deleteDatabase: 'Apagar banco de dados',
       editDatabase: 'Editar banco de dados',
-      clearChanges: 'Limpar alterações',
       addNewField: 'Adicionar novo campo',
       manageIndexes: 'Gerenciar índices',
       manageForeignKeys: 'Gerenciar chaes estrangeiras',

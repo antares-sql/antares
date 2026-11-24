@@ -178,7 +178,6 @@ export const uzUZ = {
       serverDefault: 'Server standartlari bo‘yicha',
       deleteDatabase: 'Maʼlumotlar bazasini oʻchirish',
       editDatabase: 'Maʼlumotlar bazasini tahrirlash',
-      clearChanges: 'Oʻzgarishlarni oʻchirish',
       addNewField: 'Yangi maydon qo‘shish',
       manageIndexes: 'Indekslarni boshqarish',
       manageForeignKeys: 'Tashqi kalitlarni boshqarish',

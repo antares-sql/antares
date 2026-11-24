@@ -124,7 +124,6 @@ export const deDE = {
       serverDefault: 'Server default',
       deleteDatabase: 'Datenbank löschen',
       editDatabase: 'Datenbank bearbeiten',
-      clearChanges: 'Änderungen leeren',
       addNewField: 'Neues Feld hinzufügen',
       manageIndexes: 'Indizes verwalten',
       manageForeignKeys: 'Fremdschlüssel verwalten',

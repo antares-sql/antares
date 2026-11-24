@@ -161,7 +161,6 @@ export const idID = {
       serverDefault: 'Standar server',
       deleteDatabase: 'Hapus basis data',
       editDatabase: 'Ubah basis data',
-      clearChanges: 'Hapus perubahan',
       addNewField: 'Tambahkan bidang baru',
       manageIndexes: 'Kelola indeks',
       manageForeignKeys: 'Mengelola kunci asing',

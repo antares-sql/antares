@@ -179,7 +179,6 @@ export const ruRU = {
       serverDefault: 'По-умолчанию на сервере',
       deleteDatabase: 'Удалить БД',
       editDatabase: 'Редактировать БД',
-      clearChanges: 'Удалить изменения',
       addNewField: 'Добавить новое поле',
       manageIndexes: 'Управление индексами',
       manageForeignKeys: 'Управление внешними ключами',

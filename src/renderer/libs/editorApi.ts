@@ -13,4 +13,6 @@ export interface EditorApi {
    focus: () => void;
    /** Recomputes the editor layout after its container has been resized */
    resize: () => void;
+   /** Formats the whole content with the SQL formatter of the workspace engine */
+   format: () => void;
 }

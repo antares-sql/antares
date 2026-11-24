@@ -178,7 +178,6 @@ export const nlNL = {
       serverDefault: 'Server default',
       deleteDatabase: 'Verwijder database',
       editDatabase: 'Bewerk database',
-      clearChanges: 'Wis wijzigingen',
       addNewField: 'Voeg nieuw veld toe',
       manageIndexes: 'Beheer indexes',
       manageForeignKeys: 'Beheer foreign keys',

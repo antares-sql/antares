@@ -16,9 +16,27 @@
             :is-selected="isSelected"
             :height="editorHeight"
             editor-classes="editor-query"
-         />
+            formattable
+         >
+            <template #actions>
+               <button
+                  type="button"
+                  class="cm-editor-action"
+                  :disabled="!query || isQuering"
+                  :title="t('general.clear')"
+                  :aria-label="t('general.clear')"
+                  @click="clear()"
+               >
+                  <BaseIcon icon-name="eraser" :size="18" />
+               </button>
+            </template>
+         </QueryEditor>
          <div ref="resizer" class="query-area-resizer" />
-         <div ref="queryAreaFooter" class="workspace-query-runner-footer">
+         <div
+            ref="queryAreaFooter"
+            class="workspace-query-runner-footer"
+            :class="{'manual-commit': !autocommit}"
+         >
             <div class="workspace-query-buttons">
                <div
                   @mouseenter="setCancelButtonVisibility(true)"
@@ -49,226 +67,202 @@
                      <span>{{ t('general.run') }}</span>
                   </button>
                </div>
-               <button
-                  v-if="!autocommit"
-                  class="btn btn-dark btn-sm"
-                  :class="{'loading':isQuering}"
-                  @click="commitTab()"
-               >
-                  <BaseIcon
-                     class="mr-1"
-                     icon-name="box+arrow"
-                     :size="24"
-                  />
-                  <span>{{ t('database.commit') }}</span>
-               </button>
-               <button
-                  v-if="!autocommit"
-                  class="btn btn-dark btn-sm"
-                  :class="{'loading':isQuering}"
-                  @click="rollbackTab()"
-               >
-                  <BaseIcon
-                     class="mr-1"
-                     icon-name="undo"
-                     :size="24"
-                  />
-                  <span>{{ t('database.rollback') }}</span>
-               </button>
-               <button
-                  class="btn btn-link btn-sm mr-0"
-                  :disabled="!query || isQuering"
-                  @click="clear()"
-               >
-                  <BaseIcon
-                     class="mr-1"
-                     icon-name="eraser"
-                     :size="24"
-                  />
-                  <span>{{ t('general.clear') }}</span>
-               </button>
+               <div class="commit-group">
+                  <button
+                     v-if="!autocommit"
+                     class="btn btn-dark btn-sm commit-action mr-0"
+                     :class="{'loading':isQuering}"
+                     @click="commitTab()"
+                  >
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="box+arrow"
+                        :size="24"
+                     />
+                     <span>{{ t('database.commit') }}</span>
+                  </button>
+                  <button
+                     v-if="!autocommit"
+                     class="btn btn-dark btn-sm commit-action mr-0"
+                     :class="{'loading':isQuering}"
+                     @click="rollbackTab()"
+                  >
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="undo"
+                        :size="24"
+                     />
+                     <span>{{ t('database.rollback') }}</span>
+                  </button>
+                  <div class="dropdown">
+                     <button
+                        class="btn btn-dark btn-sm dropdown-toggle commit-mode mr-0"
+                        :title="t('database.commitMode')"
+                        tabindex="0"
+                     >
+                        <BaseIcon
+                           class="mr-1"
+                           icon-name="commit"
+                           :size="24"
+                        />
+                        <span>{{ autocommit ? t('database.autoCommit') : t('database.manualCommit') }}</span>
+                        <BaseIcon icon-name="caret-down" :size="20" />
+                     </button>
+                     <ul class="menu text-left">
+                        <li class="menu-item">
+                           <a class="c-hand" @click="autocommit = true">
+                              <BaseIcon
+                                 icon-name="check"
+                                 :class="{'d-invisible': !autocommit}"
+                                 :size="18"
+                              />
+                              {{ t('database.autoCommit') }}
+                           </a>
+                        </li>
+                        <li class="menu-item">
+                           <a class="c-hand" @click="autocommit = false">
+                              <BaseIcon
+                                 icon-name="check"
+                                 :class="{'d-invisible': autocommit}"
+                                 :size="18"
+                              />
+                              {{ t('database.manualCommit') }}
+                           </a>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
 
                <div class="divider-vert py-3" />
 
-               <button
-                  class="btn btn-dark btn-sm"
-                  :disabled="!query || isQuering"
-                  :title="t('general.format')"
-                  @click="beautify()"
-               >
-                  <BaseIcon icon-name="brush" :size="24" />
-               </button>
-               <div class="btn-group">
-                  <button
-                     class="btn btn-dark btn-sm mr-0"
-                     :disabled="!filePath || lastSavedQuery === query"
-                     :title="t('application.saveFile')"
-                     @click="saveFile()"
-                  >
-                     <BaseIcon icon-name="save+check" :size="24" />
-                  </button>
-                  <button
-                     class="btn btn-dark btn-sm mr-0"
-                     :title="t('application.saveFileAs')"
-                     @click="saveFileAs()"
-                  >
-                     <BaseIcon icon-name="save+plus" :size="24" />
-                  </button>
-                  <button
-                     class="btn btn-dark btn-sm"
-                     :title="t('application.openFile')"
-                     @click="openFile()"
-                  >
-                     <BaseIcon icon-name="folder-open" :size="24" />
-                  </button>
-               </div>
-               <div class="btn-group">
-                  <button
-                     class="btn btn-dark btn-sm mr-0"
-                     :disabled="isQuering || (isQuerySaved || query.length < 5)"
-                     :title="t('application.saveAsNote')"
-                     @click="saveQuery()"
-                  >
-                     <BaseIcon icon-name="heart+plus" :size="24" />
-                  </button>
+               <BaseToolbarOverflow>
+                  <div class="dropdown">
+                     <div class="btn-group">
+                        <button
+                           class="btn btn-dark btn-sm mr-0"
+                           :disabled="!query || lastSavedQuery === query"
+                           :title="t('application.saveFile')"
+                           @click="saveFile()"
+                        >
+                           <BaseIcon icon-name="save+check" :size="24" />
+                        </button>
+                        <button
+                           class="btn btn-dark btn-sm dropdown-toggle px-0"
+                           :title="t('general.options')"
+                           tabindex="0"
+                        >
+                           <BaseIcon icon-name="caret-down" :size="20" />
+                        </button>
+                        <ul class="menu text-left">
+                           <li class="menu-item">
+                              <a class="c-hand" @click="saveFileAs()">
+                                 <BaseIcon icon-name="save+plus" :size="18" />
+                                 {{ t('application.saveFileAs') }}
+                              </a>
+                           </li>
+                           <li class="menu-item">
+                              <a class="c-hand" @click="openFile()">
+                                 <BaseIcon icon-name="folder-open" :size="18" />
+                                 {{ t('application.openFile') }}
+                              </a>
+                           </li>
+                        </ul>
+                     </div>
+                  </div>
+                  <div class="dropdown">
+                     <div class="btn-group">
+                        <button
+                           class="btn btn-dark btn-sm mr-0"
+                           :disabled="isQuering || (isQuerySaved || query.length < 5)"
+                           :title="t('application.saveAsNote')"
+                           @click="saveQuery()"
+                        >
+                           <BaseIcon icon-name="heart+plus" :size="24" />
+                        </button>
+                        <button
+                           class="btn btn-dark btn-sm dropdown-toggle px-0"
+                           :title="t('general.options')"
+                           tabindex="0"
+                        >
+                           <BaseIcon icon-name="caret-down" :size="20" />
+                        </button>
+                        <ul class="menu text-left">
+                           <li class="menu-item">
+                              <a class="c-hand" @click="openSavedModal()">
+                                 <BaseIcon icon-name="notebook+heart" :size="18" />
+                                 {{ t('database.savedQueries') }}
+                              </a>
+                           </li>
+                        </ul>
+                     </div>
+                  </div>
                   <button
                      class="btn btn-dark btn-sm"
                      :disabled="isQuering"
-                     :title="t('database.savedQueries')"
-                     @click="openSavedModal()"
+                     :title="t('general.history')"
+                     @click="openHistoryModal()"
                   >
-                     <BaseIcon icon-name="notebook+heart" :size="24" />
+                     <BaseIcon icon-name="history" :size="24" />
                   </button>
-               </div>
-               <button
-                  class="btn btn-dark btn-sm"
-                  :disabled="isQuering"
-                  :title="t('general.history')"
-                  @click="openHistoryModal()"
-               >
-                  <BaseIcon icon-name="history" :size="24" />
-               </button>
-               <div class="dropdown table-dropdown pr-2">
-                  <button
-                     :disabled="!hasResults || isQuering"
-                     class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
-                     tabindex="0"
-                  >
-                     <BaseIcon
-                        class="mr-1"
-                        icon-name="file+up"
-                        :size="24"
-                     />
-                     <span>{{ t('database.export') }}</span>
-                     <BaseIcon
-                        class="mr-1"
-                        icon-name="caret-down"
-                        :size="24"
-                     />
-                  </button>
-                  <ul class="menu text-left">
+                  <template #menu>
                      <li class="menu-item">
-                        <a class="c-hand" @click="downloadTable('json')">JSON</a>
+                        <a
+                           class="c-hand"
+                           :class="{'disabled': !query || lastSavedQuery === query}"
+                           @click="saveFile()"
+                        >
+                           <BaseIcon icon-name="save+check" :size="18" />
+                           {{ t('application.saveFile') }}
+                        </a>
                      </li>
                      <li class="menu-item">
-                        <a class="c-hand" @click="downloadTable('csv')">CSV</a>
+                        <a class="c-hand" @click="saveFileAs()">
+                           <BaseIcon icon-name="save+plus" :size="18" />
+                           {{ t('application.saveFileAs') }}
+                        </a>
                      </li>
                      <li class="menu-item">
-                        <a class="c-hand" @click="downloadTable('php')">{{ t('application.phpArray') }}</a>
+                        <a class="c-hand" @click="openFile()">
+                           <BaseIcon icon-name="folder-open" :size="18" />
+                           {{ t('application.openFile') }}
+                        </a>
+                     </li>
+                     <li class="divider" />
+                     <li class="menu-item">
+                        <a
+                           class="c-hand"
+                           :class="{'disabled': isQuering || isQuerySaved || query.length < 5}"
+                           @click="saveQuery()"
+                        >
+                           <BaseIcon icon-name="heart+plus" :size="18" />
+                           {{ t('application.saveAsNote') }}
+                        </a>
                      </li>
                      <li class="menu-item">
-                        <a class="c-hand" @click="downloadTable('sql')">SQL INSERT</a>
+                        <a
+                           class="c-hand"
+                           :class="{'disabled': isQuering}"
+                           @click="openSavedModal()"
+                        >
+                           <BaseIcon icon-name="notebook+heart" :size="18" />
+                           {{ t('database.savedQueries') }}
+                        </a>
                      </li>
+                     <li class="divider" />
                      <li class="menu-item">
-                        <a class="c-hand" @click="downloadTable('md')">Markdown</a>
+                        <a
+                           class="c-hand"
+                           :class="{'disabled': isQuering}"
+                           @click="openHistoryModal()"
+                        >
+                           <BaseIcon icon-name="history" :size="18" />
+                           {{ t('general.history') }}
+                        </a>
                      </li>
-                  </ul>
-               </div>
-               <div class="dropdown table-dropdown pr-2">
-                  <button
-                     :disabled="!hasResults || isQuering"
-                     class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
-                     tabindex="0"
-                  >
-                     <BaseIcon
-                        class="mr-1"
-                        icon-name="copy"
-                        :size="24"
-                     />
-                     <span>{{ t('general.copy') }}</span>
-                     <BaseIcon
-                        class="mr-1"
-                        icon-name="caret-down"
-                        :size="24"
-                     />
-                  </button>
-                  <ul class="menu text-left">
-                     <li class="menu-item">
-                        <a class="c-hand" @click="copyTable('json')">JSON</a>
-                     </li>
-                     <li class="menu-item">
-                        <a class="c-hand" @click="copyTable('csv')">CSV</a>
-                     </li>
-                     <li class="menu-item">
-                        <a class="c-hand" @click="copyTable('php')">{{ t('application.phpArray') }}</a>
-                     </li>
-                     <li class="menu-item">
-                        <a class="c-hand" @click="copyTable('sql')">SQL INSERT</a>
-                     </li>
-                     <li class="menu-item">
-                        <a class="c-hand" @click="copyTable('md')">Markdown</a>
-                     </li>
-                  </ul>
-               </div>
-               <div class="input-group pr-2" :title="t('database.commitMode')">
-                  <BaseIcon
-                     class="input-group-addon addon-sm p-0"
-                     icon-name="commit"
-                     :size="28"
-                  />
-                  <BaseSelect
-                     v-model="autocommit"
-                     :options="[{value: true, label: t('database.autoCommit')}, {value: false, label: t('database.manualCommit')}]"
-                     :option-label="(opt: any) => opt.label"
-                     :option-track-by="(opt: any) => opt.value"
-                     class="form-select select-sm text-bold"
-                  />
-               </div>
+                  </template>
+               </BaseToolbarOverflow>
             </div>
             <div class="workspace-query-info">
-               <div
-                  v-if="results.length"
-                  class="d-flex"
-                  :title="t('database.queryDuration')"
-               >
-                  <BaseIcon
-                     class="mr-1 mt-1"
-                     icon-name="hourglass"
-                     :size="16"
-                  /> <b>{{ durationsCount / 1000 }}s</b>
-               </div>
-               <div
-                  v-if="resultsCount"
-                  class="d-flex"
-                  :title="t('general.results')"
-               >
-                  <BaseIcon
-                     class="mr-1 mt-1"
-                     icon-name="equal"
-                     :size="16"
-                  /> <b>{{ resultsCount.toLocaleString() }}</b>
-               </div>
-               <div
-                  v-if="hasAffected"
-                  class="d-flex"
-                  :title="t('database.affectedRows')"
-               >
-                  <BaseIcon
-                     class="mr-1 mt-1"
-                     icon-name="target"
-                     :size="16"
-                  />  <b>{{ affectedCount }}</b>
-               </div>
                <div class="input-group" :title="t('database.schema')">
                   <BaseIcon
                      class="input-group-addon addon-sm p-0 px-1"
@@ -288,6 +282,42 @@
       <WorkspaceTabQueryEmptyState v-if="!results.length && !isQuering" :customizations="workspace.customizations" />
       <div class="workspace-query-results p-relative column col-12">
          <BaseLoader v-if="isQuering" />
+         <WorkspaceTabResultsBar
+            v-if="results.length && !isQuering"
+            :disabled="!hasResults"
+            @copy="copyTable"
+            @export="downloadTable"
+         >
+            <div class="d-flex" :title="t('database.queryDuration')">
+               <BaseIcon
+                  class="mr-1"
+                  icon-name="hourglass"
+                  :size="16"
+               /> <b>{{ durationsCount / 1000 }}s</b>
+            </div>
+            <div
+               v-if="resultsCount"
+               class="d-flex"
+               :title="t('general.results')"
+            >
+               <BaseIcon
+                  class="mr-1"
+                  icon-name="equal"
+                  :size="16"
+               /> <b>{{ resultsCount.toLocaleString() }}</b>
+            </div>
+            <div
+               v-if="hasAffected"
+               class="d-flex"
+               :title="t('database.affectedRows')"
+            >
+               <BaseIcon
+                  class="mr-1"
+                  icon-name="target"
+                  :size="16"
+               />  <b>{{ affectedCount }}</b>
+            </div>
+         </WorkspaceTabResultsBar>
          <WorkspaceTabQueryTable
             v-if="results"
             v-show="!isQuering"
@@ -318,17 +348,18 @@ import { querySplitter } from 'common/libs/sqlUtils';
 import { uidGen } from 'common/libs/uidGen';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
-import { format } from 'sql-formatter';
 import { Component, computed, onBeforeUnmount, onMounted, Prop, Ref, ref, toRaw, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseIcon from '@/components/BaseIcon.vue';
 import BaseLoader from '@/components/BaseLoader.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import BaseToolbarOverflow from '@/components/BaseToolbarOverflow.vue';
 import ModalHistory from '@/components/ModalHistory.vue';
 import QueryEditor from '@/components/QueryEditor.vue';
 import WorkspaceTabQueryEmptyState from '@/components/WorkspaceTabQueryEmptyState.vue';
 import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable.vue';
+import WorkspaceTabResultsBar from '@/components/WorkspaceTabResultsBar.vue';
 import { useResultTables } from '@/composables/useResultTables';
 import Application from '@/ipc-api/Application';
 import Schema from '@/ipc-api/Schema';
@@ -621,18 +652,7 @@ const stopResize = () => {
       queryEditor.value.resize();
 };
 
-const beautify = () => {
-   if (queryEditor.value) {
-      const language = workspace.value.customizations.formatterLanguage ?? 'sql';
-
-      const formattedQuery = format(query.value, {
-         language,
-         uppercase: true
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
-      queryEditor.value.setValue(formattedQuery);
-   }
-};
+const beautify = () => queryEditor.value?.format();
 
 const openHistoryModal = () => {
    isHistoryOpen.value = true;
@@ -989,8 +1009,14 @@ onBeforeUnmount(() => {
 
         .btn {
           display: flex;
+          align-items: center;
           align-self: center;
           margin-right: 0.4rem;
+        }
+
+        // As tall as the buttons (inline-block adds the line box height)
+        .dropdown {
+          display: flex;
         }
       }
 
@@ -1001,6 +1027,42 @@ onBeforeUnmount(() => {
           padding-left: 0.6rem;
         }
       }
+
+      .commit-group {
+        display: flex;
+
+        .commit-mode {
+          gap: 0.1rem;
+          padding-right: 0.1rem;
+        }
+
+        .commit-action {
+          border-radius: 0;
+          margin-right: 1px !important;
+
+          &:first-child {
+            border-top-left-radius: var(--radius);
+            border-bottom-left-radius: var(--radius);
+          }
+        }
+      }
+
+      &.manual-commit .commit-mode {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+
+      .dropdown .menu .menu-item > a {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        white-space: nowrap;
+
+        &.disabled {
+          opacity: 0.5;
+          pointer-events: none;
+        }
+      }
     }
   }
 
@@ -1008,4 +1070,4 @@ onBeforeUnmount(() => {
     min-height: 200px;
   }
 }
-</style>filePathsfilePathsfilePaths
+</style>

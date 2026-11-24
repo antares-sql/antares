@@ -23,7 +23,7 @@
                            :size="24"
                         />
                      </button>
-                     <div class="btn btn-dark btn-sm dropdown-toggle pl-0 pr-0 p-vcentered" tabindex="0">
+                     <div class="btn btn-dark btn-sm dropdown-toggle pl-0 pr-0 mr-0 p-vcentered" tabindex="0">
                         <BaseIcon icon-name="caret-down" :size="24" />
                      </div>
                      <div class="menu px-3">
@@ -40,169 +40,38 @@
                      </div>
                   </div>
                </div>
-               <div class="btn-group">
-                  <button
-                     class="btn btn-dark btn-sm mr-0"
-                     :disabled="isQuering || page === 1"
-                     :title="t('application.previousResultsPage')"
-                     @click="pageChange('prev')"
-                  >
-                     <BaseIcon icon-name="skip-previous" :size="24" />
-                  </button>
-                  <div class="dropdown" :class="{'active': isPageMenu}">
-                     <div @click="openPageMenu">
-                        <div class="btn btn-dark btn-sm mr-0 no-radius dropdown-toggle text-bold px-3">
-                           {{ page }}
-                        </div>
-                        <div class="menu px-3">
-                           <span>{{ t('general.pageNumber') }}</span>
-                           <input
-                              ref="pageSelect"
-                              v-model="pageProxy"
-                              type="number"
-                              min="1"
-                              class="form-input"
-                              @blur="setPageNumber"
-                           >
-                        </div>
-                     </div>
-                  </div>
-                  <button
-                     class="btn btn-dark btn-sm mr-0"
-                     :disabled="isQuering || (results.length && results[0].rows.length < limit)"
-                     :title="t('application.nextResultsPage')"
-                     @click="pageChange('next')"
-                  >
-                     <BaseIcon icon-name="skip-next" :size="24" />
-                  </button>
-               </div>
-
                <div class="divider-vert py-3" />
-
-               <button
-                  class="btn btn-sm"
-                  :title="t('general.filter')"
-                  :disabled="isQuering"
-                  :class="{'btn-primary': isSearch, 'btn-dark': !isSearch}"
-                  @click="isSearch = !isSearch"
-               >
-                  <BaseIcon icon-name="search" :size="24" />
-               </button>
-               <button
-                  v-if="isTable && !connection.readonly"
-                  class="btn btn-dark btn-sm"
-                  :disabled="isQuering"
-                  @click="showFakerModal()"
-               >
-                  <BaseIcon
-                     icon-name="list+plus"
-                     class="mr-1"
-                     :size="24"
-                  />
-                  <span>{{ t('database.insertRow', 2) }}</span>
-               </button>
-
-               <div class="dropdown table-dropdown pr-2">
+               <BaseToolbarOverflow>
                   <button
+                     class="btn btn-sm"
+                     :title="t('general.filter')"
                      :disabled="isQuering"
-                     class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
-                     tabindex="0"
+                     :class="{'btn-primary': isSearch, 'btn-dark': !isSearch}"
+                     @click="isSearch = !isSearch"
                   >
                      <BaseIcon
-                        icon-name="file+up"
+                        icon-name="search"
                         class="mr-1"
                         :size="24"
                      />
-                     <span>{{ t('database.export') }}</span>
-                     <BaseIcon icon-name="caret-down" :size="24" />
+                     <span>{{ t('general.filter') }}</span>
                   </button>
-                  <ul class="menu text-left">
-                     <li class="menu-item">
-                        <a class="c-hand" @click="downloadTable('json')">JSON</a>
-                     </li>
-                     <li class="menu-item">
-                        <a class="c-hand" @click="downloadTable('csv')">CSV</a>
-                     </li>
-                     <li class="menu-item">
-                        <a class="c-hand" @click="downloadTable('php')">{{ t('application.phpArray') }}</a>
-                     </li>
-                     <li class="menu-item">
-                        <a class="c-hand" @click="downloadTable('sql')">SQL INSERT</a>
-                     </li>
-                     <li class="menu-item">
-                        <a class="c-hand" @click="downloadTable('md')">Markdown</a>
-                     </li>
-                  </ul>
-               </div>
-
-               <div class="dropdown table-dropdown">
                   <button
+                     v-if="isTable && !connection.readonly"
+                     class="btn btn-dark btn-sm"
                      :disabled="isQuering"
-                     class="btn btn-dark btn-sm dropdown-toggle mr-0 pr-0"
-                     tabindex="0"
+                     @click="showFakerModal()"
                   >
                      <BaseIcon
-                        icon-name="copy"
+                        icon-name="list+plus"
                         class="mr-1"
                         :size="24"
                      />
-                     <span>{{ t('general.copy') }}</span>
-                     <BaseIcon icon-name="caret-down" :size="24" />
+                     <span>{{ t('database.insertRow', 2) }}</span>
                   </button>
-                  <ul class="menu text-left">
-                     <li class="menu-item">
-                        <a class="c-hand" @click="copyTable('json')">JSON</a>
-                     </li>
-                     <li class="menu-item">
-                        <a class="c-hand" @click="copyTable('csv')">CSV</a>
-                     </li>
-                     <li class="menu-item">
-                        <a class="c-hand" @click="copyTable('php')">{{ t('application.phpArray') }}</a>
-                     </li>
-                     <li class="menu-item">
-                        <a class="c-hand" @click="copyTable('sql')">SQL INSERT</a>
-                     </li>
-                     <li class="menu-item">
-                        <a class="c-hand" @click="copyTable('md')">Markdown</a>
-                     </li>
-                  </ul>
-               </div>
-
-               <div class="divider-vert py-3" />
-
-               <button
-                  class="btn btn-dark btn-sm"
-                  :disabled="isQuering"
-                  :title="t('application.settings')"
-                  @click="openTableSettingTab()"
-               >
-                  <BaseIcon icon-name="cog" :size="24" />
-                  <!-- <span>{{ t('application.settings') }}</span> -->
-               </button>
+               </BaseToolbarOverflow>
             </div>
             <div class="workspace-query-info">
-               <div
-                  v-if="results.length"
-                  class="d-flex"
-                  :title="t('database.queryDuration')"
-               >
-                  <BaseIcon
-                     class="mr-1 mt-1"
-                     icon-name="hourglass"
-                     :size="16"
-                  /> <b>{{ results[0].duration / 1000 }}s</b>
-               </div>
-               <div v-if="results.length && results[0].rows">
-                  {{ t('general.results') }}: <b>{{ localeString(results[0].rows.length) }}</b>
-               </div>
-               <div v-if="hasApproximately || (page > 1 && approximateCount)">
-                  {{ t('database.total') }}: <b
-                     :title="!customizations.tableRealCount ? t('database.approximately') : ''"
-                  >
-                     <span v-if="!customizations.tableRealCount">≈</span>
-                     {{ localeString(approximateCount) }}
-                  </b>
-               </div>
                <div class="d-flex" :title="t('database.schema')">
                   <BaseIcon
                      class="mt-1 mr-1"
@@ -210,6 +79,14 @@
                      :size="18"
                   /><b>{{ schema }}</b>
                </div>
+               <button
+                  class="btn btn-dark btn-sm mr-0 ml-2"
+                  :disabled="isQuering"
+                  :title="t('application.settings')"
+                  @click="openTableSettingTab()"
+               >
+                  <BaseIcon icon-name="cog" :size="24" />
+               </button>
             </div>
          </div>
       </div>
@@ -223,6 +100,70 @@
       />
       <div class="workspace-query-results p-relative column col-12">
          <BaseLoader v-if="isQuering" />
+         <WorkspaceTabResultsBar
+            :disabled="isQuering"
+            @copy="copyTable"
+            @export="downloadTable"
+         >
+            <div
+               v-if="results.length"
+               class="d-flex"
+               :title="t('database.queryDuration')"
+            >
+               <BaseIcon
+                  class="mr-1"
+                  icon-name="hourglass"
+                  :size="16"
+               /> <b>{{ results[0].duration / 1000 }}s</b>
+            </div>
+            <div v-if="results.length && results[0].rows">
+               {{ t('general.results') }}: <b>{{ localeString(results[0].rows.length) }}</b>
+            </div>
+            <div v-if="hasApproximately || (page > 1 && approximateCount)">
+               {{ t('database.total') }}: <b
+                  :title="!customizations.tableRealCount ? t('database.approximately') : ''"
+               >
+                  <span v-if="!customizations.tableRealCount">≈</span>
+                  {{ localeString(approximateCount) }}
+               </b>
+            </div>
+            <div class="btn-group">
+               <button
+                  class="btn btn-dark btn-sm mr-0"
+                  :disabled="isQuering || page === 1"
+                  :title="t('application.previousResultsPage')"
+                  @click="pageChange('prev')"
+               >
+                  <BaseIcon icon-name="skip-previous" :size="24" />
+               </button>
+               <div class="dropdown" :class="{'active': isPageMenu}">
+                  <div @click="openPageMenu">
+                     <div class="btn btn-dark btn-sm mr-0 no-radius dropdown-toggle text-bold px-3">
+                        {{ page }}
+                     </div>
+                     <div class="menu px-3">
+                        <span>{{ t('general.pageNumber') }}</span>
+                        <input
+                           ref="pageSelect"
+                           v-model="pageProxy"
+                           type="number"
+                           min="1"
+                           class="form-input"
+                           @blur="setPageNumber"
+                        >
+                     </div>
+                  </div>
+               </div>
+               <button
+                  class="btn btn-dark btn-sm mr-0"
+                  :disabled="isQuering || (results.length && results[0].rows.length < limit)"
+                  :title="t('application.nextResultsPage')"
+                  @click="pageChange('next')"
+               >
+                  <BaseIcon icon-name="skip-next" :size="24" />
+               </button>
+            </div>
+         </WorkspaceTabResultsBar>
          <div v-if="!isQuering && !results[0]?.rows.length" class="empty">
             <div class="empty-icon">
                <BaseIcon icon-name="island" :size="56" />
@@ -272,8 +213,10 @@ import { useI18n } from 'vue-i18n';
 
 import BaseIcon from '@/components/BaseIcon.vue';
 import BaseLoader from '@/components/BaseLoader.vue';
+import BaseToolbarOverflow from '@/components/BaseToolbarOverflow.vue';
 import ModalFakerRows from '@/components/ModalFakerRows.vue';
 import WorkspaceTabQueryTable from '@/components/WorkspaceTabQueryTable.vue';
+import WorkspaceTabResultsBar from '@/components/WorkspaceTabResultsBar.vue';
 import WorkspaceTabTableFilters from '@/components/WorkspaceTabTableFilters.vue';
 import { useFilters } from '@/composables/useFilters';
 import { useResultTables } from '@/composables/useResultTables';

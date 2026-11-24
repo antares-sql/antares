@@ -19,88 +19,89 @@
                <button
                   :disabled="!isChanged || isSaving"
                   class="btn btn-link btn-sm mr-0"
-                  :title="t('database.clearChanges')"
+                  :title="t('database.discardChanges')"
                   @click="clearChanges"
                >
                   <BaseIcon
                      class="mr-1"
-                     icon-name="eraser"
+                     icon-name="restore"
                      :size="24"
                   />
-                  <span>{{ t('general.clear') }}</span>
+                  <span>{{ t('general.restore') }}</span>
                </button>
 
                <div class="divider-vert py-3" />
+               <BaseToolbarOverflow>
+                  <button
+                     :disabled="isSaving"
+                     class="btn btn-dark btn-sm"
+                     :title="t('database.addNewField')"
+                     @click="addField"
+                  >
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="list+plus"
+                        :size="24"
+                     />
+                     <span>{{ t('general.add') }}</span>
+                  </button>
+                  <button
+                     :disabled="isSaving"
+                     class="btn btn-dark btn-sm"
+                     :title="t('database.manageIndexes')"
+                     @click="showIntdexesModal"
+                  >
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="key"
+                        :size="24"
+                     />
+                     <span>{{ t('database.indexes') }}</span>
+                  </button>
+                  <button
+                     class="btn btn-dark btn-sm mr-0"
+                     :disabled="isSaving"
+                     :title="t('database.manageForeignKeys')"
+                     @click="showForeignModal"
+                  >
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="key+arrow"
+                        :size="24"
+                     />
+                     <span>{{ t('database.foreignKeys') }}</span>
+                  </button>
+                  <button
+                     v-if="workspace.customizations.tableCheck && originalTableChecks !== false"
+                     class="btn btn-dark btn-sm ml-2 mr-0"
+                     :disabled="isSaving"
+                     :title="t('database.manageTableChecks')"
+                     @click="showTableChecksModal"
+                  >
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="table+check"
+                        :size="24"
+                     />
+                     <span>{{ t('database.tableChecks') }}</span>
+                  </button>
 
-               <button
-                  :disabled="isSaving"
-                  class="btn btn-dark btn-sm"
-                  :title="t('database.addNewField')"
-                  @click="addField"
-               >
-                  <BaseIcon
-                     class="mr-1"
-                     icon-name="list+plus"
-                     :size="24"
-                  />
-                  <span>{{ t('general.add') }}</span>
-               </button>
-               <button
-                  :disabled="isSaving"
-                  class="btn btn-dark btn-sm"
-                  :title="t('database.manageIndexes')"
-                  @click="showIntdexesModal"
-               >
-                  <BaseIcon
-                     class="mr-1"
-                     icon-name="key"
-                     :size="24"
-                  />
-                  <span>{{ t('database.indexes') }}</span>
-               </button>
-               <button
-                  class="btn btn-dark btn-sm mr-0"
-                  :disabled="isSaving"
-                  :title="t('database.manageForeignKeys')"
-                  @click="showForeignModal"
-               >
-                  <BaseIcon
-                     class="mr-1"
-                     icon-name="key+arrow"
-                     :size="24"
-                  />
-                  <span>{{ t('database.foreignKeys') }}</span>
-               </button>
-               <button
-                  v-if="workspace.customizations.tableCheck && originalTableChecks !== false"
-                  class="btn btn-dark btn-sm ml-2 mr-0"
-                  :disabled="isSaving"
-                  :title="t('database.manageTableChecks')"
-                  @click="showTableChecksModal"
-               >
-                  <BaseIcon
-                     class="mr-1"
-                     icon-name="table+check"
-                     :size="24"
-                  />
-                  <span>{{ t('database.tableChecks') }}</span>
-               </button>
+                  <div class="divider-vert py-3" />
 
-               <div class="divider-vert py-3" />
-
-               <button
-                  v-if="workspace.customizations.tableDdl"
-                  class="btn btn-dark btn-sm"
-                  :disabled="isSaving"
-                  @click="showDdlModal"
-               >
-                  <BaseIcon
-                     class="mr-1"
-                     icon-name="code"
-                     :size="24"
-                  />
-                  <span>{{ t('database.ddl') }}</span>
-               </button>
+                  <button
+                     v-if="workspace.customizations.tableDdl"
+                     class="btn btn-dark btn-sm"
+                     :disabled="isSaving"
+                     @click="showDdlModal"
+                  >
+                     <BaseIcon
+                        class="mr-1"
+                        icon-name="code"
+                        :size="24"
+                     />
+                     <span>{{ t('database.ddl') }}</span>
+                  </button>
+               </BaseToolbarOverflow>
             </div>
             <div class="workspace-query-info">
                <div class="d-flex" :title="t('database.schema')">
@@ -254,6 +255,7 @@ import { useI18n } from 'vue-i18n';
 import BaseIcon from '@/components/BaseIcon.vue';
 import BaseLoader from '@/components/BaseLoader.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import BaseToolbarOverflow from '@/components/BaseToolbarOverflow.vue';
 import WorkspaceTabPropsTableChecksModal from '@/components/WorkspaceTabPropsTableChecksModal.vue';
 import WorkspaceTabPropsTableDdlModal from '@/components/WorkspaceTabPropsTableDdlModal.vue';
 import WorkspaceTabPropsTableFields from '@/components/WorkspaceTabPropsTableFields.vue';

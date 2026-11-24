@@ -156,7 +156,6 @@ export const viVN = {
       serverDefault: 'Máy chủ mặc định',
       deleteDatabase: 'Xoá cơ sở dữ liệu',
       editDatabase: 'Sửa cơ sở dữ liệu',
-      clearChanges: 'Xóa các thay đổi',
       addNewField: 'Thêm trường mới',
       manageIndexes: 'Quản lý index',
       manageForeignKeys: 'Quản lý khoá ngoại',

@@ -116,15 +116,15 @@
                               <button
                                  class="btn btn-link btn-sm mr-0"
                                  :disabled="!isDirty || isSaving"
-                                 :title="t('database.clearChanges')"
+                                 :title="t('database.discardChanges')"
                                  @click="clearChanges"
                               >
                                  <BaseIcon
-                                    icon-name="eraser"
+                                    icon-name="restore"
                                     class="mr-1"
                                     :size="24"
                                  />
-                                 <span>{{ t('general.clear') }}</span>
+                                 <span>{{ t('general.restore') }}</span>
                               </button>
                               <button
                                  v-if="canDelete"

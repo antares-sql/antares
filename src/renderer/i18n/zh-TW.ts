@@ -182,7 +182,6 @@ export const zhTW = {
       serverDefault: '預設伺服器',
       deleteDatabase: '刪除資料庫',
       editDatabase: '編輯資料庫',
-      clearChanges: '清除變更',
       addNewField: '新增新字段',
       manageIndexes: '管理索引',
       manageForeignKeys: '管理外鍵',
