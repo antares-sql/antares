@@ -78,7 +78,7 @@
             <div class="context-element" @click="copyRow('md')">
                <span class="d-flex">
                   <BaseIcon
-                     icon-name="mdiTableRow"
+                     icon-name="table-row"
                      class="mr-1 mt-1 text-light"
                      :size="18"
                   /> {{ t('database.row', selectedRows.length) }} (Markdown)

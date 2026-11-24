@@ -192,13 +192,13 @@
                   >
                      <BaseIcon
                         class="mr-1"
-                        icon-name="mdiContentCopy"
+                        icon-name="copy"
                         :size="24"
                      />
                      <span>{{ t('general.copy') }}</span>
                      <BaseIcon
                         class="mr-1"
-                        icon-name="mdiMenuDown"
+                        icon-name="caret-down"
                         :size="24"
                      />
                   </button>

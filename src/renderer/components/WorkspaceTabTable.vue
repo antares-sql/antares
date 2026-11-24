@@ -142,12 +142,12 @@
                      tabindex="0"
                   >
                      <BaseIcon
-                        icon-name="mdiContentCopy"
+                        icon-name="copy"
                         class="mr-1"
                         :size="24"
                      />
                      <span>{{ t('general.copy') }}</span>
-                     <BaseIcon icon-name="mdiMenuDown" :size="24" />
+                     <BaseIcon icon-name="caret-down" :size="24" />
                   </button>
                   <ul class="menu text-left">
                      <li class="menu-item">
