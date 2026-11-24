@@ -374,7 +374,7 @@
       "contributions": [
         "code"
       ]
-    },      
+    },
     {
       "login": "dajiaohuang",
       "name": "Wu Shuwen",
@@ -416,6 +416,15 @@
       "name": "devag-al",
       "avatar_url": "https://avatars.githubusercontent.com/u/125698684?v=4",
       "profile": "https://github.com/devag-al",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "carlos-mora",
+      "name": "Carlos Mora",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3001367?v=4",
+      "profile": "https://github.com/carlos-mora",
       "contributions": [
         "code"
       ]

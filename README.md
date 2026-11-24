@@ -185,6 +185,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center"><a href="https://ohansyah.github.io/"><img src="https://avatars.githubusercontent.com/u/43288867?v=4?s=100" width="100px;" alt="Ohansyah"/><br /><sub><b>Ohansyah</b></sub></a><br /><a href="https://github.com/antares-sql/antares/commits?author=ohansyah" title="Code">💻</a></td>
       <td align="center"><a href="https://hit53.fr"><img src="https://avatars.githubusercontent.com/u/18170201?v=4?s=100" width="100px;" alt="Kova53"/><br /><sub><b>Kova53</b></sub></a><br /><a href="https://github.com/antares-sql/antares/commits?author=Kovania" title="Code">💻</a></td>
       <td align="center"><a href="https://github.com/devag-al"><img src="https://avatars.githubusercontent.com/u/125698684?v=4?s=100" width="100px;" alt="devag-al"/><br /><sub><b>devag-al</b></sub></a><br /><a href="https://github.com/antares-sql/antares/commits?author=devag-al" title="Code">💻</a></td>
+      <td align="center"><a href="https://github.com/carlos-mora"><img src="https://avatars.githubusercontent.com/u/3001367?v=4?s=100" width="100px;" alt="Carlos Mora"/><br /><sub><b>Carlos Mora</b></sub></a><br /><a href="https://github.com/antares-sql/antares/commits?author=carlos-mora" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
