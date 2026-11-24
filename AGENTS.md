@@ -145,3 +145,17 @@ VS Code debugging: start `npm run debug` (or `debug-runner`) in a terminal, then
 - Commits: Conventional Commits enforced by commitlint (`feat|fix|docs|chore|style|refactor|build|ci|test|revert|perf`, subject not upper/Pascal/Start case). Common scopes (from `.vscode/settings.json`): `UI, core, MySQL, PostgreSQL, SQLite, Firebird SQL, Windows, Linux, MacOS, translation, deps, Flatpak`.
 - Branches: work on `develop`; `master` is the release branch (stable build workflow only runs there). Releases via `standard-version` (`npm run release` / `release:beta`).
 - New UI strings: add to `src/renderer/i18n/en-US.ts` first; other locales fall back to English.
+
+## Accessibility
+
+Everything must work with the keyboard alone and have a name for screen readers. The building blocks:
+
+- Prefer native `<button>`. A clickable `<div>`/`<li>`/`<a>` without `href` (or a clickable `BaseIcon`) gets `v-button` (`directives/button.ts`): role, tab stop, Enter/Space; its value is the accessible name for icon-only elements (`v-button="t('general.close')"`). Keep an explicit `role`/`tabindex` when the element is part of a composite widget (e.g. `role="menuitem" tabindex="-1"`).
+- Spectre tab bars (`ul.tab` > `li.tab-item.active`): `v-tablist` (`directives/tablist.ts`). The workspace tab bar has its own roving tabindex in `Workspace.vue`.
+- Modals: bind `trapRef` from `useFocusTrap()` to `.modal-container`: dialog role, title, focus trap and focus restore come with it.
+- Context menus built on `BaseContextMenu` (items `.context-element`, submenus `.context-submenu`) and Spectre dropdowns (`.dropdown` > `.dropdown-toggle` + `.menu`, `libs/a11y/dropdowns.ts`) get keyboard navigation automatically.
+- Trees: `useTreeNavigation` (`<details>/<summary>` folders + `[data-tree-item]` leaves with `tabindex="-1"`), used by the database explorer.
+- Form controls are labelled by the `.form-label` of their `.form-group` (`libs/a11y/formLabels.ts`); give `aria-label` to controls outside that layout.
+- F6/Shift+F6 move between the main areas (`libs/a11y/regions.ts`): update its list when the layout changes.
+- Focus ring: `:focus-visible` outline in `main.scss`; don't add `outline: none` to focusable elements without an alternative. Animations respect `prefers-reduced-motion`.
+- Arrow-key handlers must mirror left/right in RTL (`getComputedStyle(el).direction === 'rtl'`).
