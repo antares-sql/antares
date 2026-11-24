@@ -277,6 +277,12 @@ onBeforeUnmount(() => {
          position: relative;
          white-space: nowrap;
 
+         // The menu focuses its first item also when opened with the mouse: Chromium counts a
+         // modifier (Shift/Ctrl+click selection) as keyboard use and would draw its default focus ring
+         :root[data-input-modality="pointer"] &:focus {
+            outline: none;
+         }
+
          .context-submenu {
             border-radius: $border-radius;
             border: var(--border-width) solid var(--context-border);
