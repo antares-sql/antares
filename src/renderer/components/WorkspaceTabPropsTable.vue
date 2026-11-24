@@ -368,7 +368,7 @@ const getFieldsData = async () => {
 
    try {
       await getTableOptions(params);
-      localOptions.value = JSON.parse(JSON.stringify(tableOptions.value));
+      localOptions.value = JSON.parse(JSON.stringify(tableOptions.value ?? {}));
    }
    catch (err) {
       console.error(err);
@@ -680,7 +680,7 @@ const clearChanges = () => {
    localIndexes.value = JSON.parse(JSON.stringify(originalIndexes.value));
    localKeyUsage.value = JSON.parse(JSON.stringify(originalKeyUsage.value));
    localTableChecks.value = JSON.parse(JSON.stringify(originalTableChecks.value));
-   localOptions.value = JSON.parse(JSON.stringify(tableOptions.value));
+   localOptions.value = JSON.parse(JSON.stringify(tableOptions.value ?? {}));
    newFieldsCounter.value = 0;
 };
 

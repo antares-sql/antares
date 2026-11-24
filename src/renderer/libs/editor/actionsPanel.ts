@@ -7,10 +7,21 @@ import { EditorView, showPanel } from '@codemirror/view';
  * them instead of drawing one over the other. The panel only hosts `dom`: its content is
  * rendered by Vue (QueryEditor teleports the `actions` slot into it).
  * Must come after the search extension to stay below the search widget.
+ * The panel itself has no height (the toolbar overflows it): CodeMirror takes the height of the
+ * top panels as a scroll margin and would hide the tooltips (autocompletion, ...) of the lines under it.
  */
 export const actionsPanel = (dom: HTMLElement): Extension => [
-   showPanel.of(() => ({ dom, top: true })),
+   showPanel.of(() => {
+      const panel = document.createElement('div');
+      panel.className = 'cm-editor-actions-panel';
+      panel.appendChild(dom);
+      return { dom: panel, top: true };
+   }),
    EditorView.baseTheme({
+      '.cm-editor-actions-panel': {
+         height: '0',
+         overflow: 'visible'
+      },
       '.cm-editor-actions': {
          display: 'flex',
          gap: '2px',
