@@ -1,25 +1,11 @@
 <template>
-   <div class="container">
-      <div class="columns">
-         <div class="column col-16 text-right">
-            <div
-               v-for="(shortcut, i) in tabShortcuts"
-               :key="i"
-               class="mb-4"
-            >
-               {{ t(shortcutEvents[shortcut.event].i18n, {param: shortcutEvents[shortcut.event].i18nParam}) }}
-            </div>
-         </div>
-         <div class="column col-16">
-            <div
-               v-for="(shortcut, i) in tabShortcuts"
-               :key="i"
-               class="mb-4"
-            >
-               <span v-html="parseKeys(shortcut.keys)" />
-            </div>
-         </div>
-      </div>
+   <div class="empty-state">
+      <dl class="shortcut-list">
+         <template v-for="shortcut in essentialShortcuts" :key="shortcut.event">
+            <dt>{{ t(shortcutEvents[shortcut.event].i18n) }}</dt>
+            <dd v-html="parseKeys([shortcut.key])" />
+         </template>
+      </dl>
    </div>
 </template>
 
@@ -32,21 +18,55 @@ import { useI18n } from 'vue-i18n';
 import { useFilters } from '@/composables/useFilters';
 import { useSettingsStore } from '@/stores/settings';
 
-const { parseKeys } = useFilters();
+/** Only the essentials: the full list lives in Settings → Shortcuts */
+const ESSENTIAL_EVENTS = [
+   'run-or-reload',
+   'run-query-at-cursor',
+   'format-query',
+   'query-history',
+   'open-new-tab',
+   'close-tab'
+];
 
+const { parseKeys } = useFilters();
 const { t } = useI18n();
 
 const settingsStore = useSettingsStore();
 const { shortcuts } = storeToRefs(settingsStore);
 
-const tabShortcuts = computed(() => {
-   return shortcuts.value.filter(s => shortcutEvents[s.event].context === 'tab');
+const essentialShortcuts = computed(() => {
+   return ESSENTIAL_EVENTS.reduce((acc, event) => {
+      const shortcut = shortcuts.value.find(s => s.event === event && s.keys.length);
+      if (shortcut) acc.push({ event, key: shortcut.keys[0] as string });
+      return acc;
+   }, [] as { event: string; key: string }[]);
 });
 </script>
 
-<style scoped>
-.container {
-  padding-top: 15vh;
+<style lang="scss" scoped>
+.empty-state {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: 12vh;
   opacity: 0.6;
+}
+
+.shortcut-list {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 1rem;
+  row-gap: 0.4rem;
+  margin: 0;
+  font-size: 0.7rem;
+
+  dt {
+    font-weight: normal;
+    text-align: right;
+  }
+
+  dd {
+    margin: 0;
+  }
 }
 </style>
