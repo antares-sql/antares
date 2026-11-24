@@ -712,7 +712,7 @@
 import { ConnectionParams } from 'common/interfaces/antares';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
-import { computed, nextTick, onMounted, Prop, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, Prop, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import * as Draggable from 'vuedraggable';
 
@@ -1016,36 +1016,50 @@ const closeContext = () => {
       connectWorkspace(props.connection);
 })();
 
+const onOpenNewTab = () => {
+   if (!isSelected.value) return;
+   addQueryTab();
+};
+
+const onCloseTab = () => {
+   if (!isSelected.value) return;
+   const currentTab = getSelectedTab();
+   if (currentTab)
+      closeTab(currentTab);
+};
+
+const onNextTab = () => {
+   if (!isSelected.value) return;
+   selectNextTab({ uid: props.connection.uid });
+};
+
+const onPrevTab = () => {
+   if (!isSelected.value) return;
+   selectPrevTab({ uid: props.connection.uid });
+};
+
+// select-tab-1 ... select-tab-9
+const selectTabListeners = Array.from({ length: 9 }, (_, i) => () => {
+   if (!isSelected.value) return;
+   if (workspace.value.tabs[i])
+      selectTab({ uid: props.connection.uid, tab: workspace.value.tabs[i].uid });
+});
+
 onMounted(() => {
-   ipcRenderer.on('open-new-tab', () => {
-      if (!isSelected.value) return;
-      addQueryTab();
-   });
+   ipcRenderer.on('open-new-tab', onOpenNewTab);
+   ipcRenderer.on('close-tab', onCloseTab);
+   ipcRenderer.on('next-tab', onNextTab);
+   ipcRenderer.on('prev-tab', onPrevTab);
+   selectTabListeners.forEach((listener, i) => ipcRenderer.on(`select-tab-${i + 1}`, listener));
+});
 
-   ipcRenderer.on('close-tab', () => {
-      if (!isSelected.value) return;
-      const currentTab = getSelectedTab();
-      if (currentTab)
-         closeTab(currentTab);
-   });
-
-   ipcRenderer.on('next-tab', () => {
-      if (!isSelected.value) return;
-      selectNextTab({ uid: props.connection.uid });
-   });
-
-   ipcRenderer.on('prev-tab', () => {
-      if (!isSelected.value) return;
-      selectPrevTab({ uid: props.connection.uid });
-   });
-
-   for (let i = 1; i <= 9; i++) {
-      ipcRenderer.on(`select-tab-${i}`, () => {
-         if (!isSelected.value) return;
-         if (workspace.value.tabs[i-1])
-            selectTab({ uid: props.connection.uid, tab: workspace.value.tabs[i-1].uid });
-      });
-   }
+// A workspace is unmounted when its connection is deleted: its listeners must go with it
+onBeforeUnmount(() => {
+   ipcRenderer.removeListener('open-new-tab', onOpenNewTab);
+   ipcRenderer.removeListener('close-tab', onCloseTab);
+   ipcRenderer.removeListener('next-tab', onNextTab);
+   ipcRenderer.removeListener('prev-tab', onPrevTab);
+   selectTabListeners.forEach((listener, i) => ipcRenderer.removeListener(`select-tab-${i + 1}`, listener));
 });
 </script>
 

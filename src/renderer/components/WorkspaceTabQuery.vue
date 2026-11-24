@@ -687,6 +687,7 @@ const onWindowResize = (e: MouseEvent) => {
 
 const stopResize = () => {
    window.removeEventListener('mousemove', resize);
+   window.removeEventListener('mouseup', stopResize);
    if (queryTable.value && results.value.length)
       resizeResults();
 
@@ -997,6 +998,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
    window.removeEventListener('resize', onWindowResize);
+   window.removeEventListener('mousemove', resize);
+   window.removeEventListener('mouseup', stopResize);
    const params = {
       uid: props.connection.uid,
       tabUid: props.tab.uid

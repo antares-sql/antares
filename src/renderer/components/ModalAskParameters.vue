@@ -54,7 +54,7 @@
 <script setup lang="ts">
 import { ClientCode, FunctionInfos, RoutineInfos } from 'common/interfaces/antares';
 import { formatRoutineArgument } from 'common/libs/routineCalls';
-import { computed, PropType, Ref, ref } from 'vue';
+import { computed, onBeforeUnmount, PropType, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
@@ -104,6 +104,11 @@ const onKey = (e: KeyboardEvent) => {
 };
 
 window.addEventListener('keydown', onKey);
+
+// Otherwise, after closing, it would keep stopping the propagation of every key press in the window
+onBeforeUnmount(() => {
+   window.removeEventListener('keydown', onKey);
+});
 
 setTimeout(() => {
    firstInput.value[0].focus();

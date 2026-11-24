@@ -262,7 +262,7 @@ const customizations = computed(() => {
 
 const filteredSchemas = computed(() => {
    if (searchMethod.value === 'schemas')
-      return workspace.value.structure.filter(schema => schema.name.search(searchTerm.value) >= 0);
+      return workspace.value.structure.filter(schema => schema.name.toLowerCase().includes(searchTerm.value.toLowerCase()));
    else
       return workspace.value.structure;
 });
@@ -357,6 +357,7 @@ const resize = (e: MouseEvent) => {
 
 const stopResize = () => {
    window.removeEventListener('mousemove', resize);
+   window.removeEventListener('mouseup', stopResize);
 };
 
 const showNewDBModal = () => {
