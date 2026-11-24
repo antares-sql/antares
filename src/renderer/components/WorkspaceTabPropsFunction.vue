@@ -187,6 +187,7 @@
             v-show="isSelected"
             ref="queryEditor"
             v-model="localFunction.sql"
+            bordered
             formattable
             :workspace="workspace"
             :schema="schema"

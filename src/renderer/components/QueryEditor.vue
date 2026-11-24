@@ -3,7 +3,7 @@
       <div
          ref="editorEl"
          class="editor"
-         :class="editorClasses"
+         :class="[editorClasses, { 'editor-bordered': bordered }]"
          :style="{height: `${height}px`}"
       />
       <Teleport v-if="hasActions" :to="actionsEl">
@@ -65,7 +65,9 @@ const props = defineProps({
    height: { type: Number, default: 200 },
    editorClasses: { type: String, default: '' },
    /** Shows the "format" action in the editor */
-   formattable: { type: Boolean, default: false }
+   formattable: { type: Boolean, default: false },
+   /** Thin top border, to tell the editor apart from a background of the same color */
+   bordered: { type: Boolean, default: false }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -267,6 +269,12 @@ defineExpose<EditorApi>({
   .editor {
     width: 100%;
     overflow: hidden;
+
+    // border-box: the border stays inside the height computed by the tab
+    &.editor-bordered {
+      box-sizing: border-box;
+      border-top: var(--border-width) solid var(--border);
+    }
   }
 }
 </style>

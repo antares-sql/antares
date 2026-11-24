@@ -123,6 +123,7 @@
             v-show="isSelected"
             ref="queryEditor"
             v-model="localScheduler.sql"
+            bordered
             formattable
             :workspace="workspace"
             :schema="schema"
