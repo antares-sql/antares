@@ -167,6 +167,11 @@ option:checked {
           display: flex;
           align-self: center;
           margin-right: 0.4rem;
+
+          // The divider has its own padding: keep the spacing symmetric around it
+          &:has(+ .divider-vert) {
+            margin-right: 0;
+          }
         }
       }
 

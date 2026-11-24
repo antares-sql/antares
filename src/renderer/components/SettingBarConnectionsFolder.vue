@@ -231,6 +231,12 @@ emit('folder-sort');// To apply changes on component key change
 <style lang="scss" scoped>
 .folder {
    position: relative;
+
+   // The selection bar of .settingbar-element is a 3px flex item that would push the folder right
+   &::before {
+      display: none;
+   }
+
    &.selected-inside {
       opacity: 1!important;
 
@@ -329,7 +335,7 @@ emit('folder-sort');// To apply changes on component key change
             background-color: color-mix(in srgb, var(--settingbar-text) 80%, transparent);
             border-radius: $border-radius;
             position: absolute;
-            left: -11px;
+            left: -8px; // folder padding + container padding: aligned to the sidebar edge
          }
 
          .folder-element-icon {
@@ -432,13 +438,28 @@ emit('folder-sort');// To apply changes on component key change
    }
 
    &:not(.opened){
+      gap: 2px;
+      justify-items: center;
+
       .folder-element {
+         width: 1.25rem;
+         max-width: 1.25rem;
+         height: 1.25rem;
+         max-height: 1.25rem;
+         margin-bottom: 0;
+         // Concentric with the folder corners (folder radius minus its padding)
+         border-radius: max(calc(var(--radius-lg) * 8 / 15), calc(var(--radius-lg) - 4px));
 
          .folder-element-icon,
          .folder-element-icon svg {
-            width: 1.05rem;
-            height: 1.05rem;
-            font-size: 0.8rem;
+            width: 1.15rem;
+            height: 1.15rem;
+            font-size: 0.9rem;
+         }
+
+         // Only the 2x2 preview: further rows would peek out of the bottom edge
+         &:nth-child(n + 5 of .folder-element) {
+            visibility: hidden;
          }
       }
    }
