@@ -115,9 +115,9 @@
                   :fields="fieldsObj"
                   :key-usage="keyUsage"
                   :element-type="elementType"
-                  :class="{ 'selected': selectedRows.includes(row._antares_id) }"
-                  :selected="selectedRows.includes(row._antares_id)"
-                  :selected-cell="selectedRows.length === 1 && selectedRows.includes(row._antares_id) ? selectedField : null"
+                  :class="{ 'selected': selectedRowsSet.has(row._antares_id) }"
+                  :selected="selectedRowsSet.has(row._antares_id)"
+                  :selected-cell="selectedRows.length === 1 && selectedRowsSet.has(row._antares_id) ? selectedField : null"
                   @start-editing="isEditingRow = true"
                   @stop-editing="isEditingRow = false"
                   @select-row="selectRow"
@@ -419,6 +419,9 @@ const sortedResults = computed(() => {
    return localResults.value;
 });
 
+// O(1) lookups for the rendered rows (selectedRows can hold every row after a select all)
+const selectedRowsSet = computed(() => new Set(selectedRows.value));
+
 const resultsWithRows = computed(() => props.results.filter(result => result.rows.length));
 const fields = computed(() => resultsWithRows.value.length ? resultsWithRows.value[resultsetIndex.value].fields : []);
 const filteredFields = computed(() => fields.value.reduce((acc, cur) => {
@@ -664,7 +667,7 @@ const hideDeleteConfirmModal = () => {
 
 const deleteSelected = () => {
    closeContext();
-   const rows = JSON.parse(JSON.stringify(localResults.value)).filter((row: any) => selectedRows.value.includes(row._antares_id)).map((row: any) => {
+   const rows = JSON.parse(JSON.stringify(localResults.value)).filter((row: any) => selectedRowsSet.value.has(row._antares_id)).map((row: any) => {
       delete row._antares_id;
       return row;
    });
@@ -680,7 +683,7 @@ const deleteSelected = () => {
 };
 
 const setNull = () => {
-   const row = localResults.value.find((row: any) => selectedRows.value.includes(row._antares_id));
+   const row = localResults.value.find((row: any) => selectedRowsSet.value.has(row._antares_id));
 
    const params = {
       primary: primaryField.value?.name,
@@ -697,7 +700,7 @@ const setNull = () => {
 };
 
 const copyCell = () => {
-   const row: any = localResults.value.find((row: any) => selectedRows.value.includes(row._antares_id));
+   const row: any = localResults.value.find((row: any) => selectedRowsSet.value.has(row._antares_id));
    const cellName = Object.keys(row).find(prop => [
       selectedCell.value.field,
       selectedCell.value.orgField,
@@ -714,7 +717,7 @@ const copyRow = (format: string) => {
    let contentToCopy;
 
    if (selectedRows.value.length === 1) {
-      const row = localResults.value.find((row: any) => selectedRows.value.includes(row._antares_id));
+      const row = localResults.value.find((row: any) => selectedRowsSet.value.has(row._antares_id));
       const rowToCopy = unproxify(row);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -722,7 +725,7 @@ const copyRow = (format: string) => {
       contentToCopy = rowToCopy;
    }
    else {
-      contentToCopy = unproxify(localResults.value).filter((row: any) => selectedRows.value.includes(row._antares_id)).map((row: any) => {
+      contentToCopy = unproxify(localResults.value).filter((row: any) => selectedRowsSet.value.has(row._antares_id)).map((row: any) => {
          delete row._antares_id;
          return row;
       });
@@ -804,7 +807,7 @@ const createHtmlTable = (tableData: Array<string[]>) => {
 };
 
 const fillCell = (event: { name: string; group: string; type: string }) => {
-   const row = localResults.value.find((row: any) => selectedRows.value.includes(row._antares_id));
+   const row = localResults.value.find((row: any) => selectedRowsSet.value.has(row._antares_id));
    let fakeValue;
    let datePrecision = '';
 
@@ -842,7 +845,7 @@ const fillCell = (event: { name: string; group: string; type: string }) => {
 };
 
 const duplicateRow = () => {
-   const row = localResults.value.find((row: any) => selectedRows.value.includes(row._antares_id));
+   const row = localResults.value.find((row: any) => selectedRowsSet.value.has(row._antares_id));
    const rowToDuplicate = JSON.parse(JSON.stringify(row));
    delete rowToDuplicate._antares_id;
    emit('duplicate-row', rowToDuplicate);
