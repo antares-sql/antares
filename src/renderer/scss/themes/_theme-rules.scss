@@ -30,7 +30,8 @@
     background: var(--bg-raised);
 
     .menu-item a {
-      &:hover {
+      &:hover,
+      &:focus {
         color: var(--menu-hover-text);
         background: var(--menu-hover-bg);
       }

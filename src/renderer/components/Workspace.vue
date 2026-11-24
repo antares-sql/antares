@@ -436,6 +436,7 @@
                            <a
                               v-button
                               role="menuitem"
+                              tabindex="-1"
                               class="c-hand p-vcentered"
                               @click="showUsersModal"
                            >
@@ -451,6 +452,7 @@
                            <a
                               v-button
                               role="menuitem"
+                              tabindex="-1"
                               class="c-hand p-vcentered"
                               @click="showProcessesModal"
                            >
@@ -466,6 +468,7 @@
                            <a
                               v-button
                               role="menuitem"
+                              tabindex="-1"
                               class="c-hand p-vcentered"
                               @click="toggleConsole"
                            >

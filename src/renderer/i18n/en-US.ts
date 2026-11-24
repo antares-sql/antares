@@ -380,6 +380,8 @@ export const enUS = {
       mainNavigation: 'Main navigation',
       openTabs: 'Open tabs',
       databaseExplorer: 'Database explorer',
+      minimize: 'Minimize',
+      maximize: 'Maximize',
       console: 'Console',
       general: 'General',
       themes: 'Themes',

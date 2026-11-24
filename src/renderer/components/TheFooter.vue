@@ -42,7 +42,7 @@
 
       <div class="footer-right-elements">
          <ul class="footer-elements">
-            <li class="footer-element footer-link" @click="toggleConsole()">
+            <li v-button class="footer-element footer-link" @click="toggleConsole()">
                <BaseIcon
                   icon-name="terminal"
                   class="mr-1"
@@ -50,7 +50,11 @@
                />
                <small>{{ t('application.console') }}</small>
             </li>
-            <li class="footer-element footer-link" @click="openOutside('https://www.paypal.com/paypalme/fabiodistasio')">
+            <li
+               v-button
+               role="link"
+               class="footer-element footer-link"
+               @click="openOutside('https://www.paypal.com/paypalme/fabiodistasio')">
                <BaseIcon
                   icon-name="coffee"
                   class="mr-1"
@@ -61,6 +65,8 @@
             <li
                class="footer-element footer-link"
                :title="t('application.reportABug')"
+               v-button="t('application.reportABug')"
+               role="link"
                @click="openOutside('https://github.com/antares-sql/antares/issues')"
             >
                <BaseIcon icon-name="bug" :size="18" />
@@ -68,6 +74,7 @@
             <li
                class="footer-element footer-link"
                :title="t('application.about')"
+               v-button="t('application.about')"
                @click="showSettingModal('about')"
             >
                <BaseIcon icon-name="info" :size="18" />

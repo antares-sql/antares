@@ -46,7 +46,7 @@
                   :title="`${field.type} ${fieldLength(field) ? `(${fieldLength(field)})` : ''}`"
                >
                   <div ref="columnResize" class="column-resizable">
-                     <div class="table-column-title" @click="sort(field)">
+                     <div v-button class="table-column-title" @click="sort(field)">
                         <div v-if="field.key" :title="keyName(field.key)">
                            <BaseIcon
                               icon-name="key"

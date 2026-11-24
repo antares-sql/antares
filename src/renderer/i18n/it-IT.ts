@@ -332,6 +332,8 @@ export const itIT = {
       mainNavigation: 'Navigazione principale',
       openTabs: 'Schede aperte',
       databaseExplorer: 'Esplora database',
+      minimize: 'Riduci a icona',
+      maximize: 'Ingrandisci',
       general: 'Generale',
       themes: 'Temi',
       update: 'Aggiorna',

@@ -550,3 +550,12 @@ code.sql {
     scroll-behavior: auto !important;
   }
 }
+
+/* Dropdowns stay open while the keyboard focus is in their menu (see libs/a11y/dropdowns.ts) */
+.dropdown.menu-open .menu {
+  display: block;
+}
+
+.dropdown.menu-dismissed .menu {
+  display: none !important;
+}

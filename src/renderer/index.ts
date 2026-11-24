@@ -13,6 +13,7 @@ import App from '@/App.vue';
 import { vButton } from '@/directives/button';
 import { vTablist } from '@/directives/tablist';
 import { i18n } from '@/i18n';
+import { installDropdownKeyboard } from '@/libs/a11y/dropdowns';
 import { useApplicationStore } from '@/stores/application';
 import { QueryLog, useConsoleStore } from '@/stores/console';
 import { useNotificationsStore } from '@/stores/notifications';
@@ -38,6 +39,8 @@ createApp(App)
    .use(i18n)
    .use(FloatingVue)
    .mount('#app');
+
+installDropdownKeyboard();
 
 const { locale } = useSettingsStore();
 i18n.global.locale.value = locale;
