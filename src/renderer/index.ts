@@ -14,6 +14,7 @@ import { vButton } from '@/directives/button';
 import { vTablist } from '@/directives/tablist';
 import { i18n } from '@/i18n';
 import { installDropdownKeyboard } from '@/libs/a11y/dropdowns';
+import { installFormLabels } from '@/libs/a11y/formLabels';
 import { installRegionNavigation } from '@/libs/a11y/regions';
 import { useApplicationStore } from '@/stores/application';
 import { QueryLog, useConsoleStore } from '@/stores/console';
@@ -43,6 +44,7 @@ createApp(App)
 
 installDropdownKeyboard();
 installRegionNavigation();
+installFormLabels();
 
 const { locale } = useSettingsStore();
 i18n.global.locale.value = locale;
