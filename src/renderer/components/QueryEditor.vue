@@ -40,7 +40,6 @@ import { sqlCompletion, SqlCompletionProvider, SqlEntity } from '@/libs/editor/s
 import { getSqlDialect } from '@/libs/editor/sql/dialects';
 import { buildEditorTheme, buildFontTheme } from '@/libs/editor/themes';
 import { EditorApi } from '@/libs/editorApi';
-import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
 import { useThemesStore } from '@/stores/themes';
 import { Workspace } from '@/stores/workspaces';
@@ -73,7 +72,6 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue']);
 
 const { t } = useI18n();
-const { addNotification } = useNotificationsStore();
 
 const slots = useSlots();
 const hasActions = computed(() => props.formattable || !!slots.actions);
@@ -248,8 +246,7 @@ const format = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setValue(formatSql(value, { language, uppercase: true } as any));
    }
-   catch (err) { // The formatter can't parse some statements (e.g. procedural bodies of some engines)
-      addNotification({ status: 'error', message: err.message });
+   catch { // The formatter can't parse some statements (e.g. procedural bodies of some engines): leave the text as is
    }
 };
 
