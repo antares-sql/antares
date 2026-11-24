@@ -1,6 +1,8 @@
 <template>
    <div
       class="tr"
+      role="row"
+      :aria-selected="selected"
       :style="{height: itemHeight+'px'}"
    >
       <div
@@ -8,6 +10,8 @@
          v-show="cKey !== '_antares_id'"
          :key="cKey"
          class="td p-0"
+         role="gridcell"
+         :aria-selected="selectedCell === cKey"
          :class="{selected: selectedCell === cKey}"
          @click="selectRow($event, cKey)"
 
