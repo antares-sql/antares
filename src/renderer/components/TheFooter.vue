@@ -1,6 +1,7 @@
 <template>
    <div
       id="footer"
+      role="contentinfo"
       :style="`background-color: ${accentColor}; color: var(--primary-color-text);`"
    >
       <div class="footer-left-elements">
@@ -42,7 +43,11 @@
 
       <div class="footer-right-elements">
          <ul class="footer-elements">
-            <li v-button class="footer-element footer-link" @click="toggleConsole()">
+            <li
+               v-button
+               class="footer-element footer-link"
+               @click="toggleConsole()"
+            >
                <BaseIcon
                   icon-name="terminal"
                   class="mr-1"
@@ -54,7 +59,8 @@
                v-button
                role="link"
                class="footer-element footer-link"
-               @click="openOutside('https://www.paypal.com/paypalme/fabiodistasio')">
+               @click="openOutside('https://www.paypal.com/paypalme/fabiodistasio')"
+            >
                <BaseIcon
                   icon-name="coffee"
                   class="mr-1"
@@ -63,18 +69,18 @@
                <small>{{ t('general.donate') }}</small>
             </li>
             <li
+               v-button="t('application.reportABug')"
                class="footer-element footer-link"
                :title="t('application.reportABug')"
-               v-button="t('application.reportABug')"
                role="link"
                @click="openOutside('https://github.com/antares-sql/antares/issues')"
             >
                <BaseIcon icon-name="bug" :size="18" />
             </li>
             <li
+               v-button="t('application.about')"
                class="footer-element footer-link"
                :title="t('application.about')"
-               v-button="t('application.about')"
                @click="showSettingModal('about')"
             >
                <BaseIcon icon-name="info" :size="18" />

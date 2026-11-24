@@ -15,7 +15,7 @@
          :connection="connection"
          :is-selected="isSelected"
       />
-      <div class="workspace-tabs column">
+      <div class="workspace-tabs column" role="main">
          <div v-if="workspace?.connectionStatus === 'connected'" class="columns col-gapless">
             <Draggable
                ref="tabWrap"
