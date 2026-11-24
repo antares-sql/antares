@@ -3402,38 +3402,48 @@
       ],
       "queries": [
         {
-          "sql": "SELECT table_name FROM information_schema.tables WHERE table_schema = \"information_schema\" AND table_name = \"CHECK_CONSTRAINTS\"",
+          "sql": "SELECT COLUMN_NAME AS name FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'information_schema' AND TABLE_NAME = 'CHECK_CONSTRAINTS'",
           "result": {
+            "duration": 1,
             "rows": [
               {
-                "TABLE_NAME": "CHECK_CONSTRAINTS"
+                "name": "CHECK_CLAUSE"
+              },
+              {
+                "name": "CONSTRAINT_CATALOG"
+              },
+              {
+                "name": "CONSTRAINT_NAME"
+              },
+              {
+                "name": "CONSTRAINT_SCHEMA"
               }
             ],
             "report": false,
             "fields": [
               {
-                "name": "TABLE_NAME",
-                "alias": "TABLE_NAME",
-                "orgName": "TABLE_NAME",
-                "schema": "information_schema",
-                "table": "tables",
-                "tableAlias": "tables",
-                "orgTable": "TABLES",
+                "name": "COLUMN_NAME",
+                "alias": "name",
+                "orgName": "COLUMN_NAME",
+                "schema": "",
+                "table": "COLUMNS",
+                "tableAlias": "COLUMNS",
+                "orgTable": "COLUMNS",
                 "type": "VARCHAR",
                 "length": 256
               }
             ],
-            "keys": [],
-            "duration": 1
+            "keys": []
           }
         },
         {
-          "sql": "SELECT CONSTRAINT_NAME as name, CHECK_CLAUSE as clausole FROM information_schema.CHECK_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = \"antares_fixtures\" AND CONSTRAINT_NAME IN ( SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA = \"antares_fixtures\" AND TABLE_NAME = \"products\" AND CONSTRAINT_TYPE = 'CHECK' )",
+          "sql": "SELECT cc.CONSTRAINT_NAME AS name, cc.CHECK_CLAUSE AS clause FROM information_schema.CHECK_CONSTRAINTS cc JOIN information_schema.TABLE_CONSTRAINTS tc ON tc.CONSTRAINT_SCHEMA = cc.CONSTRAINT_SCHEMA AND tc.CONSTRAINT_NAME = cc.CONSTRAINT_NAME WHERE tc.TABLE_SCHEMA = 'antares_fixtures' AND tc.TABLE_NAME = 'products' AND tc.CONSTRAINT_TYPE = 'CHECK'",
           "result": {
+            "duration": 1,
             "rows": [
               {
                 "name": "products_price_chk",
-                "clausole": "(`price` >= 0)"
+                "clause": "(`price` >= 0)"
               }
             ],
             "report": false,
@@ -3443,26 +3453,25 @@
                 "alias": "name",
                 "orgName": "CONSTRAINT_NAME",
                 "schema": "information_schema",
-                "table": "CHECK_CONSTRAINTS",
-                "tableAlias": "CHECK_CONSTRAINTS",
+                "table": "cc",
+                "tableAlias": "cc",
                 "orgTable": "CHECK_CONSTRAINTS",
                 "type": "VARCHAR",
                 "length": 256
               },
               {
                 "name": "CHECK_CLAUSE",
-                "alias": "clausole",
+                "alias": "clause",
                 "orgName": "CHECK_CLAUSE",
                 "schema": "information_schema",
-                "table": "CHECK_CONSTRAINTS",
-                "tableAlias": "CHECK_CONSTRAINTS",
+                "table": "cc",
+                "tableAlias": "cc",
                 "orgTable": "CHECK_CONSTRAINTS",
                 "type": "LONGTEXT",
                 "length": 4294967295
               }
             ],
-            "keys": [],
-            "duration": 1
+            "keys": []
           }
         }
       ],

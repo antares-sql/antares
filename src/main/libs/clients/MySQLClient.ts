@@ -421,36 +421,37 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
    }
 
    async getTableChecks ({ schema, table }: { schema: string; table: string }): Promise<antares.TableCheck[] | false> {
-      const { rows: checkTableExists } = await this.raw('SELECT table_name FROM information_schema.tables WHERE table_schema = "information_schema" AND table_name = "CHECK_CONSTRAINTS"');
+      // No CHECK_CONSTRAINTS (MySQL < 8.0.16, MariaDB < 10.2): checks not supported
+      const { rows: checkColumns } = await this.raw<antares.QueryResult<{ name: string }>>(`
+         SELECT COLUMN_NAME AS name
+         FROM information_schema.COLUMNS
+         WHERE TABLE_SCHEMA = 'information_schema' AND TABLE_NAME = 'CHECK_CONSTRAINTS'
+      `);
 
-      if (!checkTableExists.length)// check if CHECK_CONSTRAINTS table exists
+      if (!checkColumns.length)
          return false;
 
-      const { rows } = await this.raw(`
-            SELECT 
-               CONSTRAINT_NAME as name, 
-               CHECK_CLAUSE as clausole 
-            FROM information_schema.CHECK_CONSTRAINTS 
-            WHERE CONSTRAINT_SCHEMA = "${schema}" 
-            AND CONSTRAINT_NAME IN (
-               SELECT
-                  CONSTRAINT_NAME
-               FROM
-                  information_schema.TABLE_CONSTRAINTS
-               WHERE
-                  TABLE_SCHEMA = "${schema}"
-                  AND TABLE_NAME = "${table}"
-                  AND CONSTRAINT_TYPE = 'CHECK'
-            )
+      const schemaLiteral = this._dialect.quoteString(schema);
+      const tableLiteral = this._dialect.quoteString(table);
+
+      // MariaDB check names are unique only in their table: CHECK_CONSTRAINTS has a TABLE_NAME column.
+      // MySQL ones are unique in the schema and the table comes from TABLE_CONSTRAINTS
+      const hasTableName = checkColumns.some(row => row.name.toUpperCase() === 'TABLE_NAME');
+      const { rows } = await this.raw(hasTableName
+         ? `
+            SELECT CONSTRAINT_NAME AS name, CHECK_CLAUSE AS clause
+            FROM information_schema.CHECK_CONSTRAINTS
+            WHERE CONSTRAINT_SCHEMA = ${schemaLiteral} AND TABLE_NAME = ${tableLiteral}
+         `
+         : `
+            SELECT cc.CONSTRAINT_NAME AS name, cc.CHECK_CLAUSE AS clause
+            FROM information_schema.CHECK_CONSTRAINTS cc
+            JOIN information_schema.TABLE_CONSTRAINTS tc
+               ON tc.CONSTRAINT_SCHEMA = cc.CONSTRAINT_SCHEMA AND tc.CONSTRAINT_NAME = cc.CONSTRAINT_NAME
+            WHERE tc.TABLE_SCHEMA = ${schemaLiteral} AND tc.TABLE_NAME = ${tableLiteral} AND tc.CONSTRAINT_TYPE = 'CHECK'
          `);
 
-      if (rows.length) {
-         return rows.map(row => ({
-            name: row.name,
-            clause: row.clausole
-         }));
-      }
-      return [];
+      return rows.map(row => ({ name: row.name, clause: row.clause }));
    }
 
    async getTableOptions ({ schema, table }: { schema: string; table: string }) {
