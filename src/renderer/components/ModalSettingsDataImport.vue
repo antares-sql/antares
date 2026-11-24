@@ -113,7 +113,8 @@ import { CustomIcon, SidebarElement, useConnectionsStore } from '@/stores/connec
 import { useNotificationsStore } from '@/stores/notifications';
 
 const { t } = useI18n();
-const { trapRef } = useFocusTrap();
+// No autofocus: these dialogs had none before getting the focus trap
+const { trapRef } = useFocusTrap({ disableAutofocus: true });
 const emit = defineEmits(['close']);
 
 const { addNotification } = useNotificationsStore();

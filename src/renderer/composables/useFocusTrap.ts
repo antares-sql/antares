@@ -92,7 +92,8 @@ const useFocusTrap = (args?: {disableAutofocus?: boolean}) => {
       document.addEventListener('keydown', keyHandler);
       isInitiated.value = true;
 
-      const elements = localArgs.disableAutofocus ? [] : focusableElements();
+      // Autofocus as before the close buttons became focusable: the first control that isn't one of them
+      const elements = localArgs.disableAutofocus ? [] : focusableElements().filter(el => !el.classList.contains('btn-clear'));
       if (elements.length) elements[0].focus();
       else if (!$trapEl.contains(document.activeElement)) {
          // The focus must enter the dialog anyway (screen readers, Tab order): the container takes it

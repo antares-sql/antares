@@ -73,7 +73,8 @@ import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
-const { trapRef } = useFocusTrap();
+// No autofocus: these dialogs had none before getting the focus trap
+const { trapRef } = useFocusTrap({ disableAutofocus: true });
 
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();

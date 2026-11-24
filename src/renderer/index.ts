@@ -15,6 +15,7 @@ import { vTablist } from '@/directives/tablist';
 import { i18n } from '@/i18n';
 import { installDropdownKeyboard } from '@/libs/a11y/dropdowns';
 import { installFormLabels } from '@/libs/a11y/formLabels';
+import { installInputModality } from '@/libs/a11y/inputModality';
 import { installRegionNavigation } from '@/libs/a11y/regions';
 import { useApplicationStore } from '@/stores/application';
 import { QueryLog, useConsoleStore } from '@/stores/console';
@@ -42,6 +43,7 @@ createApp(App)
    .use(FloatingVue)
    .mount('#app');
 
+installInputModality();
 installDropdownKeyboard();
 installRegionNavigation();
 installFormLabels();

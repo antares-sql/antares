@@ -287,7 +287,7 @@ onBeforeUnmount(() => {
          }
 
          &:hover,
-         &:focus-within {
+         :root:not([data-input-modality="pointer"]) &:focus-within {
             .context-submenu {
                display: block;
                visibility: visible;

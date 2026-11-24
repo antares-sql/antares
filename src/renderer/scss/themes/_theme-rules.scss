@@ -31,7 +31,7 @@
 
     .menu-item a {
       &:hover,
-      &:focus {
+      :root:not([data-input-modality="pointer"]) &:focus {
         color: var(--menu-hover-text);
         background: var(--menu-hover-bg);
       }
@@ -338,7 +338,7 @@
         }
 
         &:hover,
-        &:focus {
+        :root:not([data-input-modality="pointer"]) &:focus {
           background: var(--context-hover);
         }
       }

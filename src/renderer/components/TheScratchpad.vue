@@ -182,7 +182,8 @@ import { ConnectionNote, TagCode, useScratchpadStore } from '@/stores/scratchpad
 import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
-const { trapRef } = useFocusTrap();
+// No autofocus: these dialogs had none before getting the focus trap
+const { trapRef } = useFocusTrap({ disableAutofocus: true });
 
 const applicationStore = useApplicationStore();
 const scratchpadStore = useScratchpadStore();
