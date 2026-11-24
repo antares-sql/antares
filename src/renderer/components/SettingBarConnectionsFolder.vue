@@ -15,8 +15,8 @@
          :item-key="((item: string) => localList.indexOf(item))"
          :class="[{'opened': isOpen}]"
          :style="[
-            `background: ${folder.color};`,
-            isOpen ? `max-height: ${60*(folder.connections.length+1)}px` : 'max-height: 60px',
+            `background: ${resolveFolderColor(folder.color)};`,
+            isOpen ? `max-height: ${3*(folder.connections.length+1)}rem` : 'max-height: 3rem',
             !isOpen || folderDrag ? `overflow: hidden;` : ''
          ]"
          :list="localList"
@@ -36,17 +36,17 @@
             <div
                v-if="isOpen"
                class="folder-icon"
-               :style="`color: ${folder.color};`"
+               :style="`color: ${resolveFolderColor(folder.color)};`"
                @click="closeFolder"
             >
                <BaseIcon
                   class="folder-icon-open"
-                  icon-name="mdiFolderOpen"
+                  icon-name="folder-open"
                   :size="36"
                />
                <BaseIcon
                   class="folder-icon-close"
-                  icon-name="mdiFolder"
+                  icon-name="folder"
                   :size="36"
                />
             </div>
@@ -70,8 +70,8 @@
                   :class="[getStatusBadge(element)]"
                >
                   <BaseIcon
-                     :icon-name="camelize(getConnectionOrderByUid(element).icon)"
-                     :type="getConnectionOrderByUid(element).hasCustomIcon ? 'custom' : 'mdi'"
+                     :icon-name="getConnectionOrderByUid(element).icon"
+                     :type="getConnectionOrderByUid(element).hasCustomIcon ? 'custom' : 'icon'"
                      :size="36"
                   />
                </div>
@@ -104,12 +104,14 @@ import * as Draggable from 'vuedraggable';
 import BaseIcon from '@/components/BaseIcon.vue';
 import SettingBarConnections from '@/components/SettingBarConnections.vue';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
+import { useThemesStore } from '@/stores/themes';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
 const workspacesStore = useWorkspacesStore();
 const connectionsStore = useConnectionsStore();
 
 const { getFolders: folders } = storeToRefs(connectionsStore);
+const { resolveFolderColor } = storeToRefs(useThemesStore());
 const { getSelected: selectedWorkspace } = storeToRefs(workspacesStore);
 
 const { getWorkspace } = workspacesStore;
@@ -208,16 +210,6 @@ const dragStart = () => {
 
 const dragStop = () => {
    emit('folder-drag', false);
-};
-
-const camelize = (text: string) => {
-   const textArr = text.split('-');
-   for (let i = 0; i < textArr.length; i++) {
-      if (i === 0) continue;
-      textArr[i] = textArr[i].charAt(0).toUpperCase() + textArr[i].slice(1);
-   }
-
-   return textArr.join('');
 };
 
 watch(() => dummyNested.value.length, () => {
@@ -392,8 +384,8 @@ emit('folder-sort');// To apply changes on component key change
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      max-width: 23px;
-      max-height: 23px;
+      max-width: 1.15rem;
+      max-height: 1.15rem;
       margin-bottom: 3px;
       position: relative;
       transition: opacity .2s;
@@ -434,9 +426,9 @@ emit('folder-sort');// To apply changes on component key change
 
          .folder-element-icon,
          .folder-element-icon svg {
-            width: 21px;
-            height: 21px;
-            font-size: 16px;
+            width: 1.05rem;
+            height: 1.05rem;
+            font-size: 0.8rem;
          }
       }
    }

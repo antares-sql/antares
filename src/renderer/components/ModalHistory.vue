@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <BaseIcon
-                        icon-name="mdiHistory"
+                        icon-name="history"
                         class="mr-1"
                         :size="24"
                      />
@@ -30,13 +30,13 @@
                   >
                   <BaseIcon
                      v-if="!searchTerm"
-                     icon-name="mdiMagnify"
+                     icon-name="search"
                      class="form-icon pr-2"
                      :size="18"
                   />
                   <BaseIcon
                      v-else
-                     icon-name="mdiBackspace"
+                     icon-name="backspace"
                      class="form-icon c-hand pr-2"
                      :size="18"
                      @click="searchTerm = ''"
@@ -65,7 +65,7 @@
                            >
                               <div class="tile-icon">
                                  <BaseIcon
-                                    icon-name="mdiCodeTags"
+                                    icon-name="code"
                                     class="pr-1"
                                     :size="24"
                                  />
@@ -83,21 +83,21 @@
                                     <div class="tile-history-buttons">
                                        <button class="btn btn-link pl-1" @click.stop="$emit('select-query', query.sql)">
                                           <BaseIcon
-                                             icon-name="mdiOpenInApp"
+                                             icon-name="open-external"
                                              class="pr-1"
                                              :size="22"
                                           /> {{ t('general.select') }}
                                        </button>
                                        <button class="btn btn-link pl-1" @click="copyQuery(query.sql)">
                                           <BaseIcon
-                                             icon-name="mdiContentCopy"
+                                             icon-name="copy"
                                              class="pr-1"
                                              :size="22"
                                           /> {{ t('general.copy') }}
                                        </button>
                                        <button class="btn btn-link pl-1" @click="deleteQuery(query)">
                                           <BaseIcon
-                                             icon-name="mdiDeleteForever"
+                                             icon-name="trash+x"
                                              class="pr-1"
                                              :size="22"
                                           /> {{ t('general.delete') }}
@@ -112,7 +112,7 @@
                </div>
                <div v-else class="empty">
                   <div class="empty-icon">
-                     <BaseIcon icon-name="mdiHistory" :size="48" />
+                     <BaseIcon icon-name="history" :size="48" />
                   </div>
                   <p class="empty-title h5">
                      {{ t('database.thereAreNoQueriesYet') }}

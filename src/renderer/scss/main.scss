@@ -14,6 +14,7 @@
 @import "fake-tables";
 @import "editor-icons";
 @import "db-icons";
+@import "icons";
 @import "themes/shape-tokens";
 @import "themes/dark-theme";
 @import "themes/light-theme";
@@ -83,7 +84,7 @@ option:checked {
   min-height: 0.8rem;
   position: relative;
 
-  > .mdi,
+  > .antares-icon,
   > .span {
     visibility: hidden;
   }
@@ -465,7 +466,7 @@ option:checked {
 }
 
 .btn.loading {
-  > .mdi,
+  > .antares-icon,
   > span {
     visibility: hidden;
   }

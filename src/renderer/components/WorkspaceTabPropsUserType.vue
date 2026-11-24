@@ -11,7 +11,7 @@
                >
                   <BaseIcon
                      class="mr-1"
-                     icon-name="mdiContentSave"
+                     icon-name="save"
                      :size="24"
                   />
                   <span>{{ t('general.save') }}</span>
@@ -24,7 +24,7 @@
                >
                   <BaseIcon
                      class="mr-1"
-                     icon-name="mdiDeleteSweep"
+                     icon-name="eraser"
                      :size="24"
                   />
                   <span>{{ t('general.clear') }}</span>
@@ -34,7 +34,7 @@
                <div class="d-flex" :title="t('database.schema')">
                   <BaseIcon
                      class="mt-1 mr-1"
-                     icon-name="mdiDatabase"
+                     icon-name="database"
                      :size="18"
                   /><b>{{ schema }}</b>
                </div>
@@ -120,7 +120,7 @@
                   <button class="btn btn-dark btn-sm ml-2" @click="addValue">
                      <BaseIcon
                         class="mr-1"
-                        icon-name="mdiPlus"
+                        icon-name="plus"
                         :size="18"
                      />
                      <span>{{ t('database.addValue') }}</span>
@@ -145,7 +145,7 @@
                         :title="t('general.moveUp')"
                         @click="moveValue(i, -1)"
                      >
-                        <BaseIcon icon-name="mdiArrowUp" :size="18" />
+                        <BaseIcon icon-name="arrow-up" :size="18" />
                      </button>
                      <button
                         class="btn btn-link btn-sm"
@@ -153,14 +153,14 @@
                         :title="t('general.moveDown')"
                         @click="moveValue(i, 1)"
                      >
-                        <BaseIcon icon-name="mdiArrowDown" :size="18" />
+                        <BaseIcon icon-name="arrow-down" :size="18" />
                      </button>
                      <button
                         class="btn btn-link btn-sm"
                         :title="t('general.delete')"
                         @click="localType.values.splice(i, 1)"
                      >
-                        <BaseIcon icon-name="mdiDelete" :size="18" />
+                        <BaseIcon icon-name="trash" :size="18" />
                      </button>
                   </template>
                </div>
@@ -173,7 +173,7 @@
                   <button class="btn btn-dark btn-sm ml-2" @click="addAttribute">
                      <BaseIcon
                         class="mr-1"
-                        icon-name="mdiPlus"
+                        icon-name="plus"
                         :size="18"
                      />
                      <span>{{ t('database.addAttribute') }}</span>
@@ -204,7 +204,7 @@
                      :title="t('general.delete')"
                      @click="localType.attributes.splice(i, 1)"
                   >
-                     <BaseIcon icon-name="mdiDelete" :size="18" />
+                     <BaseIcon icon-name="trash" :size="18" />
                   </button>
                </div>
             </template>
@@ -237,7 +237,7 @@
                   <button class="btn btn-dark btn-sm ml-2" @click="addCheck">
                      <BaseIcon
                         class="mr-1"
-                        icon-name="mdiPlus"
+                        icon-name="plus"
                         :size="18"
                      />
                      <span>{{ t('database.createNewCheck') }}</span>
@@ -266,7 +266,7 @@
                      :title="t('general.delete')"
                      @click="localType.checks.splice(i, 1)"
                   >
-                     <BaseIcon icon-name="mdiDelete" :size="18" />
+                     <BaseIcon icon-name="trash" :size="18" />
                   </button>
                </div>
             </template>

@@ -19,6 +19,24 @@ interface TabTransaction {
 const promisify = (fn: (cb: (err?: Error) => void) => void) =>
    new Promise<void>((resolve, reject) => fn(err => err ? reject(err) : resolve()));
 
+/** Server connections already set up (pooled attachments are reused) */
+const sessionsReady = new WeakSet<object>();
+
+/**
+ * node-firebird describes DECFLOAT result columns with a wrong BLR (error -804, SQLDA incorrect type):
+ * Firebird 4+ sends them as exact strings instead. Older servers have neither DECFLOAT nor SET BIND.
+ */
+async function setupSession (db: firebird.Database) {
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   const key = (db as any).connection ?? db;
+   if (sessionsReady.has(key)) return;
+   sessionsReady.add(key);
+
+   await new Promise<void>(resolve => {
+      db.query('SET BIND OF DECFLOAT TO VARCHAR(64)', [], () => resolve()); // Errors (Firebird < 4) ignored
+   });
+}
+
 /**
  * Connections of a Firebird client: pool (or single attachment) and the dedicated
  * attachments + transactions of query tabs with autocommit off.
@@ -47,13 +65,15 @@ export class FirebirdConnections {
    }
 
    /** A new attachment */
-   attach () {
-      return new Promise<firebird.Database>((resolve, reject) => {
+   async attach () {
+      const db = await new Promise<firebird.Database>((resolve, reject) => {
          firebird.attach({ ...this._params, ...ATTACH_OPTIONS }, (err, db) => {
             if (err) reject(err);
             else resolve(db);
          });
       });
+      await setupSession(db);
+      return db;
    }
 
    createPool () {
@@ -88,6 +108,7 @@ export class FirebirdConnections {
                else resolve(db);
             });
          });
+         await setupSession(database);
          return createLease(database, () => database.detach()); // back to the pool
       }
 

@@ -10,7 +10,7 @@
       <template #header>
          <div class="d-flex">
             <BaseIcon
-               icon-name="mdiNoteEditOutline"
+               icon-name="note+pencil"
                class="mr-1"
                :size="24"
             /> {{ t('application.editNote') }}

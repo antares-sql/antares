@@ -4,7 +4,7 @@
          <div :class="customizations.sortableFields ? 'row-draggable' : 'text-center'">
             <BaseIcon
                v-if="customizations.sortableFields"
-               icon-name="mdiDragHorizontal"
+               icon-name="grip"
                :size="22"
                class="row-draggable-icon"
             />
@@ -20,8 +20,7 @@
                class="p-vcentered"
             >
                <BaseIcon
-                  icon-name="mdiKey"
-                  :rotate="45"
+                  icon-name="key"
                   :size="14"
                   class="d-inline-block column-key c-help"
                   :class="`key-${index.type}`"
@@ -35,7 +34,7 @@
             >
                <BaseIcon
                   class="d-inline-block c-help"
-                  icon-name="mdiKeyLink"
+                  icon-name="key+arrow"
                   :size="16"
                />
             </div>
@@ -248,7 +247,7 @@
             <div class="d-flex">
                <BaseIcon
                   class="mr-1"
-                  icon-name="mdiPlaylistEdit"
+                  icon-name="list+pencil"
                   :size="24"
                />
                <span class="cut-text">{{ t('database.default') }} "{{ row.name }}"</span>

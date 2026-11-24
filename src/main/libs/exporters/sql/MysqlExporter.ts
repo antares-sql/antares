@@ -1,17 +1,95 @@
+import { FLOAT, NUMBER } from 'common/fieldTypes';
 import * as exporter from 'common/interfaces/exporter';
-import { valueToSqlString } from 'common/libs/sqlUtils';
+import * as mysql from 'mysql2/promise';
 
 import { MySQLClient } from '../../clients/MySQLClient';
-import { SqlExporter } from './SqlExporter';
+import { DataColumn, NUMERIC_LITERAL, SqlExporter, ValueFormatter } from './SqlExporter';
+
+const NUMERIC_TYPES = new Set([...NUMBER, ...FLOAT]);
+
+/**
+ * Values read as the server sends them: BIGINT and DECIMAL as strings (no rounding beyond 2^53),
+ * JSON as text (not parsed and serialized again), spatial values in the internal binary format
+ * (written as hex, like mysqldump --hex-blob). Dates are strings (dateStrings connection option).
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const typeCast = (field: any, next: () => unknown) => {
+   switch (field.type) {
+      case 'LONGLONG':
+      case 'NEWDECIMAL':
+      case 'DECIMAL':
+         return field.string();
+      case 'JSON':
+         return field.string('utf8');
+      case 'GEOMETRY':
+         return field.buffer();
+      default:
+         return next();
+   }
+};
+
+// eslint-disable-next-line no-control-regex
+const CHARS_TO_ESCAPE = /[\0\b\t\n\r\x1a"'\\]/g;
+const CHARS_ESCAPE_MAP: Record<string, string> = {
+   '\0': '\\0',
+   '\b': '\\b',
+   '\t': '\\t',
+   '\n': '\\n',
+   '\r': '\\r',
+   '\x1a': '\\Z',
+   '"': '\\"',
+   '\'': '\\\'',
+   '\\': '\\\\'
+};
 
 export default class MysqlExporter extends SqlExporter {
    protected _client: MySQLClient;
+   /** Connection of the dump: a transaction with a consistent snapshot, session time zone UTC */
+   private _connection?: mysql.Connection;
 
    constructor (client: MySQLClient, tables: exporter.TableParams[], options: exporter.ExportOptions) {
       super(tables, options);
 
       this._client = client;
       this._commentChar = '#';
+   }
+
+   get host () {
+      return this._client.host;
+   }
+
+   async getServerVersion () {
+      const version = await this._client.getVersion();
+      return `${version.name} ${version.number}`;
+   }
+
+   quoteName (name: string) {
+      return `\`${name.replaceAll('`', '``')}\``;
+   }
+
+   /**
+    * Like mysqldump --single-transaction: all the rows come from the same snapshot (consistent foreign keys),
+    * TIMESTAMP values are read in UTC and the dump sets TIME_ZONE='+00:00' (portable across servers).
+    */
+   async prepare () {
+      this._connection = await this._client.getSingleConnection();
+      await this._connection.query('SET SESSION time_zone = \'+00:00\'');
+      // The output may stop reading rows for a while (backpressure): the server must not drop the connection
+      await this._connection.query('SET SESSION net_write_timeout = 3600');
+      await this._connection.query('SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ');
+      await this._connection.query('START TRANSACTION /*!40100 WITH CONSISTENT SNAPSHOT */');
+   }
+
+   async cleanup () {
+      const connection = this._connection;
+      this._connection = undefined;
+      connection?.destroy();
+   }
+
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   private async _query<T = any> (sql: string): Promise<T[]> {
+      const [rows] = await this._connection.query(sql);
+      return rows as T[];
    }
 
    async getSqlHeader () {
@@ -23,6 +101,9 @@ export default class MysqlExporter extends SqlExporter {
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 SET NAMES utf8mb4;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;`;
@@ -36,6 +117,8 @@ SET NAMES utf8mb4;
       return `/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
@@ -45,9 +128,7 @@ ${footer}
    }
 
    async getCreateTable (tableName: string) {
-      const { rows } = await this._client.raw(
-         `SHOW CREATE TABLE \`${this.schemaName}\`.\`${tableName}\``
-      );
+      const rows = await this._query(`SHOW CREATE TABLE ${this.quoteName(this.schemaName)}.${this.quoteName(tableName)}`);
 
       if (rows.length !== 1) return '';
 
@@ -57,123 +138,90 @@ ${footer}
    }
 
    getDropTable (tableName: string) {
-      return `DROP TABLE IF EXISTS \`${tableName}\`;`;
+      return `DROP TABLE IF EXISTS ${this.quoteName(tableName)};`;
    }
 
-   async * getTableInsert (tableName: string) {
-      let rowCount = 0;
-      let sqlStr = '';
+   async getDataColumns (tableName: string): Promise<DataColumn[]> {
+      const columns = await this._client.getTableColumns({ table: tableName, schema: this.schemaName });
 
-      const countResults = await this._client.raw(`SELECT COUNT(1) as count FROM \`${this.schemaName}\`.\`${tableName}\``);
-      if (countResults.rows.length === 1) rowCount = countResults.rows[0].count;
+      return columns
+         .filter(column => !column.generated)
+         .map(column => ({ name: column.name, format: this._formatter(column.type) }));
+   }
 
-      if (rowCount > 0) {
-         let queryLength = 0;
-         let rowsWritten = 0;
-         let rowIndex = 0;
-         const { sqlInsertDivider, sqlInsertAfter } = this._options;
-         const columns = await this._client.getTableColumns({
-            table: tableName,
-            schema: this.schemaName
-         });
+   private _formatter (type: string): ValueFormatter {
+      const quote = (value: string) => this.escapeAndQuote(value);
+      const blob = (data: Buffer) => this._client.dialect.blobLiteral(data);
 
-         const notGeneratedColumns = columns.filter(col => !col.generated);
-         const columnNames = notGeneratedColumns.map(col => '`' + col.name + '`');
-         const insertStmt = `INSERT INTO \`${tableName}\` (${columnNames.join(
-            ', '
-         )}) VALUES`;
-
-         sqlStr += `LOCK TABLES \`${tableName}\` WRITE;\n`;
-         sqlStr += `/*!40000 ALTER TABLE \`${tableName}\` DISABLE KEYS */;`;
-         sqlStr += '\n\n';
-         yield sqlStr;
-
-         yield insertStmt;
-
-         const stream = await this._queryStream(
-            `SELECT ${columnNames.join(', ')} FROM \`${this.schemaName}\`.\`${tableName}\``
-         );
-
-         for await (const row of stream) {
-            if (this.isCancelled) {
-               stream.destroy();
-               yield null;
-               return;
-            }
-
-            let sqlInsertString = '';
-
-            if (
-               (sqlInsertDivider === 'bytes' && queryLength >= sqlInsertAfter * 1024) ||
-               (sqlInsertDivider === 'rows' && rowsWritten === sqlInsertAfter)
-            ) {
-               sqlInsertString += `;\n${insertStmt}\n\t(`;
-               queryLength = 0;
-               rowsWritten = 0;
-            }
-            else if (rowIndex === 0) sqlInsertString += '\n\t(';
-            else sqlInsertString += ',\n\t(';
-
-            for (const i in notGeneratedColumns) {
-               const column = notGeneratedColumns[i];
-               const val = row[column.name];
-
-               sqlInsertString += valueToSqlString({ val, client: 'mysql', field: column });
-
-               if (parseInt(i) !== notGeneratedColumns.length - 1)
-                  sqlInsertString += ', ';
-            }
-
-            sqlInsertString += ')';
-
-            queryLength += sqlInsertString.length;
-            rowsWritten++;
-            rowIndex++;
-            yield sqlInsertString;
-         }
-
-         sqlStr = ';\n\n';
-         sqlStr += `/*!40000 ALTER TABLE \`${tableName}\` ENABLE KEYS */;\n`;
-         sqlStr += 'UNLOCK TABLES;';
-
-         yield sqlStr;
+      if (type === 'BIT') {
+         return value => value instanceof Uint8Array
+            ? `b'${Array.from(value, byte => byte.toString(2).padStart(8, '0')).join('')}'`
+            : this.formatValue(value, quote, blob);
       }
+
+      if (NUMERIC_TYPES.has(type)) {
+         return value => typeof value === 'string' && NUMERIC_LITERAL.test(value)
+            ? value
+            : this.formatValue(value, quote, blob);
+      }
+
+      return value => this.formatValue(value, quote, blob);
    }
 
+   async * streamRows (tableName: string, columns: DataColumn[]): AsyncIterable<unknown[]> {
+      const sql = `SELECT ${columns.map(c => this.quoteName(c.name)).join(', ')} FROM ${this.quoteName(this.schemaName)}.${this.quoteName(tableName)}`;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const stream = (this._connection as any).connection
+         .query({ sql, rowsAsArray: true, typeCast })
+         .stream({ highWaterMark: 1000 });
+
+      yield * stream;
+   }
+
+   getBeforeTableData (tableName: string) {
+      return `LOCK TABLES ${this.quoteName(tableName)} WRITE;\n/*!40000 ALTER TABLE ${this.quoteName(tableName)} DISABLE KEYS */;\n\n`;
+   }
+
+   getAfterTableData (tableName: string) {
+      return `\n/*!40000 ALTER TABLE ${this.quoteName(tableName)} ENABLE KEYS */;\nUNLOCK TABLES;`;
+   }
+
+   /**
+    * Views are created after the tables, first as placeholders (views with the same columns) so that
+    * views using other views can be created in any order (like mysqldump)
+    */
    async getViews () {
-      const { rows: views } = await this._client.raw(
-         `SHOW TABLE STATUS FROM \`${this.schemaName}\` WHERE Comment = 'VIEW'`
+      const views = await this._query<{ name: string }>(
+         `SELECT TABLE_NAME AS name FROM information_schema.TABLES WHERE TABLE_SCHEMA = ${this.escapeAndQuote(this.schemaName)} AND TABLE_TYPE = 'VIEW' ORDER BY TABLE_NAME`
       );
-      let sqlString = '';
+      if (!views.length) return '';
 
-      sqlString += this.buildComment('Creating temporary tables to overcome VIEW dependency errors');
+      let sqlString = this.buildComment('Temporary views to overcome VIEW dependency errors') + '\n\n';
 
-      // Temporary tables
-      for (const view of views) {
-         const viewFields = await this._client.getTableColumns({ schema: this.schemaName, table: view.Name });
-         const tableFields: string[] = [];
-
-         for (const field of viewFields) {
-            const typeInfo = this._client.getTypeInfo(field.type);
-            const length = typeInfo.length ? field.enumValues || field.numLength || field.charLength || field.datePrecision : false;
-
-            tableFields.push(`\`${field.name}\` ${field.type.toUpperCase()}${length ? `(${length}${field.numScale ? `,${field.numScale}` : ''})` : ''} ${field.unsigned ? 'UNSIGNED' : ''} ${field.zerofill ? 'ZEROFILL' : ''} ${field.nullable ? 'NULL' : 'NOT NULL'} ${field.autoIncrement ? 'AUTO_INCREMENT' : ''} ${field.collation ? `COLLATE ${field.collation}` : ''}`);
+      for (const { name } of views) {
+         let columns: string[] = [];
+         try {
+            columns = (await this._client.getTableColumns({ schema: this.schemaName, table: name })).map(field => field.name);
          }
-         sqlString +=
-`
-CREATE TABLE \`${view.Name}\`(
-   ${tableFields.join(',\n\t')}
-);`;
+         catch (_) {} // Invalid view (e.g. a referenced table was dropped): created anyway
 
-         sqlString += '\n';
+         const select = columns.length
+            ? columns.map(column => `1 AS ${this.quoteName(column)}`).join(', ')
+            : '1 AS `1`';
+
+         sqlString += `DROP TABLE IF EXISTS ${this.quoteName(name)};\n`;
+         sqlString += `/*!50001 DROP VIEW IF EXISTS ${this.quoteName(name)}*/;\n`;
+         sqlString += `/*!50001 CREATE VIEW ${this.quoteName(name)} AS SELECT ${select}*/;\n\n`;
       }
 
       sqlString += '\n';
 
-      for (const view of views) {
-         sqlString += `DROP TABLE IF EXISTS \`${view.Name}\`;\n`;
-         const viewSyntax = await this.getCreateTable(view.Name);
-         sqlString += viewSyntax.replaceAll('`' + this.schemaName + '`.', '');
+      for (const { name } of views) {
+         const [view] = await this._query(`SHOW CREATE VIEW ${this.quoteName(this.schemaName)}.${this.quoteName(name)}`);
+         if (!view) continue;
+
+         sqlString += `/*!50001 DROP VIEW IF EXISTS ${this.quoteName(name)}*/;\n`;
+         sqlString += view['Create View'].replaceAll(this.quoteName(this.schemaName) + '.', '') + ';';
          sqlString += '\n\n';
       }
 
@@ -181,12 +229,7 @@ CREATE TABLE \`${view.Name}\`(
    }
 
    async getTriggers () {
-      const { rows: triggers } = await this._client.raw(
-         `SHOW TRIGGERS FROM \`${this.schemaName}\``
-      );
-      // const generatedTables = this._tables
-      //    .filter(t => t.includeStructure)
-      //    .map(t => t.table);
+      const triggers = await this._query(`SHOW TRIGGERS FROM ${this.quoteName(this.schemaName)}`);
 
       let sqlString = '';
 
@@ -200,15 +243,14 @@ CREATE TABLE \`${view.Name}\`(
             sql_mode: sqlMode
          } = trigger;
 
-         // if (!generatedTables.includes(table)) continue;// Commented to avoid issues if export contains triggers without tables
-
          const definer = this.getEscapedDefiner(trigger.Definer);
-         sqlString += '/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE*/;;\n';
-         sqlString += `/*!50003 SET SQL_MODE="${sqlMode}" */;\n`;
+         sqlString += '/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE*/;\n';
+         sqlString += `/*!50003 SET SQL_MODE=${this.escapeAndQuote(sqlMode)} */;\n`;
+         sqlString += `/*!50032 DROP TRIGGER IF EXISTS ${this.quoteName(name)} */;\n`;
          sqlString += 'DELIMITER ;;\n';
          sqlString += '/*!50003 CREATE*/ ';
          sqlString += `/*!50017 DEFINER=${definer}*/ `;
-         sqlString += `/*!50003 TRIGGER \`${name}\` ${timing} ${event} ON \`${table}\` FOR EACH ROW ${statement}*/;;\n`;
+         sqlString += `/*!50003 TRIGGER ${this.quoteName(name)} ${timing} ${event} ON ${this.quoteName(table)} FOR EACH ROW ${statement}*/;;\n`;
          sqlString += 'DELIMITER ;\n';
          sqlString += '/*!50003 SET SQL_MODE=@OLD_SQL_MODE */;\n\n';
       }
@@ -217,8 +259,8 @@ CREATE TABLE \`${view.Name}\`(
    }
 
    async getSchedulers () {
-      const { rows: schedulers } = await this._client.raw(
-         `SELECT *, EVENT_SCHEMA AS \`Db\`, EVENT_NAME AS \`Name\` FROM information_schema.\`EVENTS\` WHERE EVENT_SCHEMA = '${this.schemaName}'`
+      const schedulers = await this._query(
+         `SELECT * FROM information_schema.EVENTS WHERE EVENT_SCHEMA = ${this.escapeAndQuote(this.schemaName)}`
       );
       let sqlString = '';
 
@@ -238,15 +280,15 @@ CREATE TABLE \`${view.Name}\`(
          } = scheduler;
 
          const definer = this.getEscapedDefiner(scheduler.DEFINER);
-         const comment = this.escapeAndQuote(scheduler.EVENT_COMMENT);
+         const comment = this.escapeAndQuote(scheduler.EVENT_COMMENT || '');
 
-         sqlString += `/*!50106 DROP EVENT IF EXISTS \`${name}\` */;\n`;
-         sqlString += '/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE*/;;\n';
-         sqlString += `/*!50003 SET SQL_MODE='${sqlMode}' */;\n`;
+         sqlString += `/*!50106 DROP EVENT IF EXISTS ${this.quoteName(name)} */;\n`;
+         sqlString += '/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE*/;\n';
+         sqlString += `/*!50003 SET SQL_MODE=${this.escapeAndQuote(sqlMode)} */;\n`;
          sqlString += 'DELIMITER ;;\n';
          sqlString += '/*!50106 CREATE*/ ';
          sqlString += `/*!50117 DEFINER=${definer}*/ `;
-         sqlString += `/*!50106 EVENT \`${name}\` ON SCHEDULE `;
+         sqlString += `/*!50106 EVENT ${this.quoteName(name)} ON SCHEDULE `;
          if (type === 'RECURRING') {
             sqlString += `EVERY ${intervalValue} ${intervalField} STARTS '${starts}' `;
 
@@ -254,57 +296,44 @@ CREATE TABLE \`${view.Name}\`(
          }
          else sqlString += `AT '${at}' `;
          sqlString += `ON COMPLETION ${onCompletion} ${
-            status === 'disabled' ? 'DISABLE' : 'ENABLE'
-         } COMMENT ${comment || '\'\''} DO ${definition}*/;;\n`;
+            status === 'DISABLED' ? 'DISABLE' : 'ENABLE'
+         } COMMENT ${comment} DO ${definition}*/;;\n`;
          sqlString += 'DELIMITER ;\n';
-         sqlString += '/*!50003 SET SQL_MODE=@OLD_SQL_MODE*/;;\n';
+         sqlString += '/*!50003 SET SQL_MODE=@OLD_SQL_MODE*/;\n\n';
       }
 
       return sqlString;
    }
 
    async getFunctions () {
-      const { rows: functions } = await this._client.raw(
-         `SHOW FUNCTION STATUS WHERE \`Db\` = '${this.schemaName}';`
+      const functions = await this._query(
+         `SHOW FUNCTION STATUS WHERE \`Db\` = ${this.escapeAndQuote(this.schemaName)}`
       );
 
       let sqlString = '';
 
-      for (const func of functions) {
-         const definer = this.getEscapedDefiner(func.Definer);
-         sqlString += await this.getRoutineSyntax(
-            func.Name,
-            func.Type,
-            definer
-         );
-      }
+      for (const func of functions)
+         sqlString += await this.getRoutineSyntax(func.Name, func.Type, this.getEscapedDefiner(func.Definer));
 
       return sqlString;
    }
 
    async getRoutines () {
-      const { rows: routines } = await this._client.raw(
-         `SHOW PROCEDURE STATUS WHERE \`Db\` = '${this.schemaName}';`
+      const routines = await this._query(
+         `SHOW PROCEDURE STATUS WHERE \`Db\` = ${this.escapeAndQuote(this.schemaName)}`
       );
 
       let sqlString = '';
 
-      for (const routine of routines) {
-         const definer = this.getEscapedDefiner(routine.Definer);
-
-         sqlString += await this.getRoutineSyntax(
-            routine.Name,
-            routine.Type,
-            definer
-         );
-      }
+      for (const routine of routines)
+         sqlString += await this.getRoutineSyntax(routine.Name, routine.Type, this.getEscapedDefiner(routine.Definer));
 
       return sqlString;
    }
 
    async getRoutineSyntax (name: string, type: string, definer: string) {
-      const { rows: routines } = await this._client.raw(
-         `SHOW CREATE ${type} \`${this.schemaName}\`.\`${name}\``
+      const routines = await this._query(
+         `SHOW CREATE ${type} ${this.quoteName(this.schemaName)}.${this.quoteName(name)}`
       );
 
       if (routines.length === 0) return '';
@@ -320,67 +349,27 @@ CREATE TABLE \`${view.Name}\`(
          const startOffset = createProcedure.indexOf(type);
          const procedureBody = createProcedure.substring(startOffset);
 
-         sqlString += `/*!50003 DROP ${type} IF EXISTS ${name}*/;;\n`;
-         sqlString += '/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE*/;;\n';
-         sqlString += `/*!50003 SET SQL_MODE="${sqlMode}"*/;;\n`;
+         sqlString += `/*!50003 DROP ${type} IF EXISTS ${this.quoteName(name)}*/;\n`;
+         sqlString += '/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE*/;\n';
+         sqlString += `/*!50003 SET SQL_MODE=${this.escapeAndQuote(sqlMode)}*/;\n`;
          sqlString += 'DELIMITER ;;\n';
          sqlString += `/*!50003 CREATE*/ /*!50020 DEFINER=${definer}*/ /*!50003 ${procedureBody}*/;;\n`;
          sqlString += 'DELIMITER ;\n';
-         sqlString += '/*!50003 SET SQL_MODE=@OLD_SQL_MODE*/;\n';
+         sqlString += '/*!50003 SET SQL_MODE=@OLD_SQL_MODE*/;\n\n';
       }
 
       return sqlString;
    }
 
-   async _queryStream (sql: string) {
-      const connection = await this._client.getConnection();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const stream = (connection as any).connection.query(sql).stream();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const dispose = () => (connection as any).release();
-
-      stream.on('end', dispose);
-      stream.on('error', dispose);
-      stream.on('close', dispose);
-      return stream;
-   }
-
    getEscapedDefiner (definer: string) {
-      return definer
-         .split('@')
-         .map(part => '`' + part + '`')
-         .join('@');
+      const at = definer.lastIndexOf('@');
+      return at === -1
+         ? this.quoteName(definer)
+         : `${this.quoteName(definer.slice(0, at))}@${this.quoteName(definer.slice(at + 1))}`;
    }
 
+   /** MySQL string literal (backslash escapes) */
    escapeAndQuote (val: string) {
-      // eslint-disable-next-line no-control-regex
-      const CHARS_TO_ESCAPE = /[\0\b\t\n\r\x1a"'\\]/g;
-      const CHARS_ESCAPE_MAP: Record<string, string> = {
-         '\0': '\\0',
-         '\b': '\\b',
-         '\t': '\\t',
-         '\n': '\\n',
-         '\r': '\\r',
-         '\x1a': '\\Z',
-         '"': '\\"',
-         '\'': '\\\'',
-         '\\': '\\\\'
-      };
-      let chunkIndex = CHARS_TO_ESCAPE.lastIndex = 0;
-      let escapedVal = '';
-      let match;
-
-      while ((match = CHARS_TO_ESCAPE.exec(val))) {
-         escapedVal += val.slice(chunkIndex, match.index) + CHARS_ESCAPE_MAP[match[0]];
-         chunkIndex = CHARS_TO_ESCAPE.lastIndex;
-      }
-
-      if (chunkIndex === 0)
-         return `'${val}'`;
-
-      if (chunkIndex < val.length)
-         return `'${escapedVal + val.slice(chunkIndex)}'`;
-
-      return `'${escapedVal}'`;
+      return `'${val.replace(CHARS_TO_ESCAPE, char => CHARS_ESCAPE_MAP[char])}'`;
    }
 }

@@ -405,7 +405,7 @@
                   :title="t('general.cancel')"
                   @click="abortConnection()"
                >
-                  <BaseIcon icon-name="mdiWindowClose" :size="24" />
+                  <BaseIcon icon-name="x" :size="24" />
                   <span class="d-invisible pr-1">{{ t('connection.testConnection') }}</span>
                </button>
                <button
@@ -417,7 +417,7 @@
                   @click="startTest"
                >
                   <BaseIcon
-                     icon-name="mdiLightningBolt"
+                     icon-name="bolt"
                      :size="24"
                      class="mr-1"
                   />
@@ -431,7 +431,7 @@
                @click="saveConnection"
             >
                <BaseIcon
-                  icon-name="mdiContentSave"
+                  icon-name="save"
                   :size="24"
                   class="mr-1"
                />
@@ -447,7 +447,7 @@
                   :title="t('general.cancel')"
                   @click="abortConnection()"
                >
-                  <BaseIcon icon-name="mdiWindowClose" :size="24" />
+                  <BaseIcon icon-name="x" :size="24" />
                   <span class="d-invisible pr-1">{{ t('connection.connect') }}</span>
                </button>
                <button
@@ -459,7 +459,7 @@
                   @click="startConnection"
                >
                   <BaseIcon
-                     icon-name="mdiConnection"
+                     icon-name="plug"
                      :size="24"
                      class="mr-1"
                   />

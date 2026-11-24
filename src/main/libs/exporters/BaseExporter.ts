@@ -4,14 +4,20 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { createGzip, Gzip } from 'zlib';
 
+/** Output is collected in chunks of this size: one stream write per row would make gzip and fs much slower */
+const WRITE_CHUNK_SIZE = 64 * 1024;
+
 export class BaseExporter extends EventEmitter {
    protected _tables;
    protected _options;
    protected _isCancelled;
+   /** Cancelled by the user (not by an error): the partial file is deleted */
+   private _cancelRequested = false;
    protected _outputFileStream: fs.WriteStream;
    protected _processedStream: fs.WriteStream | Gzip;
    protected _state;
    private _lastAccessCheck = 0;
+   private _buffer = '';
 
    constructor (tables: exporter.TableParams[], options: exporter.ExportOptions) {
       super();
@@ -40,18 +46,28 @@ export class BaseExporter extends EventEmitter {
       try {
          this.emit('start', this);
          await this.dump();
+         await this.flush();
       }
       catch (err) {
          this.emit('error', err);
          throw err;
       }
       finally {
+         try {
+            await this.cleanup();
+         }
+         catch (_) {} // Closing database resources must not hide the export result
+
          // Emit 'end' only once the file is fully written (otherwise it may be read truncated)
          await new Promise<void>(resolve => {
             this._outputFileStream.once('finish', resolve);
             this._outputFileStream.once('error', () => resolve());
             this._processedStream.end();
          });
+
+         if (this._cancelRequested)
+            fs.rmSync(this._options.outputFile, { force: true });
+
          this.emit('end');
       }
    }
@@ -70,6 +86,7 @@ export class BaseExporter extends EventEmitter {
 
    cancel () {
       this._isCancelled = true;
+      this._cancelRequested = true;
       this.emit('cancel');
       this.emitUpdate({ op: 'cancelling' });
    }
@@ -78,13 +95,25 @@ export class BaseExporter extends EventEmitter {
       this.emit('progress', { ...this._state, ...state });
    }
 
-   /**
-    * Writes to the output and waits when its buffer is full: rows are read from the database faster
-    * than they are written (gzip, slow disks), and an unbounded buffer exhausts the worker memory
-    * on big tables, freezing the export (#970).
-    */
+   /** Appends to the output: data is written in chunks (see flush) */
    async writeString (data: string) {
-      if (this._isCancelled) return;
+      if (this._isCancelled || !data) return;
+
+      this._buffer += data;
+      if (this._buffer.length >= WRITE_CHUNK_SIZE)
+         await this.flush();
+   }
+
+   /**
+    * Writes the collected output and waits when the stream buffer is full: rows are read from the
+    * database faster than they are written (gzip, slow disks), and an unbounded buffer exhausts the
+    * worker memory on big tables, freezing the export (#970).
+    */
+   async flush () {
+      if (this._isCancelled || !this._buffer) return;
+
+      const data = this._buffer;
+      this._buffer = '';
 
       // The output file was deleted or moved: checked at most once per second (it is a syscall per write),
       // and only once the stream has created it (it is opened asynchronously)
@@ -118,7 +147,12 @@ export class BaseExporter extends EventEmitter {
       }
    }
 
-   dump () {
+   dump (): Promise<void> {
       throw new Error('Exporter must implement the "dump" method');
+   }
+
+   /** Releases the resources of the export (database connections): called once, also on errors and cancel */
+   async cleanup (): Promise<void> {
+      return undefined;
    }
 }

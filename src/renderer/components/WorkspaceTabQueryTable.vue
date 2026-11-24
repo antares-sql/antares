@@ -49,8 +49,7 @@
                      <div class="table-column-title" @click="sort(field)">
                         <div v-if="field.key" :title="keyName(field.key)">
                            <BaseIcon
-                              icon-name="mdiKey"
-                              :rotate="45"
+                              icon-name="key"
                               :size="14"
                               class="column-key c-help mt-1 mr-1"
                               :class="`key-${field.key}`"
@@ -59,13 +58,13 @@
                         <span>{{ field.alias || field.name }}</span>
                         <BaseIcon
                            v-if="isSortable && currentSort[resultsetIndex]?.field === field.name || currentSort[resultsetIndex]?.field === `${field.tableAlias || field.table}.${field.name}`"
-                           :icon-name="currentSort[resultsetIndex].dir === 'asc' ? 'mdiSortAscending' : 'mdiSortDescending'"
+                           :icon-name="currentSort[resultsetIndex].dir === 'asc' ? 'sort-asc' : 'sort-desc'"
                            :size="18"
                            class="sort-icon ml-1"
                         />
                         <BaseIcon
                            v-else
-                           icon-name="mdiMinus"
+                           icon-name="minus"
                            :size="18"
                            class="sort-icon d-invisible"
                         />
@@ -114,7 +113,7 @@
          <template #header>
             <div class="d-flex">
                <BaseIcon
-                  icon-name="mdiDelete"
+                  icon-name="trash"
                   class="mr-1"
                   :size="24"
                />
@@ -136,7 +135,7 @@
          <template #header>
             <div class="d-flex">
                <BaseIcon
-                  icon-name="mdiFileExport"
+                  icon-name="file+up"
                   class="mr-1"
                   :size="24"
                />
@@ -181,7 +180,7 @@
          <template #header>
             <div class="d-flex">
                <BaseIcon
-                  icon-name="mdiFileExport"
+                  icon-name="file+up"
                   class="mr-1"
                   :size="24"
                />

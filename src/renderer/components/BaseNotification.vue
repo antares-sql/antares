@@ -10,7 +10,7 @@
       </span>
       <BaseIcon
          v-if="isExpandable"
-         :icon-name="isExpanded ? 'mdiChevronUp' : 'mdiChevronDown'"
+         :icon-name="isExpanded ? 'chevron-up' : 'chevron-down'"
          class=" c-hand expand-btn"
          :size="24"
          @click="toggleExpand"
@@ -43,19 +43,19 @@ const notificationStatus = computed(() => {
    switch (props.status) {
       case 'success':
          className = 'toast-success';
-         iconName = 'mdiCheck';
+         iconName = 'check';
          break;
       case 'error':
          className = 'toast-error';
-         iconName = 'mdiAlertRhombus';
+         iconName = 'alert-rhombus';
          break;
       case 'warning':
          className = 'toast-warning';
-         iconName = 'mdiAlert';
+         iconName = 'alert-triangle';
          break;
       case 'primary':
          className = 'toast-primary';
-         iconName = 'mdiInformationOutline';
+         iconName = 'info';
          break;
    }
 

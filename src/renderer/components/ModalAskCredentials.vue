@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <BaseIcon
-                        icon-name="mdiKeyVariant"
+                        icon-name="key"
                         class="mr-1"
                         :size="24"
                      /> {{ t('connection.credentials') }}

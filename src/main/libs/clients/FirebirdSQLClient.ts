@@ -4,7 +4,7 @@ import { removeComments } from 'common/libs/sqlUtils';
 import * as firebird from 'node-firebird';
 import * as path from 'path';
 
-import { DatabaseClient, DatabasesCapability, RoutinesCapability, UsersCapability } from '../db/core/contracts';
+import { DatabaseClient, DatabasesCapability, DbConfigCapability, RoutinesCapability, UsersCapability } from '../db/core/contracts';
 import { arrayRowsToObjects, uniqueColumnNames } from '../db/core/resultRows';
 import { maskSecrets, trimmed } from '../db/core/users';
 import { FirebirdConnections } from '../db/engines/firebird/FirebirdConnections';
@@ -13,7 +13,7 @@ import { FirebirdDialect } from '../db/engines/firebird/FirebirdDialect';
 import { FirebirdUsers } from '../db/engines/firebird/FirebirdUsers';
 import { BaseClient } from './BaseClient';
 
-export class FirebirdSQLClient extends BaseClient implements DatabaseClient, DatabasesCapability, RoutinesCapability, UsersCapability {
+export class FirebirdSQLClient extends BaseClient implements DatabaseClient, DatabasesCapability, DbConfigCapability, RoutinesCapability, UsersCapability {
    protected readonly _ddl = new FirebirdDdl();
    protected readonly _dialect = new FirebirdDialect();
    private readonly _users = new FirebirdUsers();
@@ -36,6 +36,13 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
       560: 'TIME',
       570: 'DATE',
       580: 'BIGINT',
+      32748: 'TIMESTAMP WITH TIME ZONE', // >= 4.0 (extended format)
+      32750: 'TIME WITH TIME ZONE', // >= 4.0 (extended format)
+      32752: 'INT128', // >= 4.0
+      32754: 'TIMESTAMP WITH TIME ZONE', // >= 4.0
+      32756: 'TIME WITH TIME ZONE', // >= 4.0
+      32760: 'DECFLOAT', // >= 4.0 DECFLOAT(16)
+      32762: 'DECFLOAT', // >= 4.0 DECFLOAT(34)
       32764: 'BOOLEAN', // >= 3.0
       32766: 'NULL' // >= 2.5
    }
@@ -48,7 +55,7 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
    }
 
    private _getType (type: string, subType?: number) {
-      let fieldType = type.trim();
+      let fieldType = type?.trim() ?? 'UNKNOWN';
 
       if ([...NUMBER, ...FLOAT].includes(fieldType)) {
          if (subType === 1)
@@ -78,8 +85,13 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
       return this._connections.connect();
    }
 
+   /** A new attachment (used by the exporter: detach it when done) */
    getConnection () {
       return this._connections.attach();
+   }
+
+   async getDbConfig () {
+      return { ...this._params };
    }
 
    getConnectionPool () {
@@ -867,6 +879,13 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
 
       for (const query of queries) {
          if (!query) continue;
+
+         // Every statement is already committed: the COMMIT of scripts (e.g. dumps for isql) would fail on the driver transaction
+         if (args.autocommit && /^\s*COMMIT(\s+WORK)?\s*;?\s*$/i.test(query)) {
+            resultsArr.push({ rows: false, report: null, fields: [], keys: [], duration: 0 });
+            continue;
+         }
+
          const timeStart = new Date();
          let timeStop;
          let keysArr: antares.QueryForeign[] = [];
@@ -892,8 +911,12 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
                   queryResult = await new Promise<unknown[]>((resolve, reject) => {
                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
                      (connection as any).query(query, [], async (err: any, res: any, fields: FieldData[]) => { // <- fields is not natively typed or documented
-                        if (err) reject(err);
-                        else {
+                        if (err) {
+                           reject(err);
+                           return;
+                        }
+
+                        try { // An error here would leave the query pending forever
                            const remappedResponse = [];
                            // Array rows: object rows would lose columns with the same name
                            const aliases = fields ? uniqueColumnNames(fields.map(field => field.alias)) : [];
@@ -949,6 +972,9 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
                            }
 
                            resolve(fields ? arrayRowsToObjects(remappedResponse, aliases) : remappedResponse);
+                        }
+                        catch (error) {
+                           reject(error);
                         }
                      }, { asObject: false });
                   });

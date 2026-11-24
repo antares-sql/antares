@@ -13,18 +13,18 @@
                      >
                         <BaseIcon
                            v-if="!+autorefreshTimer"
-                           icon-name="mdiRefresh"
+                           icon-name="refresh"
                            :size="24"
                         />
                         <BaseIcon
                            v-else
-                           icon-name="mdiHistory"
+                           icon-name="history"
                            flip="horizontal"
                            :size="24"
                         />
                      </button>
                      <div class="btn btn-dark btn-sm dropdown-toggle pl-0 pr-0 p-vcentered" tabindex="0">
-                        <BaseIcon icon-name="mdiMenuDown" :size="24" />
+                        <BaseIcon icon-name="caret-down" :size="24" />
                      </div>
                      <div class="menu px-3">
                         <span>{{ t('general.autoRefresh') }}: <b>{{ +autorefreshTimer ? `${autorefreshTimer}s` : 'OFF' }}</b></span>
@@ -47,7 +47,7 @@
                      :title="t('application.previousResultsPage')"
                      @click="pageChange('prev')"
                   >
-                     <BaseIcon icon-name="mdiSkipPrevious" :size="24" />
+                     <BaseIcon icon-name="skip-previous" :size="24" />
                   </button>
                   <div class="dropdown" :class="{'active': isPageMenu}">
                      <div @click="openPageMenu">
@@ -73,7 +73,7 @@
                      :title="t('application.nextResultsPage')"
                      @click="pageChange('next')"
                   >
-                     <BaseIcon icon-name="mdiSkipNext" :size="24" />
+                     <BaseIcon icon-name="skip-next" :size="24" />
                   </button>
                </div>
 
@@ -86,7 +86,7 @@
                   :class="{'btn-primary': isSearch, 'btn-dark': !isSearch}"
                   @click="isSearch = !isSearch"
                >
-                  <BaseIcon icon-name="mdiMagnify" :size="24" />
+                  <BaseIcon icon-name="search" :size="24" />
                </button>
                <button
                   v-if="isTable && !connection.readonly"
@@ -95,7 +95,7 @@
                   @click="showFakerModal()"
                >
                   <BaseIcon
-                     icon-name="mdiPlaylistPlus"
+                     icon-name="list+plus"
                      class="mr-1"
                      :size="24"
                   />
@@ -109,12 +109,12 @@
                      tabindex="0"
                   >
                      <BaseIcon
-                        icon-name="mdiFileExport"
+                        icon-name="file+up"
                         class="mr-1"
                         :size="24"
                      />
                      <span>{{ t('database.export') }}</span>
-                     <BaseIcon icon-name="mdiMenuDown" :size="24" />
+                     <BaseIcon icon-name="caret-down" :size="24" />
                   </button>
                   <ul class="menu text-left">
                      <li class="menu-item">
@@ -176,7 +176,7 @@
                   :title="t('application.settings')"
                   @click="openTableSettingTab()"
                >
-                  <BaseIcon icon-name="mdiCog" :size="24" />
+                  <BaseIcon icon-name="cog" :size="24" />
                   <!-- <span>{{ t('application.settings') }}</span> -->
                </button>
             </div>
@@ -188,8 +188,7 @@
                >
                   <BaseIcon
                      class="mr-1 mt-1"
-                     icon-name="mdiTimerSand"
-                     :rotate="180"
+                     icon-name="hourglass"
                      :size="16"
                   /> <b>{{ results[0].duration / 1000 }}s</b>
                </div>
@@ -207,7 +206,7 @@
                <div class="d-flex" :title="t('database.schema')">
                   <BaseIcon
                      class="mt-1 mr-1"
-                     icon-name="mdiDatabase"
+                     icon-name="database"
                      :size="18"
                   /><b>{{ schema }}</b>
                </div>
@@ -226,7 +225,7 @@
          <BaseLoader v-if="isQuering" />
          <div v-if="!isQuering && !results[0]?.rows.length" class="empty">
             <div class="empty-icon">
-               <BaseIcon icon-name="mdiIsland" :size="56" />
+               <BaseIcon icon-name="island" :size="56" />
             </div>
             <p class="h4 empty-subtitle">
                {{ t('database.noResultsPresent') }}

@@ -13,34 +13,13 @@ import {
 } from '@codemirror/search';
 import { Extension } from '@codemirror/state';
 import { EditorView, Panel, runScopeHandlers, ViewUpdate } from '@codemirror/view';
-import {
-   mdiArrowDown,
-   mdiArrowUp,
-   mdiChevronDown,
-   mdiChevronRight,
-   mdiClose,
-   mdiFileReplaceOutline,
-   mdiFindReplace,
-   mdiFormatLetterCase,
-   mdiFormatLetterMatches,
-   mdiRegex,
-   mdiSelectAll
-} from '@mdi/js';
+
+import { createIconElement } from '@/libs/icons';
 
 /** Matches counted for the "n of m" label, beyond that it shows "m+" */
 const maxCount = 999;
 
-const svgIcon = (path: string) => {
-   const ns = 'http://www.w3.org/2000/svg';
-   const svg = document.createElementNS(ns, 'svg');
-   svg.setAttribute('viewBox', '0 0 24 24');
-   svg.setAttribute('width', '16');
-   svg.setAttribute('height', '16');
-   const shape = document.createElementNS(ns, 'path');
-   shape.setAttribute('d', path);
-   svg.appendChild(shape);
-   return svg;
-};
+const svgIcon = (name: string) => createIconElement(name, 16);
 
 const iconButton = (icon: string, title: string, onClick: () => void, className = '') => {
    const button = document.createElement('button');
@@ -122,9 +101,9 @@ const createSearchPanel = (view: EditorView): Panel => {
       commit();
    };
 
-   toggles.caseSensitive = iconButton(mdiFormatLetterCase, 'Match case', toggle('caseSensitive'), 'cm-search-toggle');
-   toggles.wholeWord = iconButton(mdiFormatLetterMatches, 'Match whole word', toggle('wholeWord'), 'cm-search-toggle');
-   toggles.regexp = iconButton(mdiRegex, 'Use regular expression', toggle('regexp'), 'cm-search-toggle');
+   toggles.caseSensitive = iconButton('match-case', 'Match case', toggle('caseSensitive'), 'cm-search-toggle');
+   toggles.wholeWord = iconButton('whole-word', 'Match whole word', toggle('wholeWord'), 'cm-search-toggle');
+   toggles.regexp = iconButton('regex', 'Use regular expression', toggle('regexp'), 'cm-search-toggle');
 
    const syncToggles = () => {
       for (const key of Object.keys(toggles) as (keyof typeof toggles)[]) {
@@ -151,24 +130,24 @@ const createSearchPanel = (view: EditorView): Panel => {
 
    const replaceRow = element('cm-search-row cm-search-replace-row',
       replaceField,
-      iconButton(mdiFindReplace, 'Replace', () => replaceNext(view)),
-      iconButton(mdiFileReplaceOutline, 'Replace all', () => replaceAll(view))
+      iconButton('search+sync', 'Replace', () => replaceNext(view)),
+      iconButton('file+sync', 'Replace all', () => replaceAll(view))
    );
 
-   const expander = iconButton(mdiChevronRight, 'Toggle replace', () => {
+   const expander = iconButton('chevron-right', 'Toggle replace', () => {
       const open = !dom.classList.contains('cm-search-replace-open');
       dom.classList.toggle('cm-search-replace-open', open);
-      expander.replaceChildren(svgIcon(open ? mdiChevronDown : mdiChevronRight));
+      expander.replaceChildren(svgIcon(open ? 'chevron-down' : 'chevron-right'));
       if (open) replaceField.focus();
    }, 'cm-search-expander');
 
    const searchRow = element('cm-search-row',
       element('cm-search-field', searchField, toggles.caseSensitive, toggles.wholeWord, toggles.regexp),
       counter,
-      iconButton(mdiArrowUp, 'Previous match (Shift+Enter)', () => findPrevious(view)),
-      iconButton(mdiArrowDown, 'Next match (Enter)', () => findNext(view)),
-      iconButton(mdiSelectAll, 'Select all matches (Alt+Enter)', () => selectMatches(view)),
-      iconButton(mdiClose, 'Close (Escape)', () => closeSearchPanel(view))
+      iconButton('arrow-up', 'Previous match (Shift+Enter)', () => findPrevious(view)),
+      iconButton('arrow-down', 'Next match (Enter)', () => findNext(view)),
+      iconButton('select-all', 'Select all matches (Alt+Enter)', () => selectMatches(view)),
+      iconButton('x', 'Close (Escape)', () => closeSearchPanel(view))
    );
 
    const dom = element('cm-search cm-search-widget',
@@ -312,7 +291,6 @@ export const searchPanel = (): Extension => [
          color: 'inherit',
          cursor: 'pointer',
          opacity: '0.85',
-         '& svg': { fill: 'currentColor' },
          '&:hover': { opacity: '1' }
       },
       '.cm-search-expander': {

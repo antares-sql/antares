@@ -28,7 +28,7 @@
                <div :title="t('database.createNewSchema')">
                   <BaseIcon
                      v-if="customizations.schemas"
-                     icon-name="mdiDatabasePlus"
+                     icon-name="database+plus"
                      :size="18"
                      class="c-hand mr-2"
                      @click="showNewDBModal"
@@ -36,7 +36,7 @@
                </div>
                <div :title="t('general.refresh')">
                   <BaseIcon
-                     icon-name="mdiRefresh"
+                     icon-name="refresh"
                      :size="18"
                      class="c-hand mr-2"
                      :class="{'rotate':isRefreshing}"
@@ -45,7 +45,7 @@
                </div>
                <div :title="t('connection.disconnect')">
                   <BaseIcon
-                     icon-name="mdiPower"
+                     icon-name="power"
                      :size="18"
                      class="c-hand"
                      @click="disconnectWorkspace(connection.uid)"
@@ -60,7 +60,7 @@
                   :title="t('application.switchSearchMethod')"
                   @click="toggleSearchMethod"
                >
-                  <BaseIcon :icon-name="searchMethod === 'elements' ? 'mdiShape' : 'mdiDatabase'" :size="18" />
+                  <BaseIcon :icon-name="searchMethod === 'elements' ? 'shapes' : 'database'" :size="18" />
                </div>
                <input
                   ref="searchInput"
@@ -72,13 +72,13 @@
                <BaseIcon
                   v-if="!searchTerm"
                   class="form-icon"
-                  icon-name="mdiMagnify"
+                  icon-name="search"
                   :size="18"
                />
                <BaseIcon
                   v-else
                   class="form-icon c-hand pr-1"
-                  icon-name="mdiBackspace"
+                  icon-name="backspace"
                   :size="18"
                   @click="searchTerm = ''"
                />

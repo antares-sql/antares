@@ -49,7 +49,7 @@
             @click="removeRow(index)"
          >
             <BaseIcon
-               icon-name="mdiMinusCircleOutline"
+               icon-name="circle-minus"
                class="mt-1"
                :size="16"
             />
@@ -68,7 +68,7 @@
             @click="addRow"
          >
             <BaseIcon
-               icon-name="mdiPlusCircleOutline"
+               icon-name="circle-plus"
                class="mt-1"
                :size="16"
             />

@@ -8,7 +8,7 @@
       <template #header>
          <div class="d-flex">
             <BaseIcon
-               icon-name="mdiContentSaveAlert"
+               icon-name="save+alert"
                class="mr-1"
                :size="24"
             /> {{ t('application.unsavedChanges') }}

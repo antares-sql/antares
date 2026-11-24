@@ -110,6 +110,11 @@ export function getSampleSqliteFiles (env: Env = process.env): string[] {
    }
 }
 
+/** Firebird sample database in the docker container, created by `npm run test:db:samples` */
+export function getSampleFirebirdDatabase (): string {
+   return '/var/lib/firebird/data/samples.fdb';
+}
+
 /** Fixed prefix: debug connections are recognized (and replaced) by uid */
 export const DEBUG_CONNECTION_PREFIX = 'CDEBUG';
 export const DEBUG_FOLDER_UID = 'FDEBUG';
@@ -176,6 +181,20 @@ export function getDebugConnections (env: Env = process.env): ConnectionParams[]
          sshPass: ssh.password
       });
    }
+
+   // Firebird samples are a database of their own (see scripts/sampleDatabases.js)
+   const firebird = databases.firebird;
+   connections.push({
+      ...baseConnection(),
+      uid: `${DEBUG_CONNECTION_PREFIX}FIREBIRDSAMPLES`,
+      name: `Docker ${firebird.label} samples`,
+      client: firebird.client,
+      host: firebird.host,
+      port: firebird.port,
+      user: firebird.user,
+      password: firebird.password,
+      database: getSampleFirebirdDatabase()
+   });
 
    for (const databasePath of getSampleSqliteFiles(env)) {
       const name = path.basename(databasePath, '.db');

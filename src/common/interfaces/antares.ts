@@ -1,14 +1,12 @@
 import SSHConfig from '@fabio286/ssh2-promise/lib/sshConfig';
 import * as mysql from 'mysql2/promise';
 import * as pg from 'pg';
-import MysqlExporter from 'src/main/libs/exporters/sql/MysqlExporter';
-import PostgreSQLExporter from 'src/main/libs/exporters/sql/PostgreSQLExporter';
-import MySQLImporter from 'src/main/libs/importers/sql/MySQLlImporter';
-import PostgreSQLImporter from 'src/main/libs/importers/sql/PostgreSQLImporter';
+import { BaseExporter } from 'src/main/libs/exporters/BaseExporter';
+import { BaseImporter } from 'src/main/libs/importers/BaseImporter';
 
 export type ClientCode = 'mysql' | 'maria' | 'pg' | 'sqlite' | 'firebird'
-export type Exporter = MysqlExporter | PostgreSQLExporter
-export type Importer = MySQLImporter | PostgreSQLImporter
+export type Exporter = BaseExporter
+export type Importer = BaseImporter
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface IpcResponse<T = any> {

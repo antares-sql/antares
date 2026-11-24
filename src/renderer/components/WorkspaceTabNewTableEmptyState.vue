@@ -7,7 +7,7 @@
          <button class="btn btn-gray d-flex" @click="emit('new-field')">
             <BaseIcon
                class="mr-2"
-               icon-name="mdiPlaylistPlus"
+               icon-name="list+plus"
                :size="24"
             />
             {{ t('database.addNewField') }}

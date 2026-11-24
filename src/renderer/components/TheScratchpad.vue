@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <BaseIcon
-                        icon-name="mdiNotebookOutline"
+                        icon-name="notebook"
                         class="mr-1"
                         :size="24"
                      />
@@ -51,7 +51,7 @@
                         @click="showArchived = !showArchived"
                      >
                         <BaseIcon
-                           :icon-name="!showArchived ? 'mdiArchiveEyeOutline' : 'mdiArchiveCancelOutline'"
+                           :icon-name="!showArchived ? 'archive+eye' : 'archive+ban'"
                            class=""
                            :size="24"
                         />
@@ -72,13 +72,13 @@
                      >
                      <BaseIcon
                         v-if="!searchTerm"
-                        icon-name="mdiMagnify"
+                        icon-name="search"
                         class="form-icon pr-2"
                         :size="18"
                      />
                      <BaseIcon
                         v-else
-                        icon-name="mdiBackspace"
+                        icon-name="backspace"
                         class="form-icon c-hand pr-2"
                         :size="18"
                         @click="searchTerm = ''"
@@ -121,7 +121,7 @@
                </div>
                <div v-else class="empty">
                   <div class="empty-icon">
-                     <BaseIcon icon-name="mdiNoteSearch" :size="48" />
+                     <BaseIcon icon-name="note+search" :size="48" />
                   </div>
                   <p class="empty-title h5">
                      {{ t('application.thereAreNoNotesYet') }}
@@ -133,7 +133,7 @@
                   @click="isAddModal = true"
                >
                   <BaseIcon
-                     icon-name="mdiPlus"
+                     icon-name="plus"
                      :size="48"
                   />
                </div>

@@ -44,7 +44,7 @@
                <BaseIcon
                   v-if="coveredElement === element.uid && draggedElement !== coveredElement"
                   class="settingbar-element-icon"
-                  icon-name="mdiFolderPlus"
+                  icon-name="folder+plus"
                   :size="36"
                />
                <template v-else>
@@ -55,8 +55,8 @@
                         :class="[getStatusBadge(element.uid)]"
                      >
                         <BaseIcon
-                           :icon-name="camelize(element.icon)"
-                           :type="element.hasCustomIcon ? 'custom' : 'mdi'"
+                           :icon-name="element.icon"
+                           :type="element.hasCustomIcon ? 'custom' : 'icon'"
                            :size="36"
                         />
                      </div>
@@ -94,7 +94,6 @@ import * as Draggable from 'vuedraggable';
 
 import BaseIcon from '@/components/BaseIcon.vue';
 import SettingBarConnectionsFolder from '@/components/SettingBarConnectionsFolder.vue';
-import { camelize } from '@/libs/camelize';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
 

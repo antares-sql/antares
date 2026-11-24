@@ -3,7 +3,7 @@ import { DATETIME, FLOAT, NUMBER, TIME } from 'common/fieldTypes';
 import * as antares from 'common/interfaces/antares';
 import { removeComments } from 'common/libs/sqlUtils';
 
-import { DatabaseClient } from '../db/core/contracts';
+import { DatabaseClient, DbConfigCapability } from '../db/core/contracts';
 import { arrayRowsToObjects, uniqueColumnNames } from '../db/core/resultRows';
 import { SQLiteConnections, SQLiteParams } from '../db/engines/sqlite/SQLiteConnections';
 import { SQLiteDdl } from '../db/engines/sqlite/SQLiteDdl';
@@ -11,7 +11,7 @@ import { SQLiteDialect } from '../db/engines/sqlite/SQLiteDialect';
 import { findAutoIncrementColumn, normalizeIntegers, parseTrigger, parseViewSelect } from '../db/engines/sqlite/SQLiteParsers';
 import { BaseClient } from './BaseClient';
 
-export class SQLiteClient extends BaseClient implements DatabaseClient {
+export class SQLiteClient extends BaseClient implements DatabaseClient, DbConfigCapability {
    protected readonly _ddl = new SQLiteDdl();
    protected readonly _dialect = new SQLiteDialect();
    private _schema?: string;
@@ -33,8 +33,13 @@ export class SQLiteClient extends BaseClient implements DatabaseClient {
       this._connections.connect();
    }
 
+   /** A new handle on the database file (used by the exporter: close it when done) */
    getConnection () {
       return this._connections.open();
+   }
+
+   async getDbConfig () {
+      return { ...this._params };
    }
 
    ping () {

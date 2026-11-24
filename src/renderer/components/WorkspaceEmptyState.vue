@@ -9,7 +9,7 @@
       <div class="empty-action">
          <button class="btn btn-primary d-flex" @click="emit('new-tab')">
             <BaseIcon
-               icon-name="mdiTabPlus"
+               icon-name="tab+plus"
                :size="24"
                class="mr-2"
             />

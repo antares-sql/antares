@@ -77,3 +77,33 @@ jobs:
       - name: Stop test databases
         if: always()
         run: npm run test:db:down
+
+  packaged:
+    name: Packaged app smoke tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # compile + electron-builder --dir (unpacked app, no installers) + Playwright against it
+      - name: Run packaged app tests
+        run: npm run test:packaged
+
+      - name: Upload Playwright traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: packaged-test-results
+          path: test-results/
+          retention-days: 7

@@ -3,6 +3,7 @@
 exports[`client capabilities > firebird capabilities 1`] = `
 [
   "databases",
+  "dbConfig",
   "routines",
   "users",
 ]
@@ -55,4 +56,8 @@ exports[`client capabilities > pg capabilities 1`] = `
 ]
 `;
 
-exports[`client capabilities > sqlite capabilities 1`] = `[]`;
+exports[`client capabilities > sqlite capabilities 1`] = `
+[
+  "dbConfig",
+]
+`;

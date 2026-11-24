@@ -1,7 +1,7 @@
 <template>
    <div class="empty">
       <div class="empty-icon">
-         <BaseIcon icon-name="mdiCloudDownload" :size="48" />
+         <BaseIcon icon-name="cloud+down" :size="48" />
       </div>
       <p class="empty-title h5">
          {{ updateMessage }}

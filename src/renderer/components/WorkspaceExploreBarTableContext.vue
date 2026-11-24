@@ -11,7 +11,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiWrenchCog"
+               icon-name="table+cog"
                :size="18"
             /> {{ t('application.settings') }}</span>
       </div>
@@ -19,7 +19,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiContentCopy"
+               icon-name="copy"
                :size="18"
             /> {{ t('general.copyName') }}</span>
       </div>
@@ -31,7 +31,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiTableArrowRight"
+               icon-name="table+arrow"
                :size="18"
             /> {{ t('database.exportTable') }}</span>
       </div>
@@ -43,7 +43,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiWrenchCog"
+               icon-name="table+cog"
                :size="18"
             /> {{ t('application.settings') }}</span>
       </div>
@@ -55,7 +55,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiWrenchCog"
+               icon-name="table+cog"
                :size="18"
             /> {{ t('application.settings') }}</span>
       </div>
@@ -67,7 +67,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiTableMultiple"
+               icon-name="tables"
                :size="18"
             /> {{ t('database.duplicateTable') }}</span>
       </div>
@@ -79,7 +79,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiTableOff"
+               icon-name="table+off"
                :size="18"
             /> {{ t('database.emptyTable') }}</span>
       </div>
@@ -91,7 +91,7 @@
          <span class="d-flex">
             <BaseIcon
                class="mt-1 mr-1"
-               icon-name="mdiTableRemove"
+               icon-name="table+minus"
                :size="18"
             /> {{ t('database.deleteTable') }}</span>
       </div>
@@ -105,7 +105,7 @@
             <div class="d-flex">
                <BaseIcon
                   class="mr-1"
-                  icon-name="mdiTableOff"
+                  icon-name="table+off"
                   :size="24"
                /> <span class="cut-text">{{ t('database.emptyTable') }}</span>
             </div>
@@ -130,7 +130,7 @@
             <div class="d-flex">
                <BaseIcon
                   class="mr-1"
-                  icon-name="mdiTableRemove"
+                  icon-name="table+minus"
                   :size="24"
                />
                <span class="cut-text">{{ selectedTable.type === 'table' ? t('database.deleteTable') : t('database.deleteView') }}</span>

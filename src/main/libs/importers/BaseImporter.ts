@@ -39,6 +39,11 @@ export class BaseImporter extends EventEmitter {
       }
    }
 
+   /** On cancel the import stops by itself and ends (otherwise the worker thread is terminated) */
+   get stopsOnCancel () {
+      return false;
+   }
+
    get isCancelled () {
       return this._isCancelled;
    }

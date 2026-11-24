@@ -9,7 +9,7 @@
       <template #header>
          <div class="d-flex">
             <BaseIcon
-               icon-name="mdiPlay"
+               icon-name="play"
                class="mr-1"
                :size="24"
             />

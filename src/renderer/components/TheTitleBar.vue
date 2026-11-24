@@ -20,25 +20,25 @@
             class="titlebar-element"
             @click="openDevTools"
          >
-            <BaseIcon icon-name="mdiBugPlayOutline" :size="18" />
+            <BaseIcon icon-name="bug+play" :size="18" />
          </div>
          <div
             v-if="isDevelopment"
             class="titlebar-element"
             @click="reload"
          >
-            <BaseIcon icon-name="mdiRefresh" :size="18" />
+            <BaseIcon icon-name="refresh" :size="18" />
          </div>
          <div v-if="isWindows" :style="'width: 140px;'" />
          <div v-if="isLinux" class="d-flex">
             <div class="titlebar-element" @click="minimize">
-               <BaseIcon icon-name="mdiWindowMinimize" :size="18" />
+               <BaseIcon icon-name="window-minimize" :size="18" />
             </div>
             <div class="titlebar-element" @click="toggleFullScreen">
-               <BaseIcon :icon-name="isMaximized ? 'mdiWindowRestore' : 'mdiWindowMaximize'" :size="18" />
+               <BaseIcon :icon-name="isMaximized ? 'window-restore' : 'window-maximize'" :size="18" />
             </div>
             <div class="titlebar-element" @click="closeApp">
-               <BaseIcon icon-name="mdiClose" :size="18" />
+               <BaseIcon icon-name="x" :size="18" />
             </div>
          </div>
       </div>

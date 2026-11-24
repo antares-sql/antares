@@ -10,7 +10,7 @@
          @keydown.prevent.stop="onKey"
       >
       <BaseIcon
-         icon-name="mdiKeyboardOutline"
+         icon-name="keyboard"
          class="form-icon"
          :size="24"
       />

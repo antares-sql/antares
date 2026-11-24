@@ -16,7 +16,7 @@ See also [CONTRIBUTING.md](CONTRIBUTING.md) for the original contributor guide a
 | Persistence | `electron-store` (settings, connections; credentials encrypted via `safeStorage`) |
 | DB drivers | `mysql2`, `pg` + `pg-query-stream`, `better-sqlite3` (N-API, prebuilds bundled), `node-firebird`, SSH tunnels via `@fabio286/ssh2-promise` |
 | Packaging | electron-builder (config in `package.json` → `build`) |
-| Tests | Vitest unit + integration ([tests/unit/](tests/unit/), [tests/integration/](tests/integration/)), Playwright e2e ([tests/app.spec.ts](tests/app.spec.ts), minimal) |
+| Tests | Vitest unit + integration ([tests/unit/](tests/unit/), [tests/integration/](tests/integration/)), Playwright e2e ([tests/app.spec.ts](tests/app.spec.ts), minimal) and packaged-app smoke tests ([tests/packaged/](tests/packaged/)) |
 
 ## Layout
 
@@ -90,6 +90,7 @@ Rules:
 - SQL values in main must go through the engine dialect (`client.dialect.quoteString()`, `blobLiteral()`, ... or `formatValue()` for UI values): never build literals with `sqlEscaper` or engine `switch`es in handlers.
 - Client contract: [contracts.ts](src/main/libs/db/core/contracts.ts). `DatabaseClient` = methods every engine has; optional features are **capability** interfaces (`RoutinesCapability`, `SchedulersCapability`, ...) declared with `implements` on the engine class. Handlers call them through `requireCapability(client, 'routines')`, which throws `UnsupportedCapabilityError` if the engine lacks it. Never add "not implemented" stubs to `BaseClient`. [capabilities.spec.ts](tests/unit/clients/capabilities.spec.ts) checks that every feature enabled in customizations is implemented.
 - Long-running export/import runs in `src/main/workers/*` (separate webpack build output `dist/exporter.js`, `dist/importer.js`).
+  Worker threads can't load `electron` (it resolves only in development, via the npm package): log with `workers/workerLog.ts` (`electron-log/node`) and pass what they need from `app` through `workerData`.
 
 ## Commands
 
@@ -107,10 +108,12 @@ npm run test:unit:watch     # unit tests in watch mode
 npm run test:db:up          # start test DBs (docker compose, waits until healthy)
 npm run test:integration    # integration tests (ANTARES_TEST_ENGINES=sqlite,pg to pick engines)
 npm run test:db:samples     # load sample DBs (sakila, pagila, chinook, ...) into the running test DBs and SQLite
-                            # samples into docker/samples/sqlite; re-run to reset them (args: mysql maria pg sqlite)
+                            # samples into docker/samples/sqlite; re-run to reset them (args: mysql maria pg firebird sqlite)
 npm run test:db:down        # stop and remove test DBs
 npm run test:fixtures:record # re-record introspection fixtures (needs test DBs) after changing an introspection query
 npm run test:e2e            # compile + playwright
+npm run test:packaged       # compile + electron-builder --dir + playwright against the packaged app (tests/packaged):
+                            # bundle externals, export/import worker threads. test:packaged-dry reuses build/
 node scripts/appDriver.js start --build   # launch the compiled app (isolated profile) and drive it like a user:
                             # seed, open "Docker PostgreSQL", click, type, press F5, ss... (see .claude/skills/run-app)
 npx tsc --noEmit -p .       # type check (.ts only; .vue files are checked only by the Vue VS Code extension)
@@ -127,11 +130,11 @@ VS Code debugging: start `npm run debug` (or `debug-runner`) in a terminal, then
 - **`ELECTRON_RUN_AS_NODE`**: terminals spawned by VS Code / Electron tools may have it set; Electron then starts as plain Node (`app` is undefined). `scripts/devRunner.js` deletes it before spawning Electron.
 - **TypeScript in VS Code**: the editor's bundled TS (6.x) defaults to `strict: true` and deprecates `baseUrl`. The tsconfig therefore sets `"strict": false` explicitly and avoids `baseUrl`; do not re-add it. The codebase is **not** strict-null-safe — don't "fix" thousands of strictness errors unless that is the task.
 - `validateSender` currently returns `true` on Windows (`TEMP HOTFIX`).
-- **Stored connections** are encrypted with a key cached in the renderer's `localStorage`; if the key is lost (e.g. running more than one app instance in dev) the connections are reset. In development, *Settings → Data → Apply debug connections* re-creates the connections to the docker test DBs (params in [testConnections.ts](src/common/libs/testConnections.ts), shared with the integration tests). `npm run test:db:samples` fills them with the sample databases of [antares-sql/test-databases](https://github.com/antares-sql/test-databases) (downloaded once into the gitignored `docker/samples/`) and adds SQLite sample files there, which become `SQLite <name>` debug connections. Firebird has no samples yet.
+- **Stored connections** are encrypted with a key cached in the renderer's `localStorage`; if the key is lost (e.g. running more than one app instance in dev) the connections are reset. In development, *Settings → Data → Apply debug connections* re-creates the connections to the docker test DBs (params in [testConnections.ts](src/common/libs/testConnections.ts), shared with the integration tests). `npm run test:db:samples` fills them with the sample databases of [antares-sql/test-databases](https://github.com/antares-sql/test-databases) (downloaded once into the gitignored `docker/samples/`) and adds SQLite sample files there, which become `SQLite <name>` debug connections. The Firebird sample (`docker/firebird/samples/bookshop.sql`, versioned here) is created as a separate database, `samples.fdb` (debug connection `Docker Firebird samples`).
 - **Tests run inside Electron** (`ELECTRON_RUN_AS_NODE`, see [scripts/vitest.js](scripts/vitest.js)) so they use the same Node runtime as the app. Always use the npm scripts, not `npx vitest`.
 - **Module interop**: webpack compiles to CommonJS, Vitest loads ESM. `import * as x` namespaces are read-only and not callable under Vitest: for CommonJS modules that are called, instantiated or mutated (moment, better-sqlite3, pg-query-stream, ...) use `import x = require('...')`; for classes use named imports (`import { EventEmitter } from 'events'`).
 - **SQL snapshots**: [`tests/unit/clients/__snapshots__`](tests/unit/clients/__snapshots__) pins the SQL generated by each client. A changed snapshot must be intentional: update with `npm run test:unit -- -u` and justify it in the PR.
-- **Themes**: a theme is a validated JSON file (`common/themes/theme.ts`: metadata, `appearance` dark/light, UI color tokens, shape tokens, editor colors + syntax). Built-in `dark`/`light` token values live in `src/renderer/scss/themes/*.scss`; installed themes (imported from file) are stored in `themes.json` (electron-store) and applied by `stores/themes.ts` as CSS variables on `#wrapper`, over the built-in theme of the same appearance. The setting `application_theme` holds the active theme id. Gallery repo: antares-sql/themes.
+- **Themes**: a theme is a validated JSON file (`common/themes/theme.ts`: metadata, `appearance` dark/light, UI color tokens, shape tokens, editor colors + syntax, folder color palette `accent`). Built-in `dark`/`light` token values live in `src/renderer/scss/themes/*.scss`; installed themes (imported from file) are stored in `themes.json` (electron-store) and applied by `stores/themes.ts` as CSS variables on `#wrapper`, over the built-in theme of the same appearance. The setting `application_theme` holds the active theme id. Gallery repo: antares-sql/themes.
 - **CI**: [.github/workflows/test.yml](.github/workflows/test.yml) runs on PRs and on `develop`, and gates the beta/stable release workflows.
 - **Code editors** (CodeMirror 6): `QueryEditor.vue` (SQL, schema-aware autocompletion) and `BaseTextEditor.vue` (other languages) share `src/renderer/libs/editor/` (setup, themes, keymap, search widget, `sql/` dialects and completion). Don't wrap an `EditorView` in a Vue `ref` (the proxy breaks it). Editor colors are plain data (`EditorThemeDefinition`, in `common/themes/editorTheme.ts`) and belong to the app theme: there is no separate editor theme setting (see Themes below). Editor key bindings go through `yieldingToAppShortcuts()`: Electron runs a menu accelerator only if the page didn't handle the key.
 

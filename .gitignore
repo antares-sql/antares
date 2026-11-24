@@ -10,3 +10,4 @@ NOTES.md
 *.heapsnapshot
 docker/samples
 
+test-results

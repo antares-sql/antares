@@ -79,6 +79,9 @@ async function createMainWindow () {
       console.log(err);
    }
 
+   // Zoom shortcuts change the interface text size: drop any page zoom left by older versions
+   window.webContents.setZoomLevel(0);
+
    window.on('closed', () => {
       window.removeListener('moved', saveWindowState);
       mainWindow = null;

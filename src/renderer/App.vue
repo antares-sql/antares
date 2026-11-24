@@ -139,6 +139,10 @@ onMounted(() => {
       isSettingModal.value = true;
    });
 
+   ipcRenderer.on('change-ui-font-size', (_, direction: -1 | 0 | 1) => {
+      settingsStore.stepUiFontSize(direction);
+   });
+
    ipcRenderer.on('create-connection', () => {
       workspacesStore.selectWorkspace('NEW');
    });

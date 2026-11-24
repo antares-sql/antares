@@ -1,31 +1,35 @@
 <template>
-   <SvgIcon
-      v-if="type === 'mdi'"
-      :type="type"
-      :path="iconPath"
-      :size="size"
-      :rotate="rotate"
-      :class="iconFlip"
+   <svg
+      v-if="type === 'custom'"
+      :width="remSize"
+      :height="remSize"
+      :viewBox="`0 0 ${size} ${size}`"
+      v-html="customSvg"
    />
    <svg
       v-else
-      :width="size"
-      :height="size"
-      :viewBox="`0 0 ${size} ${size}`"
-      v-html="iconPath"
+      class="antares-icon"
+      :class="iconFlip"
+      viewBox="0 0 24 24"
+      :width="remSize"
+      :height="remSize"
+      :style="rotate ? { rotate: `${rotate}deg` } : null"
+      aria-hidden="true"
+      v-html="markup"
    />
 </template>
 
 <script setup lang="ts">
-import SvgIcon from '@jamescoyle/vue-icon';
-import * as Icons from '@mdi/js';
-import { computed, PropType } from 'vue';
+import { computed, PropType, useId } from 'vue';
 
+import { iconContent } from '@/libs/icons';
 import { useConnectionsStore } from '@/stores/connections';
+import { uiFontSizes } from '@/stores/settings';
 
 const { getIconByUid } = useConnectionsStore();
 
 const props = defineProps({
+   /** Antares icon name (`table`, `table+cog`, `brand:docker`, …) or the uid of a custom icon */
    iconName: {
       type: String,
       required: true
@@ -35,8 +39,8 @@ const props = defineProps({
       default: 48
    },
    type: {
-      type: String as PropType<'mdi' | 'custom'>,
-      default: () => 'mdi'
+      type: String as PropType<'icon' | 'custom'>,
+      default: () => 'icon'
    },
    flip: {
       type: String as PropType<'horizontal' | 'vertical' | 'both' | null>,
@@ -48,18 +52,18 @@ const props = defineProps({
    }
 });
 
-const iconPath = computed(() => {
-   if (props.type === 'mdi')
-      return (Icons as {[k:string]: string})[props.iconName];
-   else if (props.type === 'custom') {
-      const base64 = getIconByUid(props.iconName)?.base64;
-      const svgString = Buffer
-         .from(base64, 'base64')
-         .toString('utf-8');
+/** `size` is in px at the default text size: in rem the icon follows the interface text size */
+const remSize = computed(() => `${props.size / uiFontSizes.medium}rem`);
 
-      return svgString;
-   }
-   return null;
+// The badge mask lives inside each icon, with ids unique to this instance
+const maskPrefix = `${useId()}-icon-`;
+const markup = computed(() => iconContent(props.iconName, maskPrefix));
+
+const customSvg = computed(() => {
+   if (props.type !== 'custom') return null;
+   const base64 = getIconByUid(props.iconName)?.base64;
+   if (!base64) return null;
+   return Buffer.from(base64, 'base64').toString('utf-8');
 });
 
 const iconFlip = computed(() => {
@@ -68,17 +72,3 @@ const iconFlip = computed(() => {
    else return '';
 });
 </script>
-
-<style lang="scss" scoped>
-.flip-horizontal {
-    transform: scaleX(-1);
-}
-
-.flip-vertical {
-    transform: scaleY(-1);
-}
-
-.flip-both {
-    transform: scale(-1, -1);
-}
-</style>

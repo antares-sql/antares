@@ -1,0 +1,46 @@
+/**
+ * Connection icon codes saved by Antares 0.7.x and older, mapped to the icon that replaces them.
+ * They are values stored in the user's connections, not icon names to use in code: saved connections
+ * are not rewritten, the old code is resolved when the icon is drawn.
+ */
+export const legacyConnectionIcons: Record<string, string> = {
+   'mdi-account-group-outline': 'users',
+   'mdi-cloud-outline': 'cloud',
+   'mdi-key-chain-variant': 'key',
+   'mdi-lightning-bolt': 'bolt',
+   'mdi-map-marker-radius-outline': 'map-pin',
+   'mdi-api': 'api',
+   'mdi-chart-line': 'chart',
+   'mdi-chat-outline': 'chat',
+   'mdi-bug-outline': 'bug',
+   'mdi-shield-outline': 'shield',
+   'mdi-cart-variant': 'cart',
+   'mdi-bank-outline': 'bank',
+   'mdi-receipt-text-outline': 'receipt',
+   'mdi-raspberry-pi': 'brand:raspberry-pi',
+   'mdi-book-outline': 'book',
+   'mdi-web': 'globe',
+   'mdi-multimedia': 'media',
+   'mdi-qrcode': 'qrcode',
+   'mdi-flask-outline': 'flask',
+   'mdi-memory': 'chip',
+   'mdi-cube-outline': 'box',
+   'mdi-weather-partly-snowy-rainy': 'weather',
+   'mdi-controller': 'gamepad',
+   'mdi-home-group': 'home',
+   'mdi-truck-outline': 'truck',
+   'mdi-car': 'car',
+   'mdi-atv': 'motorbike',
+   'mdi-train': 'train',
+   'mdi-airplane': 'airplane',
+   'mdi-ferry': 'ship',
+   'mdi-docker': 'brand:docker',
+   'mdi-open-source-initiative': 'brand:osi',
+   'mdi-aws': 'brand:aws',
+   'mdi-google-cloud': 'brand:google-cloud',
+   'mdi-microsoft-azure': 'brand:azure',
+   'mdi-linux': 'brand:linux',
+   'mdi-microsoft-windows': 'brand:windows',
+   'mdi-apple': 'brand:apple',
+   'mdi-android': 'brand:android'
+};

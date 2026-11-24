@@ -11,7 +11,7 @@
                >
                   <BaseIcon
                      class="mr-1"
-                     icon-name="mdiContentSave"
+                     icon-name="save"
                      :size="24"
                   />
                   <span>{{ t('general.save') }}</span>
@@ -24,7 +24,7 @@
                >
                   <BaseIcon
                      class="mr-1"
-                     icon-name="mdiDeleteSweep"
+                     icon-name="eraser"
                      :size="24"
                   />
                   <span>{{ t('general.clear') }}</span>
@@ -34,7 +34,7 @@
                <div class="d-flex" :title="t('database.schema')">
                   <BaseIcon
                      class="mt-1 mr-1"
-                     icon-name="mdiDatabase"
+                     icon-name="database"
                      :size="18"
                   /><b>{{ schema }}</b>
                </div>

@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <BaseIcon
-                        icon-name="mdiCog"
+                        icon-name="cog"
                         class="mr-1"
                         :size="24"
                      />
@@ -83,7 +83,7 @@
                                  <div class="col-5 col-sm-12">
                                     <label class="form-label">
                                        <BaseIcon
-                                          icon-name="mdiTranslate"
+                                          icon-name="translate"
                                           class="mr-1"
                                           :size="18"
                                        />
@@ -266,7 +266,7 @@
                               :style="'align-items: center; display: inline-flex;'"
                               @click="openOutside('https://github.com/antares-sql/antares')"
                            ><BaseIcon
-                              icon-name="mdiGithub"
+                              icon-name="brand:github"
                               class="d-inline mr-1"
                               :size="16"
                            /> GitHub</a> • <a
@@ -274,7 +274,7 @@
                               :style="'align-items: center; display: inline-flex;'"
                               @click="openOutside('https://fosstodon.org/@AntaresSQL')"
                            ><BaseIcon
-                              icon-name="mdiMastodon"
+                              icon-name="brand:mastodon"
                               class="d-inline mr-1"
                               :size="16"
                            /> Mastodon</a> • <a
@@ -282,7 +282,7 @@
                               :style="'align-items: center; display: inline-flex;'"
                               @click="openOutside('https://antares-sql.app/')"
                            ><BaseIcon
-                              icon-name="mdiWeb"
+                              icon-name="globe"
                               class="d-inline mr-1"
                               :size="16"
                            /> Website</a><br>

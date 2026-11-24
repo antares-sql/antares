@@ -1,4 +1,4 @@
-import { querySplitter, removeComments } from 'common/libs/sqlScanner';
+import { querySplitter, removeComments, splitStatements } from 'common/libs/sqlScanner';
 import { describe, expect, it } from 'vitest';
 
 describe('querySplitter', () => {
@@ -67,6 +67,34 @@ END;`;
       expect(querySplitter(`${anonymous} SELECT 1;`, 'maria')).toEqual([anonymous, 'SELECT 1;']);
    });
 
+   it('follows the isql SET TERM command of Firebird scripts', () => {
+      const script = `CREATE TABLE t (a INT);
+-- PSQL
+SET TERM ^ ;
+CREATE TRIGGER trg FOR t BEFORE INSERT AS
+DECLARE x INT;
+BEGIN
+   x = 1; -- ^ in a comment
+   NEW.a = '^';
+END^
+EXECUTE BLOCK AS BEGIN END^
+SET TERM ; ^
+INSERT INTO t VALUES (1);`;
+
+      expect(querySplitter(script, 'firebird')).toEqual([
+         'CREATE TABLE t (a INT);',
+         'CREATE TRIGGER trg FOR t BEFORE INSERT AS\nDECLARE x INT;\nBEGIN\n   x = 1; -- ^ in a comment\n   NEW.a = \'^\';\nEND',
+         'EXECUTE BLOCK AS BEGIN END',
+         'INSERT INTO t VALUES (1);'
+      ]);
+
+      expect(querySplitter('SET TERM !! ;\nSELECT 1 FROM RDB$DATABASE!!\nSET TERM ; !!\nSELECT 2 FROM RDB$DATABASE;', 'firebird'))
+         .toEqual(['SELECT 1 FROM RDB$DATABASE', 'SELECT 2 FROM RDB$DATABASE;']);
+
+      // Not an isql command for other engines
+      expect(querySplitter('SET TERM ^ ;', 'pg')).toEqual(['SET TERM ^ ;']);
+   });
+
    // #1025: nothing in a single statement must be changed
    it('keeps a nested subquery intact', () => {
       const sql = `SELECT CONCAT('Prefix ', GROUP_CONCAT(sub.id SEPARATOR ' '))
@@ -100,5 +128,39 @@ describe('removeComments', () => {
    it('keeps comments inside PostgreSQL dollar quotes', () => {
       const body = '$$ BEGIN -- keep\n RETURN 1; /* keep */ END; $$';
       expect(removeComments(`SELECT ${body} -- drop`, 'pg')).toBe(`SELECT ${body} `);
+   });
+});
+
+describe('splitStatements', () => {
+   const script = `-- header
+CREATE TABLE "t" (a INT, b VARCHAR(20)); /* note; */
+INSERT INTO "t" VALUES (1, 'a;b'), (2, 'it''s');
+SET TERM ^ ;
+CREATE TRIGGER trg FOR t BEFORE INSERT AS
+DECLARE x INT;
+BEGIN
+   x = 1;
+END^
+SET TERM ; ^
+INSERT INTO "t" VALUES (3, '^');
+SELECT 1 FROM RDB$DATABASE`;
+
+   it('splits a script read in chunks like the whole script', () => {
+      const expected = querySplitter(script, 'firebird');
+
+      for (const size of [1, 2, 3, 7, 16, 50]) {
+         const statements: string[] = [];
+         let rest = '';
+         let terminator: string;
+
+         for (let i = 0; i < script.length; i += size) {
+            const result = splitStatements(rest + script.slice(i, i + size), 'firebird', { terminator });
+            statements.push(...result.statements);
+            ({ rest, terminator } = result);
+         }
+         statements.push(...splitStatements(rest, 'firebird', { terminator, final: true }).statements);
+
+         expect(statements).toEqual(expected);
+      }
    });
 });

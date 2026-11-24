@@ -14,7 +14,7 @@
             :title="t('users.checkAll')"
             @click="checkAll"
          >
-            <BaseIcon icon-name="mdiCheckboxMarkedOutline" :size="15" />
+            <BaseIcon icon-name="checkbox-checked" :size="15" />
          </button>
          <button
             class="btn btn-dark btn-sm"
@@ -22,7 +22,7 @@
             :title="t('users.uncheckAll')"
             @click="uncheckAll"
          >
-            <BaseIcon icon-name="mdiCheckboxBlankOutline" :size="15" />
+            <BaseIcon icon-name="checkbox" :size="15" />
          </button>
          <small class="ml-2 text-gray">{{ modelValue.length }}/{{ privileges.length }}</small>
       </div>

@@ -1,4 +1,5 @@
 import { EditorThemeDefinition, ThemeTokenKey, themeTokenKeys, ThemeTokenStyle } from './editorTheme';
+import { FolderColorSlot, folderColorSlotNames } from './folderColors';
 import { shapeColorTokens, ShapeLengthToken, ShapeToken, shapeTokenRanges, UiColorToken, uiColorTokens } from './tokens';
 
 export const THEME_SCHEMA_VERSION = 1;
@@ -26,6 +27,11 @@ export interface AntaresTheme {
    colors?: Partial<Record<UiColorToken, string>>;
    /** Corner radii, line widths, focus ring, scrollbars */
    shape?: Partial<Record<ShapeToken, string>>;
+   /**
+    * Colors of the connection folder palette (see folderColors.ts): `default` is the accent of the app,
+    * the other slots the colors a folder can get. #rrggbb only. Useful for color vision deficiencies
+    */
+   accent?: Partial<Record<FolderColorSlot, string>>;
    /** Code editor colors */
    editor?: {
       colors?: Partial<EditorChromeColors>;
@@ -162,6 +168,18 @@ export const validateTheme = (raw: unknown): ThemeValidationResult => {
          }
       }
       else warnings.push('"shape" ignored: expected an object');
+   }
+
+   if (raw.accent !== undefined) {
+      if (isRecord(raw.accent)) {
+         theme.accent = {};
+         for (const [slot, value] of Object.entries(raw.accent)) {
+            if (!(folderColorSlotNames as readonly string[]).includes(slot)) warnings.push(`accent.${slot} ignored: unknown palette slot`);
+            else if (typeof value !== 'string' || !/^#[0-9a-f]{6}$/i.test(value.trim())) warnings.push(`accent.${slot} ignored: expected a #rrggbb color`);
+            else theme.accent[slot as FolderColorSlot] = value.trim();
+         }
+      }
+      else warnings.push('"accent" ignored: expected an object');
    }
 
    if (raw.editor !== undefined) {

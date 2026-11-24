@@ -31,7 +31,7 @@
                      :title="t('general.cancel')"
                      @click="killTabQuery()"
                   >
-                     <BaseIcon icon-name="mdiWindowClose" :size="24" />
+                     <BaseIcon icon-name="x" :size="24" />
                      <span class="d-invisible pr-1">{{ t('general.run') }}</span>
                   </button>
                   <button
@@ -43,7 +43,7 @@
                   >
                      <BaseIcon
                         class="mr-1"
-                        icon-name="mdiPlay"
+                        icon-name="play"
                         :size="24"
                      />
                      <span>{{ t('general.run') }}</span>
@@ -57,7 +57,7 @@
                >
                   <BaseIcon
                      class="mr-1"
-                     icon-name="mdiCubeSend"
+                     icon-name="box+arrow"
                      :size="24"
                   />
                   <span>{{ t('database.commit') }}</span>
@@ -70,7 +70,7 @@
                >
                   <BaseIcon
                      class="mr-1"
-                     icon-name="mdiUndoVariant"
+                     icon-name="undo"
                      :size="24"
                   />
                   <span>{{ t('database.rollback') }}</span>
@@ -82,7 +82,7 @@
                >
                   <BaseIcon
                      class="mr-1"
-                     icon-name="mdiDeleteSweep"
+                     icon-name="eraser"
                      :size="24"
                   />
                   <span>{{ t('general.clear') }}</span>
@@ -96,7 +96,7 @@
                   :title="t('general.format')"
                   @click="beautify()"
                >
-                  <BaseIcon icon-name="mdiBrush" :size="24" />
+                  <BaseIcon icon-name="brush" :size="24" />
                </button>
                <div class="btn-group">
                   <button
@@ -105,21 +105,21 @@
                      :title="t('application.saveFile')"
                      @click="saveFile()"
                   >
-                     <BaseIcon icon-name="mdiContentSaveCheckOutline" :size="24" />
+                     <BaseIcon icon-name="save+check" :size="24" />
                   </button>
                   <button
                      class="btn btn-dark btn-sm mr-0"
                      :title="t('application.saveFileAs')"
                      @click="saveFileAs()"
                   >
-                     <BaseIcon icon-name="mdiContentSavePlusOutline" :size="24" />
+                     <BaseIcon icon-name="save+plus" :size="24" />
                   </button>
                   <button
                      class="btn btn-dark btn-sm"
                      :title="t('application.openFile')"
                      @click="openFile()"
                   >
-                     <BaseIcon icon-name="mdiFolderOpenOutline" :size="24" />
+                     <BaseIcon icon-name="folder-open" :size="24" />
                   </button>
                </div>
                <div class="btn-group">
@@ -129,7 +129,7 @@
                      :title="t('application.saveAsNote')"
                      @click="saveQuery()"
                   >
-                     <BaseIcon icon-name="mdiHeartPlusOutline" :size="24" />
+                     <BaseIcon icon-name="heart+plus" :size="24" />
                   </button>
                   <button
                      class="btn btn-dark btn-sm"
@@ -137,7 +137,7 @@
                      :title="t('database.savedQueries')"
                      @click="openSavedModal()"
                   >
-                     <BaseIcon icon-name="mdiNotebookHeartOutline" :size="24" />
+                     <BaseIcon icon-name="notebook+heart" :size="24" />
                   </button>
                </div>
                <button
@@ -146,7 +146,7 @@
                   :title="t('general.history')"
                   @click="openHistoryModal()"
                >
-                  <BaseIcon icon-name="mdiHistory" :size="24" />
+                  <BaseIcon icon-name="history" :size="24" />
                </button>
                <div class="dropdown table-dropdown pr-2">
                   <button
@@ -156,13 +156,13 @@
                   >
                      <BaseIcon
                         class="mr-1"
-                        icon-name="mdiFileExport"
+                        icon-name="file+up"
                         :size="24"
                      />
                      <span>{{ t('database.export') }}</span>
                      <BaseIcon
                         class="mr-1"
-                        icon-name="mdiMenuDown"
+                        icon-name="caret-down"
                         :size="24"
                      />
                   </button>
@@ -223,7 +223,7 @@
                <div class="input-group pr-2" :title="t('database.commitMode')">
                   <BaseIcon
                      class="input-group-addon addon-sm p-0"
-                     icon-name="mdiSourceCommit"
+                     icon-name="commit"
                      :size="28"
                   />
                   <BaseSelect
@@ -243,8 +243,7 @@
                >
                   <BaseIcon
                      class="mr-1 mt-1"
-                     icon-name="mdiTimerSand"
-                     :rotate="180"
+                     icon-name="hourglass"
                      :size="16"
                   /> <b>{{ durationsCount / 1000 }}s</b>
                </div>
@@ -255,7 +254,7 @@
                >
                   <BaseIcon
                      class="mr-1 mt-1"
-                     icon-name="mdiEqual"
+                     icon-name="equal"
                      :size="16"
                   /> <b>{{ resultsCount.toLocaleString() }}</b>
                </div>
@@ -266,14 +265,14 @@
                >
                   <BaseIcon
                      class="mr-1 mt-1"
-                     icon-name="mdiTarget"
+                     icon-name="target"
                      :size="16"
                   />  <b>{{ affectedCount }}</b>
                </div>
                <div class="input-group" :title="t('database.schema')">
                   <BaseIcon
                      class="input-group-addon addon-sm p-0 px-1"
-                     icon-name="mdiDatabase"
+                     icon-name="database"
                      :size="28"
                   />
 

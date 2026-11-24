@@ -47,6 +47,7 @@ const variables = computed(() => {
    const syntax = (key: keyof typeof editor.tokens, fallback: string) => editor.tokens[key]?.color ?? fallback;
    return {
       ...themeCssVariables(props.theme),
+      ...(props.theme.accent?.default ? { '--primary-color': props.theme.accent.default } : {}),
       '--tp-editor-bg': editor.editor.background,
       '--tp-editor-fg': editor.editor.foreground,
       '--tp-keyword': syntax('keyword', editor.editor.foreground),

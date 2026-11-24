@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <BaseIcon
-                        icon-name="mdiDatabaseExport"
+                        icon-name="database+up"
                         class="mr-1"
                         :size="24"
                      />
@@ -49,7 +49,7 @@
                      <div class="columns mb-2 mt-1 p-vcentered">
                         <div class="column col-auto input-group d-flex text-italic" :style="'flex-grow: 1'">
                            <BaseIcon
-                              icon-name="mdiFileDocumentOutline"
+                              icon-name="file-text"
                               class="input-group-addon"
                               :size="36"
                            />
@@ -68,7 +68,7 @@
                               :title="t('general.refresh')"
                               @click="refresh"
                            >
-                              <BaseIcon icon-name="mdiRefresh" :size="15" />
+                              <BaseIcon icon-name="refresh" :size="15" />
                            </button>
                            <button
                               class="btn btn-dark btn-sm mx-1 pt-1"
@@ -76,7 +76,7 @@
                               :disabled="isRefreshing"
                               @click="uncheckAllTables"
                            >
-                              <BaseIcon icon-name="mdiCheckboxBlankOutline" :size="15" />
+                              <BaseIcon icon-name="checkbox" :size="15" />
                            </button>
                            <button
                               class="btn btn-dark btn-sm pt-1"
@@ -84,7 +84,7 @@
                               :disabled="isRefreshing"
                               @click="checkAllTables"
                            >
-                              <BaseIcon icon-name="mdiCheckboxMarkedOutline" :size="15" />
+                              <BaseIcon icon-name="checkbox-checked" :size="15" />
                            </button>
                         </div>
                      </div>
@@ -259,10 +259,16 @@
                   </div>
                </div>
                <div class="column col-auto px-0">
-                  <button class="btn btn-link mr-2" @click.stop="closeModal">
+                  <button
+                     class="btn mr-2"
+                     :class="isExported ? 'btn-primary' : 'btn-link'"
+                     @click.stop="closeModal"
+                  >
                      {{ t('general.close') }}
                   </button>
+                  <!-- Hidden after a completed export: a second click would overwrite the file -->
                   <button
+                     v-if="!isExported"
                      class="btn btn-primary mr-2"
                      :class="{'loading': isExporting}"
                      :disabled="isExporting || isRefreshing"
@@ -317,6 +323,8 @@ const {
 const { selectedTable, selectedSchema } = storeToRefs(schemaExportStore);
 
 const isExporting = ref(false);
+/** The export completed: only the close button is left */
+const isExported = ref(false);
 const isRefreshing = ref(false);
 const progressPercentage = ref(0);
 const progressStatus = ref('');
@@ -381,8 +389,10 @@ const startExport = async () => {
    try {
       const { status, response } = await Schema.export(params);
 
-      if (status === 'success')
+      if (status === 'success') {
          progressStatus.value = response.cancelled ? t('general.aborted') : t('general.completed');
+         isExported.value = !response.cancelled;
+      }
       else {
          progressStatus.value = response;
          addNotification({ status: 'error', message: response });

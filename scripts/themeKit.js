@@ -6,6 +6,8 @@
  *
  * Writes, from the sources of this repository (the single source of truth):
  *   schema/theme.schema.json   JSON Schema of a theme file, built from src/common/themes
+ *   schema/tokens.json         token catalog (groups, shape ranges, folder palette, editor keys) read by the
+ *                              web theme editor (antares-website, /theme-editor)
  *   base/dark.json, light.json the built-in themes with every token value (from the SCSS themes):
  *                              a complete starting point to create a theme
  * With --ace it also converts the editor themes ported from Ace into full themes in themes/<id>/theme.json:
@@ -20,6 +22,7 @@ const jiti = require('jiti')(__filename, { alias: { common: path.join(root, 'src
 const { uiColorTokens, uiColorTokenGroups, shapeTokenRanges, shapeColorTokens } = jiti('../src/common/themes/tokens.ts');
 const { themeTokenKeys } = jiti('../src/common/themes/editorTheme.ts');
 const { THEME_SCHEMA_VERSION, validateTheme } = jiti('../src/common/themes/theme.ts');
+const { folderColorSlots } = jiti('../src/common/themes/folderColors.ts');
 
 const SCHEMA_URL = 'https://raw.githubusercontent.com/antares-sql/themes/main/schema/theme.schema.json';
 const BASE_EDITOR = { dark: 'twilight', light: 'sqlserver' };
@@ -74,6 +77,12 @@ const schema = {
             ...Object.fromEntries(shapeColorTokens.map(token => [token, colorSchema]))
          }
       },
+      accent: {
+         type: 'object',
+         description: 'Colors of the connection folder palette: "default" is the accent of the app, the other slots the colors a folder can get (e.g. a palette for color vision deficiencies)',
+         additionalProperties: false,
+         properties: Object.fromEntries(folderColorSlots.map(slot => [slot.name, { type: 'string', pattern: '^#[0-9a-fA-F]{6}$', description: `Default ${slot.hex}` }]))
+      },
       editor: {
          type: 'object',
          additionalProperties: false,
@@ -115,6 +124,17 @@ const schema = {
 };
 
 writeJson(path.join(outDir, 'schema/theme.schema.json'), schema);
+
+// Machine-readable token catalog for tools (the web theme editor): groups, ranges and palette in app order
+writeJson(path.join(outDir, 'schema/tokens.json'), {
+   schemaVersion: THEME_SCHEMA_VERSION,
+   colorGroups: uiColorTokenGroups,
+   shapeRanges: shapeTokenRanges,
+   shapeColorTokens,
+   folderColorSlots,
+   editorColorKeys,
+   syntaxKeys: themeTokenKeys
+});
 
 // ---------------------------------------------------------------- Built-in themes, fully expanded
 

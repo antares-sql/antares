@@ -29,7 +29,7 @@
             >
                <div class="settingbar-element-icon-wrapper">
                   <BaseIcon
-                     icon-name="mdiDotsHorizontal"
+                     icon-name="dots"
                      class="settingbar-element-icon text-light"
                      :size="24"
                   />
@@ -47,7 +47,7 @@
             >
                <div class="settingbar-element-icon-wrapper">
                   <BaseIcon
-                     icon-name="mdiPlus"
+                     icon-name="plus"
                      class="settingbar-element-icon text-light"
                      :size="24"
                   />
@@ -68,7 +68,7 @@
                @click="showScratchpad()"
             >
                <BaseIcon
-                  icon-name="mdiNotebookOutline"
+                  icon-name="notebook"
                   class="settingbar-element-icon text-light"
                   :size="24"
                />
@@ -88,7 +88,7 @@
                      :class="{ 'badge badge-update': hasUpdates }"
                   >
                      <BaseIcon
-                        icon-name="mdiCog"
+                        icon-name="cog"
                         :size="24"
                      />
                   </div>
@@ -287,21 +287,6 @@ if (!connectionsArr.value.length)
                line-height: 1.1;
                color: color-mix(in srgb, var(--settingbar-text) 80%, transparent);
                text-align: center;
-            }
-
-            .settingbar-element-pin {// <- Dead
-               margin: 0 auto;
-
-               &::before {
-                  font: normal normal normal 14px/1 "Material Design Icons";
-                  content: "\F0403";
-                  color: var(--settingbar-text);
-                  transform: rotate(45deg);
-                  opacity: 0.25;
-                  top: -8px;
-                  left: -10px;
-                  position: absolute;
-               }
             }
          }
       }

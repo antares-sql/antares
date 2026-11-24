@@ -10,7 +10,7 @@
          <div class="d-flex">
             <BaseIcon
                class="mr-1"
-               icon-name="mdiKeyLink"
+               icon-name="key+arrow"
                :size="24"
             />
             <span class="cut-text">{{ t('database.foreignKeys') }} "{{ table }}"</span>
@@ -25,7 +25,7 @@
                         <button class="btn btn-dark btn-sm d-flex" @click="addForeign">
                            <BaseIcon
                               class="mr-1"
-                              icon-name="mdiLinkPlus"
+                              icon-name="link+plus"
                               :size="24"
                            />
                            <span>{{ t('general.add') }}</span>
@@ -38,7 +38,7 @@
                         >
                            <BaseIcon
                               class="mr-1"
-                              icon-name="mdiDeleteSweep"
+                              icon-name="eraser"
                               :size="24"
                            />
                            <span>{{ t('general.clear') }}</span>
@@ -57,7 +57,7 @@
                            <div>
                               <BaseIcon
                                  class="mr-1 mt-1"
-                                 icon-name="mdiKeyLink"
+                                 icon-name="key+arrow"
                                  :size="24"
                               />
                            </div>
@@ -69,14 +69,14 @@
                            <small class="tile-subtitle text-gray d-flex">
                               <BaseIcon
                                  class="mt-1 mr-1"
-                                 icon-name="mdiLinkVariant"
+                                 icon-name="link"
                                  :size="18"
                               />
                               <div class="fk-details-wrapper">
                                  <span v-if="foreign.table !== ''" class="fk-details">
                                     <BaseIcon
                                        class="mr-1"
-                                       icon-name="mdiTable"
+                                       icon-name="table"
                                        :size="14"
                                        :style="'min-width:14px'"
                                     />
@@ -85,7 +85,7 @@
                                  <span v-if="foreign.refTable !== ''" class="fk-details">
                                     <BaseIcon
                                        class="mr-1"
-                                       icon-name="mdiTable"
+                                       icon-name="table"
                                        :size="14"
                                        :style="'min-width:14px'"
                                     />
@@ -101,7 +101,7 @@
                               @click.prevent="removeIndex(foreign._antares_id)"
                            >
                               <BaseIcon
-                                 icon-name="mdiClose"
+                                 icon-name="x"
                                  :size="18"
                                  class="mt-2"
                               />
@@ -207,7 +207,7 @@
                   <div class="empty-icon">
                      <BaseIcon
                         class="mr-1"
-                        icon-name="mdiKeyLink"
+                        icon-name="key+arrow"
                         :size="48"
                      />
                   </div>

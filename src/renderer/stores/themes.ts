@@ -1,4 +1,5 @@
 import { EditorThemeDefinition } from 'common/themes/editorTheme';
+import { DEFAULT_ACCENT, FolderColorSlot, folderColorSlotOf, folderColorSlots } from 'common/themes/folderColors';
 import { AntaresTheme, resolveEditorTheme, THEME_SCHEMA_VERSION, ThemeAppearance, themeCssVariables, validateTheme } from 'common/themes/theme';
 import Store from 'electron-store';
 import { defineStore } from 'pinia';
@@ -115,6 +116,24 @@ export const useThemesStore = defineStore('themes', {
       /** CSS custom properties to set on #wrapper (none for the built-in themes) */
       cssVariables (): Record<string, string> {
          return themeCssVariables(this.activeTheme);
+      },
+      /** Accent of the app outside folders */
+      defaultAccent (): string {
+         return (this.activeTheme as AntaresTheme).accent?.default ?? DEFAULT_ACCENT;
+      },
+      /** Color shown for a stored folder color: the active theme can remap every palette slot */
+      resolveFolderColor (): (stored: string) => string {
+         const accent = (this.activeTheme as AntaresTheme).accent ?? {};
+         return (stored: string) => {
+            if (!stored) return accent.default ?? DEFAULT_ACCENT;
+            const slot = folderColorSlotOf(stored);
+            return (slot && accent[slot]) || stored;
+         };
+      },
+      /** The folder palette with the colors of the active theme (`hex` is the value stored in the folder) */
+      folderPalette (): { name: FolderColorSlot; hex: string; color: string }[] {
+         const accent = (this.activeTheme as AntaresTheme).accent ?? {};
+         return folderColorSlots.map(slot => ({ name: slot.name, hex: slot.hex, color: accent[slot.name] ?? slot.hex }));
       },
       /** Editor theme of any theme: its editor section over the base editor theme of its appearance */
       editorThemeOf: () => (theme: AntaresTheme): EditorThemeDefinition =>

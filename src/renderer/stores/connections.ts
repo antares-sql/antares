@@ -428,13 +428,22 @@ export const useConnectionsStore = defineStore('connections', {
          connectionsOrder: SidebarElement[];
          customIcons: CustomIcon[];
       }) {
+         // Exports of versions before 0.7.28 have no icons array: none before 0.7.26, a serialized Vue ref after
+         const rawIcons = importObj.customIcons as unknown;
+         const importedIcons: CustomIcon[] = Array.isArray(rawIcons)
+            ? rawIcons
+            : Array.isArray((rawIcons as { _value?: unknown })?._value)
+               ? (rawIcons as { _value: CustomIcon[] })._value
+               : [];
+         const newIcons = importedIcons.filter(icon => !this.customIcons.some((i: CustomIcon) => i.uid === icon.uid));
+
          this.connections = [...this.connections, ...importObj.connections];
          this.connectionsOrder = [...this.connectionsOrder, ...importObj.connectionsOrder];
-         this.customIcons = [...this.customIcons, ...importObj.customIcons];
+         this.customIcons = [...this.customIcons, ...newIcons];
 
          persistentStore.set('connections', this.connections);
          persistentStore.set('connectionsOrder', this.connectionsOrder);
-         persistentStore.set('customIcons', this.customIcons);
+         persistentStore.set('custom_icons', this.customIcons);
       }
    }
 });

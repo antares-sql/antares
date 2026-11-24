@@ -3,14 +3,14 @@
       <div class="shortcuts-tools pb-2 px-2">
          <button class="btn btn-dark btn-sm d-flex ml-2" @click="showAddModal">
             <BaseIcon
-               icon-name="mdiPlus"
+               icon-name="plus"
                class="mr-1"
                :size="24"
             /><span>{{ t('application.addShortcut') }}</span>
          </button>
          <button class="btn btn-dark btn-sm d-flex ml-2" @click="isConfirmRestoreModal = true">
             <BaseIcon
-               icon-name="mdiUndo"
+               icon-name="undo"
                class="mr-1"
                :size="24"
             /><span>{{ t('application.restoreDefaults') }}</span>
@@ -53,7 +53,7 @@
                      <button class="shortcut-button btn btn-link btn-sm d-flex p-0 px-1 mr-2" @click="showEditModal({...shortcut, index: i})">
                         <span>{{ t('general.edit') }}</span>
                         <BaseIcon
-                           icon-name="mdiPencil"
+                           icon-name="pencil"
                            class="ml-1"
                            :size="16"
                         />
@@ -61,7 +61,7 @@
                      <button class="shortcut-button btn btn-link btn-sm d-flex p-0 px-1" @click="showDeleteModal(shortcut)">
                         <span>{{ t('general.delete') }}</span>
                         <BaseIcon
-                           icon-name="mdiDeleteOutline"
+                           icon-name="trash"
                            class="ml-1"
                            :size="16"
                         />
@@ -84,7 +84,7 @@
          <template #header>
             <div class="d-flex">
                <BaseIcon
-                  icon-name="mdiPlus"
+                  icon-name="plus"
                   class="mr-1"
                   :size="24"
                /> {{ t('application.addShortcut') }}
@@ -122,7 +122,7 @@
          <template #header>
             <div class="d-flex">
                <BaseIcon
-                  icon-name="mdiPencil"
+                  icon-name="pencil"
                   class="mr-1"
                   :size="24"
                /> {{ t('application.editShortcut') }}
@@ -159,7 +159,7 @@
          <template #header>
             <div class="d-flex">
                <BaseIcon
-                  icon-name="mdiDelete"
+                  icon-name="trash"
                   class="mr-1"
                   :size="24"
                /> {{ t('application.deleteShortcut') }}
@@ -181,7 +181,7 @@
          <template #header>
             <div class="d-flex">
                <BaseIcon
-                  icon-name="mdiUndo"
+                  icon-name="undo"
                   class="mr-1"
                   :size="24"
                /> {{ t('application.restoreDefaults') }}

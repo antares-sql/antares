@@ -7,7 +7,7 @@
                <div class="modal-title h6">
                   <div class="d-flex">
                      <BaseIcon
-                        icon-name="mdiAccountGroup"
+                        icon-name="users"
                         class="mr-1"
                         :size="24"
                      />
@@ -27,7 +27,7 @@
                            :title="t('users.newUser')"
                            @click="requestAction(newUser)"
                         >
-                           <BaseIcon icon-name="mdiAccountPlus" :size="18" />
+                           <BaseIcon icon-name="user+plus" :size="18" />
                         </button>
                         <button
                            class="btn btn-dark btn-sm mr-1"
@@ -35,7 +35,7 @@
                            :title="`${t('general.refresh')} (F5)`"
                            @click="requestAction(refresh)"
                         >
-                           <BaseIcon icon-name="mdiRefresh" :size="18" />
+                           <BaseIcon icon-name="refresh" :size="18" />
                         </button>
                         <input
                            v-model="searchTerm"
@@ -51,7 +51,7 @@
                         >
                            <a class="active d-flex">
                               <BaseIcon
-                                 icon-name="mdiAccountPlus"
+                                 icon-name="user+plus"
                                  class="mr-1"
                                  :size="16"
                               />
@@ -70,14 +70,14 @@
                               @click="requestAction(() => selectUser(user))"
                            >
                               <BaseIcon
-                                 :icon-name="user.disabled ? 'mdiAccountCancel' : 'mdiAccount'"
+                                 :icon-name="user.disabled ? 'user+ban' : 'user'"
                                  class="mr-1"
                                  :size="16"
                               />
                               <span class="cut-text">{{ user.name }}<span v-if="user.host !== undefined" class="text-gray">@{{ user.host }}</span></span>
                               <BaseIcon
                                  v-if="isSelf(user)"
-                                 icon-name="mdiAccountCheck"
+                                 icon-name="user+check"
                                  class="ml-1 current-user-icon"
                                  :size="16"
                                  :title="t('users.currentUser')"
@@ -90,7 +90,7 @@
                   <div class="users-editor-panel">
                      <div v-if="!editing" class="empty">
                         <div class="empty-icon">
-                           <BaseIcon icon-name="mdiAccountGroup" :size="48" />
+                           <BaseIcon icon-name="users" :size="48" />
                         </div>
                         <p class="empty-title h5">
                            {{ t('users.selectUser') }}
@@ -107,7 +107,7 @@
                                  @click="saveUser"
                               >
                                  <BaseIcon
-                                    icon-name="mdiContentSave"
+                                    icon-name="save"
                                     class="mr-1"
                                     :size="24"
                                  />
@@ -120,7 +120,7 @@
                                  @click="clearChanges"
                               >
                                  <BaseIcon
-                                    icon-name="mdiDeleteSweep"
+                                    icon-name="eraser"
                                     class="mr-1"
                                     :size="24"
                                  />
@@ -134,7 +134,7 @@
                                  @click="isDeleteModal = true"
                               >
                                  <BaseIcon
-                                    icon-name="mdiAccountRemove"
+                                    icon-name="user+minus"
                                     class="mr-1"
                                     :size="24"
                                  />
@@ -148,7 +148,7 @@
                                  :title="notice"
                               >
                                  <BaseIcon
-                                    icon-name="mdiLock"
+                                    icon-name="lock"
                                     class="mr-1"
                                     :size="18"
                                  />
@@ -364,7 +364,7 @@
          <template #header>
             <div class="d-flex">
                <BaseIcon
-                  icon-name="mdiAccountRemove"
+                  icon-name="user+minus"
                   class="mr-1"
                   :size="24"
                />
@@ -387,7 +387,7 @@
          <template #header>
             <div class="d-flex">
                <BaseIcon
-                  icon-name="mdiContentSave"
+                  icon-name="save"
                   class="mr-1"
                   :size="24"
                />
