@@ -531,6 +531,7 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
          constraint_name: string;
          column_name: string;
          constraint_type: string;
+         index_where: string | null;
       }
       /* eslint-enable camelcase */
 
@@ -541,12 +542,12 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
          SELECT pg_index.indexrelid, pg_class.oid
          FROM pg_index, pg_class
          WHERE pg_class.relname = '${table}' AND pg_class.oid = pg_index.indrelid), ndx_cols AS (
-         SELECT pg_class.relname, UNNEST(i.indkey) AS col_ndx, CASE i.indisprimary WHEN TRUE THEN 'PRIMARY' ELSE CASE i.indisunique WHEN TRUE THEN 'UNIQUE' ELSE 'INDEX' END END AS CONSTRAINT_TYPE, pg_class.oid
+         SELECT pg_class.relname, UNNEST(i.indkey) AS col_ndx, CASE i.indisprimary WHEN TRUE THEN 'PRIMARY' ELSE CASE i.indisunique WHEN TRUE THEN 'UNIQUE' ELSE 'INDEX' END END AS CONSTRAINT_TYPE, pg_get_expr(i.indpred, i.indrelid) AS INDEX_WHERE, pg_class.oid
          FROM pg_class
          JOIN pg_index i ON (pg_class.oid = i.indexrelid)
          JOIN ndx_list ON (pg_class.oid = ndx_list.indexrelid)
          WHERE pg_table_is_visible(pg_class.oid))
-         SELECT ndx_cols.relname AS CONSTRAINT_NAME, ndx_cols.CONSTRAINT_TYPE, a.attname AS COLUMN_NAME
+         SELECT ndx_cols.relname AS CONSTRAINT_NAME, ndx_cols.CONSTRAINT_TYPE, a.attname AS COLUMN_NAME, ndx_cols.INDEX_WHERE
          FROM pg_attribute a
          JOIN ndx_cols ON (a.attnum = ndx_cols.col_ndx)
          JOIN ndx_list ON (ndx_list.oid = a.attrelid AND ndx_list.indexrelid = ndx_cols.oid)
@@ -556,7 +557,8 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
          return {
             name: row.constraint_name,
             column: row.column_name,
-            type: row.constraint_type
+            type: row.constraint_type,
+            ...(row.index_where ? { where: row.index_where } : {})
          };
       });
    }
@@ -647,7 +649,7 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
             }
 
             return acc;
-         }, [] as { name: string; column: string; type: string}[]);
+         }, [] as { name: string; column: string; type: string; where?: string }[]);
 
       for (const column of rows) {
          let fieldType = column.data_type;
@@ -710,7 +712,7 @@ export class PostgreSQLClient extends BaseClient implements DatabaseClient, Sche
 
       for (const index of remappedIndexes) {
          if (index.type !== 'PRIMARY')
-            createSql += `CREATE ${index.type}${index.type === 'UNIQUE' ? ' INDEX' : ''} "${index.name}" ON "${schema}"."${table}" (${index.column});\n`;
+            createSql += `CREATE ${index.type}${index.type === 'UNIQUE' ? ' INDEX' : ''} "${index.name}" ON "${schema}"."${table}" (${index.column})${index.where ? ` WHERE ${index.where}` : ''};\n`;
       }
 
       return createSql;

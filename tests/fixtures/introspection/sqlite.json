@@ -19,7 +19,7 @@
               {
                 "seq": 0,
                 "name": "main",
-                "file": "C:\\Users\\fabio\\AppData\\Local\\Temp\\antares-it-33336.db"
+                "file": "C:\\Users\\fabio\\AppData\\Local\\Temp\\antares-it-23024.db"
               }
             ],
             "report": null,
@@ -811,7 +811,7 @@
               }
             ],
             "keys": [],
-            "duration": 0
+            "duration": 1
           }
         },
         {
@@ -820,13 +820,20 @@
             "rows": [
               {
                 "seq": 0,
+                "name": "products_category_name_uq",
+                "unique": 1,
+                "origin": "c",
+                "partial": 1
+              },
+              {
+                "seq": 1,
                 "name": "products_price_idx",
                 "unique": 0,
                 "origin": "c",
                 "partial": 0
               },
               {
-                "seq": 1,
+                "seq": 2,
                 "name": "products_name_uq",
                 "unique": 1,
                 "origin": "c",
@@ -888,6 +895,87 @@
                 "tableAlias": "pragma_index_list",
                 "orgTable": "pragma_index_list",
                 "type": "number",
+                "length": null
+              }
+            ],
+            "keys": [],
+            "duration": 0
+          }
+        },
+        {
+          "sql": "SELECT * FROM \"main\".pragma_index_info('products_category_name_uq');",
+          "result": {
+            "rows": [
+              {
+                "seqno": 0,
+                "cid": 4,
+                "name": "category_id"
+              },
+              {
+                "seqno": 1,
+                "cid": 1,
+                "name": "name"
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "seqno",
+                "alias": "seqno",
+                "orgName": "seqno",
+                "schema": "main",
+                "table": "pragma_index_info",
+                "tableAlias": "pragma_index_info",
+                "orgTable": "pragma_index_info",
+                "type": "number",
+                "length": null
+              },
+              {
+                "name": "cid",
+                "alias": "cid",
+                "orgName": "cid",
+                "schema": "main",
+                "table": "pragma_index_info",
+                "tableAlias": "pragma_index_info",
+                "orgTable": "pragma_index_info",
+                "type": "number",
+                "length": null
+              },
+              {
+                "name": "name",
+                "alias": "name",
+                "orgName": "name",
+                "schema": "main",
+                "table": "pragma_index_info",
+                "tableAlias": "pragma_index_info",
+                "orgTable": "pragma_index_info",
+                "type": "string",
+                "length": null
+              }
+            ],
+            "keys": [],
+            "duration": 0
+          }
+        },
+        {
+          "sql": "SELECT sql FROM \"main\".sqlite_master WHERE type = 'index' AND name = 'products_category_name_uq'",
+          "result": {
+            "rows": [
+              {
+                "sql": "CREATE UNIQUE INDEX products_category_name_uq ON products (category_id, name) WHERE data IS NOT NULL"
+              }
+            ],
+            "report": null,
+            "fields": [
+              {
+                "name": "sql",
+                "alias": "sql",
+                "orgName": "sql",
+                "schema": "main",
+                "table": "sqlite_master",
+                "tableAlias": "sqlite_master",
+                "orgTable": "sqlite_master",
+                "type": "TEXT",
                 "length": null
               }
             ],
@@ -1001,6 +1089,26 @@
           "name": "PRIMARY",
           "column": "id",
           "type": "PRIMARY"
+        },
+        {
+          "name": "products_category_name_uq",
+          "column": "category_id",
+          "indexType": null,
+          "type": "UNIQUE",
+          "cardinality": null,
+          "comment": "",
+          "indexComment": "",
+          "where": "data IS NOT NULL"
+        },
+        {
+          "name": "products_category_name_uq",
+          "column": "name",
+          "indexType": null,
+          "type": "UNIQUE",
+          "cardinality": null,
+          "comment": "",
+          "indexComment": "",
+          "where": "data IS NOT NULL"
         },
         {
           "name": "products_price_idx",
@@ -1138,7 +1246,7 @@
               }
             ],
             "keys": [],
-            "duration": 1
+            "duration": 0
           }
         }
       ],

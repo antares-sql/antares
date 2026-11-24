@@ -66,6 +66,7 @@ export const defaults: Customizations = {
    functionSettings: false,
    schedulerSettings: false,
    indexes: false,
+   partialIndexes: false,
    foreigns: false,
    sortableFields: false,
    unsigned: false,

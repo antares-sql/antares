@@ -21,6 +21,19 @@ export class PostgreSQLDdl extends DdlGenerator {
       return lowerCase ? type.toLowerCase() : type.toUpperCase();
    }
 
+   /**
+    * A unique index with a WHERE clause can't be a constraint:
+    * it's created with CREATE UNIQUE INDEX and dropped with DROP INDEX.
+    */
+   private _isConstraint (type: string, where?: string): boolean {
+      return type === 'PRIMARY' || (type === 'UNIQUE' && !where);
+   }
+
+   private _createIndex (schema: string, table: string, index: antares.TableIndex, fields: string): string {
+      const where = index.where ? ` WHERE ${index.where}` : '';
+      return `CREATE ${index.type === 'UNIQUE' ? 'UNIQUE ' : ''}INDEX "${index.name}" ON "${schema}"."${table}" (${fields})${where}`;
+   }
+
    createSchema (params: {name: string}): string {
       return `CREATE SCHEMA "${params.name}"`;
    }
@@ -68,10 +81,10 @@ export class PostgreSQLDdl extends DdlGenerator {
 
          if (type === 'PRIMARY')
             newIndexes.push(`PRIMARY KEY (${fields})`);
-         else if (type === 'UNIQUE')
+         else if (this._isConstraint(type, index.where))
             newIndexes.push(`CONSTRAINT "${index.name}" UNIQUE (${fields})`);
          else
-            manageIndexes.push(`CREATE INDEX "${index.name}" ON "${schema}"."${options.name}" (${fields})`);
+            manageIndexes.push(this._createIndex(schema, options.name, index, fields));
       });
 
       // ADD FOREIGN KEYS
@@ -131,10 +144,10 @@ export class PostgreSQLDdl extends DdlGenerator {
 
          if (type === 'PRIMARY')
             alterColumns.push(`ADD PRIMARY KEY (${fields})`);
-         else if (type === 'UNIQUE')
+         else if (this._isConstraint(type, addition.where))
             alterColumns.push(`ADD CONSTRAINT "${addition.name}" UNIQUE (${fields})`);
          else
-            manageIndexes.push(`CREATE INDEX "${addition.name}" ON "${schema}"."${table}" (${fields})`);
+            manageIndexes.push(this._createIndex(schema, table, addition, fields));
       });
 
       // ADD FOREIGN KEYS
@@ -180,20 +193,26 @@ export class PostgreSQLDdl extends DdlGenerator {
 
       // CHANGE INDEX
       indexChanges.changes.forEach(change => {
-         if (['PRIMARY', 'UNIQUE'].includes(change.oldType))
-            alterColumns.push(`DROP CONSTRAINT ${change.oldName}`);
+         const fields = change.fields.map(field => `"${field}"`).join(',');
+         const type = change.type;
+         const isConstraint = this._isConstraint(type, change.where);
+
+         if (this._isConstraint(change.oldType, change.oldWhere)) {
+            // The index statements run before ALTER TABLE: a constraint replaced by an index is dropped first
+            if (isConstraint)
+               alterColumns.push(`DROP CONSTRAINT ${change.oldName}`);
+            else
+               manageIndexes.push(`ALTER TABLE "${schema}"."${table}" DROP CONSTRAINT "${change.oldName}"`);
+         }
          else
             manageIndexes.push(`DROP INDEX ${change.oldName}`);
 
-         const fields = change.fields.map(field => `"${field}"`).join(',');
-         const type = change.type;
-
          if (type === 'PRIMARY')
             alterColumns.push(`ADD PRIMARY KEY (${fields})`);
-         else if (type === 'UNIQUE')
+         else if (isConstraint)
             alterColumns.push(`ADD CONSTRAINT "${change.name}" UNIQUE (${fields})`);
          else
-            manageIndexes.push(`CREATE INDEX "${change.name}" ON "${schema}"."${table}" (${fields})`);
+            manageIndexes.push(this._createIndex(schema, table, change, fields));
       });
 
       // CHANGE FOREIGN KEYS
@@ -209,7 +228,7 @@ export class PostgreSQLDdl extends DdlGenerator {
 
       // DROP INDEX
       indexChanges.deletions.forEach(deletion => {
-         if (['PRIMARY', 'UNIQUE'].includes(deletion.type))
+         if (this._isConstraint(deletion.type, deletion.where))
             alterColumns.push(`DROP CONSTRAINT "${deletion.name}"`);
          else
             manageIndexes.push(`DROP INDEX "${deletion.name}"`);

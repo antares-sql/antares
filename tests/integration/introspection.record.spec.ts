@@ -83,6 +83,7 @@ const schemaSql: Record<EngineName, { schema: string; setup: string[]; teardown:
          )`,
          `COMMENT ON COLUMN ${S}.products.name IS 'Product name'`,
          `CREATE INDEX products_price_idx ON ${S}.products (price)`,
+         `CREATE UNIQUE INDEX products_active_name_uq ON ${S}.products (name, category_id) WHERE flag AND price > 0`,
          `CREATE VIEW ${S}.cheap_products AS SELECT id, name FROM ${S}.products WHERE price < 10`,
          `CREATE MATERIALIZED VIEW ${S}.products_count AS SELECT count(*) AS n FROM ${S}.products`,
          `CREATE FUNCTION ${S}.product_price(p_id integer) RETURNS numeric LANGUAGE plpgsql AS $$ BEGIN RETURN (SELECT price FROM ${S}.products WHERE id = p_id); END $$`,
@@ -107,6 +108,7 @@ const schemaSql: Record<EngineName, { schema: string; setup: string[]; teardown:
          )`,
          'CREATE UNIQUE INDEX products_name_uq ON products (name)',
          'CREATE INDEX products_price_idx ON products (price)',
+         'CREATE UNIQUE INDEX products_category_name_uq ON products (category_id, name) WHERE data IS NOT NULL',
          'CREATE VIEW cheap_products AS SELECT id, name FROM products WHERE price < 10',
          'CREATE TRIGGER products_bi BEFORE INSERT ON `products` BEGIN SELECT 1; END'
       ],

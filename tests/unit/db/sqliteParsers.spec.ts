@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { findAutoIncrementColumn, normalizeIntegers, parseTrigger, parseViewSelect } from '../../../src/main/libs/db/engines/sqlite/SQLiteParsers';
+import { findAutoIncrementColumn, normalizeIntegers, parseIndexWhere, parseTrigger, parseViewSelect } from '../../../src/main/libs/db/engines/sqlite/SQLiteParsers';
 
 describe('SQLite parseTrigger', () => {
    it.each([
@@ -76,5 +76,18 @@ describe('SQLite findAutoIncrementColumn', () => {
       expect(findAutoIncrementColumn('CREATE TABLE t (id INTEGER PRIMARY KEY, name TEXT)', columns)).toBeNull();
       expect(findAutoIncrementColumn('CREATE TABLE t (id INTEGER PRIMARY KEY, name TEXT DEFAULT \'AUTOINCREMENT\') -- AUTOINCREMENT', columns)).toBeNull();
       expect(findAutoIncrementColumn(undefined, columns)).toBeNull();
+   });
+});
+
+describe('SQLite parseIndexWhere', () => {
+   it.each([
+      ['no WHERE', 'CREATE UNIQUE INDEX i ON t (a, b)', null],
+      ['simple', 'CREATE UNIQUE INDEX i ON t (a) WHERE b IS NULL', 'b IS NULL'],
+      ['lowercase, newlines', 'create index i on t(a)\nwhere\n  b > 0 and c in (1, 2)', 'b > 0 and c in (1, 2)'],
+      ['parentheses in names', 'CREATE INDEX "i(x" ON [t(y] ("a)", lower(b)) WHERE "a)" <> \'(\'', '"a)" <> \'(\''],
+      ['WHERE in a name', 'CREATE INDEX "where" ON "where" ("where")', null],
+      ['comments', 'CREATE INDEX i /* ( */ ON t (a) -- )\nWHERE a = 1', 'a = 1']
+   ])('%s', (_label, statement, where) => {
+      expect(parseIndexWhere(statement)).toBe(where);
    });
 });

@@ -70,6 +70,8 @@ export interface Customizations {
    functionSettings?: boolean;
    schedulerSettings?: boolean;
    indexes?: boolean;
+   /** Indexes with a WHERE clause (partial indexes) */
+   partialIndexes?: boolean;
    foreigns?: boolean;
    sortableFields?: boolean;
    unsigned?: boolean;

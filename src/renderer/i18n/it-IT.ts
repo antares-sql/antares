@@ -186,6 +186,8 @@ export const itIT = {
       deleteTable: 'Cancella tabella',
       emptyConfirm: 'Confermi di voler svuotare',
       thereAreNoIndexes: 'Non ci sono indici',
+      indexCondition: 'Condizione',
+      partialIndexHint: 'Clausola WHERE di un indice parziale, facoltativa',
       thereAreNoForeign: 'Non ci sono chiavi esterne',
       createNewForeign: 'Crea nuova chiave esterna',
       referenceTable: 'Tabella di rif.',

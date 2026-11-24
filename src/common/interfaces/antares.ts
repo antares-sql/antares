@@ -140,8 +140,11 @@ export interface TableIndex {
    indexType?: string;
    indexComment?: string;
    cardinality?: number;
+   /** Predicate of a partial index, without WHERE */
+   where?: string;
    oldType?: string;
    oldName?: string;
+   oldWhere?: string;
 }
 
 export interface TableForeign {

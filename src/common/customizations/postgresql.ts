@@ -64,6 +64,7 @@ export const customizations: Customizations = {
    routineSettings: true,
    functionSettings: true,
    indexes: true,
+   partialIndexes: true,
    foreigns: true,
    nullable: true,
    comment: true,

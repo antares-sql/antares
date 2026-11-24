@@ -39,6 +39,7 @@ export const customizations: Customizations = {
    viewSettings: true,
    triggerSettings: true,
    indexes: true,
+   partialIndexes: true,
    foreigns: true,
    sortableFields: true,
    autoIncrement: true,

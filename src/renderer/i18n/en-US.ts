@@ -212,6 +212,8 @@ export const enUS = {
       createNewIndex: 'Create new index',
       createNewCheck: 'Create new check',
       checkClause: 'Check clause',
+      indexCondition: 'Condition',
+      partialIndexHint: 'WHERE clause of a partial index, optional',
       addToIndex: 'Add to index',
       createNewTable: 'Create new table',
       emptyTable: 'Empty table',

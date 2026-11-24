@@ -68,7 +68,7 @@ export class SQLiteDdl extends DdlGenerator {
                newIndexes.push(`PRIMARY KEY (${fields})`);
          }
          else
-            manageIndexes.push(`CREATE ${type === 'UNIQUE' ? type : ''} INDEX "${index.name}" ON "${options.name}" (${fields})`);
+            manageIndexes.push(`CREATE ${type === 'UNIQUE' ? type : ''} INDEX "${index.name}" ON "${options.name}" (${fields})${index.where ? ` WHERE ${index.where}` : ''}`);
       });
 
       // ADD FOREIGN KEYS

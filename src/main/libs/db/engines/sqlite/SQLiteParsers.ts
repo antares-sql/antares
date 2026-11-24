@@ -60,6 +60,36 @@ export function findAutoIncrementColumn (statement: string, columns: { name: str
    return primary.length === 1 && primary[0].type.toUpperCase() === 'INTEGER' ? primary[0].name : null;
 }
 
+/**
+ * The predicate (without WHERE) of a partial index, from its CREATE INDEX statement; null if it has none.
+ * The WHERE follows the column list: the first parenthesis outside quotes and comments.
+ */
+export function parseIndexWhere (statement: string): string | null {
+   const sql = statement ?? '';
+   const skipped = /'(?:[^']|'')*'|"(?:[^"]|"")*"|`(?:[^`]|``)*`|\[[^\]]*\]|--[^\n]*|\/\*[\s\S]*?\*\//y; // Quotes and comments
+   let depth = 0;
+   let i = 0;
+
+   while (i < sql.length) {
+      skipped.lastIndex = i;
+      const skip = skipped.exec(sql);
+
+      if (skip)
+         i += skip[0].length;
+      else {
+         if (sql[i] === '(')
+            depth++;
+         else if (sql[i] === ')' && --depth === 0) {
+            const where = sql.slice(i + 1).match(/^(?:\s|--[^\n]*\n|\/\*[\s\S]*?\*\/)*WHERE\s+([\s\S]*?)[\s;]*$/i);
+            return where ? where[1] : null;
+         }
+         i++;
+      }
+   }
+
+   return null;
+}
+
 const VIEW_HEADER = new RegExp(
    `^\\s*CREATE\\s+(?:TEMP(?:ORARY)?\\s+)?VIEW\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?(?:${IDENT}\\.)?${IDENT}\\s*(?:\\([^)]*\\)\\s*)?AS\\s`,
    'i'

@@ -8,7 +8,7 @@ import { arrayRowsToObjects, uniqueColumnNames } from '../db/core/resultRows';
 import { SQLiteConnections, SQLiteParams } from '../db/engines/sqlite/SQLiteConnections';
 import { SQLiteDdl } from '../db/engines/sqlite/SQLiteDdl';
 import { SQLiteDialect } from '../db/engines/sqlite/SQLiteDialect';
-import { findAutoIncrementColumn, normalizeIntegers, parseTrigger, parseViewSelect } from '../db/engines/sqlite/SQLiteParsers';
+import { findAutoIncrementColumn, normalizeIntegers, parseIndexWhere, parseTrigger, parseViewSelect } from '../db/engines/sqlite/SQLiteParsers';
 import { BaseClient } from './BaseClient';
 
 export class SQLiteClient extends BaseClient implements DatabaseClient, DbConfigCapability {
@@ -240,6 +240,12 @@ export class SQLiteClient extends BaseClient implements DatabaseClient, DbConfig
       for (const index of indexes) {
          const { rows: details } = await this.raw(`SELECT * FROM "${schema}".pragma_index_info('${index.name}');`);
 
+         let where: string = null;
+         if (index.partial === 1) {
+            const { rows } = await this.raw<antares.QueryResult<{ sql: string }>>(`SELECT sql FROM "${schema}".sqlite_master WHERE type = 'index' AND name = ${this.dialect.quoteString(index.name)}`);
+            where = parseIndexWhere(rows[0]?.sql);
+         }
+
          for (const detail of details) {
             remappedIndexes.push({
                name: index.name,
@@ -248,7 +254,8 @@ export class SQLiteClient extends BaseClient implements DatabaseClient, DbConfig
                type: index.unique === 1 ? 'UNIQUE' : 'INDEX',
                cardinality: null as never,
                comment: '',
-               indexComment: ''
+               indexComment: '',
+               ...(where ? { where } : {})
             });
          }
       }

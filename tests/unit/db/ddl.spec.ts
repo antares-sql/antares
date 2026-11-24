@@ -84,3 +84,60 @@ describe('MySQL DDL column CHECK', () => {
       expect(sql).not.toContain('CHECK');
    });
 });
+
+describe('partial indexes', () => {
+   const partial = { name: 'users_email_uq', fields: ['email'], type: 'UNIQUE', where: 'deleted_at IS NULL' };
+   const alter = (indexChanges: Any): Any => ({
+      schema: 's',
+      table: 't',
+      additions: [],
+      changes: [],
+      deletions: [],
+      tableStructure: { name: 't', fields: [], foreigns: [], indexes: [] },
+      indexChanges: { additions: [], changes: [], deletions: [], ...indexChanges },
+      foreignChanges: { additions: [], changes: [], deletions: [] },
+      checkChanges: { additions: [], changes: [], deletions: [] },
+      options: {}
+   });
+   const table = (indexes: Any[]): Any => ({ schema: 's', fields: [], foreigns: [], indexes, options: { name: 't' } });
+
+   describe('PostgreSQL', () => {
+      const ddl = new PostgreSQLDdl();
+
+      it('creates a partial unique index instead of a UNIQUE constraint', () => {
+         const sql = normalizeSql(ddl.createTable(table([partial])));
+         expect(sql).toContain('CREATE UNIQUE INDEX "users_email_uq" ON "s"."t" (email) WHERE deleted_at IS NULL');
+         expect(sql).not.toContain('CONSTRAINT');
+      });
+
+      it('adds a partial index', () => {
+         expect(normalizeSql(ddl.alterTable(alter({ additions: [partial] }))))
+            .toBe('CREATE UNIQUE INDEX "users_email_uq" ON "s"."t" ("email") WHERE deleted_at IS NULL;');
+         expect(normalizeSql(ddl.alterTable(alter({ additions: [{ ...partial, type: 'INDEX' }] }))))
+            .toBe('CREATE INDEX "users_email_uq" ON "s"."t" ("email") WHERE deleted_at IS NULL;');
+      });
+
+      it('drops a partial unique index with DROP INDEX', () => {
+         expect(normalizeSql(ddl.alterTable(alter({ deletions: [partial] })))).toBe('DROP INDEX "users_email_uq";');
+      });
+
+      it('drops the UNIQUE constraint before the partial index that replaces it', () => {
+         const change = { ...partial, oldName: 'users_email_uq', oldType: 'UNIQUE' };
+         expect(normalizeSql(ddl.alterTable(alter({ changes: [change] }))))
+            .toBe('ALTER TABLE "s"."t" DROP CONSTRAINT "users_email_uq";CREATE UNIQUE INDEX "users_email_uq" ON "s"."t" ("email") WHERE deleted_at IS NULL;');
+      });
+
+      it('replaces a partial unique index with a UNIQUE constraint', () => {
+         const change = { ...partial, where: undefined as string, oldName: 'users_email_uq', oldType: 'UNIQUE', oldWhere: partial.where };
+         expect(normalizeSql(ddl.alterTable(alter({ changes: [change] }))))
+            .toBe('DROP INDEX users_email_uq; ALTER TABLE "s"."t" ADD CONSTRAINT "users_email_uq" UNIQUE ("email");');
+      });
+   });
+
+   describe('SQLite', () => {
+      it('creates a partial index', () => {
+         expect(normalizeSql(new SQLiteDdl().createTable(table([partial]))))
+            .toContain('CREATE UNIQUE INDEX "users_email_uq" ON "t" ("email") WHERE deleted_at IS NULL');
+      });
+   });
+});

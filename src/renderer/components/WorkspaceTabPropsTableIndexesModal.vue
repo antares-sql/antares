@@ -67,7 +67,7 @@
                            <div class="tile-title">
                               {{ index.name }}
                            </div>
-                           <small class="tile-subtitle text-gray">{{ index.type }} · {{ index.fields.length }} {{ t('database.field', index.fields.length) }}</small>
+                           <small class="tile-subtitle text-gray">{{ index.type }}{{ canBePartial(index) && index.where ? ' · WHERE' : '' }} · {{ index.fields.length }} {{ t('database.field', index.fields.length) }}</small>
                         </div>
                         <div class="tile-action">
                            <button
@@ -116,6 +116,23 @@
                            :option-disabled="(opt: any) => opt === 'PRIMARY' && hasPrimary"
                            class="form-select"
                         />
+                     </div>
+                  </div>
+                  <div v-if="canBePartial(selectedIndexObj)" class="form-group">
+                     <label class="form-label col-3">
+                        {{ t('database.indexCondition') }}
+                     </label>
+                     <div class="column">
+                        <div class="input-group">
+                           <span class="input-group-addon">WHERE</span>
+                           <input
+                              v-model="selectedIndexObj.where"
+                              class="form-input"
+                              type="text"
+                              spellcheck="false"
+                              :placeholder="t('database.partialIndexHint')"
+                           >
+                        </div>
                      </div>
                   </div>
                   <div class="form-group">
@@ -189,8 +206,18 @@ const selectedIndexObj = computed(() => indexesProxy.value.find(index => index._
 const isChanged = computed(() => JSON.stringify(props.localIndexes) !== JSON.stringify(indexesProxy.value));
 const hasPrimary = computed(() => indexesProxy.value.some(index => ['PRIMARY', 'PRIMARY KEY'].includes(index.type)));
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const canBePartial = (index: any) => props.workspace.customizations.partialIndexes && !['PRIMARY', 'PRIMARY KEY'].includes(index.type);
+
 const confirmIndexesChange = () => {
-   indexesProxy.value = indexesProxy.value.filter(index => index.fields.length);
+   indexesProxy.value = indexesProxy.value
+      .filter(index => index.fields.length)
+      .map(index => {
+         const where = canBePartial(index) ? index.where?.trim().replace(/^WHERE\s+/i, '') : '';
+         if (where) index.where = where;
+         else delete index.where;
+         return index;
+      });
    emit('indexes-update', indexesProxy.value);
 };
 

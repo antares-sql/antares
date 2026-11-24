@@ -425,7 +425,8 @@ const getFieldsData = async () => {
                comment: indexesObj[index][0].comment,
                indexType: indexesObj[index][0].indexType,
                indexComment: indexesObj[index][0].indexComment,
-               cardinality: indexesObj[index][0].cardinality
+               cardinality: indexesObj[index][0].cardinality,
+               where: indexesObj[index][0].where
             };
          });
 
@@ -522,7 +523,8 @@ const saveChanges = async () => {
             indexChanges.changes.push({
                ...localIndexes.value[lI],
                oldName: originalIndex.name,
-               oldType: originalIndex.type
+               oldType: originalIndex.type,
+               oldWhere: originalIndex.where
             });
          }
       }
