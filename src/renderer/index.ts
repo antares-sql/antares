@@ -10,6 +10,7 @@ import { VueMaskDirective } from 'v-mask';
 import { createApp } from 'vue';
 
 import App from '@/App.vue';
+import { vButton } from '@/directives/button';
 import { i18n } from '@/i18n';
 import { useApplicationStore } from '@/stores/application';
 import { QueryLog, useConsoleStore } from '@/stores/console';
@@ -30,6 +31,7 @@ migrateLegacyEditorTheme();
 
 createApp(App)
    .directive('mask', vMaskV3)
+   .directive('button', vButton)
    .use(createPinia())
    .use(i18n)
    .use(FloatingVue)

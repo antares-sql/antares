@@ -1,5 +1,5 @@
 <template>
-   <div id="settingbar">
+   <nav id="settingbar" :aria-label="t('application.mainNavigation')">
       <div ref="sidebarConnections" class="settingbar-top-elements">
          <SettingBarContext
             v-if="isContext"
@@ -24,6 +24,7 @@
                   placement: 'right',
                   content: t('connection.allConnections')
                }"
+               v-button="t('connection.allConnections')"
                class="settingbar-element btn btn-link"
                @click="emit('show-connections-modal')"
             >
@@ -41,8 +42,10 @@
                   placement: 'right',
                   content: t('connection.addConnection')
                }"
+               v-button="t('connection.addConnection')"
                class="settingbar-element btn btn-link"
                :class="{ 'selected': 'NEW' === selectedWorkspace }"
+               :aria-pressed="'NEW' === selectedWorkspace"
                @click="selectWorkspace('NEW')"
             >
                <div class="settingbar-element-icon-wrapper">
@@ -64,6 +67,7 @@
                   placement: 'right',
                   content: t('application.note', 2)
                }"
+               v-button="t('application.note', 2)"
                class="settingbar-element btn btn-link"
                @click="showScratchpad()"
             >
@@ -79,6 +83,7 @@
                   placement: 'right',
                   content: t('application.settings')
                }"
+               v-button="t('application.settings')"
                class="settingbar-element btn btn-link"
                @click="showSettingModal('general')"
             >
@@ -96,7 +101,7 @@
             </li>
          </ul>
       </div>
-   </div>
+   </nav>
 </template>
 
 <script setup lang="ts">

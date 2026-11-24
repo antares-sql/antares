@@ -327,6 +327,7 @@ export const itIT = {
    },
    application: {
       settings: 'Impostazioni',
+      mainNavigation: 'Navigazione principale',
       general: 'Generale',
       themes: 'Temi',
       update: 'Aggiorna',

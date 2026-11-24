@@ -25,10 +25,12 @@
                   placement: 'right',
                   content: getConnectionName(element.uid)
                }"
+               v-button="element.name || getConnectionName(element.uid)"
                class="settingbar-element btn btn-link"
                :class="{ 'selected': element.uid === selectedWorkspace && coveredElement !== element.uid }"
                placement="right"
                strategy="fixed"
+               :aria-current="element.uid === selectedWorkspace ? 'true' : undefined"
                @click.stop="selectWorkspace(element.uid)"
             >
                <!-- Creates a new folder -->

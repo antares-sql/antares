@@ -29,14 +29,18 @@
          <template #header>
             <div
                v-if="!isOpen"
+               v-button="folder.name || t('general.folder')"
                class="folder-overlay"
+               aria-expanded="false"
                @click="openFolder"
                @contextmenu.stop="emit('context', {event: $event, content: folder})"
             />
             <div
                v-if="isOpen"
+               v-button="folder.name || t('general.folder')"
                class="folder-icon"
                :style="`color: ${resolveFolderColor(folder.color)};`"
+               aria-expanded="true"
                @click="closeFolder"
             >
                <BaseIcon
@@ -59,8 +63,11 @@
                   placement: 'right',
                   content: getConnectionName(element)
                }"
+               v-button="getConnectionOrderByUid(element)?.name || getConnectionName(element)"
                class="folder-element"
                :class="{ 'selected': element === selectedWorkspace }"
+               :tabindex="isOpen ? 0 : -1"
+               :aria-current="element === selectedWorkspace ? 'true' : undefined"
                @click="emit('select-workspace', element)"
                @contextmenu.stop="emit('context', {event: $event, content: getConnectionOrderByUid(element)})"
             >
@@ -99,6 +106,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { computed, PropType, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import * as Draggable from 'vuedraggable';
 
 import BaseIcon from '@/components/BaseIcon.vue';
@@ -106,6 +114,8 @@ import SettingBarConnections from '@/components/SettingBarConnections.vue';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { useThemesStore } from '@/stores/themes';
 import { useWorkspacesStore } from '@/stores/workspaces';
+
+const { t } = useI18n();
 
 const workspacesStore = useWorkspacesStore();
 const connectionsStore = useConnectionsStore();

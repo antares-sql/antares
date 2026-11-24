@@ -375,6 +375,7 @@ export const enUS = {
    },
    application: { // Application related terms
       settings: 'Settings',
+      mainNavigation: 'Main navigation',
       console: 'Console',
       general: 'General',
       themes: 'Themes',
