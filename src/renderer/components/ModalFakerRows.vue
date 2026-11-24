@@ -285,14 +285,20 @@ const onKey = (e: KeyboardEvent) => {
 
 window.addEventListener('keydown', onKey);
 
+/**
+ * Focuses the value of the first field that can be edited: fields excluded by default
+ * (auto increment, "on update") are disabled and skipped. Looks only inside this dialog.
+ */
+const focusFirstField = () => {
+   const dialog = trapRef.value as HTMLElement;
+   if (!dialog) return;
+   const inputs = [...dialog.querySelectorAll<HTMLInputElement>('.modal-body .form-group .form-input')];
+   inputs.find(el => !el.disabled && !el.readOnly && el.offsetParent !== null)?.focus();
+};
+
 onMounted(() => {
-   setTimeout(() => {
-      const inputs = Array.from(document.querySelectorAll<HTMLInputElement>('.modal-container .form-input'));
-      if (inputs?.length) {
-         const firstEnabledInput = inputs.find((el) => !el.disabled);
-         firstEnabledInput?.focus();
-      }
-   }, 50);
+   // After the rows built below are rendered
+   setTimeout(focusFirstField, 50);
 
    const rowObj: Record<string, unknown> = {};
 
