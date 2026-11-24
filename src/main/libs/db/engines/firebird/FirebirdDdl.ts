@@ -36,11 +36,12 @@ export class FirebirdDdl extends DdlGenerator {
       });
 
       // ADD INDEX
+      const plainIndexes: string[] = [];
       indexes.forEach(index => {
-         const fields = index.fields.map(field => `"${field}"`).join(',');
-         const type = index.type;
-
-         newIndexes.push(`CONSTRAINT "${index.name}" ${type === 'PRIMARY' ? 'PRIMARY KEY' : type} (${fields})`);
+         if (index.type === 'INDEX')
+            plainIndexes.push(this.createIndex(options.name, index));
+         else
+            newIndexes.push(this.indexConstraint(index));
       });
 
       // ADD FOREIGN KEYS
@@ -55,13 +56,20 @@ export class FirebirdDdl extends DdlGenerator {
 
       sql = `${sql} (${[...newColumns, ...newIndexes].join(', ')})`;
 
+      if (plainIndexes.length)
+         sql = `${sql}; ${plainIndexes.join('; ')}`;
+
       if (newForeigns.length)
          sql = `${sql}; ALTER TABLE "${options.name}" ${newForeigns.join(';')}`;
 
       return sql;
    }
 
-   alterTable (params: antares.AlterTableParams): string {
+   /**
+    * @param constraintIndexes names of the existing indexes that belong to a constraint: a UNIQUE index in it is
+    * dropped with DROP CONSTRAINT, otherwise (CREATE UNIQUE INDEX) with DROP INDEX. Without it UNIQUE means constraint.
+    */
+   alterTable (params: antares.AlterTableParams, constraintIndexes?: Set<string>): string {
       const {
          table,
          additions,
@@ -74,6 +82,12 @@ export class FirebirdDdl extends DdlGenerator {
       let sql = `ALTER TABLE "${table}" `;
       const alterColumns: string[] = [];
       const newForeigns: string[] = [];
+      const dropPlainIndexes: string[] = [];
+      const createPlainIndexes: string[] = [];
+      // PRIMARY is always a constraint and INDEX never; UNIQUE can be both
+      const isConstraint = (name: string, type: string) => type === 'UNIQUE' && constraintIndexes
+         ? constraintIndexes.has(name)
+         : type !== 'INDEX';
 
       // OPTIONS
       // if ('comment' in options) alterColumns.push(`COMMENT='${options.comment}'`);
@@ -94,10 +108,10 @@ export class FirebirdDdl extends DdlGenerator {
 
       // ADD INDEX
       indexChanges.additions.forEach(addition => {
-         const fields = addition.fields.map(field => `"${field}"`).join(',');
-         const type = addition.type;
-
-         alterColumns.push(`ADD CONSTRAINT "${addition.name}" ${type === 'PRIMARY' ? 'PRIMARY KEY' : type} (${fields})`);
+         if (addition.type === 'INDEX')
+            createPlainIndexes.push(this.createIndex(table, addition));
+         else
+            alterColumns.push(`ADD ${this.indexConstraint(addition)}`);
       });
 
       // ADD FOREIGN KEYS
@@ -129,11 +143,15 @@ export class FirebirdDdl extends DdlGenerator {
 
       // CHANGE INDEX
       indexChanges.changes.forEach(change => {
-         alterColumns.push(`DROP CONSTRAINT "${change.oldName}"`);
-         const fields = change.fields.map(field => `"${field}"`).join(',');
-         const type = change.type;
+         if (isConstraint(change.oldName, change.oldType))
+            alterColumns.push(`DROP CONSTRAINT "${change.oldName}"`);
+         else
+            dropPlainIndexes.push(`DROP INDEX "${change.oldName}"`);
 
-         alterColumns.push(`ADD CONSTRAINT "${change.name}" ${type === 'PRIMARY' ? 'PRIMARY KEY' : type} (${fields})`);
+         if (change.type === 'INDEX')
+            createPlainIndexes.push(this.createIndex(table, change));
+         else
+            alterColumns.push(`ADD ${this.indexConstraint(change)}`);
       });
 
       // CHANGE FOREIGN KEYS
@@ -154,7 +172,10 @@ export class FirebirdDdl extends DdlGenerator {
 
       // DROP INDEX
       indexChanges.deletions.forEach(deletion => {
-         alterColumns.push(`DROP CONSTRAINT "${deletion.name}"`);
+         if (isConstraint(deletion.name, deletion.type))
+            alterColumns.push(`DROP CONSTRAINT "${deletion.name}"`);
+         else
+            dropPlainIndexes.push(`DROP INDEX "${deletion.name}"`);
       });
 
       // DROP FOREIGN KEYS
@@ -165,10 +186,31 @@ export class FirebirdDdl extends DdlGenerator {
       if (alterColumns.length)
          sql += alterColumns.join(', ');
 
+      // Plain indexes are statements of their own: dropped before the columns they use, created after the new ones
+      if (dropPlainIndexes.length || createPlainIndexes.length) {
+         sql = [
+            ...dropPlainIndexes,
+            ...(alterColumns.length ? [sql] : []),
+            ...createPlainIndexes
+         ].join('; ');
+      }
+
       if (newForeigns.length)
          sql = `${sql}; ALTER TABLE "${table}" ${newForeigns.join(';')}`;
 
       return sql;
+   }
+
+   /** PRIMARY KEY or UNIQUE constraint clause of CREATE/ALTER TABLE */
+   private indexConstraint (index: { name: string; type: string; fields: string[] }): string {
+      const fields = index.fields.map(field => `"${field}"`).join(',');
+      return `CONSTRAINT "${index.name}" ${index.type === 'PRIMARY' ? 'PRIMARY KEY' : index.type} (${fields})`;
+   }
+
+   /** Index not backed by a constraint */
+   private createIndex (table: string, index: { name: string; fields: string[] }): string {
+      const fields = index.fields.map(field => `"${field}"`).join(',');
+      return `CREATE INDEX "${index.name}" ON "${table}" (${fields})`;
    }
 
    truncateTable (params: { schema: string; table: string }): string {

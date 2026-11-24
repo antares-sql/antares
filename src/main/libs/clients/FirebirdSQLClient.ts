@@ -369,29 +369,35 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
 
       const remappedIndexes = [];
 
+      // Every index of the table: constraint ones (PRIMARY KEY, UNIQUE, FOREIGN KEY) and the ones created with
+      // CREATE [UNIQUE] INDEX, which have no constraint. Expression indexes have no segments and are left out.
       const { rows: indexes } = await this.raw<antares.QueryResult<ShowIndexesResult>>(`
          SELECT
             ix.rdb$index_name AS INDEX_NAME,
             sg.rdb$field_name AS FIELD_NAME,
-            rc.rdb$relation_name AS TABLE_NAME,
+            ix.rdb$relation_name AS TABLE_NAME,
             rc.rdb$constraint_type AS INDEX_TYPE,
             ix.RDB$UNIQUE_FLAG AS INDEX_UNIQUE
          FROM
             rdb$indices ix
-            LEFT JOIN rdb$index_segments sg ON ix.rdb$index_name = sg.rdb$index_name
+            JOIN rdb$index_segments sg ON ix.rdb$index_name = sg.rdb$index_name
             LEFT JOIN rdb$relation_constraints rc ON rc.rdb$index_name = ix.rdb$index_name
          WHERE
-            rc.rdb$relation_name = '${table}'
+            ix.rdb$relation_name = '${table}'
          ORDER BY
             ix.rdb$index_name, sg.rdb$field_position
       `);
 
       for (const index of indexes) {
+         const constraintType = index.INDEX_TYPE?.trim();
+
          remappedIndexes.push({
             name: index.INDEX_NAME.trim(),
             column: index.FIELD_NAME.trim(),
             indexType: null as never,
-            type: index.INDEX_TYPE.trim() === 'PRIMARY KEY' ? 'PRIMARY' : index.INDEX_TYPE.trim(),
+            type: constraintType === 'PRIMARY KEY'
+               ? 'PRIMARY'
+               : constraintType || (index.INDEX_UNIQUE === 1 ? 'UNIQUE' : 'INDEX'),
             cardinality: null as never,
             comment: '',
             indexComment: ''
@@ -563,7 +569,20 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
    }
 
    async alterTable (params: antares.AlterTableParams) {
-      return await this.raw(this._ddl.alterTable(params));
+      const { indexChanges } = params;
+      let constraintIndexes: Set<string> | undefined;
+
+      // A UNIQUE index can be a constraint or a CREATE UNIQUE INDEX: the catalog tells how to drop it
+      if (indexChanges.changes.length || indexChanges.deletions.length) {
+         const { rows } = await this.raw<antares.QueryResult<{ INDEX_NAME: string }>>(`
+            SELECT rdb$index_name AS INDEX_NAME
+            FROM rdb$relation_constraints
+            WHERE rdb$relation_name = '${params.table}' AND rdb$index_name IS NOT NULL
+         `);
+         constraintIndexes = new Set(rows.map(row => row.INDEX_NAME.trim()));
+      }
+
+      return await this.raw(this._ddl.alterTable(params, constraintIndexes));
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -996,9 +1015,14 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
                            try { // Column details
                               const indexes = await this.getTableIndexes(paramObj);
                               remappedFields = remappedFields.map(field => {
-                                 const fieldIndex = indexes.find(i => i.column === field.name);
-                                 if (fieldIndex) {
-                                    const key = fieldIndex.type === 'PRIMARY KEY' ? 'pri' : fieldIndex.type === 'UNIQUE' ? 'uni' : 'fk';
+                                 // A column can be in several indexes: the strongest key wins
+                                 const types = indexes.filter(i => i.column === field.name).map(i => i.type);
+                                 if (types.length) {
+                                    const key = types.includes('PRIMARY')
+                                       ? 'pri'
+                                       : types.includes('UNIQUE')
+                                          ? 'uni'
+                                          : types.includes('FOREIGN KEY') ? 'fk' : 'mul';
                                     field = { ...field, key };
                                  }
 

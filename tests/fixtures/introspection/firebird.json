@@ -1,6 +1,6 @@
 {
   "engine": "firebird",
-  "server": "{\"number\":\"5.0.4\",\"name\":\"Firebird SQL\",\"arch\":\"TCPv4\",\"os\":\"172.22.0.1/41462\"}",
+  "server": "{\"number\":\"5.0.4\",\"name\":\"Firebird SQL\",\"arch\":\"TCPv4\",\"os\":\"172.22.0.1/34236\"}",
   "calls": [
     {
       "method": "getStructure",
@@ -34,7 +34,7 @@
               }
             ],
             "keys": [],
-            "duration": 3
+            "duration": 7
           }
         },
         {
@@ -98,7 +98,7 @@
               }
             ],
             "keys": [],
-            "duration": 4
+            "duration": 6
           }
         },
         {
@@ -134,7 +134,7 @@
               }
             ],
             "keys": [],
-            "duration": 3
+            "duration": 5
           }
         },
         {
@@ -181,7 +181,7 @@
               }
             ],
             "keys": [],
-            "duration": 4
+            "duration": 7
           }
         },
         {
@@ -239,7 +239,7 @@
               }
             ],
             "keys": [],
-            "duration": 3
+            "duration": 5
           }
         }
       ],
@@ -577,7 +577,7 @@
               }
             ],
             "keys": [],
-            "duration": 13
+            "duration": 20
           }
         }
       ],
@@ -902,7 +902,7 @@
               }
             ],
             "keys": [],
-            "duration": 4
+            "duration": 6
           }
         }
       ],
@@ -959,11 +959,11 @@
       ],
       "queries": [
         {
-          "sql": "SELECT ix.rdb$index_name AS INDEX_NAME, sg.rdb$field_name AS FIELD_NAME, rc.rdb$relation_name AS TABLE_NAME, rc.rdb$constraint_type AS INDEX_TYPE, ix.RDB$UNIQUE_FLAG AS INDEX_UNIQUE FROM rdb$indices ix LEFT JOIN rdb$index_segments sg ON ix.rdb$index_name = sg.rdb$index_name LEFT JOIN rdb$relation_constraints rc ON rc.rdb$index_name = ix.rdb$index_name WHERE rc.rdb$relation_name = 'products' ORDER BY ix.rdb$index_name, sg.rdb$field_position",
+          "sql": "SELECT ix.rdb$index_name AS INDEX_NAME, sg.rdb$field_name AS FIELD_NAME, ix.rdb$relation_name AS TABLE_NAME, rc.rdb$constraint_type AS INDEX_TYPE, ix.RDB$UNIQUE_FLAG AS INDEX_UNIQUE FROM rdb$indices ix JOIN rdb$index_segments sg ON ix.rdb$index_name = sg.rdb$index_name LEFT JOIN rdb$relation_constraints rc ON rc.rdb$index_name = ix.rdb$index_name WHERE ix.rdb$relation_name = 'products' ORDER BY ix.rdb$index_name, sg.rdb$field_position",
           "result": {
             "rows": [
               {
-                "INDEX_NAME": "RDB$PRIMARY2                                                   ",
+                "INDEX_NAME": "RDB$PRIMARY12                                                  ",
                 "FIELD_NAME": "id                                                             ",
                 "TABLE_NAME": "products                                                       ",
                 "INDEX_TYPE": "PRIMARY KEY",
@@ -982,6 +982,13 @@
                 "TABLE_NAME": "products                                                       ",
                 "INDEX_TYPE": "UNIQUE     ",
                 "INDEX_UNIQUE": 1
+              },
+              {
+                "INDEX_NAME": "products_price_idx                                             ",
+                "FIELD_NAME": "price                                                          ",
+                "TABLE_NAME": "products                                                       ",
+                "INDEX_TYPE": null,
+                "INDEX_UNIQUE": 0
               }
             ],
             "report": null,
@@ -1010,9 +1017,9 @@
                 "name": "TABLE_NAME",
                 "alias": "TABLE_NAME",
                 "orgName": "RDB$RELATION_NAME",
-                "table": "RDB$RELATION_CONSTRAINTS",
-                "tableAlias": "RDB$RELATION_CONSTRAINTS",
-                "orgTable": "RDB$RELATION_CONSTRAINTS",
+                "table": "RDB$INDICES",
+                "tableAlias": "RDB$INDICES",
+                "orgTable": "RDB$INDICES",
                 "type": "CHAR",
                 "length": 252
               },
@@ -1038,13 +1045,13 @@
               }
             ],
             "keys": [],
-            "duration": 3
+            "duration": 5
           }
         }
       ],
       "output": [
         {
-          "name": "RDB$PRIMARY2",
+          "name": "RDB$PRIMARY12",
           "column": "id",
           "indexType": null,
           "type": "PRIMARY",
@@ -1066,6 +1073,15 @@
           "column": "name",
           "indexType": null,
           "type": "UNIQUE",
+          "cardinality": null,
+          "comment": "",
+          "indexComment": ""
+        },
+        {
+          "name": "products_price_idx",
+          "column": "price",
+          "indexType": null,
+          "type": "INDEX",
           "cardinality": null,
           "comment": "",
           "indexComment": ""
@@ -1093,7 +1109,7 @@
                 "KEY_SEQ": 1,
                 "UPDATE_RULE": "CASCADE    ",
                 "DELETE_RULE": "SET NULL   ",
-                "PK_NAME": "INTEG_2                                                        ",
+                "PK_NAME": "INTEG_36                                                       ",
                 "FK_NAME": "products_category_fk                                           "
               }
             ],
@@ -1191,7 +1207,7 @@
               }
             ],
             "keys": [],
-            "duration": 3
+            "duration": 5
           }
         }
       ],
@@ -1255,7 +1271,7 @@
               }
             ],
             "keys": [],
-            "duration": 3
+            "duration": 4
           }
         }
       ],
@@ -1328,7 +1344,7 @@
               }
             ],
             "keys": [],
-            "duration": 4
+            "duration": 6
           }
         }
       ],
@@ -1417,7 +1433,7 @@
               }
             ],
             "keys": [],
-            "duration": 3
+            "duration": 6
           }
         },
         {
@@ -1505,7 +1521,7 @@
               }
             ],
             "keys": [],
-            "duration": 3
+            "duration": 7
           }
         }
       ],

@@ -11,6 +11,7 @@ export const customizations: Customizations = {
    dataTypes: firebirdTypes,
    indexTypes: [
       'PRIMARY',
+      'INDEX',
       // 'CHECK',
       'UNIQUE'
    ],

@@ -29,7 +29,10 @@ exports[`firebird client SQL generation > alterTable 1`] = `
 {
   "queries": [
     {
-      "sql": "ALTER TABLE "products" ADD "stock" INTEGER DEFAULT 0 NOT NULL, ADD CONSTRAINT "products_stock_idx" INDEX ("stock"), ALTER COLUMN "name" TO "title", ALTER COLUMN "title" TYPE VARCHAR(150), ALTER COLUMN "title" SET DEFAULT 'unnamed', ALTER COLUMN "title" DROP NOT NULL, DROP CONSTRAINT "products_price_idx", ADD CONSTRAINT "products_price_idx" INDEX ("price"), DROP CONSTRAINT "products_category_fk", ADD CONSTRAINT "products_category_fk" FOREIGN KEY ("category_id") REFERENCES "categories" ("id") ON UPDATE CASCADE ON DELETE CASCADE , DROP "created_at", DROP CONSTRAINT "products_name_uq", DROP CONSTRAINT "products_old_fk"; ALTER TABLE "products" ADD CONSTRAINT "products_supplier_fk" FOREIGN KEY ("supplier_id") REFERENCES "suppliers" ("id") ON UPDATE CASCADE",
+      "sql": "SELECT rdb$index_name AS INDEX_NAME FROM rdb$relation_constraints WHERE rdb$relation_name = 'products' AND rdb$index_name IS NOT NULL",
+    },
+    {
+      "sql": "DROP INDEX "products_price_idx"; DROP INDEX "products_name_uq"; ALTER TABLE "products" ADD "stock" INTEGER DEFAULT 0 NOT NULL, ALTER COLUMN "name" TO "title", ALTER COLUMN "title" TYPE VARCHAR(150), ALTER COLUMN "title" SET DEFAULT 'unnamed', ALTER COLUMN "title" DROP NOT NULL, DROP CONSTRAINT "products_category_fk", ADD CONSTRAINT "products_category_fk" FOREIGN KEY ("category_id") REFERENCES "categories" ("id") ON UPDATE CASCADE ON DELETE CASCADE , DROP "created_at", DROP CONSTRAINT "products_old_fk"; CREATE INDEX "products_stock_idx" ON "products" ("stock"); CREATE INDEX "products_price_idx" ON "products" ("price"); ALTER TABLE "products" ADD CONSTRAINT "products_supplier_fk" FOREIGN KEY ("supplier_id") REFERENCES "suppliers" ("id") ON UPDATE CASCADE",
     },
   ],
 }
@@ -90,7 +93,7 @@ exports[`firebird client SQL generation > createTable 1`] = `
 {
   "queries": [
     {
-      "sql": "CREATE TABLE "products" ("id" INTEGER NOT NULL, "name" VARCHAR(100) DEFAULT 'unnamed' , "price" DECIMAL(10) DEFAULT 0 NOT NULL, "created_at" TIMESTAMP , CONSTRAINT "PRIMARY" PRIMARY KEY ("id"), CONSTRAINT "products_name_uq" UNIQUE ("name"), CONSTRAINT "products_price_idx" INDEX ("price","created_at")); ALTER TABLE "products" ADD CONSTRAINT "products_category_fk" FOREIGN KEY ("category_id") REFERENCES "categories" ("id") ON UPDATE CASCADE",
+      "sql": "CREATE TABLE "products" ("id" INTEGER NOT NULL, "name" VARCHAR(100) DEFAULT 'unnamed' , "price" DECIMAL(10) DEFAULT 0 NOT NULL, "created_at" TIMESTAMP , CONSTRAINT "PRIMARY" PRIMARY KEY ("id"), CONSTRAINT "products_name_uq" UNIQUE ("name")); CREATE INDEX "products_price_idx" ON "products" ("price","created_at"); ALTER TABLE "products" ADD CONSTRAINT "products_category_fk" FOREIGN KEY ("category_id") REFERENCES "categories" ("id") ON UPDATE CASCADE",
     },
   ],
 }
