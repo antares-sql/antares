@@ -275,10 +275,11 @@ import WorkspaceTabQueryTableRow from '@/components/WorkspaceTabQueryTableRow.vu
 import { copyText } from '@/libs/copyText';
 import { unproxify } from '@/libs/unproxify';
 import { useConsoleStore } from '@/stores/console';
+import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
-import { exportRows } from '../libs/exportRows';
+import { ExportFormat, exportRows, formatRows } from '../libs/exportRows';
 
 const { t } = useI18n();
 
@@ -286,6 +287,7 @@ const settingsStore = useSettingsStore();
 const consoleStore = useConsoleStore();
 const workspacesStore = useWorkspacesStore();
 const { getWorkspace, newTab } = workspacesStore;
+const { addNotification } = useNotificationsStore();
 
 const { /* dataTabLimit: pageSize, */ defaultCopyType } = storeToRefs(settingsStore);
 
@@ -752,6 +754,10 @@ const copyRow = (format: string) => {
       const phpString = printer(contentToCopy);
       copyText(phpString);
    }
+   else if (format === 'md') {
+      if (!Array.isArray(contentToCopy)) contentToCopy = [contentToCopy];
+      copyText(formatRows({ type: 'md', content: contentToCopy, table: getTable(resultsetIndex.value) }));
+   }
 };
 
 const createHtmlTable = (tableData: Array<string[]>) => {
@@ -944,7 +950,37 @@ const selectResultset = (index: number) => {
    resultsetIndex.value = index;
 };
 
-const downloadTable = (format: 'csv' | 'json' | 'sql' | 'php', table: string, popup = false) => {
+const getExportableRows = () => sortedResults.value.map((row: any) => {
+   const clonedRow = { ...row };
+   delete clonedRow._antares_id;
+   return clonedRow;
+});
+
+const getExportableFields = () => JSON.parse(JSON.stringify(fieldsObj.value)) as {
+   [key: string]: { type: string; datePrecision: number };
+};
+
+const copyTable = async (format: ExportFormat, table: string) => {
+   if (!sortedResults.value || !sortedResults.value.length) return;
+
+   const content = formatRows({
+      type: format,
+      content: getExportableRows(),
+      fields: getExportableFields(),
+      client: workspaceClient.value,
+      table: getTable(resultsetIndex.value) || table
+   });
+
+   try {
+      await navigator.clipboard.writeText(content);
+      addNotification({ status: 'success', message: t('general.copiedToClipboard') });
+   }
+   catch (err) {
+      addNotification({ status: 'error', message: err.stack });
+   }
+};
+
+const downloadTable = (format: ExportFormat, table: string, popup = false) => {
    if (!sortedResults.value) return;
 
    if (format === 'sql' && !popup && customizations.value.exportByChunks) {
@@ -971,18 +1007,10 @@ const downloadTable = (format: 'csv' | 'json' | 'sql' | 'php', table: string, po
       csvModalRequest.value = false;
    }
 
-   const rows = sortedResults.value.map((row: any) => {
-      const clonedRow = { ...row };
-      delete clonedRow._antares_id;
-      return clonedRow;
-   });
-
    exportRows({
       type: format,
-      content: rows,
-      fields: JSON.parse(JSON.stringify(fieldsObj.value)) as {
-         [key: string]: { type: string; datePrecision: number };
-      },
+      content: getExportableRows(),
+      fields: getExportableFields(),
       client: workspaceClient.value,
       table,
       page: props.page,
@@ -1122,7 +1150,8 @@ defineExpose({
    refreshScroller,
    resetSort,
    resizeResults,
-   downloadTable
+   downloadTable,
+   copyTable
 });
 
 watch(() => props.results, () => {

@@ -42,6 +42,7 @@ export const enUS = {
       content: 'Content',
       cut: 'Cut',
       copy: 'Copy',
+      copiedToClipboard: 'Copied to clipboard',
       paste: 'Paste',
       duplicate: 'Duplicate',
       tools: 'Tools',
