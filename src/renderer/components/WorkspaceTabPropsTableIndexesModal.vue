@@ -146,8 +146,8 @@
                            class="form-checkbox m-0"
                            @click.prevent="toggleField(field.name)"
                         >
-                           <input type="checkbox" :checked="selectedIndexObj.fields.some((f: string) => f === field.name)">
-                           <i class="form-icon" /> {{ field.name }}
+                           <input type="checkbox" :checked="fieldPosition(field.name) > 0">
+                           <i class="form-icon field-order"><span v-if="fieldPosition(field.name)">{{ fieldPosition(field.name) }}</span></i> {{ field.name }}
                         </label>
                      </div>
                   </div>
@@ -264,6 +264,10 @@ const clearChanges = () => {
       resetSelectedID();
 };
 
+/** 1-based position of the field in the selected index, 0 if it is not part of it */
+const fieldPosition = (field: string) => selectedIndexObj.value.fields.indexOf(field) + 1;
+
+/** Adds the field at the end of the index or removes it (the following fields move up one position) */
 const toggleField = (field: string) => {
    indexesProxy.value = indexesProxy.value.map(index => {
       if (index._antares_id === selectedIndexID.value) {
@@ -321,6 +325,27 @@ onUnmounted(() => {
 .fields-list {
   max-height: 300px;
   overflow: auto;
+}
+
+/* Spectre checkbox that shows the position of the field in the index instead of the check mark */
+.form-checkbox .form-icon.field-order {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color-text);
+  font-size: 0.55rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1;
+
+  /* on the flex item, not on the icon: text-box is not inherited by the anonymous text box */
+  span {
+    text-box: trim-both cap alphabetic; /* center the digits, not the font line box */
+  }
+
+  &::before {
+    display: none;
+  }
 }
 
 .remove-field svg {

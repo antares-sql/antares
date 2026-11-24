@@ -382,6 +382,8 @@ export class FirebirdSQLClient extends BaseClient implements DatabaseClient, Dat
             LEFT JOIN rdb$relation_constraints rc ON rc.rdb$index_name = ix.rdb$index_name
          WHERE
             rc.rdb$relation_name = '${table}'
+         ORDER BY
+            ix.rdb$index_name, sg.rdb$field_position
       `);
 
       for (const index of indexes) {
