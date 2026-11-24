@@ -610,13 +610,15 @@ const buildSvg = () => {
    clone.setAttribute('height', String(height));
    clone.setAttribute('viewBox', `0 0 ${width} ${height}`);
    clone.removeAttribute('style');
-   clone.querySelector('g').setAttribute('transform', `translate(${FIT_MARGIN - bounds.x} ${FIT_MARGIN - bounds.y})`);
+   // Direct child: <defs> holds a <g> too (icon masks)
+   const viewport = clone.querySelector(':scope > g');
+   viewport.setAttribute('transform', `translate(${FIT_MARGIN - bounds.x} ${FIT_MARGIN - bounds.y})`);
 
    const background = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
    background.setAttribute('width', '100%');
    background.setAttribute('height', '100%');
    background.setAttribute('fill', window.getComputedStyle(canvasRef.value).backgroundColor);
-   clone.insertBefore(background, clone.querySelector('g'));
+   clone.insertBefore(background, viewport);
 
    return `<?xml version="1.0" encoding="UTF-8"?>\n${new XMLSerializer().serializeToString(clone)}`;
 };
