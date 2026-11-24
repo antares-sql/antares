@@ -1,0 +1,81 @@
+/*
+ * Right-to-left languages (Arabic, Hebrew): App.vue sets dir="rtl" on <html>.
+ * Flexbox and grid layouts mirror by themselves; these rules mirror the physical Spectre utilities
+ * (margins, paddings, floats, text alignment) and keep code left-to-right.
+ */
+$rtl-spacings: (0: 0, 1: $unit-1, 2: $unit-2, 3: $unit-3, 4: $unit-4);
+
+[dir="rtl"] {
+  @each $id, $size in $rtl-spacings {
+    // Swapped sides; the original side is reset only when the opposite utility isn't there too
+    .ml-#{$id} {
+      margin-right: $size !important;
+
+      &:not([class*="mr-"], [class*="mx-"]) {
+        margin-left: 0 !important;
+      }
+    }
+
+    .mr-#{$id} {
+      margin-left: $size !important;
+
+      &:not([class*="ml-"], [class*="mx-"]) {
+        margin-right: 0 !important;
+      }
+    }
+
+    .pl-#{$id} {
+      padding-right: $size !important;
+
+      &:not([class*="pr-"], [class*="px-"]) {
+        padding-left: 0 !important;
+      }
+    }
+
+    .pr-#{$id} {
+      padding-left: $size !important;
+
+      &:not([class*="pl-"], [class*="px-"]) {
+        padding-right: 0 !important;
+      }
+    }
+  }
+
+  .float-left {
+    float: right !important;
+  }
+
+  .float-right {
+    float: left !important;
+  }
+
+  .text-left {
+    text-align: right;
+  }
+
+  .text-right {
+    text-align: left;
+  }
+
+  /* Closed accordions (database explorer) point to the start side, open ones down */
+  .accordion .accordion-header > .icon:first-child {
+    transform: scaleX(-1);
+  }
+
+  .accordion[open] .accordion-header > .icon:first-child {
+    transform: rotate(90deg);
+  }
+
+  /* SQL and other code stay left-to-right */
+  .cm-editor,
+  code,
+  pre,
+  kbd {
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+
+  .cm-editor {
+    text-align: left;
+  }
+}

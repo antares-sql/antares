@@ -30,14 +30,15 @@ export function useFilters () {
 
    const parseKeys = (keys: Record<number, string>[]) => {
       const isMacOS = process.platform === 'darwin';
-      return (keys as string[]).map(k => (
+      // dir="ltr": key combinations keep their order in right-to-left languages
+      return `<span dir="ltr">${(keys as string[]).map(k => (
          k.split('+')
             .map(sk => (
                `<code class="text-bold">${sk}</code>`
             )))
          .join('+')
          .replaceAll('CommandOrControl', isMacOS ? 'Command' : 'Control')
-      ).join(', ');
+      ).join(', ')}</span>`;
    };
 
    return {

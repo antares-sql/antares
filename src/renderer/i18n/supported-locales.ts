@@ -21,3 +21,9 @@ export const localesNames: Record<string, string> = {
    'he-IL': 'עברית',
    'pl-PL': 'Polski'
 };
+
+/** Languages written right to left (the UI is mirrored for them) */
+const rtlLanguages = ['ar', 'fa', 'he', 'ur'];
+
+export const localeDirection = (locale: string): 'rtl' | 'ltr' =>
+   rtlLanguages.includes(locale.split('-')[0]) ? 'rtl' : 'ltr';
