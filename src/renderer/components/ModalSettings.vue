@@ -14,12 +14,16 @@
                      <span class="cut-text">{{ t('application.settings') }}</span>
                   </div>
                </div>
-               <a class="btn btn-clear c-hand" @click="closeModal" />
+               <a
+                  v-button="t('general.close')"
+                  class="btn btn-clear c-hand"
+                  @click="closeModal"
+               />
             </div>
             <div class="modal-body p-0">
                <div class="panel">
                   <div class="panel-nav">
-                     <ul class="tab tab-block">
+                     <ul v-tablist class="tab tab-block">
                         <li
                            class="tab-item c-hand"
                            :class="{'active': selectedTab === 'general'}"
@@ -103,7 +107,12 @@
                                  <div class="col-4 col-sm-12 px-2 p-vcentered">
                                     <small class="d-block" :style="'line-height: 1.1; font-size: 70%;'">
                                        {{ t('application.missingOrIncompleteTranslation') }}<br>
-                                       <a class="text-bold c-hand" @click="openOutside('https://github.com/antares-sql/antares/wiki/Translate-Antares')">{{ t('application.findOutHowToContribute') }}</a>
+                                       <a
+                                          v-button
+                                          role="link"
+                                          class="text-bold c-hand"
+                                          @click="openOutside('https://github.com/antares-sql/antares/wiki/Translate-Antares')"
+                                       >{{ t('application.findOutHowToContribute') }}</a>
                                     </small>
                                  </div>
                               </div>
@@ -286,7 +295,12 @@
                               class="d-inline mr-1"
                               :size="16"
                            /> Website</a><br>
-                           <small>{{ t('general.author') }} <a class="c-hand" @click="openOutside('https://github.com/Fabio286')">{{ appAuthor }}</a></small><br>
+                           <small>{{ t('general.author') }} <a
+                              v-button
+                              role="link"
+                              class="c-hand"
+                              @click="openOutside('https://github.com/Fabio286')"
+                           >{{ appAuthor }}</a></small><br>
                         </p>
                         <div class="mb-2">
                            <small class="d-block text-uppercase">{{ t('general.contributors') }}:</small>

@@ -110,7 +110,13 @@
                      </button>
                      <ul class="menu text-left">
                         <li class="menu-item">
-                           <a class="c-hand" @click="autocommit = true">
+                           <a
+                              v-button
+                              role="menuitem"
+                              tabindex="-1"
+                              class="c-hand"
+                              @click="autocommit = true"
+                           >
                               <BaseIcon
                                  icon-name="check"
                                  :class="{'d-invisible': !autocommit}"
@@ -120,7 +126,13 @@
                            </a>
                         </li>
                         <li class="menu-item">
-                           <a class="c-hand" @click="autocommit = false">
+                           <a
+                              v-button
+                              role="menuitem"
+                              tabindex="-1"
+                              class="c-hand"
+                              @click="autocommit = false"
+                           >
                               <BaseIcon
                                  icon-name="check"
                                  :class="{'d-invisible': autocommit}"
@@ -155,13 +167,25 @@
                         </button>
                         <ul class="menu text-left">
                            <li class="menu-item">
-                              <a class="c-hand" @click="saveFileAs()">
+                              <a
+                                 v-button
+                                 role="menuitem"
+                                 tabindex="-1"
+                                 class="c-hand"
+                                 @click="saveFileAs()"
+                              >
                                  <BaseIcon icon-name="save+plus" :size="18" />
                                  {{ t('application.saveFileAs') }}
                               </a>
                            </li>
                            <li class="menu-item">
-                              <a class="c-hand" @click="openFile()">
+                              <a
+                                 v-button
+                                 role="menuitem"
+                                 tabindex="-1"
+                                 class="c-hand"
+                                 @click="openFile()"
+                              >
                                  <BaseIcon icon-name="folder-open" :size="18" />
                                  {{ t('application.openFile') }}
                               </a>
@@ -188,7 +212,13 @@
                         </button>
                         <ul class="menu text-left">
                            <li class="menu-item">
-                              <a class="c-hand" @click="openSavedModal()">
+                              <a
+                                 v-button
+                                 role="menuitem"
+                                 tabindex="-1"
+                                 class="c-hand"
+                                 @click="openSavedModal()"
+                              >
                                  <BaseIcon icon-name="notebook+heart" :size="18" />
                                  {{ t('database.savedQueries') }}
                               </a>
@@ -216,13 +246,25 @@
                         </a>
                      </li>
                      <li class="menu-item">
-                        <a class="c-hand" @click="saveFileAs()">
+                        <a
+                           v-button
+                           role="menuitem"
+                           tabindex="-1"
+                           class="c-hand"
+                           @click="saveFileAs()"
+                        >
                            <BaseIcon icon-name="save+plus" :size="18" />
                            {{ t('application.saveFileAs') }}
                         </a>
                      </li>
                      <li class="menu-item">
-                        <a class="c-hand" @click="openFile()">
+                        <a
+                           v-button
+                           role="menuitem"
+                           tabindex="-1"
+                           class="c-hand"
+                           @click="openFile()"
+                        >
                            <BaseIcon icon-name="folder-open" :size="18" />
                            {{ t('application.openFile') }}
                         </a>

@@ -21,7 +21,13 @@
                   :key="format.value"
                   class="menu-item"
                >
-                  <a class="c-hand" @click="emit('copy', format.value)">{{ format.label }}</a>
+                  <a
+                     v-button
+                     role="menuitem"
+                     tabindex="-1"
+                     class="c-hand"
+                     @click="emit('copy', format.value)"
+                  >{{ format.label }}</a>
                </li>
             </ul>
          </div>
@@ -42,7 +48,13 @@
                   :key="format.value"
                   class="menu-item"
                >
-                  <a class="c-hand" @click="emit('export', format.value)">{{ format.label }}</a>
+                  <a
+                     v-button
+                     role="menuitem"
+                     tabindex="-1"
+                     class="c-hand"
+                     @click="emit('export', format.value)"
+                  >{{ format.label }}</a>
                </li>
             </ul>
          </div>

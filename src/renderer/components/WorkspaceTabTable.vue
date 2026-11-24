@@ -137,7 +137,7 @@
                   <BaseIcon icon-name="skip-previous" :size="24" />
                </button>
                <div class="dropdown" :class="{'active': isPageMenu}">
-                  <div @click="openPageMenu">
+                  <div v-button="t('general.pageNumber')" @click="openPageMenu">
                      <div class="btn btn-dark btn-sm mr-0 no-radius dropdown-toggle text-bold px-3">
                         {{ page }}
                      </div>

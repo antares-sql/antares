@@ -10,7 +10,12 @@ import { VueMaskDirective } from 'v-mask';
 import { createApp } from 'vue';
 
 import App from '@/App.vue';
+import { vButton } from '@/directives/button';
+import { vTablist } from '@/directives/tablist';
 import { i18n } from '@/i18n';
+import { installDropdownKeyboard } from '@/libs/a11y/dropdowns';
+import { installFormLabels } from '@/libs/a11y/formLabels';
+import { installRegionNavigation } from '@/libs/a11y/regions';
 import { useApplicationStore } from '@/stores/application';
 import { QueryLog, useConsoleStore } from '@/stores/console';
 import { useNotificationsStore } from '@/stores/notifications';
@@ -30,10 +35,16 @@ migrateLegacyEditorTheme();
 
 createApp(App)
    .directive('mask', vMaskV3)
+   .directive('button', vButton)
+   .directive('tablist', vTablist)
    .use(createPinia())
    .use(i18n)
    .use(FloatingVue)
    .mount('#app');
+
+installDropdownKeyboard();
+installRegionNavigation();
+installFormLabels();
 
 const { locale } = useSettingsStore();
 i18n.global.locale.value = locale;

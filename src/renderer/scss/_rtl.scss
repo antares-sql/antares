@@ -1,0 +1,31 @@
+/*
+ * Right-to-left languages (Arabic, Hebrew): App.vue sets dir="rtl" on <html> and postcss-rtlcss
+ * (webpack.renderer.config.js) mirrors every direction-dependent declaration with [dir="rtl"] overrides.
+ * Here only what the automatic mirroring can't know: exceptions are excluded from it.
+ */
+
+/*! rtl:begin:ignore */
+[dir="rtl"] {
+  /* Closed accordions (database explorer) point to the start side, open ones down */
+  .accordion .accordion-header > .icon:first-child {
+    transform: scaleX(-1);
+  }
+
+  .accordion[open] .accordion-header > .icon:first-child {
+    transform: rotate(90deg);
+  }
+
+  /* SQL and other code stay left-to-right */
+  .cm-editor,
+  code,
+  pre,
+  kbd {
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+
+  .cm-editor {
+    text-align: left;
+  }
+}
+/*! rtl:end:ignore */

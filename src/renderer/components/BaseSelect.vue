@@ -320,9 +320,17 @@ export default defineComponent({
             optionList.value.style.transform = 'translate(0, -100%)';
          }
 
-         optionList.value.style.left = `${left + offsetLeft}px`;
          optionList.value.style.top = `${top}px`;
          optionList.value.style.minWidth = `${element.clientWidth}px`;
+
+         // RTL: anchored to the select's right edge, so a list wider than the select grows to the left
+         if (document.documentElement.dir === 'rtl') {
+            const { right } = element.getBoundingClientRect();
+            optionList.value.style.left = 'auto';
+            optionList.value.style.right = `${document.documentElement.clientWidth - right - offsetLeft}px`;
+         }
+         else
+            optionList.value.style.left = `${left + offsetLeft}px`;
       };
 
       const keyArrows = (direction) => {

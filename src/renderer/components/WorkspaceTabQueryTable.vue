@@ -25,7 +25,11 @@
          @go-to-foreign-key="goToForeignKey"
          @close-context="closeContext"
       />
-      <ul v-if="resultsWithRows.length > 1" class="tab tab-block result-tabs">
+      <ul
+         v-if="resultsWithRows.length > 1"
+         v-tablist
+         class="tab tab-block result-tabs"
+      >
          <li
             v-for="(result, index) in resultsWithRows"
             :key="index"
@@ -36,17 +40,36 @@
             <a>{{ result.fields ? result.fields[0]?.tableAlias ?? result.fields[0]?.table : `${t('general.results')} #${index}` }} ({{ result.rows.length }})</a>
          </li>
       </ul>
-      <div ref="table" class="table table-hover">
+      <div
+         class="text-assistive"
+         aria-live="polite"
+         aria-atomic="true"
+      >
+         {{ cellAnnouncement }}
+      </div>
+      <div
+         ref="table"
+         class="table table-hover"
+         role="grid"
+         :aria-rowcount="sortedResults.length + 1"
+         :aria-colcount="filteredFields.length"
+      >
          <div class="thead">
-            <div class="tr">
+            <div class="tr" role="row">
                <div
                   v-for="(field, index) in filteredFields"
                   :key="index"
                   class="th c-hand"
+                  role="columnheader"
+                  :aria-sort="ariaSort(field)"
                   :title="`${field.type} ${fieldLength(field) ? `(${fieldLength(field)})` : ''}`"
                >
                   <div ref="columnResize" class="column-resizable">
-                     <div class="table-column-title" @click="sort(field)">
+                     <div
+                        v-button
+                        class="table-column-title"
+                        @click="sort(field)"
+                     >
                         <div v-if="field.key" :title="keyName(field.key)">
                            <BaseIcon
                               icon-name="key"
@@ -79,6 +102,7 @@
             :items="sortedResults"
             :item-height="rowHeight"
             class="tbody"
+            role="rowgroup"
             :visible-height="resultsSize"
             :scroll-element="scrollElement"
          >
@@ -908,6 +932,24 @@ const contextMenu = (event: MouseEvent, cell: any) => {
    isContext.value = true;
 };
 
+const ariaSort = (field: TableField) => {
+   const sort = currentSort.value[resultsetIndex.value];
+   if (!sort || (sort.field !== field.name && sort.field !== `${field.tableAlias || field.table}.${field.name}`)) return undefined;
+   return sort.dir === 'asc' ? 'ascending' : 'descending';
+};
+
+/** Read by screen readers (live region) while moving between cells with the keyboard */
+const cellAnnouncement = computed(() => {
+   if (selectedRows.value.length !== 1 || !selectedField.value) return '';
+   const index = sortedResults.value.findIndex((row: any) => row._antares_id === selectedRows.value[0]);
+   if (index < 0) return '';
+   const value = (sortedResults.value[index] as any)[selectedField.value];
+   const text = value === null || value === undefined
+      ? 'NULL'
+      : typeof value === 'object' && !(value instanceof Date) ? JSON.stringify(value) : String(value);
+   return `${selectedField.value}: ${text.slice(0, 200)}. ${t('database.row')} ${index + 1} / ${sortedResults.value.length}`;
+});
+
 const sort = (field: TableField) => {
    if (!isSortable.value || props.isQuering) return;
 
@@ -1046,9 +1088,16 @@ const onKey = async (e: KeyboardEvent) => {
 
    // row navigation stuff
    if (!(e.ctrlKey || e.metaKey) && (e.code.includes('Arrow') || e.code === 'Tab') && sortedResults.value.length > 0 && !e.altKey) {
-      e.preventDefault();
-
       const aviableFields = Object.keys(sortedResults.value[0]).slice(0, -1); // removes _antares_id
+
+      // Tab leaves the grid (no keyboard trap) when no row is selected or from the last/first cell of the row
+      if (e.code === 'Tab') {
+         const fieldIndex = aviableFields.indexOf(selectedField.value);
+         const atEdge = e.shiftKey ? fieldIndex <= 0 : fieldIndex === aviableFields.length - 1;
+         if (!selectedRows.value.length || atEdge) return;
+      }
+
+      e.preventDefault();
 
       if (!selectedField.value)
          selectedField.value = aviableFields[0];

@@ -77,7 +77,12 @@ const check = async () => {
 const alignMenu = (e: FocusEvent) => {
    const toggle = e.target as HTMLElement;
    const menu = toggle.nextElementSibling as HTMLElement;
-   alignRight.value = toggle.getBoundingClientRect().left + (menu?.offsetWidth || 0) > document.documentElement.clientWidth;
+   const rect = toggle.getBoundingClientRect();
+   const width = menu?.offsetWidth || 0;
+   // `dropdown-right` aligns the menu to the end side of the toggle (mirrored in RTL)
+   alignRight.value = document.documentElement.dir === 'rtl'
+      ? rect.right - width < 0
+      : rect.left + width > document.documentElement.clientWidth;
 };
 
 onMounted(() => {

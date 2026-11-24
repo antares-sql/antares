@@ -2,6 +2,8 @@
    <div
       id="notifications-board"
       @mouseenter="clearTimeouts"
+      @focusin="clearTimeouts"
+      @focusout="rearmTimeouts"
       @mouseleave="rearmTimeouts"
    >
       <TransitionGroup tag="div" name="slide-fade">

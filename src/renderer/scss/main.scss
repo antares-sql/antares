@@ -528,3 +528,36 @@ code.sql {
 .sql-hl-comment {
   color: var(--syntax-comment, inherit);
 }
+
+/* Accessibility */
+
+/*
+ * Keyboard focus indicator: shown only when focus comes from the keyboard (:focus-visible), on every
+ * focusable element, overriding the scattered `outline: none`. Its width follows the theme focus ring
+ * (high contrast themes make it thicker). Text fields, the code editor and the results grid cells
+ * keep their own focus style, since they match :focus-visible on click too.
+ */
+:focus-visible:not(input, textarea, select, .form-input, .form-select, .cm-content, .cm-editor, .td, [role="dialog"]) {
+  outline: max(2px, var(--focus-ring-width)) solid var(--primary-color) !important;
+  outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Dropdowns stay open while the keyboard focus is in their menu (see libs/a11y/dropdowns.ts) */
+.dropdown.menu-open .menu {
+  display: block;
+}
+
+.dropdown.menu-dismissed .menu {
+  display: none !important;
+}
+
+@import "rtl";

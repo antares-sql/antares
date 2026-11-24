@@ -14,7 +14,11 @@
                      <span class="cut-text">{{ t('database.manageUsers') }}: {{ connectionName }}</span>
                   </div>
                </div>
-               <a class="btn btn-clear c-hand" @click.stop="requestClose" />
+               <a
+                  v-button="t('general.close')"
+                  class="btn btn-clear c-hand"
+                  @click.stop="requestClose"
+               />
             </div>
             <div class="modal-body p-0">
                <BaseLoader v-if="!info && isLoading" />
@@ -157,7 +161,7 @@
                            </div>
                         </div>
 
-                        <ul class="tab tab-block mx-2">
+                        <ul v-tablist class="tab tab-block mx-2">
                            <li
                               v-for="tab in tabs"
                               :key="tab.name"

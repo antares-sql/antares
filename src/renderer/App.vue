@@ -44,6 +44,7 @@ import { useI18n } from 'vue-i18n';
 
 import ModalExportSchema from '@/components/ModalExportSchema.vue';
 import TheSettingBar from '@/components/TheSettingBar.vue';
+import { localeDirection } from '@/i18n/supported-locales';
 import { titleBarOverlayColors } from '@/libs/themes/titleBarColors';
 import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
@@ -76,7 +77,7 @@ const {
    isScratchpad
 } = storeToRefs(applicationStore);
 const { connections } = storeToRefs(connectionsStore);
-const { disableBlur, uiFontSize } = storeToRefs(settingsStore);
+const { disableBlur, uiFontSize, locale } = storeToRefs(settingsStore);
 const themesStore = useThemesStore();
 const { activeTheme, appearance, cssVariables, syntaxVariables } = storeToRefs(themesStore);
 const themeVariables = computed(() => ({ ...cssVariables.value, ...syntaxVariables.value }));
@@ -109,6 +110,13 @@ const syncTitleBar = async () => {
       height: Math.round(1.5 * (uiFontSizes[uiFontSize.value] ?? uiFontSizes.medium)) // $titlebar-height: 1.5rem
    });
 };
+
+// Language of the document (screen reader pronunciation, hyphenation) and text direction (RTL languages)
+watch(locale, (value) => {
+   document.documentElement.lang = value;
+   document.documentElement.dir = localeDirection(value);
+}, { immediate: true });
+
 watch(activeTheme, syncTitleBar);
 watch(uiFontSize, () => {
    applyUiFontSize();

@@ -13,7 +13,7 @@
          :style="{height: localHeight ? localHeight+'px' : ''}"
       >
          <div class="console-header">
-            <ul class="tab tab-block">
+            <ul v-tablist class="tab tab-block">
                <li class="tab-item" :class="{'active': selectedTab === 'query'}">
                   <a class="tab-link" @click="selectedTab = 'query'">{{ t('application.executedQueries') }}</a>
                </li>
@@ -36,7 +36,11 @@
                >
                   <BaseIcon icon-name="refresh" :size="22" />
                </div>
-               <button class="btn btn-clear mr-1" @click="resizeConsole(0)" />
+               <button
+                  class="btn btn-clear mr-1"
+                  :aria-label="t('general.close')"
+                  @click="resizeConsole(0)"
+               />
             </div>
          </div>
          <div

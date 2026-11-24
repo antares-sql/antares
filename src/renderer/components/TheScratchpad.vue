@@ -14,7 +14,11 @@
                      <span>{{ t('application.note', 2) }}</span>
                   </div>
                </div>
-               <a class="btn btn-clear c-hand" @click.stop="hideScratchpad" />
+               <a
+                  v-button="t('general.close')"
+                  class="btn btn-clear c-hand"
+                  @click.stop="hideScratchpad"
+               />
             </div>
             <div class="modal-body p-0 workspace-query-results">
                <div
@@ -171,12 +175,14 @@ import BaseVirtualScroll from '@/components/BaseVirtualScroll.vue';
 import ModalNoteEdit from '@/components/ModalNoteEdit.vue';
 import ModalNoteNew from '@/components/ModalNoteNew.vue';
 import ScratchpadNote from '@/components/ScratchpadNote.vue';
+import { useFocusTrap } from '@/composables/useFocusTrap';
 import { useApplicationStore } from '@/stores/application';
 import { useConnectionsStore } from '@/stores/connections';
 import { ConnectionNote, TagCode, useScratchpadStore } from '@/stores/scratchpad';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
+const { trapRef } = useFocusTrap();
 
 const applicationStore = useApplicationStore();
 const scratchpadStore = useScratchpadStore();

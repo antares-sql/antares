@@ -1,4 +1,6 @@
 /* Icons of the query editor completions (CodeMirror `cm-completionIcon-<type>`) */
+/* The editor stays left-to-right in RTL languages: not mirrored */
+/*! rtl:begin:ignore */
 $editor-completion-icons: (
   "table": "table",
   "column": "rhombus-split-outline",
@@ -33,3 +35,4 @@ $editor-completion-icons: (
     }
   }
 }
+/*! rtl:end:ignore */

@@ -1,8 +1,18 @@
 import { customRef, ref } from 'vue';
 
 const focusableElementsSelector =
-  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+  'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
 
+let titleId = 0;
+
+/**
+ * Accessible modal dialogs: bind `trapRef` to the dialog container.
+ * - keeps Tab/Shift+Tab inside the dialog (focusable elements are looked up on every key press,
+ *   so content rendered later is included);
+ * - marks the container as a modal dialog labelled by its `.modal-title`;
+ * - focuses the first focusable element (unless `disableAutofocus`) and, when the dialog closes,
+ *   gives the focus back to the element that had it before the dialog opened.
+ */
 const useFocusTrap = (args?: {disableAutofocus?: boolean}) => {
    let localArgs = {
       disableAutofocus: false
@@ -15,64 +25,92 @@ const useFocusTrap = (args?: {disableAutofocus?: boolean}) => {
       };
    }
 
-   let focusableElements: NodeListOf<HTMLInputElement>;
-   let $firstFocusable: HTMLElement;
-   let $lastFocusable: HTMLElement;
+   let $trapEl: HTMLElement = null;
+   let $previousFocus: HTMLElement = null;
    const isInitiated = ref(false);
 
    const trapRef = customRef((track, trigger) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let $trapEl: any = null;
       return {
          get () {
             track();
             return $trapEl;
          },
          set (value) {
+            if (!value) clearFocusTrap(); // Needs the old element
             $trapEl = value;
-            value ? initFocusTrap() : clearFocusTrap();
+            if (value) initFocusTrap();
             trigger();
          }
       };
    });
 
-   function keyHandler (e: KeyboardEvent) {
-      const isTabPressed = e.key === 'Tab';
+   const focusableElements = () => [...$trapEl.querySelectorAll<HTMLElement>(focusableElementsSelector)]
+      .filter(el => el.offsetParent !== null || el === document.activeElement);
 
-      if (!isTabPressed) return;
+   function keyHandler (e: KeyboardEvent) {
+      if (e.key !== 'Tab' || !$trapEl) return;
+      const active = document.activeElement;
+      // A dialog or menu opened over this one handles its own focus
+      if (!$trapEl.contains(active) && active !== document.body && active?.closest('[aria-modal="true"]')) return;
+
+      const elements = focusableElements();
+      if (!elements.length) return;
+      const $firstFocusable = elements[0];
+      const $lastFocusable = elements[elements.length - 1];
 
       if (e.shiftKey) {
-         if (document.activeElement === $firstFocusable) {
+         if (active === $firstFocusable || !$trapEl.contains(active)) {
             $lastFocusable.focus();
             e.preventDefault();
          }
       }
       else {
-         if (document.activeElement === $lastFocusable) {
+         if (active === $lastFocusable || !$trapEl.contains(active)) {
             $firstFocusable.focus();
             e.preventDefault();
          }
       }
    }
 
+   function setDialogSemantics () {
+      if (!$trapEl.hasAttribute('role')) $trapEl.setAttribute('role', 'dialog');
+      $trapEl.setAttribute('aria-modal', 'true');
+      if (!$trapEl.hasAttribute('aria-labelledby') && !$trapEl.hasAttribute('aria-label')) {
+         const $title = $trapEl.querySelector<HTMLElement>('.modal-title');
+         if ($title) {
+            if (!$title.id) $title.id = `dialog-title-${++titleId}`;
+            $trapEl.setAttribute('aria-labelledby', $title.id);
+         }
+      }
+   }
+
    function initFocusTrap () {
-      if (!trapRef.value || (isInitiated.value)) return;
+      if (!$trapEl || isInitiated.value) return;
 
-      focusableElements = (trapRef.value as HTMLElement).querySelectorAll(
-         focusableElementsSelector
-      );
+      $previousFocus = document.activeElement as HTMLElement;
+      setDialogSemantics();
+      document.addEventListener('keydown', keyHandler);
+      isInitiated.value = true;
 
-      if (focusableElements.length) {
-         $firstFocusable = focusableElements[0];
-         $lastFocusable = focusableElements[focusableElements.length - 1];
-         document.addEventListener('keydown', keyHandler);
-         isInitiated.value = true;
-         if (!localArgs.disableAutofocus) $firstFocusable.focus();
+      const elements = localArgs.disableAutofocus ? [] : focusableElements();
+      if (elements.length) elements[0].focus();
+      else if (!$trapEl.contains(document.activeElement)) {
+         // The focus must enter the dialog anyway (screen readers, Tab order): the container takes it
+         if (!$trapEl.hasAttribute('tabindex')) $trapEl.tabIndex = -1;
+         $trapEl.focus({ preventScroll: true });
       }
    }
 
    function clearFocusTrap () {
       document.removeEventListener('keydown', keyHandler);
+      if (!isInitiated.value) return;
+      isInitiated.value = false;
+
+      // Gives the focus back, unless the dialog already moved it somewhere else
+      const active = document.activeElement;
+      const focusInDialog = !active || active === document.body || !!$trapEl?.contains(active);
+      if (focusInDialog && $previousFocus?.isConnected) $previousFocus.focus();
+      $previousFocus = null;
    }
 
    return {

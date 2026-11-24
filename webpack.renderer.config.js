@@ -14,6 +14,24 @@ const parsedContributors = contributors.reduce((acc, c) => {
 }, []).join(',');
 
 const isDevMode = process.env.NODE_ENV !== 'production';
+// Right-to-left languages: adds [dir="rtl"] overrides that mirror the direction-dependent declarations
+// (margins, paddings, positions, floats, text alignment...); the left-to-right CSS stays unchanged.
+// The prefix is wrapped in :where() so an override has the specificity of the rule it mirrors
+// and doesn't beat rules that win over that one in LTR (e.g. `[dir="rtl"] ul` over `.tab`).
+const rtlCssLoader = {
+   loader: 'postcss-loader',
+   options: {
+      postcssOptions: {
+         plugins: [require('postcss-rtlcss')({
+            mode: require('postcss-rtlcss/options').Mode.override,
+            prefixSelectorTransformer: (prefix, selector) => /^(html|:root)(?=\W|$)/.test(selector)
+               ? undefined // Default handling: html[dir="rtl"]
+               : `:where(${prefix}) ${selector}`
+         })]
+      }
+   }
+};
+
 const whiteListedModules = ['.bin'];
 const externals = {};
 
@@ -111,6 +129,7 @@ const config = {
             use: [
                { loader: MiniCssExtractPlugin.loader },
                { loader: 'css-loader' },
+               rtlCssLoader,
                {
                   loader: 'sass-loader',
                   options: {
@@ -126,20 +145,25 @@ const config = {
          },
          {
             test: /\.css$/,
-            use: [
-               {
-                  loader: MiniCssExtractPlugin.loader,
-                  options: {
-                     publicPath: ''
-                  }
-               },
-               {
-                  loader: 'css-loader',
-                  options: {
-                     url: true
-                  }
-               }
-            ]
+            // Plain <style> blocks of the components are mirrored too, third party stylesheets aren't
+            oneOf: [false, true].map(mirror => ({
+               ...(mirror ? {} : { include: /node_modules/ }),
+               use: [
+                  {
+                     loader: MiniCssExtractPlugin.loader,
+                     options: {
+                        publicPath: ''
+                     }
+                  },
+                  {
+                     loader: 'css-loader',
+                     options: {
+                        url: true
+                     }
+                  },
+                  ...(mirror ? [rtlCssLoader] : [])
+               ]
+            }))
          },
          {
             test: /\.(png|jpe?g|gif|tif?f|bmp|webp|svg)(\?.*)?$/,

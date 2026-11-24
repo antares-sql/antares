@@ -2,12 +2,14 @@
    <div class="context" :class="[{ 'bottom': isBottom }, { 'right': isRight }]">
       <a
          class="context-overlay"
+         aria-hidden="true"
          @click="close"
          @contextmenu="close"
       />
       <div
          ref="contextContent"
          class="context-container"
+         role="menu"
          :style="position"
       >
          <slot />
@@ -24,13 +26,29 @@ const isBottom: Ref<boolean> = ref(false);
 const isRight: Ref<boolean> = ref(false);
 const props = defineProps<{ contextEvent: MouseEvent }>();
 const emit = defineEmits(['close-context']);
+const isRtl = document.documentElement.dir === 'rtl';
+
+/**
+ * Where the menu opens: the pointer, or for a menu opened with the keyboard (context menu key, Shift+F10)
+ * the bottom start corner of the focused element, since such events don't carry pointer coordinates
+ */
+const origin = (event: MouseEvent) => {
+   const target = event.target as HTMLElement;
+   const fromKeyboard = event.button !== 2 && !(event.clientX || event.clientY);
+   if (fromKeyboard && target?.getBoundingClientRect) {
+      const rect = target.getBoundingClientRect();
+      const inset = Math.min(rect.width / 2, 40);
+      return { clientX: isRtl ? rect.right - inset : rect.left + inset, clientY: rect.bottom };
+   }
+   return { clientX: event.clientX, clientY: event.clientY };
+};
 
 const position = computed(() => {
    let topCord = '0px';
    let leftCord = '0px';
 
    if (props.contextEvent) {
-      const { clientY, clientX } = props.contextEvent;
+      const { clientY, clientX } = origin(props.contextEvent);
       topCord = `${clientY + 2}px`;
       leftCord = `${clientX + 5}px`;
 
@@ -43,13 +61,28 @@ const position = computed(() => {
          if (clientY + contextSize.value.subHeight + contextSize.value.height >= window.innerHeight)
             isBottom.value = true;
 
-         if (clientX + contextSize.value.width + 5 >= window.innerWidth) {
-            leftCord = `${clientX - contextSize.value.width}px`;
-            isRight.value = true;
-         }
+         if (isRtl) {
+            // Mirrored: the menu opens on the left of the pointer, submenus on its left side.
+            // `right` (from the stylesheet mirrored for RTL) moves submenus to the other side
+            leftCord = `${clientX - contextSize.value.width - 5}px`;
 
-         if (clientX + contextSize.value.subWidth + contextSize.value.width >= window.innerWidth)
-            isRight.value = true;
+            if (clientX - contextSize.value.width - 5 <= 0) {
+               leftCord = `${clientX}px`;
+               isRight.value = true;
+            }
+
+            if (clientX - contextSize.value.subWidth - contextSize.value.width <= 0)
+               isRight.value = true;
+         }
+         else {
+            if (clientX + contextSize.value.width + 5 >= window.innerWidth) {
+               leftCord = `${clientX - contextSize.value.width}px`;
+               isRight.value = true;
+            }
+
+            if (clientX + contextSize.value.subWidth + contextSize.value.width >= window.innerWidth)
+               isRight.value = true;
+         }
       }
    }
 
@@ -62,10 +95,94 @@ const position = computed(() => {
 const close = () => {
    emit('close-context');
 };
+
+// Element focused before the menu opened: it gets the focus back on close
+const previousFocus = document.activeElement as HTMLElement;
+
+/** Items of the menu level that contains `item` (the main menu or a submenu) */
+const levelItems = (level: Element) => [...level.querySelectorAll<HTMLElement>('.context-element')]
+   .filter(el => el.parentElement.closest('.context-submenu, .context-container') === level && !el.classList.contains('disabled'));
+
+const focusItem = (el: HTMLElement) => {
+   if (!el) return;
+   if (!el.hasAttribute('tabindex')) el.tabIndex = -1; // Items rendered after the menu opened
+   el.focus();
+};
+
+const currentLevel = () => {
+   const active = document.activeElement as HTMLElement;
+   if (!contextContent.value?.contains(active) || !active.classList.contains('context-element')) return null;
+   return active.parentElement.closest('.context-submenu, .context-container');
+};
+
+const moveFocus = (step: 1 | -1 | 'first' | 'last') => {
+   const level = currentLevel() || contextContent.value;
+   const items = levelItems(level);
+   if (!items.length) return;
+   const index = items.indexOf(document.activeElement as HTMLElement);
+   let next: HTMLElement;
+   if (step === 'first') next = items[0];
+   else if (step === 'last') next = items[items.length - 1];
+   else next = items[(index + step + items.length) % items.length] || items[0];
+   focusItem(next);
+};
+
 const onKey = (e: KeyboardEvent) => {
    e.stopPropagation();
-   if (e.key === 'Escape')
-      close();
+   const active = document.activeElement as HTMLElement;
+   const isItem = contextContent.value?.contains(active) && active.classList.contains('context-element');
+   const isRtl = getComputedStyle(contextContent.value).direction === 'rtl';
+   const forward = isRtl ? 'ArrowLeft' : 'ArrowRight';
+   const backward = isRtl ? 'ArrowRight' : 'ArrowLeft';
+
+   switch (e.key) {
+      case 'Escape':
+      case 'Tab':
+         e.preventDefault();
+         close();
+         break;
+      case 'ArrowDown':
+         e.preventDefault();
+         moveFocus(1);
+         break;
+      case 'ArrowUp':
+         e.preventDefault();
+         moveFocus(-1);
+         break;
+      case 'Home':
+         e.preventDefault();
+         moveFocus('first');
+         break;
+      case 'End':
+         e.preventDefault();
+         moveFocus('last');
+         break;
+      case forward: {
+         const submenu = isItem && active.querySelector(':scope > .context-submenu');
+         if (submenu) {
+            e.preventDefault();
+            focusItem(levelItems(submenu)[0]);
+         }
+         break;
+      }
+      case backward: {
+         const parentItem = isItem && active.closest('.context-submenu')?.closest<HTMLElement>('.context-element');
+         if (parentItem) {
+            e.preventDefault();
+            focusItem(parentItem);
+         }
+         break;
+      }
+      case 'Enter':
+      case ' ':
+         if (isItem) {
+            e.preventDefault();
+            const submenu = active.querySelector(':scope > .context-submenu');
+            if (submenu) focusItem(levelItems(submenu)[0]);
+            else active.click();
+         }
+         break;
+   }
 };
 
 window.addEventListener('keydown', onKey);
@@ -83,12 +200,24 @@ onMounted(() => {
             contextSize.value.subHeight = submenuSize.height;
          if (!contextSize.value.subWidth || submenuSize.width > contextSize.value.subWidth)
             contextSize.value.subWidth = submenuSize.width;
+         submenu.setAttribute('role', 'menu');
       }
+
+      for (const item of contextContent.value.querySelectorAll<HTMLElement>('.context-element')) {
+         item.setAttribute('role', 'menuitem');
+         item.tabIndex = -1;
+         if (item.querySelector(':scope > .context-submenu')) item.setAttribute('aria-haspopup', 'menu');
+         if (item.classList.contains('disabled')) item.setAttribute('aria-disabled', 'true');
+      }
+
+      moveFocus('first');
    }
 });
 
 onBeforeUnmount(() => {
    window.removeEventListener('keydown', onKey);
+   if (previousFocus?.isConnected && contextContent.value?.contains(document.activeElement))
+      previousFocus.focus();
 });
 </script>
 
@@ -157,7 +286,8 @@ onBeforeUnmount(() => {
             background: var(--context-bg);
          }
 
-         &:hover {
+         &:hover,
+         &:focus-within {
             .context-submenu {
                display: block;
                visibility: visible;

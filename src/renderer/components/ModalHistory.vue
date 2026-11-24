@@ -14,7 +14,11 @@
                      <span class="cut-text">{{ t('general.history') }}: {{ connectionName }}</span>
                   </div>
                </div>
-               <a class="btn btn-clear c-hand" @click.stop="closeModal" />
+               <a
+                  v-button="t('general.close')"
+                  class="btn btn-clear c-hand"
+                  @click.stop="closeModal"
+               />
             </div>
             <div class="modal-body p-0 workspace-query-results">
                <div

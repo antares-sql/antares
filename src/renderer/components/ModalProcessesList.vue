@@ -24,7 +24,11 @@
                      <span class="cut-text">{{ t('database.processesList') }}: {{ connectionName }}</span>
                   </div>
                </div>
-               <a class="btn btn-clear c-hand" @click.stop="closeModal" />
+               <a
+                  v-button="t('general.close')"
+                  class="btn btn-clear c-hand"
+                  @click.stop="closeModal"
+               />
             </div>
             <div class="processes-toolbar py-2 px-4">
                <div class="workspace-query-buttons">
@@ -78,10 +82,22 @@
                      </button>
                      <ul class="menu text-left">
                         <li class="menu-item">
-                           <a class="c-hand" @click="downloadTable('json')">JSON</a>
+                           <a
+                              v-button
+                              role="menuitem"
+                              tabindex="-1"
+                              class="c-hand"
+                              @click="downloadTable('json')"
+                           >JSON</a>
                         </li>
                         <li class="menu-item">
-                           <a class="c-hand" @click="downloadTable('csv')">CSV</a>
+                           <a
+                              v-button
+                              role="menuitem"
+                              tabindex="-1"
+                              class="c-hand"
+                              @click="downloadTable('csv')"
+                           >CSV</a>
                         </li>
                      </ul>
                   </div>

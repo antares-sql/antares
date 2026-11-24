@@ -15,7 +15,7 @@
          :connection="connection"
          :is-selected="isSelected"
       />
-      <div class="workspace-tabs column">
+      <div class="workspace-tabs column" role="main">
          <div v-if="workspace?.connectionStatus === 'connected'" class="columns col-gapless">
             <Draggable
                ref="tabWrap"
@@ -25,6 +25,8 @@
                group="tabs"
                class="tab tab-block column col-12"
                draggable=".tab-draggable"
+               role="tablist"
+               :aria-label="t('application.openTabs')"
                @mouseover="addWheelEvent"
             >
                <template #item="{element}">
@@ -32,6 +34,11 @@
                      class="tab-item tab-draggable"
                      :draggable="true"
                      :class="{'active': selectedTab === element.uid}"
+                     role="tab"
+                     :data-tab-uid="element.uid"
+                     :aria-selected="selectedTab === element.uid"
+                     :tabindex="selectedTab === element.uid ? 0 : -1"
+                     @keydown="onTabKeydown($event, element)"
                      @mousedown.left="selectTab({uid: workspace.uid, tab: element.uid})"
                      @mouseup.middle="closeTab(element)"
                      @contextmenu.prevent="contextMenu($event, element)"
@@ -412,17 +419,27 @@
                   <li
                      v-if="hasTools"
                      class="tab-item dropdown tools-dropdown"
+                     role="none"
                   >
                      <a
                         class="tab-link workspace-tools-link dropdown-toggle"
                         tabindex="0"
+                        role="button"
+                        aria-haspopup="menu"
                         :title="t('general.tools')"
+                        :aria-label="t('general.tools')"
                      >
                         <BaseIcon icon-name="tools" :size="24" />
                      </a>
-                     <ul class="menu text-left text-uppercase">
+                     <ul class="menu text-left text-uppercase" role="menu">
                         <li v-if="workspace.customizations.usersManagement" class="menu-item">
-                           <a class="c-hand p-vcentered" @click="showUsersModal">
+                           <a
+                              v-button
+                              role="menuitem"
+                              tabindex="-1"
+                              class="c-hand p-vcentered"
+                              @click="showUsersModal"
+                           >
                               <BaseIcon
                                  icon-name="users"
                                  :size="18"
@@ -432,7 +449,13 @@
                            </a>
                         </li>
                         <li v-if="workspace.customizations.processesList" class="menu-item">
-                           <a class="c-hand p-vcentered" @click="showProcessesModal">
+                           <a
+                              v-button
+                              role="menuitem"
+                              tabindex="-1"
+                              class="c-hand p-vcentered"
+                              @click="showProcessesModal"
+                           >
                               <BaseIcon
                                  icon-name="chip"
                                  :size="18"
@@ -442,7 +465,13 @@
                            </a>
                         </li>
                         <li class="menu-item">
-                           <a class="c-hand p-vcentered" @click="toggleConsole">
+                           <a
+                              v-button
+                              role="menuitem"
+                              tabindex="-1"
+                              class="c-hand p-vcentered"
+                              @click="toggleConsole"
+                           >
                               <BaseIcon
                                  icon-name="terminal"
                                  :size="18"
@@ -456,7 +485,11 @@
                            class="menu-item"
                            title="Coming..."
                         >
-                           <a class="c-hand p-vcentered disabled">
+                           <a
+                              class="c-hand p-vcentered disabled"
+                              role="menuitem"
+                              aria-disabled="true"
+                           >
                               <BaseIcon
                                  icon-name="shapes"
                                  :size="18"
@@ -469,8 +502,9 @@
                   </li>
                </template>
                <template #footer>
-                  <li class="tab-item">
+                  <li class="tab-item" role="none">
                      <a
+                        v-button="t('application.openNewTab')"
                         class="tab-add"
                         :title="t('application.openNewTab')"
                         @click="addQueryTab"
@@ -678,7 +712,7 @@
 import { ConnectionParams } from 'common/interfaces/antares';
 import { ipcRenderer } from 'electron';
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, Prop, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, Prop, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import * as Draggable from 'vuedraggable';
 
@@ -853,6 +887,60 @@ const closeTab = (tab: WorkspaceTab, force = false) => {
    }
 
    removeTab({ uid: props.connection.uid, tab: tab.uid });
+};
+
+const focusTab = (uid: string) => {
+   const el = tabWrap.value?.$el.querySelector(`[data-tab-uid="${uid}"]`) as HTMLElement;
+   if (el) {
+      el.tabIndex = 0;
+      el.focus();
+   }
+};
+
+/**
+ * Keyboard navigation of the tab bar (ARIA tabs pattern, manual activation):
+ * arrows/Home/End move the focus, Enter/Space select the focused tab, Delete closes it.
+ */
+const onTabKeydown = (event: KeyboardEvent, tab: WorkspaceTab) => {
+   if (event.target !== event.currentTarget) return;
+   const tabs = draggableTabs.value;
+   const index = tabs.findIndex(t => t.uid === tab.uid);
+   const isRtl = getComputedStyle(event.currentTarget as HTMLElement).direction === 'rtl';
+   let target: WorkspaceTab;
+
+   switch (event.key) {
+      case 'ArrowRight':
+      case 'ArrowLeft': {
+         const step = (event.key === 'ArrowRight') !== isRtl ? 1 : -1;
+         target = tabs[(index + step + tabs.length) % tabs.length];
+         break;
+      }
+      case 'Home':
+         target = tabs[0];
+         break;
+      case 'End':
+         target = tabs[tabs.length - 1];
+         break;
+      case 'Enter':
+      case ' ':
+         event.preventDefault();
+         selectTab({ uid: props.connection.uid, tab: tab.uid });
+         return;
+      case 'Delete':
+         event.preventDefault();
+         closeTab(tab);
+         if (!tab.isChanged && tabs.length > 1) {
+            const next = tabs[index + 1] || tabs[index - 1];
+            nextTick(() => focusTab(next.uid));
+         }
+         return;
+      default:
+         return;
+   }
+
+   event.preventDefault();
+   (event.currentTarget as HTMLElement).tabIndex = -1;
+   focusTab(target.uid);
 };
 
 const closeAllTabs = () => {
