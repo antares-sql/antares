@@ -107,7 +107,7 @@
 <script setup lang="ts">
 import { useElementBounding } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
-import { computed, Ref, ref, watch } from 'vue';
+import { computed, provide, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseIcon from '@/components/BaseIcon.vue';
@@ -172,6 +172,18 @@ watch(selectedWorkspace, (newVal, oldVal) => {
       }, 150);
    }
 });
+
+// At startup, open the folder holding the selected connection (once: later the user decides which folders are open).
+// The selection resolves when the workspaces are loaded, so wait for the first real one
+const revealedFolder = ref<string>(null);
+provide('revealedFolder', revealedFolder);
+let isRevealDone = false;
+const stopReveal = watch(selectedWorkspace, uid => {
+   if (isRevealDone || !uid || uid === 'NEW') return;
+   isRevealDone = true;
+   revealedFolder.value = connectionsStore.getFolders.find(folder => folder.connections.includes(uid))?.uid ?? null;
+   stopReveal?.();
+}, { immediate: true });
 
 if (!connectionsArr.value.length)
    initConnectionsOrder();
@@ -248,7 +260,7 @@ if (!connectionsArr.value.length)
             opacity: 1;
 
             &::before {
-               height: calc(#{$settingbar-width} - 0.4rem);
+               height: 2.5rem; // same as connections inside folders
             }
          }
 

@@ -1,5 +1,6 @@
 <template>
    <div
+      ref="folderEl"
       v-tooltip="{
          strategy: 'fixed',
          placement: 'right',
@@ -105,7 +106,7 @@
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { computed, PropType, ref, watch } from 'vue';
+import { computed, inject, PropType, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import * as Draggable from 'vuedraggable';
 
@@ -156,6 +157,7 @@ const isOpen = ref(foldersOpened.includes(props.folder.uid));
 const storeList = () => props.folder.connections.filter(uid => getConnectionOrderByUid(uid));
 const localList = ref<string[]>(storeList());
 const dummyNested = ref([]);
+const folderEl = ref<HTMLDivElement>(null);
 
 watch(() => props.folder.connections, () => {
    localList.value = storeList();
@@ -214,6 +216,18 @@ const closeFolder = () => {
    localStorage.setItem('opened-folders', JSON.stringify(opened));
 };
 
+// Set by TheSettingBar at startup when the selected connection is in this folder: open it and scroll the connection into view.
+// Reset after use, so a remount (folders sort) doesn't reopen a folder the user closed
+const revealedFolder = inject<Ref<string>>('revealedFolder', ref(null));
+watch(revealedFolder, uid => {
+   if (uid !== props.folder.uid) return;
+   revealedFolder.value = null;
+   if (!isOpen.value) openFolder();
+   setTimeout(() => { // after the opening transition
+      folderEl.value?.querySelector('.folder-element.selected')?.scrollIntoView({ block: 'nearest' });
+   }, 200);
+}, { immediate: true });
+
 const dragStart = () => {
    emit('folder-drag', true);
 };
@@ -255,6 +269,8 @@ emit('folder-sort');// To apply changes on component key change
       border-radius: $border-radius;
       position: absolute;
       left: 0;
+      top: 50%;
+      transform: translateY(-50%);
    }
 }
 
@@ -336,6 +352,8 @@ emit('folder-sort');// To apply changes on component key change
             border-radius: $border-radius;
             position: absolute;
             left: -8px; // folder padding + container padding: aligned to the sidebar edge
+            top: 50%;
+            transform: translateY(-50%); // grows from the center, like top-level connections
          }
 
          .folder-element-icon {
