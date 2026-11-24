@@ -103,6 +103,7 @@ export class MySQLDdl extends DdlGenerator {
 
       const sql = `ALTER TABLE \`${schema}\`.\`${table}\` `;
       const alterOptions: string[] = [];
+      const alterCheckDrops: string[] = [];
       const alterColumns: { name: string; clause: string }[] = [];
       const alterKeys: string[] = [];
       const alterDrops: string[] = [];
@@ -191,11 +192,11 @@ export class MySQLDdl extends DdlGenerator {
          alterKeys.push(`ADD CONSTRAINT \`${change.constraintName}\` FOREIGN KEY (\`${change.field}\`) REFERENCES \`${change.refTable}\` (\`${change.refField}\`) ON UPDATE ${change.onUpdate} ON DELETE ${change.onDelete}`);
       });
 
-      // CHANGE CHECK TABLE
+      // CHANGE CHECK TABLE (dropped and re-added in the main statement: the new clause can use added or renamed columns)
       checkChanges.changes.forEach(change => {
-         if (!change.clause.trim().length) return;
-         alterQueryes.push(`${sql} DROP CONSTRAINT \`${change.name}\``);
-         alterQueryes.push(`${sql} ADD ${change.name ? `CONSTRAINT \`${change.name}\` ` : ''}CHECK (${change.clause})`);
+         alterCheckDrops.push(`DROP CONSTRAINT \`${change.oldName || change.name}\``);
+         if (!change.clause.trim().length) return; // emptied clause: drop only
+         alterKeys.push(`ADD ${change.name ? `CONSTRAINT \`${change.name}\` ` : ''}CHECK (${change.clause})`);
       });
 
       // DROP FIELDS
@@ -218,11 +219,12 @@ export class MySQLDdl extends DdlGenerator {
 
       // DROP CHECK TABLE
       checkChanges.deletions.forEach(deletion => {
-         alterQueryes.push(`${sql} DROP CONSTRAINT \`${deletion.name}\``);
+         alterCheckDrops.push(`DROP CONSTRAINT \`${deletion.name}\``);
       });
 
-      // A single statement for options, columns and keys: at most one table rebuild
-      const alterMain = [...alterOptions, ...alterColumns.map(column => column.clause), ...alterKeys];
+      // A single statement for checks, options, columns and keys: at most one table rebuild.
+      // Checks are dropped there too, so that columns they use can be renamed in the same statement
+      const alterMain = [...alterCheckDrops, ...alterOptions, ...alterColumns.map(column => column.clause), ...alterKeys];
       if (alterMain.length) alterQueryes.push(sql+alterMain.join(', '));
       if (alterDrops.length) alterQueryes.push(sql+alterDrops.join(', '));
 

@@ -196,6 +196,8 @@ export interface TableCheck {
    _antares_id?: string;
    name: string;
    clause: string;
+   /** Name before the edit (alter table changes) */
+   oldName?: string;
 }
 
 export interface CreateTableParams {

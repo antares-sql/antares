@@ -3506,14 +3506,10 @@
           }
         },
         {
-          "sql": "SELECT CONSTRAINT_NAME AS name, CHECK_CLAUSE AS clause FROM information_schema.CHECK_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = 'antares_fixtures' AND TABLE_NAME = 'products'",
+          "sql": "SELECT CONSTRAINT_NAME AS name, CHECK_CLAUSE AS clause FROM information_schema.CHECK_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = 'antares_fixtures' AND TABLE_NAME = 'products' AND LEVEL = 'Table'",
           "result": {
             "duration": 1,
             "rows": [
-              {
-                "name": "data",
-                "clause": "json_valid(`data`)"
-              },
               {
                 "name": "products_price_chk",
                 "clause": "`price` >= 0"
@@ -3549,10 +3545,6 @@
         }
       ],
       "output": [
-        {
-          "name": "data",
-          "clause": "json_valid(`data`)"
-        },
         {
           "name": "products_price_chk",
           "clause": "`price` >= 0"

@@ -436,12 +436,14 @@ export class MySQLClient extends BaseClient implements DatabaseClient, SchemasCa
 
       // MariaDB check names are unique only in their table: CHECK_CONSTRAINTS has a TABLE_NAME column.
       // MySQL ones are unique in the schema and the table comes from TABLE_CONSTRAINTS
-      const hasTableName = checkColumns.some(row => row.name.toUpperCase() === 'TABLE_NAME');
-      const { rows } = await this.raw(hasTableName
+      const hasColumn = (name: string) => checkColumns.some(row => row.name.toUpperCase() === name);
+      // MariaDB 10.5.10+: column-level checks (e.g. json_valid of JSON columns) belong to the column definition
+      const tableLevel = hasColumn('LEVEL') ? ' AND LEVEL = \'Table\'' : '';
+      const { rows } = await this.raw(hasColumn('TABLE_NAME')
          ? `
             SELECT CONSTRAINT_NAME AS name, CHECK_CLAUSE AS clause
             FROM information_schema.CHECK_CONSTRAINTS
-            WHERE CONSTRAINT_SCHEMA = ${schemaLiteral} AND TABLE_NAME = ${tableLiteral}
+            WHERE CONSTRAINT_SCHEMA = ${schemaLiteral} AND TABLE_NAME = ${tableLiteral}${tableLevel}
          `
          : `
             SELECT cc.CONSTRAINT_NAME AS name, cc.CHECK_CLAUSE AS clause

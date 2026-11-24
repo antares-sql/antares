@@ -562,37 +562,6 @@ const saveChanges = async () => {
    foreignChanges.deletions = originalKeyUsage.value.filter(foreign => !localForeignIDs.includes(foreign._antares_id));
 
    // CHECKS
-   if (originalTableChecks.value !== false && localTableChecks.value !== false) {
-      const checkChanges = {
-         additions: [] as TableCheck[],
-         changes: [] as TableCheck[],
-         deletions: [] as TableCheck[]
-      };
-      const originalCheckIDs = originalTableChecks.value.reduce((acc, curr) => [...acc, curr._antares_id], []);
-      const localCheckIDs = localTableChecks.value.reduce((acc, curr) => [...acc, curr._antares_id], []);
-
-      // Check Additions
-      checkChanges.additions = localTableChecks.value.filter(check => !originalCheckIDs.includes(check._antares_id));
-
-      // Check Changes
-      originalTableChecks.value.forEach(originalCheck => {
-         const lI = Array.isArray(localTableChecks.value)
-            ? localTableChecks.value.findIndex(localCheck => localCheck._antares_id === originalCheck._antares_id)
-            : -1;
-         if (Array.isArray(localTableChecks.value) && JSON.stringify(originalCheck) !== JSON.stringify(localTableChecks.value[lI])) {
-            if (localTableChecks.value[lI]) {
-               checkChanges.changes.push({
-                  ...localTableChecks.value[lI]
-               });
-            }
-         }
-      });
-
-      // Check Deletions
-      checkChanges.deletions = originalTableChecks.value.filter(check => !localCheckIDs.includes(check._antares_id));
-   }
-
-   // CHECKS
    const checkChanges = {
       additions: [] as TableCheck[],
       changes: [] as TableCheck[],
@@ -614,7 +583,8 @@ const saveChanges = async () => {
          if (Array.isArray(localTableChecks.value) && JSON.stringify(originalCheck) !== JSON.stringify(localTableChecks.value[lI])) {
             if (localTableChecks.value[lI]) {
                checkChanges.changes.push({
-                  ...localTableChecks.value[lI]
+                  ...localTableChecks.value[lI],
+                  oldName: originalCheck.name
                });
             }
          }
