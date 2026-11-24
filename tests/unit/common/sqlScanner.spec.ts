@@ -145,22 +145,60 @@ SET TERM ; ^
 INSERT INTO "t" VALUES (3, '^');
 SELECT 1 FROM RDB$DATABASE`;
 
+   const mysqlScript = `-- Table structure for table \`o'brien\`
+CREATE TABLE \`o'brien\` (\`delimiter\` int, field_delimiter int); # it's
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50003 TRIGGER trg BEFORE INSERT ON t FOR EACH ROW BEGIN SET NEW.a = 1; SET NEW.b = 2; END */;;
+CREATE PROCEDURE p()
+BEGIN
+   SELECT 'it\\'s;;';
+END ;;
+delimiter $$
+CREATE FUNCTION f() RETURNS INT RETURN 1$$
+DELIMITER ;
+INSERT INTO t VALUES ('the delimiter');
+SELECT 2`;
+
+   const mysqlStatements = [
+      '-- Table structure for table `o\'brien`\nCREATE TABLE `o\'brien` (`delimiter` int, field_delimiter int);',
+      '/*!50003 CREATE*/ /*!50003 TRIGGER trg BEFORE INSERT ON t FOR EACH ROW BEGIN SET NEW.a = 1; SET NEW.b = 2; END */',
+      'CREATE PROCEDURE p()\nBEGIN\n   SELECT \'it\\\'s;;\';\nEND',
+      'CREATE FUNCTION f() RETURNS INT RETURN 1',
+      'INSERT INTO t VALUES (\'the delimiter\');',
+      'SELECT 2'
+   ];
+
+   /** Splits a script given in chunks of the given size, like the import does */
+   const splitInChunks = (sql: string, dbType: 'firebird' | 'mysql', size: number) => {
+      const statements: string[] = [];
+      let rest = '';
+      let terminator: string;
+
+      for (let i = 0; i < sql.length; i += size) {
+         const result = splitStatements(rest + sql.slice(i, i + size), dbType, { terminator });
+         statements.push(...result.statements);
+         ({ rest, terminator } = result);
+      }
+      statements.push(...splitStatements(rest, dbType, { terminator, final: true }).statements);
+      return statements;
+   };
+
    it('splits a script read in chunks like the whole script', () => {
       const expected = querySplitter(script, 'firebird');
 
-      for (const size of [1, 2, 3, 7, 16, 50]) {
-         const statements: string[] = [];
-         let rest = '';
-         let terminator: string;
+      for (const size of [1, 2, 3, 7, 16, 50])
+         expect(splitInChunks(script, 'firebird', size)).toEqual(expected);
+   });
 
-         for (let i = 0; i < script.length; i += size) {
-            const result = splitStatements(rest + script.slice(i, i + size), 'firebird', { terminator });
-            statements.push(...result.statements);
-            ({ rest, terminator } = result);
-         }
-         statements.push(...splitStatements(rest, 'firebird', { terminator, final: true }).statements);
+   it('follows the DELIMITER command of MySQL scripts', () => {
+      expect(querySplitter(mysqlScript, 'mysql')).toEqual(mysqlStatements);
+      expect(querySplitter(mysqlScript, 'maria')).toEqual(mysqlStatements);
 
-         expect(statements).toEqual(expected);
-      }
+      for (const size of [1, 2, 3, 7, 16, 50])
+         expect(splitInChunks(mysqlScript, 'mysql', size), `chunks of ${size}`).toEqual(mysqlStatements);
+
+      // Only as a command at the start of a statement
+      expect(querySplitter('SELECT 1 AS delimiter; SELECT 2;', 'mysql')).toEqual(['SELECT 1 AS delimiter;', 'SELECT 2;']);
+      expect(querySplitter('DELIMITER //\nSELECT 1//\nSELECT 2//', 'pg')).toEqual(['DELIMITER //\nSELECT 1//\nSELECT 2//']);
    });
 });

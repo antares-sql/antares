@@ -41,8 +41,8 @@ src/
                         <Engine>Connections: pool/single connection, query tab transactions, running query ids,
                         keepalive; raw() borrows a connection with acquire() and frees it with lease.release()
                         <Engine>Parsers: pure parsers of server metadata (SHOW CREATE ..., pg_get_functiondef, ...)
-      exporters/ importers/  SQL dump/import logic, run inside worker threads
-      parsers/          Engine-specific SQL parsers
+      exporters/ importers/  SQL dump/import logic, run inside worker threads. Importers extend ScriptImporter:
+                        scripts split by common/libs/sqlScanner (the query editor splitter), COPY data streamed
       misc/             validateSender (IPC origin check), ipcLogger
     workers/            exporter.ts / importer.ts (worker_threads entry points, own webpack config)
   renderer/             Vue app

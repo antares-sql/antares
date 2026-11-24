@@ -126,6 +126,7 @@ function tokenizer (terminator: string) {
  * text, trimmed, with its semicolon; statements made only of comments are left out.
  * Firebird scripts can change the terminator with the isql SET TERM command: statements then end
  * only at the new terminator, which is removed (the SET TERM commands are not returned).
+ * MySQL scripts do the same with the mysql client command DELIMITER, which ends at the end of its line.
  */
 export function querySplitter (sql: string, dbType: ClientCode): string[] {
    return splitStatements(sql, dbType, { final: true }).statements;
@@ -183,7 +184,15 @@ export function splitStatements (sql: string, dbType: ClientCode, options: { ter
    const isInFirebirdDeclarations = () => dbType === 'firebird' && !bodyStarted &&
       ROUTINE_START.test(statementCode) && /\bAS\b/i.test(statementCode);
 
+   /** End of the last DELIMITER command: the text before it is already read */
+   let skipUntil = 0;
+   /** A DELIMITER command without the end of its line: read again with the next chunk */
+   let incomplete = false;
+
    for (const segment of scanSql(sql, dbType)) {
+      if (incomplete) break;
+      if (segment.end <= skipUntil) continue;
+
       if (segment.type !== 'code') {
          if (segment.type !== 'comment') hasContent = true;
          statementCode += ' ';
@@ -192,6 +201,7 @@ export function splitStatements (sql: string, dbType: ClientCode, options: { ter
 
       const text = sql.slice(segment.start, segment.end);
       let tokens = tokenizer(terminator);
+      if (segment.start < skipUntil) tokens.lastIndex = skipUntil - segment.start;
       let match: RegExpExecArray;
 
       // After a SET TERM the tokens are read with the new terminator
@@ -229,8 +239,29 @@ export function splitStatements (sql: string, dbType: ClientCode, options: { ter
             continue;
          }
 
-         if (/\S/.test(token)) hasContent = true;
          const word = token.toUpperCase();
+
+         // mysql client command changing the statement terminator: DELIMITER ;; (up to the end of the line)
+         if (word === 'DELIMITER' && isMySQL(dbType) && !hasContent && /^(\s|$)/.test(sql.slice(position + token.length, position + token.length + 1))) {
+            const newline = sql.indexOf('\n', position);
+            if (newline === -1 && !options.final) {
+               incomplete = true;
+               break;
+            }
+
+            const end = newline === -1 ? sql.length : newline + 1;
+            const delimiter = sql.slice(position + token.length, end).trim().split(/\s+/)[0];
+            if (delimiter) terminator = delimiter;
+            statementStart = end;
+            statementCode = '';
+            skipUntil = end;
+            if (end >= segment.end) break;
+            tokens = tokenizer(terminator);
+            tokens.lastIndex = end - segment.start;
+            continue;
+         }
+
+         if (/\S/.test(token)) hasContent = true;
 
          if (word === 'BEGIN') {
             // MariaDB anonymous blocks: BEGIN NOT ATOMIC ... END
@@ -254,7 +285,7 @@ export function splitStatements (sql: string, dbType: ClientCode, options: { ter
       }
    }
 
-   if (!options.final)
+   if (!options.final || incomplete)
       return { statements, ends, rest: sql.slice(statementStart), terminator };
 
    endStatement(sql.length);
