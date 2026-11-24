@@ -537,7 +537,7 @@ code.sql {
  * (high contrast themes make it thicker). Text fields, the code editor and the results grid cells
  * keep their own focus style, since they match :focus-visible on click too.
  */
-:focus-visible:not(input, textarea, select, .form-input, .form-select, .cm-content, .cm-editor, .td) {
+:focus-visible:not(input, textarea, select, .form-input, .form-select, .cm-content, .cm-editor, .td, [role="dialog"]) {
   outline: max(2px, var(--focus-ring-width)) solid var(--primary-color) !important;
   outline-offset: 1px;
 }

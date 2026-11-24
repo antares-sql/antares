@@ -1,5 +1,9 @@
 <template>
-   <div class="toast mt-2" :class="notificationStatus.className">
+   <div
+      class="toast mt-2"
+      :class="notificationStatus.className"
+      :role="status === 'error' ? 'alert' : 'status'"
+   >
       <span class="p-vcentered text-left" :class="{'expanded': isExpanded}">
          <BaseIcon
             :icon-name="notificationStatus.iconName"
@@ -13,16 +17,21 @@
          :icon-name="isExpanded ? 'chevron-up' : 'chevron-down'"
          class=" c-hand expand-btn"
          :size="24"
+         v-button="isExpanded ? t('general.showLess') : t('general.showMore')"
+         :aria-expanded="isExpanded"
          @click="toggleExpand"
       />
-      <button class="btn btn-clear ml-2" @click="hideToast" />
+      <button class="btn btn-clear ml-2" :aria-label="t('general.close')" @click="hideToast" />
    </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import BaseIcon from '@/components/BaseIcon.vue';
+
+const { t } = useI18n();
 
 const props = defineProps({
    message: {

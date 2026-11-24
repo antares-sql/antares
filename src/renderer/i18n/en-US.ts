@@ -35,6 +35,8 @@ export const enUS = {
       restore: 'Restore',
       options: 'Options',
       moreActions: 'More actions',
+      showMore: 'Show more',
+      showLess: 'Show less',
       insert: 'Insert',
       discard: 'Discard',
       stay: 'Stay',

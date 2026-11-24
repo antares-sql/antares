@@ -14,7 +14,7 @@
                      <span class="cut-text">{{ t('connection.allConnections') }}</span>
                   </div>
                </div>
-               <a class="btn btn-clear c-hand" @click.stop="closeModal" />
+               <a v-button="t('general.close')" class="btn btn-clear c-hand" @click.stop="closeModal" />
             </div>
             <div class="modal-body py-0">
                <div class="columns">

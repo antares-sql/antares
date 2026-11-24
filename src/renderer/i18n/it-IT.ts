@@ -28,6 +28,8 @@ export const itIT = {
       seconds: 'Secondi',
       options: 'Opzioni',
       moreActions: 'Altre azioni',
+      showMore: 'Mostra di più',
+      showLess: 'Mostra meno',
       discard: 'Scarta',
       stay: 'Resta',
       author: 'Autore',

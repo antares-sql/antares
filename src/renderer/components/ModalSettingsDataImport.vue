@@ -13,7 +13,7 @@
                      /> {{ t('application.importData') }}
                   </div>
                </div>
-               <a class="btn btn-clear c-hand" @click.stop="closeModal" />
+               <a v-button="t('general.close')" class="btn btn-clear c-hand" @click.stop="closeModal" />
             </div>
             <div class="modal-body pb-0">
                <div class="mb-2">
@@ -102,12 +102,14 @@ import { onBeforeUnmount, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseIcon from '@/components/BaseIcon.vue';
+import { useFocusTrap } from '@/composables/useFocusTrap';
 import BaseUploadInput from '@/components/BaseUploadInput.vue';
 import { unproxify } from '@/libs/unproxify';
 import { CustomIcon, SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
 
 const { t } = useI18n();
+const { trapRef } = useFocusTrap();
 const emit = defineEmits(['close']);
 
 const { addNotification } = useNotificationsStore();

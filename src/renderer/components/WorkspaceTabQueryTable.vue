@@ -25,7 +25,7 @@
          @go-to-foreign-key="goToForeignKey"
          @close-context="closeContext"
       />
-      <ul v-if="resultsWithRows.length > 1" class="tab tab-block result-tabs">
+      <ul v-if="resultsWithRows.length > 1" v-tablist class="tab tab-block result-tabs">
          <li
             v-for="(result, index) in resultsWithRows"
             :key="index"

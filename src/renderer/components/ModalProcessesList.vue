@@ -24,7 +24,7 @@
                      <span class="cut-text">{{ t('database.processesList') }}: {{ connectionName }}</span>
                   </div>
                </div>
-               <a class="btn btn-clear c-hand" @click.stop="closeModal" />
+               <a v-button="t('general.close')" class="btn btn-clear c-hand" @click.stop="closeModal" />
             </div>
             <div class="processes-toolbar py-2 px-4">
                <div class="workspace-query-buttons">

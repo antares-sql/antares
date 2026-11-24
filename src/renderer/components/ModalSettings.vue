@@ -14,12 +14,12 @@
                      <span class="cut-text">{{ t('application.settings') }}</span>
                   </div>
                </div>
-               <a class="btn btn-clear c-hand" @click="closeModal" />
+               <a v-button="t('general.close')" class="btn btn-clear c-hand" @click="closeModal" />
             </div>
             <div class="modal-body p-0">
                <div class="panel">
                   <div class="panel-nav">
-                     <ul class="tab tab-block">
+                     <ul v-tablist class="tab tab-block">
                         <li
                            class="tab-item c-hand"
                            :class="{'active': selectedTab === 'general'}"

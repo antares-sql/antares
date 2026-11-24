@@ -2,7 +2,7 @@
    <Teleport to="#window-content">
       <div class="modal active">
          <a class="modal-overlay" @click.stop="closeModal" />
-         <div class="modal-container p-0">
+         <div ref="trapRef" class="modal-container p-0">
             <div class="modal-header pl-2">
                <div class="modal-title h6">
                   <div class="d-flex">
@@ -14,7 +14,7 @@
                      <span class="cut-text">{{ t('database.importSchema') }}</span>
                   </div>
                </div>
-               <a class="btn btn-clear c-hand" @click.stop="closeModal" />
+               <a v-button="t('general.close')" class="btn btn-clear c-hand" @click.stop="closeModal" />
             </div>
             <div class="modal-body pb-0">
                {{ sqlFile }}
@@ -62,12 +62,14 @@ import { computed, onBeforeUnmount, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseIcon from '@/components/BaseIcon.vue';
+import { useFocusTrap } from '@/composables/useFocusTrap';
 import Schema from '@/ipc-api/Schema';
 import { useConsoleStore } from '@/stores/console';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
+const { trapRef } = useFocusTrap();
 
 const { addNotification } = useNotificationsStore();
 const workspacesStore = useWorkspacesStore();
