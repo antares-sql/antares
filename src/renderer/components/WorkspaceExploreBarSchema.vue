@@ -546,48 +546,49 @@ const searchTerm = computed(() => {
    return getSearchTerm(props.connection.uid);
 });
 
+const searchTermLower = computed(() => searchTerm.value.toLowerCase());
+
+// Plain case-insensitive substring match (the term is user text, not a regular expression)
+const matchesSearch = (name: string) => name.toLowerCase().includes(searchTermLower.value);
+
 const filteredTables = computed(() => {
-   if (props.searchMethod === 'elements') {
-      const searchTermLower = searchTerm.value.toLowerCase();
-      return props.database.tables.filter(table =>
-         table.name.toLowerCase().includes(searchTermLower) && table.type === 'table'
-      );
-   }
+   if (props.searchMethod === 'elements')
+      return props.database.tables.filter(table => matchesSearch(table.name) && table.type === 'table');
    else
       return props.database.tables;
 });
 
 const filteredViews = computed(() => {
    if (props.searchMethod === 'elements')
-      return props.database.tables.filter(table => table.name.search(searchTerm.value) >= 0 && table.type === 'view');
+      return props.database.tables.filter(table => matchesSearch(table.name) && table.type === 'view');
    else
       return props.database.tables.filter(table => table.type === 'view');
 });
 
 const filteredMatViews = computed(() => {
    if (props.searchMethod === 'elements')
-      return props.database.tables.filter(table => table.name.search(searchTerm.value) >= 0 && table.type === 'materializedView');
+      return props.database.tables.filter(table => matchesSearch(table.name) && table.type === 'materializedView');
    else
       return props.database.tables.filter(table => table.type === 'materializedView');
 });
 
 const filteredTriggers = computed(() => {
    if (props.searchMethod === 'elements')
-      return props.database.triggers.filter(trigger => trigger.name.search(searchTerm.value) >= 0);
+      return props.database.triggers.filter(trigger => matchesSearch(trigger.name));
    else
       return props.database.triggers;
 });
 
 const filteredProcedures = computed(() => {
    if (props.searchMethod === 'elements')
-      return props.database.procedures.filter(procedure => procedure.name.search(searchTerm.value) >= 0);
+      return props.database.procedures.filter(procedure => matchesSearch(procedure.name));
    else
       return props.database.procedures;
 });
 
 const filteredFunctions = computed(() => {
    if (props.searchMethod === 'elements')
-      return props.database.functions.filter(func => func.name.search(searchTerm.value) >= 0);
+      return props.database.functions.filter(func => matchesSearch(func.name));
    else
       return props.database.functions;
 });
@@ -595,7 +596,7 @@ const filteredFunctions = computed(() => {
 const filteredTriggerFunctions = computed(() => {
    if (props.searchMethod === 'elements') {
       return props.database.triggerFunctions
-         ? props.database.triggerFunctions.filter(func => func.name.search(searchTerm.value) >= 0)
+         ? props.database.triggerFunctions.filter(func => matchesSearch(func.name))
          : [];
    }
    else {
@@ -607,7 +608,7 @@ const filteredTriggerFunctions = computed(() => {
 
 const filteredSchedulers = computed(() => {
    if (props.searchMethod === 'elements')
-      return props.database.schedulers.filter(scheduler => scheduler.name.search(searchTerm.value) >= 0);
+      return props.database.schedulers.filter(scheduler => matchesSearch(scheduler.name));
    else
       return props.database.schedulers;
 });

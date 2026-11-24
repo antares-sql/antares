@@ -179,7 +179,7 @@ const localSearchTerm = ref('');
 
 const connectionName = computed(() => getConnectionName(props.connection.uid));
 const history: ComputedRef<HistoryRecord[]> = computed(() => (getHistoryByWorkspace(props.connection.uid) || []));
-const filteredHistory = computed(() => history.value.filter(q => q.sql.toLowerCase().search(localSearchTerm.value.toLowerCase()) >= 0));
+const filteredHistory = computed(() => history.value.filter(q => q.sql.toLowerCase().includes(localSearchTerm.value.toLowerCase())));
 
 watch(searchTerm, () => {
    clearTimeout(searchTermInterval.value);
