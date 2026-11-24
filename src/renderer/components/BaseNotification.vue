@@ -14,14 +14,18 @@
       </span>
       <BaseIcon
          v-if="isExpandable"
+         v-button="isExpanded ? t('general.showLess') : t('general.showMore')"
          :icon-name="isExpanded ? 'chevron-up' : 'chevron-down'"
          class=" c-hand expand-btn"
          :size="24"
-         v-button="isExpanded ? t('general.showLess') : t('general.showMore')"
          :aria-expanded="isExpanded"
          @click="toggleExpand"
       />
-      <button class="btn btn-clear ml-2" :aria-label="t('general.close')" @click="hideToast" />
+      <button
+         class="btn btn-clear ml-2"
+         :aria-label="t('general.close')"
+         @click="hideToast"
+      />
    </div>
 </template>
 

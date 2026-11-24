@@ -14,7 +14,11 @@
                      <span class="cut-text">{{ t('application.editConnectionAppearance') }}</span>
                   </div>
                </div>
-               <a v-button="t('general.close')" class="btn btn-clear c-hand" @click.stop="closeModal" />
+               <a
+                  v-button="t('general.close')"
+                  class="btn btn-clear c-hand"
+                  @click.stop="closeModal"
+               />
             </div>
             <div class="modal-body pb-0">
                <div class="content">

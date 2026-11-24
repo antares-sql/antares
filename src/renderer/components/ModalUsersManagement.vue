@@ -14,7 +14,11 @@
                      <span class="cut-text">{{ t('database.manageUsers') }}: {{ connectionName }}</span>
                   </div>
                </div>
-               <a v-button="t('general.close')" class="btn btn-clear c-hand" @click.stop="requestClose" />
+               <a
+                  v-button="t('general.close')"
+                  class="btn btn-clear c-hand"
+                  @click.stop="requestClose"
+               />
             </div>
             <div class="modal-body p-0">
                <BaseLoader v-if="!info && isLoading" />

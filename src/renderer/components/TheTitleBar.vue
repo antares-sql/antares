@@ -31,13 +31,25 @@
          </div>
          <div v-if="isWindows" :style="'width: 140px;'" />
          <div v-if="isLinux" class="d-flex">
-            <div v-button="t('application.minimize')" class="titlebar-element" @click="minimize">
+            <div
+               v-button="t('application.minimize')"
+               class="titlebar-element"
+               @click="minimize"
+            >
                <BaseIcon icon-name="window-minimize" :size="18" />
             </div>
-            <div v-button="isMaximized ? t('general.restore') : t('application.maximize')" class="titlebar-element" @click="toggleFullScreen">
+            <div
+               v-button="isMaximized ? t('general.restore') : t('application.maximize')"
+               class="titlebar-element"
+               @click="toggleFullScreen"
+            >
                <BaseIcon :icon-name="isMaximized ? 'window-restore' : 'window-maximize'" :size="18" />
             </div>
-            <div v-button="t('general.close')" class="titlebar-element" @click="closeApp">
+            <div
+               v-button="t('general.close')"
+               class="titlebar-element"
+               @click="closeApp"
+            >
                <BaseIcon icon-name="x" :size="18" />
             </div>
          </div>

@@ -8,13 +8,21 @@
                   <div class="modal-title h6">
                      <slot name="header" />
                   </div>
-                  <a v-button="t('general.close')" class="btn btn-clear float-right" @click="hideModal" />
+                  <a
+                     v-button="t('general.close')"
+                     class="btn btn-clear float-right"
+                     @click="hideModal"
+                  />
                </div>
                <div v-if="hasDefault" class="modal-header">
                   <div class="modal-title h6">
                      <slot />
                   </div>
-                  <a v-button="t('general.close')" class="btn btn-clear float-right" @click="hideModal" />
+                  <a
+                     v-button="t('general.close')"
+                     class="btn btn-clear float-right"
+                     @click="hideModal"
+                  />
                </div>
                <div v-if="hasBody" class="modal-body pb-0">
                   <a

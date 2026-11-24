@@ -36,7 +36,11 @@
                >
                   <BaseIcon icon-name="refresh" :size="22" />
                </div>
-               <button class="btn btn-clear mr-1" :aria-label="t('general.close')" @click="resizeConsole(0)" />
+               <button
+                  class="btn btn-clear mr-1"
+                  :aria-label="t('general.close')"
+                  @click="resizeConsole(0)"
+               />
             </div>
          </div>
          <div
