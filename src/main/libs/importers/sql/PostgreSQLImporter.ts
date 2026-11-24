@@ -1,86 +1,110 @@
 import * as importer from 'common/interfaces/importer';
-import * as fs from 'fs/promises';
+import { removeComments, scanSql } from 'common/libs/sqlScanner';
 import * as pg from 'pg';
+import { from as copyFrom } from 'pg-copy-streams';
 
-import PostgreSQLParser from '../../parsers/PostgreSQLParser';
-import { BaseImporter } from '../BaseImporter';
+import { PostgreSQLClient } from '../../clients/PostgreSQLClient';
+import { InlineDataSink, ScriptImporter } from './ScriptImporter';
 
-export default class PostgreSQLImporter extends BaseImporter {
-   protected _client: pg.PoolClient;
+/** COPY reading its rows from the script (pg_dump and pgAdmin plain dumps) */
+const COPY_FROM_STDIN = /^COPY\b[\s\S]*\bFROM\s+STDIN\b/i;
+/**
+ * psql meta-commands without effect on the import: pg_dump 17.6/16.10/15.14/14.19/13.22 and later
+ * wrap the dump in \restrict ... \unrestrict (CVE-2025-8714)
+ */
+const IGNORED_META_COMMAND = /^\\(restrict|unrestrict)\b/;
 
-   constructor (client: pg.PoolClient, options: importer.ImportOptions) {
+/**
+ * Removes the psql meta-commands of a statement: a backslash outside strings, quoted identifiers
+ * and comments starts a meta-command that goes on up to the end of the line.
+ */
+export function stripMetaCommands (sql: string) {
+   const commands: string[] = [];
+   const text = scanSql(sql, 'pg').map(segment => {
+      const part = sql.slice(segment.start, segment.end);
+      if (segment.type !== 'code') return part;
+      return part.replace(/\\[^\n]*/g, command => {
+         commands.push(command.trim());
+         return '';
+      });
+   }).join('');
+
+   return { sql: text, commands };
+}
+
+/**
+ * Runs an SQL script on a PostgreSQL database, like psql: each statement runs on its own (the
+ * transactions are the ones of the script), the rows of COPY ... FROM stdin are streamed to the server.
+ */
+export default class PostgreSQLImporter extends ScriptImporter {
+   protected readonly _dialect = 'pg';
+   private readonly _client: PostgreSQLClient;
+   private _connection?: pg.Client;
+
+   constructor (client: PostgreSQLClient, options: importer.ImportOptions) {
       super(options);
       this._client = client;
    }
 
-   async import (): Promise<void> {
-      try {
-         const { size: totalFileSize } = await fs.stat(this._options.file);
-         const parser = new PostgreSQLParser();
-         let readPosition = 0;
-         let queryCount = 0;
+   protected async open () {
+      const connection = await this._client.getConnection() as pg.Client;
+      // Errors of the server or the network are reported by the running query
+      connection.on('error', (): null => null);
+      this._connection = connection;
+      if (this._options.schema)
+         await this._client.use(this._options.schema, connection);
+   }
 
-         this.emitUpdate({
-            fileSize: totalFileSize,
-            readPosition: 0,
-            percentage: 0,
-            queryCount: 0
-         });
+   protected async execute (sql: string) {
+      await this._connection.query(sql);
+   }
 
-         return new Promise((resolve, reject) => {
-            this._fileHandler.pipe(parser);
+   /** psql meta-commands are not SQL: they are left out, the ones with effects are reported */
+   protected prepareStatement (statement: string) {
+      if (!statement.includes('\\')) return statement;
 
-            parser.on('error', reject);
-
-            parser.on('close', async () => {
-               // console.log('TOTAL QUERIES', queryCount);
-               // console.log('import end');
-               resolve();
-            });
-
-            parser.on('data', async (query) => {
-               queryCount++;
-               parser.pause();
-
-               try {
-                  await this._client.query(query);
-               }
-               catch (error) {
-                  this.emit('query-error', {
-                     sql: query,
-                     message: error.hint || error.toString(),
-                     sqlSnippet: error.sql,
-                     time: new Date().getTime()
-                  });
-               }
-
-               this.emitUpdate({
-                  queryCount,
-                  readPosition,
-                  percentage: readPosition / totalFileSize * 100
-               });
-               this._fileHandler.pipe(parser);
-               parser.resume();
-            });
-
-            parser.on('pause', () => {
-               this._fileHandler.unpipe(parser);
-               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-               (this._fileHandler as any).readableFlowing = false;
-            });
-
-            this._fileHandler.on('data', (chunk) => {
-               readPosition += chunk.length;
-            });
-
-            this._fileHandler.on('error', (err) => {
-               console.log(err);
-               reject(err);
-            });
-         });
+      const { sql, commands } = stripMetaCommands(statement);
+      for (const command of commands) {
+         if (!IGNORED_META_COMMAND.test(command))
+            this.reportError(command, new Error('psql meta-commands are not supported: skipped'));
       }
-      catch (err) {
-         console.log(err);
-      }
+
+      return removeComments(sql, 'pg').trim() ? sql.trim() : '';
+   }
+
+   protected hasInlineData (sql: string) {
+      return COPY_FROM_STDIN.test(removeComments(sql, 'pg').trim());
+   }
+
+   protected async openInlineData (sql: string): Promise<InlineDataSink> {
+      const stream = this._connection.query(copyFrom(sql));
+      let error: Error | undefined;
+      // The statement fails before or while the data is written (pending writes are never completed)
+      const failed = new Promise<never>((_resolve, reject) => stream.on('error', err => {
+         error = err;
+         reject(err);
+      }));
+      failed.catch((): null => null);
+
+      // After an error the stream has no connection anymore: it must not be used
+      const whileRunning = (action: (done: (err?: Error) => void) => void) => error
+         ? Promise.reject(error)
+         : Promise.race([new Promise<void>((resolve, reject) => action(err => err ? reject(err) : resolve())), failed]);
+
+      return {
+         write: data => whileRunning(done => stream.write(data, done)),
+         end: () => whileRunning(done => stream.end(() => done())),
+         // A CopyFail rolls back the COPY
+         abort: () => {
+            if (!error && !stream.destroyed && !stream.writableFinished) stream.destroy();
+         }
+      };
+   }
+
+   protected async close () {
+      const connection = this._connection;
+      this._connection = undefined;
+      // A transaction left open by the script is rolled back, like psql does
+      await connection?.end().catch((): null => null);
    }
 }

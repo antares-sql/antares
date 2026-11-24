@@ -134,6 +134,8 @@ export function querySplitter (sql: string, dbType: ClientCode): string[] {
 export interface SplitResult {
    /** Complete statements */
    statements: string[];
+   /** End (exclusive) of each statement in the text */
+   ends: number[];
    /** Text after the last complete statement (an unfinished statement) */
    rest: string;
    /** Statement terminator at the end of the text (changed by SET TERM in Firebird scripts) */
@@ -146,6 +148,7 @@ export interface SplitResult {
  */
 export function splitStatements (sql: string, dbType: ClientCode, options: { terminator?: string; final?: boolean } = {}): SplitResult {
    const statements: string[] = [];
+   const ends: number[] = [];
    let statementStart = 0;
    let statementCode = ''; // Code of the current statement, without strings and comments
    let hasContent = false;
@@ -164,8 +167,10 @@ export function splitStatements (sql: string, dbType: ClientCode, options: { ter
       const setTerm = dbType === 'firebird' ? SET_TERM.exec(removeComments(command, dbType).trim()) : null;
       if (setTerm)
          terminator = setTerm[1];
-      else if (hasContent && text)
+      else if (hasContent && text) {
          statements.push(text);
+         ends.push(end);
+      }
       statementStart = end;
       statementCode = '';
       hasContent = false;
@@ -250,8 +255,8 @@ export function splitStatements (sql: string, dbType: ClientCode, options: { ter
    }
 
    if (!options.final)
-      return { statements, rest: sql.slice(statementStart), terminator };
+      return { statements, ends, rest: sql.slice(statementStart), terminator };
 
    endStatement(sql.length);
-   return { statements, rest: '', terminator };
+   return { statements, ends, rest: '', terminator };
 }
