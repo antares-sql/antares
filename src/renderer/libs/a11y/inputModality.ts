@@ -18,3 +18,6 @@ export const installInputModality = () => {
    }, true);
    window.addEventListener('pointerdown', () => set('pointer'), true);
 };
+
+/** True unless the last interaction was with a pointer (mouse, touch, pen) */
+export const isKeyboardModality = () => document.documentElement.dataset.inputModality !== 'pointer';

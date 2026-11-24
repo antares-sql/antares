@@ -1,5 +1,7 @@
 import { customRef, ref } from 'vue';
 
+import { isKeyboardModality } from '@/libs/a11y/inputModality';
+
 const focusableElementsSelector =
   'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
 
@@ -110,7 +112,8 @@ const useFocusTrap = (args?: {disableAutofocus?: boolean}) => {
       // Gives the focus back, unless the dialog already moved it somewhere else
       const active = document.activeElement;
       const focusInDialog = !active || active === document.body || !!$trapEl?.contains(active);
-      if (focusInDialog && $previousFocus?.isConnected) $previousFocus.focus();
+      // Only for keyboard users: after a click the focus stays where the pointer put it, as before
+      if (focusInDialog && $previousFocus?.isConnected && isKeyboardModality()) $previousFocus.focus();
       $previousFocus = null;
    }
 

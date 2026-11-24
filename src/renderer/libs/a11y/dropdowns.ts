@@ -1,3 +1,5 @@
+import { isKeyboardModality } from '@/libs/a11y/inputModality';
+
 /**
  * Keyboard support for every Spectre dropdown (`.dropdown` > `.dropdown-toggle` + `.menu`), which opens
  * while its toggle is focused:
@@ -83,8 +85,8 @@ const onClick = (event: MouseEvent) => {
    const item = target.closest?.(ITEM_SELECTOR);
    const dropdown = item?.closest('.dropdown');
    if (!dropdown || !item.closest('.menu') || item.closest('.form-group, .menu-badge')) return;
-   // Back to the toggle only if the focus was in the menu (keyboard), a mouse user doesn't need it
-   dismiss(dropdown, dropdown.contains(document.activeElement) && document.activeElement !== toggleOf(dropdown));
+   // Back to the toggle only for keyboard users, a mouse user doesn't need it
+   dismiss(dropdown, isKeyboardModality() && dropdown.contains(document.activeElement) && document.activeElement !== toggleOf(dropdown));
 };
 
 const onFocusOut = (event: FocusEvent) => {

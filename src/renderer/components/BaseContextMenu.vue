@@ -20,6 +20,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, Ref, ref } from 'vue';
 
+import { isKeyboardModality } from '@/libs/a11y/inputModality';
+
 const contextContent: Ref<HTMLDivElement> = ref(null);
 const contextSize: Ref<{height: number; width: number; subHeight?: number; subWidth?: number}> = ref(null);
 const isBottom: Ref<boolean> = ref(false);
@@ -216,7 +218,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
    window.removeEventListener('keydown', onKey);
-   if (previousFocus?.isConnected && contextContent.value?.contains(document.activeElement))
+   if (previousFocus?.isConnected && contextContent.value?.contains(document.activeElement) && isKeyboardModality())
       previousFocus.focus();
 });
 </script>

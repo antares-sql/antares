@@ -563,3 +563,8 @@ code.sql {
 }
 
 @import "rtl";
+
+/* Elements made focusable by v-button (setting bar icons...) show no focus ring when clicked */
+:root[data-input-modality="pointer"] .btn[role="button"]:not(button):focus {
+  box-shadow: none;
+}
