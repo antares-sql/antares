@@ -328,6 +328,7 @@ export const itIT = {
    application: {
       settings: 'Impostazioni',
       mainNavigation: 'Navigazione principale',
+      openTabs: 'Schede aperte',
       general: 'Generale',
       themes: 'Temi',
       update: 'Aggiorna',
