@@ -227,6 +227,8 @@
     "husky": "~9.0.11",
     "playwright": "~1.65.1",
     "playwright-core": "~1.65.1",
+    "postcss-loader": "~8.2.2",
+    "postcss-rtlcss": "~6.0.0",
     "standard-version": "~9.3.1",
     "stylelint": "^15.11.0",
     "stylelint-config-recommended-vue": "~1.5.0",

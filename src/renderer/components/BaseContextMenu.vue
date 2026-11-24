@@ -26,17 +26,19 @@ const isBottom: Ref<boolean> = ref(false);
 const isRight: Ref<boolean> = ref(false);
 const props = defineProps<{ contextEvent: MouseEvent }>();
 const emit = defineEmits(['close-context']);
+const isRtl = document.documentElement.dir === 'rtl';
 
 /**
  * Where the menu opens: the pointer, or for a menu opened with the keyboard (context menu key, Shift+F10)
- * the bottom left corner of the focused element, since such events don't carry pointer coordinates
+ * the bottom start corner of the focused element, since such events don't carry pointer coordinates
  */
 const origin = (event: MouseEvent) => {
    const target = event.target as HTMLElement;
    const fromKeyboard = event.button !== 2 && !(event.clientX || event.clientY);
    if (fromKeyboard && target?.getBoundingClientRect) {
       const rect = target.getBoundingClientRect();
-      return { clientX: rect.left + Math.min(rect.width / 2, 40), clientY: rect.bottom };
+      const inset = Math.min(rect.width / 2, 40);
+      return { clientX: isRtl ? rect.right - inset : rect.left + inset, clientY: rect.bottom };
    }
    return { clientX: event.clientX, clientY: event.clientY };
 };
@@ -59,13 +61,28 @@ const position = computed(() => {
          if (clientY + contextSize.value.subHeight + contextSize.value.height >= window.innerHeight)
             isBottom.value = true;
 
-         if (clientX + contextSize.value.width + 5 >= window.innerWidth) {
-            leftCord = `${clientX - contextSize.value.width}px`;
-            isRight.value = true;
-         }
+         if (isRtl) {
+            // Mirrored: the menu opens on the left of the pointer, submenus on its left side.
+            // `right` (from the stylesheet mirrored for RTL) moves submenus to the other side
+            leftCord = `${clientX - contextSize.value.width - 5}px`;
 
-         if (clientX + contextSize.value.subWidth + contextSize.value.width >= window.innerWidth)
-            isRight.value = true;
+            if (clientX - contextSize.value.width - 5 <= 0) {
+               leftCord = `${clientX}px`;
+               isRight.value = true;
+            }
+
+            if (clientX - contextSize.value.subWidth - contextSize.value.width <= 0)
+               isRight.value = true;
+         }
+         else {
+            if (clientX + contextSize.value.width + 5 >= window.innerWidth) {
+               leftCord = `${clientX - contextSize.value.width}px`;
+               isRight.value = true;
+            }
+
+            if (clientX + contextSize.value.subWidth + contextSize.value.width >= window.innerWidth)
+               isRight.value = true;
+         }
       }
    }
 
