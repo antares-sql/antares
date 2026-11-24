@@ -3,7 +3,7 @@
 Guide for AI agents (and humans) working on **Antares SQL**, a cross-platform SQL client built with Electron + Vue 3 + TypeScript.
 Supported engines: MySQL/MariaDB, PostgreSQL, SQLite, Firebird SQL.
 
-See also [CONTRIBUTING.md](CONTRIBUTING.md) for the original contributor guide and [DESIGN.md](DESIGN.md) for UI guidelines.
+See also [ARCHITECTURE.md](ARCHITECTURE.md) for how processes and layers fit together, [CONTRIBUTING.md](CONTRIBUTING.md) for the original contributor guide and [DESIGN.md](DESIGN.md) for UI guidelines.
 
 ## Stack
 
