@@ -19,6 +19,11 @@ const logos: Record<string, string> = {
    sqlite: '<path class="f" d="M19.6 3.2c1.6 3.6-.4 8.6-4.2 11.7-1.6 1.3-3.4 2.1-5.2 2.4-.6-2.7 0-5.8 1.8-8.4 2.1-3.1 4.8-5.2 7.6-5.7z"/><path d="M17.6 6.4C14 10.6 11.2 15.4 8.4 21"/>',
    // Firebird: ring open at the top, the bird rising inside it with its head in the gap
    firebird: '<path d="M11 3a9 9 0 0 0-2.2 17.4"/><path class="f" d="M14.8 3.1A9 9 0 0 1 12.8 21c-2 0-3.2-1.4-3.2-3.6 0-2 .6-3.6 2-4.8.8-.7 1-1.6.4-2-.6-.4-1.4-.2-1.8.3 0-1.5 1-2.3 2-2.3 0-1 1-1.2 1.4-.6 1.2-.2 2.4.2 3.2 0-.4.8-.2 1.6.2 2.4.4 1.6-.6 3-1.8 4.2-.8.8-.4 1.6.6 1.6 2.4-.1 4-2.2 4.4-4.6A8 8 0 0 0 14.6 4.3z"/><circle class="d" cx="13.3" cy="9.5" r=".55"/>',
+   // SQL Server: the twisted ribbon of the logo; the tinted front face (the wing pointing right) runs between the two folds,
+   // with the back of the ribbon showing above it (top flap) and below it (flared lobe, one arc of its mesh)
+   sqlserver: '<path d="M10.3 2C10.8 3.3 11.2 4.5 11.6 5.5C14.9 6 18.3 7 20.8 10.1C18.3 10.3 15.7 11.2 13.5 11.8C14 15 13.5 18.7 11.8 22C8.7 21.7 5.5 20.8 3.7 19.7C2.5 19 2.5 17.7 3.7 16.7C5.3 15 8.2 13.3 8.8 10.3C9 9 8.7 7.8 7.8 6.7C7 5.8 6.2 5.2 6 4.3C6.5 3.5 8.7 2.5 10.3 2Z"/><path class="t" d="M6.1 4.7C9.5 4.8 12.8 5.3 15.8 6.7C17.8 7.7 19.8 8.8 20.8 10.1C17 10.7 13.7 11.5 10.3 12.8C7.8 13.8 5.7 15.3 3.7 16.7C5.3 15 8.2 13.3 8.8 10.3C9 9 8.7 7.8 7.8 6.7C7 5.8 6.3 5.3 6.1 4.7Z"/><path d="M6.8 14.5C7 17 8.7 19 12.5 19.8"/>',
+   // DuckDB: round badge with the duck head on the left and the bill on the right
+   duckdb: '<circle cx="12" cy="12" r="9"/><circle class="t" cx="10" cy="12" r="4.2"/><rect class="d" x="15.2" y="10.8" width="4.3" height="2.4" rx="1.2"/>',
 
    /* ---------- platforms and services ---------- */
    // Docker: whale carrying containers
