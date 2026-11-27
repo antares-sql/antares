@@ -58,7 +58,18 @@
                               class="form-select"
                               dropdown-container=".workspace .connection-panel-wrapper"
                               :dropdown-offsets="{top: 10}"
-                           />
+                           >
+                              <template #option="{ option }">
+                                 <span class="client-option">
+                                    <BaseIcon
+                                       :icon-name="customizations[option.value]?.connectionIcon"
+                                       :stroke-width="THIN_STROKE"
+                                       :size="18"
+                                    />
+                                    {{ option.label }}
+                                 </span>
+                              </template>
+                           </BaseSelect>
                         </div>
                      </div>
                      <div v-if="clientCustomizations.connectionString" class="form-group columns">
@@ -488,6 +499,7 @@ import BaseSelect from '@/components/BaseSelect.vue';
 import BaseUploadInput from '@/components/BaseUploadInput.vue';
 import ModalAskCredentials from '@/components/ModalAskCredentials.vue';
 import Connection from '@/ipc-api/Connection';
+import { THIN_STROKE } from '@/libs/icons';
 import { useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useWorkspacesStore } from '@/stores/workspaces';
@@ -646,6 +658,12 @@ localConnection.value = JSON.parse(JSON.stringify(props.connection));
 </script>
 
 <style lang="scss" scoped>
+.client-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 .connection-panel {
   margin-left: auto;
   margin-right: auto;

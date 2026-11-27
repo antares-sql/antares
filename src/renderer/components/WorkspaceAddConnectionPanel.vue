@@ -57,7 +57,18 @@
                                  option-track-by="slug"
                                  option-label="name"
                                  class="form-select"
-                              />
+                              >
+                                 <template #option="{ option }">
+                                    <span class="client-option">
+                                       <BaseIcon
+                                          :icon-name="customizations[option.value]?.connectionIcon"
+                                          :stroke-width="THIN_STROKE"
+                                          :size="18"
+                                       />
+                                       {{ option.label }}
+                                    </span>
+                                 </template>
+                              </BaseSelect>
                            </div>
                         </div>
                         <div v-if="clientCustomizations.connectionString" class="form-group columns">
@@ -463,6 +474,7 @@ import BaseUploadInput from '@/components/BaseUploadInput.vue';
 import DebugConsole from '@/components/DebugConsole.vue';
 import ModalAskCredentials from '@/components/ModalAskCredentials.vue';
 import Connection from '@/ipc-api/Connection';
+import { THIN_STROKE } from '@/libs/icons';
 import { useConnectionsStore } from '@/stores/connections';
 import { useConsoleStore } from '@/stores/console';
 import { useNotificationsStore } from '@/stores/notifications';
@@ -641,6 +653,12 @@ setTimeout(() => {
 </script>
 
 <style lang="scss" scoped>
+.client-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 .connection-panel {
   margin-left: auto;
   margin-right: auto;
