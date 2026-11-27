@@ -1,6 +1,8 @@
 import { uidGen } from 'common/libs/uidGen';
 import { defineStore } from 'pinia';
 
+import { announce } from '@/libs/a11y/announce';
+
 import { useConsoleStore } from './console';
 
 export interface Notification {
@@ -17,6 +19,7 @@ export const useNotificationsStore = defineStore('notifications', {
       addNotification (payload: { status: string; message: string }) {
          const notification: Notification = { uid: uidGen('N'), ...payload };
          this.notifications.unshift(notification);
+         if (notification.status !== 'error') announce(notification.message);
 
          useConsoleStore().putLog('debug', {
             level: notification.status,

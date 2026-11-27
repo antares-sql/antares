@@ -100,6 +100,13 @@ export const useTreeNavigation = (
 
    const onKeydown = (event: KeyboardEvent) => {
       const current = event.target as HTMLElement;
+      // The tree itself has the focus when it had no items yet (e.g. right after connecting)
+      if (current === containerRef.value && ['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+         const items = visibleItems();
+         event.preventDefault();
+         focusItem(['End', 'ArrowUp'].includes(event.key) ? items[items.length - 1] : items[0]);
+         return;
+      }
       if (!current.matches(ITEM_SELECTOR) || event.altKey || event.ctrlKey || event.metaKey) return;
 
       const items = visibleItems();

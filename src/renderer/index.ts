@@ -14,6 +14,7 @@ import { vButton } from '@/directives/button';
 import { vListbox, vRadiogroup } from '@/directives/choiceGroup';
 import { vTablist } from '@/directives/tablist';
 import { i18n } from '@/i18n';
+import { installAnnouncer } from '@/libs/a11y/announce';
 import { installDropdownKeyboard } from '@/libs/a11y/dropdowns';
 import { installFormLabels } from '@/libs/a11y/formLabels';
 import { installInputModality } from '@/libs/a11y/inputModality';
@@ -50,6 +51,7 @@ installInputModality();
 installDropdownKeyboard();
 installRegionNavigation();
 installFormLabels();
+installAnnouncer();
 
 const { locale } = useSettingsStore();
 i18n.global.locale.value = locale;

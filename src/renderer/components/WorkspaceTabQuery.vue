@@ -421,6 +421,7 @@ import WorkspaceTabResultsBar from '@/components/WorkspaceTabResultsBar.vue';
 import { useResultTables } from '@/composables/useResultTables';
 import Application from '@/ipc-api/Application';
 import Schema from '@/ipc-api/Schema';
+import { announce } from '@/libs/a11y/announce';
 import { EditorApi } from '@/libs/editorApi';
 import { ExportFormat } from '@/libs/exportRows';
 import { useApplicationStore } from '@/stores/application';
@@ -626,6 +627,10 @@ const runQuery = async (query: string) => {
                if (acc === null) acc = 0;
                return acc + (curr.report ? curr.report.affectedRows : 0);
             }, null);
+
+         announce(affectedCount.value !== null && !resultsCount.value
+            ? t('application.queryDoneAffected', { affected: affectedCount.value, duration: durationsCount.value / 1000 })
+            : t('application.queryDone', { rows: resultsCount.value, duration: durationsCount.value / 1000 }));
 
          saveHistory(params);
          if (!autocommit.value)
