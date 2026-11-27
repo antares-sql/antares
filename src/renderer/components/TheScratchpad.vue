@@ -30,6 +30,7 @@
                      <BaseSelect
                         v-model="localConnection"
                         class="form-select"
+                        :aria-label="t('connection.connection')"
                         :options="connectionOptions"
                         option-track-by="code"
                         option-label="name"
@@ -40,8 +41,10 @@
                      <div
                         v-for="tag in [{ code: 'all', name: t('general.all') }, ...noteTags]"
                         :key="tag.code"
+                        v-button
                         class="btn"
                         :class="[selectedTag === tag.code ? 'btn-primary': 'btn-dark']"
+                        :aria-pressed="selectedTag === tag.code"
                         @click="setTag(tag.code)"
                      >
                         {{ tag.name }}
@@ -49,8 +52,10 @@
                   </div>
                   <div class="">
                      <div
+                        v-button="showArchived ? t('application.hideArchivedNotes') : t('application.showArchivedNotes')"
                         class="btn px-1 tooltip tooltip-left s-rounded archived-button"
                         :class="[showArchived ? 'btn-primary' : 'btn-link']"
+                        :aria-pressed="showArchived"
                         :data-tooltip="showArchived ? t('application.hideArchivedNotes') : t('application.showArchivedNotes')"
                         @click="showArchived = !showArchived"
                      >
@@ -82,6 +87,7 @@
                      />
                      <BaseIcon
                         v-else
+                        v-button="t('general.clear')"
                         icon-name="backspace"
                         class="form-icon c-hand pr-2"
                         :size="18"
@@ -132,6 +138,7 @@
                   </p>
                </div>
                <div
+                  v-button="t('application.addNote')"
                   class="btn btn-primary p-0 add-button tooltip tooltip-left"
                   :data-tooltip="t('application.addNote')"
                   @click="isAddModal = true"

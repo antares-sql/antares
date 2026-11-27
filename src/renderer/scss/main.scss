@@ -581,3 +581,8 @@ code.sql {
 :root[data-input-modality="pointer"] .btn[role="button"]:not(button):focus {
   box-shadow: none;
 }
+
+/* …and keep their tooltip only while hovered, as before they were focusable */
+:root[data-input-modality="pointer"] .tooltip[role="button"]:not(button):focus:not(:hover)::after {
+  opacity: 0;
+}
