@@ -10,6 +10,8 @@ export interface Customizations {
    indexTypes?: string[];
    foreignActions?: string[];
    operators?: TableFilterOperator[];
+   /** Default connection icon (Antares icon name, see renderer/libs/icons), used when the user picks none */
+   connectionIcon?: string;
    // Core
    database?: boolean;
    collations?: boolean;

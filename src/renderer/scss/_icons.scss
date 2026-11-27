@@ -1,10 +1,11 @@
-/* Antares icons (src/renderer/libs/icons): stroke glyphs with a duotone tint, colored by `color` */
+/* Antares icons (src/renderer/libs/icons): stroke glyphs with a duotone tint, colored by `color`.
+   --icon-stroke-width overrides the stroke (BaseIcon prop `stroke-width`) */
 .antares-icon {
   flex: none;
   overflow: visible;
   fill: none;
   stroke: currentColor;
-  stroke-width: 2.25;
+  stroke-width: var(--icon-stroke-width, 2.25);
   stroke-linecap: round;
   stroke-linejoin: round;
 

@@ -32,10 +32,8 @@ const usedIconNames = () => {
 
 describe('icons', () => {
    it('every glyph and badge has markup', () => {
-      for (const [name, markup] of Object.entries({ ...glyphs, ...badges }))
+      for (const [name, markup] of Object.entries({ ...glyphs, ...badges, ...brands }))
          expect(markup, name).toMatch(/^<(path|circle|rect|ellipse|g)\b/);
-      for (const [name, path] of Object.entries(brands))
-         expect(path, name).toMatch(/^M/);
    });
 
    it('resolves glyphs, badges, the off modifier and brands', () => {

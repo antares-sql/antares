@@ -87,6 +87,7 @@ export const customizations: Customizations = {
    languages: ['sql', 'plpgsql', 'c', 'internal'],
    readOnlyMode: true,
    connectionString: true,
+   connectionIcon: 'brand:postgresql',
    sqlDialect: 'postgresql',
    formatterLanguage: 'postgresql',
    procedureCall: 'CALL {name}({params})',

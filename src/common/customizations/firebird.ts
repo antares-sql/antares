@@ -64,5 +64,6 @@ export const customizations: Customizations = {
    foreigns: true,
    nullable: true,
    procedureCall: 'EXECUTE PROCEDURE "{name}"({params})',
+   connectionIcon: 'brand:firebird',
    sqlDialect: 'firebird'
 };

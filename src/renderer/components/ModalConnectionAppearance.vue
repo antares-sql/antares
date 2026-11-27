@@ -49,17 +49,21 @@
                               <BaseIcon
                                  v-if="icon.code"
                                  :icon-name="icon.code"
+                                 :stroke-width="THIN_STROKE"
                                  :size="36"
                                  class="icon-box"
                                  :title="icon.name"
                                  :class="[{'selected': resolveIconName(localConnection.icon) === icon.code}]"
                                  @click="setIcon(icon.code)"
                               />
-                              <div
+                              <BaseIcon
                                  v-else
+                                 :icon-name="customizations[connection.client]?.connectionIcon"
+                                 :stroke-width="THIN_STROKE"
+                                 :size="36"
                                  class="icon-box"
                                  :title="icon.name"
-                                 :class="[`dbi dbi-${connection.client}`, {'selected': localConnection.icon === null}]"
+                                 :class="[{'selected': localConnection.icon === null}]"
                                  @click="setIcon(null)"
                               />
                            </div>
@@ -124,6 +128,7 @@
 </template>
 
 <script setup lang="ts">
+import customizations from 'common/customizations';
 import { storeToRefs } from 'pinia';
 import { onBeforeUnmount, PropType, Ref, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -132,7 +137,7 @@ import BaseContextMenu from '@/components/BaseContextMenu.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import Application from '@/ipc-api/Application';
-import { resolveIconName } from '@/libs/icons';
+import { resolveIconName, THIN_STROKE } from '@/libs/icons';
 import { unproxify } from '@/libs/unproxify';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
@@ -328,17 +333,5 @@ onBeforeUnmount(() => {
             border-radius: var(--radius);
          }
      }
-  }
-
-  .theme-light {
-      .icons-wrapper {
-         .dbi {
-            filter: invert(100%) opacity(.8);
-
-            &.selected {
-               outline-color: #1c96d6;
-            }
-         }
-      }
   }
 </style>

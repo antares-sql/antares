@@ -62,21 +62,14 @@
                         <div class="panel">
                            <div class="panel-header p-2 text-center p-relative">
                               <figure class="avatar avatar-lg pt-1 mb-1 bg-dark">
-                                 <div
-                                    v-if="connection.icon"
-                                    class="settingbar-connection-icon"
-                                 >
+                                 <div class="settingbar-connection-icon">
                                     <BaseIcon
-                                       :icon-name="connection.icon"
-                                       :type="connection.hasCustomIcon ? 'custom' : 'icon'"
+                                       :icon-name="connection.icon || customizations[connection.client]?.connectionIcon"
+                                       :stroke-width="THIN_STROKE"
+                                       :type="connection.icon && connection.hasCustomIcon ? 'custom' : 'icon'"
                                        :size="42"
                                     />
                                  </div>
-                                 <div
-                                    v-else
-                                    class="settingbar-element-icon dbi ml-1"
-                                    :class="[`dbi-${connection.client}`]"
-                                 />
                               </figure>
                               <div class="panel-title h6 text-ellipsis">
                                  {{ getConnectionName(connection.uid) }}
@@ -231,6 +224,7 @@
 </template>
 
 <script setup lang="ts">
+import customizations from 'common/customizations';
 import { ConnectionParams } from 'common/interfaces/antares';
 import { storeToRefs } from 'pinia';
 import { computed, onBeforeUnmount, Ref, ref } from 'vue';
@@ -239,6 +233,7 @@ import { useI18n } from 'vue-i18n';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
+import { THIN_STROKE } from '@/libs/icons';
 import { useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
