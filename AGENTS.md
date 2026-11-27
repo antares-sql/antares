@@ -116,6 +116,7 @@ npm run test:packaged       # compile + electron-builder --dir + playwright agai
                             # bundle externals, export/import worker threads. test:packaged-dry reuses build/
 node scripts/appDriver.js start --build   # launch the compiled app (isolated profile) and drive it like a user:
                             # seed, open "Docker PostgreSQL", click, type, press F5, ss... (see .claude/skills/run-app)
+                            # a11y checks: walk [n] [--shift], focus (role, name, ring=yes|no), ax-audit
 npx tsc --noEmit -p .       # type check (.ts only; .vue files are checked only by the Vue VS Code extension)
 ```
 
