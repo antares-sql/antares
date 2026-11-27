@@ -87,9 +87,6 @@ const findOffenders = () => {
 const BASELINE: string[] = [
    // Context menu backdrop: Escape closes the menu
    'BaseContextMenu.vue:a:close',
-   // Only tracks a mouse press inside the option list
-   'BaseSelect.vue:div:isMouseDown',
-   'BaseSelect.vue:li:select',
    'DebugConsole.vue:div:openDevTools',
    'DebugConsole.vue:div:reload',
    'ModalAllConnections.vue:BaseIcon:askToDelete',

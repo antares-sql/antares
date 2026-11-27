@@ -1,15 +1,15 @@
 <template>
+   <!-- ARIA combobox pattern: the focused element (search input, or the root when not searchable) is the combobox -->
    <div
       ref="el"
       class="select"
       :class="{'select--open': isOpen, 'select--disabled': disabled}"
-      role="combobox"
+      :role="searchable ? null : 'combobox'"
       :tabindex="searchable || disabled ? -1 : tabindex"
+      v-bind="searchable ? {} : comboboxAttrs"
       @focus="activate()"
       @blur="searchable ? false : handleBlurEvent()"
-      @keyup.esc="deactivate()"
-      @keydown.self.down.prevent="moveDown()"
-      @keydown.self.up.prevent="moveUp"
+      @keydown.self="onKeydown"
    >
       <div class="select__item-text">
          <input
@@ -18,33 +18,45 @@
             class="select__search-input"
             :style="searchInputStyle"
             type="text"
+            role="combobox"
+            aria-autocomplete="list"
             autocomplete="off"
             spellcheck="false"
             :tabindex="tabindex"
             :value="searchText"
-            @input="searchText = $event.target.value"
+            :aria-label="$attrs['aria-label']"
+            v-bind="comboboxAttrs"
+            @input="onInput"
             @focus.prevent="!isOpen ? activate() : false"
             @blur.prevent="handleBlurEvent()"
-            @keyup.esc="deactivate()"
-            @keydown.down.prevent="keyArrows('down')"
-            @keydown.up.prevent="keyArrows('up')"
-            @keypress.enter.prevent.stop.self="select(filteredOptions[hightlightedIndex])"
+            @keydown="onKeydown"
          >
-         <span v-if="searchable && !isOpen || !searchable">{{ currentOptionLabel }}</span>
+         <span v-if="searchable && !isOpen || !searchable" :id="valueId">{{ currentOptionLabel }}</span>
       </div>
       <Transition :name="animation">
          <div
             v-if="isOpen"
             ref="optionList"
             :class="`select__list-wrapper ${dropdownClass ? dropdownClass : '' }`"
+            tabindex="-1"
             @mousedown="isMouseDown = true"
             @mouseup="handleMouseUpEvent()"
          >
-            <ul class="select__list" @mousedown.prevent>
+            <ul
+               :id="listId"
+               class="select__list"
+               role="listbox"
+               :aria-label="$attrs['aria-label']"
+               @mousedown.prevent
+            >
                <li
                   v-for="(opt, index) of filteredOptions"
+                  :id="`${listId}-${index}`"
                   :key="opt.id"
                   :ref="(el) => optionRefs[index] = el"
+                  :role="opt.$type === 'group' ? 'presentation' : 'option'"
+                  :aria-selected="opt.$type === 'group' ? null : isSelected(opt)"
+                  :aria-disabled="opt.disabled || null"
                   :class="{
                      'select__item': true,
                      'select__group': opt.$type === 'group',
@@ -70,7 +82,10 @@
 </template>
 
 <script>
+import { uidGen } from 'common/libs/uidGen';
 import { computed, defineComponent, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+
+import { isKeyboardModality } from '@/libs/a11y/inputModality';
 
 export default defineComponent({
    name: 'BaseSelect',
@@ -140,6 +155,9 @@ export default defineComponent({
    },
    emits: ['select', 'open', 'close', 'update:modelValue', 'change', 'blur'],
    setup (props, { emit }) {
+      const uid = uidGen();
+      const listId = `select-list-${uid}`;
+      const valueId = `select-value-${uid}`;
       const hightlightedIndex = ref(0);
       const isOpen = ref(false);
       const isMouseDown = ref(false);
@@ -257,6 +275,17 @@ export default defineComponent({
          flattenOptions.value.find(d => d.value === internalValue.value)?.label
       );
 
+      /** ARIA state of the combobox, on the element that has the focus */
+      const comboboxAttrs = computed(() => ({
+         'aria-haspopup': 'listbox',
+         'aria-expanded': String(isOpen.value),
+         'aria-controls': isOpen.value ? listId : null,
+         'aria-activedescendant': isOpen.value && filteredOptions.value[hightlightedIndex.value] ? `${listId}-${hightlightedIndex.value}` : null,
+         // The current value, read when the list is closed (the search input itself is empty)
+         'aria-describedby': !isOpen.value && currentOptionLabel.value !== undefined ? valueId : null,
+         'aria-disabled': props.disabled || null
+      }));
+
       const select = (opt) => {
          if (opt.$type === 'group' || opt.disabled) return;
 
@@ -276,7 +305,7 @@ export default defineComponent({
       const activate = () => {
          if (isOpen.value || props.disabled) return;
          isOpen.value = true;
-         hightlightedIndex.value = filteredOptions.value.findIndex(el => el.value === internalValue.value) || 0;
+         hightlightedIndex.value = Math.max(0, filteredOptions.value.findIndex(el => el.value === internalValue.value));
 
          if (props.searchable)
             searchInput.value.focus();
@@ -295,11 +324,13 @@ export default defineComponent({
          if (!isOpen.value) return;
          isOpen.value = false;
 
-         if (props.searchable)
-            searchInput.value?.blur();
-
-         else
-            el.value?.blur();
+         // Keyboard users stay on the select, to go on with Tab from there
+         if (!isKeyboardModality()) {
+            if (props.searchable)
+               searchInput.value?.blur();
+            else
+               el.value?.blur();
+         }
 
          if (!props.preserveSearch) searchText.value = '';
 
@@ -335,10 +366,12 @@ export default defineComponent({
 
       const keyArrows = (direction) => {
          const sum = direction === 'down' ? +1 : -1;
+         const options = filteredOptions.value;
+         // Next option in that direction, skipping groups and disabled options
          let index = hightlightedIndex.value + sum;
-         index = Math.max(0, index > filteredOptions.value.length - 1 ? filteredOptions.value.length - 1 : index);
-         if (filteredOptions.value[index].$type === 'group')
-            index=Math.max(1, index+sum);
+         while (index >= 0 && index < options.length && (options[index].$type === 'group' || options[index].disabled))
+            index += sum;
+         if (index < 0 || index >= options.length) return;
 
          hightlightedIndex.value = index;
 
@@ -359,6 +392,40 @@ export default defineComponent({
 
          else if (optEl.offsetTop >= visMax)
             optionList.value.scrollTop = optEl.offsetTop - optionList.value.clientHeight + optEl.clientHeight;
+      };
+
+      const onKeydown = (e) => {
+         switch (e.key) {
+            case 'ArrowDown':
+            case 'ArrowUp':
+               e.preventDefault();
+               if (!isOpen.value) activate();
+               else keyArrows(e.key === 'ArrowDown' ? 'down' : 'up');
+               break;
+            case 'Enter':
+               if (!isOpen.value) return;
+               e.preventDefault();
+               e.stopPropagation();
+               if (filteredOptions.value[hightlightedIndex.value]) select(filteredOptions.value[hightlightedIndex.value]);
+               break;
+            case ' ':
+               if (props.searchable || isOpen.value) return;
+               e.preventDefault();
+               activate();
+               break;
+            case 'Escape':
+               // Closes the list, not the dialog around it
+               if (!isOpen.value) return;
+               e.preventDefault();
+               e.stopPropagation();
+               deactivate();
+               break;
+         }
+      };
+
+      const onInput = (e) => {
+         searchText.value = e.target.value;
+         if (!isOpen.value) activate();
       };
 
       const handleBlurEvent = () => {
@@ -398,6 +465,11 @@ export default defineComponent({
 
       return {
          el,
+         listId,
+         valueId,
+         comboboxAttrs,
+         onKeydown,
+         onInput,
          searchInput,
          searchText,
          searchInputStyle,
