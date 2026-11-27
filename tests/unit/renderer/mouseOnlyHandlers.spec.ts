@@ -119,6 +119,7 @@ const BASELINE: string[] = [
    'WorkspaceTabPropsTableChecksModal.vue:div:selectCheck',
    'WorkspaceTabPropsTableForeignModal.vue:div:selectForeign',
    'WorkspaceTabPropsTableIndexesModal.vue:div:selectIndex',
+   // Structure fields: Enter or F2 on the focused cell edits it
    'WorkspaceTabPropsTableRow.vue:span:editON',
    'WorkspaceTabQuery.vue:a:openHistoryModal',
    'WorkspaceTabQuery.vue:a:openSavedModal',

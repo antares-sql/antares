@@ -16,83 +16,112 @@
          @add-new-index="emit('add-new-index', $event)"
          @add-to-index="emit('add-to-index', $event)"
       />
-      <div ref="propTable" class="table table-hover">
-         <div class="thead">
-            <div class="tr">
-               <div class="th">
+      <div
+         ref="propTable"
+         class="table table-hover"
+         role="table"
+         :aria-label="table"
+      >
+         <div class="thead" role="rowgroup">
+            <div class="tr" role="row">
+               <div class="th" role="columnheader">
                   <div class="text-right">
                      {{ t('database.order') }}
                   </div>
                </div>
-               <div class="th">
+               <div class="th" role="columnheader">
                   <div class="table-column-title">
                      {{ t('database.key', 2) }}
                   </div>
                </div>
-               <div class="th">
+               <div class="th" role="columnheader">
                   <div class="column-resizable min-100">
                      <div class="table-column-title">
                         {{ t('general.name') }}
                      </div>
                   </div>
                </div>
-               <div class="th">
+               <div class="th" role="columnheader">
                   <div class="column-resizable min-100">
                      <div class="table-column-title">
                         {{ t('database.type') }}
                      </div>
                   </div>
                </div>
-               <div v-if="customizations.tableArray" class="th">
+               <div
+                  v-if="customizations.tableArray"
+                  class="th"
+                  role="columnheader"
+               >
                   <div class="column-resizable">
                      <div class="table-column-title">
                         {{ t('database.array') }}
                      </div>
                   </div>
                </div>
-               <div class="th">
+               <div class="th" role="columnheader">
                   <div class="column-resizable">
                      <div class="table-column-title">
                         {{ t('database.length') }}
                      </div>
                   </div>
                </div>
-               <div v-if="customizations.unsigned" class="th">
+               <div
+                  v-if="customizations.unsigned"
+                  class="th"
+                  role="columnheader"
+               >
                   <div class="column-resizable">
                      <div class="table-column-title">
                         {{ t('database.unsigned') }}
                      </div>
                   </div>
                </div>
-               <div v-if="customizations.nullable" class="th">
+               <div
+                  v-if="customizations.nullable"
+                  class="th"
+                  role="columnheader"
+               >
                   <div class="column-resizable">
                      <div class="table-column-title">
                         {{ t('database.allowNull') }}
                      </div>
                   </div>
                </div>
-               <div v-if="customizations.zerofill" class="th">
+               <div
+                  v-if="customizations.zerofill"
+                  class="th"
+                  role="columnheader"
+               >
                   <div class="column-resizable">
                      <div class="table-column-title">
                         {{ t('database.zeroFill') }}
                      </div>
                   </div>
                </div>
-               <div class="th">
+               <div class="th" role="columnheader">
                   <div class="column-resizable">
                      <div class="table-column-title">
                         {{ t('database.default') }}
                      </div>
                   </div>
                </div>
-               <div v-if="customizations.comment" class="th">
+               <div
+                  v-if="customizations.comment"
+                  class="th"
+                  role="columnheader"
+               >
                   <div class="column-resizable">
                      <div class="table-column-title">
                         {{ t('database.comment') }}
                      </div>
                   </div>
                </div>
-               <div v-if="customizations.collation" class="th">
+               <div
+                  v-if="customizations.collation"
+                  class="th"
+                  role="columnheader"
+               >
                   <div class="column-resizable min-100">
                      <div class="table-column-title">
                         {{ t('database.collation') }}
@@ -105,6 +134,7 @@
             ref="resultTable"
             :list="fields"
             class="tbody"
+            role="rowgroup"
             item-key="_antares_id"
             handle=".row-draggable"
          >
