@@ -924,7 +924,9 @@ const onTabKeydown = (event: KeyboardEvent, tab: WorkspaceTab) => {
       case 'Enter':
       case ' ':
          event.preventDefault();
-         selectTab({ uid: props.connection.uid, tab: tab.uid });
+         // Enter on the tab already open does what a double click does: a temporary tab becomes permanent
+         if (event.key === 'Enter' && selectedTab.value === tab.uid && tab.type.includes('temp-')) openAsPermanentTab(tab);
+         else selectTab({ uid: props.connection.uid, tab: tab.uid });
          return;
       case 'Delete':
          event.preventDefault();

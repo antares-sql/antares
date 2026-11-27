@@ -17,6 +17,7 @@
       <div class="titlebar-elements">
          <div
             v-if="isDevelopment"
+            v-button="t('application.openDevTools')"
             class="titlebar-element"
             @click="openDevTools"
          >
@@ -24,6 +25,7 @@
          </div>
          <div
             v-if="isDevelopment"
+            v-button="t('application.reload')"
             class="titlebar-element"
             @click="reload"
          >

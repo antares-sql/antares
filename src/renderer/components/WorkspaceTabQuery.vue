@@ -237,8 +237,12 @@
                   <template #menu>
                      <li class="menu-item">
                         <a
+                           v-button
+                           role="menuitem"
+                           tabindex="-1"
                            class="c-hand"
                            :class="{'disabled': !query || lastSavedQuery === query}"
+                           :aria-disabled="!query || lastSavedQuery === query"
                            @click="saveFile()"
                         >
                            <BaseIcon icon-name="save+check" :size="18" />
@@ -272,8 +276,12 @@
                      <li class="divider" />
                      <li class="menu-item">
                         <a
+                           v-button
+                           role="menuitem"
+                           tabindex="-1"
                            class="c-hand"
                            :class="{'disabled': isQuering || isQuerySaved || query.length < 5}"
+                           :aria-disabled="isQuering || isQuerySaved || query.length < 5"
                            @click="saveQuery()"
                         >
                            <BaseIcon icon-name="heart+plus" :size="18" />
@@ -282,8 +290,12 @@
                      </li>
                      <li class="menu-item">
                         <a
+                           v-button
+                           role="menuitem"
+                           tabindex="-1"
                            class="c-hand"
                            :class="{'disabled': isQuering}"
+                           :aria-disabled="isQuering"
                            @click="openSavedModal()"
                         >
                            <BaseIcon icon-name="notebook+heart" :size="18" />
@@ -293,8 +305,12 @@
                      <li class="divider" />
                      <li class="menu-item">
                         <a
+                           v-button
+                           role="menuitem"
+                           tabindex="-1"
                            class="c-hand"
                            :class="{'disabled': isQuering}"
+                           :aria-disabled="isQuering"
                            @click="openHistoryModal()"
                         >
                            <BaseIcon icon-name="history" :size="18" />

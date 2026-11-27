@@ -24,6 +24,7 @@
             <div class="d-flex">
                <div
                   v-if="isDevelopment"
+                  v-button="t('application.openDevTools')"
                   class="c-hand mr-2"
                   @click="openDevTools()"
                >
@@ -31,6 +32,7 @@
                </div>
                <div
                   v-if="isDevelopment"
+                  v-button="t('application.reload')"
                   class="c-hand mr-2"
                   @click="reload()"
                >

@@ -284,6 +284,8 @@
                         <p class="mb-2">
                            {{ t('general.version') }} {{ appVersion }}<br>
                            <a
+                              v-button
+                              role="link"
                               class="c-hand"
                               :style="'align-items: center; display: inline-flex;'"
                               @click="openOutside('https://github.com/antares-sql/antares')"
@@ -292,6 +294,8 @@
                               class="d-inline mr-1"
                               :size="16"
                            /> GitHub</a> • <a
+                              v-button
+                              role="link"
                               class="c-hand"
                               :style="'align-items: center; display: inline-flex;'"
                               @click="openOutside('https://fosstodon.org/@AntaresSQL')"
@@ -300,6 +304,8 @@
                               class="d-inline mr-1"
                               :size="16"
                            /> Mastodon</a> • <a
+                              v-button
+                              role="link"
                               class="c-hand"
                               :style="'align-items: center; display: inline-flex;'"
                               @click="openOutside('https://antares-sql.app/')"

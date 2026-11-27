@@ -1,10 +1,17 @@
 <template>
-   <div class="tr" @click="selectRow()">
+   <div
+      class="tr"
+      role="row"
+      @click="selectRow()"
+      @focusin="selectRow()"
+   >
       <div
          v-for="(col, cKey) in row"
          :key="cKey"
          class="td p-0"
+         role="cell"
          tabindex="0"
+         @keydown.enter.self="dblClick(cKey)"
          @contextmenu.prevent="openContext($event, { id: row.id, field: cKey })"
       >
          <span

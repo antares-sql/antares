@@ -87,32 +87,21 @@ const findOffenders = () => {
 const BASELINE: string[] = [
    // Context menu backdrop: Escape closes the menu
    'BaseContextMenu.vue:a:close',
-   'DebugConsole.vue:div:openDevTools',
-   'DebugConsole.vue:div:reload',
-   'ModalAllConnections.vue:BaseIcon:askToDelete',
-   'ModalAllConnections.vue:BaseIcon:searchTerm',
-   'ModalHistory.vue:BaseIcon:searchTerm',
-   'ModalProcessesList.vue:div:sort',
-   'ModalProcessesListRow.vue:div:selectRow',
+   // Processes list: Enter on the focused cell opens the process info
    'ModalProcessesListRow.vue:span:dblClick',
-   'ModalSettings.vue:a:openOutside',
-   'ModalUsersManagement.vue:a:requestAction',
-   'TheTitleBar.vue:div:openDevTools',
-   'TheTitleBar.vue:div:reload',
+   // Title bar double click (maximize) is a window manager gesture: the OS shortcuts do the same
    'TheTitleBar.vue:div:toggleFullScreen',
+   // Workspace tabs: Enter on the open temporary tab makes it permanent
    'Workspace.vue:a:openAsPermanentTab',
+   // Workspace tabs: Delete on the focused tab (or Ctrl+W) closes it
    'Workspace.vue:span:closeTab',
    // Structure fields: Enter or F2 on the focused cell edits it
    'WorkspaceTabPropsTableRow.vue:span:editON',
-   'WorkspaceTabQuery.vue:a:openHistoryModal',
-   'WorkspaceTabQuery.vue:a:openSavedModal',
-   'WorkspaceTabQuery.vue:a:saveFile',
-   'WorkspaceTabQuery.vue:a:saveQuery',
    // Results grid: Enter on the focused cell edits it
    'WorkspaceTabQueryTableRow.vue:span:editON',
+   // Schema diagram canvas: tables open from the explorer too; dragging and panning have no keyboard equivalent yet
    'WorkspaceTabSchemaDiagram.vue:g:openTableData',
    'WorkspaceTabSchemaDiagram.vue:g:startTableDrag',
-   'WorkspaceTabSchemaDiagram.vue:span:zoomAt',
    'WorkspaceTabSchemaDiagram.vue:svg:startPan'
 ];
 

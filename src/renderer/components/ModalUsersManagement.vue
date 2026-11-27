@@ -48,10 +48,11 @@
                            :placeholder="t('users.searchForUsers')"
                         >
                      </div>
-                     <ul class="menu users-list">
+                     <ul v-listbox="t('database.manageUsers')" class="menu users-list">
                         <li
                            v-if="isNew"
                            class="menu-item"
+                           role="none"
                         >
                            <a class="active d-flex">
                               <BaseIcon
@@ -66,11 +67,14 @@
                            v-for="user in filteredUsers"
                            :key="userKey(user)"
                            class="menu-item"
+                           role="none"
                            :title="accountLabel(user)"
                         >
                            <a
                               class="c-hand d-flex"
                               :class="{'active': !isNew && selected && userKey(selected) === userKey(user), 'text-gray': !user.editable}"
+                              role="option"
+                              :aria-selected="!isNew && !!selected && userKey(selected) === userKey(user)"
                               @click="requestAction(() => selectUser(user))"
                            >
                               <BaseIcon

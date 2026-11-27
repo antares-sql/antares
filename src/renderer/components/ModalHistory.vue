@@ -40,6 +40,7 @@
                   />
                   <BaseIcon
                      v-else
+                     v-button="t('general.clear')"
                      icon-name="backspace"
                      class="form-icon c-hand pr-2"
                      :size="18"

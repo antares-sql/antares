@@ -40,6 +40,7 @@
                            />
                            <BaseIcon
                               v-else
+                              v-button="t('general.clear')"
                               icon-name="backspace"
                               class="form-icon c-hand pr-4"
                               :size="18"
@@ -53,7 +54,10 @@
                         v-for="connection in filteredConnections"
                         :key="connection.uid"
                         class="connection-block column col-md-6 col-lg-4 col-3 p-3"
+                        role="button"
                         tabindex="0"
+                        aria-keyshortcuts="Delete"
+                        @keydown.delete.self="askToDelete(connection)"
                         @click.stop="selectConnection(connection.uid)"
                         @keypress.stop.enter="selectConnection(connection.uid)"
                         @mouseover="connectionHover = connection.uid"
@@ -79,6 +83,7 @@
                               </div>
                               <div class="all-connections-buttons p-absolute d-flex" :style="'top: 0; right: 0;'">
                                  <BaseIcon
+                                    tabindex="-1"
                                     icon-name="trash"
                                     class="all-connections-delete ml-2"
                                     :title="t('general.delete')"
@@ -398,6 +403,10 @@ onBeforeUnmount(() => {
 
   &:focus {
     box-shadow: 0 0 3px 0.1rem rgba(var(--primary-color), 80%);
+  }
+
+  :root:not([data-input-modality="pointer"]) &:focus-within .all-connections-buttons .all-connections-delete {
+    opacity: 0.5;
   }
 
   &:hover {

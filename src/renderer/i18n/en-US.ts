@@ -408,6 +408,8 @@ export const enUS = {
       icon: 'Icon',
       customIcon: 'Custom icon',
       addCustomIcon: 'Add custom icon',
+      openDevTools: 'Open DevTools',
+      reload: 'Reload',
       fileName: 'File name',
       choseFile: 'Choose file',
       data: 'Data',

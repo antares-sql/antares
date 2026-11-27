@@ -121,16 +121,27 @@
                   class="vscroll"
                   :style="{'height': resultsSize+'px'}"
                >
-                  <div ref="table" class="table table-hover">
-                     <div class="thead">
-                        <div class="tr">
+                  <div
+                     ref="table"
+                     class="table table-hover"
+                     role="table"
+                     :aria-label="t('database.processesList')"
+                  >
+                     <div class="thead" role="rowgroup">
+                        <div class="tr" role="row">
                            <div
                               v-for="(field, index) in fields"
                               :key="index"
                               class="th c-hand"
+                              role="columnheader"
+                              :aria-sort="currentSort === field ? (currentSortDir === 'asc' ? 'ascending' : 'descending') : null"
                            >
                               <div ref="columnResize" class="column-resizable">
-                                 <div class="table-column-title" @click="sort(field)">
+                                 <div
+                                    v-button
+                                    class="table-column-title"
+                                    @click="sort(field)"
+                                 >
                                     <span>{{ field.toUpperCase() }}</span>
 
                                     <BaseIcon
