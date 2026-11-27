@@ -224,7 +224,7 @@ const {
 const searchInput: Ref<HTMLInputElement> = ref(null);
 const explorebar: Ref<HTMLInputElement> = ref(null);
 const explorebarBody: Ref<HTMLDivElement> = ref(null);
-useTreeNavigation(explorebarBody, { selectedSelector: '[data-tree-item].selected' });
+useTreeNavigation(explorebarBody, { selectedSelector: '[data-tree-item].selected', label: t('application.databaseExplorer') });
 const resizer: Ref<HTMLInputElement> = ref(null);
 const databases: Ref<string[]> = ref([]);
 const schema: Ref<Component & { selectSchema: (name: string) => void; $refs: {schemaAccordion: HTMLDetailsElement} }[]> = ref(null);
