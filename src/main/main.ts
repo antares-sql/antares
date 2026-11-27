@@ -37,7 +37,7 @@ let mainWindow: BrowserWindow;
 let mainWindowState: windowStateKeeper.State;
 
 async function createMainWindow () {
-   const icon = require('../renderer/images/logo-64.png');
+   const icon: string = require('../renderer/images/logo-64.png');
    const window = new BrowserWindow({
       width: mainWindowState.width,
       height: mainWindowState.height,
@@ -47,7 +47,7 @@ async function createMainWindow () {
       minHeight: 550,
       show: !isWindows,
       title: 'Antares SQL',
-      icon: nativeImage.createFromDataURL(icon.default),
+      icon: nativeImage.createFromDataURL(icon),
       webPreferences: {
          nodeIntegration: true,
          contextIsolation: false,

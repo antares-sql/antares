@@ -70,9 +70,7 @@ module.exports = { // Main
          },
          {
             test: /\.(png|jpg|gif)$/,
-            use: [{
-               loader: 'file-loader'
-            }]
+            type: 'asset/inline' // data URL, read by nativeImage.createFromDataURL()
          }
       ]
    }
