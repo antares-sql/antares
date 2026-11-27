@@ -176,7 +176,9 @@ export const useWorkspacesStore = defineStore('workspaces', {
                structure: [] as WorkspaceStructure[],
                breadcrumbs: {},
                loadedSchemas: new Set(),
-               database: connection.database,
+               // When switching database the workspace stays 'connected' and its tabs mounted: change the database
+               // (which mounts the tabs of the new one) only once the new client exists in main, see below
+               database: args?.mode === 'switch' ? workspace.database : connection.database,
                connectionStatus: args?.mode === 'switch' ? 'connected' : 'connecting'
             }
             : workspace);
@@ -269,6 +271,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
                            dataTypes,
                            indexTypes,
                            customizations: clientCustomizations,
+                           database: connection.database,
                            structure: response,
                            connectionStatus: 'connected',
                            tabs: cachedTabs,
