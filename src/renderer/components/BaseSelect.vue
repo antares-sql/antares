@@ -302,8 +302,10 @@ export default defineComponent({
          return internalValue.value === opt.value;
       };
 
+      let isRefocusing = false;
+
       const activate = () => {
-         if (isOpen.value || props.disabled) return;
+         if (isOpen.value || props.disabled || isRefocusing) return;
          isOpen.value = true;
          hightlightedIndex.value = Math.max(0, filteredOptions.value.findIndex(el => el.value === internalValue.value));
 
@@ -324,12 +326,19 @@ export default defineComponent({
          if (!isOpen.value) return;
          isOpen.value = false;
 
-         // Keyboard users stay on the select, to go on with Tab from there
-         if (!isKeyboardModality()) {
-            if (props.searchable)
-               searchInput.value?.blur();
-            else
-               el.value?.blur();
+         // Blurred as always: inline editors (results grid, table structure) confirm the value on blur
+         const target = props.searchable ? searchInput.value : el.value;
+         target?.blur();
+
+         // Keyboard users get the focus back when the select is still there and the focus went nowhere,
+         // to go on with Tab from it (without opening the list again)
+         if (isKeyboardModality()) {
+            nextTick(() => {
+               if (!target?.isConnected || (document.activeElement && document.activeElement !== document.body)) return;
+               isRefocusing = true;
+               target.focus();
+               isRefocusing = false;
+            });
          }
 
          if (!props.preserveSearch) searchText.value = '';
