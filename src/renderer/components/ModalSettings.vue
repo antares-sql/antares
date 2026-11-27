@@ -102,7 +102,20 @@
                                        option-track-by="code"
                                        option-label="name"
                                        @change="changeLocale(localLocale)"
-                                    />
+                                    >
+                                       <template #option="{ option }">
+                                          <span class="locale-option">
+                                             <img
+                                                v-if="localeFlag(option.value)"
+                                                class="locale-flag"
+                                                :src="localeFlag(option.value)"
+                                                alt=""
+                                             >
+                                             <span v-else class="locale-flag locale-flag--missing" />
+                                             {{ option.label }}
+                                          </span>
+                                       </template>
+                                    </BaseSelect>
                                  </div>
                                  <div class="col-4 col-sm-12 px-2 p-vcentered">
                                     <small class="d-block" :style="'line-height: 1.1; font-size: 70%;'">
@@ -333,6 +346,7 @@ import ModalSettingsThemes from '@/components/ModalSettingsThemes.vue';
 import ModalSettingsUpdate from '@/components/ModalSettingsUpdate.vue';
 import { useFocusTrap } from '@/composables/useFocusTrap';
 import { AvailableLocale } from '@/i18n';
+import { localeFlag } from '@/i18n/locale-flags';
 import { localesNames } from '@/i18n/supported-locales';
 import { useApplicationStore } from '@/stores/application';
 import { useSettingsStore } from '@/stores/settings';
@@ -467,6 +481,26 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss">
+.locale-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  .locale-flag {
+    width: 20px;
+    height: 15px;
+    border-radius: 2px;
+    flex-shrink: 0;
+
+    // language without a flag yet: keep the labels aligned
+    &--missing {
+      display: inline-block;
+      border: 1px dashed currentColor;
+      opacity: 0.3;
+    }
+  }
+}
+
 #settings {
   .modal-container {
     position: absolute;

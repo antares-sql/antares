@@ -163,6 +163,7 @@
     "electron-window-state": "~5.0.3",
     "encoding": "~0.1.13",
     "file-loader": "~6.2.0",
+    "flag-icons": "~7.6.0",
     "floating-vue": "~5.4.0",
     "html-webpack-plugin": "~5.5.0",
     "json2php": "~0.0.7",

@@ -372,12 +372,10 @@ export default defineComponent({
          searchInput.value.focus();
       };
 
+      // scrolling outside the select (list included) closes it, as the list position is fixed
       const handleWheelEvent = (e) => {
-         try {
-            if (!e.target.className.includes('select__')) deactivate();
-         }
-         catch (_) {
-         }
+         if (!(e.target instanceof Node) || !el.value?.contains(e.target))
+            deactivate();
       };
 
       onMounted(() => {
