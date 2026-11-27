@@ -45,6 +45,7 @@ describe('editor customizations', () => {
    });
 
    it('MariaDB inherits everything else from MySQL', () => {
-      expect({ ...customizations.maria, sqlDialect: null, formatterLanguage: null }).toEqual({ ...customizations.mysql, sqlDialect: null, formatterLanguage: null });
+      expect({ ...customizations.maria, sqlDialect: null, formatterLanguage: null, connectionIcon: null })
+         .toEqual({ ...customizations.mysql, sqlDialect: null, formatterLanguage: null, connectionIcon: null });
    });
 });

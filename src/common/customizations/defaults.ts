@@ -6,6 +6,7 @@ export const defaults: Customizations = {
    defaultPort: null,
    defaultUser: null,
    defaultDatabase: null,
+   connectionIcon: 'database',
    dataTypes: [],
    indexTypes: [],
    foreignActions: [],

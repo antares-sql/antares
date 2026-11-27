@@ -52,21 +52,16 @@
                <template v-else>
                   <div class="settingbar-element-icon-wrapper">
                      <div
-                        v-if="element.icon"
                         class="settingbar-element-icon"
                         :class="[getStatusBadge(element.uid)]"
                      >
                         <BaseIcon
-                           :icon-name="element.icon"
-                           :type="element.hasCustomIcon ? 'custom' : 'icon'"
+                           :icon-name="element.icon || customizations[element.client]?.connectionIcon"
+                           :stroke-width="THIN_STROKE"
+                           :type="element.icon && element.hasCustomIcon ? 'custom' : 'icon'"
                            :size="36"
                         />
                      </div>
-                     <div
-                        v-else
-                        class="settingbar-element-icon dbi"
-                        :class="[`dbi-${element.client}`, getStatusBadge(element.uid)]"
-                     />
                      <small class="settingbar-element-name">{{ element.name || getConnectionName(element.uid) }}</small>
                   </div>
                </template>
@@ -90,12 +85,14 @@
    </Draggable>
 </template>
 <script setup lang="ts">
+import customizations from 'common/customizations';
 import { storeToRefs } from 'pinia';
 import { computed, PropType, Ref, ref, watch } from 'vue';
 import * as Draggable from 'vuedraggable';
 
 import BaseIcon from '@/components/BaseIcon.vue';
 import SettingBarConnectionsFolder from '@/components/SettingBarConnectionsFolder.vue';
+import { THIN_STROKE } from '@/libs/icons';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { useWorkspacesStore } from '@/stores/workspaces';
 

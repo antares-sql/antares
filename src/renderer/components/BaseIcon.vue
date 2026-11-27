@@ -13,7 +13,7 @@
       viewBox="0 0 24 24"
       :width="remSize"
       :height="remSize"
-      :style="rotate ? { rotate: `${rotate}deg` } : null"
+      :style="iconStyle"
       aria-hidden="true"
       v-html="markup"
    />
@@ -49,6 +49,11 @@ const props = defineProps({
    rotate: {
       type: Number as PropType<number | null>,
       default: () => null
+   },
+   /** Stroke width on the 24×24 grid (default: 2.25 for glyphs, THIN_STROKE for brand logos) */
+   strokeWidth: {
+      type: Number as PropType<number | null>,
+      default: () => null
    }
 });
 
@@ -65,6 +70,11 @@ const customSvg = computed(() => {
    if (!base64) return null;
    return Buffer.from(base64, 'base64').toString('utf-8');
 });
+
+const iconStyle = computed(() => ({
+   ...(props.rotate ? { rotate: `${props.rotate}deg` } : {}),
+   ...(props.strokeWidth ? { '--icon-stroke-width': props.strokeWidth } : {})
+}));
 
 const iconFlip = computed(() => {
    if (['horizontal', 'vertical', 'both'].includes(props.flip))

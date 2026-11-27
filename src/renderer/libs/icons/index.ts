@@ -1,6 +1,6 @@
 import { legacyConnectionIcons } from './aliases';
 import { badges } from './badges';
-import { brands } from './brands';
+import { brands, THIN_STROKE } from './brands';
 import { glyphs } from './glyphs';
 
 /**
@@ -45,7 +45,7 @@ export const iconMarkup = (name: string, maskPrefix: string): string => {
    const resolved = resolveIconName(name);
 
    if (resolved.startsWith('brand:'))
-      return `<path class="d" d="${brands[resolved.slice(6)]}"/>`;
+      return brands[resolved.slice(6)];
 
    const { glyph, modifier } = parseIconName(resolved);
    if (!modifier) return glyphs[glyph];
@@ -97,4 +97,4 @@ export const createIconElement = (name: string, size = 24): SVGSVGElement => {
    return svg;
 };
 
-export { badges, brands, glyphs };
+export { badges, brands, glyphs, THIN_STROKE };

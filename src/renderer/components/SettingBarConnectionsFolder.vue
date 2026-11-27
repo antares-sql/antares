@@ -73,21 +73,16 @@
                @contextmenu.stop="emit('context', {event: $event, content: getConnectionOrderByUid(element)})"
             >
                <div
-                  v-if="getConnectionOrderByUid(element).icon"
                   class="folder-element-icon"
                   :class="[getStatusBadge(element)]"
                >
                   <BaseIcon
-                     :icon-name="getConnectionOrderByUid(element).icon"
-                     :type="getConnectionOrderByUid(element).hasCustomIcon ? 'custom' : 'icon'"
+                     :icon-name="getConnectionOrderByUid(element).icon || customizations[getConnectionOrderByUid(element).client]?.connectionIcon"
+                     :stroke-width="THIN_STROKE"
+                     :type="getConnectionOrderByUid(element).icon && getConnectionOrderByUid(element).hasCustomIcon ? 'custom' : 'icon'"
                      :size="36"
                   />
                </div>
-               <div
-                  v-else
-                  class="folder-element-icon dbi"
-                  :class="[`dbi-${getConnectionOrderByUid(element).client}`, getStatusBadge(element)]"
-               />
                <small v-if="isOpen" class="folder-element-name">{{ getConnectionOrderByUid(element)?.name || getConnectionName(element) }}</small>
             </div>
          </template>
@@ -105,6 +100,7 @@
    </div>
 </template>
 <script setup lang="ts">
+import customizations from 'common/customizations';
 import { storeToRefs } from 'pinia';
 import { computed, inject, PropType, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -112,6 +108,7 @@ import * as Draggable from 'vuedraggable';
 
 import BaseIcon from '@/components/BaseIcon.vue';
 import SettingBarConnections from '@/components/SettingBarConnections.vue';
+import { THIN_STROKE } from '@/libs/icons';
 import { SidebarElement, useConnectionsStore } from '@/stores/connections';
 import { useThemesStore } from '@/stores/themes';
 import { useWorkspacesStore } from '@/stores/workspaces';

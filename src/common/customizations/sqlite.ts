@@ -47,5 +47,6 @@ export const customizations: Customizations = {
    nullablePrimary: true,
    triggerSql: 'BEGIN\r\n\r\nEND',
    readOnlyMode: true,
+   connectionIcon: 'brand:sqlite',
    sqlDialect: 'sqlite'
 };
