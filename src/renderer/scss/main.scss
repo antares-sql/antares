@@ -557,6 +557,15 @@ code.sql {
   outline: none;
 }
 
+/*
+ * A dialog container takes the focus only when it has no control to focus (useFocusTrap), e.g. a dialog
+ * opened at startup before the window is shown: Chromium then draws its default ring around the whole
+ * dialog, since no interaction happened yet. The dialog is announced by screen readers, the ring adds nothing.
+ */
+[role="dialog"]:focus {
+  outline: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -580,4 +589,9 @@ code.sql {
 /* Elements made focusable by v-button (setting bar icons...) show no focus ring when clicked */
 :root[data-input-modality="pointer"] .btn[role="button"]:not(button):focus {
   box-shadow: none;
+}
+
+/* …and keep their tooltip only while hovered, as before they were focusable */
+:root[data-input-modality="pointer"] .tooltip[role="button"]:not(button):focus:not(:hover)::after {
+  opacity: 0;
 }

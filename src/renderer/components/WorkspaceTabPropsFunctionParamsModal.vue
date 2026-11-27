@@ -45,12 +45,18 @@
                         </button>
                      </div>
                   </div>
-                  <div ref="parametersPanel" class="panel-body p-0 pr-1">
+                  <div
+                     ref="parametersPanel"
+                     v-listbox="t('database.parameters')"
+                     class="panel-body p-0 pr-1"
+                  >
                      <div
                         v-for="param in parametersProxy"
                         :key="param._antares_id"
                         class="tile tile-centered c-hand mb-1 p-1"
                         :class="{'selected-element': selectedParam === param._antares_id}"
+                        role="option"
+                        :aria-selected="selectedParam === param._antares_id"
                         @click="selectParameter($event, param._antares_id)"
                      >
                         <div class="tile-icon">
@@ -72,6 +78,9 @@
                         <div class="tile-action">
                            <button
                               class="btn btn-link remove-field p-0 mr-2"
+                              tabindex="-1"
+                              aria-hidden="true"
+                              data-option-delete
                               :title="t('general.delete')"
                               @click.prevent="removeParameter(param._antares_id)"
                            >

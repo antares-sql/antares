@@ -94,7 +94,7 @@
             ref="explorebarBody"
             class="workspace-explorebar-body"
             :aria-label="t('application.databaseExplorer')"
-            role="group"
+            role="tree"
             @click="focusExplorebar"
          >
             <WorkspaceExploreBarSchema
@@ -173,7 +173,7 @@
 <script setup lang="ts">
 import { ConnectionParams } from 'common/interfaces/antares';
 import { storeToRefs } from 'pinia';
-import { Component, computed, onMounted, Prop, Ref, ref, watch } from 'vue';
+import { Component, computed, nextTick, onMounted, Prop, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseIcon from '@/components/BaseIcon.vue';
@@ -188,6 +188,8 @@ import { useTreeNavigation } from '@/composables/useTreeNavigation';
 import Databases from '@/ipc-api/Databases';
 import Tables from '@/ipc-api/Tables';
 import Views from '@/ipc-api/Views';
+import { announce } from '@/libs/a11y/announce';
+import { isKeyboardModality } from '@/libs/a11y/inputModality';
 import { useConnectionsStore } from '@/stores/connections';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useSettingsStore } from '@/stores/settings';
@@ -224,7 +226,7 @@ const {
 const searchInput: Ref<HTMLInputElement> = ref(null);
 const explorebar: Ref<HTMLInputElement> = ref(null);
 const explorebarBody: Ref<HTMLDivElement> = ref(null);
-useTreeNavigation(explorebarBody, { selectedSelector: '[data-tree-item].selected' });
+useTreeNavigation(explorebarBody, { selectedSelector: '[data-tree-item].selected', label: t('application.databaseExplorer') });
 const resizer: Ref<HTMLInputElement> = ref(null);
 const databases: Ref<string[]> = ref([]);
 const schema: Ref<Component & { selectSchema: (name: string) => void; $refs: {schemaAccordion: HTMLDetailsElement} }[]> = ref(null);
@@ -301,6 +303,13 @@ onMounted(async () => {
       window.addEventListener('mousemove', resize);
       window.addEventListener('mouseup', stopResize);
    });
+
+   if (props.isSelected) {
+      announce(t('application.connectedTo', { name: getConnectionName(props.connection.uid) }));
+      // The Connect button is gone: keyboard users go on from the explorer instead of the page body
+      if (isKeyboardModality() && (!document.activeElement || document.activeElement === document.body))
+         nextTick(() => explorebarBody.value?.focus());
+   }
 
    if (workspace.value.structure.length === 1) { // Auto-open if just one schema
       schema.value[0].selectSchema(workspace.value.structure[0].name);

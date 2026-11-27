@@ -45,12 +45,18 @@
                         </button>
                      </div>
                   </div>
-                  <div ref="checksPanel" class="panel-body p-0 pr-1">
+                  <div
+                     ref="checksPanel"
+                     v-listbox="t('database.tableChecks')"
+                     class="panel-body p-0 pr-1"
+                  >
                      <div
                         v-for="check in checksProxy"
                         :key="check._antares_id"
                         class="tile tile-centered c-hand mb-1 p-1"
                         :class="{'selected-element': selectedCheckID === check._antares_id}"
+                        role="option"
+                        :aria-selected="selectedCheckID === check._antares_id"
                         @click="selectCheck($event, check._antares_id)"
                      >
                         <div class="tile-icon">
@@ -74,6 +80,9 @@
                         <div class="tile-action">
                            <button
                               class="btn btn-link remove-field p-0 mr-2"
+                              tabindex="-1"
+                              aria-hidden="true"
+                              data-option-delete
                               :title="t('general.delete')"
                               @click.prevent="removeCheck(check._antares_id)"
                            >

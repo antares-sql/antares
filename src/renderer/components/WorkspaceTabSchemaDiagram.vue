@@ -101,7 +101,11 @@
                   /><b>{{ relations.length }}</b>
                </div>
                <div class="d-flex" :title="t('application.zoomReset')">
-                  <span class="c-hand" @click="zoomAt(1)">{{ Math.round(zoom * 100) }}%</span>
+                  <span
+                     v-button="`${t('application.zoomReset')} (${Math.round(zoom * 100)}%)`"
+                     class="c-hand"
+                     @click="zoomAt(1)"
+                  >{{ Math.round(zoom * 100) }}%</span>
                </div>
             </div>
          </div>

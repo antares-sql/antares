@@ -89,6 +89,47 @@ function withStores (page, fn, arg) {
    }, [fn.toString(), arg]);
 }
 
+const INTERACTIVE_ROLES = new Set([
+   'button', 'link', 'textbox', 'searchbox', 'combobox', 'checkbox', 'radio', 'switch', 'tab', 'menuitem',
+   'menuitemcheckbox', 'menuitemradio', 'treeitem', 'option', 'slider', 'spinbutton', 'listbox', 'tree', 'tablist',
+   'radiogroup', 'grid', 'columnheader'
+]);
+
+/**
+ * One line describing the focused element: accessibility role and name, tag, and whether a focus ring
+ * is drawn (outline on the element or, when it has no size, on its nearest visible ancestor)
+ */
+async function describeFocus (page, cdp) {
+   const { result } = await cdp.send('Runtime.evaluate', { expression: 'document.activeElement' });
+   const info = await page.evaluate(() => {
+      const el = document.activeElement;
+      if (!el || el === document.body) return null;
+      let box = el;
+      while (box && box.getBoundingClientRect().width < 2) box = box.parentElement;
+      const cs = box ? getComputedStyle(box) : null;
+      const cls = typeof el.className === 'string' ? el.className.trim().split(/\s+/).slice(0, 3).join('.') : '';
+      return {
+         tag: el.tagName.toLowerCase() + (cls ? `.${cls}` : ''),
+         ring: !!cs && cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) > 0
+      };
+   });
+   if (!info) return 'BODY (no focus)';
+   const { node } = await cdp.send('DOM.describeNode', { objectId: result.objectId });
+   const { nodes } = await cdp.send('Accessibility.getPartialAXTree', { backendNodeId: node.backendNodeId, fetchRelatives: false });
+   const ax = nodes[0] || {};
+   const states = (ax.properties || [])
+      .filter(p => ['expanded', 'selected', 'checked', 'pressed'].includes(p.name) && p.value?.value !== undefined)
+      .map(p => `${p.name}=${p.value.value}`).join(' ');
+   return `${ax.role?.value || '?'} "${String(ax.name?.value || '').slice(0, 60)}"${states ? ` [${states}]` : ''} <${info.tag}> ring=${info.ring ? 'yes' : 'no'}`;
+}
+
+async function axSession (page) {
+   const cdp = await page.context().newCDPSession(page);
+   await cdp.send('DOM.enable');
+   await cdp.send('Accessibility.enable');
+   return cdp;
+}
+
 const commands = {
    async start (...flags) {
       if (isAlive(readPid()) && await cdpVersion()) return console.log('already running');
@@ -264,6 +305,51 @@ const commands = {
    async eval (...expr) {
       const page = await getPage();
       console.log(JSON.stringify(await page.evaluate(expr.join(' ')), null, 2));
+   },
+
+   /** Role, name, states and focus ring of the focused element */
+   async focus () {
+      const page = await getPage();
+      console.log(await describeFocus(page, await axSession(page)));
+   },
+
+   /** Presses Tab (or Shift+Tab with --shift) n times, describing the focus after each press */
+   async walk (n = '10', ...flags) {
+      const page = await getPage();
+      const cdp = await axSession(page);
+      const key = flags.includes('--shift') ? 'Shift+Tab' : 'Tab';
+      for (let i = 1; i <= +n; i++) {
+         await page.keyboard.press(key);
+         await sleep(80);
+         console.log(String(i).padStart(3), await describeFocus(page, cdp));
+      }
+   },
+
+   /** Visible interactive elements without an accessible name, plus the page structure (landmarks, widgets) */
+   async 'ax-audit' () {
+      const page = await getPage();
+      const cdp = await axSession(page);
+      const { nodes } = await cdp.send('Accessibility.getFullAXTree');
+      const unnamed = [];
+      const structure = [];
+      for (const n of nodes) {
+         if (n.ignored || !n.role) continue;
+         const role = n.role.value;
+         const name = String(n.name?.value || '').trim();
+         if (['main', 'navigation', 'region', 'dialog', 'alertdialog', 'tree', 'tablist', 'grid', 'table', 'radiogroup', 'listbox', 'toolbar'].includes(role))
+            structure.push(`${role} "${name.slice(0, 50)}"`);
+         if (!INTERACTIVE_ROLES.has(role) || name || !n.backendDOMNodeId) continue;
+         const { object } = await cdp.send('DOM.resolveNode', { backendNodeId: n.backendDOMNodeId });
+         const { result } = await cdp.send('Runtime.callFunctionOn', {
+            objectId: object.objectId,
+            functionDeclaration: 'function () { const r = this.getBoundingClientRect(); return r.width && r.height ? this.outerHTML.replace(/\\s+/g, " ").slice(0, 140) : null; }',
+            returnByValue: true
+         });
+         if (result.value) unnamed.push(`${role}: ${result.value}`);
+      }
+      console.log(`unnamed interactive elements: ${unnamed.length}`);
+      unnamed.forEach(line => console.log(`  ${line}`));
+      console.log(`structure: ${structure.join(', ')}`);
    },
 
    /** Last lines of the app stdout/stderr */

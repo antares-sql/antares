@@ -235,6 +235,44 @@ If you need a new layer, check these first.
 - Use `title` for truncated text and icon-only controls, and `c-hand` / `c-help` for the cursor where it helps.
 - Do not rely on color alone: status dots have a tooltip, and changed rows also change their style.
 
+### Accessible components
+
+Everything must work with the keyboard alone and make sense to a screen reader. AGENTS.md (*Accessibility*) lists the building blocks to use (`v-button`, `v-tablist`, `useFocusTrap`, `useTreeNavigation`, dropdowns, form labels, F6 regions). These rules say how to use them.
+
+**Mouse users must see no difference.** Keyboard and screen reader support only adds things: no new focus rings after a click, no focus jumping after a click, no layout changes.
+
+- **Focus styles.** Do not style `:focus` / `:focus-visible` in components. The global rule in `main.scss` draws the keyboard ring on every focusable element. It is gated on `<html data-input-modality>` ([inputModality.ts](src/renderer/libs/a11y/inputModality.ts)), so a mouse click never shows it.
+  - If a new element needs its own focus style (e.g. it is in the rule's exclusion list), gate it the same way: `:root:not([data-input-modality="pointer"]) …`.
+  - When the focused control is visually hidden (a native input behind a custom control), draw the ring on the visible wrapper: `:root:not([data-input-modality="pointer"]) .wrapper:has(input:focus-visible)`.
+- **Moving the focus from code** (after a connection, after closing an inline editor or a dialog) only when `isKeyboardModality()`, unless mouse users already get the same move today. Text fields show their focus style on click too, so focusing one after a click is a visible change.
+- **Hiding native controls.** Never use `display: none` / `visibility: hidden` on a native control that is the only way to do something (file inputs, checkboxes behind a switch). Use `.text-assistive`: invisible but still focusable and announced.
+- **Every mouse handler needs a keyboard path:**
+  - `@click` on a non-native element → `v-button` (or a real `<button>`);
+  - `@dblclick` to edit or open → Enter (plus F2 to edit) on the focused element. Escape cancels, and the focus goes back to the element;
+  - `@mousedown` to select → arrows or Space;
+  - drag and drop → a context menu entry or a shortcut;
+  - controls shown only on `:hover` → also on `:focus-within`.
+- **One tab stop per widget.** A group of similar items (tabs, tree nodes, menu items, a list or a palette to choose from) is one tab stop with arrow keys inside (roving `tabindex`). Do not make each item a separate tab stop.
+- **Roles for choices:**
+  - mutually exclusive pickers (themes, icons, colors) are radio groups: `role="radiogroup"` > `role="radio"` + `aria-checked`, and the arrows also select;
+  - selectable side lists (indexes, foreign keys, parameters) are listboxes: `role="listbox"` > `role="option"` + `aria-selected`;
+  - custom selects follow the ARIA combobox pattern (`aria-expanded`, `aria-controls`, `aria-activedescendant`, `listbox`/`option`).
+- **States go in ARIA, not only in CSS classes:** `aria-pressed` (toggle buttons), `aria-current` (the active item of a navigation), `aria-selected`, `aria-checked`, `aria-expanded` (dropdown toggles, tree folders, comboboxes), `aria-disabled`.
+- **Names:**
+  - icon-only controls get an i18n name (the `v-button` value or `aria-label`). `title` is only a tooltip;
+  - names must be unique in their area ("Save options", not two "Options");
+  - decorative glyphs inside a name (the "✕" of a tab) get `aria-hidden="true"`;
+  - controls inside table cells get the column name.
+- **No interactive elements inside `role="button"` / `option` / `tab`.** Their children are flattened for screen readers. Give the container another role, or expose the inner action as a key (e.g. Delete) declared with `aria-keyshortcuts`.
+- **Tables:** tabular data uses `grid` (navigable cells) or `table` + `row` + `columnheader` + `cell`/`gridcell`, never bare `div`s.
+- **Announcements:**
+  - results that appear away from the focus (query finished, rows, connection state) go to a **persistent** `aria-live="polite"` `.text-assistive` element whose text changes, as `WorkspaceTabQueryTable` does for cells. A freshly inserted `role="status"` node is often not announced;
+  - errors use `role="alert"` (the notification board already does).
+- **Verify** in the running app (`.claude/skills/run-app`):
+  - walk the new UI with Tab, Shift+Tab, F6 and the arrows;
+  - check role and name in the accessibility tree;
+  - click it with the mouse and check that no new ring appears.
+
 ## Text and i18n
 
 - All visible strings go through `t('...')`. Add keys to [en-US.ts](src/renderer/i18n/en-US.ts) first and reuse existing keys (`general.save`, `general.cancel`, `general.confirm`, `general.clear`, ...) before creating new ones.
@@ -251,5 +289,6 @@ If you need a new layer, check these first.
 - [ ] Engine-specific UI is gated by a `customizations` flag.
 - [ ] Long names truncate with a tooltip, and big lists are virtualized.
 - [ ] Keyboard: Escape/Enter behave, and a shortcut is added if the action is frequent.
+- [ ] Accessibility (see *Accessible components*): every mouse action has a keyboard path, roles/names/states are exposed, and a mouse click shows no new focus ring.
 - [ ] `npm run lint` passes (eslint + stylelint).
 - [ ] Verified in the running app (`.claude/skills/run-app`), with a screenshot for visual changes.

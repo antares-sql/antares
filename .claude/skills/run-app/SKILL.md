@@ -44,6 +44,9 @@ node scripts/appDriver.js stop
 | `text [selector]` | innerText of first visible match (page body if omitted) |
 | `eval <js>` | evaluate in the renderer, prints JSON (`require` and `@electron/remote` available) |
 | `ss [name]` | screenshot |
+| `focus` | the focused element: accessibility role, name, states, tag and `ring=yes/no` (focus outline drawn) |
+| `walk [n] [--shift]` | press Tab (Shift+Tab) n times, printing `focus` after each press: keyboard order check |
+| `ax-audit` | visible interactive elements without an accessible name, plus landmarks and widgets |
 | `log [lines]` | tail of the app stdout/stderr |
 
 ## Gotchas

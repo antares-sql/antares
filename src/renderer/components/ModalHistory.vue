@@ -1,7 +1,11 @@
 <template>
    <Teleport to="#window-content">
       <div class="modal active">
-         <a class="modal-overlay" @click.stop="closeModal" />
+         <a
+            class="modal-overlay"
+            aria-hidden="true"
+            @click.stop="closeModal"
+         />
          <div ref="trapRef" class="modal-container p-0 pb-4">
             <div class="modal-header pl-2">
                <div class="modal-title h6">
@@ -40,6 +44,7 @@
                   />
                   <BaseIcon
                      v-else
+                     v-button="t('general.clear')"
                      icon-name="backspace"
                      class="form-icon c-hand pr-2"
                      :size="18"

@@ -1,7 +1,7 @@
 <template>
    <Teleport to="#window-content">
       <div class="modal active modal-sm">
-         <a class="modal-overlay" />
+         <a class="modal-overlay" aria-hidden="true" />
          <div ref="trapRef" class="modal-container p-0">
             <div class="modal-header pl-2">
                <div class="modal-title h6">

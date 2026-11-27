@@ -2,7 +2,11 @@
    <div class="dummy-wrapper">
       <Teleport to="#window-content">
          <div class="modal active" :class="modalSizeClass">
-            <a class="modal-overlay" @click="hideModal" />
+            <a
+               class="modal-overlay"
+               aria-hidden="true"
+               @click="hideModal"
+            />
             <div ref="trapRef" class="modal-container">
                <div v-if="hasHeader" class="modal-header pl-2">
                   <div class="modal-title h6">

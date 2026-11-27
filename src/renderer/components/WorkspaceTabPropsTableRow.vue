@@ -1,6 +1,14 @@
 <template>
-   <div class="tr" @contextmenu.prevent="!editingField ? emit('contextmenu', $event, localRow._antares_id) : null">
-      <div class="td p-0" tabindex="0">
+   <div
+      class="tr"
+      role="row"
+      @contextmenu.prevent="!editingField ? emit('contextmenu', $event, localRow._antares_id) : null"
+   >
+      <div
+         class="td p-0"
+         role="cell"
+         tabindex="0"
+      >
          <div :class="customizations.sortableFields ? 'row-draggable' : 'text-center'">
             <BaseIcon
                v-if="customizations.sortableFields"
@@ -11,7 +19,11 @@
             {{ localRow.order }}
          </div>
       </div>
-      <div class="td p-0" tabindex="0">
+      <div
+         class="td p-0"
+         role="cell"
+         tabindex="0"
+      >
          <div class="text-center" :style="'display: flex; justify-content: center; align-items: center'">
             <div
                v-for="(index, i) in indexes"
@@ -40,7 +52,12 @@
             </div>
          </div>
       </div>
-      <div class="td p-0" tabindex="0">
+      <div
+         class="td p-0"
+         role="cell"
+         tabindex="0"
+         @keydown="editFromKeyboard($event, localRow.name, 'name')"
+      >
          <span
             v-if="!isInlineEditor.name"
             class="cell-content"
@@ -55,13 +72,18 @@
             type="text"
             autofocus
             class="editable-field form-input input-sm px-1"
+            :aria-label="t('general.name')"
+            @keydown.enter.prevent="closeEditor"
+            @keydown.esc.stop.prevent="cancelEditor"
             @blur="editOFF"
          >
       </div>
       <div
          class="td p-0"
          :class="{'text-uppercase': !isUserType}"
+         role="cell"
          tabindex="0"
+         @keydown="editFromKeyboard($event, typeOption(localRow.type), 'type')"
       >
          <span
             v-if="!isInlineEditor.type"
@@ -81,20 +103,31 @@
             option-label="name"
             option-track-by="name"
             class="form-select editable-field pl-1 pr-4 small-select text-uppercase"
+            :aria-label="t('database.type')"
             @blur="editOFF"
          />
       </div>
       <div
          v-if="customizations.tableArray"
          class="td p-0"
+         role="cell"
          tabindex="0"
       >
          <label class="form-checkbox">
-            <input v-model="localRow.isArray" type="checkbox">
+            <input
+               v-model="localRow.isArray"
+               type="checkbox"
+               :aria-label="t('database.array')"
+            >
             <i class="form-icon" />
          </label>
       </div>
-      <div class="td p-0 type-int" tabindex="0">
+      <div
+         class="td p-0 type-int"
+         role="cell"
+         tabindex="0"
+         @keydown="fieldType?.length && editFromKeyboard($event, localLength, 'length')"
+      >
          <template v-if="fieldType?.length">
             <span
                v-if="!isInlineEditor.length"
@@ -118,6 +151,9 @@
                type="text"
                autofocus
                class="editable-field form-input input-sm px-1"
+               :aria-label="t('database.length')"
+               @keydown.enter.prevent="closeEditor"
+               @keydown.esc.stop.prevent="cancelEditor"
                @blur="editOFF"
             >
             <input
@@ -127,7 +163,10 @@
                type="text"
                autofocus
                class="editable-field form-input input-sm px-1"
+               :aria-label="t('database.length')"
                @keypress="checkLengthScale"
+               @keydown.enter.prevent="closeEditor"
+               @keydown.esc.stop.prevent="cancelEditor"
                @blur="editOFF"
             >
             <input
@@ -137,6 +176,9 @@
                type="number"
                autofocus
                class="editable-field form-input input-sm px-1"
+               :aria-label="t('database.length')"
+               @keydown.enter.prevent="closeEditor"
+               @keydown.esc.stop.prevent="cancelEditor"
                @blur="editOFF"
             >
          </template>
@@ -144,6 +186,7 @@
       <div
          v-if="customizations.unsigned"
          class="td p-0"
+         role="cell"
          tabindex="0"
       >
          <label class="form-checkbox">
@@ -151,6 +194,7 @@
                v-model="localRow.unsigned"
                type="checkbox"
                :disabled="!fieldType?.unsigned"
+               :aria-label="t('database.unsigned')"
             >
             <i class="form-icon" />
          </label>
@@ -158,6 +202,7 @@
       <div
          v-if="customizations.nullable"
          class="td p-0"
+         role="cell"
          tabindex="0"
       >
          <label class="form-checkbox">
@@ -165,6 +210,7 @@
                v-model="localRow.nullable"
                type="checkbox"
                :disabled="!isNullable"
+               :aria-label="t('database.allowNull')"
             >
             <i class="form-icon" />
          </label>
@@ -172,6 +218,7 @@
       <div
          v-if="customizations.zerofill"
          class="td p-0"
+         role="cell"
          tabindex="0"
       >
          <label class="form-checkbox">
@@ -179,11 +226,17 @@
                v-model="localRow.zerofill"
                type="checkbox"
                :disabled="!fieldType.zerofill"
+               :aria-label="t('database.zeroFill')"
             >
             <i class="form-icon" />
          </label>
       </div>
-      <div class="td p-0" tabindex="0">
+      <div
+         class="td p-0"
+         role="cell"
+         tabindex="0"
+         @keydown="editFromKeyboard($event, localRow.default, 'default')"
+      >
          <span class="cell-content" @dblclick="editON($event, localRow.default, 'default')">
             {{ fieldDefault }}
          </span>
@@ -191,7 +244,9 @@
       <div
          v-if="customizations.comment"
          class="td p-0 type-varchar"
+         role="cell"
          tabindex="0"
+         @keydown="editFromKeyboard($event, localRow.comment, 'comment')"
       >
          <span
             v-if="!isInlineEditor.comment"
@@ -207,13 +262,18 @@
             type="text"
             autofocus
             class="editable-field form-input input-sm px-1"
+            :aria-label="t('database.comment')"
+            @keydown.enter.prevent="closeEditor"
+            @keydown.esc.stop.prevent="cancelEditor"
             @blur="editOFF"
          >
       </div>
       <div
          v-if="customizations.collation"
          class="td p-0"
+         role="cell"
          tabindex="0"
+         @keydown="fieldType.collation && editFromKeyboard($event, localRow.collation, 'collation')"
       >
          <template v-if="fieldType.collation">
             <span
@@ -232,6 +292,7 @@
                option-track-by="collation"
                :max-visible-options="1000"
                class="form-select small-select pl-1 pr-4 editable-field"
+               :aria-label="t('database.collation')"
                @blur="editOFF"
             />
          </template>
@@ -355,6 +416,7 @@ import { useI18n } from 'vue-i18n';
 import ConfirmModal from '@/components/BaseConfirmModal.vue';
 import BaseIcon from '@/components/BaseIcon.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
+import { isKeyboardModality } from '@/libs/a11y/inputModality';
 import { useWorkspacesStore } from '@/stores/workspaces';
 
 const { t } = useI18n();
@@ -479,7 +541,31 @@ const initLocalRow = () => {
    }
 };
 
-const editON = async (event: MouseEvent, content: string | number, field: keyof TableField) => {
+/** Cell whose inline editor is open: it gets the focus back when the editor is closed with Enter or Escape */
+let editorCell: HTMLElement = null;
+let returnFocusToCell = false;
+
+/** Enter or F2 on a focused cell opens its editor, like a double click */
+const editFromKeyboard = (event: KeyboardEvent, content: string | number, field: keyof TableField) => {
+   if (!['Enter', 'F2'].includes(event.key) || event.target !== event.currentTarget || editingField.value) return;
+   event.preventDefault();
+   editON(event, content, field);
+};
+
+/** Enter in an inline editor confirms, Escape restores the previous value */
+const closeEditor = () => {
+   returnFocusToCell = true;
+   (document.activeElement as HTMLElement)?.blur();
+};
+
+const cancelEditor = () => {
+   editingContent.value = originalContent.value;
+   closeEditor();
+};
+
+const editON = async (event: MouseEvent | KeyboardEvent, content: string | number, field: keyof TableField) => {
+   editorCell = (event.target as HTMLElement).closest<HTMLElement>('.td');
+
    if (field === 'length') {
       if (['integer', 'float', 'binary', 'spatial'].includes(fieldType.value.group)) editingField.value = 'numLength';
       else if (['string', 'unknown'].includes(fieldType.value.group)) editingField.value = 'charLength';
@@ -510,7 +596,7 @@ const editON = async (event: MouseEvent, content: string | number, field: keyof 
       isDefaultModal.value = true;
    else {
       await nextTick();
-      (event as MouseEvent & { target: HTMLInputElement }).target.blur();
+      (event.target as HTMLElement).blur();
       await nextTick();
       document.querySelector<HTMLInputElement>('.editable-field').focus();
    }
@@ -588,6 +674,16 @@ const editOFF = () => {
    editingContent.value = null;
    originalContent.value = null;
    editingField.value = null;
+
+   // Back to the cell after Enter/Escape, or when the editor closed leaving the focus nowhere (e.g. a type chosen with Enter)
+   if (isKeyboardModality() && editorCell?.isConnected) {
+      const cell = editorCell;
+      const force = returnFocusToCell;
+      nextTick(() => {
+         if (force || !document.activeElement || document.activeElement === document.body) cell.focus();
+      });
+   }
+   returnFocusToCell = false;
 };
 
 const checkLengthScale = (e: KeyboardEvent & { target: HTMLInputElement }) => {

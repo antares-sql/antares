@@ -1,7 +1,11 @@
 <template>
    <Teleport to="#window-content">
       <div class="modal active">
-         <a class="modal-overlay" @click.stop="hideScratchpad" />
+         <a
+            class="modal-overlay"
+            aria-hidden="true"
+            @click.stop="hideScratchpad"
+         />
          <div ref="trapRef" class="modal-container p-0 pb-4">
             <div class="modal-header pl-2">
                <div class="modal-title h6">
@@ -30,18 +34,21 @@
                      <BaseSelect
                         v-model="localConnection"
                         class="form-select"
+                        :aria-label="t('connection.connection')"
                         :options="connectionOptions"
                         option-track-by="code"
                         option-label="name"
                         @change="null"
                      />
                   </div>
-                  <div class="btn-group btn-group-block text-uppercase">
+                  <div v-radiogroup="t('general.filter')" class="btn-group btn-group-block text-uppercase">
                      <div
                         v-for="tag in [{ code: 'all', name: t('general.all') }, ...noteTags]"
                         :key="tag.code"
                         class="btn"
                         :class="[selectedTag === tag.code ? 'btn-primary': 'btn-dark']"
+                        role="radio"
+                        :aria-checked="selectedTag === tag.code"
                         @click="setTag(tag.code)"
                      >
                         {{ tag.name }}
@@ -49,8 +56,10 @@
                   </div>
                   <div class="">
                      <div
+                        v-button="showArchived ? t('application.hideArchivedNotes') : t('application.showArchivedNotes')"
                         class="btn px-1 tooltip tooltip-left s-rounded archived-button"
                         :class="[showArchived ? 'btn-primary' : 'btn-link']"
+                        :aria-pressed="showArchived"
                         :data-tooltip="showArchived ? t('application.hideArchivedNotes') : t('application.showArchivedNotes')"
                         @click="showArchived = !showArchived"
                      >
@@ -82,6 +91,7 @@
                      />
                      <BaseIcon
                         v-else
+                        v-button="t('general.clear')"
                         icon-name="backspace"
                         class="form-icon c-hand pr-2"
                         :size="18"
@@ -132,6 +142,7 @@
                   </p>
                </div>
                <div
+                  v-button="t('application.addNote')"
                   class="btn btn-primary p-0 add-button tooltip tooltip-left"
                   :data-tooltip="t('application.addNote')"
                   @click="isAddModal = true"

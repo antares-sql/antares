@@ -45,12 +45,18 @@
                         </button>
                      </div>
                   </div>
-                  <div ref="indexesPanel" class="panel-body p-0 pr-1">
+                  <div
+                     ref="indexesPanel"
+                     v-listbox="t('database.foreignKeys')"
+                     class="panel-body p-0 pr-1"
+                  >
                      <div
                         v-for="foreign in foreignProxy"
                         :key="foreign._antares_id"
                         class="tile tile-centered c-hand mb-1 p-1"
                         :class="{'selected-element': selectedForeignID === foreign._antares_id}"
+                        role="option"
+                        :aria-selected="selectedForeignID === foreign._antares_id"
                         @click="selectForeign($event, foreign._antares_id)"
                      >
                         <div class="tile-icon">
@@ -100,6 +106,9 @@
                         <div class="tile-action">
                            <button
                               class="btn btn-link remove-field p-0 mr-2"
+                              tabindex="-1"
+                              aria-hidden="true"
+                              data-option-delete
                               :title="t('general.delete')"
                               @click.prevent="removeIndex(foreign._antares_id)"
                            >

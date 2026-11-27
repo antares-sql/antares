@@ -12,7 +12,10 @@ const onKeydown = (event: KeyboardEvent) => {
    if (event.target !== el || event.repeat) return;
    if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      if (el.getAttribute('aria-disabled') !== 'true') el.click();
+      if (el.getAttribute('aria-disabled') === 'true') return;
+      // click() exists only on HTML elements: a clickable BaseIcon is an <svg>
+      if (typeof el.click === 'function') el.click();
+      else el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
    }
 };
 

@@ -130,6 +130,10 @@ const moveFocus = (step: 1 | -1 | 'first' | 'last') => {
 };
 
 const onKey = (e: KeyboardEvent) => {
+   // A dialog opened from a menu item (e.g. a delete confirmation) is a child of the menu: its keys are its own,
+   // closing the menu would close the dialog too
+   const target = e.target as HTMLElement;
+   if (!contextContent.value?.contains(target) && target.closest?.('.modal')) return;
    e.stopPropagation();
    const active = document.activeElement as HTMLElement;
    const isItem = contextContent.value?.contains(active) && active.classList.contains('context-element');
@@ -218,8 +222,15 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
    window.removeEventListener('keydown', onKey);
-   if (previousFocus?.isConnected && contextContent.value?.contains(document.activeElement) && isKeyboardModality())
+   if (!isKeyboardModality()) return;
+   if (previousFocus?.isConnected && contextContent.value?.contains(document.activeElement))
       previousFocus.focus();
+   else {
+      // Closed together with a dialog opened from one of its items: the focus is lost when the dialog goes away
+      requestAnimationFrame(() => {
+         if (previousFocus?.isConnected && document.activeElement === document.body) previousFocus.focus();
+      });
+   }
 });
 </script>
 

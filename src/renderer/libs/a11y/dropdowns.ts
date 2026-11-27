@@ -1,27 +1,35 @@
 import { isKeyboardModality } from '@/libs/a11y/inputModality';
 
 /**
- * Keyboard support for every Spectre dropdown (`.dropdown` > `.dropdown-toggle` + `.menu`), which opens
+ * Keyboard support for every Spectre dropdown (`.dropdown` > `.dropdown-toggle` + `.menu`, possibly wrapped
+ * together in a `.btn-group` next to a main button), which opens
  * while its toggle is focused:
  * - the menu stays open while the focus is inside it (`menu-open`), so its items can be reached;
  * - ↓ on the toggle enters the menu, ↑/↓/Home/End move between items, Escape goes back to the toggle;
  * - choosing an item closes the menu and gives the focus back to the toggle.
  * Installed once on the document, so it also covers dropdowns rendered later.
  */
-const ITEM_SELECTOR = '.menu-item > a, [role="menuitem"], .menu button';
+const ITEM_SELECTOR = '.menu-item > a, [role="menuitem"], .menu button, .menu input';
+/** Form controls inside a menu (e.g. the auto-refresh slider) use the arrow keys themselves */
+const FORM_CONTROL = 'input, select, textarea';
 const DISMISSED = 'menu-dismissed';
 const OPEN = 'menu-open';
 
-const menuItems = (dropdown: Element) => [...dropdown.querySelectorAll<HTMLElement>(`:scope > .menu :is(${ITEM_SELECTOR})`)]
+/** Toggle and menu are children of the dropdown, or of a `.btn-group` inside it */
+const OWN = (selector: string) => `:scope > ${selector}, :scope > .btn-group > ${selector}`;
+
+const menuItems = (dropdown: Element) => [...dropdown.querySelectorAll<HTMLElement>(OWN('.menu'))]
+   .flatMap(menu => [...menu.querySelectorAll<HTMLElement>(ITEM_SELECTOR)])
    .filter(el => !el.classList.contains('disabled') && !(el as HTMLButtonElement).disabled && el.offsetParent !== null);
 
-const toggleOf = (dropdown: Element) => dropdown.querySelector<HTMLElement>(':scope > .dropdown-toggle');
+const toggleOf = (dropdown: Element) => dropdown.querySelector<HTMLElement>(OWN('.dropdown-toggle'));
 
 const focusItem = (el: HTMLElement) => {
    // Keeps the menu shown while the focus leaves the toggle (the menu is shown by toggle:focus)
    el?.closest('.dropdown')?.classList.add(OPEN);
    if (!el) return;
-   if (!el.hasAttribute('tabindex') && !['A', 'BUTTON'].includes(el.tagName)) el.tabIndex = -1;
+   // Form controls stay in the Tab order (Tab from the toggle reaches them too)
+   if (!el.hasAttribute('tabindex') && !['A', 'BUTTON'].includes(el.tagName) && !el.matches(FORM_CONTROL)) el.tabIndex = -1;
    if (el.tagName === 'A' && !el.hasAttribute('href') && !el.hasAttribute('tabindex')) el.tabIndex = -1;
    el.focus();
 };
@@ -54,6 +62,7 @@ const onKeydown = (event: KeyboardEvent) => {
    }
 
    if (!inMenu) return;
+   if (target.matches(FORM_CONTROL) && event.key !== 'Escape') return;
    const items = menuItems(dropdown);
    const index = items.indexOf(target);
 
@@ -91,7 +100,13 @@ const onClick = (event: MouseEvent) => {
 
 const onFocusOut = (event: FocusEvent) => {
    const dropdown = (event.target as HTMLElement).closest?.('.dropdown');
-   if (dropdown && !dropdown.contains(event.relatedTarget as Node)) dropdown.classList.remove(DISMISSED, OPEN);
+   if (!dropdown) return;
+   const next = event.relatedTarget as HTMLElement;
+   if (!dropdown.contains(next)) dropdown.classList.remove(DISMISSED, OPEN);
+   // Tab from the toggle into the menu (e.g. to the auto-refresh slider): the menu is shown by toggle:focus,
+   // so it must stay open before the toggle loses the focus, or the target is hidden and the focus is lost.
+   // A mouse user doesn't need it: the menu stays open while hovered.
+   else if (next.closest('.menu') && isKeyboardModality()) dropdown.classList.add(OPEN);
 };
 
 const onPointerDown = (event: PointerEvent) => {

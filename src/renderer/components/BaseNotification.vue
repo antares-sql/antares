@@ -2,7 +2,7 @@
    <div
       class="toast mt-2"
       :class="notificationStatus.className"
-      :role="status === 'error' ? 'alert' : 'status'"
+      :role="status === 'error' ? 'alert' : null"
    >
       <span class="p-vcentered text-left" :class="{'expanded': isExpanded}">
          <BaseIcon

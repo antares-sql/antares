@@ -6,7 +6,9 @@
    >
       <BaseIcon
          v-if="isBig"
+         v-button="isSelected ? t('general.showLess') : t('general.showMore')"
          class="tile-compress c-hand"
+         :aria-expanded="isSelected"
          :icon-name="isSelected ? 'chevron-up' : 'chevron-down'"
          :size="36"
          @click.stop="$emit('toggle-note', note.uid)"

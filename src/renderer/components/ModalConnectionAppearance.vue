@@ -1,7 +1,11 @@
 <template>
    <Teleport to="#window-content">
       <div class="modal active">
-         <a class="modal-overlay" @click.stop="closeModal" />
+         <a
+            class="modal-overlay"
+            aria-hidden="true"
+            @click.stop="closeModal"
+         />
          <div ref="trapRef" class="modal-container p-0">
             <div class="modal-header pl-2">
                <div class="modal-title h6">
@@ -41,7 +45,7 @@
                         <div class="col-3">
                            <label class="form-label">{{ t('application.icon') }}</label>
                         </div>
-                        <div class="col-9 icons-wrapper">
+                        <div v-radiogroup="t('application.icon')" class="col-9 icons-wrapper">
                            <div
                               v-for="icon in icons"
                               :key="icon.name"
@@ -54,6 +58,10 @@
                                  class="icon-box"
                                  :title="icon.name"
                                  :class="[{'selected': resolveIconName(localConnection.icon) === icon.code}]"
+                                 role="radio"
+                                 :aria-checked="resolveIconName(localConnection.icon) === icon.code"
+                                 :aria-label="icon.name"
+                                 :aria-hidden="false"
                                  @click="setIcon(icon.code)"
                               />
                               <BaseIcon
@@ -64,6 +72,10 @@
                                  class="icon-box"
                                  :title="icon.name"
                                  :class="[{'selected': localConnection.icon === null}]"
+                                 role="radio"
+                                 :aria-checked="localConnection.icon === null"
+                                 :aria-label="icon.name"
+                                 :aria-hidden="false"
                                  @click="setIcon(null)"
                               />
                            </div>
@@ -73,9 +85,9 @@
                         <div class="col-3">
                            <label class="form-label">{{ t('application.customIcon') }}</label>
                         </div>
-                        <div class="col-9 icons-wrapper">
+                        <div v-radiogroup="t('application.customIcon')" class="col-9 icons-wrapper">
                            <div
-                              v-for="icon in customIcons"
+                              v-for="(icon, index) in customIcons"
                               :key="icon.uid"
                            >
                               <BaseIcon
@@ -85,11 +97,16 @@
                                  :size="36"
                                  class="icon-box"
                                  :class="[{'selected': localConnection.icon === icon.uid}]"
+                                 role="radio"
+                                 :aria-checked="localConnection.icon === icon.uid"
+                                 :aria-label="`${t('application.customIcon')} ${index + 1}`"
+                                 :aria-hidden="false"
                                  @click="setIcon(icon.uid, 'custom')"
                                  @contextmenu.prevent="contextMenu($event, icon.uid)"
                               />
                            </div>
                            <BaseIcon
+                              v-button="t('application.addCustomIcon')"
                               :icon-name="'plus'"
                               :size="36"
                               class="icon-box"
@@ -302,6 +319,8 @@ const onKey =(e: KeyboardEvent) => {
    if (e.key === 'Escape')
       closeModal();
 };
+
+window.addEventListener('keydown', onKey);
 
 onBeforeUnmount(() => {
    window.removeEventListener('keydown', onKey);
