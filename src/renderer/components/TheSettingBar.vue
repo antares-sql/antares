@@ -31,7 +31,7 @@
                <div class="settingbar-element-icon-wrapper">
                   <BaseIcon
                      icon-name="dots"
-                     class="settingbar-element-icon text-light"
+                     class="settingbar-element-icon"
                      :size="24"
                   />
                </div>
@@ -51,7 +51,7 @@
                <div class="settingbar-element-icon-wrapper">
                   <BaseIcon
                      icon-name="plus"
-                     class="settingbar-element-icon text-light"
+                     class="settingbar-element-icon"
                      :size="24"
                   />
                </div>
@@ -73,7 +73,7 @@
             >
                <BaseIcon
                   icon-name="notebook"
-                  class="settingbar-element-icon text-light"
+                  class="settingbar-element-icon"
                   :size="24"
                />
             </li>
@@ -89,7 +89,7 @@
             >
                <div class="settingbar-element-icon-wrapper">
                   <div
-                     class="settingbar-element-icon text-light"
+                     class="settingbar-element-icon"
                      :class="{ 'badge badge-update': hasUpdates }"
                   >
                      <BaseIcon
