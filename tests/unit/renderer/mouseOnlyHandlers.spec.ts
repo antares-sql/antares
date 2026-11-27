@@ -102,11 +102,6 @@ const BASELINE: string[] = [
    'TheTitleBar.vue:div:toggleFullScreen',
    'Workspace.vue:a:openAsPermanentTab',
    'Workspace.vue:span:closeTab',
-   'WorkspaceTabPropsFunctionParamsModal.vue:div:selectParameter',
-   'WorkspaceTabPropsRoutineParamsModal.vue:div:selectParameter',
-   'WorkspaceTabPropsTableChecksModal.vue:div:selectCheck',
-   'WorkspaceTabPropsTableForeignModal.vue:div:selectForeign',
-   'WorkspaceTabPropsTableIndexesModal.vue:div:selectIndex',
    // Structure fields: Enter or F2 on the focused cell edits it
    'WorkspaceTabPropsTableRow.vue:span:editON',
    'WorkspaceTabQuery.vue:a:openHistoryModal',

@@ -45,12 +45,18 @@
                         </button>
                      </div>
                   </div>
-                  <div ref="indexesPanel" class="panel-body p-0 pr-1">
+                  <div
+                     ref="indexesPanel"
+                     v-listbox="t('database.indexes')"
+                     class="panel-body p-0 pr-1"
+                  >
                      <div
                         v-for="index in indexesProxy"
                         :key="index._antares_id"
                         class="tile tile-centered c-hand mb-1 p-1"
                         :class="{'selected-element': selectedIndexID === index._antares_id}"
+                        role="option"
+                        :aria-selected="selectedIndexID === index._antares_id"
                         @click="selectIndex($event, index._antares_id)"
                      >
                         <div class="tile-icon">
@@ -75,6 +81,9 @@
                         <div class="tile-action">
                            <button
                               class="btn btn-link remove-field p-0 mr-2"
+                              tabindex="-1"
+                              aria-hidden="true"
+                              data-option-delete
                               :title="t('general.delete')"
                               @click.prevent="removeIndex(index._antares_id)"
                            >
