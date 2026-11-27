@@ -2,6 +2,77 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.36-beta.3](https://github.com/antares-sql/antares/compare/v0.7.36-beta.2...v0.7.36-beta.3) (2026-11-27)
+
+
+### Features
+
+* add icon library with markup and styling ([339f1d7](https://github.com/antares-sql/antares/commit/339f1d73e6da31b150dc175ea87412eaa31638e1))
+* add support for partial indexes with WHERE clause ([38b45d0](https://github.com/antares-sql/antares/commit/38b45d0d8dfd307c0dd5d5039dc95411d43c318c))
+* copy query results to clipboard with markdown table format ([e4626b5](https://github.com/antares-sql/antares/commit/e4626b53cf70c1e0e05166d4d5446f6fb9875d6c))
+* **core:** SQL export for SQLite and Firebird ([4889021](https://github.com/antares-sql/antares/commit/4889021b6c3cb2a0a81d31d1d24a81da2e3996ec))
+* **core:** SQL import for SQLite and Firebird ([1b1a185](https://github.com/antares-sql/antares/commit/1b1a185d22d9e9d2f25be94fef0c773c86787d14))
+* **FocusTrap:** track keyboard modality for focus restoration after dialog closure ([1cd8dfd](https://github.com/antares-sql/antares/commit/1cd8dfd783c3e7aca84bd7a235d3177f002f086f))
+* **icon:** update iconography guidelines and introduce Antares icon set ([e5ee1e0](https://github.com/antares-sql/antares/commit/e5ee1e09e15fa6c3d7ec832e2e8ee61e6ce15ed1))
+* **Scratchpad:** add keyboard shortcut to close scratchpad on Escape key ([3b81f49](https://github.com/antares-sql/antares/commit/3b81f499e1560c61dea69152c3f259d04985a6da))
+* **UI:** accessible dialogs, notifications and tab bars ([98d831c](https://github.com/antares-sql/antares/commit/98d831cc11549f025592763b0d6f3b20851119c3))
+* **UI:** accessible names for form controls ([0391f4e](https://github.com/antares-sql/antares/commit/0391f4e42429d6f1b720c4667bd459dece115c61))
+* **UI:** add locale flags to language selection in settings modal ([b67b177](https://github.com/antares-sql/antares/commit/b67b1776f0311feac663b9453d3bfdf0f396a61d))
+* **UI:** complete right-to-left mirroring ([7554819](https://github.com/antares-sql/antares/commit/7554819189a101255a832fd4bf69a2956d145f51))
+* **UI:** enhance client option display with icons in connection panels ([76a331c](https://github.com/antares-sql/antares/commit/76a331c5efc9e51cca9fb5cff97456b4f8614de3))
+* **UI:** F6 navigation between the main areas and landmarks ([9f6140f](https://github.com/antares-sql/antares/commit/9f6140f8de48199b6cf7359d655e261ecc0a5852))
+* **UI:** hide the export button after a completed export ([b5c65ec](https://github.com/antares-sql/antares/commit/b5c65eca2f51c711919aa68d49c369b79030bc76))
+* **UI:** keyboard accessible setting bar (connections, folders, actions) ([2197645](https://github.com/antares-sql/antares/commit/2197645bbb1e7d5844adc43ea720c54edbf738e6))
+* **UI:** keyboard navigable context menus ([2ea5168](https://github.com/antares-sql/antares/commit/2ea5168887cee1ff24867a6486086ec036f2b9a3))
+* **UI:** keyboard navigable dropdown menus and remaining controls ([0da8f34](https://github.com/antares-sql/antares/commit/0da8f34eeeeb7b993d05cc8272edbe334396b123))
+* **UI:** keyboard navigation of the database explorer ([c3b09e5](https://github.com/antares-sql/antares/commit/c3b09e5290d15d0fcf8129206b990d7b56fbafb4))
+* **UI:** keyboard navigation of the workspace tab bar ([18bfc76](https://github.com/antares-sql/antares/commit/18bfc7635dfa2ebd588c1dd8f50980a1dd2a4752))
+* **UI:** mark unconfirmed changes in the table structure modals ([cf16541](https://github.com/antares-sql/antares/commit/cf16541ea46f95d7e44abba1063b3ea60a29740a)), closes [#1063](https://github.com/antares-sql/antares/issues/1063)
+* **UI:** right-to-left layout for Arabic and Hebrew ([1d05c93](https://github.com/antares-sql/antares/commit/1d05c93ebec7a9f83f8bcff164dbdab13e8ff2b3))
+* **UI:** theme-aware brand and database engine icons ([2544e29](https://github.com/antares-sql/antares/commit/2544e2914897d0d699127975f744f31b8f18d135))
+* **UI:** visible keyboard focus indicator and reduced motion support ([e6514a3](https://github.com/antares-sql/antares/commit/e6514a30c868518896e21d0dffee03e18377549b))
+* **zoom:** implement zoom shortcuts to adjust interface text size ([13fa39d](https://github.com/antares-sql/antares/commit/13fa39da7c828717b9244b1d4326698a2bbaa6bc))
+
+
+### Bug Fixes
+
+* **core:** export and import failed in the packaged app ([23687c3](https://github.com/antares-sql/antares/commit/23687c3ba2dac77432a5a98fa75c4b4aea5b3110))
+* **core:** return the columns of composite indexes in key order ([4e4fec9](https://github.com/antares-sql/antares/commit/4e4fec9d1fec87b68e5496d4709ffb2b4ce82daa)), closes [#1015](https://github.com/antares-sql/antares/issues/1015)
+* **Firebird SQL:** DECFLOAT columns failed with error -804 ([57eedae](https://github.com/antares-sql/antares/commit/57eedaeecbe50db3fa7845322759f777af83c916))
+* **Firebird SQL:** export of GENERATED ALWAYS identity columns ([04e5622](https://github.com/antares-sql/antares/commit/04e5622cf89406eda94ad8a96a1f70abec66c4c2))
+* **Firebird SQL:** queries returning Firebird 4 types no longer hang ([636eba2](https://github.com/antares-sql/antares/commit/636eba21a824aa4b4f5da25ee7efe314934b615e))
+* **Firebird SQL:** show and edit indexes created with CREATE INDEX ([f843ba2](https://github.com/antares-sql/antares/commit/f843ba25b188f6a5d9ba598b3b3e0d80d7c20c1d)), closes [#1062](https://github.com/antares-sql/antares/issues/1062)
+* **import:** handle custom icons during data import and ensure unique entries ([d95f465](https://github.com/antares-sql/antares/commit/d95f46548e6d0c985e774675e39b1e80f3801744))
+* **MySQL:** import of mysqldump and mariadb-dump scripts ([3556acb](https://github.com/antares-sql/antares/commit/3556acbaa1fcc8c2c499046d50f5e2fd6c7fb663))
+* **MySQL:** rename, reorder and single ALTER for table check changes ([096ca37](https://github.com/antares-sql/antares/commit/096ca3753e1ef5081ede765728b77df1c5eac132))
+* **MySQL:** table checks of other tables with the same constraint name listed on MariaDB ([4d244b3](https://github.com/antares-sql/antares/commit/4d244b3ae8cf599150c782db036e1fc295a22ebe))
+* **PostgreSQL:** import of pg_dump and pgAdmin plain dumps ([f8f6826](https://github.com/antares-sql/antares/commit/f8f6826c77d8fe2c4237253de2fec7c9ab9554f9))
+* **schema diagram:** adjust SVG viewport transformation and background insertion ([c915e1d](https://github.com/antares-sql/antares/commit/c915e1df1095ee7670eecd101fe539046308914e))
+* **TheSettingBar:** remove text-light class from setting bar icons ([a035dc7](https://github.com/antares-sql/antares/commit/a035dc7fd91f4b25f4e7058692408d53e0bf4d4d))
+* **UI:** add bordered prop to QueryEditor for better visual distinction ([11a415f](https://github.com/antares-sql/antares/commit/11a415fbdc7ee8c099d7bc5daf0c8c2e0d729565))
+* **UI:** adjust folder element styles for better alignment and visibility ([30367a7](https://github.com/antares-sql/antares/commit/30367a779964d1f88773be170130dd4f39a5c393))
+* **UI:** edit JSONB, XML, TINYTEXT and CLOB cells in the editor modal ([3137008](https://github.com/antares-sql/antares/commit/3137008befa90fdb08fa3616bb183535dbf06c3b))
+* **UI:** explorer and history search match plain text, case insensitive ([b9494b7](https://github.com/antares-sql/antares/commit/b9494b7d53a79004b30f62804da70e0604b2f4ef))
+* **UI:** handle undefined table options in WorkspaceTabPropsTable and adjust actions panel styling ([e16f741](https://github.com/antares-sql/antares/commit/e16f741c9b7be245699c065b19bd34e1c7623681))
+* **UI:** hide default focus ring for pointer input modality on context menu items ([c10ea32](https://github.com/antares-sql/antares/commit/c10ea32298c0133f19fea8649739b79066636d4b))
+* **UI:** improve folder reveal behavior and scrolling in SettingBarConnectionsFolder ([92d9258](https://github.com/antares-sql/antares/commit/92d9258f45aaea7cbbbfb3efe0b62f146055564b))
+* **UI:** insert rows dialog always focuses its first editable field ([c28f67b](https://github.com/antares-sql/antares/commit/c28f67b73782aa150c1da2737fe8d62b3e7a44d8))
+* **UI:** no focus halo on setting bar icons after closing a dialog with the mouse ([a28a302](https://github.com/antares-sql/antares/commit/a28a302ff6a694b8ea98e9494ee9c86ec8b8386f))
+* **UI:** no focus outline after mouse clicks and no autofocus on close buttons ([6438d85](https://github.com/antares-sql/antares/commit/6438d85ef299b1938d74fe603690706d55be351c))
+* **UI:** prevent default focus ring on context menu when opened with mouse ([11ad05c](https://github.com/antares-sql/antares/commit/11ad05c246b4638381b3c9a8bac7e370dbb62fae))
+* **UI:** remove unused notifications store and simplify error handling in SQL formatter ([9903d4e](https://github.com/antares-sql/antares/commit/9903d4e09c93cfd4c7f6a5a5b4cca1931dfdc477))
+* **UI:** remove window and IPC listeners left behind by closed modals, tabs and workspaces ([f193be8](https://github.com/antares-sql/antares/commit/f193be8bcc76293a553f1dd918318a5528782cbf))
+* **UI:** restore focus to grid after context menu interaction to maintain shortcut functionality ([2a7be8d](https://github.com/antares-sql/antares/commit/2a7be8d81236723911f3ef56062c46a7e1f4c6d4))
+* **UI:** results grid keyboard trap and screen reader semantics ([653ce1b](https://github.com/antares-sql/antares/commit/653ce1b89318edcd46ce89d6db948ce2752fc99a))
+* **UI:** show the position of each field in the indexes modal ([347ce1e](https://github.com/antares-sql/antares/commit/347ce1e355d5f3f5c2be2bdbda4b626746d096b1))
+* **UI:** streamline tab shortcut handling and remove unused tab event listeners ([223a0af](https://github.com/antares-sql/antares/commit/223a0af4011f2a5c563e09ad21cae36063ee9074))
+
+
+### Improvements
+
+* **core:** faster and more reliable MySQL and PostgreSQL exports ([987735b](https://github.com/antares-sql/antares/commit/987735b9fabf4a486e196b4c7ce794b49652163a))
+* **UI:** constant-time selected row lookups in the results grid ([a499267](https://github.com/antares-sql/antares/commit/a49926764a9c1f472b807a7aa3c9c11cc7964c26))
+
 ### [0.7.36-beta.2](https://github.com/antares-sql/antares/compare/v0.7.36-beta.1...v0.7.36-beta.2) (2026-11-22)
 
 
