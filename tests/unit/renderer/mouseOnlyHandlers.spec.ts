@@ -90,7 +90,6 @@ const BASELINE: string[] = [
    // Only tracks a mouse press inside the option list
    'BaseSelect.vue:div:isMouseDown',
    'BaseSelect.vue:li:select',
-   'BaseUploadInput.vue:BaseIcon:clear',
    'DebugConsole.vue:div:openDevTools',
    'DebugConsole.vue:div:reload',
    'ModalAllConnections.vue:BaseIcon:askToDelete',

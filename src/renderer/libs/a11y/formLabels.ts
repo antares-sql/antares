@@ -11,8 +11,10 @@ let labelId = 0;
 const hasOwnName = (control: HTMLElement) => {
    if (control.hasAttribute('aria-label') || control.hasAttribute('aria-labelledby')) return true;
    if ((control as HTMLInputElement).labels?.length) {
-      // A wrapping label counts only if it has some text (switches wrap just an icon)
-      return [...(control as HTMLInputElement).labels].some(label => label.textContent.trim());
+      // A wrapping label counts only if it has some text (switches wrap just an icon), and unless it asks
+      // for the group label (file pickers: their own text is just "Browse" and the chosen file)
+      return [...(control as HTMLInputElement).labels]
+         .some(label => label.textContent.trim() && !label.hasAttribute('data-a11y-group-label'));
    }
    return false;
 };
