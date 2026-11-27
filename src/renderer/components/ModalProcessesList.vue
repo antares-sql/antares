@@ -53,7 +53,13 @@
                               :size="24"
                            />
                         </button>
-                        <div class="btn btn-dark btn-sm dropdown-toggle pl-0 pr-0" tabindex="0">
+                        <div
+                           class="btn btn-dark btn-sm dropdown-toggle pl-0 pr-0"
+                           role="button"
+                           tabindex="0"
+                           aria-haspopup="true"
+                           :aria-label="t('general.autoRefresh')"
+                        >
                            <BaseIcon icon-name="caret-down" :size="24" />
                         </div>
                         <div class="menu px-3">
@@ -61,6 +67,7 @@
                            <input
                               v-model="autorefreshTimer"
                               class="slider no-border"
+                              :aria-label="t('general.autoRefresh')"
                               type="range"
                               min="0"
                               max="15"
