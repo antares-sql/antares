@@ -103,6 +103,7 @@
             option-label="name"
             option-track-by="name"
             class="form-select editable-field pl-1 pr-4 small-select text-uppercase"
+            :aria-label="t('database.type')"
             @blur="editOFF"
          />
       </div>
@@ -291,6 +292,7 @@
                option-track-by="collation"
                :max-visible-options="1000"
                class="form-select small-select pl-1 pr-4 editable-field"
+               :aria-label="t('database.collation')"
                @blur="editOFF"
             />
          </template>
@@ -673,9 +675,13 @@ const editOFF = () => {
    originalContent.value = null;
    editingField.value = null;
 
-   if (returnFocusToCell && isKeyboardModality() && editorCell?.isConnected) {
+   // Back to the cell after Enter/Escape, or when the editor closed leaving the focus nowhere (e.g. a type chosen with Enter)
+   if (isKeyboardModality() && editorCell?.isConnected) {
       const cell = editorCell;
-      nextTick(() => cell.focus());
+      const force = returnFocusToCell;
+      nextTick(() => {
+         if (force || !document.activeElement || document.activeElement === document.body) cell.focus();
+      });
    }
    returnFocusToCell = false;
 };
