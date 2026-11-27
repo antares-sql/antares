@@ -29,6 +29,7 @@ const useFocusTrap = (args?: {disableAutofocus?: boolean}) => {
 
    let $trapEl: HTMLElement = null;
    let $previousFocus: HTMLElement = null;
+   let openedWithKeyboard = false;
    const isInitiated = ref(false);
 
    const trapRef = customRef((track, trigger) => {
@@ -90,6 +91,7 @@ const useFocusTrap = (args?: {disableAutofocus?: boolean}) => {
       if (!$trapEl || isInitiated.value) return;
 
       $previousFocus = document.activeElement as HTMLElement;
+      openedWithKeyboard = isKeyboardModality();
       setDialogSemantics();
       document.addEventListener('keydown', keyHandler);
       isInitiated.value = true;
@@ -112,8 +114,9 @@ const useFocusTrap = (args?: {disableAutofocus?: boolean}) => {
       // Gives the focus back, unless the dialog already moved it somewhere else
       const active = document.activeElement;
       const focusInDialog = !active || active === document.body || !!$trapEl?.contains(active);
-      // Only for keyboard users: after a click the focus stays where the pointer put it, as before
-      if (focusInDialog && $previousFocus?.isConnected && isKeyboardModality()) $previousFocus.focus();
+      // Only for keyboard users (dialog opened and closed with the keyboard): after a click, or Esc on a
+      // dialog opened with the mouse, the focus isn't moved, so the opener shows no focus ring
+      if (focusInDialog && $previousFocus?.isConnected && openedWithKeyboard && isKeyboardModality()) $previousFocus.focus();
       $previousFocus = null;
    }
 
