@@ -48,7 +48,8 @@ const useFocusTrap = (args?: {disableAutofocus?: boolean}) => {
    });
 
    const focusableElements = () => [...$trapEl.querySelectorAll<HTMLElement>(focusableElementsSelector)]
-      .filter(el => el.offsetParent !== null || el === document.activeElement);
+      // Rendered elements only (getClientRects, unlike offsetParent, also counts position: fixed ones)
+      .filter(el => el.getClientRects().length > 0 || el === document.activeElement);
 
    function keyHandler (e: KeyboardEvent) {
       if (e.key !== 'Tab' || !$trapEl) return;
