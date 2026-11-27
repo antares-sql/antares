@@ -330,6 +330,7 @@ const confirmDeleteConnection = () => {
 
 const onKey = (e: KeyboardEvent) => {
    e.stopPropagation();
+   if (isConfirmModal.value) return; // The delete confirmation handles its own keys
    if (e.key === 'Escape') {
       if ((e.target as HTMLInputElement).tagName === 'INPUT' && searchTerm.value.length > 0)
          searchTerm.value = '';
