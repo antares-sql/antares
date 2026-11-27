@@ -13,7 +13,7 @@
          :style="{height: localHeight ? localHeight+'px' : ''}"
       >
          <div class="console-header">
-            <ul v-tablist class="tab tab-block">
+            <ul v-tablist="t('application.console')" class="tab tab-block">
                <li class="tab-item" :class="{'active': selectedTab === 'query'}">
                   <a class="tab-link" @click="selectedTab = 'query'">{{ t('application.executedQueries') }}</a>
                </li>

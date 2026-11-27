@@ -1,7 +1,11 @@
 <template>
    <Teleport to="#window-content">
       <div id="settings" class="modal active">
-         <a class="modal-overlay c-hand" @click="closeModal" />
+         <a
+            class="modal-overlay c-hand"
+            aria-hidden="true"
+            @click="closeModal"
+         />
          <div ref="trapRef" class="modal-container">
             <div class="modal-header pl-2">
                <div class="modal-title h6">
@@ -23,7 +27,7 @@
             <div class="modal-body p-0">
                <div class="panel">
                   <div class="panel-nav">
-                     <ul v-tablist class="tab tab-block">
+                     <ul v-tablist="t('application.settings')" class="tab tab-block">
                         <li
                            class="tab-item c-hand"
                            :class="{'active': selectedTab === 'general'}"
@@ -273,7 +277,13 @@
                   <div v-show="selectedTab === 'update'" class="panel-body py-4">
                      <ModalSettingsUpdate />
                   </div>
-                  <div v-show="selectedTab === 'changelog'" class="panel-body py-4">
+                  <div
+                     v-show="selectedTab === 'changelog'"
+                     class="panel-body py-4"
+                     tabindex="0"
+                     role="region"
+                     :aria-label="t('application.changelog')"
+                  >
                      <ModalSettingsChangelog />
                   </div>
 

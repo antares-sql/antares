@@ -3,7 +3,7 @@
       <div class="connection-panel">
          <div class="panel">
             <div class="panel-nav">
-               <ul v-tablist class="tab tab-block">
+               <ul v-tablist="t('connection.connection')" class="tab tab-block">
                   <li
                      class="tab-item c-hand"
                      :class="{'active': selectedTab === 'general'}"

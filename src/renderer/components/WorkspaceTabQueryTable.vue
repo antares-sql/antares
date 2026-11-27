@@ -27,7 +27,7 @@
       />
       <ul
          v-if="resultsWithRows.length > 1"
-         v-tablist
+         v-tablist="t('general.results')"
          class="tab tab-block result-tabs"
       >
          <li
@@ -51,6 +51,7 @@
          ref="table"
          class="table table-hover"
          role="grid"
+         :aria-label="t('general.results')"
          :aria-rowcount="sortedResults.length + 1"
          :aria-colcount="filteredFields.length"
       >

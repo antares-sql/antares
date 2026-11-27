@@ -18,6 +18,7 @@ import { Compartment, EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 import { storeToRefs } from 'pinia';
 import { onBeforeUnmount, onMounted, PropType, Ref, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { loadLanguage } from '@/libs/editor/languages';
 import { baseSetup } from '@/libs/editor/setup';
@@ -34,8 +35,11 @@ const props = defineProps({
    readOnly: { type: Boolean, default: false },
    showLineNumbers: { type: Boolean, default: true },
    height: { type: Number, default: 200 },
-   width: { type: [Number, Boolean] as PropType<number|false>, default: false }
+   width: { type: [Number, Boolean] as PropType<number|false>, default: false },
+   /** Accessible name of the editor (default: "Editor") */
+   label: { type: String, default: '' }
 });
+const { t } = useI18n();
 const emit = defineEmits(['update:modelValue']);
 const settingsStore = useSettingsStore();
 
@@ -93,7 +97,7 @@ onMounted(() => {
       state: EditorState.create({
          doc: props.modelValue ?? '',
          extensions: [
-            baseSetup({ gutter: props.showLineNumbers }),
+            baseSetup({ gutter: props.showLineNumbers, label: props.label || t('application.editor') }),
             language.of([]),
             theme.of(buildEditorTheme(editorTheme.value)),
             fontSize.of(buildFontTheme(editorFontSize.value)),

@@ -58,6 +58,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />
@@ -79,6 +80,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />
@@ -96,6 +98,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />
@@ -117,6 +120,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />
@@ -138,6 +142,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />
@@ -159,6 +164,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />
@@ -180,6 +186,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />
@@ -201,6 +208,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />
@@ -222,6 +230,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />
@@ -243,6 +252,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />
@@ -264,6 +274,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />
@@ -285,6 +296,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />
@@ -306,6 +318,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />
@@ -327,6 +340,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />
@@ -348,6 +362,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />
@@ -365,6 +380,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />
@@ -387,6 +403,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />
@@ -408,6 +425,7 @@
                            <span
                               class="btn btn-clear"
                               :title="t('general.close')"
+                              aria-hidden="true"
                               @mousedown.left.stop
                               @click.stop="closeTab(element)"
                            />

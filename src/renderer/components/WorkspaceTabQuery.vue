@@ -160,7 +160,7 @@
                         </button>
                         <button
                            class="btn btn-dark btn-sm dropdown-toggle px-0"
-                           :title="t('general.options')"
+                           :title="t('application.saveOptions')"
                            tabindex="0"
                         >
                            <BaseIcon icon-name="caret-down" :size="20" />
@@ -205,7 +205,7 @@
                         </button>
                         <button
                            class="btn btn-dark btn-sm dropdown-toggle px-0"
-                           :title="t('general.options')"
+                           :title="t('application.noteOptions')"
                            tabindex="0"
                         >
                            <BaseIcon icon-name="caret-down" :size="20" />

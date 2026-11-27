@@ -1,7 +1,11 @@
 <template>
    <Teleport to="#window-content">
       <div class="modal active users-modal">
-         <a class="modal-overlay" @click.stop="requestClose" />
+         <a
+            class="modal-overlay"
+            aria-hidden="true"
+            @click.stop="requestClose"
+         />
          <div ref="trapRef" class="modal-container p-0">
             <div class="modal-header pl-2">
                <div class="modal-title h6">
@@ -165,7 +169,7 @@
                            </div>
                         </div>
 
-                        <ul v-tablist class="tab tab-block mx-2">
+                        <ul v-tablist="t('database.manageUsers')" class="tab tab-block mx-2">
                            <li
                               v-for="tab in tabs"
                               :key="tab.name"

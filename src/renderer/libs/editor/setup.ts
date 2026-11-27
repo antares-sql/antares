@@ -21,11 +21,14 @@ import { searchPanel } from './searchPanel';
 
 export interface BaseSetupOptions {
    gutter?: boolean;
+   /** Accessible name of the editable area */
+   label?: string;
 }
 
 /** Editing behaviour shared by every editor (mirrors Ace's defaults) */
-export const baseSetup = ({ gutter = true }: BaseSetupOptions = {}): Extension => [
+export const baseSetup = ({ gutter = true, label }: BaseSetupOptions = {}): Extension => [
    gutter ? [lineNumbers(), highlightActiveLineGutter(), foldGutter()] : [],
+   label ? EditorView.contentAttributes.of({ 'aria-label': label }) : [],
    highlightSpecialChars(),
    history(),
    drawSelection(),

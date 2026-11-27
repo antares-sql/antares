@@ -189,7 +189,7 @@ onMounted(() => {
          doc: props.modelValue ?? '',
          extensions: [
             breakpoints(),
-            baseSetup(),
+            baseSetup({ label: t('application.queryEditor') }),
             hasActions.value ? actionsPanel(actionsEl) : [],
             dialectDefinition.value.dialect,
             completion.of(buildCompletion()),
