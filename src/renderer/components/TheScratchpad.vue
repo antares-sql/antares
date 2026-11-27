@@ -320,6 +320,12 @@ const closeEditModal = () => {
    noteToEdit.value = null;
 };
 
+const onKey = (e: KeyboardEvent) => {
+   // The new/edit note dialogs opened over this one close themselves
+   if (e.key === 'Escape' && !isAddModal.value && !isEditModal.value)
+      hideScratchpad();
+};
+
 watch(searchTerm, () => {
    clearTimeout(searchTermInterval.value);
 
@@ -339,6 +345,7 @@ onUpdated(() => {
 onMounted(() => {
    resizeResults();
    window.addEventListener('resize', resizeResults);
+   window.addEventListener('keydown', onKey);
 
    if (selectedWorkspace.value && selectedWorkspace.value !== 'NEW')
       localConnection.value = selectedWorkspace.value;
@@ -346,6 +353,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
    window.removeEventListener('resize', resizeResults);
+   window.removeEventListener('keydown', onKey);
    clearInterval(searchTermInterval.value);
 });
 
