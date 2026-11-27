@@ -123,6 +123,8 @@ const onKey =(e: KeyboardEvent) => {
       closeModal();
 };
 
+window.addEventListener('keydown', onKey);
+
 onBeforeUnmount(() => {
    window.removeEventListener('keydown', onKey);
 });
