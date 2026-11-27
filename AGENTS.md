@@ -148,7 +148,7 @@ VS Code debugging: start `npm run debug` (or `debug-runner`) in a terminal, then
 
 ## Accessibility
 
-Everything must work with the keyboard alone and have a name for screen readers. The building blocks:
+Everything must work with the keyboard alone and have a name for screen readers, **without changing anything for mouse users**: no new focus rings after a click (focus styles come only from the global, modality-gated rule in `main.scss`), and no focus moves after a click (check `isKeyboardModality()`). How to build accessible components (keyboard paths for every mouse handler, roles and states, announcements, what to avoid) is in [DESIGN.md](DESIGN.md) → *Accessible components*. The building blocks:
 
 - Prefer native `<button>`. A clickable `<div>`/`<li>`/`<a>` without `href` (or a clickable `BaseIcon`) gets `v-button` (`directives/button.ts`): role, tab stop, Enter/Space; its value is the accessible name for icon-only elements (`v-button="t('general.close')"`). Keep an explicit `role`/`tabindex` when the element is part of a composite widget (e.g. `role="menuitem" tabindex="-1"`).
 - Spectre tab bars (`ul.tab` > `li.tab-item.active`): `v-tablist` (`directives/tablist.ts`). The workspace tab bar has its own roving tabindex in `Workspace.vue`.
