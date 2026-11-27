@@ -407,6 +407,7 @@ export const enUS = {
       label: 'Label',
       icon: 'Icon',
       customIcon: 'Custom icon',
+      addCustomIcon: 'Add custom icon',
       fileName: 'File name',
       choseFile: 'Choose file',
       data: 'Data',

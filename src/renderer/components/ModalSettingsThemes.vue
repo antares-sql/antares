@@ -1,6 +1,6 @@
 <template>
    <div class="container">
-      <div class="columns">
+      <div v-radiogroup="t('application.applicationTheme')" class="columns">
          <div class="column col-12 p-vcentered mb-2 themes-toolbar">
             <div class="h6 text-uppercase mr-2">
                {{ t('application.applicationTheme') }}
@@ -36,6 +36,9 @@
             <div
                class="theme-card c-hand"
                :class="{ selected: theme.id === activeTheme.id }"
+               role="radio"
+               :aria-checked="theme.id === activeTheme.id"
+               :aria-label="isBuiltin(theme.id) ? t(`application.${theme.id}`) : theme.name"
                :title="theme.description || theme.name"
                @click="changeApplicationTheme(theme.id)"
             >
@@ -283,6 +286,11 @@ const exportTheme = async (id: string) => {
   }
 
   &:hover .theme-card-actions {
+    opacity: 1;
+  }
+
+  // Keyboard users reach the actions with Tab from the card
+  :root:not([data-input-modality="pointer"]) &:focus-within .theme-card-actions {
     opacity: 1;
   }
 }

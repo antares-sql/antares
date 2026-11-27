@@ -37,14 +37,14 @@
                         @change="null"
                      />
                   </div>
-                  <div class="btn-group btn-group-block text-uppercase">
+                  <div v-radiogroup="t('general.filter')" class="btn-group btn-group-block text-uppercase">
                      <div
                         v-for="tag in [{ code: 'all', name: t('general.all') }, ...noteTags]"
                         :key="tag.code"
-                        v-button
                         class="btn"
                         :class="[selectedTag === tag.code ? 'btn-primary': 'btn-dark']"
-                        :aria-pressed="selectedTag === tag.code"
+                        role="radio"
+                        :aria-checked="selectedTag === tag.code"
                         @click="setTag(tag.code)"
                      >
                         {{ tag.name }}

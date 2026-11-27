@@ -11,6 +11,7 @@ import { createApp } from 'vue';
 
 import App from '@/App.vue';
 import { vButton } from '@/directives/button';
+import { vListbox, vRadiogroup } from '@/directives/choiceGroup';
 import { vTablist } from '@/directives/tablist';
 import { i18n } from '@/i18n';
 import { installDropdownKeyboard } from '@/libs/a11y/dropdowns';
@@ -38,6 +39,8 @@ createApp(App)
    .directive('mask', vMaskV3)
    .directive('button', vButton)
    .directive('tablist', vTablist)
+   .directive('radiogroup', vRadiogroup)
+   .directive('listbox', vListbox)
    .use(createPinia())
    .use(i18n)
    .use(FloatingVue)

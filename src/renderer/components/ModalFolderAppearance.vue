@@ -42,11 +42,14 @@
                         <div class="col-3">
                            <label class="form-label">{{ t('application.color') }}</label>
                         </div>
-                        <div class="col-9 color-wrapper">
+                        <div v-radiogroup="t('application.color')" class="col-9 color-wrapper">
                            <div
                               v-for="color in folderPalette"
                               :key="color.name"
                               class="color-box"
+                              role="radio"
+                              :aria-checked="localFolder.color?.toLowerCase() === color.hex.toLowerCase()"
+                              :aria-label="color.name"
                               :title="color.name"
                               :style="`background-color: ${color.color}; color: ${readableTextOn(color.color)}`"
                               @click="localFolder.color = color.hex"
